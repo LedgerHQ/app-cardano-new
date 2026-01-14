@@ -469,7 +469,19 @@ void addPaymentInfoUIPairs(const addressParams_t* addressParams) {
 void addStakingInfoUIPairs(const addressParams_t* addressParams) {
     switch (addressParams->stakingDataSource) {
         case NO_STAKING: {
-            UI_ADD_STATIC(UI_STATIC_LABEL("Warning:"), UI_STATIC_LABEL("no staking rewards"));
+            switch (addressParams->type) {
+                case BYRON:
+                    UI_ADD_STATIC(UI_STATIC_LABEL("Warning:"), UI_STATIC_LABEL("Legacy Byron address\n(no staking rewards)"));
+                    break;
+
+                case ENTERPRISE_KEY:
+                case ENTERPRISE_SCRIPT:
+                    UI_ADD_STATIC(UI_STATIC_LABEL("Warning:"), UI_STATIC_LABEL("no staking rewards"));
+                    break;
+
+                default:
+                    ASSERT(false);
+            }
             break;
         }
 

@@ -36,6 +36,8 @@
 #include "get_public_key.h"
 #include "sign_tx.h"
 #include "sign_opcert.h"
+#include "derive_address.h"
+
 #ifdef DEBUG
 #include "debug_settings.h"
 #endif
@@ -54,6 +56,8 @@ static command_e req_type_to_instruction(request_type_e req_type) {
             return INS_SIGN_TX;
         case REQUEST_SIGN_OPCERT:
             return INS_SIGN_OPCERT;
+        case REQUEST_DERIVE_ADDRESS:
+            return INS_DERIVE_ADDRESS;
         default:
             LEDGER_ASSERT(false, "Unknown request type");
             return INS_GET_VERSION;  // Unreachable
@@ -142,6 +146,21 @@ void apdu_dispatcher(const command_t *cmd) {
             handler_get_public_key(&data_buffer);
             return;
         }
+
+        case INS_DERIVE_ADDRESS:
+            if (cmd->p2 != P2_UNUSED) {
+                io_send_sw(SWO_INCORRECT_P1_P2);
+                return;
+            }
+
+            // Validate P1 value
+            if (cmd->p1 != P1_RETURN && cmd->p1 != P1_DISPLAY) {
+                io_send_sw(SWO_INCORRECT_P1_P2);
+                return;
+            }
+            
+            handler_derive_address(&data_buffer, cmd->p1);
+            return;
 
         case INS_SIGN_TX:
             // Check if this is a witness APDU

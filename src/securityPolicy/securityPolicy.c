@@ -15,7 +15,7 @@
 // helper functions
 
 // stake key path has the same account as the payment key path
-static inline bool is_standard_base_address(const addressParams_t* addressParams) {
+static inline bool is_standard_base_address(const addressParams_t *addressParams) {
     ASSERT(isValidAddressParams(addressParams));
 
 #define CHECK(cond) \
@@ -39,7 +39,7 @@ static inline bool is_standard_base_address(const addressParams_t* addressParams
 #undef CHECK
 }
 
-static address_type_t getDestinationAddressType(const tx_output_destination_t* destination) {
+static address_type_t getDestinationAddressType(const tx_output_destination_t *destination) {
     switch (destination->type) {
         case DESTINATION_DEVICE_OWNED:
             return destination->params->type;
@@ -73,9 +73,7 @@ static address_type_t getDestinationAddressType(const tx_output_destination_t* d
 #define HIDE_UNLESS(expr) \
     if (!(expr)) return POLICY_HIDE
 
-
-
-static inline void mark_unusual_key_derivation(warning_bits_t* warnings, const bip44_path_t* path) {
+static inline void mark_unusual_key_derivation(warning_bits_t *warnings, const bip44_path_t *path) {
     LEDGER_ASSERT(warnings != NULL, "NULL warnings pointer");
     LEDGER_ASSERT(path != NULL, "NULL path");
 
@@ -84,8 +82,8 @@ static inline void mark_unusual_key_derivation(warning_bits_t* warnings, const b
     }
 }
 
-static security_policy_t _policyForGetExtendedPublicKey_silent(const bip44_path_t* path,
-                                                               warning_bits_t* warnings) {
+static security_policy_t _policyForGetExtendedPublicKey_silent(const bip44_path_t *path,
+                                                               warning_bits_t *warnings) {
     LEDGER_ASSERT(path != NULL, "NULL path");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
     switch (bip44_classifyPath(path)) {
@@ -128,7 +126,8 @@ static security_policy_t _policyForGetExtendedPublicKey_silent(const bip44_path_
 }
 
 // Get extended public key and return it to the host
-security_policy_t policyForGetExtendedPublicKey(const bip44_path_t* path, warning_bits_t* warnings) {
+security_policy_t policyForGetExtendedPublicKey(const bip44_path_t *path,
+                                                warning_bits_t *warnings) {
     LEDGER_ASSERT(path != NULL, "NULL path");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
 
@@ -167,14 +166,21 @@ security_policy_t policyForGetExtendedPublicKey(const bip44_path_t* path, warnin
 
 // common policy for DENY and WARN cases in returnDeriveAddress and showDeriveAddress
 // successPolicy is returned if no DENY or WARN applies
-static security_policy_t _policyForDeriveAddress(const addressParams_t* addressParams,
-                                                 security_policy_t successPolicy) {
+static security_policy_t _policyForDeriveAddress(const addressParams_t *addressParams,
+                                                 security_policy_t successPolicy,
+                                                 warning_bits_t *warnings) {
     DENY_UNLESS(isValidAddressParams(addressParams));
 
     switch (addressParams->type) {
         case BASE_PAYMENT_KEY_STAKE_KEY:
-            // unusual path
+            if (!bip44_isPathReasonable(&addressParams->paymentKeyPath)) {
+                mark_unusual_key_derivation(warnings, &addressParams->paymentKeyPath);
+            }
             SHOW_UNLESS(bip44_isPathReasonable(&addressParams->paymentKeyPath));
+            if (addressParams->stakingDataSource == STAKING_KEY_PATH &&
+                !bip44_isPathReasonable(&addressParams->stakingKeyPath)) {
+                mark_unusual_key_derivation(warnings, &addressParams->stakingKeyPath);
+            }
             SHOW_IF(addressParams->stakingDataSource == STAKING_KEY_PATH &&
                     !bip44_isPathReasonable(&addressParams->stakingKeyPath));
             break;
@@ -183,16 +189,18 @@ static security_policy_t _policyForDeriveAddress(const addressParams_t* addressP
         case POINTER_KEY:
         case ENTERPRISE_KEY:
         case BYRON:
-            // unusual path
+            if (!bip44_isPathReasonable(&addressParams->paymentKeyPath)) {
+                mark_unusual_key_derivation(warnings, &addressParams->paymentKeyPath);
+            }
             SHOW_UNLESS(bip44_isPathReasonable(&addressParams->paymentKeyPath));
             break;
 
         case BASE_PAYMENT_SCRIPT_STAKE_KEY:
         case REWARD_KEY:
-            // we only support derivation based on key path
+            if (!bip44_isPathReasonable(&addressParams->stakingKeyPath)) {
+                mark_unusual_key_derivation(warnings, &addressParams->stakingKeyPath);
+            }
             DENY_IF(addressParams->stakingDataSource != STAKING_KEY_PATH);
-
-            // unusual path
             SHOW_UNLESS(bip44_isPathReasonable(&addressParams->stakingKeyPath));
             break;
 
@@ -212,17 +220,28 @@ static security_policy_t _policyForDeriveAddress(const addressParams_t* addressP
 }
 
 // Derive address and return it to the host
-security_policy_t policyForReturnDeriveAddress(const addressParams_t* addressParams) {
+security_policy_t policyForReturnDeriveAddress(const addressParams_t *addressParams,
+                                               warning_bits_t *warnings) {
     // in expert mode, do not export addresses without permission
-    security_policy_t policy =
-        is_expert_mode() ? POLICY_SHOW : POLICY_HIDE;
+    security_policy_t policy = is_expert_mode() ? POLICY_SHOW : POLICY_HIDE;
 
-    return _policyForDeriveAddress(addressParams, policy);
+    return _policyForDeriveAddress(addressParams, policy, warnings);
+}
+
+security_policy_t policyForDeriveNativeScriptHashDevicePubkey(const bip44_path_t *path,
+                                                              warning_bits_t *warnings) {
+    // TODO: expert mode check ok?
+    // in expert mode, do not derive script hash without permission
+    security_policy_t policy = is_expert_mode() ? POLICY_SHOW : POLICY_HIDE;
+    // TODO: restrict to reasonable paths only?
+    DENY_UNLESS(bip44_isPathReasonable(path));
+    return policy;
 }
 
 // Derive address and show it to the user
-security_policy_t policyForShowDeriveAddress(const addressParams_t* addressParams) {
-    return _policyForDeriveAddress(addressParams, POLICY_SHOW);
+security_policy_t policyForShowDeriveAddress(const addressParams_t *addressParams,
+                                             warning_bits_t *warnings) {
+    return _policyForDeriveAddress(addressParams, POLICY_SHOW, warnings);
 }
 
 // true iff network is the standard mainnet or testnet
@@ -303,7 +322,7 @@ security_policy_t policyForSignTxInit(sign_tx_signingmode_t txSigningMode,
                                       uint16_t numVotingProcedures,
                                       bool includeTreasury,
                                       bool includeDonation,
-                                      warning_bits_t* warnings) {
+                                      warning_bits_t *warnings) {
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
     bool hasWarning = false;
     DENY_UNLESS(isValidNetworkId(networkId));
@@ -403,7 +422,7 @@ security_policy_t policyForSignTxInit(sign_tx_signingmode_t txSigningMode,
 
 // For each transaction UTxO input
 security_policy_t policyForSignTxInput(sign_tx_signingmode_t txSigningMode,
-                                        const tx_input_t* input MARK_UNUSED) {
+                                       const tx_input_t *input MARK_UNUSED) {
     switch (txSigningMode) {
         case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
             // user should check inputs because they are not interchangeable for Plutus scripts
@@ -426,7 +445,7 @@ security_policy_t policyForSignTxInput(sign_tx_signingmode_t txSigningMode,
     DENY();  // should not be reached
 }
 
-static bool is_addressBytes_suitable_for_tx_output(const uint8_t* addressBuffer,
+static bool is_addressBytes_suitable_for_tx_output(const uint8_t *addressBuffer,
                                                    size_t addressSize,
                                                    const uint8_t networkId,
                                                    const uint32_t protocolMagic
@@ -492,7 +511,7 @@ static bool is_addressBytes_suitable_for_tx_output(const uint8_t* addressBuffer,
 #undef CHECK
 }
 
-static bool contains_forbidden_plutus_elements(const tx_output_description_t* output,
+static bool contains_forbidden_plutus_elements(const tx_output_description_t *output,
                                                sign_tx_signingmode_t txSigningMode) {
     if (output->includeDatum || output->includeRefScript) {
         // no Plutus elements for pool registration, only allow in other modes
@@ -510,22 +529,22 @@ static bool contains_forbidden_plutus_elements(const tx_output_description_t* ou
     return false;
 }
 
-bool needsMissingDatumWarning(const tx_output_destination_t* destination, bool includeDatum) {
+bool needsMissingDatumWarning(const tx_output_destination_t *destination, bool includeDatum) {
     const bool mightRequireDatum =
         determinePaymentChoice(getDestinationAddressType(destination)) == PAYMENT_SCRIPT_HASH;
     return mightRequireDatum && !includeDatum;
 }
 
 // For each transaction output with third-party address
-security_policy_t policyForSignTxOutputAddressBytes(const tx_output_description_t* output,
+security_policy_t policyForSignTxOutputAddressBytes(const tx_output_description_t *output,
                                                     sign_tx_signingmode_t txSigningMode,
                                                     const uint8_t networkId,
                                                     const uint32_t protocolMagic,
-                                                    warning_bits_t* warnings) {
+                                                    warning_bits_t *warnings) {
     LEDGER_ASSERT(output != NULL, "NULL output");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
     ASSERT(output->destination.type == DESTINATION_THIRD_PARTY);
-    const uint8_t* addressBuffer = output->destination.address.buffer;
+    const uint8_t *addressBuffer = output->destination.address.buffer;
     const size_t addressSize = output->destination.address.size;
 
     DENY_UNLESS(is_addressBytes_suitable_for_tx_output(addressBuffer,
@@ -562,7 +581,7 @@ security_policy_t policyForSignTxOutputAddressBytes(const tx_output_description_
     DENY();  // should not be reached
 }
 
-static bool is_addressParams_suitable_for_tx_output(const addressParams_t* params,
+static bool is_addressParams_suitable_for_tx_output(const addressParams_t *params,
                                                     const uint8_t networkId,
                                                     const uint32_t protocolMagic) {
 #define CHECK(cond) \
@@ -605,16 +624,16 @@ static bool is_addressParams_suitable_for_tx_output(const addressParams_t* param
 }
 
 // For each output given by payment derivation path
-security_policy_t policyForSignTxOutputAddressParams(const tx_output_description_t* output,
+security_policy_t policyForSignTxOutputAddressParams(const tx_output_description_t *output,
                                                      sign_tx_signingmode_t txSigningMode,
                                                      const uint8_t networkId,
                                                      const uint32_t protocolMagic,
-                                                     warning_bits_t* warnings) {
+                                                     warning_bits_t *warnings) {
     LEDGER_ASSERT(output != NULL, "NULL output");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
     (void) warnings;
     ASSERT(output->destination.type == DESTINATION_DEVICE_OWNED);
-    const addressParams_t* params = output->destination.params;
+    const addressParams_t *params = output->destination.params;
 
     DENY_UNLESS(is_addressParams_suitable_for_tx_output(params, networkId, protocolMagic));
 
@@ -702,8 +721,7 @@ security_policy_t policyForSignTxOutputRefScript(security_policy_t outputPolicy)
     }
 }
 
-
-static bool is_address_suitable_for_collateral_output(const tx_output_description_t* output) {
+static bool is_address_suitable_for_collateral_output(const tx_output_description_t *output) {
     switch (getDestinationAddressType(&output->destination)) {
         case BASE_PAYMENT_KEY_STAKE_KEY:
         case BASE_PAYMENT_KEY_STAKE_SCRIPT:
@@ -717,7 +735,7 @@ static bool is_address_suitable_for_collateral_output(const tx_output_descriptio
     }
 }
 
-security_policy_t policyForSignTxCollateralOutputAddressBytes(const tx_output_description_t* output,
+security_policy_t policyForSignTxCollateralOutputAddressBytes(const tx_output_description_t *output,
                                                               sign_tx_signingmode_t txSigningMode,
                                                               const uint8_t networkId,
                                                               const uint32_t protocolMagic) {
@@ -725,7 +743,7 @@ security_policy_t policyForSignTxCollateralOutputAddressBytes(const tx_output_de
     // interdependent
 
     ASSERT(output->destination.type == DESTINATION_THIRD_PARTY);
-    const uint8_t* addressBuffer = output->destination.address.buffer;
+    const uint8_t *addressBuffer = output->destination.address.buffer;
     const size_t addressSize = output->destination.address.size;
 
     DENY_UNLESS(is_addressBytes_suitable_for_tx_output(addressBuffer,
@@ -743,7 +761,7 @@ security_policy_t policyForSignTxCollateralOutputAddressBytes(const tx_output_de
 }
 
 security_policy_t policyForSignTxCollateralOutputAddressParams(
-    const tx_output_description_t* output,
+    const tx_output_description_t *output,
     sign_tx_signingmode_t txSigningMode,
     const uint8_t networkId,
     const uint32_t protocolMagic,
@@ -752,7 +770,7 @@ security_policy_t policyForSignTxCollateralOutputAddressParams(
     // interdependent
 
     ASSERT(output->destination.type == DESTINATION_DEVICE_OWNED);
-    const addressParams_t* params = output->destination.params;
+    const addressParams_t *params = output->destination.params;
 
     DENY_UNLESS(is_addressParams_suitable_for_tx_output(params, networkId, protocolMagic));
     DENY_UNLESS(is_address_suitable_for_collateral_output(output));
@@ -801,7 +819,7 @@ security_policy_t policyForSignTxCollateralOutputAdaAmount(security_policy_t out
 }
 
 security_policy_t policyForSignTxCollateralOutputTokens(security_policy_t outputPolicy,
-                                                        const tx_output_description_t* output) {
+                                                        const tx_output_description_t *output) {
     // WARNING: policies for collateral inputs, collateral return output and total collateral are
     // interdependent
 
@@ -818,7 +836,6 @@ security_policy_t policyForSignTxCollateralOutputTokens(security_policy_t output
     HIDE();
 }
 
-
 // For transaction TTL
 security_policy_t policyForSignTxTtl(uint32_t ttl MARK_UNUSED) {
     SHOW_IF(is_expert_mode());
@@ -827,7 +844,7 @@ security_policy_t policyForSignTxTtl(uint32_t ttl MARK_UNUSED) {
 
 // applicable to credentials that are witnessed in this tx
 static bool _forbiddenCredential(sign_tx_signingmode_t txSigningMode,
-                                 const ext_credential_t* credential) {
+                                 const ext_credential_t *credential) {
     // certain combinations of tx signing mode and credential type are not allowed
     // either because they don't make sense or are dangerous
     switch (txSigningMode) {
@@ -1090,7 +1107,7 @@ security_policy_t policyForSignTxStakePoolRegistrationInit(sign_tx_signingmode_t
 }
 
 security_policy_t policyForSignTxStakePoolRegistrationPoolId(sign_tx_signingmode_t txSigningMode,
-                                                             const pool_id_t* poolId) {
+                                                             const pool_id_t *poolId) {
     switch (txSigningMode) {
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
             // owner should see a hash
@@ -1133,13 +1150,13 @@ security_policy_t policyForSignTxStakePoolRegistrationVrfKey(sign_tx_signingmode
 security_policy_t policyForSignTxStakePoolRegistrationRewardAccount(
     sign_tx_signingmode_t txSigningMode,
     uint8_t networkId,
-    const pool_reward_account_t* poolRewardAccount) {
+    const pool_reward_account_t *poolRewardAccount) {
     LEDGER_ASSERT(poolRewardAccount != NULL, "NULL pool reward account");
     switch (poolRewardAccount->keyReferenceType) {
         case KEY_REFERENCE_HASH: {
             LEDGER_ASSERT(poolRewardAccount->hashBuffer != NULL, "NULL reward account hash buffer");
-            const uint8_t header = getAddressHeader(poolRewardAccount->hashBuffer,
-                                                    REWARD_ACCOUNT_LENGTH);
+            const uint8_t header =
+                getAddressHeader(poolRewardAccount->hashBuffer, REWARD_ACCOUNT_LENGTH);
             const address_type_t address_type = getAddressType(header);
             DENY_UNLESS(address_type == REWARD_KEY || address_type == REWARD_SCRIPT);
             DENY_UNLESS(getNetworkId(header) == networkId);
@@ -1168,7 +1185,7 @@ security_policy_t policyForSignTxStakePoolRegistrationRewardAccount(
 
 security_policy_t policyForSignTxStakePoolRegistrationOwner(
     const sign_tx_signingmode_t txSigningMode,
-    const ext_credential_t* ownerCredential) {
+    const ext_credential_t *ownerCredential) {
     LEDGER_ASSERT(ownerCredential != NULL, "NULL pool owner credential");
     switch (ownerCredential->type) {
         case EXT_CREDENTIAL_KEY_PATH:
@@ -1204,7 +1221,7 @@ security_policy_t policyForSignTxStakePoolRegistrationOwner(
 
 security_policy_t policyForSignTxStakePoolRegistrationRelay(
     const sign_tx_signingmode_t txSigningMode,
-    const pool_relay_t* relay MARK_UNUSED) {
+    const pool_relay_t *relay MARK_UNUSED) {
     switch (txSigningMode) {
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
             // not interesting for an owner, show only in expert mode
@@ -1254,16 +1271,15 @@ security_policy_t policyForSignTxAnchor(const anchor_t* anchor, warning_bits_t* 
 
 // For each withdrawal
 security_policy_t policyForSignTxWithdrawal(sign_tx_signingmode_t txSigningMode,
-                                            const ext_credential_t* stakeCredential,
-                                            warning_bits_t* warnings) {
+                                            const ext_credential_t *stakeCredential,
+                                            warning_bits_t *warnings) {
     LEDGER_ASSERT(stakeCredential != NULL, "NULL credential");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
     // Withdrawals can be signed by staking keys used to sign pool registration certificates,
     // so we do not allow them.
-    LEDGER_ASSERT(
-        txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER &&
-            txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR,
-        "Withdrawal in pool registration mode");
+    LEDGER_ASSERT(txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER &&
+                      txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR,
+                  "Withdrawal in pool registration mode");
     switch (stakeCredential->type) {
         case EXT_CREDENTIAL_KEY_PATH:
             DENY_UNLESS(bip44_isOrdinaryStakingKeyPath(&stakeCredential->keyPath));
@@ -1347,9 +1363,9 @@ security_policy_t policyForSignTxWithdrawal(sign_tx_signingmode_t txSigningMode,
 }
 
 // TODO move witness policies in the proper place, at the end of tx
-static inline security_policy_t _ordinaryWitnessPolicy(const bip44_path_t* path,
+static inline security_policy_t _ordinaryWitnessPolicy(const bip44_path_t *path,
                                                        bool mintPresent,
-                                                       warning_bits_t* warnings) {
+                                                       warning_bits_t *warnings) {
     LEDGER_ASSERT(path != NULL, "NULL path");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
     switch (bip44_classifyPath(path)) {
@@ -1403,7 +1419,7 @@ static inline security_policy_t _ordinaryWitnessPolicy(const bip44_path_t* path,
 
 security_policy_t policyForSignTxFee(sign_tx_signingmode_t txSigningMode,
                                      uint64_t fee,
-                                     warning_bits_t* warnings) {
+                                     warning_bits_t *warnings) {
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
 
     switch (txSigningMode) {
@@ -1429,9 +1445,9 @@ security_policy_t policyForSignTxFee(sign_tx_signingmode_t txSigningMode,
     DENY();  // should not be reached
 }
 
-static inline security_policy_t _multisigWitnessPolicy(const bip44_path_t* path,
+static inline security_policy_t _multisigWitnessPolicy(const bip44_path_t *path,
                                                        bool mintPresent,
-                                                       warning_bits_t* warnings) {
+                                                       warning_bits_t *warnings) {
     LEDGER_ASSERT(path != NULL, "NULL path");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
 
@@ -1460,9 +1476,9 @@ static inline security_policy_t _multisigWitnessPolicy(const bip44_path_t* path,
     }
 }
 
-static inline security_policy_t _plutusWitnessPolicy(const bip44_path_t* path,
+static inline security_policy_t _plutusWitnessPolicy(const bip44_path_t *path,
                                                      bool mintPresent,
-                                                     warning_bits_t* warnings) {
+                                                     warning_bits_t *warnings) {
     LEDGER_ASSERT(path != NULL, "NULL path");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
     switch (bip44_classifyPath(path)) {
@@ -1495,9 +1511,9 @@ static inline security_policy_t _plutusWitnessPolicy(const bip44_path_t* path,
 }
 
 static inline security_policy_t _poolRegistrationOwnerWitnessPolicy(
-    const bip44_path_t* witnessPath,
-    const bip44_path_t* poolOwnerPath,
-    warning_bits_t* warnings) {
+    const bip44_path_t *witnessPath,
+    const bip44_path_t *poolOwnerPath,
+    warning_bits_t *warnings) {
     LEDGER_ASSERT(witnessPath != NULL, "NULL witness path");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
     switch (bip44_classifyPath(witnessPath)) {
@@ -1521,8 +1537,8 @@ static inline security_policy_t _poolRegistrationOwnerWitnessPolicy(
     }
 }
 
-static inline security_policy_t _poolRegistrationOperatorWitnessPolicy(const bip44_path_t* path,
-                                                                       warning_bits_t* warnings) {
+static inline security_policy_t _poolRegistrationOperatorWitnessPolicy(const bip44_path_t *path,
+                                                                       warning_bits_t *warnings) {
     LEDGER_ASSERT(path != NULL, "NULL path");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
     switch (bip44_classifyPath(path)) {
@@ -1546,11 +1562,10 @@ static inline security_policy_t _poolRegistrationOperatorWitnessPolicy(const bip
 // Note: witnesses reveal public key of an address and Ledger *does not* check
 // whether they correspond to previously declared inputs and certificates
 security_policy_t policyForSignTxWitness(sign_tx_signingmode_t txSigningMode,
-                                         const bip44_path_t* witnessPath,
+                                         const bip44_path_t *witnessPath,
                                          bool mintPresent,
-                                         const bip44_path_t* poolOwnerPath
-                                         __attribute__((unused)),
-                                         warning_bits_t* warnings) {
+                                         const bip44_path_t *poolOwnerPath __attribute__((unused)),
+                                         warning_bits_t *warnings) {
     LEDGER_ASSERT(witnessPath != NULL, "NULL witness path");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
     switch (txSigningMode) {
@@ -1644,7 +1659,7 @@ security_policy_t policyForSignTxScriptDataHash(const sign_tx_signingmode_t txSi
 // For each transaction collateral input
 security_policy_t policyForSignTxCollateralInput(const sign_tx_signingmode_t txSigningMode,
                                                  bool isTotalCollateralPresent,
-                                                 const tx_input_t* collateralInput MARK_UNUSED) {
+                                                 const tx_input_t *collateralInput MARK_UNUSED) {
     // WARNING: policies for collateral inputs, collateral return output and total collateral are
     // interdependent
 
@@ -1687,7 +1702,7 @@ static bool required_signers_allowed(const sign_tx_signingmode_t txSigningMode) 
     }
 }
 
-static bool is_required_signer_allowed(bip44_path_t* path) {
+static bool is_required_signer_allowed(bip44_path_t *path) {
     switch (bip44_classifyPath(path)) {
         case PATH_ORDINARY_ACCOUNT:
         case PATH_ORDINARY_PAYMENT_KEY:
@@ -1714,7 +1729,7 @@ static bool is_required_signer_allowed(bip44_path_t* path) {
 }
 
 security_policy_t policyForSignTxRequiredSigner(const sign_tx_signingmode_t txSigningMode,
-                                                required_signer_t* requiredSigner) {
+                                                required_signer_t *requiredSigner) {
     DENY_UNLESS(required_signers_allowed(txSigningMode));
 
     switch (requiredSigner->type) {
@@ -1746,7 +1761,7 @@ security_policy_t policyForSignTxTotalCollateral() {
 }
 
 security_policy_t policyForSignTxReferenceInput(const sign_tx_signingmode_t txSigningMode,
-                                                const tx_input_t* referenceInput MARK_UNUSED) {
+                                                const tx_input_t *referenceInput MARK_UNUSED) {
     switch (txSigningMode) {
         case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
             // should be shown because the user loses all collateral if Plutus execution fails
@@ -1769,7 +1784,7 @@ security_policy_t policyForSignTxReferenceInput(const sign_tx_signingmode_t txSi
 
 // For voting procedures
 security_policy_t policyForSignTxVotingProcedure(sign_tx_signingmode_t txSigningMode,
-                                                 ext_voter_t* voter) {
+                                                 ext_voter_t *voter) {
     // gov action id and vote can be arbitrary
     // we only restrict voter because that determines witnesses
     // certain combinations of tx signing mode and credential type are not allowed
@@ -1868,7 +1883,7 @@ security_policy_t policyForCVoteRegistrationVoteKey() {
     SHOW();
 }
 
-security_policy_t policyForCVoteRegistrationVoteKeyPath(bip44_path_t* path,
+security_policy_t policyForCVoteRegistrationVoteKeyPath(bip44_path_t *path,
                                                         cvote_registration_format_t format) {
     // encourages people to use the new format,
     // so that we can drop support for CIP15 sooner
@@ -1879,7 +1894,7 @@ security_policy_t policyForCVoteRegistrationVoteKeyPath(bip44_path_t* path,
     SHOW();
 }
 
-security_policy_t policyForCVoteRegistrationStakingKey(const bip44_path_t* stakingKeyPath) {
+security_policy_t policyForCVoteRegistrationStakingKey(const bip44_path_t *stakingKeyPath) {
     DENY_UNLESS(bip44_isOrdinaryStakingKeyPath(stakingKeyPath));
     SHOW_UNLESS(bip44_isPathReasonable(stakingKeyPath));
 
@@ -1888,7 +1903,7 @@ security_policy_t policyForCVoteRegistrationStakingKey(const bip44_path_t* staki
 
 // based on https://input-output-rnd.slack.com/archives/C036XSMFXE3/p1668185230182239
 security_policy_t policyForCVoteRegistrationPaymentDestination(
-    const tx_output_destination_storage_t* destination,
+    const tx_output_destination_storage_t *destination,
     const uint8_t networkId) {
     switch (destination->type) {
         case DESTINATION_DEVICE_OWNED: {
@@ -1940,8 +1955,8 @@ security_policy_t policyForCVoteRegistrationConfirm() {
     SHOW();
 }
 
-security_policy_t policyForSignOpCert(const bip44_path_t* poolColdKeyPath,
-                                     warning_bits_t* warnings) {
+security_policy_t policyForSignOpCert(const bip44_path_t *poolColdKeyPath,
+                                      warning_bits_t *warnings) {
     LEDGER_ASSERT(poolColdKeyPath != NULL, "NULL pool key path");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
     switch (bip44_classifyPath(poolColdKeyPath)) {
@@ -2039,14 +2054,15 @@ static const warning_definition_t WARNING_DEFINITIONS[WARNING_BIT_COUNT] = {
 };
 
 size_t warning_bits_to_definitions(warning_bits_t warnings,
-                                   const warning_definition_t** definitions,
+                                   const warning_definition_t **definitions,
                                    size_t max_definitions) {
     size_t count = 0;
     for (warning_bit_e bit = 0; bit < WARNING_BIT_COUNT && count < max_definitions; ++bit) {
         if (!warning_bits_has(warnings, bit)) continue;
-        const warning_definition_t* def = (const warning_definition_t*) PIC(&WARNING_DEFINITIONS[bit]);
-        const char* title = (const char*) PIC(def->title);
-        const char* description = (const char*) PIC(def->description);
+        const warning_definition_t *def =
+            (const warning_definition_t *) PIC(&WARNING_DEFINITIONS[bit]);
+        const char *title = (const char *) PIC(def->title);
+        const char *description = (const char *) PIC(def->description);
         if (title == NULL || description == NULL || description[0] == '\0') {
             continue;
         }
@@ -2062,7 +2078,7 @@ security_policy_t policyForSignCVoteConfirm() {
     SHOW();
 }
 
-security_policy_t policyForSignCVoteWitness(bip44_path_t* path) {
+security_policy_t policyForSignCVoteWitness(bip44_path_t *path) {
     switch (bip44_classifyPath(path)) {
         case PATH_CVOTE_KEY:
             SHOW_UNLESS(bip44_isPathReasonable(path));
@@ -2075,9 +2091,9 @@ security_policy_t policyForSignCVoteWitness(bip44_path_t* path) {
     }
 }
 
-security_policy_t policyForSignMsg(const bip44_path_t* witnessPath,
+security_policy_t policyForSignMsg(const bip44_path_t *witnessPath,
                                    cip8_address_field_type_t addressFieldType,
-                                   const addressParams_t* addressParams) {
+                                   const addressParams_t *addressParams) {
     switch (bip44_classifyPath(witnessPath)) {
         case PATH_ORDINARY_PAYMENT_KEY:
         case PATH_ORDINARY_STAKING_KEY:

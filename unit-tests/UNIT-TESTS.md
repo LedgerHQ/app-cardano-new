@@ -72,7 +72,7 @@ python3 unit-tests/generate_unit_tests_from_ragger.py
 # or individual steps:
 python3 unit-tests/generate_unit_tests_from_ragger.py fixtures
 python3 unit-tests/generate_unit_tests_from_ragger.py generate-test-runners
-python3 unit-tests/generate_unit_tests_from_ragger.py rejects
+
 ```
 
 The default command runs all generators in order (fixtures, complete-tests, rejects, mock-data).

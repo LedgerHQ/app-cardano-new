@@ -593,6 +593,62 @@ add_executable(test_opcert_message test_opcert_message.c test_utils/hexUtils.c)
 target_link_libraries(test_opcert_message PUBLIC cmocka gcov)
 add_test(test_opcert_message test_opcert_message)
 
+
+# Common sources for address derivation tests
+set(DERIVE_ADDRESS_COMMON_SOURCES
+    mock_globals.c
+    ../src/handler/derive_address.c
+    ../src/keyDerivation/keyDerivation.c
+    ../src/addressUtils/addressUtilsShelley.c
+    ../src/addressUtils/addressUtilsByron.c
+    ../src/addressUtils/bip44.c
+    ../src/transaction/tx_utils.c
+    ../src/securityPolicy/securityPolicy.c
+    ../src/securityPolicy/securityPolicy_privkey.c
+    ../src/app_context.c
+    ../src/memory/mem_utils.c
+    ../src/memory/mem.c
+    ../src/ui/ui_utils.c
+    ../src/ui/ui_warnings.c
+    mock_sources/mem_alloc_stub.c
+    mock_sources/glyphs_mock.c
+    mock_sources/display_stub.c
+    mock_sources/hex_stub.c
+    mock_sources/io_stub.c
+)
+# Common libraries for address derivation tests
+set(DERIVE_ADDRESS_COMMON_LIBS
+    hex_utils
+    base58
+    bech32_lib
+    bip44_real
+    buffer_utils_lib
+    cbor_lib
+    blake2b_lib
+    sha3_lib
+    hash_mocks_lib
+    crypto_mocks_lib
+    buffer
+    write
+    read
+    varint
+    bip32
+    cx_crc_support
+    mock_printf
+)
+# Create a static library for address derivation core (reusable across tests)
+add_library(cardano_derive_address_core STATIC ${DERIVE_ADDRESS_COMMON_SOURCES})
+target_link_libraries(cardano_derive_address_core PUBLIC ${DERIVE_ADDRESS_COMMON_LIBS})
+add_executable(test_derive_address_rejects
+    test_derive_address_rejects.c
+    # mem implementation is provided by test fixtures (test_derive_address_rejects.c) to avoid
+    # duplicate allocator state in mocks.
+    mock_sources/mem_alloc_stub.c
+)
+target_link_libraries(test_derive_address_rejects PUBLIC cmocka gcov cardano_derive_address_core)
+target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
+add_test(test_derive_address_rejects test_derive_address_rejects)
+
 # add_test(test_tokens test_tokens)  # TODO: uncomment when crypto dependencies are mocked
 # add_test(test_tx_parser test_tx_parser)  # TODO: uncomment when created
 # add_test(test_tx_utils test_tx_utils)    # TODO: uncomment when created

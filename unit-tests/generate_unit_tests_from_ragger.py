@@ -15,12 +15,22 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Type
 
+from common_generators import (
+    UNIT_TESTS_DIR,
+)
 
-UNIT_TESTS_DIR = Path(__file__).resolve().parent
-REPO_ROOT = UNIT_TESTS_DIR.parent
+# Import fixture generators
+from fixture_generators.tx_generators import (
+    generate_tx_fixtures,
+)
 
-NODE_VERSION = "16.20.2"
+from fixture_generators.address_derivation_generators import (
+    generate_address_derivation_fixtures,
+)
 
+from reject_fixture_generators.address_derivation_reject_generators import (
+    generate_reject_address_derivation_fixtures,
+)
 
 def _add_tests_to_sys_path() -> None:
     sys.path.insert(0, str(REPO_ROOT / "tests"))
@@ -447,6 +457,11 @@ def generate_all_fixtures() -> None:
         _generate_fixtures_for_era(era_key, tests, aux_data_classes)
 
 
+# Import reject generators
+from reject_fixture_generators.tx_reject_generators import (
+    generate_tx_reject_fixtures,
+)
+
 ERA_TEST_FILE_MAP: Dict[str, Tuple[str, str, str]] = {
     "byron": ("test_sign_tx_fixtures_byron.h", "test_sign_tx_byron.c", "BYRON"),
     "shelley": ("test_sign_tx_fixtures_shelley.h", "test_sign_tx_shelley.c", "SHELLEY"),
@@ -454,10 +469,22 @@ ERA_TEST_FILE_MAP: Dict[str, Tuple[str, str, str]] = {
     "allegra": ("test_sign_tx_fixtures_allegra.h", "test_sign_tx_allegra.c", "ALLEGRA"),
     "alonzo": ("test_sign_tx_fixtures_alonzo.h", "test_sign_tx_alonzo.c", "ALONZO"),
     "babbage": ("test_sign_tx_fixtures_babbage.h", "test_sign_tx_babbage.c", "BABBAGE"),
-    "alonzo_catalyst": ("test_sign_tx_fixtures_alonzo_catalyst.h", "test_sign_tx_alonzo_catalyst.c", "ALONZO_CATALYST"),
-    "alonzo_cip36": ("test_sign_tx_fixtures_alonzo_cip36.h", "test_sign_tx_alonzo_cip36.c", "ALONZO_CIP36"),
+    "alonzo_catalyst": (
+        "test_sign_tx_fixtures_alonzo_catalyst.h",
+        "test_sign_tx_alonzo_catalyst.c",
+        "ALONZO_CATALYST",
+    ),
+    "alonzo_cip36": (
+        "test_sign_tx_fixtures_alonzo_cip36.h",
+        "test_sign_tx_alonzo_cip36.c",
+        "ALONZO_CIP36",
+    ),
     "conway": ("test_sign_tx_fixtures_conway.h", "test_sign_tx_conway.c", "CONWAY"),
-    "conway_voting": ("test_sign_tx_fixtures_conway_voting.h", "test_sign_tx_conway_voting.c", "CONWAY_VOTING"),
+    "conway_voting": (
+        "test_sign_tx_fixtures_conway_voting.h",
+        "test_sign_tx_conway_voting.c",
+        "CONWAY_VOTING",
+    ),
     "conway_without_certificates": (
         "test_sign_tx_fixtures_conway_without_certificates.h",
         "test_sign_tx_conway_without_certificates.c",
@@ -468,7 +495,11 @@ ERA_TEST_FILE_MAP: Dict[str, Tuple[str, str, str]] = {
         "test_sign_tx_shelley_certificates.c",
         "SHELLEY_CERTIFICATES",
     ),
-    "multisig": ("test_sign_tx_fixtures_multisig.h", "test_sign_tx_multisig.c", "MULTISIG"),
+    "multisig": (
+        "test_sign_tx_fixtures_multisig.h",
+        "test_sign_tx_multisig.c",
+        "MULTISIG",
+    ),
     "pool_registration": (
         "test_sign_tx_fixtures_pool_registration.h",
         "test_sign_tx_pool_registration.c",
@@ -493,7 +524,9 @@ def _sanitize_test_name(name: str) -> str:
 def _extract_fixtures_from_header(fixture_path: Path) -> List[Tuple[str, str]]:
     content = fixture_path.read_text()
     fixtures: List[Tuple[str, str]] = []
-    pattern = re.compile(r"static const tx_fixture_t (FIXTURE_[A-Z0-9_]+)\s*=\s*\{(.*?)\};", re.S)
+    pattern = re.compile(
+        r"static const tx_fixture_t (FIXTURE_[A-Z0-9_]+)\s*=\s*\{(.*?)\};", re.S
+    )
     for match in pattern.finditer(content):
         fixture_name = match.group(1)
         body = match.group(2)
@@ -505,7 +538,9 @@ def _extract_fixtures_from_header(fixture_path: Path) -> List[Tuple[str, str]]:
     return fixtures
 
 
-def _build_test_functions(fixtures: Sequence[Tuple[str, str]]) -> Tuple[List[str], List[str]]:
+def _build_test_functions(
+    fixtures: Sequence[Tuple[str, str]],
+) -> Tuple[List[str], List[str]]:
     functions: List[str] = []
     names: List[str] = []
     for fixture_name, display_name in fixtures:
@@ -530,7 +565,9 @@ def _build_test_functions(fixtures: Sequence[Tuple[str, str]]) -> Tuple[List[str
 
 
 def _build_main_function(test_names: Sequence[str], test_c_file: str) -> str:
-    registrations = ",\n        ".join(f"cmocka_unit_test({name})" for name in test_names)
+    registrations = ",\n        ".join(
+        f"cmocka_unit_test({name})" for name in test_names
+    )
     return (
         "// ======================================================================\n"
         "// Main\n"
@@ -539,13 +576,15 @@ def _build_main_function(test_names: Sequence[str], test_c_file: str) -> str:
         "    const struct CMUnitTest tests[] = {\n"
         f"        {registrations},\n"
         "    };\n"
-        f"    return _cmocka_run_group_tests(\"{Path(test_c_file).stem}\", "
+        f'    return _cmocka_run_group_tests("{Path(test_c_file).stem}", '
         "tests, ARRAY_LEN(tests), NULL, NULL);\n"
         "}\n"
     )
 
 
-def _generate_complete_test_file(era: str, fixture_file: str, test_c_file: str, era_upper: str) -> None:
+def _generate_complete_test_file(
+    era: str, fixture_file: str, test_c_file: str, era_upper: str
+) -> None:
     fixture_path = UNIT_TESTS_DIR / fixture_file
     test_path = UNIT_TESTS_DIR / test_c_file
 
@@ -554,9 +593,11 @@ def _generate_complete_test_file(era: str, fixture_file: str, test_c_file: str, 
 
     existing = test_path.read_text()
 
-    era_block_match = re.search(r"^// =+\n// ([^\n]+ Era Tests)\n// =+\n", existing, re.MULTILINE)
+    era_block_match = re.search(
+        r"^// =+\n// ([^\n]+ Era Tests)\n// =+\n", existing, re.MULTILINE
+    )
     if era_block_match:
-        boilerplate = existing[:era_block_match.start()]
+        boilerplate = existing[: era_block_match.start()]
         era_heading = era_block_match.group(1)
     else:
         placeholder_match = re.search(
@@ -566,7 +607,7 @@ def _generate_complete_test_file(era: str, fixture_file: str, test_c_file: str, 
         )
         if not placeholder_match:
             raise ValueError(f"Could not find test section marker in {test_c_file}")
-        boilerplate = existing[:placeholder_match.start()]
+        boilerplate = existing[: placeholder_match.start()]
         era_heading = ERA_COMMENT_OVERRIDES.get(era, f"{era_upper} Era Tests")
 
     fixtures = _extract_fixtures_from_header(fixture_path)
@@ -603,6 +644,7 @@ def _generate_complete_test_file(era: str, fixture_file: str, test_c_file: str, 
 
 
 def generate_test_runners() -> None:
+
     for era, (fixture_file, test_c_file, era_upper) in ERA_TEST_FILE_MAP.items():
         _generate_complete_test_file(era, fixture_file, test_c_file, era_upper)
 
@@ -1350,7 +1392,7 @@ def regenerate_mock_data() -> None:
         return "/".join(path_parts)
 
     def format_c_array(data: bytes, indent: str = "      ") -> str:
-        chunks = [data[i:i + 8] for i in range(0, len(data), 8)]
+        chunks = [data[i : i + 8] for i in range(0, len(data), 8)]
         lines = []
         for i, chunk in enumerate(chunks):
             prefix = "" if i == 0 else indent + " "
@@ -1378,9 +1420,7 @@ def regenerate_mock_data() -> None:
 
         try:
             derived_pk_hex, derived_cc_hex = calculate_public_key_and_chaincode(
-                CurveChoice.Ed25519Kholaw,
-                bip32_path,
-                mnemonic=mnemonic
+                CurveChoice.Ed25519Kholaw, bip32_path, mnemonic=mnemonic
             )
 
             derived_pk = bytes.fromhex(derived_pk_hex[2:])
@@ -1393,32 +1433,32 @@ def regenerate_mock_data() -> None:
             entry_text = re.sub(
                 r'/\* Public key \(hex\): "[^"]*" \*/',
                 f'/* Public key (hex): "{derived_pk.hex()}" */',
-                entry_text
+                entry_text,
             )
             entry_text = re.sub(
                 r"\.public_key = \{[^}]+\}",
                 f".public_key = {{{format_c_array(derived_pk)}}}",
-                entry_text
+                entry_text,
             )
             entry_text = re.sub(
                 r'/\* Chain code \(hex\): "[^"]*" \*/',
                 f'/* Chain code (hex): "{derived_cc.hex()}" */',
-                entry_text
+                entry_text,
             )
             entry_text = re.sub(
                 r"\.chain_code = \{[^}]+\}",
                 f".chain_code = {{{format_c_array(derived_cc)}}}",
-                entry_text
+                entry_text,
             )
             entry_text = re.sub(
                 r"/\* Blake2b-224 key hash: [a-f0-9]+ \*/",
                 f"/* Blake2b-224 key hash: {derived_kh.hex()} */",
-                entry_text
+                entry_text,
             )
             entry_text = re.sub(
                 r"\.key_hash = \{[^}]+\}",
                 f".key_hash = {{{format_c_array(derived_kh)}}}",
-                entry_text
+                entry_text,
             )
             return entry_text
 
@@ -1472,11 +1512,11 @@ def regenerate_mock_data() -> None:
 
     signature_pattern = (
         r'(/\* Path "([^"]+)" message ([^*]+?) \*/\s*'
-        r'\{ \.path = (\{[^}]+\}), \.path_len = [^,]+,\s*'
-        r'\.message = ([^,]+),\s*\.message_len = [^,]+,\s*'
+        r"\{ \.path = (\{[^}]+\}), \.path_len = [^,]+,\s*"
+        r"\.message = ([^,]+),\s*\.message_len = [^,]+,\s*"
         r'/\* Signature \(hex\): "([^"]*)" \*/\s*'
-        r'\.signature = \{([^}]+)\},\s*'
-        r'\},)'
+        r"\.signature = \{([^}]+)\},\s*"
+        r"\},)"
     )
 
     signature_match_count = 0
@@ -1501,16 +1541,18 @@ def regenerate_mock_data() -> None:
         entry_text = re.sub(
             r'/\* Signature \(hex\): "[^"]*" \*/',
             f'/* Signature (hex): "{signature_hex}" */',
-            entry_text
+            entry_text,
         )
         entry_text = re.sub(
             r"\.signature = \{[^}]+\}",
             f".signature = {{{format_c_array(signature)}}}",
-            entry_text
+            entry_text,
         )
         return entry_text
 
-    new_content = re.sub(signature_pattern, regenerate_signature_entry, new_content, flags=re.DOTALL)
+    new_content = re.sub(
+        signature_pattern, regenerate_signature_entry, new_content, flags=re.DOTALL
+    )
 
     if signature_match_count == 0:
         raise ValueError("No signature entries were regenerated")
@@ -1522,9 +1564,9 @@ def regenerate_mock_data() -> None:
 
 
 def run_all() -> None:
-    generate_all_fixtures()
+    generate_tx_fixtures()
     generate_test_runners()
-    generate_reject_fixtures()
+    generate_tx_reject_fixtures()
     regenerate_mock_data()
 
 
@@ -1535,7 +1577,9 @@ def main() -> None:
     subparsers = parser.add_subparsers(dest="command")
     subparsers.add_parser("all", help="Run all generators (default).")
     subparsers.add_parser("fixtures", help="Generate sign-tx fixture headers.")
-    subparsers.add_parser("generate-test-runners", help="Regenerate test_sign_tx_*.c files.")
+    subparsers.add_parser(
+        "generate-test-runners", help="Regenerate test_sign_tx_*.c files."
+    )
     subparsers.add_parser("rejects", help="Generate reject fixture headers.")
     subparsers.add_parser("mock-data", help="Regenerate mock_crypto/crypto_mock_data.h.")
 
@@ -1544,11 +1588,13 @@ def main() -> None:
     if args.command in (None, "all"):
         run_all()
     elif args.command == "fixtures":
-        generate_all_fixtures()
+        generate_tx_fixtures()
+        generate_address_derivation_fixtures()
     elif args.command == "generate-test-runners":
         generate_test_runners()
     elif args.command == "rejects":
-        generate_reject_fixtures()
+        generate_tx_reject_fixtures()
+        generate_reject_address_derivation_fixtures()
     elif args.command == "mock-data":
         regenerate_mock_data()
     else:

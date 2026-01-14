@@ -41,7 +41,7 @@ typedef enum {
     // Network/Protocol validation errors
     SWO_INVALID_NETWORK_ID = 0x6B37,                  // network ID mismatch
     SWO_INVALID_PROTOCOL_MAGIC = 0x6B38,              // protocol magic mismatch
-
+    
     // Transaction structure errors
     SWO_TX_PARSING_FAIL_INCLUSION_FLAG = 0x6B39,      // optional field flag error
     SWO_TX_PARSING_FAIL_BUFFER_NOT_FULLY_CONSUMED = 0x6B3A,  // extra data in buffer

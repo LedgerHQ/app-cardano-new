@@ -47,3 +47,11 @@ typedef struct {
     uint8_t network_id;
     uint32_t protocol_magic;
 } tx_fixture_t;
+
+typedef struct {
+    const char *name;
+    uint8_t p1;
+    const uint8_t *data;
+    size_t data_len;
+    uint16_t check_expected;
+} derive_address_reject_fixture_t;
