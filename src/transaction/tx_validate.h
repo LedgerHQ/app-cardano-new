@@ -47,7 +47,7 @@
  * ## Why This Architecture?
  *
  * 1. **Single-pass efficiency:** Parse once, validate once, hash once
- * 2. **Security:** Hash is computed before UI display (prevents TOCTOU attacks)
+ * 2. **Security:** Hash is computed before UI display
  * 3. **Memory efficiency:** No need to store entire transaction for later hashing
  * 4. **Policy enforcement:** Security decisions made before user sees anything
  */

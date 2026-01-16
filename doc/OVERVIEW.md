@@ -4,7 +4,7 @@ This document provides a high-level overview of the Cardano Ledger application a
 
 ## 1. C Application Architecture (`src/`)
 
-The application is written in C and runs on Ledger devices (Stax, Flex, Nano X, Nano S+). 
+The application is written in C and runs on Ledger devices (Stax, Flex, Nano X, Nano S+).
 *Note: Nano S is no longer supported.*
 
 ### Core Components
@@ -14,7 +14,7 @@ The application is written in C and runs on Ledger devices (Stax, Flex, Nano X, 
     - `get_public_key.c`: Exports public keys.
     - `sign_tx.c`: Coordinates the multi-stage transaction signing process.
     - `sign_opcert.c`: Handles operational certificate signing.
-- **`transaction/`**: Core transaction processing logic. Detailed documentation can be found in [OVERVIEW_TX.md]TX.md.
+- **`transaction/`**: Core transaction processing logic. Includes parsing (`tx_parse.c`), validation with security policies and hash computation (`tx_validate.c` with `tx_hash_builder.c`), and UI preparation (`tx_prepare.c`). Detailed documentation can be found in [tx.md](tx.md).
 - **`securityPolicy/`**: Enforces security rules for every operation, especially validating BIP44 paths and ensuring that transaction components are safe to sign.
 - **`addressUtils/`**: Utilities for Cardano address manipulation (Shelley, Byron, Bech32).
 - **`memory/`**: Custom memory management.
@@ -23,7 +23,7 @@ The application is written in C and runs on Ledger devices (Stax, Flex, Nano X, 
 
 ## 2. Transaction Signing Data Flow
 
-Detailed data flow and transaction-specific logic are documented in [OVERVIEW_TX.md]TX.md.
+Detailed data flow and transaction-specific logic are documented in [tx.md](tx.md).
 
 ## 3. Python Client and Functional Tests (`tests/`)
 
@@ -74,3 +74,15 @@ Unit tests are written in C using the `cmocka` framework and run on the host mac
 - **`utils/textUtils.h`**: Helpers for formatting numbers and addresses for UI display.
 - **`flist.h`**: Generic linked list used to store transaction items during parsing.
 - **`mem.h`**: Dynamic memory allocator optimized for Ledger device constraints.
+
+# Security
+
+Apart from avoiding memory leaks and bugs in general, the security of the app has two main pillars:
+
+1. Users must be shown everything important that is included in the transaction. There are very few exceptions where something is hidden, typically when the data cannot be verified by a human (inline datum) and are too long (in which case the error rate of human verification on a small screen mostly defeats the purpose of showing it), or when it is safe to hide data because user will not lose control of his assets (e.g. change outputs).
+
+2. Data being displayed should not allow "attacks by deception", e.g. including several elements in the transaction that are signed by the same key, and tricking the user into overlooking some of them (most users are not aware of most security implications, so a compromised software wallet has a good chance of deceiving them). This means some combinations of elements are forbidden (e.g. key hash certificates in ordinary transaction signing mode because the user cannot easily determine if the key hash in the certificate comes from some of his keys).
+
+There is an ["expert mode"](expert_mode.xlsx) setting that allows the user to somewhat control the amount of data being displayed. It is mostly relevant for Plutus transactions.
+
+The reasoning behind specific restrictions is the result of years of discussion among all the stakeholders (IOG, Intersect, Vacuumlabs, stake pool operators, wallet developers, power users etc.). You can find the historical documentation in `doc/spec_*.md`. It is organized by Cardano eras or specific features as they were added over time.
