@@ -9,8 +9,6 @@
 #include "memory/flist.h"
 #include "addressUtils/addressUtilsShelley.h"
 
-#define MAX_DATUM_INLINE_LENGTH INT16_MAX  // TODO: inline datum length currently bounded only by wire/data limits (effectively unlimited)
-#define MAX_REF_SCRIPT_LENGTH INT16_MAX    // TODO: reference script length currently bounded only by wire/data limits (effectively unlimited)
 #define ASSET_NAME_HASH_SIZE 32
 #define ASSET_NAME_DISPLAY_SIZE 32
 
@@ -74,9 +72,9 @@ typedef struct {
     union {
         const uint8_t* hash;  // Points to 32-byte hash in raw_tx buffer
         struct {
-            uint16_t size;
-            const uint8_t* data;  // Points to data in raw_tx buffer
-        } inline_data;
+            size_t length;
+            const uint8_t* buffer;  // Points to inline datum bytes in raw_tx buffer
+        } inline_datum;
     };
 } output_datum_t;
 

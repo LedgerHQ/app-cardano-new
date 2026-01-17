@@ -58,8 +58,15 @@ void ui_display_transaction(void) {
     }
 
     const char *review_subtitle = NULL;
-    if (G_context.tx_info.transaction.txSigningMode == SIGN_TX_SIGNINGMODE_PLUTUS_TX) {
-        review_subtitle = "Plutus execution";
+    switch (G_context.tx_info.transaction.txSigningMode) {
+        case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
+            review_subtitle = "Plutus execution";
+            break;
+        case SIGN_TX_SIGNINGMODE_MULTISIG_TX:
+            review_subtitle = "Multisig transaction";
+            break;
+        default:
+            break;
     }
 
     const nbgl_warning_t *warningPtr = ui_get_warnings();

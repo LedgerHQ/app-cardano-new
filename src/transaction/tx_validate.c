@@ -329,11 +329,11 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
             } else {
                 txHashBuilder_addOutput_datum(txHashBuilder,
                                              DATUM_INLINE,
-                                             output_datum->inline_data.data,
-                                             output_datum->inline_data.size);
+                                             output_datum->inline_datum.buffer,
+                                             output_datum->inline_datum.length);
                 txHashBuilder_addOutput_datum_inline_chunk(txHashBuilder,
-                                                           output_datum->inline_data.data,
-                                                           output_datum->inline_data.size);
+                                                           output_datum->inline_datum.buffer,
+                                                           output_datum->inline_datum.length);
             }
         }
 
@@ -582,26 +582,31 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
             case CERTIFICATE_STAKE_POOL_REGISTRATION: {
                 pool_owner_counts_t owner_counts =
                     count_pool_owner_nodes(certificate->poolRegistration.poolOwners);
-                if (G_context.tx_info.transaction.txSigningMode ==
-                    SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER) {
-                    LEDGER_ASSERT(!G_context.tx_info.pool_owner_path_present,
-                                  "Multiple pool registrations in owner mode");
-                    if (owner_counts.path_owners == 1) {
-                        s_flist_node *node2 = certificate->poolRegistration.poolOwners;
-                        while (node2 != NULL) {
-                            tx_certificate_node_t *owner_node = (tx_certificate_node_t *) node2;
-                            const ext_credential_t *owner_credential =
-                                &owner_node->certificate.stakeCredential;
-                            if (owner_credential->type == EXT_CREDENTIAL_KEY_PATH) {
-                                G_context.tx_info.pool_owner_path = owner_credential->keyPath;
-                                G_context.tx_info.pool_owner_path_present = true;
-                                break;
+                switch (G_context.tx_info.transaction.txSigningMode) {
+                    case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
+                        LEDGER_ASSERT(!G_context.tx_info.pool_owner_path_present,
+                                      "Multiple pool registrations in owner mode");
+                        if (owner_counts.path_owners == 1) {
+                            s_flist_node *node2 = certificate->poolRegistration.poolOwners;
+                            while (node2 != NULL) {
+                                tx_certificate_node_t *owner_node = (tx_certificate_node_t *) node2;
+                                const ext_credential_t *owner_credential =
+                                    &owner_node->certificate.stakeCredential;
+                                if (owner_credential->type == EXT_CREDENTIAL_KEY_PATH) {
+                                    G_context.tx_info.pool_owner_path = owner_credential->keyPath;
+                                    G_context.tx_info.pool_owner_path_present = true;
+                                    break;
+                                }
+                                node2 = node2->next;
                             }
-                            node2 = node2->next;
+                            LEDGER_ASSERT(G_context.tx_info.pool_owner_path_present,
+                                          "Pool owner path missing");
                         }
-                        LEDGER_ASSERT(G_context.tx_info.pool_owner_path_present,
-                                      "Pool owner path missing");
-                    }
+                        break;
+                    case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
+                        break;
+                    default:
+                        break;
                 }
                 cert_policy = policyForSignTxStakePoolRegistrationInit(
                     G_context.tx_info.transaction.txSigningMode,

@@ -897,12 +897,16 @@ void handler_sign_tx_witness(buffer_t *cdata) {
 
     // Get pool owner path if this is a pool registration
     const bip44_path_t* poolOwnerPath = NULL;
-    if (G_context.tx_info.transaction.txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER ||
-        G_context.tx_info.transaction.txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR) {
-        if (G_context.tx_info.transaction.txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER &&
-            G_context.tx_info.pool_owner_path_present) {
-            poolOwnerPath = &G_context.tx_info.pool_owner_path;
-        }
+    switch (G_context.tx_info.transaction.txSigningMode) {
+        case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
+            if (G_context.tx_info.pool_owner_path_present) {
+                poolOwnerPath = &G_context.tx_info.pool_owner_path;
+            }
+            break;
+        case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
+            break;
+        default:
+            break;
     }
 
     warning_bits_t witness_warnings = {0};

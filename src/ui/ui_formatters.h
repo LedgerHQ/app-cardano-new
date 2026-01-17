@@ -216,3 +216,21 @@ bool format_asset_fingerprint_bech32(const uint8_t *policyId,
                                      size_t assetNameLen,
                                      char *out,
                                      size_t outSize);
+
+/**
+ * Format inline datum or reference script with size and preview
+ *
+ * Formats as "deadbeefaf... (XXXX bytes)" where we show the first 6 bytes as
+ * lowercase hex followed by an ellipsis and the byte count in parentheses.
+ * Matches UI_ADD_FORMAT2 signature (data, dataLen).
+ *
+ * @param data       Inline datum or script bytes to format
+ * @param dataLen    Length of data in bytes
+ * @param out        Output buffer for formatted string
+ * @param outSize    Size of output buffer
+ * @return true on success, false on failure
+ */
+bool format_incomplete_hex_with_length(const uint8_t *data,
+                                     size_t dataLen,
+                                     char *out,
+                                     size_t outSize);

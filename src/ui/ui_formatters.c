@@ -393,3 +393,33 @@ bool format_asset_fingerprint_bech32(const uint8_t *policyId,
     // Encode fingerprint bytes as bech32 with "asset" prefix
     return format_bech32("asset", fingerprintBuffer, sizeof(fingerprintBuffer), out, outSize);
 }
+
+/**
+ * Format inline datum or reference script with size and preview
+ * Formats as "deadbeefaf... (XXXX bytes)" where first 6 bytes show as hex.
+ */
+bool format_incomplete_hex_with_length(const uint8_t *data,
+                                     size_t dataLen,
+                                     char *out,
+                                     size_t outSize) {
+    LEDGER_ASSERT(data != NULL, "NULL data");
+    LEDGER_ASSERT(out != NULL, "NULL output buffer");
+    LEDGER_ASSERT(outSize > 0, "Zero output size");
+
+    enum {
+        PREVIEW_BYTES = 6,
+        HEX_PREFIX_SIZE = (PREVIEW_BYTES * 2) + 1,  // 12 hex chars + null
+    };
+    size_t previewLen = (dataLen < PREVIEW_BYTES) ? dataLen : PREVIEW_BYTES;
+
+    char hexPrefix[HEX_PREFIX_SIZE];
+    int hexStatus = bytes_to_lowercase_hex(hexPrefix, sizeof(hexPrefix), data, previewLen);
+    if (hexStatus != 0) {
+        return false;
+    }
+
+    snprintf(out, outSize, "%s... (%u bytes)", hexPrefix, (unsigned int)dataLen);
+    size_t len = strlen(out);
+    LEDGER_ASSERT(len + 1 < outSize, "Inline datum preview truncated");
+    return len + 1 < outSize;
+}

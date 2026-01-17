@@ -263,46 +263,52 @@ static void add_ui_and_free_outputs(transaction_t *tx) {
                             (output_node->output_data.destination.type == DESTINATION_DEVICE_OWNED ? UI_PAIRS_OUTPUT_DEVICE_OWNED : 0));
             }
 
-            if (output_node->output_data.datum.hasDatum) {
+            const output_datum_t* datum = &output_node->output_data.datum;
+            if (datum->hasDatum) {
                 security_policy_t datum_policy = policyForSignTxOutputDatumHash(policy);
                 LEDGER_ASSERT(datum_policy != POLICY_DENY, "Output datum policy denied during UI");
                 if (datum_policy == POLICY_SHOW) {
                     START_COUNT();
-                    if (output_node->output_data.datum.type == DATUM_HASH) {
-                        UI_ADD_FORMAT2(UI_STATIC_LABEL("Datum hash"), MAX_DATUM_HASH_STRING_LENGTH, format_hex_bytes, output_node->output_data.datum.hash, OUTPUT_DATUM_HASH_LENGTH);
-                    } else {
-                        // TODO: Inline datum size is not bounded by protocol; handle large values more robustly.
-                        UI_ADD_FORMAT2(UI_STATIC_LABEL("Inline datum"), MAX_INLINE_DATUM_STRING_LENGTH, format_hex_bytes, output_node->output_data.datum.inline_data.data, output_node->output_data.datum.inline_data.size);
+                    switch (datum->type) {
+                        case DATUM_HASH:
+                            UI_ADD_FORMAT3(UI_STATIC_LABEL("Datum hash"), MAX_BECH32_STRING_LENGTH, format_bech32, "datum", datum->hash, OUTPUT_DATUM_HASH_LENGTH);
+                            break;
+                        case DATUM_INLINE:
+                            UI_ADD_FORMAT2(UI_STATIC_LABEL("Datum"), MAX_INLINE_DATUM_STRING_LENGTH, format_incomplete_hex_with_length, datum->inline_datum.buffer, datum->inline_datum.length);
+                            break;
+                        default:
+                            LEDGER_ASSERT(false, "Unknown datum type");
+                            break;
                     }
                     CHECK_COUNT(UI_PAIRS_OUTPUT_DATUM);
                 }
             }
 
-            if (output_node->output_data.refScript.hasRefScript) {
+            const ref_script_t* ref_script = &output_node->output_data.refScript;
+            if (ref_script->hasRefScript) {
                 security_policy_t ref_script_policy = policyForSignTxOutputRefScript(policy);
                 LEDGER_ASSERT(ref_script_policy != POLICY_DENY, "Output ref script policy denied during UI");
                 if (ref_script_policy == POLICY_SHOW) {
                     START_COUNT();
-                    // TODO: Reference script size is not bounded by protocol; handle large values more robustly.
-                    UI_ADD_FORMAT2(UI_STATIC_LABEL("Reference script"), MAX_REFERENCE_SCRIPT_STRING_LENGTH, format_hex_bytes, output_node->output_data.refScript.data, output_node->output_data.refScript.size);
+                    UI_ADD_FORMAT2(UI_STATIC_LABEL("Script"), MAX_REFERENCE_SCRIPT_STRING_LENGTH, format_incomplete_hex_with_length, ref_script->data, ref_script->size);
                     CHECK_COUNT(UI_PAIRS_OUTPUT_REF_SCRIPT);
                 }
             }
 
-                if (output_node->output_data.assetGroups != NULL) {
-                    uint16_t token_count = count_output_tokens(
-                        output_node->output_data.assetGroups);
-                    START_COUNT();
-                    add_ui_and_free_output_asset_groups(
-                        output_node->output_data.assetGroups,
-                        output_node->output_data.numAssetGroups,
-                        true
-                    );
-                    CHECK_COUNT(UI_PAIRS_TOKEN * token_count);
-                    output_node->output_data.assetGroups = NULL;
-                }
+            if (output_node->output_data.assetGroups != NULL) {
+                uint16_t token_count = count_output_tokens(
+                    output_node->output_data.assetGroups);
+                START_COUNT();
+                add_ui_and_free_output_asset_groups(
+                    output_node->output_data.assetGroups,
+                    output_node->output_data.numAssetGroups,
+                    true
+                );
+                CHECK_COUNT(UI_PAIRS_TOKEN * token_count);
+                output_node->output_data.assetGroups = NULL;
+            }
 
-                output_num++;
+            output_num++;
         }
 
         if (output_node->output_data.assetGroups != NULL) {
@@ -852,7 +858,7 @@ static void add_ui_and_free_script_data_hash(transaction_t *tx) {
     LEDGER_ASSERT(policy != POLICY_DENY, "Script data hash denied during UI");
     if (policy == POLICY_SHOW) {
         START_COUNT();
-        UI_ADD_FORMAT2(UI_STATIC_LABEL("Script data hash"), MAX_TX_HASH_DISPLAY_LENGTH, format_hex_bytes, tx->scriptDataHash, SCRIPT_DATA_HASH_LENGTH);
+        UI_ADD_FORMAT3(UI_STATIC_LABEL("Script data hash"), MAX_BECH32_STRING_LENGTH, format_bech32, "script_data", tx->scriptDataHash, SCRIPT_DATA_HASH_LENGTH);
         CHECK_COUNT(UI_PAIRS_SCRIPT_DATA_HASH);
     }
 }
@@ -893,7 +899,7 @@ static void add_ui_and_free_required_signers(transaction_t *tx) {
             START_COUNT();
             switch (required_signer->type) {
                 case REQUIRED_SIGNER_WITH_HASH: {
-                    UI_ADD_FORMAT3(UI_STATIC_LABEL("Required signer"), MAX_BECH32_STRING_LENGTH, format_bech32, "vkh", required_signer->keyHash, ADDRESS_KEY_HASH_LENGTH);
+                    UI_ADD_FORMAT3(UI_STATIC_LABEL("Required signer"), MAX_BECH32_STRING_LENGTH, format_bech32, "req_signer_vkh", required_signer->keyHash, ADDRESS_KEY_HASH_LENGTH);
                     break;
                 }
                 case REQUIRED_SIGNER_WITH_PATH: {

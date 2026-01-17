@@ -135,17 +135,14 @@ parser_status_e parse_output_datum(buffer_t* buf, output_datum_t* datum) {
             if (!buffer_read_u16(buf, &datum_size, BE)) {
                 return OUTPUTS_PARSING_ERROR;
             }
-            if (datum_size > MAX_DATUM_INLINE_LENGTH) {
-                return OUTPUTS_PARSING_ERROR;
-            }
-            datum->inline_data.size = datum_size;
+            datum->inline_datum.length = datum_size;
 
-            if (!buffer_read_bytes_ptr(buf, &datum->inline_data.data, datum_size)) {
+            if (!buffer_read_bytes_ptr(buf, &datum->inline_datum.buffer, datum_size)) {
                 return OUTPUTS_PARSING_ERROR;
             }
-            ASSERT(datum->inline_data.data != NULL);
+            ASSERT(datum->inline_datum.buffer != NULL);
             TRACE("Inline datum read: %u bytes", datum_size);
-            TRACE_BUFFER(datum->inline_data.data, datum->inline_data.size);
+            TRACE_BUFFER(datum->inline_datum.buffer, datum->inline_datum.length);
             break;
         }
 
@@ -180,9 +177,6 @@ parser_status_e parse_output_ref_script(buffer_t* buf,
 
             uint16_t script_size;
             if (!buffer_read_u16(buf, &script_size, BE)) {
-                return OUTPUTS_PARSING_ERROR;
-            }
-            if (script_size > MAX_REF_SCRIPT_LENGTH) {
                 return OUTPUTS_PARSING_ERROR;
             }
             refScript->size = script_size;
