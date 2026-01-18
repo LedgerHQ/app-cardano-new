@@ -663,6 +663,13 @@ static void handle_tx_data_chunk(buffer_t *cdata, bool more) {
 void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
     switch (p1) {
         case P1_TX_INIT:
+            if (G_context.req_type != REQUEST_NONE ||
+                G_context.state.tx_state != TX_STATE_NONE) {
+                send_swo_and_reset(SWO_BAD_STATE);
+                return;
+            }
+            LEDGER_ASSERT(G_context.req_type == REQUEST_NONE, "init while request active");
+            LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_NONE, "init while tx state active");
             G_context.req_type = REQUEST_SIGN_TRANSACTION;
             G_context.state.tx_state = TX_STATE_NONE;
             handle_tx_init_apdu(cdata);
