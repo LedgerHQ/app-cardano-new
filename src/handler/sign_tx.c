@@ -276,6 +276,19 @@ static int cvote_send_aux_data_hash(void) {
                                     SWO_SUCCESS);
 }
 
+static bool is_valid_tx_signing_mode(uint8_t tx_signing_mode) {
+    switch (tx_signing_mode) {
+        case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
+        case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
+        case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
+        case SIGN_TX_SIGNINGMODE_MULTISIG_TX:
+        case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
+            return true;
+        default:
+            return false;
+    }
+}
+
 static void cvote_finalize_aux_data(void) {
     cvote_aux_data_t *aux_data = G_context.tx_info.cvote_aux_data;
     LEDGER_ASSERT(aux_data != NULL, "Auxiliary data must be initialized before finalization");
@@ -357,6 +370,11 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     if (!buffer_read_u8(cdata, &txSigningMode)) {
         TRACE("TX init: missing signing mode");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+    if (!is_valid_tx_signing_mode(txSigningMode)) {
+        TRACE("TX init: invalid signing mode %u", txSigningMode);
+        send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
         return;
     }
     G_context.tx_info.transaction.txSigningMode = (sign_tx_signingmode_t) txSigningMode;
