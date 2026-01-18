@@ -75,6 +75,26 @@ testsCVoteKeysUnusual = [
                    "m/1694'/1815'/101'"),
 ]
 
+testsDRepKeys = [
+    PubKeyTestCase("drep_key_path_0",
+                   "m/1852'/1815'/0'/3/0"),
+]
+
+testsCommitteeColdKeys = [
+    PubKeyTestCase("committee_cold_key_path_0",
+                   "m/1852'/1815'/0'/4/0"),
+]
+
+testsCommitteeHotKeys = [
+    PubKeyTestCase("committee_hot_key_path_0",
+                   "m/1852'/1815'/0'/5/0"),
+]
+
+testsMintKeys = [
+    PubKeyTestCase("mint_key_path_0",
+                   "m/1855'/1815'/0'"),
+]
+
 rejectTestCases = [
     PubKeyTestCase("path_shorter_than_3_indexes",
                    "m/44'/1815'"),
@@ -87,8 +107,3 @@ rejectTestCases = [
     PubKeyTestCase("invalid_vote_key_path_3",
                    "m/1694'/1815'/0'/1"),
 ]
-
-# TODO incomplete! missing at least
-#        case PATH_DREP_KEY:
-#        case PATH_COMMITTEE_COLD_KEY:
-#        case PATH_COMMITTEE_HOT_KEY:

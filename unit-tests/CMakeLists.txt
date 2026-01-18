@@ -49,6 +49,7 @@ include_directories(../src/memory)
 include_directories(../src/addressUtils)
 include_directories(../src/crypto)
 include_directories(../src/transaction)
+include_directories(../src/ui)
 include_directories(../src/opcert)
 include_directories(../src/securityPolicy)
 include_directories(../src/messageSigning)
@@ -537,6 +538,13 @@ add_executable(test_sign_tx_rejects
 target_link_libraries(test_sign_tx_rejects PUBLIC cmocka gcov cardano_sign_tx_core)
 target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
 add_test(test_sign_tx_rejects test_sign_tx_rejects)
+
+add_executable(test_handler_rejects
+    test_handler_rejects.c
+    ../src/handler/get_public_key.c
+)
+target_link_libraries(test_handler_rejects PUBLIC cmocka gcov cardano_sign_tx_core)
+add_test(test_handler_rejects test_handler_rejects)
 # target_link_libraries(test_tokens PUBLIC cmocka gcov tokens_lib bech32_lib hex_utils)  # TODO: when tokens_lib is ready
 
 # TODO: uncomment when test files are created
