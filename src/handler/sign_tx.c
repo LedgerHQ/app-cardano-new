@@ -539,6 +539,12 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
+    if (buffer_can_read(cdata, 1)) {
+        TRACE("TX init APDU not fully consumed");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+    LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");
 
     TRACE("TX Mode=%d, Network: ID=%d, Magic=%d, Inputs=%d, Outputs=%d, Withdrawals=%d, Mint=%d, TTL=%d, VIS=%d, Witnesses=%d",
         G_context.tx_info.transaction.txSigningMode,
@@ -794,10 +800,12 @@ void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
 
     if (p2 == P2_AUX_DATA_DELEGATION) {
         if (!G_context.tx_info.cvote_aux_data_initialized) {
+            TRACE("CVote AUX_DATA delegation received before initialization");
             send_swo_and_reset(SWO_BAD_STATE);
             return;
         }
         if (G_context.tx_info.cvote_registrations_remaining == 0) {
+            TRACE("CVote AUX_DATA delegation received with no remaining slots");
             send_swo_and_reset(SWO_BAD_STATE);
             return;
         }
@@ -810,17 +818,26 @@ void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
         ext_credential_t delegation_credential = {0};
         if (cvote_parse_credential(cdata, &delegation_credential, "Delegation credential") !=
             CVOTE_PARSER_OK) {
+            TRACE("CVote AUX_DATA delegation: invalid credential");
             send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
             return;
         }
 
         uint32_t weight = 0;
-        if (!buffer_read_u32(cdata, &weight, BE) || cdata->offset != cdata->size) {
+        if (!buffer_read_u32(cdata, &weight, BE)) {
+            TRACE("CVote AUX_DATA delegation: missing weight");
             send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
             return;
         }
+        if (buffer_can_read(cdata, 1)) {
+            TRACE("CVote AUX_DATA delegation APDU not fully consumed");
+            send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
+            return;
+        }
+        LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");
 
         if (!cvote_hash_builder_add_delegation(aux_data, &delegation_credential, weight)) {
+            TRACE("CVote AUX_DATA delegation: failed to add delegation");
             send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
             return;
         }
@@ -836,6 +853,7 @@ void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
         return;
     }
 
+    TRACE("Unexpected P2 for AUX_DATA APDU");
     send_swo_and_reset(SWO_INCORRECT_P1_P2);
 }
 
@@ -890,9 +908,16 @@ void handler_sign_tx_witness(buffer_t *cdata) {
     // Parse witness path from APDU data
     // buffer_read_bip44_path reads the length byte and all path components
     if (!buffer_read_bip44_path(cdata, &G_context.tx_info.witness_path)) {
+        TRACE("Witness APDU: failed to parse BIP44 path");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
+    if (buffer_can_read(cdata, 1)) {
+        TRACE("Witness APDU not fully consumed");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+    LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");
 
     TRACE("Witness %d: path length=%d",
            G_context.tx_info.current_witness,

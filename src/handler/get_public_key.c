@@ -44,10 +44,16 @@ void handler_get_public_key(buffer_t *cdata) {
     G_context.req_type = REQUEST_EXPORT_PUBKEY;
 
     if (!buffer_read_bip44_path(cdata, &G_context.pk_info.path)) {
-        TRACE();
+        TRACE("Failed to parse BIP44 path for public key export");
         send_swo_and_reset(SWO_BIP44_PATH_PARSING_FAIL);
         return;
     }
+    if (buffer_can_read(cdata, 1)) {
+        TRACE("Get pubkey APDU not fully consumed");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+    LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");
 
     // Log the requested path for easier debugging.
     BIP44_PRINTF(&G_context.pk_info.path);
@@ -62,6 +68,7 @@ void handler_get_public_key(buffer_t *cdata) {
         TRACE("Security policy DENY - rejecting operation");
         TRACE("Calling nbgl_useCaseStatus(\"Export of public key denied\", false, ui_menu_main)");
         nbgl_useCaseStatus("Export of public key denied", false, ui_menu_main);
+        TRACE("Export of public key denied by security policy");
         send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
         return;
     }
@@ -69,6 +76,7 @@ void handler_get_public_key(buffer_t *cdata) {
     {
         cx_err_t error = deriveExtendedPublicKey(&G_context.pk_info.path, &G_context.pk_info.extPubKey);
         if (error != CX_OK) {
+            TRACE("Failed to derive extended public key: 0x%X", error);
             send_swo_and_reset(error);
             return;
         }
