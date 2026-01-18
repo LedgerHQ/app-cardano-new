@@ -89,6 +89,7 @@ void finalize_pubkey_export(bool confirmed) {
     TRACE("confirmed = %d", confirmed);
 
     if (!confirmed) {
+        TRACE("Public key export rejected by user");
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
         return;
     }

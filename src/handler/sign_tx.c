@@ -281,11 +281,13 @@ static void cvote_finalize_aux_data(void) {
     LEDGER_ASSERT(aux_data != NULL, "Auxiliary data must be initialized before finalization");
 
     if (!cvote_hash_builder_add_common_fields(aux_data)) {
+        TRACE("CVote AUX_DATA finalize: failed to add common fields");
         send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
         return;
     }
 
     if (!cvote_append_registration_signature(aux_data)) {
+        TRACE("CVote AUX_DATA finalize: failed to append signature");
         send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
         return;
     }
@@ -315,12 +317,14 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     // Read and validate options (fixed header)
     uint64_t options;
     if (!buffer_read_u64(cdata, &options, BE)) {
+        TRACE("TX init: missing options");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     bool tagCborSets = options & TX_OPTIONS_TAG_CBOR_SETS;
     options &= ~TX_OPTIONS_TAG_CBOR_SETS;
     if (options != 0) {
+        TRACE("TX init: unsupported options");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
@@ -329,12 +333,14 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     // Read network parameters and signing mode
     if (!buffer_read_u8(cdata, &G_context.tx_info.transaction.networkId) ||
         !buffer_read_u32(cdata, &G_context.tx_info.transaction.protocolMagic, BE)) {
+        TRACE("TX init: missing network parameters");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 
     // Validate network ID immediately - return specific error code
     if (!isValidNetworkId(G_context.tx_info.transaction.networkId)) {
+        TRACE("TX init: invalid network id %u", G_context.tx_info.transaction.networkId);
         send_swo_and_reset(SWO_INVALID_NETWORK_ID);
         return;
     }
@@ -342,12 +348,14 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     // Validate mainnet protocol magic - return specific error code
     if (G_context.tx_info.transaction.networkId == MAINNET_NETWORK_ID &&
         G_context.tx_info.transaction.protocolMagic != MAINNET_PROTOCOL_MAGIC) {
+        TRACE("TX init: invalid mainnet protocol magic %u", G_context.tx_info.transaction.protocolMagic);
         send_swo_and_reset(SWO_INVALID_PROTOCOL_MAGIC);
         return;
     }
 
     uint8_t txSigningMode;
     if (!buffer_read_u8(cdata, &txSigningMode)) {
+        TRACE("TX init: missing signing mode");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
@@ -356,6 +364,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     // Read transaction structure counts (fields 0-1: inputs and outputs, always present)
     if (!buffer_read_u16(cdata, &G_context.tx_info.transaction.num_inputs, BE) ||
         !buffer_read_u16(cdata, &G_context.tx_info.transaction.num_outputs, BE)) {
+        TRACE("TX init: missing inputs/outputs counts");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
@@ -363,16 +372,19 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     // Field 3 (TTL) - optional
     uint8_t includeTtlByte;
     if (!buffer_read_u8(cdata, &includeTtlByte)) {
+        TRACE("TX init: missing TTL inclusion flag");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     if (!parseIncluded(includeTtlByte, &G_context.tx_info.transaction.includeTtl)) {
+        TRACE("TX init: invalid TTL inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
 
     // Field 4 (certificates) - optional
     if (!buffer_read_u16(cdata, &G_context.tx_info.transaction.num_certificates, BE)) {
+        TRACE("TX init: missing certificates count");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
@@ -380,6 +392,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
 
     // Field 5 (withdrawals) - optional
     if (!buffer_read_u16(cdata, &G_context.tx_info.transaction.num_withdrawals, BE)) {
+        TRACE("TX init: missing withdrawals count");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
@@ -388,10 +401,12 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     uint8_t includeAuxDataHashByte;
     bool includeAuxDataHash = false;
     if (!buffer_read_u8(cdata, &includeAuxDataHashByte)) {
+        TRACE("TX init: missing aux data hash inclusion flag");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     if (!parseIncluded(includeAuxDataHashByte, &includeAuxDataHash)) {
+        TRACE("TX init: invalid aux data hash inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
@@ -399,6 +414,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     if (includeAuxDataHash) {
         uint8_t auxDataTypeByte = 0;
         if (!buffer_read_u8(cdata, &auxDataTypeByte)) {
+            TRACE("TX init: missing aux data type");
             send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
         return;
         }
@@ -408,6 +424,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
             if (!buffer_read_bytes(cdata,
                                    G_context.tx_info.transaction.auxDataHash,
                                    AUX_DATA_HASH_LENGTH)) {
+                TRACE("TX init: missing aux data hash bytes");
                 send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
         return;
             }
@@ -416,6 +433,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
             explicit_bzero(G_context.tx_info.transaction.auxDataHash,
                            AUX_DATA_HASH_LENGTH);
         } else {
+            TRACE("TX init: unsupported aux data type %u", auxDataTypeByte);
             send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
         return;
         }
@@ -428,16 +446,19 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     // Field 8 (validity interval start) - optional
     uint8_t includeValidityIntervalStartByte;
     if (!buffer_read_u8(cdata, &includeValidityIntervalStartByte)) {
+        TRACE("TX init: missing validity interval start inclusion flag");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     if (!parseIncluded(includeValidityIntervalStartByte, &G_context.tx_info.transaction.includeValidityIntervalStart)) {
+        TRACE("TX init: invalid validity interval start inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
 
     // Field 9 (mint) - optional
     if (!buffer_read_u16(cdata, &G_context.tx_info.transaction.num_mint_asset_groups, BE)) {
+        TRACE("TX init: missing mint asset group count");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
@@ -446,10 +467,12 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     uint8_t includeScriptDataHashByte;
     bool includeScriptDataHash = false;
     if (!buffer_read_u8(cdata, &includeScriptDataHashByte)) {
+        TRACE("TX init: missing script data hash inclusion flag");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     if (!parseIncluded(includeScriptDataHashByte, &includeScriptDataHash)) {
+        TRACE("TX init: invalid script data hash inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
@@ -457,12 +480,14 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
 
     // Field 13 (collateral inputs)
     if (!buffer_read_u16(cdata, &G_context.tx_info.transaction.num_collateral_inputs, BE)) {
+        TRACE("TX init: missing collateral inputs count");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 
     // Field 14 (required signers)
     if (!buffer_read_u16(cdata, &G_context.tx_info.transaction.num_required_signers, BE)) {
+        TRACE("TX init: missing required signers count");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
@@ -470,10 +495,12 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     // Field 15 (network ID)
     uint8_t includeNetworkIdByte;
     if (!buffer_read_u8(cdata, &includeNetworkIdByte)) {
+        TRACE("TX init: missing network id inclusion flag");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     if (!parseIncluded(includeNetworkIdByte, &G_context.tx_info.transaction.includeNetworkId)) {
+        TRACE("TX init: invalid network id inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
@@ -481,10 +508,12 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     // Field 16 (collateral output)
     uint8_t includeCollateralOutputByte;
     if (!buffer_read_u8(cdata, &includeCollateralOutputByte)) {
+        TRACE("TX init: missing collateral output inclusion flag");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     if (!parseIncluded(includeCollateralOutputByte, &G_context.tx_info.transaction.includeCollateralOutput)) {
+        TRACE("TX init: invalid collateral output inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
@@ -492,22 +521,26 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     // Field 17 (total collateral)
     uint8_t includeTotalCollateralByte;
     if (!buffer_read_u8(cdata, &includeTotalCollateralByte)) {
+        TRACE("TX init: missing total collateral inclusion flag");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     if (!parseIncluded(includeTotalCollateralByte, &G_context.tx_info.transaction.includeTotalCollateral)) {
+        TRACE("TX init: invalid total collateral inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
 
     // Field 18 (reference inputs)
     if (!buffer_read_u16(cdata, &G_context.tx_info.transaction.num_reference_inputs, BE)) {
+        TRACE("TX init: missing reference inputs count");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 
     // Field 19 (voting procedures)
     if (!buffer_read_u16(cdata, &G_context.tx_info.transaction.num_voters, BE)) {
+        TRACE("TX init: missing voters count");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
@@ -515,10 +548,12 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     // Field 21 (treasury) - optional
     uint8_t includeTreasuryByte;
     if (!buffer_read_u8(cdata, &includeTreasuryByte)) {
+        TRACE("TX init: missing treasury inclusion flag");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     if (!parseIncluded(includeTreasuryByte, &G_context.tx_info.transaction.includeTreasury)) {
+        TRACE("TX init: invalid treasury inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
@@ -526,16 +561,19 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     // Field 22 (donation) - optional
     uint8_t includeDonationByte;
     if (!buffer_read_u8(cdata, &includeDonationByte)) {
+        TRACE("TX init: missing donation inclusion flag");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     if (!parseIncluded(includeDonationByte, &G_context.tx_info.transaction.includeDonation)) {
+        TRACE("TX init: invalid donation inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
 
     // Read number of witnesses
     if (!buffer_read_u16(cdata, &G_context.tx_info.num_witnesses, BE)) {
+        TRACE("TX init: missing witnesses count");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
@@ -671,6 +709,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
         case P1_TX_INIT:
             if (G_context.req_type != REQUEST_NONE ||
                 G_context.state.tx_state != TX_STATE_NONE) {
+                TRACE("TX init rejected: request already active");
                 send_swo_and_reset(SWO_BAD_STATE);
                 return;
             }
@@ -683,6 +722,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 
         case P1_TX_DATA_CHUNK:
             if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
+                TRACE("TX data chunk rejected: wrong request type %d", G_context.req_type);
                 send_swo_and_reset(SWO_BAD_STATE);
                 return;
             }
@@ -693,6 +733,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 
         case P1_TX_CHUNK_LAST:
             if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
+                TRACE("TX final chunk rejected: wrong request type %d", G_context.req_type);
                 send_swo_and_reset(SWO_BAD_STATE);
                 return;
             }
@@ -722,6 +763,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             // Validate transaction and compute hash. On failure, stop immediately before UI prep.
             int validation_status = tx_validate_and_compute_hash(&ui_plan);
             if (validation_status != SWO_SUCCESS) {
+                TRACE("TX validation/hash failed: 0x%04x", validation_status);
                 send_swo_and_reset(validation_status);
                 return;
             }
@@ -734,6 +776,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             int ui_prep_result = ui_prepare_transaction_review();
             if (ui_prep_result != SWO_SUCCESS) {
                 tx_review_cleanup();
+                TRACE("TX UI preparation failed: 0x%04x", ui_prep_result);
                 send_swo_and_reset(ui_prep_result);
                 return;
             }
@@ -743,6 +786,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             return;
 
         default:
+            TRACE("Unexpected P1 for SIGN_TX");
             send_swo_and_reset(SWO_INCORRECT_P1_P2);
             return;
     }
@@ -751,6 +795,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 
 void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
     if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
+        TRACE("AUX_DATA rejected: wrong request type %d", G_context.req_type);
         send_swo_and_reset(SWO_BAD_STATE);
         return;
     }
@@ -769,6 +814,7 @@ void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
 
     if (p2 == P2_AUX_DATA_INIT) {
         if (G_context.tx_info.cvote_aux_data_initialized) {
+            TRACE("CVote AUX_DATA init received twice");
             send_swo_and_reset(SWO_BAD_STATE);
             return;
         }
@@ -776,6 +822,7 @@ void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
         cvote_aux_data_t *parsed = NULL;
         cvote_parser_status_t status = cvote_parse_aux_data_init(cdata, &parsed);
         if (status != CVOTE_PARSER_OK) {
+            TRACE("CVote AUX_DATA init parse failed: %d", status);
             send_swo_and_reset(status == CVOTE_PARSER_OUT_OF_MEMORY
                                ? SWO_INSUFFICIENT_MEMORY
                                : SWO_WRONG_TX_INIT_APDU_DATA);
@@ -863,6 +910,7 @@ void finalize_witness(bool confirm)
 {
     if (!confirm) {
         // Reject entire signing operation - no more witnesses will be processed
+        TRACE("Witness rejected by user");
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
         return;
         return;
