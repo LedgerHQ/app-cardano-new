@@ -39,8 +39,6 @@
 #include "ui_utils.h"
 #include "cardano_settings.h"
 
-static char *pubkeyPathStr = NULL;
-
 static void pubkey_review_choice(bool confirm) {
     // CLEANUP
     ui_cleanup_tracked_allocations();
@@ -75,7 +73,7 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
     pubkey_ctx_t* pk = &G_context.pk_info;
 
     // Allocate display buffers
-    pubkeyPathStr = (char *) ui_mem_alloc(MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN);
+    char *pubkeyPathStr = (char *) ui_mem_alloc(MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN);
     if (pubkeyPathStr == NULL) {
         ui_cleanup_tracked_allocations();
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
