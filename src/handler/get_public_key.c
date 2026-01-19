@@ -40,7 +40,13 @@
 #include "menu.h"
 
 void handler_get_public_key(buffer_t *cdata) {
-    TRACE();
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to get_public_key handler");
+    TRACE_BUFFER(cdata->ptr, cdata->size);
+
+    // Handler entry invariant: no other request should be active
+    // (Dispatcher prevents this with SWO_COMMAND_NOT_ALLOWED, but we validate here too)
+    LEDGER_ASSERT(G_context.req_type == REQUEST_NONE, "pubkey handler called while another request active");
+
     G_context.req_type = REQUEST_EXPORT_PUBKEY;
 
     if (!buffer_read_bip44_path(cdata, &G_context.pk_info.path)) {

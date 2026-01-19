@@ -45,10 +45,15 @@
 #define OP_CERT_BODY_LENGTH (KES_PUBLIC_KEY_LENGTH + 8 + 8)
 
 void handler_sign_opcert(buffer_t *cdata) {
-    TRACE_BUFFER(cdata->ptr, cdata->size);
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_opcert handler");
+    // Handler entry invariant: no other request should be active
+    // (Dispatcher prevents this with SWO_COMMAND_NOT_ALLOWED, but we validate here too)
+    LEDGER_ASSERT(G_context.req_type == REQUEST_NONE, "opcert init called while another request active");
 
     G_context.req_type = REQUEST_SIGN_OPCERT;
     G_context.state.opcert_state = OPCERT_STATE_NONE;
+
+    TRACE_BUFFER(cdata->ptr, cdata->size);
 
     G_context.opcert_info.raw_opcert_len = cdata->size;
     if (!buffer_move(cdata, G_context.opcert_info.raw_opcert, sizeof(G_context.opcert_info.raw_opcert))) {

@@ -723,6 +723,9 @@ static void handle_tx_data_chunk(buffer_t *cdata, bool more) {
 }
 
 void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_tx handler");
+    TRACE_BUFFER(cdata->ptr, cdata->size);
+
     switch (p1) {
         case P1_TX_INIT:
             if (G_context.req_type != REQUEST_NONE ||
@@ -812,17 +815,22 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 
 
 void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_tx_aux_data handler");
+    TRACE_BUFFER(cdata->ptr, cdata->size);
+
     if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
         TRACE("AUX_DATA rejected: wrong request type %d", G_context.req_type);
         send_swo_and_reset(SWO_BAD_STATE);
         return;
     }
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "aux_data handler called with wrong request type");
 
     if (G_context.state.tx_state != TX_STATE_AUX_DATA) {
         TRACE("Bad state for AUX_DATA: expected TX_STATE_AUX_DATA, got %d", G_context.state.tx_state);
         send_swo_and_reset(SWO_BAD_STATE);
         return;
     }
+    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_AUX_DATA, "aux_data handler called with wrong tx state");
 
     if (!G_context.tx_info.cvote_aux_data_expected) {
         TRACE("Unexpected CVote AUX_DATA APDU");
@@ -948,18 +956,23 @@ void finalize_witness(bool confirm)
 }
 
 void handler_sign_tx_witness(buffer_t *cdata) {
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_tx_witness handler");
+    TRACE_BUFFER(cdata->ptr, cdata->size);
+
     // Verify we're in correct state for witness signing
     if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
         TRACE("Bad request type for witness signing: %d", G_context.req_type);
         send_swo_and_reset(SWO_BAD_STATE);
         return;
     }
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "witness handler called with wrong request type");
 
     if (G_context.state.tx_state != TX_STATE_APPROVED) {
         TRACE("Bad state for witness signing: expected TX_STATE_APPROVED, got %d", G_context.state.tx_state);
         send_swo_and_reset(SWO_BAD_STATE);
         return;
     }
+    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_APPROVED, "witness handler called with wrong tx state");
 
     // Check that we haven't exceeded the expected number of witnesses
     if (G_context.tx_info.current_witness >= G_context.tx_info.num_witnesses) {
