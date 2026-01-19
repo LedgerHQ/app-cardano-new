@@ -313,7 +313,12 @@ static parser_status_e _parse_anchor(buffer_t *buf, anchor_t *anchor) {
     }
 
     TRACE("Anchor present flag: %u", anchor_present);
-    if (anchor_present == 0) {
+    bool anchor_included = false;
+    if (!parseIncluded(anchor_present, &anchor_included)) {
+        TRACE("Invalid anchor present flag: 0x%02x", anchor_present);
+        return CERTIFICATES_PARSING_ERROR;
+    }
+    if (!anchor_included) {
         anchor->isIncluded = false;
         TRACE("Anchor not included");
         return PARSING_OK;
@@ -652,6 +657,20 @@ static parser_status_e _parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
             }
 
             // DNS name (length + data)
+            uint8_t dns_present;
+            bool dns_included = false;
+            if (!buffer_read_u8(buf, &dns_present)) {
+                TRACE("Failed to read DNS name present flag");
+                return CERTIFICATES_PARSING_ERROR;
+            }
+            if (!parseIncluded(dns_present, &dns_included)) {
+                TRACE("Invalid DNS name present flag: %u", dns_present);
+                return CERTIFICATES_PARSING_ERROR;
+            }
+            if (!dns_included) {
+                TRACE("Relay DNS name missing");
+                return CERTIFICATES_PARSING_ERROR;
+            }
             uint8_t dns_len;
             if (!buffer_read_u8(buf, &dns_len)) {
                 TRACE("Failed to read DNS name length");
@@ -691,6 +710,20 @@ static parser_status_e _parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
             relay->ipv6.isNull = true;
 
             // DNS name (length + data)
+            uint8_t dns_present;
+            bool dns_included = false;
+            if (!buffer_read_u8(buf, &dns_present)) {
+                TRACE("Failed to read DNS name present flag");
+                return CERTIFICATES_PARSING_ERROR;
+            }
+            if (!parseIncluded(dns_present, &dns_included)) {
+                TRACE("Invalid DNS name present flag: %u", dns_present);
+                return CERTIFICATES_PARSING_ERROR;
+            }
+            if (!dns_included) {
+                TRACE("Relay DNS name missing");
+                return CERTIFICATES_PARSING_ERROR;
+            }
             uint8_t dns_len;
             if (!buffer_read_u8(buf, &dns_len)) {
                 TRACE("Failed to read DNS name length");
@@ -739,7 +772,13 @@ static parser_status_e _parse_pool_metadata(buffer_t *buf, pool_metadata_t *meta
         return CERTIFICATES_PARSING_ERROR;
     }
 
-    if (metadata_present == 0) {
+    bool is_included = false;
+    if (!parseIncluded(metadata_present, &is_included)) {
+        TRACE("Invalid metadata present flag: 0x%02x", metadata_present);
+        return CERTIFICATES_PARSING_ERROR;
+    }
+
+    if (!is_included) {
         *isNull = true;
         TRACE("Pool metadata is null");
         return PARSING_OK;

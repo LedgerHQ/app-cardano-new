@@ -119,114 +119,114 @@ void app_mem_dump_stats(void) {
 // POOL_REGISTRATION Era Tests
 // ======================================================================
 
-static void test_witness_valid_multiple_mixed_owners_all_relays_pool_registration_expert_off(void **state) {
+static void test_sign_tx_witness_valid_multiple_mixed_owners_all_relays_pool_registration_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_ALL_RELAYS_POOL_REGISTRATION, false);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_ALL_RELAYS_POOL_REGISTRATION, false);
 }
 
-static void test_witness_valid_multiple_mixed_owners_all_relays_pool_registration_expert_on(void **state) {
+static void test_sign_tx_witness_valid_multiple_mixed_owners_all_relays_pool_registration_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_ALL_RELAYS_POOL_REGISTRATION, true);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_ALL_RELAYS_POOL_REGISTRATION, true);
 }
 
-static void test_witness_valid_single_path_owner_ipv4_relay_pool_registration_expert_off(void **state) {
+static void test_sign_tx_witness_valid_single_path_owner_ipv4_relay_pool_registration_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_VALID_SINGLE_PATH_OWNER_IPV4_RELAY_POOL_REGISTRATION, false);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_SINGLE_PATH_OWNER_IPV4_RELAY_POOL_REGISTRATION, false);
 }
 
-static void test_witness_valid_single_path_owner_ipv4_relay_pool_registration_expert_on(void **state) {
+static void test_sign_tx_witness_valid_single_path_owner_ipv4_relay_pool_registration_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_VALID_SINGLE_PATH_OWNER_IPV4_RELAY_POOL_REGISTRATION, true);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_SINGLE_PATH_OWNER_IPV4_RELAY_POOL_REGISTRATION, true);
 }
 
-static void test_witness_valid_multiple_mixed_owners_ipv4_relay_pool_registration_expert_off(void **state) {
+static void test_sign_tx_witness_valid_multiple_mixed_owners_ipv4_relay_pool_registration_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_IPV4_RELAY_POOL_REGISTRATION, false);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_IPV4_RELAY_POOL_REGISTRATION, false);
 }
 
-static void test_witness_valid_multiple_mixed_owners_ipv4_relay_pool_registration_expert_on(void **state) {
+static void test_sign_tx_witness_valid_multiple_mixed_owners_ipv4_relay_pool_registration_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_IPV4_RELAY_POOL_REGISTRATION, true);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_IPV4_RELAY_POOL_REGISTRATION, true);
 }
 
-static void test_witness_valid_multiple_mixed_owners_mixed_ipv4_single_host_relays_pool_registration_expert_off(void **state) {
+static void test_sign_tx_witness_valid_multiple_mixed_owners_mixed_ipv4_single_host_relays_pool_registration_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_MIXED_IPV4_SINGLE_HOST_RELAYS_POOL_REGISTRATION, false);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_MIXED_IPV4_SINGLE_HOST_RELAYS_POOL_REGISTRATION, false);
 }
 
-static void test_witness_valid_multiple_mixed_owners_mixed_ipv4_single_host_relays_pool_registration_expert_on(void **state) {
+static void test_sign_tx_witness_valid_multiple_mixed_owners_mixed_ipv4_single_host_relays_pool_registration_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_MIXED_IPV4_SINGLE_HOST_RELAYS_POOL_REGISTRATION, true);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_MIXED_IPV4_SINGLE_HOST_RELAYS_POOL_REGISTRATION, true);
 }
 
-static void test_witness_valid_multiple_mixed_owners_mixed_ipv4_ipv6_relays_pool_registration_expert_off(void **state) {
+static void test_sign_tx_witness_valid_multiple_mixed_owners_mixed_ipv4_ipv6_relays_pool_registration_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_MIXED_IPV4_IPV6_RELAYS_POOL_REGISTRATION, false);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_MIXED_IPV4_IPV6_RELAYS_POOL_REGISTRATION, false);
 }
 
-static void test_witness_valid_multiple_mixed_owners_mixed_ipv4_ipv6_relays_pool_registration_expert_on(void **state) {
+static void test_sign_tx_witness_valid_multiple_mixed_owners_mixed_ipv4_ipv6_relays_pool_registration_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_MIXED_IPV4_IPV6_RELAYS_POOL_REGISTRATION, true);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_MIXED_IPV4_IPV6_RELAYS_POOL_REGISTRATION, true);
 }
 
-static void test_witness_valid_single_path_owner_no_relays_pool_registration_expert_off(void **state) {
+static void test_sign_tx_witness_valid_single_path_owner_no_relays_pool_registration_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_VALID_SINGLE_PATH_OWNER_NO_RELAYS_POOL_REGISTRATION, false);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_SINGLE_PATH_OWNER_NO_RELAYS_POOL_REGISTRATION, false);
 }
 
-static void test_witness_valid_single_path_owner_no_relays_pool_registration_expert_on(void **state) {
+static void test_sign_tx_witness_valid_single_path_owner_no_relays_pool_registration_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_VALID_SINGLE_PATH_OWNER_NO_RELAYS_POOL_REGISTRATION, true);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_SINGLE_PATH_OWNER_NO_RELAYS_POOL_REGISTRATION, true);
 }
 
-static void test_witness_pool_registration_with_no_metadata_expert_off(void **state) {
+static void test_sign_tx_witness_pool_registration_with_no_metadata_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_POOL_REGISTRATION_WITH_NO_METADATA, false);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_WITH_NO_METADATA, false);
 }
 
-static void test_witness_pool_registration_with_no_metadata_expert_on(void **state) {
+static void test_sign_tx_witness_pool_registration_with_no_metadata_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_POOL_REGISTRATION_WITH_NO_METADATA, true);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_WITH_NO_METADATA, true);
 }
 
-static void test_witness_pool_registration_without_outputs_expert_off(void **state) {
+static void test_sign_tx_witness_pool_registration_without_outputs_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_POOL_REGISTRATION_WITHOUT_OUTPUTS, false);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_WITHOUT_OUTPUTS, false);
 }
 
-static void test_witness_pool_registration_without_outputs_expert_on(void **state) {
+static void test_sign_tx_witness_pool_registration_without_outputs_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_POOL_REGISTRATION_WITHOUT_OUTPUTS, true);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_WITHOUT_OUTPUTS, true);
 }
 
-static void test_witness_pool_registration_as_operator_with_no_owners_and_no_relays_expert_off(void **state) {
+static void test_sign_tx_witness_pool_registration_as_operator_with_no_owners_and_no_relays_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_POOL_REGISTRATION_AS_OPERATOR_WITH_NO_OWNERS_AND_NO_RELAYS, false);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_AS_OPERATOR_WITH_NO_OWNERS_AND_NO_RELAYS, false);
 }
 
-static void test_witness_pool_registration_as_operator_with_no_owners_and_no_relays_expert_on(void **state) {
+static void test_sign_tx_witness_pool_registration_as_operator_with_no_owners_and_no_relays_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_POOL_REGISTRATION_AS_OPERATOR_WITH_NO_OWNERS_AND_NO_RELAYS, true);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_AS_OPERATOR_WITH_NO_OWNERS_AND_NO_RELAYS, true);
 }
 
-static void test_witness_pool_registration_as_operator_with_one_owner_and_no_relays_expert_off(void **state) {
+static void test_sign_tx_witness_pool_registration_as_operator_with_one_owner_and_no_relays_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_POOL_REGISTRATION_AS_OPERATOR_WITH_ONE_OWNER_AND_NO_RELAYS, false);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_AS_OPERATOR_WITH_ONE_OWNER_AND_NO_RELAYS, false);
 }
 
-static void test_witness_pool_registration_as_operator_with_one_owner_and_no_relays_expert_on(void **state) {
+static void test_sign_tx_witness_pool_registration_as_operator_with_one_owner_and_no_relays_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_POOL_REGISTRATION_AS_OPERATOR_WITH_ONE_OWNER_AND_NO_RELAYS, true);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_AS_OPERATOR_WITH_ONE_OWNER_AND_NO_RELAYS, true);
 }
 
-static void test_witness_pool_registration_as_operator_with_multiple_owners_and_all_relays_expert_off(void **state) {
+static void test_sign_tx_witness_pool_registration_as_operator_with_multiple_owners_and_all_relays_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_POOL_REGISTRATION_AS_OPERATOR_WITH_MULTIPLE_OWNERS_AND_ALL_RELAYS, false);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_AS_OPERATOR_WITH_MULTIPLE_OWNERS_AND_ALL_RELAYS, false);
 }
 
-static void test_witness_pool_registration_as_operator_with_multiple_owners_and_all_relays_expert_on(void **state) {
+static void test_sign_tx_witness_pool_registration_as_operator_with_multiple_owners_and_all_relays_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_WITNESS_POOL_REGISTRATION_AS_OPERATOR_WITH_MULTIPLE_OWNERS_AND_ALL_RELAYS, true);
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_AS_OPERATOR_WITH_MULTIPLE_OWNERS_AND_ALL_RELAYS, true);
 }
 
 // ======================================================================
@@ -235,28 +235,28 @@ static void test_witness_pool_registration_as_operator_with_multiple_owners_and_
 
 int main(void) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_witness_valid_multiple_mixed_owners_all_relays_pool_registration_expert_off),
-        cmocka_unit_test(test_witness_valid_multiple_mixed_owners_all_relays_pool_registration_expert_on),
-        cmocka_unit_test(test_witness_valid_single_path_owner_ipv4_relay_pool_registration_expert_off),
-        cmocka_unit_test(test_witness_valid_single_path_owner_ipv4_relay_pool_registration_expert_on),
-        cmocka_unit_test(test_witness_valid_multiple_mixed_owners_ipv4_relay_pool_registration_expert_off),
-        cmocka_unit_test(test_witness_valid_multiple_mixed_owners_ipv4_relay_pool_registration_expert_on),
-        cmocka_unit_test(test_witness_valid_multiple_mixed_owners_mixed_ipv4_single_host_relays_pool_registration_expert_off),
-        cmocka_unit_test(test_witness_valid_multiple_mixed_owners_mixed_ipv4_single_host_relays_pool_registration_expert_on),
-        cmocka_unit_test(test_witness_valid_multiple_mixed_owners_mixed_ipv4_ipv6_relays_pool_registration_expert_off),
-        cmocka_unit_test(test_witness_valid_multiple_mixed_owners_mixed_ipv4_ipv6_relays_pool_registration_expert_on),
-        cmocka_unit_test(test_witness_valid_single_path_owner_no_relays_pool_registration_expert_off),
-        cmocka_unit_test(test_witness_valid_single_path_owner_no_relays_pool_registration_expert_on),
-        cmocka_unit_test(test_witness_pool_registration_with_no_metadata_expert_off),
-        cmocka_unit_test(test_witness_pool_registration_with_no_metadata_expert_on),
-        cmocka_unit_test(test_witness_pool_registration_without_outputs_expert_off),
-        cmocka_unit_test(test_witness_pool_registration_without_outputs_expert_on),
-        cmocka_unit_test(test_witness_pool_registration_as_operator_with_no_owners_and_no_relays_expert_off),
-        cmocka_unit_test(test_witness_pool_registration_as_operator_with_no_owners_and_no_relays_expert_on),
-        cmocka_unit_test(test_witness_pool_registration_as_operator_with_one_owner_and_no_relays_expert_off),
-        cmocka_unit_test(test_witness_pool_registration_as_operator_with_one_owner_and_no_relays_expert_on),
-        cmocka_unit_test(test_witness_pool_registration_as_operator_with_multiple_owners_and_all_relays_expert_off),
-        cmocka_unit_test(test_witness_pool_registration_as_operator_with_multiple_owners_and_all_relays_expert_on),
+        cmocka_unit_test(test_sign_tx_witness_valid_multiple_mixed_owners_all_relays_pool_registration_expert_off),
+        cmocka_unit_test(test_sign_tx_witness_valid_multiple_mixed_owners_all_relays_pool_registration_expert_on),
+        cmocka_unit_test(test_sign_tx_witness_valid_single_path_owner_ipv4_relay_pool_registration_expert_off),
+        cmocka_unit_test(test_sign_tx_witness_valid_single_path_owner_ipv4_relay_pool_registration_expert_on),
+        cmocka_unit_test(test_sign_tx_witness_valid_multiple_mixed_owners_ipv4_relay_pool_registration_expert_off),
+        cmocka_unit_test(test_sign_tx_witness_valid_multiple_mixed_owners_ipv4_relay_pool_registration_expert_on),
+        cmocka_unit_test(test_sign_tx_witness_valid_multiple_mixed_owners_mixed_ipv4_single_host_relays_pool_registration_expert_off),
+        cmocka_unit_test(test_sign_tx_witness_valid_multiple_mixed_owners_mixed_ipv4_single_host_relays_pool_registration_expert_on),
+        cmocka_unit_test(test_sign_tx_witness_valid_multiple_mixed_owners_mixed_ipv4_ipv6_relays_pool_registration_expert_off),
+        cmocka_unit_test(test_sign_tx_witness_valid_multiple_mixed_owners_mixed_ipv4_ipv6_relays_pool_registration_expert_on),
+        cmocka_unit_test(test_sign_tx_witness_valid_single_path_owner_no_relays_pool_registration_expert_off),
+        cmocka_unit_test(test_sign_tx_witness_valid_single_path_owner_no_relays_pool_registration_expert_on),
+        cmocka_unit_test(test_sign_tx_witness_pool_registration_with_no_metadata_expert_off),
+        cmocka_unit_test(test_sign_tx_witness_pool_registration_with_no_metadata_expert_on),
+        cmocka_unit_test(test_sign_tx_witness_pool_registration_without_outputs_expert_off),
+        cmocka_unit_test(test_sign_tx_witness_pool_registration_without_outputs_expert_on),
+        cmocka_unit_test(test_sign_tx_witness_pool_registration_as_operator_with_no_owners_and_no_relays_expert_off),
+        cmocka_unit_test(test_sign_tx_witness_pool_registration_as_operator_with_no_owners_and_no_relays_expert_on),
+        cmocka_unit_test(test_sign_tx_witness_pool_registration_as_operator_with_one_owner_and_no_relays_expert_off),
+        cmocka_unit_test(test_sign_tx_witness_pool_registration_as_operator_with_one_owner_and_no_relays_expert_on),
+        cmocka_unit_test(test_sign_tx_witness_pool_registration_as_operator_with_multiple_owners_and_all_relays_expert_off),
+        cmocka_unit_test(test_sign_tx_witness_pool_registration_as_operator_with_multiple_owners_and_all_relays_expert_on),
     };
     return _cmocka_run_group_tests("test_sign_tx_pool_registration", tests, ARRAY_LEN(tests), NULL, NULL);
 }

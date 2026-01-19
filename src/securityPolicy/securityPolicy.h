@@ -137,8 +137,11 @@ security_policy_t policyForSignTxStakePoolRegistrationOwner(
 security_policy_t policyForSignTxStakePoolRegistrationRelay(
     const sign_tx_signingmode_t txSigningMode,
     const pool_relay_t* relay);
-security_policy_t policyForSignTxStakePoolRegistrationMetadata();
+security_policy_t policyForSignTxStakePoolRegistrationMetadata(
+    const pool_metadata_t* metadata,
+    warning_bits_t* warnings);
 security_policy_t policyForSignTxStakePoolRegistrationNoMetadata();
+security_policy_t policyForSignTxAnchor(const anchor_t* anchor, warning_bits_t* warnings);
 security_policy_t policyForSignTxWithdrawal(sign_tx_signingmode_t txSigningMode,
                                             const ext_credential_t* stakeCredential,
                                             warning_bits_t* warnings);

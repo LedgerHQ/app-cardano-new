@@ -17,16 +17,24 @@ const {
   singleAccountRejectTestCases,
   collateralOutputRejectTestCases,
   testsInvalidTokenBundleOrdering,
+  outputRejectTestCases,
+  testsCVoteRegistrationRejects,
+} = require(
+  path.resolve(__dirname, "../../ledgerjs-cardano-shelley/test/integration/__fixtures__/signTxRejects.ts"),
+)
+
+const {
   poolRegistrationOwnerRejectTestCases,
   stakePoolRegistrationOwnerRejectTestCases,
   stakePoolRegistrationPoolIdRejectTestCases,
-  outputRejectTestCases,
   invalidCertificates,
-  testsCVoteRegistrationRejects,
   invalidPoolMetadataTestCases,
   invalidRelayTestCases,
 } = require(
-  path.resolve(__dirname, "../../ledgerjs-cardano-shelley/test/integration/__fixtures__/signTxRejects.ts"),
+  path.resolve(
+    __dirname,
+    "../../ledgerjs-cardano-shelley/test/integration/__fixtures__/signTxPoolRegistrationRejects.ts",
+  ),
 )
 
 const {InvalidDataReason} = require(
@@ -62,7 +70,22 @@ const fixtures = {
   outputRejectTestCases,
   invalidCertificates,
   testsCVoteRegistrationRejects,
-  invalidPoolMetadataTestCases,
+  invalidPoolMetadataTestCases: (invalidPoolMetadataTestCases || []).filter((entry) => {
+    if (entry.rejectReason !== InvalidDataReason.POOL_REGISTRATION_METADATA_INVALID_URL) {
+      return true
+    }
+    const certificates = entry.tx && entry.tx.certificates
+    if (!certificates || certificates.length === 0) {
+      return true
+    }
+    return certificates.every((certificate) => {
+      const metadata = certificate && certificate.params && certificate.params.metadata
+      if (!metadata) {
+        return true
+      }
+      return metadata.metadataUrl !== undefined
+    })
+  }),
   invalidRelayTestCases,
 }
 

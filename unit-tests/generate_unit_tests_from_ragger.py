@@ -689,6 +689,10 @@ REJECT_REASON_SW: Dict[str, str] = {
     "InvalidDataReason.SIGN_MODE_POOL_OPERATOR__SINGLE_POOL_REG_CERTIFICATE_REQUIRED": "SWO_TX_PARSING_FAIL_CERTIFICATES",
     "InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_POOL_REG_CERTIFICATE_REQUIRED": "SWO_TX_PARSING_FAIL_CERTIFICATES",
     "InvalidDataReason.CERTIFICATE_INVALID_POOL_KEY_HASH": "SWO_TX_PARSING_FAIL_CERTIFICATES",
+    "InvalidDataReason.POOL_REGISTRATION_METADATA_INVALID_URL": "SWO_TX_PARSING_FAIL_CERTIFICATES",
+    "InvalidDataReason.POOL_REGISTRATION_METADATA_INVALID_HASH": "SWO_TX_PARSING_FAIL_CERTIFICATES",
+    "InvalidDataReason.POOL_REGISTRATION_INVALID_MARGIN": "SWO_TX_PARSING_FAIL_CERTIFICATES",
+    "InvalidDataReason.RELAY_INVALID_DNS": "SWO_TX_PARSING_FAIL_CERTIFICATES",
     "InvalidDataReason.WITHDRAWAL_INVALID_ORDERING": "SWO_TX_PARSING_FAIL_WITHDRAWALS",
 }
 
@@ -885,13 +889,18 @@ def _build_reject_fixtures() -> str:
         if relay_type == RelayType.SINGLE_HOST_HOSTNAME:
             return Relay(
                 type=relay_type,
-                params=SingleHostHostnameRelayParams(portNumber=params["portNumber"], dnsName=params["dnsName"]),
+                params=SingleHostHostnameRelayParams(portNumber=params["portNumber"], dnsName=params.get("dnsName")),
             )
-        return Relay(type=relay_type, params=MultiHostRelayParams(dnsName=params["dnsName"]))
+        return Relay(type=relay_type, params=MultiHostRelayParams(dnsName=params.get("dnsName")))
 
     def convert_pool_registration_params(params_json: Dict[str, Any]) -> PoolRegistrationParams:
         margin_json = params_json["margin"]
         metadata_json = params_json.get("metadata")
+        metadata_url = ""
+        metadata_hash = ""
+        if metadata_json is not None:
+            metadata_url = metadata_json.get("metadataUrl", "")
+            metadata_hash = metadata_json.get("metadataHashHex", "")
         return PoolRegistrationParams(
             poolKey=convert_pool_key(params_json["poolKey"]),
             vrfKeyHashHex=params_json["vrfKeyHashHex"].lower(),
@@ -902,7 +911,7 @@ def _build_reject_fixtures() -> str:
             poolOwners=[convert_pool_key(owner) for owner in params_json["poolOwners"]],
             relays=[convert_relay(relay) for relay in params_json["relays"]],
             metadata=PoolMetadataParams(
-                metadata_json["metadataUrl"], metadata_json["metadataHashHex"].lower()
+                metadata_url, metadata_hash.lower()
             )
             if metadata_json
             else None,
@@ -1202,7 +1211,7 @@ def _build_reject_fixtures() -> str:
             )
             for chunk in builder.serialize_transaction_chunks(tx)
         ]
-        if prefix in ("REJECT_WITNESS", "REJECT_SINGLE_ACCOUNT"):
+        if prefix in ("REJECT_WITNESS", "REJECT_SINGLE_ACCOUNT") or len(additional_paths) > 0:
             for path in witness_paths:
                 witness_apdu = builder.sign_tx_witness(path)
                 chunks.append(

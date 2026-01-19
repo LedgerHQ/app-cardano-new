@@ -615,17 +615,37 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
             CHECK_COUNT(UI_PAIRS_POOL_NO_METADATA);
         }
     } else {
-        security_policy_t metadata_policy = policyForSignTxStakePoolRegistrationMetadata();
+        warning_bits_t metadata_warnings = 0;
+        warning_bits_init(&metadata_warnings);
+        security_policy_t metadata_policy =
+            policyForSignTxStakePoolRegistrationMetadata(
+                &certificate->poolRegistration.poolMetadata,
+                &metadata_warnings
+            );
+        LEDGER_ASSERT((metadata_warnings & ~G_context.tx_info.warning_bits) == 0,
+                      "Pool metadata warnings mismatch between validation and UI");
         LEDGER_ASSERT(metadata_policy != POLICY_DENY, "Metadata security policy denied");
 
         if (metadata_policy == POLICY_SHOW) {
             {
                 START_COUNT();
-                UI_ADD_FORMAT2(UI_STATIC_LABEL("Pool metadata url"),
-                               MAX_POOL_METADATA_URL_LENGTH,
-                               format_url,
-                               certificate->poolRegistration.poolMetadata.url,
-                               certificate->poolRegistration.poolMetadata.urlSize);
+                if (certificate->poolRegistration.poolMetadata.urlSize == 0) {
+                    LEDGER_ASSERT(
+                        warning_bits_has(
+                            G_context.tx_info.warning_bits,
+                            WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL
+                        ),
+                        "Empty pool metadata URL warning missing"
+                    );
+                    UI_ADD_STATIC(UI_STATIC_LABEL("Pool metadata url"),
+                                  UI_STATIC_LABEL("(empty)"));
+                } else {
+                    UI_ADD_FORMAT2(UI_STATIC_LABEL("Pool metadata url"),
+                                   MAX_POOL_METADATA_URL_LENGTH,
+                                   format_url,
+                                   certificate->poolRegistration.poolMetadata.url,
+                                   certificate->poolRegistration.poolMetadata.urlSize);
+                }
                 UI_ADD_FORMAT2(UI_STATIC_LABEL("Pool metadata hash"),
                                MAX_POOL_METADATA_HASH_STRING_LENGTH,
                                format_hex_bytes,

@@ -490,6 +490,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
 
                     // Store pointer to asset name in raw buffer instead of copying
                     // Note: assetNameLen can be 0 for empty asset names, which is valid
+                    // TODO is empty asset name valid?
                     if (!buffer_read_bytes_ptr(&output_buf, &token->assetName, token->assetNameLen)) {
                         app_mem_free(token_item);
                         free_asset_group_node(group_node);
@@ -639,6 +640,7 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx) {
 
             // Store pointer to asset name in raw buffer instead of copying
             // Note: assetNameLen can be 0 for empty asset names, which is valid
+            // TODO is empty asset name valid?
             if (!buffer_read_bytes_ptr(buf, &token->assetName, token->assetNameLen)) {
                 app_mem_free(token_item);
                 free_mint_item(item);

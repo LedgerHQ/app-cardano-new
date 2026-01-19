@@ -270,8 +270,30 @@ void addAnchorUIPairs(const anchor_t *anchor) {
         return;
     }
 
+    warning_bits_t anchor_warnings = 0;
+    warning_bits_init(&anchor_warnings);
+    security_policy_t anchor_policy = policyForSignTxAnchor(anchor, &anchor_warnings);
+    LEDGER_ASSERT(anchor_policy != POLICY_DENY, "Anchor security policy denied");
+    LEDGER_ASSERT((anchor_warnings & ~G_context.tx_info.warning_bits) == 0,
+                  "Anchor warnings mismatch between validation and UI");
+
     START_COUNT();
-    UI_ADD_FORMAT2(UI_STATIC_LABEL("Anchor URL"), MAX_ANCHOR_URL_LENGTH, format_url, anchor->url, anchor->urlLength);
+    if (anchor->urlLength == 0) {
+        LEDGER_ASSERT(
+            warning_bits_has(
+                G_context.tx_info.warning_bits,
+                WARNING_BIT_EMPTY_ANCHOR_URL
+            ),
+            "Empty anchor URL warning missing"
+        );
+        UI_ADD_STATIC(UI_STATIC_LABEL("Anchor URL"), UI_STATIC_LABEL("(empty)"));
+    } else {
+        UI_ADD_FORMAT2(UI_STATIC_LABEL("Anchor URL"),
+                       MAX_ANCHOR_URL_LENGTH,
+                       format_url,
+                       anchor->url,
+                       anchor->urlLength);
+    }
     UI_ADD_FORMAT3(UI_STATIC_LABEL("Anchor hash"), MAX_BECH32_STRING_LENGTH, format_bech32, "anchor", anchor->hash, ANCHOR_HASH_LENGTH);
     CHECK_COUNT(UI_PAIRS_ANCHOR);
 }

@@ -226,14 +226,14 @@ static void test_sign_tx_with_key_hash_in_stake_credential_expert_on(void **stat
     run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_KEY_HASH_IN_STAKE_CREDENTIAL, true);
 }
 
-static void test_full_test_for_trezor_feature_parity_expert_off(void **state) {
+static void test_sign_tx_full_test_for_trezor_feature_parity_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_FULL_TEST_FOR_TREZOR_FEATURE_PARITY, false);
+    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY, false);
 }
 
-static void test_full_test_for_trezor_feature_parity_expert_on(void **state) {
+static void test_sign_tx_full_test_for_trezor_feature_parity_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_FULL_TEST_FOR_TREZOR_FEATURE_PARITY, true);
+    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY, true);
 }
 
 static void test_sign_tx_with_multidelegation_keys_in_all_tx_elements_expert_off(void **state) {
@@ -272,8 +272,8 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_mint_path_in_a_required_signer_expert_on),
         cmocka_unit_test(test_sign_tx_with_key_hash_in_stake_credential_expert_off),
         cmocka_unit_test(test_sign_tx_with_key_hash_in_stake_credential_expert_on),
-        cmocka_unit_test(test_full_test_for_trezor_feature_parity_expert_off),
-        cmocka_unit_test(test_full_test_for_trezor_feature_parity_expert_on),
+        cmocka_unit_test(test_sign_tx_full_test_for_trezor_feature_parity_expert_off),
+        cmocka_unit_test(test_sign_tx_full_test_for_trezor_feature_parity_expert_on),
         cmocka_unit_test(test_sign_tx_with_multidelegation_keys_in_all_tx_elements_expert_off),
         cmocka_unit_test(test_sign_tx_with_multidelegation_keys_in_all_tx_elements_expert_on),
     };

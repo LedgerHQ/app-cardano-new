@@ -675,10 +675,10 @@ class CommandBuilder:
     def _serialize_anchor(self, anchor: Optional[AnchorParams]) -> bytes:
         result = bytearray()
         if anchor is None:
-            result.append(0x00)
+            result.append(ITEM_INCLUDED_NO)
             return bytes(result)
 
-        result.append(0x01)
+        result.append(ITEM_INCLUDED_YES)
         url_bytes = anchor.url.encode("utf-8")
         if len(url_bytes) > 0xFF:
             raise ValueError("Anchor URL exceeds maximum length")
@@ -738,7 +738,11 @@ class CommandBuilder:
             else:
                 data.append(ITEM_INCLUDED_YES)
                 data.extend(params.portNumber.to_bytes(2, "big"))
-            dns_bytes = (params.dnsName or "").encode("utf-8")
+            if params.dnsName is None:
+                data.append(ITEM_INCLUDED_NO)
+                return bytes(data)
+            data.append(ITEM_INCLUDED_YES)
+            dns_bytes = params.dnsName.encode("utf-8")
             if len(dns_bytes) > 0xFF:
                 raise ValueError("Relay DNS name exceeds maximum length")
             data.append(len(dns_bytes))
@@ -746,7 +750,11 @@ class CommandBuilder:
         elif relay.type == RelayType.MULTI_HOST:
             params = relay.params
             assert isinstance(params, MultiHostRelayParams)
-            dns_bytes = (params.dnsName or "").encode("utf-8")
+            if params.dnsName is None:
+                data.append(ITEM_INCLUDED_NO)
+                return bytes(data)
+            data.append(ITEM_INCLUDED_YES)
+            dns_bytes = params.dnsName.encode("utf-8")
             if len(dns_bytes) > 0xFF:
                 raise ValueError("Relay DNS name exceeds maximum length")
             data.append(len(dns_bytes))
@@ -758,17 +766,13 @@ class CommandBuilder:
     def _serialize_pool_metadata(self, metadata: Optional[PoolMetadataParams]) -> bytes:
         data = bytearray()
         if metadata is None:
-            data.append(0x00)
+            data.append(ITEM_INCLUDED_NO)
             return bytes(data)
+        data.append(ITEM_INCLUDED_YES)
         url_bytes = metadata.metadataUrl.encode("utf-8")
-        if len(url_bytes) > 0xFF:
-            raise ValueError("Pool metadata URL exceeds maximum length")
-        hash_bytes = bytes.fromhex(metadata.metadataHashHex.lower())
-        if len(hash_bytes) != 32:
-            raise ValueError("Pool metadata hash must be 32 bytes")
-        data.append(0x01)
         data.append(len(url_bytes))
         data.extend(url_bytes)
+        hash_bytes = bytes.fromhex(metadata.metadataHashHex.lower())
         data.extend(hash_bytes)
         return bytes(data)
 

@@ -276,24 +276,24 @@ static void test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_col
     run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL, true);
 }
 
-static void test_full_test_for_trezor_feature_parity_babbage_elements_plutus_expert_off(void **state) {
+static void test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_PLUTUS, false);
+    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_PLUTUS, false);
 }
 
-static void test_full_test_for_trezor_feature_parity_babbage_elements_plutus_expert_on(void **state) {
+static void test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_PLUTUS, true);
+    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_PLUTUS, true);
 }
 
-static void test_full_test_for_trezor_feature_parity_babbage_elements_ordinary_expert_off(void **state) {
+static void test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_ORDINARY, false);
+    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_ORDINARY, false);
 }
 
-static void test_full_test_for_trezor_feature_parity_babbage_elements_ordinary_expert_on(void **state) {
+static void test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_ORDINARY, true);
+    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_ORDINARY, true);
 }
 
 // ======================================================================
@@ -332,10 +332,10 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral_expert_on),
         cmocka_unit_test(test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral_expert_off),
         cmocka_unit_test(test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral_expert_on),
-        cmocka_unit_test(test_full_test_for_trezor_feature_parity_babbage_elements_plutus_expert_off),
-        cmocka_unit_test(test_full_test_for_trezor_feature_parity_babbage_elements_plutus_expert_on),
-        cmocka_unit_test(test_full_test_for_trezor_feature_parity_babbage_elements_ordinary_expert_off),
-        cmocka_unit_test(test_full_test_for_trezor_feature_parity_babbage_elements_ordinary_expert_on),
+        cmocka_unit_test(test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_expert_off),
+        cmocka_unit_test(test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_expert_on),
+        cmocka_unit_test(test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_expert_off),
+        cmocka_unit_test(test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_expert_on),
     };
     return _cmocka_run_group_tests("test_sign_tx_babbage", tests, ARRAY_LEN(tests), NULL, NULL);
 }

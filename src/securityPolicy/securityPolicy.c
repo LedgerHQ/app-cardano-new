@@ -549,9 +549,7 @@ security_policy_t policyForSignTxOutputAddressBytes(const tx_output_description_
             // utxo on a Plutus script address without datum hash is unspendable
             // but we can't DENY because it is valid for native scripts
             if (needsMissingDatumWarning(&output->destination, output->includeDatum)) {
-                if (warnings != NULL) {
-                    warning_bits_set(warnings, WARNING_BIT_OUTPUT_MISSING_DATUM);
-                }
+                warning_bits_set(warnings, WARNING_BIT_OUTPUT_MISSING_DATUM);
             }
             // we always show third-party output addresses
             SHOW();
@@ -1130,7 +1128,7 @@ security_policy_t policyForSignTxStakePoolRegistrationInit(sign_tx_signingmode_t
             break;
 
         default:
-            ASSERT(false);
+            LEDGER_ASSERT(false, "Unexpected signing mode");
     }
 
     DENY();  // should not be reached
@@ -1270,13 +1268,32 @@ security_policy_t policyForSignTxStakePoolRegistrationRelay(
     DENY();  // should not be reached
 }
 
-security_policy_t policyForSignTxStakePoolRegistrationMetadata() {
+security_policy_t policyForSignTxStakePoolRegistrationMetadata(
+    const pool_metadata_t* metadata,
+    warning_bits_t* warnings) {
+    LEDGER_ASSERT(metadata != NULL, "NULL metadata");
+    LEDGER_ASSERT(warnings != NULL, "NULL warnings");
+    if (metadata->urlSize == 0) {
+        warning_bits_set(warnings, WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL);
+    }
     // Metadata presence is material for pool registration and must be visible.
     SHOW();
 }
 
 security_policy_t policyForSignTxStakePoolRegistrationNoMetadata() {
     // Explicitly show absence of metadata so owners/operators can verify this case.
+    SHOW();
+}
+
+security_policy_t policyForSignTxAnchor(const anchor_t* anchor, warning_bits_t* warnings) {
+    LEDGER_ASSERT(anchor != NULL, "NULL anchor");
+    LEDGER_ASSERT(warnings != NULL, "NULL warnings");
+    LEDGER_ASSERT(anchor->isIncluded, "Anchor policy called on non-included anchor");
+
+    if (anchor->urlLength == 0) {
+        warning_bits_set(warnings, WARNING_BIT_EMPTY_ANCHOR_URL);
+    }
+
     SHOW();
 }
 
@@ -1972,7 +1989,6 @@ security_policy_t policyForSignOpCert(const bip44_path_t* poolColdKeyPath,
                                      warning_bits_t* warnings) {
     LEDGER_ASSERT(poolColdKeyPath != NULL, "NULL pool key path");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
-    ASSERT(warnings != NULL);
     switch (bip44_classifyPath(poolColdKeyPath)) {
         case PATH_POOL_COLD_KEY:
             if (!bip44_isPathReasonable(poolColdKeyPath)) {
@@ -2049,6 +2065,16 @@ static const warning_definition_t WARNING_DEFINITIONS[WARNING_BIT_COUNT] = {
         .bit = WARNING_BIT_POOL_REGISTRATION_NO_RELAYS,
         .title = "No pool relays",
         .description = "Stake pool registration does not specify any pool relays",
+    },
+    [WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL] = {
+        .bit = WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL,
+        .title = "Empty metadata URL",
+        .description = "Stake pool registration metadata URL is empty",
+    },
+    [WARNING_BIT_EMPTY_ANCHOR_URL] = {
+        .bit = WARNING_BIT_EMPTY_ANCHOR_URL,
+        .title = "Empty anchor URL",
+        .description = "Anchor URL is empty",
     },
     [WARNING_BIT_HIGH_FEE] = {
         .bit = WARNING_BIT_HIGH_FEE,

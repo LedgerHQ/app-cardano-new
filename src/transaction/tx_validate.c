@@ -535,7 +535,22 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                     case POLICY_SHOW:
                         plan->pair_count += UI_PAIRS_CERTIFICATE_RESIGN_COMMITTEE_COLD;
                         if (certificate->anchor.isIncluded) {
-                            plan->pair_count += UI_PAIRS_ANCHOR;
+                            security_policy_t anchor_policy = policyForSignTxAnchor(
+                                &certificate->anchor,
+                                &G_context.tx_info.warning_bits
+                            );
+                            switch (anchor_policy) {
+                                case POLICY_DENY:
+                                    return SWO_SECURITY_CONDITION_NOT_SATISFIED;
+                                case POLICY_SHOW:
+                                    plan->pair_count += UI_PAIRS_ANCHOR;
+                                    break;
+                                case POLICY_HIDE:
+                                    break;
+                                default:
+                                    LEDGER_ASSERT(false, "Unknown anchor policy");
+                                    break;
+                            }
                         }
                         break;
                     case POLICY_HIDE:
@@ -560,14 +575,44 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                         if (certificate->type == CERTIFICATE_DREP_REGISTRATION) {
                             plan->pair_count += UI_PAIRS_CERTIFICATE_DREP_REGISTRATION;
                             if (certificate->anchor.isIncluded) {
-                                plan->pair_count += UI_PAIRS_ANCHOR;
+                                security_policy_t anchor_policy = policyForSignTxAnchor(
+                                    &certificate->anchor,
+                                    &G_context.tx_info.warning_bits
+                                );
+                                switch (anchor_policy) {
+                                    case POLICY_DENY:
+                                        return SWO_SECURITY_CONDITION_NOT_SATISFIED;
+                                    case POLICY_SHOW:
+                                        plan->pair_count += UI_PAIRS_ANCHOR;
+                                        break;
+                                    case POLICY_HIDE:
+                                        break;
+                                    default:
+                                        LEDGER_ASSERT(false, "Unknown anchor policy");
+                                        break;
+                                }
                             }
                         } else if (certificate->type == CERTIFICATE_DREP_DEREGISTRATION) {
                             plan->pair_count += UI_PAIRS_CERTIFICATE_DREP_DEREGISTRATION;
                         } else {
                             plan->pair_count += UI_PAIRS_CERTIFICATE_DREP_UPDATE;
                             if (certificate->anchor.isIncluded) {
-                                plan->pair_count += UI_PAIRS_ANCHOR;
+                                security_policy_t anchor_policy = policyForSignTxAnchor(
+                                    &certificate->anchor,
+                                    &G_context.tx_info.warning_bits
+                                );
+                                switch (anchor_policy) {
+                                    case POLICY_DENY:
+                                        return SWO_SECURITY_CONDITION_NOT_SATISFIED;
+                                    case POLICY_SHOW:
+                                        plan->pair_count += UI_PAIRS_ANCHOR;
+                                        break;
+                                    case POLICY_HIDE:
+                                        break;
+                                    default:
+                                        LEDGER_ASSERT(false, "Unknown anchor policy");
+                                        break;
+                                }
                             }
                         }
                         break;
@@ -803,7 +848,10 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                         } else {
                             // Metadata present case: URL + hash
                             security_policy_t metadata_policy =
-                                policyForSignTxStakePoolRegistrationMetadata();
+                                policyForSignTxStakePoolRegistrationMetadata(
+                                    &certificate->poolRegistration.poolMetadata,
+                                    &G_context.tx_info.warning_bits
+                                );
                             switch (metadata_policy) {
                                 case POLICY_DENY:
                                     return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -1677,7 +1725,22 @@ static int validate_and_hash_voting_procedures(tx_hash_builder_t* txHashBuilder,
                     const vote_item_t *vote_data = &vote_node->vote_data;
                     plan->pair_count += UI_PAIRS_VOTE;
                     if (vote_data->anchor.isIncluded) {
-                        plan->pair_count += UI_PAIRS_ANCHOR;
+                        security_policy_t anchor_policy = policyForSignTxAnchor(
+                            &vote_data->anchor,
+                            &G_context.tx_info.warning_bits
+                        );
+                        switch (anchor_policy) {
+                            case POLICY_DENY:
+                                return SWO_SECURITY_CONDITION_NOT_SATISFIED;
+                            case POLICY_SHOW:
+                                plan->pair_count += UI_PAIRS_ANCHOR;
+                                break;
+                            case POLICY_HIDE:
+                                break;
+                            default:
+                                LEDGER_ASSERT(false, "Unknown anchor policy");
+                                break;
+                        }
                     }
                     node2 = node2->next;
                 }
