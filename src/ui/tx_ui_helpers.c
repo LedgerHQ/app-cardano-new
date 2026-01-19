@@ -280,7 +280,7 @@ void addWithdrawalUIPairs(uint8_t networkId, const withdrawal_t *withdrawal) {
     LEDGER_ASSERT(withdrawal != NULL, "NULL withdrawal");
 
     START_COUNT();
-    UI_ADD_FORMAT1(UI_STATIC_LABEL("Withdrawal"), MAX_ADA_AMOUNT_STRING_LENGTH, format_ada_amount, withdrawal->amount);
+    UI_ADD_FORMAT1(UI_STATIC_LABEL("Withdrawal amount"), MAX_ADA_AMOUNT_STRING_LENGTH, format_ada_amount, withdrawal->amount);
 
     const ext_credential_t *credential = &withdrawal->stakeCredential;
 
@@ -297,7 +297,7 @@ void addWithdrawalUIPairs(uint8_t networkId, const withdrawal_t *withdrawal) {
             LEDGER_ASSERT(false, "Unknown credential type");
     }
 
-    UI_ADD_FORMAT2(UI_STATIC_LABEL("Withdrawal"),
+    UI_ADD_FORMAT2(UI_STATIC_LABEL("Withdraw from"),
                    MAX_HUMAN_ADDRESS_LENGTH,
                    format_reward_account_from_credential,
                    networkId,
