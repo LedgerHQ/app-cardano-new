@@ -1172,22 +1172,8 @@ static inline bool status_requires_streaming(int status) {
     return status == SWO_INSUFFICIENT_MEMORY;
 }
 
-static int ui_build_pairs_and_warnings(void) {
-    int status = add_ui_strings_and_free_parsed_data();
-    if (status != SWO_SUCCESS) {
-        return status;
-    }
-    ui_status_t warning_status = ui_build_warnings(G_context.tx_info.warning_bits);
-    switch (warning_status) {
-        case UI_STATUS_SUCCESS:
-            return SWO_SUCCESS;
-        case UI_STATUS_OUT_OF_MEMORY:
-            return SWO_INSUFFICIENT_MEMORY;
-        case UI_STATUS_UNINITIALIZED:
-        default:
-            LEDGER_ASSERT(false, "Unexpected UI warning status");
-            return SWO_BAD_STATE;
-    }
+static int ui_build_pairs(void) {
+    return add_ui_strings_and_free_parsed_data();
 }
 
 int ui_prepare_transaction_review(void) {
@@ -1212,16 +1198,32 @@ int ui_prepare_transaction_review(void) {
         return SWO_INSUFFICIENT_MEMORY;
     }
 
-    int status = ui_build_pairs_and_warnings();
+    int status = ui_build_pairs();
     if (status != SWO_SUCCESS) {
         ui_pairs_cleanup();
         ui_clear_warnings();
         if (status_requires_streaming(status)) {
-            // TODO we can add range to ui_build_pairs_and_warnings, but then maybe deallocation should be done more carefully
-            // TODO so that the range can be applied on subsequent runs of ui_build_pairs_and_warnings
+            // TODO we can add range to ui_build_pairs, but then maybe deallocation should be done more carefully
+            // TODO so that the range can be applied on subsequent runs of ui_build_pairs
             LEDGER_ASSERT(false, "Need streaming UI but not implemented (status=0x%04x)", status);
         }
         return status;
+    }
+
+    ui_status_t warning_status = ui_build_warnings(G_context.tx_info.warning_bits);
+    switch (warning_status) {
+        case UI_STATUS_SUCCESS:
+            break;
+        case UI_STATUS_OUT_OF_MEMORY:
+            ui_pairs_cleanup();
+            ui_clear_warnings();
+            return SWO_INSUFFICIENT_MEMORY;
+        case UI_STATUS_UNINITIALIZED:
+        default:
+            LEDGER_ASSERT(false, "Unexpected UI warning status");
+            ui_pairs_cleanup();
+            ui_clear_warnings();
+            return SWO_BAD_STATE;
     }
 
     // Validate that the actual number of pairs formatted matches the planned count
