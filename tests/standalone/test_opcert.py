@@ -35,16 +35,16 @@ def test_opCert(device: Device,
     # Use the app interface instead of raw interface
     client = CommandSender(backend)
 
-    # Send the INIT APDU
     with client.sign_opCert(testCase):
         if device.is_nano:
             # TODO warning not shown ???
             navigator.navigate_until_text(NavInsID.RIGHT_CLICK, [NavInsID.BOTH_CLICK], "Sign certificate")
         else:
+            test_name = testCase.name
             if testCase.warning:
-                scenario_navigator.review_approve_with_warning()
+                scenario_navigator.review_approve_with_warning(test_name=test_name)
             else:
-                scenario_navigator.review_approve(do_comparison=False)
+                scenario_navigator.review_approve(test_name=test_name)
     # Check the status (Asynchronous)
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS

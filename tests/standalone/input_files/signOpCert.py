@@ -24,13 +24,13 @@ class OpCertTestCase:
 
 # pylint: disable=line-too-long
 opCertTestCases = [
-    OpCertTestCase("Should_correctly_sign_operational_certificate",
+    OpCertTestCase("Sign_opcert_should_correctly_sign_operational_certificate",
                    operationalCertificate("3d24bc547388cf2403fd978fc3d3a93d1f39acf68a9c00e40512084dc05f2822",
                                           47,
                                           42,
                                           "m/1853'/1815'/0'/0'")
     ),
-    OpCertTestCase("Should_correctly_sign_operational_certificate_with_warning",
+    OpCertTestCase("Sign_opcert_should_correctly_sign_operational_certificate_with_warning",
                    operationalCertificate("3d24bc547388cf2403fd978fc3d3a93d1f39acf68a9c00e40512084dc05f2822",
                                           47,
                                           42,

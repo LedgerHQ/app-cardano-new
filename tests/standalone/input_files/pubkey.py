@@ -18,89 +18,89 @@ class PubKeyTestCase:
 
 # pylint: disable=line-too-long
 testsByron = [
-    PubKeyTestCase("byronpath_1",
+    PubKeyTestCase("Export_pubkey_byronpath_1",
                    "m/44'/1815'/1'"),
-    PubKeyTestCase("byronpath_2",
+    PubKeyTestCase("Export_pubkey_byronpath_2",
                    "m/44'/1815'/1'/0/55'"),
-    PubKeyTestCase("byronpath_3",
+    PubKeyTestCase("Export_pubkey_byronpath_3",
                    "m/44'/1815'/1'/0/12'"),
 ]
 
 testsShelleyUsual = [
-    PubKeyTestCase("shelley_usual_path_0",
+    PubKeyTestCase("Export_pubkey_shelley_usual_path_0",
                    "m/1852'/1815'/4'"),
-    PubKeyTestCase("shelley_usual_path_1",
+    PubKeyTestCase("Export_pubkey_shelley_usual_path_1",
                    "m/1852'/1815'/0'/0/1"),
-    PubKeyTestCase("shelley_usual_path_2",
+    PubKeyTestCase("Export_pubkey_shelley_usual_path_2",
                    "m/1852'/1815'/0'/2/0"),
-    PubKeyTestCase("shelley_usual_path_3",
+    PubKeyTestCase("Export_pubkey_shelley_usual_path_3",
                    "m/1852'/1815'/0'/2/1001"),
-    PubKeyTestCase("shelley_usual_path_4",
+    PubKeyTestCase("Export_pubkey_shelley_usual_path_4",
                    "m/1852'/1815'/0'/3/0"),
-    PubKeyTestCase("shelley_usual_path_5",
+    PubKeyTestCase("Export_pubkey_shelley_usual_path_5",
                    "m/1852'/1815'/0'/4/0"),
-    PubKeyTestCase("shelley_usual_path_6",
+    PubKeyTestCase("Export_pubkey_shelley_usual_path_6",
                    "m/1852'/1815'/1'/5/0"),
 ]
 
 testsShelleyUnusual = [
-    PubKeyTestCase("shelley_unusual_path_1",
+    PubKeyTestCase("Export_pubkey_shelley_unusual_path_1",
                    "m/1852'/1815'/101'"),
-    PubKeyTestCase("shelley_unusual_path_2",
+    PubKeyTestCase("Export_pubkey_shelley_unusual_path_2",
                    "m/1852'/1815'/100'/0/1000001'"),
-    PubKeyTestCase("shelley_unusual_path_3",
+    PubKeyTestCase("Export_pubkey_shelley_unusual_path_3",
                    "m/1852'/1815'/0'/2/1000001"),
-    PubKeyTestCase("shelley_unusual_path_4",
+    PubKeyTestCase("Export_pubkey_shelley_unusual_path_4",
                    "m/1852'/1815'/101'/3/0"),
-    PubKeyTestCase("shelley_unusual_path_5",
+    PubKeyTestCase("Export_pubkey_shelley_unusual_path_5",
                    "m/1852'/1815'/101'/4/0"),
-    PubKeyTestCase("shelley_unusual_path_6",
+    PubKeyTestCase("Export_pubkey_shelley_unusual_path_6",
                    "m/1852'/1815'/101'/5/0"),
 ]
 
 testsMultisig = [
-    PubKeyTestCase("multisig_account_path_0",
+    PubKeyTestCase("Export_pubkey_multisig_account_path_0",
                    "m/1854'/1815'/0'"),
-    PubKeyTestCase("multisig_payment_path_0",
+    PubKeyTestCase("Export_pubkey_multisig_payment_path_0",
                    "m/1854'/1815'/0'/0/0"),
-    PubKeyTestCase("multisig_staking_path_0",
+    PubKeyTestCase("Export_pubkey_multisig_staking_path_0",
                    "m/1854'/1815'/0'/2/0"),
 ]
 
 testsColdKeys = [
-     PubKeyTestCase("cold_case",
+     PubKeyTestCase("Export_pubkey_cold_case",
                     "m/1853'/1815'/0'/0'"),
 ]
 
 testsCVoteKeysUsual = [
-    PubKeyTestCase("CVote_keys_path_2",
+    PubKeyTestCase("Export_pubkey_CVote_keys_path_2",
                    "m/1694'/1815'/100'"),
 ]
 
 testsCVoteKeysUnusual = [
-    PubKeyTestCase("CVote_keys_path_1",
+    PubKeyTestCase("Export_pubkey_CVote_keys_path_1",
                    "m/1694'/1815'/0'/0/1"),
-    PubKeyTestCase("CVote_keys_path_3",
+    PubKeyTestCase("Export_pubkey_CVote_keys_path_3",
                    "m/1694'/1815'/101'"),
 ]
 
 testsDRepKeys = [
-    PubKeyTestCase("drep_key_path_0",
+    PubKeyTestCase("Export_pubkey_drep_key_path_0",
                    "m/1852'/1815'/0'/3/0"),
 ]
 
 testsCommitteeColdKeys = [
-    PubKeyTestCase("committee_cold_key_path_0",
+    PubKeyTestCase("Export_pubkey_committee_cold_key_path_0",
                    "m/1852'/1815'/0'/4/0"),
 ]
 
 testsCommitteeHotKeys = [
-    PubKeyTestCase("committee_hot_key_path_0",
+    PubKeyTestCase("Export_pubkey_committee_hot_key_path_0",
                    "m/1852'/1815'/0'/5/0"),
 ]
 
 testsMintKeys = [
-    PubKeyTestCase("mint_key_path_0",
+    PubKeyTestCase("Export_pubkey_mint_key_path_0",
                    "m/1855'/1815'/0'"),
 ]
 
@@ -123,7 +123,7 @@ def _is_silent_export_path(path: str) -> bool:
     account, account_hardened = parsed[2]
     if not (purpose_hardened and coin_type_hardened and account_hardened):
         return False
-    if purpose not in {1852, 1854} or coin_type != 1815:
+    if purpose not in {1694, 1852, 1854} or coin_type != 1815:
         return False
     if account > 100:
         return False
@@ -135,7 +135,10 @@ def _is_silent_export_path(path: str) -> bool:
     address, address_hardened = parsed[4]
     if chain_hardened or address_hardened:
         return False
-    if chain not in {0, 1, 2}:
+    if purpose == 1694:
+        if chain != 0:
+            return False
+    elif chain not in {0, 1, 2}:
         return False
     return address <= 1000000
 
@@ -149,14 +152,30 @@ testsSilentExport = [
 ]
 
 rejectTestCases = [
-    PubKeyTestCase("path_shorter_than_3_indexes",
+    PubKeyTestCase("Export_pubkey_path_shorter_than_3_indexes",
                    "m/44'/1815'"),
-    PubKeyTestCase("path_not_matching_cold_key_structure",
+    PubKeyTestCase("Export_pubkey_path_not_matching_cold_key_structure",
                    "m/1853'/1900'/0'/0/0"),
-    PubKeyTestCase("invalid_vote_key_path_1",
+    PubKeyTestCase("Export_pubkey_invalid_vote_key_path_1",
                    "m/1694'/1815'/0'/1/0"),
-    PubKeyTestCase("invalid_vote_key_path_2",
+    PubKeyTestCase("Export_pubkey_invalid_vote_key_path_2",
                    "m/1694'/1815'/17"),
-    PubKeyTestCase("invalid_vote_key_path_3",
+    PubKeyTestCase("Export_pubkey_invalid_vote_key_path_3",
                    "m/1694'/1815'/0'/1"),
+    PubKeyTestCase("Export_pubkey_invalid_multisig_account_not_hardened",
+                   "m/1854'/1815'/0"),
+    PubKeyTestCase("Export_pubkey_invalid_multisig_chain",
+                   "m/1854'/1815'/0'/3/0"),
+    PubKeyTestCase("Export_pubkey_invalid_multisig_address_hardened",
+                   "m/1854'/1815'/0'/0/0'"),
+    PubKeyTestCase("Export_pubkey_invalid_mint_policy_not_hardened",
+                   "m/1855'/1815'/0"),
+    PubKeyTestCase("Export_pubkey_invalid_drep_chain",
+                   "m/1852'/1815'/0'/6/0"),
+    PubKeyTestCase("Export_pubkey_invalid_committee_cold_address_hardened",
+                   "m/1852'/1815'/0'/4/0'"),
+    PubKeyTestCase("Export_pubkey_invalid_committee_hot_account_not_hardened",
+                   "m/1852'/1815'/0/5/0"),
+    PubKeyTestCase("Export_pubkey_invalid_pool_cold_usecase",
+                   "m/1853'/1815'/1'/0'"),
 ]
