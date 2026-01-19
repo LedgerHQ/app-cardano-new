@@ -103,19 +103,27 @@ parser_status_e parse_output_datum(buffer_t* buf, output_datum_t* datum) {
     LEDGER_ASSERT(datum != NULL, "NULL datum");
 
     size_t offset_before = buf->offset;
-    uint8_t datum_wire_type;
+    uint8_t datum_present_wire = 0;
+    if (!buffer_read_u8(buf, &datum_present_wire)) {
+        return OUTPUTS_PARSING_ERROR;
+    }
+    TRACE("Datum present: wire=%u, offset %u -> %u", datum_present_wire, (unsigned int)offset_before, (unsigned int)buf->offset);
+    if (!parseIncluded(datum_present_wire, &datum->hasDatum)) {
+        return OUTPUTS_PARSING_ERROR;
+    }
+
+    if (!datum->hasDatum) {
+        return PARSING_OK;
+    }
+
+    uint8_t datum_wire_type = 0;
     if (!buffer_read_u8(buf, &datum_wire_type)) {
         return OUTPUTS_PARSING_ERROR;
     }
-    TRACE("Datum: wire=%u, offset %u -> %u", datum_wire_type, (unsigned int)offset_before, (unsigned int)buf->offset);
+    TRACE("Datum type: wire=%u", datum_wire_type);
 
     switch (datum_wire_type) {
-        case 0:  // No datum
-            datum->hasDatum = false;
-            break;
-
-        case 1: {  // Datum hash
-            datum->hasDatum = true;
+        case DATUM_HASH: {  // Datum hash
             datum->type = DATUM_HASH;
 
             if (!buffer_read_bytes_ptr(buf, &datum->hash, OUTPUT_DATUM_HASH_LENGTH)) {
@@ -127,8 +135,7 @@ parser_status_e parse_output_datum(buffer_t* buf, output_datum_t* datum) {
             break;
         }
 
-        case 2: {  // Inline datum
-            datum->hasDatum = true;
+        case DATUM_INLINE: {  // Inline datum
             datum->type = DATUM_INLINE;
 
             uint16_t datum_size;
@@ -159,39 +166,32 @@ parser_status_e parse_output_ref_script(buffer_t* buf,
     LEDGER_ASSERT(refScript != NULL, "NULL refScript");
 
     size_t offset_before = buf->offset;
-    uint8_t has_ref_script_wire;
-    if (!buffer_read_u8(buf, &has_ref_script_wire)) {
+    uint8_t ref_script_present_wire = 0;
+    if (!buffer_read_u8(buf, &ref_script_present_wire)) {
         return OUTPUTS_PARSING_ERROR;
     }
-    TRACE("Reference script: wire=%u, offset %u -> %u", has_ref_script_wire, (unsigned int)offset_before, (unsigned int)buf->offset);
-
-    switch (has_ref_script_wire) {
-        case 0:  // No reference script
-            refScript->hasRefScript = false;
-            refScript->size = 0;
-            refScript->data = NULL;
-            break;
-
-        case 2: {  // Has reference script
-            refScript->hasRefScript = true;
-
-            uint16_t script_size;
-            if (!buffer_read_u16(buf, &script_size, BE)) {
-                return OUTPUTS_PARSING_ERROR;
-            }
-            refScript->size = script_size;
-
-            if (!buffer_read_bytes_ptr(buf, &refScript->data, script_size)) {
-                return OUTPUTS_PARSING_ERROR;
-            }
-            ASSERT(refScript->data != NULL);
-            TRACE("Reference script read: %u bytes", script_size);
-            break;
-        }
-
-        default:
-            return OUTPUTS_PARSING_ERROR;
+    TRACE("Reference script present: wire=%u, offset %u -> %u", ref_script_present_wire, (unsigned int)offset_before, (unsigned int)buf->offset);
+    if (!parseIncluded(ref_script_present_wire, &refScript->hasRefScript)) {
+        return OUTPUTS_PARSING_ERROR;
     }
+
+    if (!refScript->hasRefScript) {
+        refScript->size = 0;
+        refScript->data = NULL;
+        return PARSING_OK;
+    }
+
+    uint16_t script_size;
+    if (!buffer_read_u16(buf, &script_size, BE)) {
+        return OUTPUTS_PARSING_ERROR;
+    }
+    refScript->size = script_size;
+
+    if (!buffer_read_bytes_ptr(buf, &refScript->data, script_size)) {
+        return OUTPUTS_PARSING_ERROR;
+    }
+    ASSERT(refScript->data != NULL);
+    TRACE("Reference script read: %u bytes", script_size);
 
     return PARSING_OK;
 }

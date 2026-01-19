@@ -31,6 +31,7 @@ from standalone.input_files.signTx import (
     DRepParams,
     DRepRegistrationParams,
     DRepUpdateParams,
+    DatumType,
     MultiHostRelayParams,
     PoolKey,
     PoolKeyType,
@@ -480,11 +481,10 @@ class CommandBuilder:
         required_signers = getattr(tx, "requiredSigners", None)
         if required_signers:
             for required_signer in required_signers:
+                data.append(int(required_signer.type))
                 if required_signer.type == TxRequiredSignerType.PATH:
-                    data.append(0x00)
                     data.extend(pack_derivation_path(required_signer.pathOrHashHex))
                 else:
-                    data.append(0x01)
                     data.extend(bytes.fromhex(required_signer.pathOrHashHex))
 
         collateral_output = getattr(tx, "collateralOutput", None)
@@ -568,25 +568,26 @@ class CommandBuilder:
                     output_data.extend(token.amount.to_bytes(8, "big"))
 
         if hasattr(tx_output, "datum") and tx_output.datum is not None:
+            output_data.append(ITEM_INCLUDED_YES)
             datum_type = tx_output.datum.type
-            if datum_type == 0:
-                output_data.append(0x01)
+            if datum_type == DatumType.HASH:
+                output_data.append(int(DatumType.HASH))
                 output_data.extend(bytes.fromhex(tx_output.datum.datumHex))
-            elif datum_type == 1:
-                output_data.append(0x02)
+            elif datum_type == DatumType.INLINE:
+                output_data.append(int(DatumType.INLINE))
                 datum_bytes = bytes.fromhex(tx_output.datum.datumHex)
                 output_data.extend(len(datum_bytes).to_bytes(2, "big"))
                 output_data.extend(datum_bytes)
         else:
-            output_data.append(0x00)
+            output_data.append(ITEM_INCLUDED_NO)
 
         if isinstance(tx_output, TxOutputBabbage) and tx_output.referenceScriptHex is not None:
-            output_data.append(0x02)
+            output_data.append(ITEM_INCLUDED_YES)
             script_bytes = bytes.fromhex(tx_output.referenceScriptHex)
             output_data.extend(len(script_bytes).to_bytes(2, "big"))
             output_data.extend(script_bytes)
         else:
-            output_data.append(0x00)
+            output_data.append(ITEM_INCLUDED_NO)
 
         return output_data
 
@@ -650,13 +651,13 @@ class CommandBuilder:
         if credential.keyValue is None:
             raise ValueError("Credential keyValue must be set")
         if credential.type == CredentialParamsType.KEY_PATH:
-            data.append(0x02)
+            data.append(CredentialParamsType.KEY_PATH)
             data.extend(pack_derivation_path(credential.keyValue))
         elif credential.type == CredentialParamsType.KEY_HASH:
-            data.append(0x00)
+            data.append(CredentialParamsType.KEY_HASH)
             data.extend(bytes.fromhex(credential.keyValue))
         elif credential.type == CredentialParamsType.SCRIPT_HASH:
-            data.append(0x01)
+            data.append(CredentialParamsType.SCRIPT_HASH)
             data.extend(bytes.fromhex(credential.keyValue))
         else:
             raise ValueError(f"Unsupported credential type: {credential.type}")
@@ -700,10 +701,10 @@ class CommandBuilder:
     def _serialize_pool_key_reference(self, pool_key: PoolKey) -> bytes:
         data = bytearray()
         if pool_key.type == PoolKeyType.DEVICE_OWNED:
-            data.append(0x02)
+            data.append(CredentialParamsType.KEY_PATH)
             data.extend(pack_derivation_path(pool_key.key))
         elif pool_key.type == PoolKeyType.THIRD_PARTY:
-            data.append(0x00)
+            data.append(CredentialParamsType.KEY_HASH)
             data.extend(bytes.fromhex(pool_key.key.lower()))
         else:
             raise ValueError(f"Unsupported pool key type: {pool_key.type}")

@@ -44,15 +44,15 @@ static parser_status_e _parse_credential_type(buffer_t *buf, ext_credential_type
     TRACE("Parsing credential type wire=0x%02x", cred_type_wire);
 
     switch (cred_type_wire) {
-        case 0x00:  // KEY_HASH
+        case EXT_CREDENTIAL_KEY_HASH:
             *cred_type = EXT_CREDENTIAL_KEY_HASH;
             TRACE("Credential type: KEY_HASH");
             break;
-        case 0x01:  // SCRIPT_HASH
+        case EXT_CREDENTIAL_SCRIPT_HASH:
             *cred_type = EXT_CREDENTIAL_SCRIPT_HASH;
             TRACE("Credential type: SCRIPT_HASH");
             break;
-        case 0x02:  // KEY_PATH
+        case EXT_CREDENTIAL_KEY_PATH:
             *cred_type = EXT_CREDENTIAL_KEY_PATH;
             TRACE("Credential type: KEY_PATH");
             break;
@@ -240,23 +240,23 @@ static parser_status_e _parse_drep(buffer_t *buf, ext_drep_t *drep) {
     TRACE("DRep type wire=0x%02x", drep_type_wire);
     ext_drep_type_t drep_type = {0};
     switch (drep_type_wire) {
-        case 0x00:  // KEY_HASH
+        case EXT_DREP_KEY_HASH:
             drep_type = EXT_DREP_KEY_HASH;
             TRACE("DRep type: KEY_HASH");
             break;
-        case 0x01:  // SCRIPT_HASH
+        case EXT_DREP_SCRIPT_HASH:
             drep_type = EXT_DREP_SCRIPT_HASH;
             TRACE("DRep type: SCRIPT_HASH");
             break;
-        case 0x02:  // ABSTAIN
+        case EXT_DREP_ABSTAIN:
             drep_type = EXT_DREP_ABSTAIN;
             TRACE("DRep type: ABSTAIN");
             break;
-        case 0x03:  // NO_CONFIDENCE
+        case EXT_DREP_NO_CONFIDENCE:
             drep_type = EXT_DREP_NO_CONFIDENCE;
             TRACE("DRep type: NO_CONFIDENCE");
             break;
-        case 0x64:  // KEY_PATH (100)
+        case EXT_DREP_KEY_PATH:
             drep_type = EXT_DREP_KEY_PATH;
             TRACE("DRep type: KEY_PATH");
             break;
@@ -518,7 +518,7 @@ static parser_status_e _parse_pool_id(buffer_t *buf, pool_id_t *pool_id) {
 
     TRACE("Pool ID type wire=0x%02x", pool_id_type_wire);
     switch (pool_id_type_wire) {
-        case 0x00:  // KEY_HASH (pool key hash)
+        case EXT_CREDENTIAL_KEY_HASH:
             pool_id->keyReferenceType = KEY_REFERENCE_HASH;
             if (!buffer_read_bytes_ptr(buf, &pool_id->hash, POOL_KEY_HASH_LENGTH)) {
                 TRACE("Failed to read pool key hash");
@@ -527,7 +527,7 @@ static parser_status_e _parse_pool_id(buffer_t *buf, pool_id_t *pool_id) {
             ASSERT(pool_id->hash != NULL);
             TRACE("Successfully parsed pool ID as KEY_HASH");
             break;
-        case 0x02:  // KEY_PATH (pool cold key path)
+        case EXT_CREDENTIAL_KEY_PATH:
             pool_id->keyReferenceType = KEY_REFERENCE_PATH;
             if (!buffer_read_bip44_path(buf, &pool_id->path)) {
                 TRACE("Failed to read pool key path");
@@ -888,7 +888,7 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
 
     TRACE("Reward account type wire: 0x%02x", reward_account_type);
     switch (reward_account_type) {
-        case 0x00:  // KEY_HASH
+        case EXT_CREDENTIAL_KEY_HASH:
             cert_data->poolRegistration.rewardAccount.keyReferenceType = KEY_REFERENCE_HASH;
             if (!buffer_read_bytes_ptr(buf, &cert_data->poolRegistration.rewardAccount.hashBuffer,
                                        REWARD_ACCOUNT_LENGTH)) {
@@ -898,7 +898,7 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
             ASSERT(cert_data->poolRegistration.rewardAccount.hashBuffer != NULL);
             TRACE("Successfully parsed reward account as KEY_HASH");
             break;
-        case 0x02:  // KEY_PATH
+        case EXT_CREDENTIAL_KEY_PATH:
             cert_data->poolRegistration.rewardAccount.keyReferenceType = KEY_REFERENCE_PATH;
             if (!buffer_read_bip44_path(buf, &cert_data->poolRegistration.rewardAccount.path)) {
                 TRACE("Failed to read reward account path");

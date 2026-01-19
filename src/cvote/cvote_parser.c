@@ -34,7 +34,7 @@ cvote_parser_status_t cvote_parse_credential(buffer_t *buf,
     }
 
     switch (type) {
-        case 0x00:  // KEY_HASH
+        case EXT_CREDENTIAL_KEY_HASH:
             credential->type = EXT_CREDENTIAL_KEY_HASH;
             STATIC_ASSERT(SIZEOF(credential->publicKey) == PUBLIC_KEY_SIZE,
                           "credential public key size mismatch");
@@ -44,7 +44,7 @@ cvote_parser_status_t cvote_parse_credential(buffer_t *buf,
             }
             TRACE("%s credential: raw key", label);
             break;
-        case 0x01:  // SCRIPT_HASH
+        case EXT_CREDENTIAL_SCRIPT_HASH:
             credential->type = EXT_CREDENTIAL_SCRIPT_HASH;
             STATIC_ASSERT(SIZEOF(credential->scriptHash) == SCRIPT_HASH_LENGTH,
                           "credential script hash size mismatch");
@@ -54,7 +54,7 @@ cvote_parser_status_t cvote_parse_credential(buffer_t *buf,
             }
             TRACE("%s credential: script hash", label);
             break;
-        case 0x02:  // KEY_PATH
+        case EXT_CREDENTIAL_KEY_PATH:
             credential->type = EXT_CREDENTIAL_KEY_PATH;
             if (!buffer_read_bip44_path(buf, &credential->keyPath)) {
                 TRACE("%s path data truncated", label);

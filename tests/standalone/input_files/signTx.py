@@ -98,6 +98,7 @@ class DatumType(IntEnum):
     HASH = 0
     INLINE = 1
 
+
 class RelayType(IntEnum):
     SINGLE_HOST_IP_ADDR = 0
     SINGLE_HOST_HOSTNAME = 1

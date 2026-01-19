@@ -48,7 +48,8 @@ parser_status_e parse_output_format(buffer_t* buf,
  * Parse transaction output datum from buffer.
  *
  * Wire format:
- * - datum_wire_type: 1 byte (0=NONE, 1=HASH, 2=INLINE)
+ * - datum_present: 1 byte (ITEM_INCLUDED_NO/ITEM_INCLUDED_YES)
+ * - datum_type: 1 byte (DATUM_HASH/DATUM_INLINE), only if present
  * - if HASH (1):
  *     - hash bytes: 32 bytes (no length prefix)
  * - if INLINE (2):
@@ -65,7 +66,7 @@ parser_status_e parse_output_datum(buffer_t* buf, output_datum_t* datum);
  * Parse transaction output reference script from buffer.
  *
  * Wire format:
- * - has_ref_script: 1 byte (0=NONE, 2=HAS_SCRIPT)
+ * - ref_script_present: 1 byte (ITEM_INCLUDED_NO/ITEM_INCLUDED_YES)
  * - if HAS_SCRIPT (2):
  *     - size: 2 bytes (BE)
  *     - data bytes: <size> bytes
