@@ -48,6 +48,7 @@ static void tx_review_choice(bool confirm) {
         // SHOW STATUS
         TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main)");
         nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main);
+        return;
     }
 }
 
@@ -55,6 +56,7 @@ void ui_display_transaction(void) {
     if (G_context.req_type != REQUEST_SIGN_TRANSACTION || G_context.state.tx_state != TX_STATE_UI_PREPARED) {
         G_context.state.tx_state = TX_STATE_NONE;
         send_swo_and_reset(SWO_BAD_STATE);
+        return;
     }
 
     const char *review_subtitle = NULL;

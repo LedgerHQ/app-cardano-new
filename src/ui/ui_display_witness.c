@@ -76,6 +76,7 @@ void ui_display_witness(const bip44_path_t* witnessPath,
     if (G_context.state.tx_state != TX_STATE_APPROVED || G_context.req_type != REQUEST_SIGN_TRANSACTION) {
         TRACE("Bad state detected - returning error");
         send_swo_and_reset(SWO_BAD_STATE);
+        return;
     }
 
     // Allocate display buffer for witness path using UI tracking system
@@ -85,14 +86,14 @@ void ui_display_witness(const bip44_path_t* witnessPath,
         TRACE("Failed to allocate witness path string");
         ui_cleanup_tracked_allocations();
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return;
     }
 
     bool isUnusual = warning_bits_has(warnings, WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH);
 
     if (securityPolicy != POLICY_SHOW) {
-        ASSERT(false);
-        ui_cleanup_tracked_allocations();
-        send_swo_and_reset(SWO_BAD_STATE);
+        LEDGER_ASSERT(false, "Unexpected security policy");
+        return;
     }
 
     TRACE("isUnusual: %d", isUnusual);

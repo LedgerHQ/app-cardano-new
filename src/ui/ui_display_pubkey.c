@@ -69,6 +69,7 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
     if (G_context.req_type != REQUEST_EXPORT_PUBKEY) {
         TRACE("Bad request type detected - returning error");
         send_swo_and_reset(SWO_BAD_STATE);
+        return;
     }
 
     pubkey_ctx_t* pk = &G_context.pk_info;
@@ -78,6 +79,7 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
     if (pubkeyPathStr == NULL) {
         ui_cleanup_tracked_allocations();
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return;
     }
     bool pathFormatted = format_bip44_path(&pk->path, pubkeyPathStr, MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN);
     LEDGER_ASSERT(pathFormatted, "Unable to format public key path");
@@ -89,15 +91,14 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
             break;
 
         case POLICY_HIDE:
-            ASSERT(is_silent_pubkey_export_allowed());
+            LEDGER_ASSERT(is_silent_pubkey_export_allowed(), "Silent pubkey export not allowed");
             pk->silentExport = true;
             finalize_pubkey_export(true);
             ui_cleanup_tracked_allocations();
             return;
 
         default:
-            ASSERT(false);
-            ui_cleanup_tracked_allocations();
+            LEDGER_ASSERT(false, "Unexpected security policy");
             return;
     }
 
@@ -113,9 +114,9 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
     explicit_bzero(title, sizeof(title));
     snprintf(title, sizeof(title), "%s %s", exportPrefix, keyTypeLabel);
 
-    ASSERT(strlen(title) > 0);
-    ASSERT(strlen(title) + 1 < SIZEOF(title));
-    ASSERT(icon != NULL);
+    LEDGER_ASSERT(strlen(title) > 0, "UI title is empty");
+    LEDGER_ASSERT(strlen(title) + 1 < SIZEOF(title), "UI title truncated");
+    LEDGER_ASSERT(icon != NULL, "UI icon is NULL");
 
     TRACE("Calling nbgl_useCaseChoice(title=%s)", title);
     nbgl_useCaseChoice(

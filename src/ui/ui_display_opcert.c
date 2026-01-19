@@ -124,6 +124,7 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
     if (G_context.req_type != REQUEST_SIGN_OPCERT || G_context.state.opcert_state != OPCERT_STATE_PARSED) {
         TRACE("Bad state detected - returning error");
         send_swo_and_reset(SWO_BAD_STATE);
+        return;
     }
 
     // Handle security policy
@@ -139,8 +140,8 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
             return;
 
         default:
-            ASSERT(false);
-            send_swo_and_reset(SWO_BAD_STATE);
+            LEDGER_ASSERT(false, "Unexpected security policy");
+            return;
     }
 
     // Format all opcert fields and check for errors
@@ -153,8 +154,7 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
             return;
         case UI_STATUS_UNINITIALIZED:
         default:
-            ASSERT(false);
-            send_swo_and_reset(SWO_BAD_STATE);
+            LEDGER_ASSERT(false, "Unexpected UI status");
             return;
     }
 
@@ -169,8 +169,7 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
             return;
         case UI_STATUS_UNINITIALIZED:
         default:
-            ASSERT(false);
-            send_swo_and_reset(SWO_BAD_STATE);
+            LEDGER_ASSERT(false, "Unexpected warning status");
             return;
     }
     const nbgl_warning_t* warningPtr = ui_get_warnings();

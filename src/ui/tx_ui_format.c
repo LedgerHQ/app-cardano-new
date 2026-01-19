@@ -505,7 +505,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
         owner_index++;
     }
 
-    ASSERT(owner_index == pool_owner_counts.total_owners);
+    LEDGER_ASSERT(owner_index == pool_owner_counts.total_owners, "Pool owner index mismatch");
     if (pool_owner_counts.total_owners == 0) {
         warning_bits_set(&G_context.tx_info.warning_bits,
                          WARNING_BIT_POOL_REGISTRATION_NO_OWNERS);
@@ -594,7 +594,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
         relay_index++;
     }
 
-    ASSERT(relay_index == certificate->poolRegistration.numRelays);
+    LEDGER_ASSERT(relay_index == certificate->poolRegistration.numRelays, "Relay index mismatch");
     if (relay_index == 0) {
         warning_bits_set(&G_context.tx_info.warning_bits,
                          WARNING_BIT_POOL_REGISTRATION_NO_RELAYS);
@@ -820,7 +820,7 @@ static void add_ui_and_free_mint(transaction_t *tx) {
         mint_asset_group_node_t *asset_group_node = (mint_asset_group_node_t *) node;
         mint_asset_group_t *asset_group = &asset_group_node->asset_group;
 
-        ASSERT(asset_group->policyId != NULL);
+        LEDGER_ASSERT(asset_group->policyId != NULL, "Missing policy id");
         s_flist_node *node2 = asset_group->tokens;
         while (node2 != NULL) {
             mint_token_node_t *token_node_entry = (mint_token_node_t *) node2;
@@ -1163,7 +1163,7 @@ static int add_ui_strings_and_free_parsed_data(void) {
             return SWO_INSUFFICIENT_MEMORY;
         case UI_STATUS_UNINITIALIZED:
         default:
-            ASSERT(false);
+            LEDGER_ASSERT(false, "Unexpected UI warning status");
             return SWO_BAD_STATE;
     }
 }
@@ -1185,7 +1185,7 @@ static int ui_build_pairs_and_warnings(void) {
             return SWO_INSUFFICIENT_MEMORY;
         case UI_STATUS_UNINITIALIZED:
         default:
-            ASSERT(false);
+            LEDGER_ASSERT(false, "Unexpected UI warning status");
             return SWO_BAD_STATE;
     }
 }
@@ -1193,6 +1193,7 @@ static int ui_build_pairs_and_warnings(void) {
 int ui_prepare_transaction_review(void) {
     if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
         send_swo_and_reset(SWO_BAD_STATE);
+        return SWO_BAD_STATE;
     }
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_HASHED, "UI prep called too early");
     uint32_t pair_count = G_context.tx_info.planned_ui_pairs;
@@ -1203,10 +1204,12 @@ int ui_prepare_transaction_review(void) {
     // If pair count exceeds UI capability, reject the transaction
     if (pair_count > MAX_UI_PAIRS) {
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return SWO_INSUFFICIENT_MEMORY;
     }
 
     if (!ui_pairs_init((uint8_t) pair_count)) {
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return SWO_INSUFFICIENT_MEMORY;
     }
 
     int status = ui_build_pairs_and_warnings();
