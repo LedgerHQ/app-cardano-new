@@ -58,6 +58,15 @@ testsShelleyUnusual = [
                    "m/1852'/1815'/101'/5/0"),
 ]
 
+testsMultisig = [
+    PubKeyTestCase("multisig_account_path_0",
+                   "m/1854'/1815'/0'"),
+    PubKeyTestCase("multisig_payment_path_0",
+                   "m/1854'/1815'/0'/0/0"),
+    PubKeyTestCase("multisig_staking_path_0",
+                   "m/1854'/1815'/0'/2/0"),
+]
+
 testsColdKeys = [
      PubKeyTestCase("cold_case",
                     "m/1853'/1815'/0'/0'"),
@@ -93,6 +102,50 @@ testsCommitteeHotKeys = [
 testsMintKeys = [
     PubKeyTestCase("mint_key_path_0",
                    "m/1855'/1815'/0'"),
+]
+
+def _parse_bip44_path(path: str) -> list[tuple[int, bool]]:
+    parts = path.split("/")[1:]
+    parsed: list[tuple[int, bool]] = []
+    for part in parts:
+        hardened = part.endswith("'")
+        value_str = part[:-1] if hardened else part
+        parsed.append((int(value_str), hardened))
+    return parsed
+
+
+def _is_silent_export_path(path: str) -> bool:
+    parsed = _parse_bip44_path(path)
+    if len(parsed) < 3:
+        return False
+    purpose, purpose_hardened = parsed[0]
+    coin_type, coin_type_hardened = parsed[1]
+    account, account_hardened = parsed[2]
+    if not (purpose_hardened and coin_type_hardened and account_hardened):
+        return False
+    if purpose not in {1852, 1854} or coin_type != 1815:
+        return False
+    if account > 100:
+        return False
+    if len(parsed) == 3:
+        return True
+    if len(parsed) != 5:
+        return False
+    chain, chain_hardened = parsed[3]
+    address, address_hardened = parsed[4]
+    if chain_hardened or address_hardened:
+        return False
+    if chain not in {0, 1, 2}:
+        return False
+    return address <= 1000000
+
+
+testsSilentExport = [
+    test_case for test_case in (
+        testsByron + testsShelleyUsual + testsShelleyUnusual + testsMultisig + testsColdKeys +
+        testsCVoteKeysUsual + testsCVoteKeysUnusual + testsDRepKeys +
+        testsCommitteeColdKeys + testsCommitteeHotKeys + testsMintKeys
+    ) if _is_silent_export_path(test_case.path)
 ]
 
 rejectTestCases = [

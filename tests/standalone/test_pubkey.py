@@ -9,13 +9,13 @@ from ragger.error import ExceptionRAPDU
 from application_client.command_sender import CommandSender
 from application_client.status_words import StatusWord
 
-from standalone.input_files.pubkey import PubKeyTestCase, rejectTestCases, testsByron, testsShelleyUsual, testsShelleyUnusual, testsColdKeys, testsCVoteKeysUsual, testsCVoteKeysUnusual, testsDRepKeys, testsCommitteeColdKeys, testsCommitteeHotKeys, testsMintKeys
+from standalone.input_files.pubkey import PubKeyTestCase, rejectTestCases, testsByron, testsShelleyUsual, testsShelleyUnusual, testsMultisig, testsColdKeys, testsCVoteKeysUsual, testsCVoteKeysUnusual, testsDRepKeys, testsCommitteeColdKeys, testsCommitteeHotKeys, testsMintKeys, testsSilentExport
 
 from standalone.utils import idTestFunc, get_device_pubkey
 
 @pytest.mark.parametrize(
     "testCase",
-    testsByron + testsShelleyUsual + testsShelleyUnusual + testsColdKeys +
+    testsByron + testsShelleyUsual + testsShelleyUnusual + testsMultisig + testsColdKeys +
     testsCVoteKeysUsual + testsCVoteKeysUnusual + testsDRepKeys +
     testsCommitteeColdKeys + testsCommitteeHotKeys + testsMintKeys,
     ids=idTestFunc
@@ -55,7 +55,7 @@ def test_pubkey_confirm(device: Device,
 
 @pytest.mark.parametrize(
     "testCase",
-    testsShelleyUsual + testsCVoteKeysUsual,
+    testsSilentExport,
     ids=idTestFunc
 )
 def test_pubkey_without_confirmation(backend: BackendInterface, testCase: PubKeyTestCase) -> None:

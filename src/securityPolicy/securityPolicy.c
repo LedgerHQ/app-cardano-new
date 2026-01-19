@@ -95,37 +95,27 @@ static security_policy_t _policyForGetExtendedPublicKey_silent(const bip44_path_
         case PATH_MULTISIG_ACCOUNT:
         case PATH_MULTISIG_PAYMENT_KEY:
         case PATH_MULTISIG_STAKING_KEY:
-        case PATH_DREP_KEY:
-        case PATH_COMMITTEE_COLD_KEY:
-        case PATH_COMMITTEE_HOT_KEY:
         case PATH_CVOTE_ACCOUNT:
         case PATH_CVOTE_KEY:
             if (!bip44_isPathReasonable(path)) {
                 mark_unusual_key_derivation(warnings, path);
             }
             SHOW_UNLESS(bip44_isPathReasonable(path));
-            // TODO show Byron paths?
-            SHOW_IF(bip44_hasByronPrefix(path));
             // we do not show these if user turned on silent key export
             HIDE();
             break;
 
+        case PATH_DREP_KEY:
+        case PATH_COMMITTEE_COLD_KEY:
+        case PATH_COMMITTEE_HOT_KEY:
         case PATH_MINT_KEY:
-            if (!bip44_isPathReasonable(path)) {
-                mark_unusual_key_derivation(warnings, path);
-            }
-            SHOW_UNLESS(bip44_isPathReasonable(path));
-            // used rarely, so making the user aware of the export does not hamper him
-            // but could be relaxed to expert mode if needed
-            SHOW();
-            break;
-
         case PATH_POOL_COLD_KEY:
+            // these paths are rare and might give significant power
+            // so we rather show them every time to alert the user
+            // about his SW wallet asking about these keys
             if (!bip44_isPathReasonable(path)) {
                 mark_unusual_key_derivation(warnings, path);
             }
-            SHOW_UNLESS(bip44_isPathReasonable(path));
-            // but ask for permission
             SHOW();
             break;
 
@@ -157,13 +147,13 @@ security_policy_t policyForGetExtendedPublicKey(const bip44_path_t* path, warnin
         case PATH_DREP_KEY:
         case PATH_COMMITTEE_COLD_KEY:
         case PATH_COMMITTEE_HOT_KEY:
+        case PATH_MINT_KEY:
+        case PATH_POOL_COLD_KEY:
         case PATH_CVOTE_ACCOUNT:
         case PATH_CVOTE_KEY:
-        case PATH_POOL_COLD_KEY:
             if (!bip44_isPathReasonable(path)) {
                 mark_unusual_key_derivation(warnings, path);
             }
-            SHOW_UNLESS(bip44_isPathReasonable(path));
             SHOW();
             break;
 
