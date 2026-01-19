@@ -29,8 +29,8 @@
 #endif
 
 // Any buffer claiming to be longer than this is a bug
-// (we anyway have only 4KB of memory)
-#define BUFFER_SIZE_PARANOIA 1024
+// (keep in sync with maximum raw tx buffer size)
+#define BUFFER_SIZE_PARANOIA (16 * 1024 + 1)
 
 #define ITERATE(it, arr) for (__typeof__(&(arr[0])) it = BEGIN(arr); it < END(arr); it++)
 
