@@ -37,6 +37,7 @@
 #include "sign_tx.h"
 #include "sign_opcert.h"
 #include "derive_address.h"
+#include "derive_native_script_hash.h"
 
 #ifdef DEBUG
 #include "debug_settings.h"
@@ -58,6 +59,8 @@ static command_e req_type_to_instruction(request_type_e req_type) {
             return INS_SIGN_OPCERT;
         case REQUEST_DERIVE_ADDRESS:
             return INS_DERIVE_ADDRESS;
+        case REQUEST_DERIVE_NATIVE_SCRIPT_HASH:
+            return INS_DERIVE_NATIVE_SCRIPT_HASH;
         default:
             LEDGER_ASSERT(false, "Unknown request type");
             return INS_GET_VERSION;  // Unreachable
@@ -165,6 +168,23 @@ void apdu_dispatcher(const command_t *cmd) {
             handler_derive_address(&data_buffer, cmd->p1);
             return;
 
+        case INS_DERIVE_NATIVE_SCRIPT_HASH:
+            // P2 must be unused for all transaction APDU types
+            if (cmd->p2 != P2_UNUSED) {
+                io_send_sw(SWO_INCORRECT_P1_P2);
+                return;
+            }
+            // Validate P1 value
+            if(cmd->p1 != STAGE_COMPLEX_SCRIPT_START &&
+                cmd->p1 != STAGE_ADD_SIMPLE_SCRIPT &&
+                cmd->p1 != STAGE_WHOLE_NATIVE_SCRIPT_FINISH) {
+                io_send_sw(SWO_INCORRECT_P1_P2);
+                return;
+            }
+
+            handler_derive_native_script_hash(&data_buffer, cmd->p1);
+            return;
+
         case INS_SIGN_TX:
             // Check if this is a witness APDU
             if (cmd->p1 == P1_TX_SIGN_WITNESS) {
@@ -198,6 +218,7 @@ void apdu_dispatcher(const command_t *cmd) {
 
             handler_sign_tx(&data_buffer, cmd->p1);
             return;
+
 
         case INS_SIGN_OPCERT: {
             if (cmd->p1 != P1_UNUSED || cmd->p2 != P2_UNUSED) {

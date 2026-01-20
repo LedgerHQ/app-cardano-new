@@ -12,6 +12,7 @@
 #include "cvote_parser.h"
 #include "tx.h"
 #include "opcert_types.h"
+#include "deriveNativeScriptHash_types.h"
 #include "apdu_constants.h"
 #include "keyDerivation.h"
 #include "addressUtilsShelley.h"
@@ -103,6 +104,23 @@ typedef struct {
     uint8_t signature[ED25519_SIGNATURE_LENGTH];
 } sign_opcert_ctx_t;
 
+/*
+    Derive native script hash context.
+*/
+typedef struct {
+    uint8_t level;
+    // stores information about a complex script at the index level
+    complex_native_script_t complexScripts[MAX_SCRIPT_DEPTH];
+
+    uint8_t scriptHashBuffer[SCRIPT_HASH_LENGTH];
+    native_script_hash_builder_t hashBuilder;
+
+    native_script_content_t scriptContent;
+
+    // ui native script state
+    ui_native_script_type ui_scriptType;
+} derive_native_script_hash_ctx_t;
+
 /**
  * Exposed context for public-key exports.
  */
@@ -138,6 +156,7 @@ typedef struct {
         transaction_ctx_t tx_info;
         sign_opcert_ctx_t opcert_info;
         derive_address_ctx_t derive_address_info;
+        derive_native_script_hash_ctx_t derive_native_script_hash_info;
     };
 
     request_type_e req_type;

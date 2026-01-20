@@ -1,0 +1,394 @@
+#include "utils/utils.h"
+#include "buffer.h"
+#include "derive_native_script_hash.h"
+#include "globals.h"
+#include "securityPolicy.h"
+#include "utils/assert.h"
+#include "nbgl_use_case.h"
+
+#include "io.h"
+
+#include "ux.h"
+#include "utils.h"
+#include "app_context.h"
+#include "ui_display_native_script_hash.h"
+#include "deriveNativeScriptHash_types.h"
+#include "derive_native_script_hash_builder.h"
+#include "cbor.h"
+#include "bech32.h"
+#include "bip44.h"
+#include "buffer_utils.h"
+#include "cardano_swo.h"
+
+// Complex native script handlers
+static void deriveNativeScriptHash_handleAll() {
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+    nativeScriptHashBuilder_startComplexScript_all(
+        &ctx->hashBuilder,
+        ctx->complexScripts[ctx->level].remainingScripts);
+    ctx->ui_scriptType = UI_SCRIPT_ALL;
+    security_policy_t policy = POLICY_SHOW;
+    ui_display_native_script_hash(policy);
+    return;
+}
+
+static void deriveNativeScriptHash_handleAny() {
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+    nativeScriptHashBuilder_startComplexScript_any(
+        &ctx->hashBuilder,
+        ctx->complexScripts[ctx->level].remainingScripts);
+    ctx->ui_scriptType = UI_SCRIPT_ANY;
+    security_policy_t policy = POLICY_SHOW;
+    ui_display_native_script_hash(policy);
+    return;
+}
+
+static void deriveNativeScriptHash_handleNofK(buffer_t *cdata) {
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+    bool read32 = buffer_read_u32(cdata, &ctx->scriptContent.requiredScripts, BE);
+    if (read32 == false) {
+        TRACE("Failed to read requiredScripts");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+    if (ctx->complexScripts[ctx->level].remainingScripts < ctx->scriptContent.requiredScripts) {
+        LEDGER_ASSERT(false, "remainingScripts less than requiredScripts");
+        return;
+    }
+    nativeScriptHashBuilder_startComplexScript_n_of_k(
+        &ctx->hashBuilder,
+        ctx->scriptContent.requiredScripts,
+        ctx->complexScripts[ctx->level].remainingScripts);
+
+    ctx->ui_scriptType = UI_SCRIPT_N_OF_K;
+    security_policy_t policy = POLICY_SHOW;
+    ui_display_native_script_hash(policy);
+    return;
+}
+
+static inline bool isComplexScriptFinished() {
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+    return ctx->level > 0 && ctx->complexScripts[ctx->level].remainingScripts == 0;
+}
+
+static inline int complexScriptFinished() {
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+    while (isComplexScriptFinished()) {
+        ASSERT(ctx->level > 0);
+        ctx->level--;
+        ASSERT(ctx->level < MAX_SCRIPT_DEPTH);
+        ASSERT(ctx->complexScripts[ctx->level].remainingScripts > 0);
+        ctx->complexScripts[ctx->level].remainingScripts--;
+    }
+    return 0;
+}
+
+static inline int simpleScriptFinished() {
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+    ASSERT(ctx->level < MAX_SCRIPT_DEPTH);
+    ASSERT(ctx->complexScripts[ctx->level].remainingScripts > 0);
+    ctx->complexScripts[ctx->level].remainingScripts--;
+    if (isComplexScriptFinished()) {
+        complexScriptFinished();
+    }
+    return 0;
+}
+
+static inline bool areMoreScriptsExpected() {
+    // if the number of remaining scripts is not bigger than 0, then this request
+    // is invalid in the current context, as Ledger was not expecting another
+    // script to be parsed
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+    if (ctx->level >= MAX_SCRIPT_DEPTH) {
+        return false;
+    }
+    return ctx->complexScripts[ctx->level].remainingScripts > 0;
+}
+
+// Simple native script handlers
+static void deriveNativeScriptHash_handleDeviceOwnedPubkey(buffer_t *cdata) {
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+    bool read_path = buffer_read_bip44_path(cdata, &ctx->scriptContent.pubkeyPath);
+    if (!read_path) {
+        TRACE("Failed to read pubkeyPath");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+    uint8_t pubkeyHash[ADDRESS_KEY_HASH_LENGTH] = {0};
+    bip44_pathToKeyHash(&ctx->scriptContent.pubkeyPath, pubkeyHash, ADDRESS_KEY_HASH_LENGTH);
+    nativeScriptHashBuilder_addScript_pubkey(&ctx->hashBuilder, pubkeyHash, SIZEOF(pubkeyHash));
+    ctx->ui_scriptType = UI_SCRIPT_PUBKEY_PATH;
+    warning_bits_t warnings = 0;
+    warning_bits_init(&warnings);
+    security_policy_t policy = policyForDeriveNativeScriptHashDevicePubkey(&ctx->scriptContent.pubkeyPath, &warnings);
+    ui_display_native_script_hash(policy);
+    return;
+}
+
+static void deriveNativeScriptHash_handleThirdPartyPubkey(buffer_t *cdata) {
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+    LEDGER_ASSERT(SIZEOF(ctx->scriptContent.pubkeyHash) == ADDRESS_KEY_HASH_LENGTH,
+                  "incorrect key hash size in script");
+    bool read_bytes =
+        buffer_read_bytes(cdata, ctx->scriptContent.pubkeyHash, ADDRESS_KEY_HASH_LENGTH);
+    if (!read_bytes) {
+        TRACE("Failed to read pubkeyHash");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+    nativeScriptHashBuilder_addScript_pubkey(&ctx->hashBuilder,
+                                             ctx->scriptContent.pubkeyHash,
+                                             SIZEOF(ctx->scriptContent.pubkeyHash));
+    ctx->ui_scriptType = UI_SCRIPT_PUBKEY_HASH;
+    security_policy_t policy = POLICY_SHOW;
+    ui_display_native_script_hash(policy);
+    return;
+}
+
+static void deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
+    uint8_t pubkeyType = 0;
+    bool read_pubkey = buffer_read_u8(cdata, &pubkeyType);
+    if (!read_pubkey) {
+        TRACE("Failed to read pubkeyType");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+    switch (pubkeyType) {
+        case KEY_REFERENCE_PATH:
+            deriveNativeScriptHash_handleDeviceOwnedPubkey(cdata);
+            break;
+        case KEY_REFERENCE_HASH:
+            deriveNativeScriptHash_handleThirdPartyPubkey(cdata);
+            break;
+        default:
+            TRACE("Bad pubkeyType");
+            send_swo_and_reset(SWO_BAD_STATE);
+            return;
+    }
+    return;
+}
+
+static void deriveNativeScriptHash_handleInvalidBefore(buffer_t *cdata) {
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+    bool read_timelock = buffer_read_u64(cdata, &ctx->scriptContent.timelock, BE);
+    if (!read_timelock) {
+        TRACE("Failed to read timelock");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+    nativeScriptHashBuilder_addScript_invalidBefore(&ctx->hashBuilder, ctx->scriptContent.timelock);
+    ctx->ui_scriptType = UI_SCRIPT_INVALID_BEFORE;
+    security_policy_t policy = POLICY_SHOW;
+    ui_display_native_script_hash(policy);
+    return;
+}
+
+static void deriveNativeScriptHash_handleInvalidHereafter(buffer_t *cdata) {
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+    bool read_timelock = buffer_read_u64(cdata, &ctx->scriptContent.timelock, BE);
+    if (!read_timelock) {
+        TRACE("Failed to read timelock");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+    nativeScriptHashBuilder_addScript_invalidHereafter(&ctx->hashBuilder,
+                                                       ctx->scriptContent.timelock);
+    ctx->ui_scriptType = UI_SCRIPT_INVALID_HEREAFTER;
+    security_policy_t policy = POLICY_SHOW;
+    ui_display_native_script_hash(policy);
+    return;
+}
+
+// Finish native script handlers
+int deriveNativeScriptHash_displayNativeScriptHash_bech32() {
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+    ctx->ui_scriptType = UI_SCRIPT_DISPLAY_BECH32;
+    security_policy_t policy = POLICY_SHOW;
+    ui_display_native_script_hash(policy);
+    return 0;
+}
+
+int deriveNativeScriptHash_displayNativeScriptHash_policyId() {
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+    ctx->ui_scriptType = UI_SCRIPT_DISPLAY_POLICY_ID;
+    security_policy_t policy = POLICY_SHOW;
+    ui_display_native_script_hash(policy);
+    return 0;
+}
+
+// Complex script start handler
+static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+
+    if (!areMoreScriptsExpected()) {
+        TRACE("More scripts expected");
+        send_swo_and_reset(SWO_BAD_STATE);
+        return;
+    }
+
+    ctx->level++;
+
+    uint8_t nativeScriptType = 0;
+    bool read_nativeScriptType = buffer_read_u8(cdata, &nativeScriptType);
+    if (!read_nativeScriptType) {
+        TRACE("Failed to read nativeScriptType");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+
+    bool read_remainingScripts =
+        buffer_read_u32(cdata, &ctx->complexScripts[ctx->level].remainingScripts, BE);
+    if (!read_remainingScripts) {
+        TRACE("Failed to read remainingScripts");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+    ctx->complexScripts[ctx->level].totalScripts = ctx->complexScripts[ctx->level].remainingScripts;
+
+
+    switch (nativeScriptType) {
+        case NATIVE_SCRIPT_ALL:
+            deriveNativeScriptHash_handleAll();
+            break;
+
+        case NATIVE_SCRIPT_ANY:
+            deriveNativeScriptHash_handleAny();
+            break;
+
+        case NATIVE_SCRIPT_N_OF_K:
+            deriveNativeScriptHash_handleNofK(cdata);
+            break;
+
+        default:
+            TRACE("Bad nativeScriptType");
+            send_swo_and_reset(SWO_BAD_STATE);
+            return;
+    }
+
+    
+    if (isComplexScriptFinished()) {
+        complexScriptFinished();
+    }
+
+    return;
+}
+
+// Simple script handler
+static void deriveNativeScriptHash_handleSimpleScript(buffer_t *cdata) {
+    if (!areMoreScriptsExpected()) {
+        TRACE("More scripts expected");
+        send_swo_and_reset(SWO_BAD_STATE);
+        return;
+    }
+
+    uint8_t nativeScriptType = 0;
+    bool read_nativeScriptType = buffer_read_u8(cdata, &nativeScriptType);
+    if (!read_nativeScriptType) {
+        TRACE("Failed to read nativeScriptType");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+
+    // parse data
+    switch (nativeScriptType) {
+        case NATIVE_SCRIPT_PUBKEY:
+            deriveNativeScriptHash_handlePubkey(cdata);
+            break;
+        case NATIVE_SCRIPT_INVALID_BEFORE:
+            deriveNativeScriptHash_handleInvalidBefore(cdata);
+            break;
+        case NATIVE_SCRIPT_INVALID_HEREAFTER:
+            deriveNativeScriptHash_handleInvalidHereafter(cdata);
+            break;
+        default:
+            TRACE("Bad nativeScriptType");
+            send_swo_and_reset(SWO_BAD_STATE);
+            return;
+    }
+
+    simpleScriptFinished();
+    return;
+}
+
+static void deriveNativeScriptHash_handleWholeNativeScriptFinish(buffer_t *cdata) {
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+
+    // we finish only if there are no more scripts to be processed
+    if (ctx->level != 0 || ctx->complexScripts[0].remainingScripts != 0) {
+        LEDGER_ASSERT(false, "We finish only if there are no more scripts to be processed");
+        return;
+    }
+
+    uint8_t displayFormat = 0;
+    bool read_displayFormat = buffer_read_u8(cdata, &displayFormat);
+    if (!read_displayFormat) {
+        TRACE("Failed to read read_displayFormat");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+    
+    switch (displayFormat) {
+        case DISPLAY_NATIVE_SCRIPT_HASH_BECH32: {
+            nativeScriptHashBuilder_finalize(&ctx->hashBuilder,
+                                             ctx->scriptHashBuffer,
+                                             SCRIPT_HASH_LENGTH);
+
+            deriveNativeScriptHash_displayNativeScriptHash_bech32();
+            break;
+        }
+        case DISPLAY_NATIVE_SCRIPT_HASH_POLICY_ID: {
+            nativeScriptHashBuilder_finalize(&ctx->hashBuilder,
+                                             ctx->scriptHashBuffer,
+                                             SCRIPT_HASH_LENGTH);
+            deriveNativeScriptHash_displayNativeScriptHash_policyId();
+            break;
+        }
+        default:
+            TRACE("Bad displayFormat");
+            send_swo_and_reset(SWO_BAD_STATE);
+            return;
+    }
+    G_context.req_type = REQUEST_NONE;
+    return;
+}
+
+void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
+
+    if (!cdata->ptr) {
+        TRACE("cdata->ptr is NULL");
+        io_send_sw(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+
+    TRACE_BUFFER(cdata->ptr, cdata->size);
+    
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+    if (G_context.req_type != REQUEST_DERIVE_NATIVE_SCRIPT_HASH) {
+        explicit_bzero(&G_context, sizeof(G_context));
+        ctx->level = 0;
+        ctx->complexScripts[ctx->level].remainingScripts = 1;
+        nativeScriptHashBuilder_init(&ctx->hashBuilder);
+        ctx->ui_scriptType = UI_SCRIPT_INIT;
+        security_policy_t policy = POLICY_SHOW;
+        ui_display_native_script_hash(policy);
+    }
+
+    G_context.req_type = REQUEST_DERIVE_NATIVE_SCRIPT_HASH;
+
+    switch (script_type) {
+        case STAGE_COMPLEX_SCRIPT_START:
+            deriveNativeScriptHash_handleComplexScriptStart(cdata);
+            break;
+        case STAGE_ADD_SIMPLE_SCRIPT:
+            deriveNativeScriptHash_handleSimpleScript(cdata);
+            break;
+        case STAGE_WHOLE_NATIVE_SCRIPT_FINISH:
+            deriveNativeScriptHash_handleWholeNativeScriptFinish(cdata);
+            break;
+        default:
+            TRACE("Bad script type");
+            LEDGER_ASSERT(false, "script type should be handled before");
+            break;
+    }
+    return;
+}
