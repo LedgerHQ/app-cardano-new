@@ -820,29 +820,29 @@ static void _initNewCertificate(tx_hash_builder_t* builder) {
     builder->remainingCertificates--;
 }
 
-static const uint8_t* _getCredentialHashBuffer(const ext_credential_t* credential) {
+static const uint8_t* _getCredentialHashBuffer(const credential_t* credential) {
     switch (credential->type) {
-        case EXT_CREDENTIAL_KEY_HASH:
+        case CREDENTIAL_KEY_HASH:
             return credential->keyHash;
-        case EXT_CREDENTIAL_SCRIPT_HASH:
+        case CREDENTIAL_SCRIPT_HASH:
             return credential->scriptHash;
         default:
             ASSERT(false);
     }
 }
 
-static size_t _getCredentialHashSize(const ext_credential_t* credential) {
+static size_t _getCredentialHashSize(const credential_t* credential) {
     switch (credential->type) {
-        case EXT_CREDENTIAL_KEY_HASH:
+        case CREDENTIAL_KEY_HASH:
             return SIZEOF(credential->keyHash);
-        case EXT_CREDENTIAL_SCRIPT_HASH:
+        case CREDENTIAL_SCRIPT_HASH:
             return SIZEOF(credential->scriptHash);
         default:
             ASSERT(false);
     }
 }
 
-static void _appendCredential(tx_hash_builder_t* builder, const ext_credential_t* credential) {
+static void _appendCredential(tx_hash_builder_t* builder, const credential_t* credential) {
     BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 2);
     { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, credential->type); }
     {
@@ -856,7 +856,7 @@ static void _appendCredential(tx_hash_builder_t* builder, const ext_credential_t
 // will be deprecated after Conway
 void txHashBuilder_addCertificate_stakingOld(tx_hash_builder_t* builder,
                                              const certificate_type_t certificateType,
-                                             const ext_credential_t* stakeCredential) {
+                                             const credential_t* stakeCredential) {
     _initNewCertificate(builder);
 
     ASSERT((certificateType == CERTIFICATE_STAKE_REGISTRATION) ||
@@ -880,7 +880,7 @@ void txHashBuilder_addCertificate_stakingOld(tx_hash_builder_t* builder,
 // exists since Conway
 void txHashBuilder_addCertificate_staking(tx_hash_builder_t* builder,
                                           const certificate_type_t certificateType,
-                                          const ext_credential_t* stakeCredential,
+                                          const credential_t* stakeCredential,
                                           uint64_t deposit) {
     _initNewCertificate(builder);
 
@@ -904,7 +904,7 @@ void txHashBuilder_addCertificate_staking(tx_hash_builder_t* builder,
 }
 
 void txHashBuilder_addCertificate_stakeDelegation(tx_hash_builder_t* builder,
-                                                  const ext_credential_t* stakeCredential,
+                                                  const credential_t* stakeCredential,
                                                   const uint8_t* poolKeyHash,
                                                   size_t poolKeyHashSize) {
     _initNewCertificate(builder);
@@ -931,7 +931,7 @@ void txHashBuilder_addCertificate_stakeDelegation(tx_hash_builder_t* builder,
 }
 
 void txHashBuilder_addCertificate_voteDelegation(tx_hash_builder_t* builder,
-                                                 const ext_credential_t* stakeCredential,
+                                                 const credential_t* stakeCredential,
                                                  const drep_t* drep) {
     _initNewCertificate(builder);
 
@@ -981,8 +981,8 @@ void txHashBuilder_addCertificate_voteDelegation(tx_hash_builder_t* builder,
 }
 
 void txHashBuilder_addCertificate_committeeAuthHot(tx_hash_builder_t* builder,
-                                                   const ext_credential_t* coldCredential,
-                                                   const ext_credential_t* hotCredential) {
+                                                   const credential_t* coldCredential,
+                                                   const credential_t* hotCredential) {
     _initNewCertificate(builder);
 
     // Array(3)[
@@ -1026,7 +1026,7 @@ static void _appendAnchor(tx_hash_builder_t* builder, const anchor_t* anchor) {
 }
 
 void txHashBuilder_addCertificate_committeeResign(tx_hash_builder_t* builder,
-                                                  const ext_credential_t* coldCredential,
+                                                  const credential_t* coldCredential,
                                                   const anchor_t* anchor) {
     _initNewCertificate(builder);
 
@@ -1047,7 +1047,7 @@ void txHashBuilder_addCertificate_committeeResign(tx_hash_builder_t* builder,
 }
 
 void txHashBuilder_addCertificate_dRepRegistration(tx_hash_builder_t* builder,
-                                                   const ext_credential_t* dRepCredential,
+                                                   const credential_t* dRepCredential,
                                                    uint64_t deposit,
                                                    const anchor_t* anchor) {
     _initNewCertificate(builder);
@@ -1071,7 +1071,7 @@ void txHashBuilder_addCertificate_dRepRegistration(tx_hash_builder_t* builder,
 }
 
 void txHashBuilder_addCertificate_dRepDeregistration(tx_hash_builder_t* builder,
-                                                     const ext_credential_t* dRepCredential,
+                                                     const credential_t* dRepCredential,
                                                      uint64_t deposit) {
     _initNewCertificate(builder);
 
@@ -1092,7 +1092,7 @@ void txHashBuilder_addCertificate_dRepDeregistration(tx_hash_builder_t* builder,
 }
 
 void txHashBuilder_addCertificate_dRepUpdate(tx_hash_builder_t* builder,
-                                             const ext_credential_t* dRepCredential,
+                                             const credential_t* dRepCredential,
                                              const anchor_t* anchor) {
     _initNewCertificate(builder);
 

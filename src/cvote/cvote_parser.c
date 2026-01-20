@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "addressUtils/addressUtilsShelley.h"
+#include "globals.h"
 #include "memory/mem.h"
 #include "utils/buffer_utils.h"
 #include "utils/utils.h"
@@ -20,12 +21,48 @@ static void trace_credential_path(const char *label, const bip44_path_t *path) {
     TRACE("%s path %s", label, formatted ? path_str : "<path format failed>");
 }
 
+static bool cvote_resolve_credential_buffers(const cvote_credential_t *credential,
+                                             uint8_t **out_public_key_buffer,
+                                             uint8_t **out_script_hash_buffer) {
+    ASSERT(credential != NULL);
+    ASSERT(out_public_key_buffer != NULL);
+    ASSERT(out_script_hash_buffer != NULL);
+
+    if (credential->publicKey != NULL || credential->scriptHash != NULL) {
+        *out_public_key_buffer = (uint8_t *) credential->publicKey;
+        *out_script_hash_buffer = (uint8_t *) credential->scriptHash;
+        return true;
+    }
+
+    cvote_aux_data_t *aux_data = G_context.tx_info.cvote_aux_data;
+    if (aux_data == NULL) {
+        return false;
+    }
+
+    if (credential == &aux_data->staking_credential) {
+        *out_public_key_buffer = aux_data->staking_credential_public_key;
+        *out_script_hash_buffer = aux_data->staking_credential_script_hash;
+        return true;
+    }
+
+    if (credential == &aux_data->vote_credential) {
+        *out_public_key_buffer = aux_data->vote_credential_public_key;
+        *out_script_hash_buffer = aux_data->vote_credential_script_hash;
+        return true;
+    }
+
+    return false;
+}
+
 cvote_parser_status_t cvote_parse_credential(buffer_t *buf,
-                                                    ext_credential_t *credential,
-                                                    const char *label) {
+                                             cvote_credential_t *credential,
+                                             const char *label) {
     ASSERT(buf != NULL);
     ASSERT(credential != NULL);
     ASSERT(label != NULL);
+
+    uint8_t *public_key_buffer = NULL;
+    uint8_t *script_hash_buffer = NULL;
 
     uint8_t type = 0;
     if (!buffer_read_u8(buf, &type)) {
@@ -35,20 +72,38 @@ cvote_parser_status_t cvote_parse_credential(buffer_t *buf,
 
     switch (type) {
         case EXT_CREDENTIAL_KEY_HASH:
+            if (!cvote_resolve_credential_buffers(credential,
+                                                  &public_key_buffer,
+                                                  &script_hash_buffer)) {
+                TRACE("%s key hash buffer missing", label);
+                return CVOTE_PARSER_INVALID_FORMAT;
+            }
+            if (public_key_buffer == NULL) {
+                TRACE("%s key hash buffer unavailable", label);
+                return CVOTE_PARSER_INVALID_FORMAT;
+            }
             credential->type = EXT_CREDENTIAL_KEY_HASH;
-            STATIC_ASSERT(SIZEOF(credential->publicKey) == PUBLIC_KEY_SIZE,
-                          "credential public key size mismatch");
-            if (!buffer_read_bytes(buf, credential->publicKey, PUBLIC_KEY_SIZE)) {
+            credential->publicKey = public_key_buffer;
+            if (!buffer_read_bytes(buf, public_key_buffer, PUBLIC_KEY_SIZE)) {
                 TRACE("%s key hash data truncated", label);
                 return CVOTE_PARSER_INVALID_FORMAT;
             }
             TRACE("%s credential: raw key", label);
             break;
         case EXT_CREDENTIAL_SCRIPT_HASH:
+            if (!cvote_resolve_credential_buffers(credential,
+                                                  &public_key_buffer,
+                                                  &script_hash_buffer)) {
+                TRACE("%s script hash buffer missing", label);
+                return CVOTE_PARSER_INVALID_FORMAT;
+            }
+            if (script_hash_buffer == NULL) {
+                TRACE("%s script hash buffer unavailable", label);
+                return CVOTE_PARSER_INVALID_FORMAT;
+            }
             credential->type = EXT_CREDENTIAL_SCRIPT_HASH;
-            STATIC_ASSERT(SIZEOF(credential->scriptHash) == SCRIPT_HASH_LENGTH,
-                          "credential script hash size mismatch");
-            if (!buffer_read_bytes(buf, credential->scriptHash, SCRIPT_HASH_LENGTH)) {
+            credential->scriptHash = script_hash_buffer;
+            if (!buffer_read_bytes(buf, script_hash_buffer, SCRIPT_HASH_LENGTH)) {
                 TRACE("%s script hash data truncated", label);
                 return CVOTE_PARSER_INVALID_FORMAT;
             }
@@ -151,7 +206,6 @@ static cvote_parser_status_t parse_vote_credential(buffer_t *buf, cvote_aux_data
     if (status != CVOTE_PARSER_OK) {
         return status;
     }
-    data->has_vote_credential = true;
     return CVOTE_PARSER_OK;
 }
 
@@ -170,9 +224,13 @@ cvote_parser_status_t cvote_parse_aux_data_init(buffer_t *buf, cvote_aux_data_t 
     }
     explicit_bzero(data, sizeof(*data));
 
+    cvote_aux_data_t *previous_aux_data = G_context.tx_info.cvote_aux_data;
+    G_context.tx_info.cvote_aux_data = data;
+
     uint8_t format = 0;
     if (!buffer_read_u8(buf, &format) ||
         !buffer_read_u16(buf, &data->delegation_count, BE)) {
+        G_context.tx_info.cvote_aux_data = previous_aux_data;
         return CVOTE_PARSER_INVALID_FORMAT;
     }
 
@@ -182,43 +240,50 @@ cvote_parser_status_t cvote_parse_aux_data_init(buffer_t *buf, cvote_aux_data_t 
             data->format = (cvote_registration_format_t) format;
             break;
         default:
+            G_context.tx_info.cvote_aux_data = previous_aux_data;
             return CVOTE_PARSER_INVALID_FORMAT;
     }
 
     if (cvote_parse_credential(buf, &data->staking_credential, "Staking credential") !=
         CVOTE_PARSER_OK) {
+        G_context.tx_info.cvote_aux_data = previous_aux_data;
         return CVOTE_PARSER_INVALID_FORMAT;
     }
 
     cvote_parser_status_t dest_status = cvote_parse_destination(buf, &data->destination);
     if (dest_status != CVOTE_PARSER_OK) {
+        G_context.tx_info.cvote_aux_data = previous_aux_data;
         return dest_status;
     }
 
     if (!buffer_read_u64(buf, &data->nonce, BE)) {
+        G_context.tx_info.cvote_aux_data = previous_aux_data;
         return CVOTE_PARSER_INVALID_FORMAT;
     }
 
     if (data->format == CIP36) {
         if (!buffer_read_u64(buf, &data->voting_purpose, BE)) {
+            G_context.tx_info.cvote_aux_data = previous_aux_data;
             return CVOTE_PARSER_INVALID_FORMAT;
         }
-        data->has_voting_purpose = true;
         if (data->delegation_count == 0) {
             cvote_parser_status_t vote_status = parse_vote_credential(buf, data);
             if (vote_status != CVOTE_PARSER_OK) {
+                G_context.tx_info.cvote_aux_data = previous_aux_data;
                 return vote_status;
             }
         }
     } else {
         cvote_parser_status_t vote_status = parse_vote_credential(buf, data);
         if (vote_status != CVOTE_PARSER_OK) {
+            G_context.tx_info.cvote_aux_data = previous_aux_data;
             return vote_status;
         }
     }
 
     if (buf->offset != buf->size) {
         TRACE("CVote init payload not fully consumed");
+        G_context.tx_info.cvote_aux_data = previous_aux_data;
         return CVOTE_PARSER_INVALID_FORMAT;
     }
 

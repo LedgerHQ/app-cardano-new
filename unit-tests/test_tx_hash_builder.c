@@ -93,8 +93,8 @@ static void test_tx_hash_builder_full(void** state) {
     txHashBuilder_addTtl(&builder, 126);
 
     txHashBuilder_enterCertificates(&builder);
-    ext_credential_t stakeCredential = {0};
-    stakeCredential.type = EXT_CREDENTIAL_KEY_HASH;
+    credential_t stakeCredential = {0};
+    stakeCredential.type = CREDENTIAL_KEY_HASH;
     static const char* stakeKeyHex = "0C0D0E0F101112131415161718191A1B1C1D1E1F20212223242526";
     decode_hex_buffer(stakeKeyHex, stakeCredential.keyHash, SIZEOF(stakeCredential.keyHash));
 

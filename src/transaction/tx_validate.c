@@ -28,15 +28,32 @@
 /**
  * Convert ext_credential_t to a version suitable for tx hash building.
  * Converts KEY_PATH to KEY_HASH, leaves KEY_HASH and SCRIPT_HASH unchanged.
- * Returns a credential that can be passed to txHashBuilder functions.
+ * Returns a credential_t that can be passed to txHashBuilder functions.
  * Does NOT modify the input credential (needed for security policies and UI).
  */
-static ext_credential_t _credentialForTxHash(const ext_credential_t* credential) {
-    ext_credential_t result = *credential;
+static credential_t _credentialForTxHash(const ext_credential_t* credential) {
+    credential_t result = {0};
 
-    if (credential->type == EXT_CREDENTIAL_KEY_PATH) {
-        result.type = EXT_CREDENTIAL_KEY_HASH;
-        bip44_pathToKeyHash(&credential->keyPath, result.keyHash, SIZEOF(result.keyHash));
+    STATIC_ASSERT(SIZEOF(result.keyHash) == ADDRESS_KEY_HASH_LENGTH, "credential key hash size");
+    STATIC_ASSERT(SIZEOF(result.scriptHash) == SCRIPT_HASH_LENGTH, "credential script hash size");
+
+    switch (credential->type) {
+        case EXT_CREDENTIAL_KEY_PATH:
+            result.type = CREDENTIAL_KEY_HASH;
+            bip44_pathToKeyHash(&credential->keyPath, result.keyHash, SIZEOF(result.keyHash));
+            break;
+        case EXT_CREDENTIAL_KEY_HASH:
+            LEDGER_ASSERT(credential->keyHash != NULL, "NULL credential key hash pointer");
+            result.type = CREDENTIAL_KEY_HASH;
+            memcpy(result.keyHash, credential->keyHash, SIZEOF(result.keyHash));
+            break;
+        case EXT_CREDENTIAL_SCRIPT_HASH:
+            LEDGER_ASSERT(credential->scriptHash != NULL, "NULL credential script hash pointer");
+            result.type = CREDENTIAL_SCRIPT_HASH;
+            memcpy(result.scriptHash, credential->scriptHash, SIZEOF(result.scriptHash));
+            break;
+        default:
+            ASSERT(false);
     }
 
     return result;
@@ -879,7 +896,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
         switch (certificate->type) {
             case CERTIFICATE_STAKE_REGISTRATION:
             case CERTIFICATE_STAKE_DEREGISTRATION: {
-                ext_credential_t stakeCred = _credentialForTxHash(&certificate->stakeCredential);
+                credential_t stakeCred = _credentialForTxHash(&certificate->stakeCredential);
                 txHashBuilder_addCertificate_stakingOld(
                     txHashBuilder,
                     certificate->type,
@@ -888,7 +905,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 break;
             }
             case CERTIFICATE_STAKE_DELEGATION: {
-                ext_credential_t stakeCred = _credentialForTxHash(&certificate->stakeCredential);
+                credential_t stakeCred = _credentialForTxHash(&certificate->stakeCredential);
                 txHashBuilder_addCertificate_stakeDelegation(
                     txHashBuilder,
                     &stakeCred,
@@ -899,7 +916,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
             }
             case CERTIFICATE_STAKE_REGISTRATION_CONWAY:
             case CERTIFICATE_STAKE_DEREGISTRATION_CONWAY: {
-                ext_credential_t stakeCred = _credentialForTxHash(&certificate->stakeCredential);
+                credential_t stakeCred = _credentialForTxHash(&certificate->stakeCredential);
                 txHashBuilder_addCertificate_staking(
                     txHashBuilder,
                     certificate->type,
@@ -918,6 +935,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                         bip44_pathToKeyHash(&poolCred->keyPath, poolKeyHash, sizeof(poolKeyHash));
                         break;
                     case EXT_CREDENTIAL_KEY_HASH:
+                        LEDGER_ASSERT(poolCred->keyHash != NULL, "NULL pool credential hash");
                         TRACE("Pool retirement credential key hash first byte = %02x", poolCred->keyHash[0]);
                         STATIC_ASSERT(ADDRESS_KEY_HASH_LENGTH == POOL_KEY_HASH_LENGTH,
                                       "pool credential hash size mismatch");
@@ -990,7 +1008,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                     while (node2 != NULL) {
                         tx_certificate_node_t *owner_node = (tx_certificate_node_t *) node2;
                         ext_credential_t *owner_credential = &owner_node->certificate.stakeCredential;
-                        ext_credential_t owner_credential_for_hash =
+                        credential_t owner_credential_for_hash =
                             _credentialForTxHash(owner_credential);
                         txHashBuilder_addPoolRegistrationCertificate_addOwner(
                             txHashBuilder,
@@ -1026,7 +1044,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 break;
             }
             case CERTIFICATE_VOTE_DELEGATION: {
-                ext_credential_t stakeCred = _credentialForTxHash(&certificate->stakeCredential);
+                credential_t stakeCred = _credentialForTxHash(&certificate->stakeCredential);
                 drep_t drep = _drepForTxHash(&certificate->drep);
                 txHashBuilder_addCertificate_voteDelegation(
                     txHashBuilder,
@@ -1036,8 +1054,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 break;
             }
             case CERTIFICATE_AUTHORIZE_COMMITTEE_HOT: {
-                ext_credential_t coldCred = _credentialForTxHash(&certificate->coldCredential);
-                ext_credential_t hotCred = _credentialForTxHash(&certificate->hotCredential);
+                credential_t coldCred = _credentialForTxHash(&certificate->coldCredential);
+                credential_t hotCred = _credentialForTxHash(&certificate->hotCredential);
                 txHashBuilder_addCertificate_committeeAuthHot(
                     txHashBuilder,
                     &coldCred,
@@ -1046,7 +1064,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 break;
             }
             case CERTIFICATE_RESIGN_COMMITTEE_COLD: {
-                ext_credential_t coldCred = _credentialForTxHash(&certificate->coldCredential);
+                credential_t coldCred = _credentialForTxHash(&certificate->coldCredential);
                 txHashBuilder_addCertificate_committeeResign(
                     txHashBuilder,
                     &coldCred,
@@ -1055,7 +1073,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 break;
             }
             case CERTIFICATE_DREP_REGISTRATION: {
-                ext_credential_t drepCred = _credentialForTxHash(&certificate->dRepCredential);
+                credential_t drepCred = _credentialForTxHash(&certificate->dRepCredential);
                 txHashBuilder_addCertificate_dRepRegistration(
                     txHashBuilder,
                     &drepCred,
@@ -1065,7 +1083,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 break;
             }
             case CERTIFICATE_DREP_DEREGISTRATION: {
-                ext_credential_t drepCred = _credentialForTxHash(&certificate->dRepCredential);
+                credential_t drepCred = _credentialForTxHash(&certificate->dRepCredential);
                 txHashBuilder_addCertificate_dRepDeregistration(
                     txHashBuilder,
                     &drepCred,
@@ -1074,7 +1092,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 break;
             }
             case CERTIFICATE_DREP_UPDATE: {
-                ext_credential_t drepCred = _credentialForTxHash(&certificate->dRepCredential);
+                credential_t drepCred = _credentialForTxHash(&certificate->dRepCredential);
                 txHashBuilder_addCertificate_dRepUpdate(
                     txHashBuilder,
                     &drepCred,

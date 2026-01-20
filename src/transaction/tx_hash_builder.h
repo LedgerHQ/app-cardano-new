@@ -7,6 +7,7 @@
 #include "addressUtils/addressUtilsShelley.h"
 #include "transaction/tx.h"
 #include "transaction/tx_output_types.h"
+#include "transaction/tx_credential_types.h"
 
 enum {
     TX_BODY_KEY_INPUTS = 0,
@@ -233,40 +234,40 @@ void txHashBuilder_enterCertificates(tx_hash_builder_t* builder);
 
 void txHashBuilder_addCertificate_stakingOld(tx_hash_builder_t* builder,
                                              const certificate_type_t certificateType,
-                                             const ext_credential_t* stakingCredential);
+                                             const credential_t* stakingCredential);
 void txHashBuilder_addCertificate_staking(tx_hash_builder_t* builder,
                                           const certificate_type_t certificateType,
-                                          const ext_credential_t* stakeCredential,
+                                          const credential_t* stakeCredential,
                                           uint64_t deposit);
 
 void txHashBuilder_addCertificate_stakeDelegation(tx_hash_builder_t* builder,
-                                                  const ext_credential_t* stakeCredential,
+                                                  const credential_t* stakeCredential,
                                                   const uint8_t* poolKeyHash,
                                                   size_t poolKeyHashSize);
 
 void txHashBuilder_addCertificate_voteDelegation(tx_hash_builder_t* builder,
-                                                 const ext_credential_t* stakeCredential,
+                                                 const credential_t* stakeCredential,
                                                  const drep_t* drep);
 
 void txHashBuilder_addCertificate_committeeAuthHot(tx_hash_builder_t* builder,
-                                                   const ext_credential_t* coldCredential,
-                                                   const ext_credential_t* hotCredential);
+                                                   const credential_t* coldCredential,
+                                                   const credential_t* hotCredential);
 
 void txHashBuilder_addCertificate_committeeResign(tx_hash_builder_t* builder,
-                                                  const ext_credential_t* coldCredential,
+                                                  const credential_t* coldCredential,
                                                   const anchor_t* anchor);
 
 void txHashBuilder_addCertificate_dRepRegistration(tx_hash_builder_t* builder,
-                                                   const ext_credential_t* dRepCredential,
+                                                   const credential_t* dRepCredential,
                                                    uint64_t deposit,
                                                    const anchor_t* anchor);
 
 void txHashBuilder_addCertificate_dRepDeregistration(tx_hash_builder_t* builder,
-                                                     const ext_credential_t* dRepCredential,
+                                                     const credential_t* dRepCredential,
                                                      uint64_t deposit);
 
 void txHashBuilder_addCertificate_dRepUpdate(tx_hash_builder_t* builder,
-                                             const ext_credential_t* dRepCredential,
+                                             const credential_t* dRepCredential,
                                              const anchor_t* anchor);
 
 void txHashBuilder_addCertificate_poolRetirement(tx_hash_builder_t* builder,

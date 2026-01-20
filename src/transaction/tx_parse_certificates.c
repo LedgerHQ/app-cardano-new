@@ -77,22 +77,20 @@ static parser_status_e _parse_credential_data(buffer_t *buf,
             TRACE("Successfully parsed KEY_PATH credential");
             break;
         case EXT_CREDENTIAL_KEY_HASH: {
-            STATIC_ASSERT(SIZEOF(credential->keyHash) == ADDRESS_KEY_HASH_LENGTH,
-                          "credential key hash size mismatch");
-            if (!buffer_read_bytes(buf, credential->keyHash, ADDRESS_KEY_HASH_LENGTH)) {
+            if (!buffer_read_bytes_ptr(buf, &credential->keyHash, ADDRESS_KEY_HASH_LENGTH)) {
                 TRACE("Failed to read key hash");
                 return CERTIFICATES_PARSING_ERROR;
             }
+            ASSERT(credential->keyHash != NULL);
             TRACE("Successfully parsed KEY_HASH credential");
             break;
         }
         case EXT_CREDENTIAL_SCRIPT_HASH: {
-            STATIC_ASSERT(SIZEOF(credential->scriptHash) == SCRIPT_HASH_LENGTH,
-                          "credential script hash size mismatch");
-            if (!buffer_read_bytes(buf, credential->scriptHash, SCRIPT_HASH_LENGTH)) {
+            if (!buffer_read_bytes_ptr(buf, &credential->scriptHash, SCRIPT_HASH_LENGTH)) {
                 TRACE("Failed to read script hash");
                 return CERTIFICATES_PARSING_ERROR;
             }
+            ASSERT(credential->scriptHash != NULL);
             TRACE("Successfully parsed SCRIPT_HASH credential");
             break;
         }
