@@ -66,6 +66,9 @@ CLA: int = 0xd7
 
 ITEM_INCLUDED_NO: int = 0x01
 ITEM_INCLUDED_YES: int = 0x02
+SETTINGS_DISABLED: int = 0x00
+SETTINGS_ENABLED: int = 0x01
+MAX_UINT8: int = 0xFF
 
 
 class InsType(IntEnum):
@@ -252,8 +255,8 @@ class TxInitParams:
 class CommandBuilder:
     def _serialize(self,
                    ins: InsType,
-                   p1: int = 0x00,
-                   p2: int = 0x00,
+                   p1: int = P1Type.P1_UNUSED,
+                   p2: int = P2Type.P2_UNUSED,
                    cdata: bytes = bytes()) -> bytes:
         header = bytearray()
         header.append(CLA)
@@ -279,7 +282,7 @@ class CommandBuilder:
         data.extend(testCase.opCert.kesPeriod.to_bytes(8, "big"))
         data.extend(testCase.opCert.issueCounter.to_bytes(8, "big"))
         data.extend(pack_derivation_path(testCase.opCert.path))
-        return self._serialize(InsType.INS_SIGN_OPCERT, 0x00, 0x00, bytes(data))
+        return self._serialize(InsType.INS_SIGN_OPCERT, P1Type.P1_UNUSED, P2Type.P2_UNUSED, bytes(data))
 
     def sign_tx_init(self, params: TxInitParams) -> bytes:
         data = bytearray()
@@ -289,10 +292,10 @@ class CommandBuilder:
         data.append(params.signing_mode)
         data.extend(params.num_inputs.to_bytes(2, "big"))
         data.extend(params.num_outputs.to_bytes(2, "big"))
-        data.append(0x02 if params.include_ttl else 0x01)
+        data.append(ITEM_INCLUDED_YES if params.include_ttl else ITEM_INCLUDED_NO)
         data.extend(params.num_certificates.to_bytes(2, "big"))
         data.extend(params.num_withdrawals.to_bytes(2, "big"))
-        data.append(0x02 if params.include_aux_data_hash else 0x01)
+        data.append(ITEM_INCLUDED_YES if params.include_aux_data_hash else ITEM_INCLUDED_NO)
         if params.include_aux_data_hash:
             if params.aux_data_type is None:
                 raise ValueError("Auxiliary data type is required when include_aux_data_hash is set")
@@ -302,18 +305,18 @@ class CommandBuilder:
                     raise ValueError("Auxiliary data hash is required for arbitrary-hash aux data")
             else:
                 data.extend(bytes.fromhex(params.aux_data_hash_hex))
-        data.append(0x02 if params.include_validity_interval_start else 0x01)
+        data.append(ITEM_INCLUDED_YES if params.include_validity_interval_start else ITEM_INCLUDED_NO)
         data.extend(params.num_mint_asset_groups.to_bytes(2, "big"))
-        data.append(0x02 if params.include_script_data_hash else 0x01)
+        data.append(ITEM_INCLUDED_YES if params.include_script_data_hash else ITEM_INCLUDED_NO)
         data.extend(params.num_collateral_inputs.to_bytes(2, "big"))
         data.extend(params.num_required_signers.to_bytes(2, "big"))
-        data.append(0x02 if params.include_network_id else 0x01)
-        data.append(0x02 if params.include_collateral_output else 0x01)
-        data.append(0x02 if params.include_total_collateral else 0x01)
+        data.append(ITEM_INCLUDED_YES if params.include_network_id else ITEM_INCLUDED_NO)
+        data.append(ITEM_INCLUDED_YES if params.include_collateral_output else ITEM_INCLUDED_NO)
+        data.append(ITEM_INCLUDED_YES if params.include_total_collateral else ITEM_INCLUDED_NO)
         data.extend(params.num_reference_inputs.to_bytes(2, "big"))
         data.extend(params.num_voters.to_bytes(2, "big"))
-        data.append(0x02 if params.include_treasury else 0x01)
-        data.append(0x02 if params.include_donation else 0x01)
+        data.append(ITEM_INCLUDED_YES if params.include_treasury else ITEM_INCLUDED_NO)
+        data.append(ITEM_INCLUDED_YES if params.include_donation else ITEM_INCLUDED_NO)
         data.extend(params.num_witnesses.to_bytes(2, "big"))
         return self._serialize(InsType.INS_SIGN_TX, P1Type.P1_TX_INIT, P2Type.P2_UNUSED, bytes(data))
 
@@ -411,8 +414,8 @@ class CommandBuilder:
             Serialized APDU command
         """
         data = bytearray()
-        data.append(0x01 if expert_mode else 0x00)
-        data.append(0x01 if silent_export else 0x00)
+        data.append(SETTINGS_ENABLED if expert_mode else SETTINGS_DISABLED)
+        data.append(SETTINGS_ENABLED if silent_export else SETTINGS_DISABLED)
         return self._serialize(InsType.INS_DEBUG_SET_SETTINGS, P1Type.P1_UNUSED, P2Type.P2_UNUSED, bytes(data))
 
     def serialize_transaction_chunks(self, tx: Transaction) -> list[bytes]:
@@ -681,7 +684,7 @@ class CommandBuilder:
 
         result.append(ITEM_INCLUDED_YES)
         url_bytes = anchor.url.encode("utf-8")
-        if len(url_bytes) > 0xFF:
+        if len(url_bytes) > MAX_UINT8:
             raise ValueError("Anchor URL exceeds maximum length")
         result.append(len(url_bytes))
         result.extend(url_bytes)
@@ -744,7 +747,7 @@ class CommandBuilder:
                 return bytes(data)
             data.append(ITEM_INCLUDED_YES)
             dns_bytes = params.dnsName.encode("utf-8")
-            if len(dns_bytes) > 0xFF:
+            if len(dns_bytes) > MAX_UINT8:
                 raise ValueError("Relay DNS name exceeds maximum length")
             data.append(len(dns_bytes))
             data.extend(dns_bytes)
@@ -756,7 +759,7 @@ class CommandBuilder:
                 return bytes(data)
             data.append(ITEM_INCLUDED_YES)
             dns_bytes = params.dnsName.encode("utf-8")
-            if len(dns_bytes) > 0xFF:
+            if len(dns_bytes) > MAX_UINT8:
                 raise ValueError("Relay DNS name exceeds maximum length")
             data.append(len(dns_bytes))
             data.extend(dns_bytes)

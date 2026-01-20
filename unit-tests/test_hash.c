@@ -25,7 +25,7 @@ static void test_blake2b_512_empty(void **state) {
 
     // Finalize with no data
     uint8_t output[64] = {0};
-    cx_err_t result = cx_hash_no_throw(&ctx.header, 0x80000000, NULL, 0, output, 64);
+    cx_err_t result = cx_hash_no_throw(&ctx.header, CX_LAST, NULL, 0, output, 64);
     assert_int_equal(result, CX_OK);
 
     const uint8_t expected[64] = {
@@ -50,7 +50,7 @@ static void test_blake2b_512_single_byte(void **state) {
     assert_int_equal(result, CX_OK);
 
     uint8_t output[64] = {0};
-    result = cx_hash_no_throw(&ctx.header, 0x80000000, NULL, 0, output, 64);
+    result = cx_hash_no_throw(&ctx.header, CX_LAST, NULL, 0, output, 64);
     assert_int_equal(result, CX_OK);
 
     const uint8_t expected[64] = {
@@ -84,7 +84,7 @@ static void test_blake2b_512_chunked(void **state) {
     }
 
     uint8_t output[64] = {0};
-    cx_hash_no_throw(&ctx.header, 0x80000000, NULL, 0, output, 64);
+    cx_hash_no_throw(&ctx.header, CX_LAST, NULL, 0, output, 64);
 
     const uint8_t expected[64] = {
         0xf9, 0xc3, 0xaa, 0x38, 0xdd, 0x69, 0xd2, 0x69, 0x2f, 0x24, 0x58, 0x4d, 0xa9, 0x06, 0x01, 0x4a,
@@ -117,7 +117,7 @@ static void test_blake2b_224_long_input(void **state) {
     cx_hash_no_throw(&ctx.header, 0, input, input_size, NULL, 0);
 
     uint8_t output[28] = {0};
-    cx_hash_no_throw(&ctx.header, 0x80000000, NULL, 0, output, 28);
+    cx_hash_no_throw(&ctx.header, CX_LAST, NULL, 0, output, 28);
 
     const uint8_t expected[28] = {
         0x8f, 0x91, 0x53, 0xcd, 0x38, 0xd4, 0x6d, 0x90, 0xd4, 0xe8, 0x8a, 0x77, 0x01, 0xaf, 0x5f, 0x9f,
@@ -144,7 +144,7 @@ static void test_blake2b_160_short_input(void **state) {
     cx_hash_no_throw(&ctx.header, 0, input, input_size, NULL, 0);
 
     uint8_t output[20] = {0};
-    cx_hash_no_throw(&ctx.header, 0x80000000, NULL, 0, output, 20);
+    cx_hash_no_throw(&ctx.header, CX_LAST, NULL, 0, output, 20);
 
     const uint8_t expected[20] = {
         0x1c, 0xad, 0xfc, 0x0e, 0x70, 0x68, 0x80, 0x1d, 0x51, 0xd2, 0x40, 0xd1, 0x4a, 0x40, 0x85, 0xf2,

@@ -4,7 +4,12 @@ from contextlib import contextmanager
 from ragger.backend.interface import BackendInterface, RAPDU
 
 from standalone.input_files.signOpCert import OpCertTestCase
-from application_client.command_builder import CommandBuilder, gather_witness_paths
+from application_client.command_builder import (
+    CommandBuilder,
+    SETTINGS_DISABLED,
+    SETTINGS_ENABLED,
+    gather_witness_paths,
+)
 from application_client.status_words import StatusWord
 from standalone.input_files.signTx import Transaction, TxAuxiliaryDataCIP36, TxAuxiliaryDataType
 
@@ -216,8 +221,8 @@ class CommandSender:
         # Verify settings were applied correctly
         actual_expert = response.data[0]
         actual_silent = response.data[1]
-        expected_expert = 0x01 if expert_mode else 0x00
-        expected_silent = 0x01 if silent_export else 0x00
+        expected_expert = SETTINGS_ENABLED if expert_mode else SETTINGS_DISABLED
+        expected_silent = SETTINGS_ENABLED if silent_export else SETTINGS_DISABLED
 
         if actual_expert != expected_expert or actual_silent != expected_silent:
             raise AssertionError(

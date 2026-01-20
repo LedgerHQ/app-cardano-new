@@ -10,6 +10,7 @@
 #include "opcert/opcert_types.h"
 #include "hexUtils.h"
 #include "utils/utils.h"
+#include "addressUtils/bip44.h"
 #include "mocks/crypto_mock_data.h"
 
 /**
@@ -180,8 +181,8 @@ static void test_opcert_mock_signature_available(void** state) {
         if (MOCK_SIGNATURES[i].path_len == 4 &&
             MOCK_SIGNATURES[i].path[0] == 0x80000e7d &&  // 1853'
             MOCK_SIGNATURES[i].path[1] == 0x80000717 &&  // 1815'
-            MOCK_SIGNATURES[i].path[2] == 0x80000000 &&  // 0'
-            MOCK_SIGNATURES[i].path[3] == 0x80000000) {  // 0'
+            MOCK_SIGNATURES[i].path[2] == HARDENED_BIP32 &&  // 0'
+            MOCK_SIGNATURES[i].path[3] == HARDENED_BIP32) {  // 0'
             found = true;
 
             // Verify signature has correct length

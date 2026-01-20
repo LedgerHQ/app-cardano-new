@@ -668,7 +668,6 @@ bool buffer_parseAddressParams(buffer_t* buffer, addressParams_t* params) {
         return false;
     }
     params->stakingDataSource = stakingChoice;
-    TRACE("Staking choice: 0x%x", (unsigned int) params->stakingDataSource);
     if (!isValidStakingChoice(params->stakingDataSource)) {
         return false;
     }

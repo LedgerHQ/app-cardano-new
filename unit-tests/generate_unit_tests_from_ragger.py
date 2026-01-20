@@ -30,6 +30,7 @@ def _add_tests_to_sys_path() -> None:
 
 ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 ALPHABET_INDEX = {char: index for index, char in enumerate(ALPHABET)}
+HARDENED_BIP32 = 0x80000000
 
 
 def _ensure_base58_module() -> None:
@@ -605,7 +606,7 @@ def generate_test_runners() -> None:
     for era, (fixture_file, test_c_file, era_upper) in ERA_TEST_FILE_MAP.items():
         _generate_complete_test_file(era, fixture_file, test_c_file, era_upper)
 
-    print("\nAll test files generated successfully!")
+    print("\nAll test_sign_tx_*.c runner files generated successfully...")
 
 
 NODE_SCRIPT = REPO_ROOT / "unit-tests" / "export_sign_tx_rejects.js"
@@ -800,7 +801,7 @@ def _build_reject_fixtures() -> str:
     }
 
     def to_bip32_path(path: Sequence[int]) -> str:
-        hardened = 0x80000000
+        hardened = HARDENED_BIP32
         components: List[str] = []
         for segment in path:
             if segment >= hardened:
@@ -1309,6 +1310,7 @@ def _build_reject_fixtures() -> str:
 
 
 def generate_reject_fixtures() -> None:
+    print("\nStarting reject fixture export (this may take a while)...")
     header = _build_reject_fixtures()
     GENERATED_REJECT_HEADER.write_text(header)
     print(f"Generated {GENERATED_REJECT_HEADER}")
@@ -1341,8 +1343,8 @@ def regenerate_mock_data() -> None:
         path_parts = ["m"]
         for hex_val in hex_values:
             val = int(hex_val, 16)
-            if val & 0x80000000:
-                path_parts.append(f"{val & 0x7FFFFFFF}'")
+            if val & HARDENED_BIP32:
+                path_parts.append(f"{val & (HARDENED_BIP32 - 1)}'")
             else:
                 path_parts.append(str(val))
         return "/".join(path_parts)
