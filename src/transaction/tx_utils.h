@@ -29,6 +29,7 @@ bool violatesSingleAccountOrStoreIt(const bip44_path_t* path);
 typedef struct {
     uint32_t total_owners;
     uint32_t path_owners;
+    const ext_credential_t* first_path_owner;
 } pool_owner_counts_t;
 
 pool_owner_counts_t count_pool_owner_nodes(const s_flist_node* owners);

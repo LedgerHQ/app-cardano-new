@@ -67,9 +67,15 @@ pool_owner_counts_t count_pool_owner_nodes(const s_flist_node* owners) {
         const ext_credential_t* owner_cred = &owner_item->certificate.stakeCredential;
         if (owner_cred->type == EXT_CREDENTIAL_KEY_PATH) {
             counts.path_owners++;
+            if (counts.first_path_owner == NULL) {
+                counts.first_path_owner = owner_cred;
+            }
         }
         counts.total_owners++;
         node = node->next;
     }
+    LEDGER_ASSERT(counts.path_owners <= counts.total_owners, "Pool owner count mismatch");
+    LEDGER_ASSERT((counts.path_owners == 0) == (counts.first_path_owner == NULL),
+                  "Pool owner path state mismatch");
     return counts;
 }

@@ -617,20 +617,11 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                         LEDGER_ASSERT(!G_context.tx_info.pool_owner_path_present,
                                       "Multiple pool registrations in owner mode");
                         if (owner_counts.path_owners == 1) {
-                            s_flist_node *node2 = certificate->poolRegistration.poolOwners;
-                            while (node2 != NULL) {
-                                tx_certificate_node_t *owner_node = (tx_certificate_node_t *) node2;
-                                const ext_credential_t *owner_credential =
-                                    &owner_node->certificate.stakeCredential;
-                                if (owner_credential->type == EXT_CREDENTIAL_KEY_PATH) {
-                                    G_context.tx_info.pool_owner_path = owner_credential->keyPath;
-                                    G_context.tx_info.pool_owner_path_present = true;
-                                    break;
-                                }
-                                node2 = node2->next;
-                            }
-                            LEDGER_ASSERT(G_context.tx_info.pool_owner_path_present,
+                            LEDGER_ASSERT(owner_counts.first_path_owner != NULL,
                                           "Pool owner path missing");
+                            G_context.tx_info.pool_owner_path =
+                                owner_counts.first_path_owner->keyPath;
+                            G_context.tx_info.pool_owner_path_present = true;
                         }
                         break;
                     case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
