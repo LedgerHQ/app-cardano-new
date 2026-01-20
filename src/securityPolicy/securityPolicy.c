@@ -824,41 +824,6 @@ security_policy_t policyForSignTxTtl(uint32_t ttl MARK_UNUSED) {
     SHOW_IF(is_expert_mode());
     HIDE();
 }
-// a generic policy for all certificates
-// does not evaluate aspects of specific certificates
-security_policy_t policyForSignTxCertificate(sign_tx_signingmode_t txSigningMode,
-                                             const certificate_type_t certificateType) {
-    // This generic policy must be applied before any certificate-specific policy.
-    // The specific policies assume this gatekeeper already validated the signing mode.
-    switch (txSigningMode) {
-        case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
-        case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
-            // pool registration is allowed only in POOL_REGISTRATION signing modes
-            DENY_IF(certificateType == CERTIFICATE_STAKE_POOL_REGISTRATION);
-            HIDE();
-            break;
-
-        case SIGN_TX_SIGNINGMODE_MULTISIG_TX:
-            // pool registration is allowed only in POOL_REGISTRATION signing modes
-            DENY_IF(certificateType == CERTIFICATE_STAKE_POOL_REGISTRATION);
-            // pool retirement is impossible with multisig keys
-            DENY_IF(certificateType == CERTIFICATE_STAKE_POOL_RETIREMENT);
-            HIDE();
-            break;
-
-        case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
-        case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
-            // only pool registration is allowed
-            DENY_UNLESS(certificateType == CERTIFICATE_STAKE_POOL_REGISTRATION);
-            HIDE();
-            break;
-
-        default:
-            ASSERT(false);
-    }
-
-    DENY();  // should not be reached
-}
 
 // applicable to credentials that are witnessed in this tx
 static bool _forbiddenCredential(sign_tx_signingmode_t txSigningMode,
@@ -910,10 +875,8 @@ static bool _forbiddenCredential(sign_tx_signingmode_t txSigningMode,
 security_policy_t _policyForSignTxCertificateStakeCredential(
     sign_tx_signingmode_t txSigningMode,
     const ext_credential_t* stakeCredential) {
-    LEDGER_ASSERT(
-        txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER &&
-            txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR,
-        "Stake credential certificate in pool registration mode");
+    DENY_IF(txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER ||
+            txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR);
     DENY_IF(_forbiddenCredential(txSigningMode, stakeCredential));
 
     switch (stakeCredential->type) {
@@ -937,10 +900,8 @@ security_policy_t _policyForSignTxCertificateStakeCredential(
 security_policy_t policyForSignTxCertificateStaking(sign_tx_signingmode_t txSigningMode,
                                                     const certificate_type_t certificateType,
                                                     const ext_credential_t* stakeCredential) {
-    LEDGER_ASSERT(
-        txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER &&
-            txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR,
-        "Staking certificate in pool registration mode");
+    DENY_IF(txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER ||
+            txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR);
     switch (certificateType) {
         case CERTIFICATE_STAKE_REGISTRATION:
         case CERTIFICATE_STAKE_REGISTRATION_CONWAY:
@@ -959,10 +920,8 @@ security_policy_t policyForSignTxCertificateStaking(sign_tx_signingmode_t txSign
 security_policy_t policyForSignTxCertificateVoteDelegation(sign_tx_signingmode_t txSigningMode,
                                                            const ext_credential_t* stakeCredential,
                                                            const ext_drep_t* drep) {
-    LEDGER_ASSERT(
-        txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER &&
-            txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR,
-        "Vote delegation certificate in pool registration mode");
+    DENY_IF(txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER ||
+            txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR);
     switch (drep->type) {
         case EXT_DREP_KEY_PATH:
             // DRep can be anything, but if given by key path, it should be a valid path
@@ -986,10 +945,8 @@ security_policy_t policyForSignTxCertificateVoteDelegation(sign_tx_signingmode_t
 security_policy_t policyForSignTxCertificateCommitteeAuth(sign_tx_signingmode_t txSigningMode,
                                                           const ext_credential_t* coldCredential,
                                                           const ext_credential_t* hotCredential) {
-    LEDGER_ASSERT(
-        txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER &&
-            txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR,
-        "Committee auth certificate in pool registration mode");
+    DENY_IF(txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER ||
+            txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR);
     DENY_IF(_forbiddenCredential(txSigningMode, coldCredential));
 
     switch (coldCredential->type) {
@@ -1027,10 +984,8 @@ security_policy_t policyForSignTxCertificateCommitteeAuth(sign_tx_signingmode_t 
 security_policy_t policyForSignTxCertificateCommitteeResign(
     sign_tx_signingmode_t txSigningMode,
     const ext_credential_t* coldCredential) {
-    LEDGER_ASSERT(
-        txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER &&
-            txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR,
-        "Committee resign certificate in pool registration mode");
+    DENY_IF(txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER ||
+            txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR);
     DENY_IF(_forbiddenCredential(txSigningMode, coldCredential));
 
     switch (coldCredential->type) {
@@ -1053,10 +1008,8 @@ security_policy_t policyForSignTxCertificateCommitteeResign(
 
 security_policy_t policyForSignTxCertificateDRep(sign_tx_signingmode_t txSigningMode,
                                                  const ext_credential_t* dRepCredential) {
-    LEDGER_ASSERT(
-        txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER &&
-            txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR,
-        "DRep certificate in pool registration mode");
+    DENY_IF(txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER ||
+            txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR);
     DENY_IF(_forbiddenCredential(txSigningMode, dRepCredential));
 
     switch (dRepCredential->type) {
@@ -1081,22 +1034,24 @@ security_policy_t policyForSignTxCertificateStakePoolRetirement(
     sign_tx_signingmode_t txSigningMode,
     const ext_credential_t* poolCredential,
     uint64_t epoch MARK_UNUSED) {
-    LEDGER_ASSERT(
-        txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER &&
-            txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR,
-        "Pool retirement certificate in pool registration mode");
     switch (txSigningMode) {
         case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
-            // pool retirement may only be present in ORDINARY_TX signing mode
-            // the path hash should be a valid pool cold key path
+        case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
+            // TODO: Investigate signing-mode restrictions for pool retirement and
+            // document them in doc/spec_pool_registration.md.
             DENY_UNLESS(poolCredential->type == EXT_CREDENTIAL_KEY_PATH);
+            // the path hash should be a valid pool cold key path
             DENY_UNLESS(bip44_isPoolColdKeyPath(&poolCredential->keyPath));
             SHOW();
             break;
 
+        case SIGN_TX_SIGNINGMODE_MULTISIG_TX:
+        case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
+        case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
+            DENY();
+            break;
+
         default:
-            // in other signing modes, the tx containing pool retirement certificate
-            // should have already been reported as invalid
             ASSERT(false);
     }
 

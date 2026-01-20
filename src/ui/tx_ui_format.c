@@ -360,12 +360,8 @@ static bool should_show_pool_registration(
     pool_owner_counts_t *pool_owner_counts) {
     LEDGER_ASSERT(certificate != NULL, "NULL certificate data");
     LEDGER_ASSERT(pool_owner_counts != NULL, "NULL pool owner counts");
-
-    security_policy_t generic_policy = policyForSignTxCertificate(
-        txSigningMode,
-        certificate->type
-    );
-    LEDGER_ASSERT(generic_policy != POLICY_DENY, "Certificate denied during UI");
+    LEDGER_ASSERT(certificate->type == CERTIFICATE_STAKE_POOL_REGISTRATION,
+                  "Expected stake pool registration certificate");
 
     *pool_owner_counts = count_pool_owner_nodes(
         certificate->poolRegistration.poolOwners
@@ -662,12 +658,6 @@ static bool should_show_certificate(
     const certificate_data_t *certificate,
     sign_tx_signingmode_t txSigningMode) {
     LEDGER_ASSERT(certificate != NULL, "NULL certificate data");
-
-    security_policy_t generic_policy = policyForSignTxCertificate(
-        txSigningMode,
-        certificate_type
-    );
-    LEDGER_ASSERT(generic_policy != POLICY_DENY, "Certificate denied during UI");
 
     security_policy_t policy = POLICY_DENY;
     switch (certificate_type) {

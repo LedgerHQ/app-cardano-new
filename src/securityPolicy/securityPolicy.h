@@ -102,8 +102,6 @@ security_policy_t policyForSignTxCollateralOutputTokens(security_policy_t output
                                                         const tx_output_description_t* output);
 
 security_policy_t policyForSignTxTtl(uint32_t ttl);
-security_policy_t policyForSignTxCertificate(sign_tx_signingmode_t txSigningMode,
-                                             const certificate_type_t certificateType);
 security_policy_t policyForSignTxCertificateStaking(sign_tx_signingmode_t txSigningMode,
                                                     const certificate_type_t certificateType,
                                                     const ext_credential_t* stakeCredential);

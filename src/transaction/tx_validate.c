@@ -408,21 +408,6 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
         tx_certificate_node_t *certificate_node = (tx_certificate_node_t *) node;
         const certificate_data_t *certificate = &certificate_node->certificate;
 
-        security_policy_t generic_policy = policyForSignTxCertificate(
-            G_context.tx_info.transaction.txSigningMode,
-            certificate->type
-        );
-        switch (generic_policy) {
-            case POLICY_DENY:
-                return SWO_SECURITY_CONDITION_NOT_SATISFIED;
-            case POLICY_SHOW:
-            case POLICY_HIDE:
-                break;
-            default:
-                LEDGER_ASSERT(false, "Unknown certificate policy");
-                break;
-        }
-
         security_policy_t cert_policy = POLICY_HIDE;
         switch (certificate->type) {
             case CERTIFICATE_STAKE_REGISTRATION:
