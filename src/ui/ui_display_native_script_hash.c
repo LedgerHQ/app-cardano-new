@@ -39,31 +39,29 @@
 #include "bech32.h"
 #include "textUtils.h"
 #include "ui_display_native_script_hash.h"
+#include "ui_utils.h"
+#include "mem.h"
 
-void buildPositionDescription(const derive_native_script_hash_ctx_t *ctx,
-                              char *out,
-                              size_t out_len) {
+void build_position_description(const derive_native_script_hash_ctx_t *ctx,
+                                uint8_t level,
+                                char *out,
+                                size_t out_len) {
     explicit_bzero(out, out_len);
-
     char *ptr = out;
     char *end = out + out_len;
 
-    // Prefix
-    snprintf(ptr, end - ptr, "Position: ");
+    // Position prefix
+    snprintf(ptr, end - ptr, "");
     ptr += strlen(ptr);
 
-    // Levels
-    for (size_t i = 1; i <= ctx->level; i++) {
-        LEDGER_ASSERT(i < MAX_SCRIPT_DEPTH, "Excedeed max script depth");
+    LEDGER_ASSERT(level >= 1, "Invalid level %d", level);
+    LEDGER_ASSERT(level < MAX_SCRIPT_DEPTH, "Excedeed max script depth");
 
+    // Levels
+    for (size_t i = 1; i <= level; i++) {
         uint32_t position =
             ctx->complexScripts[i].totalScripts - ctx->complexScripts[i].remainingScripts + 1;
-
-        // STATIC_ASSERT(sizeof(position) <= sizeof(unsigned), "oversized type for %u");
-        // STATIC_ASSERT(!IS_SIGNED(position), "signed type for %u");
-
         snprintf(ptr, end - ptr, "%u.", position);
-
         LEDGER_ASSERT(strlen(out) + 1 < out_len, "Excedeed output size");
         ptr += strlen(ptr);
     }
@@ -71,10 +69,55 @@ void buildPositionDescription(const derive_native_script_hash_ctx_t *ctx,
     // Remove trailing '.'
     LEDGER_ASSERT(ptr > out, "Excedeed output size");
     *(ptr - 1) = '\0';
-
     LEDGER_ASSERT(strlen(out) + 1 < out_len, "Excedeed output size");
-
     return;
+}
+
+bool is_required_position(const derive_native_script_hash_ctx_t *ctx) {
+    if (ctx->level == 0) {
+        return false;  // No position at root level for simple scripts
+    }
+    if (ctx->level == 1 &&
+        (ctx->ui_scriptType == UI_SCRIPT_ALL || ctx->ui_scriptType == UI_SCRIPT_N_OF_K ||
+         ctx->ui_scriptType == UI_SCRIPT_ANY)) {
+        return false;  // No position at root level for complex scripts
+    }
+    return true;
+}
+
+bool format_position(derive_native_script_hash_ctx_t *ctx,
+                     char *position_description,
+                     size_t position_descriptionLen) {
+    uint8_t level = ctx->level;
+
+    // Complex scripts show position of parent level
+    if (ctx->ui_scriptType == UI_SCRIPT_ALL || ctx->ui_scriptType == UI_SCRIPT_N_OF_K ||
+        ctx->ui_scriptType == UI_SCRIPT_ANY) {
+        if (ctx->level <= 1) {
+            return false;  // No position to show at root level
+        }
+        level = ctx->level - 1;
+    }
+
+    build_position_description(ctx, level, position_description, position_descriptionLen);
+    TRACE("Position: %s", position_description);
+    return true;
+}
+
+bool format_remaining(uint8_t remaining_scripts, char *out, size_t out_size) {
+    LEDGER_ASSERT(out != NULL, "NULL output buffer");
+    int chars_written = snprintf(out, out_size, "%u nested scripts", remaining_scripts);
+    return (chars_written > 0 && chars_written < out_size);
+}
+
+bool format_required_signatures(uint8_t requiredScripts,
+                                uint8_t remainingScripts,
+                                char *out,
+                                size_t out_size) {
+    LEDGER_ASSERT(out != NULL, "NULL output buffer");
+    int chars_written =
+        snprintf(out, out_size, "%u out of %u signatures", requiredScripts, remainingScripts);
+    return (chars_written > 0 && chars_written < out_size);
 }
 
 static void derive_native_script_hash_buffer_cleanup(void) {
@@ -152,15 +195,73 @@ static void derive_native_script_hash_review_ask_confirmation(bool confirm) {
     }
 }
 
+#define MAX_POSITION_DESCRIPTION_LENGTH       100
+#define MAX_NESTED_SCRIPTS_DESCRIPTION_LENGTH 87
+#define MAX_SIGNATURES_DESCRIPTION_LENGTH     87
+#define MAX_TIMELOCK_DESCRIPTION_LENGTH       40
+
+void display_complex_script_content(ui_native_script_type scriptType) {
+    TRACE("display_complex_script_content");
+
+    LEDGER_ASSERT(scriptType == UI_SCRIPT_ALL || scriptType == UI_SCRIPT_ANY ||
+                      scriptType == UI_SCRIPT_N_OF_K,
+                  "Invalid script type for complex script display");
+
+    const char *script_label = NULL;
+    int ui_pairs_count = 0;
+    switch (scriptType) {
+        case UI_SCRIPT_ALL:
+            script_label = "ALL";
+            ui_pairs_count = 2;
+            break;
+        case UI_SCRIPT_ANY:
+            script_label = "ANY";
+            ui_pairs_count = 2;
+            break;
+        case UI_SCRIPT_N_OF_K:
+            script_label = "N out K";
+            ui_pairs_count = 3;
+            break;
+        default:
+            break;
+    }
+
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+    bool required_position = is_required_position(ctx);
+    if (required_position) {
+        ui_pairs_count++;
+    }
+    if (!ui_pairs_init(ui_pairs_count)) {
+        TRACE("Failed to initialize pairs");
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return;
+    }
+    if (required_position) {
+        UI_ADD_FORMAT1(UI_STATIC_LABEL("Position"),
+                       MAX_POSITION_DESCRIPTION_LENGTH,
+                       format_position,
+                       ctx);
+    }
+    UI_ADD_STATIC(UI_STATIC_LABEL("Script type"), script_label);
+    if (scriptType == UI_SCRIPT_N_OF_K) {
+        UI_ADD_FORMAT2(UI_STATIC_LABEL("Requirement"),
+                       MAX_NESTED_SCRIPTS_DESCRIPTION_LENGTH,
+                       format_required_signatures,
+                       ctx->scriptContent.requiredScripts,
+                       ctx->complexScripts[ctx->level].remainingScripts);
+    }
+    UI_ADD_FORMAT1(UI_STATIC_LABEL("Content"),
+                   MAX_NESTED_SCRIPTS_DESCRIPTION_LENGTH,
+                   format_remaining,
+                   ctx->complexScripts[ctx->level].remainingScripts);
+
+    nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_review_continue);
+}
+
 void ui_display_native_script_hash(security_policy_t securityPolicy) {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
 
-    char positionDescription[100] = {0};
-    buildPositionDescription(ctx, positionDescription, SIZEOF(positionDescription));
-    TRACE("positionDescription: \"%s\"", positionDescription);
-    TRACE("=== ui_display_native_script_hash ===");
     TRACE("securityPolicy: %d", securityPolicy);
-
     if (securityPolicy == POLICY_DENY) {
         TRACE("Security condition not satisfied");
         send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
@@ -174,168 +275,138 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
             nbgl_useCaseReviewStreamingStart(TYPE_OPERATION,
                                              &ICON_APP_CARDANO,
                                              "Review Script",
-                                             "Swipe to review",
+                                             NULL,
                                              derive_native_script_hash_review_continue);
             break;
         }
         case UI_SCRIPT_ALL: {
-            char text[87] = {0};
-            explicit_bzero(text, SIZEOF(text));
-            snprintf(text,
-                     SIZEOF(text),
-                     "%u nested scripts",
-                     ctx->complexScripts[ctx->level].remainingScripts);
-            if (!ui_pairs_init(2)) {
-                TRACE("Failed to initialize pairs");
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-                return;
-            }
-            g_pairs[0].item = "Script type";
-            g_pairs[0].value = "ALL";
-            g_pairs[1].item = "Content";
-            g_pairs[1].value = text;
-
-            nbgl_useCaseReviewStreamingContinue(g_pairsList,
-                                                derive_native_script_hash_review_continue);
-
+            TRACE("UI_SCRIPT_ALL");
+            display_complex_script_content(UI_SCRIPT_ALL);
             break;
         }
         case UI_SCRIPT_N_OF_K: {
-            char text[87] = {0};
-            explicit_bzero(text, SIZEOF(text));
-            snprintf(text,
-                     SIZEOF(text),
-                     "%u out of %u signatures",
-                     ctx->scriptContent.requiredScripts,
-                     ctx->complexScripts[ctx->level].remainingScripts);
-
-            char text2[87] = {0};
-            explicit_bzero(text2, SIZEOF(text2));
-            snprintf(text2,
-                     SIZEOF(text2),
-                     "%u nested scripts",
-                     ctx->complexScripts[ctx->level].remainingScripts);
-
-            if (!ui_pairs_init(3)) {
-                TRACE("Failed to initialize pairs");
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-                return;
-            }
-            g_pairs[0].item = "Script type";
-            g_pairs[0].value = "N out K";
-            g_pairs[1].item = "Requirement";
-            g_pairs[1].value = text;
-            g_pairs[2].item = "Script contents";
-            g_pairs[2].value = text2;
-
-            nbgl_useCaseReviewStreamingContinue(g_pairsList,
-                                                derive_native_script_hash_review_continue);
+            TRACE("UI_SCRIPT_N_OF_K");
+            display_complex_script_content(UI_SCRIPT_N_OF_K);
             break;
         }
         case UI_SCRIPT_ANY: {
-            char text[87] = {0};
-            explicit_bzero(text, SIZEOF(text));
-            snprintf(text,
-                     SIZEOF(text),
-                     "%u nested scripts",
-                     ctx->complexScripts[ctx->level].remainingScripts);
-            if (!ui_pairs_init(2)) {
-                TRACE("Failed to initialize pairs");
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-                return;
-            }
-            g_pairs[0].item = "Script type";
-            g_pairs[0].value = "ANY";
-            g_pairs[1].item = "Content";
-            g_pairs[1].value = text;
-
-            nbgl_useCaseReviewStreamingContinue(g_pairsList,
-                                                derive_native_script_hash_review_continue);
+            TRACE("UI_SCRIPT_ANY");
+            display_complex_script_content(UI_SCRIPT_ANY);
             break;
         }
         case UI_SCRIPT_PUBKEY_PATH: {
-            static char *pathStr = NULL;
-            const size_t pathStrSize = MAX_BIP44_PATH_STRING_LENGTH + 1;
-            pathStr = (char *) ui_mem_alloc(pathStrSize);
-            if (pathStr == NULL) {
-                TRACE("Failed to allocate pathStr");
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-                return;
+            TRACE("UI_SCRIPT_PUBKEY_PATH");
+            int ui_pairs_count = 2;
+            bool required_position = is_required_position(ctx);
+            if (required_position) {
+                ui_pairs_count++;
             }
-            explicit_bzero(pathStr, pathStrSize);
-            bool poolPathFormatted =
-                format_bip44_path(&ctx->scriptContent.pubkeyPath, pathStr, pathStrSize);
-            ASSERT(poolPathFormatted);
-            ASSERT(strlen(pathStr) + 1 < pathStrSize);
-
-            if (!ui_pairs_init(2)) {
+            if (!ui_pairs_init(ui_pairs_count)) {
                 TRACE("Failed to initialize pairs");
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
-            g_pairs[0].item = "Script type";
-            g_pairs[0].value = "Pubkey path";
-            g_pairs[1].item = "Pubkey path";
-            g_pairs[1].value = pathStr;
+            if (required_position) {
+                UI_ADD_FORMAT1(UI_STATIC_LABEL("Position"),
+                               MAX_POSITION_DESCRIPTION_LENGTH,
+                               format_position,
+                               ctx);
+            }
+            UI_ADD_STATIC(UI_STATIC_LABEL("Script type"), UI_STATIC_LABEL("Pubkey path"));
+            UI_ADD_FORMAT1(UI_STATIC_LABEL("Pubkey path"),
+                           MAX_BIP44_PATH_STRING_LENGTH,
+                           format_bip44_path,
+                           &ctx->scriptContent.pubkeyPath);
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList,
                                                 derive_native_script_hash_review_continue);
             break;
         }
         case UI_SCRIPT_PUBKEY_HASH: {
-            static char encodedStr[MAX_BECH32_STRING_LENGTH] = {0};
-            explicit_bzero(encodedStr, SIZEOF(encodedStr));
-            format_bech32("addr_shared_vkh",
-                          ctx->scriptContent.pubkeyHash,
-                          ADDRESS_KEY_HASH_LENGTH,
-                          encodedStr,
-                          SIZEOF(encodedStr));
-
-            if (!ui_pairs_init(2)) {
+            TRACE("UI_SCRIPT_PUBKEY_HASH");
+            derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+            int ui_pairs_count = 2;
+            bool required_position = is_required_position(ctx);
+            if (required_position) {
+                ui_pairs_count++;
+            }
+            if (!ui_pairs_init(ui_pairs_count)) {
                 TRACE("Failed to initialize pairs");
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
-            g_pairs[0].item = "Script type";
-            g_pairs[0].value = "Pubkey hash";
-            g_pairs[1].item = "Pubkey hash";
-            g_pairs[1].value = encodedStr;
+            if (required_position) {
+                UI_ADD_FORMAT1(UI_STATIC_LABEL("Position"),
+                               MAX_POSITION_DESCRIPTION_LENGTH,
+                               format_position,
+                               ctx);
+            }
+            UI_ADD_STATIC(UI_STATIC_LABEL("Script type"), UI_STATIC_LABEL("Pubkey hash"));
+            UI_ADD_FORMAT3(UI_STATIC_LABEL("Pubkey hash"),
+                           MAX_BECH32_STRING_LENGTH,
+                           format_bech32,
+                           "addr_shared_vkh",
+                           ctx->scriptContent.pubkeyHash,
+                           ADDRESS_KEY_HASH_LENGTH);
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList,
                                                 derive_native_script_hash_review_continue);
             break;
         }
         case UI_SCRIPT_INVALID_BEFORE: {
-            char tmp[100] = {0};
-            format_decimal_amount(ctx->scriptContent.timelock, 0, tmp, sizeof(tmp));
-
-            if (!ui_pairs_init(2)) {
+            TRACE("UI_SCRIPT_INVALID_BEFORE");
+            int ui_pairs_count = 2;
+            bool required_position = is_required_position(ctx);
+            if (required_position) {
+                ui_pairs_count++;
+            }
+            if (!ui_pairs_init(ui_pairs_count)) {
                 TRACE("Failed to initialize pairs");
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
-            g_pairs[0].item = "Script type";
-            g_pairs[0].value = "Invalid before";
-            g_pairs[1].item = "Invalid before";
-            g_pairs[1].value = tmp;
+            if (required_position) {
+                UI_ADD_FORMAT1(UI_STATIC_LABEL("Position"),
+                               MAX_POSITION_DESCRIPTION_LENGTH,
+                               format_position,
+                               ctx);
+            }
+            UI_ADD_STATIC(UI_STATIC_LABEL("Script type"), UI_STATIC_LABEL("Invalid before"));
+            UI_ADD_FORMAT2(UI_STATIC_LABEL("Invalid before"),
+                           MAX_TIMELOCK_DESCRIPTION_LENGTH,
+                           format_decimal_amount,
+                           ctx->scriptContent.timelock,
+                           0);
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList,
                                                 derive_native_script_hash_review_continue);
             break;
         }
         case UI_SCRIPT_INVALID_HEREAFTER: {
-            char tmp[100] = {0};
-            format_decimal_amount(ctx->scriptContent.timelock, 0, tmp, sizeof(tmp));
-
-            if (!ui_pairs_init(2)) {
+            TRACE("UI_SCRIPT_INVALID_HEREAFTER");
+            int ui_pairs_count = 2;
+            bool required_position = is_required_position(ctx);
+            if (required_position) {
+                ui_pairs_count++;
+            }
+            if (!ui_pairs_init(ui_pairs_count)) {
                 TRACE("Failed to initialize pairs");
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
-            g_pairs[0].item = "Script type";
-            g_pairs[0].value = "Invalid hereafter";
-            g_pairs[1].item = "Invalid hereafter";
-            g_pairs[1].value = tmp;
+            if (required_position) {
+                UI_ADD_FORMAT1(UI_STATIC_LABEL("Position"),
+                               MAX_POSITION_DESCRIPTION_LENGTH,
+                               format_position,
+                               ctx);
+            }
+            UI_ADD_STATIC(UI_STATIC_LABEL("Script type"), UI_STATIC_LABEL("Invalid hereafter"));
+            UI_ADD_FORMAT2(UI_STATIC_LABEL("Invalid hereafter"),
+                           MAX_TIMELOCK_DESCRIPTION_LENGTH,
+                           format_decimal_amount,
+                           ctx->scriptContent.timelock,
+                           0);
+
             nbgl_useCaseReviewStreamingContinue(g_pairsList,
                                                 derive_native_script_hash_review_continue);
             break;

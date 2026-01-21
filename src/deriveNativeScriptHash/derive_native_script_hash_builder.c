@@ -198,7 +198,7 @@ void nativeScriptHashBuilder_finalize(native_script_hash_builder_t* builder,
                                       size_t outSize) {
     _TRACE("state = %d", builder->state);
 
-    //ASSERT(builder->state == NATIVE_SCRIPT_HASH_BUILDER_FINISHED);
+    ASSERT(builder->state == NATIVE_SCRIPT_HASH_BUILDER_FINISHED);
 
     ASSERT(outSize == SCRIPT_HASH_LENGTH);
 

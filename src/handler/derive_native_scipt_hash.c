@@ -245,7 +245,6 @@ static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
     }
     ctx->complexScripts[ctx->level].totalScripts = ctx->complexScripts[ctx->level].remainingScripts;
 
-
     switch (nativeScriptType) {
         case NATIVE_SCRIPT_ALL:
             deriveNativeScriptHash_handleAll();
@@ -265,7 +264,6 @@ static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
             return;
     }
 
-    
     if (isComplexScriptFinished()) {
         complexScriptFinished();
     }
