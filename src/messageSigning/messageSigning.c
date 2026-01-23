@@ -10,6 +10,7 @@ int signRawMessageWithPath(const bip44_path_t* path,
                             size_t messageSize,
                             uint8_t* outBuffer,
                             size_t outSize) {
+    cx_err_t error = CX_OK;
     size_t sigLen = outSize;
 
     ASSERT(messageSize < BUFFER_SIZE_PARANOIA);
@@ -22,27 +23,25 @@ int signRawMessageWithPath(const bip44_path_t* path,
     ASSERT(policyForDerivePrivateKey(path) != POLICY_DENY);
 
 #if !defined(FUZZING) || defined(TEST)
-    {
-        TRACE("signing with path:");
-        BIP44_PRINTF(path);
-        TRACE("");
+    TRACE("signing with path:");
+    BIP44_PRINTF(path);
+    TRACE("");
 
-        cx_err_t error = crypto_eddsa_sign(path->path,
-                                           path->length,
-                                           messageBuffer,
-                                           messageSize,
-                                           outBuffer,
-                                           &sigLen);
-        if (error != CX_OK) {
-            TRACE("error: %d", error);
-            ASSERT(false);
-            return error;
-        }
-    }
+    CX_CHECK(crypto_eddsa_sign(path->path,
+                               path->length,
+                               messageBuffer,
+                               messageSize,
+                               outBuffer,
+                               &sigLen));
 #endif
 
     ASSERT(sigLen == ED25519_SIGNATURE_LENGTH);
-    return CX_OK;
+
+end:
+    if (error != CX_OK) {
+        TRACE("error: %d", error);
+    }
+    return error;
 }
 
 // sign the given hash by the private key derived according to the given path

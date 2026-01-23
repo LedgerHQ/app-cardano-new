@@ -86,7 +86,7 @@ void handler_get_public_key(buffer_t *cdata) {
             send_swo_and_reset(error);
             return;
         }
-    }
+    }  // Note: CX_CHECK not applicable here since we need custom error handling
 
     ui_display_pubkey(policy, warnings);
 }
