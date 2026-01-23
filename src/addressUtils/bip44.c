@@ -1,6 +1,4 @@
 #include "bip44.h"
-#include "hash.h"
-#include "keyDerivation.h"
 #include "utils.h"
 #include "cardano_swo.h"
 #include "read.h"
@@ -594,23 +592,6 @@ bool bip44_isPathReasonable(const bip44_path_t* pathSpec) {
     return false;
 }
 
-void bip44_pathToKeyHash(const bip44_path_t* pathSpec, uint8_t* hash, size_t hashSize) {
-    ASSERT(hashSize < BUFFER_SIZE_PARANOIA);
-
-    extendedPublicKey_t extPubKey;
-    deriveExtendedPublicKey(pathSpec, &extPubKey);
-
-    switch (hashSize) {
-        case 28:
-            ASSERT(hashSize * 8 == 224);
-
-            blake2b_224_hash(extPubKey.pubKey, SIZEOF(extPubKey.pubKey), hash, hashSize);
-            return;
-
-        default:
-            ASSERT(false);
-    }
-}
 
 bool bip44_pathsEqual(const bip44_path_t* lhs, const bip44_path_t* rhs) {
     if (lhs->length != rhs->length) {

@@ -1,5 +1,4 @@
 #include "buffer_utils.h"
-#include "hash.h"
 #include "keyDerivation.h"
 #include "addressUtilsByron.h"
 #include "addressUtilsShelley.h"
@@ -149,12 +148,12 @@ staking_data_source_t determineStakingChoice(address_type_t addressType) {
     }
 }
 
-__noinline_due_to_stack__ static bool buffer_appendAddressPublicKeyHash(
+__noinline_due_to_stack__ static bool buffer_appendPublicKeyHash(
     write_buffer_t* buf,
     const bip44_path_t* keyDerivationPath) {
 
     uint8_t hashedPubKey[ADDRESS_KEY_HASH_LENGTH] = {0};
-    bip44_pathToKeyHash(keyDerivationPath, hashedPubKey, SIZEOF(hashedPubKey));
+    keyPathToKeyHash(keyDerivationPath, hashedPubKey, SIZEOF(hashedPubKey));
 
     return buffer_write_bytes(buf, hashedPubKey, SIZEOF(hashedPubKey));
 }
@@ -188,7 +187,7 @@ static size_t deriveAddress_base(const addressParams_t* addressParams,
     switch (addressParams->type) {
         case BASE_PAYMENT_KEY_STAKE_KEY:
         case BASE_PAYMENT_KEY_STAKE_SCRIPT: {
-            ASSERT(buffer_appendAddressPublicKeyHash(&out, &addressParams->paymentKeyPath));
+            ASSERT(buffer_appendPublicKeyHash(&out, &addressParams->paymentKeyPath));
         } break;
         case BASE_PAYMENT_SCRIPT_STAKE_KEY:
         case BASE_PAYMENT_SCRIPT_STAKE_SCRIPT: {
@@ -204,7 +203,7 @@ static size_t deriveAddress_base(const addressParams_t* addressParams,
                   "bad stake script hash size");
     switch (addressParams->stakingDataSource) {
         case STAKING_KEY_PATH: {
-            ASSERT(buffer_appendAddressPublicKeyHash(&out, &addressParams->stakingKeyPath));
+            ASSERT(buffer_appendPublicKeyHash(&out, &addressParams->stakingKeyPath));
         } break;
 
         case STAKING_KEY_HASH: {
@@ -268,7 +267,7 @@ static size_t deriveAddress_pointer(const addressParams_t* addressParams,
     }
 
     if (addressType == POINTER_KEY) {
-        ASSERT(buffer_appendAddressPublicKeyHash(&out, &addressParams->paymentKeyPath));
+        ASSERT(buffer_appendPublicKeyHash(&out, &addressParams->paymentKeyPath));
     } else {
         ASSERT(buffer_write_bytes(&out, addressParams->paymentScriptHash, SCRIPT_HASH_LENGTH));
     }
@@ -304,7 +303,7 @@ static size_t deriveAddress_enterprise(const addressParams_t* addressParams,
     }
 
     if (addressType == ENTERPRISE_KEY) {
-        ASSERT(buffer_appendAddressPublicKeyHash(&out, &addressParams->paymentKeyPath));
+        ASSERT(buffer_appendPublicKeyHash(&out, &addressParams->paymentKeyPath));
     } else {
         ASSERT(buffer_write_bytes(&out, addressParams->paymentScriptHash, SCRIPT_HASH_LENGTH));
     }
@@ -341,7 +340,7 @@ static size_t deriveAddress_reward(const addressParams_t* addressParams,
         BIP44_PRINTF(stakingKeyPath);
         TRACE("");
         ASSERT(bip44_isOrdinaryStakingKeyPath(stakingKeyPath));
-        ASSERT(buffer_appendAddressPublicKeyHash(&out, stakingKeyPath));
+        ASSERT(buffer_appendPublicKeyHash(&out, stakingKeyPath));
     } else {
         ASSERT(buffer_write_bytes(&out, addressParams->stakingScriptHash, SCRIPT_HASH_LENGTH));
     }

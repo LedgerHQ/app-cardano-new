@@ -25,6 +25,7 @@
 #include "bip44.h"
 #include "bech32.h"
 #include "format.h"
+#include "keyDerivation.h"
 
 #include "ui_constants.h"
 #include "ui_icons.h"
@@ -75,7 +76,7 @@ static ui_status_t format_opcert_fields(const parsed_opcert_t* opcert) {
 
     // Pool ID requires computing key hash from path
     uint8_t poolKeyHash[POOL_KEY_HASH_LENGTH] = {0};
-    bip44_pathToKeyHash(&opcert->poolColdKeyPath, poolKeyHash, SIZEOF(poolKeyHash));
+    keyPathToKeyHash(&opcert->poolColdKeyPath, poolKeyHash, SIZEOF(poolKeyHash));
     UI_ADD_FORMAT3(UI_STATIC_LABEL("Pool ID"),
                    MAX_BECH32_STRING_LENGTH,
                    format_bech32,

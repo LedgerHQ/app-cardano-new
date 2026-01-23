@@ -71,6 +71,7 @@
 #include "tx_ui_plan.h"
 #include "addressUtilsShelley.h"
 #include "bip44.h"
+#include "keyDerivation.h"
 #include "mem.h"
 #include "securityPolicy.h"
 #include "securityWarnings.h"
@@ -406,7 +407,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
 
         switch (pool_id->keyReferenceType) {
             case KEY_REFERENCE_PATH:
-                bip44_pathToKeyHash(&pool_id->path, pool_key_hash, sizeof(pool_key_hash));
+                keyPathToKeyHash(&pool_id->path, pool_key_hash, sizeof(pool_key_hash));
                 break;
             case KEY_REFERENCE_HASH:
                 LEDGER_ASSERT(pool_id->hash != NULL, "NULL pool ID hash");

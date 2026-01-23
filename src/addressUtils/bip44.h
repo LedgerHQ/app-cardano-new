@@ -137,10 +137,6 @@ bip44_path_type_t bip44_classifyPath(const bip44_path_t* pathSpec);
 
 bool bip44_isPathReasonable(const bip44_path_t* pathSpec);
 
-void bip44_pathToKeyHash(const bip44_path_t* pathSpec,
-                                                   uint8_t* hash,
-                                                   size_t hashSize);
-
 bool bip44_pathsEqual(const bip44_path_t* lhs, const bip44_path_t* rhs);
 
 #ifdef HAVE_PRINTF

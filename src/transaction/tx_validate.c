@@ -12,6 +12,7 @@
 #include "globals.h"
 #include "bip44.h"
 #include "addressUtilsShelley.h"
+#include "keyDerivation.h"
 #include "tx_output_types.h"
 #include "tx_aux_data_types.h"
 #include "tx_hash_builder.h"
@@ -40,7 +41,7 @@ static credential_t _credentialForTxHash(const ext_credential_t* credential) {
     switch (credential->type) {
         case EXT_CREDENTIAL_KEY_PATH:
             result.type = CREDENTIAL_KEY_HASH;
-            bip44_pathToKeyHash(&credential->keyPath, result.keyHash, SIZEOF(result.keyHash));
+            keyPathToKeyHash(&credential->keyPath, result.keyHash, SIZEOF(result.keyHash));
             break;
         case EXT_CREDENTIAL_KEY_HASH:
             LEDGER_ASSERT(credential->keyHash != NULL, "NULL credential key hash pointer");
@@ -73,7 +74,7 @@ static drep_t _drepForTxHash(const ext_drep_t* ext_drep) {
     switch (ext_drep->type) {
         case EXT_DREP_KEY_PATH:
             result.type = DREP_KEY_HASH;
-            bip44_pathToKeyHash(&ext_drep->keyPath, result.keyHash, SIZEOF(result.keyHash));
+            keyPathToKeyHash(&ext_drep->keyPath, result.keyHash, SIZEOF(result.keyHash));
             break;
         case EXT_DREP_KEY_HASH:
             LEDGER_ASSERT(ext_drep->keyHash != NULL, "NULL drep key hash pointer");
@@ -107,15 +108,15 @@ static voter_t _voterForTxHash(const ext_voter_t* ext_voter) {
     switch (ext_voter->type) {
         case EXT_VOTER_COMMITTEE_HOT_KEY_PATH:
             voter.type = VOTER_COMMITTEE_HOT_KEY_HASH;
-            bip44_pathToKeyHash(&ext_voter->keyPath, voter.keyHash, SIZEOF(voter.keyHash));
+            keyPathToKeyHash(&ext_voter->keyPath, voter.keyHash, SIZEOF(voter.keyHash));
             break;
         case EXT_VOTER_DREP_KEY_PATH:
             voter.type = VOTER_DREP_KEY_HASH;
-            bip44_pathToKeyHash(&ext_voter->keyPath, voter.keyHash, SIZEOF(voter.keyHash));
+            keyPathToKeyHash(&ext_voter->keyPath, voter.keyHash, SIZEOF(voter.keyHash));
             break;
         case EXT_VOTER_STAKE_POOL_KEY_PATH:
             voter.type = VOTER_STAKE_POOL_KEY_HASH;
-            bip44_pathToKeyHash(&ext_voter->keyPath, voter.keyHash, SIZEOF(voter.keyHash));
+            keyPathToKeyHash(&ext_voter->keyPath, voter.keyHash, SIZEOF(voter.keyHash));
             break;
         case EXT_VOTER_COMMITTEE_HOT_KEY_HASH:
             LEDGER_ASSERT(ext_voter->keyHash != NULL, "NULL committee hot key hash voter");
@@ -932,7 +933,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 switch (poolCred->type) {
                     case EXT_CREDENTIAL_KEY_PATH:
                         TRACE("Pool retirement key path length = %u", poolCred->keyPath.length);
-                        bip44_pathToKeyHash(&poolCred->keyPath, poolKeyHash, sizeof(poolKeyHash));
+                        keyPathToKeyHash(&poolCred->keyPath, poolKeyHash, sizeof(poolKeyHash));
                         break;
                     case EXT_CREDENTIAL_KEY_HASH:
                         LEDGER_ASSERT(poolCred->keyHash != NULL, "NULL pool credential hash");
@@ -965,7 +966,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
 
                 uint8_t poolKeyHash[POOL_KEY_HASH_LENGTH];
                 if (certificate->poolId.keyReferenceType == KEY_REFERENCE_PATH) {
-                    bip44_pathToKeyHash(&certificate->poolId.path, poolKeyHash, sizeof(poolKeyHash));
+                    keyPathToKeyHash(&certificate->poolId.path, poolKeyHash, sizeof(poolKeyHash));
                 } else {
                     LEDGER_ASSERT(certificate->poolId.hash != NULL, "NULL pool ID hash");
                     memcpy(poolKeyHash, certificate->poolId.hash, POOL_KEY_HASH_LENGTH);
@@ -1439,7 +1440,7 @@ static int validate_and_hash_required_signers(tx_hash_builder_t* txHashBuilder, 
 
         uint8_t keyHash[ADDRESS_KEY_HASH_LENGTH];
         if (required_signer->type == REQUIRED_SIGNER_WITH_PATH) {
-            bip44_pathToKeyHash(&required_signer->keyPath, keyHash, sizeof(keyHash));
+            keyPathToKeyHash(&required_signer->keyPath, keyHash, sizeof(keyHash));
         } else {
             ASSERT(required_signer->type == REQUIRED_SIGNER_WITH_HASH);
             LEDGER_ASSERT(required_signer->keyHash != NULL, "NULL required signer key hash");

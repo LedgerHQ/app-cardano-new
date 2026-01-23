@@ -19,3 +19,5 @@ typedef struct {
 } extendedPublicKey_t;
 
 cx_err_t deriveExtendedPublicKey(const bip44_path_t* pathSpec, extendedPublicKey_t* out);
+
+void keyPathToKeyHash(const bip44_path_t* pathSpec, uint8_t* hash, size_t hashSize);

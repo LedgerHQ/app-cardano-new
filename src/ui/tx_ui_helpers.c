@@ -27,6 +27,7 @@
 #include "addressUtilsShelley.h"
 #include "bip44.h"
 #include "bech32.h"
+#include "keyDerivation.h"
 #include "securityPolicy.h"
 #include "securityWarnings.h"
 #include "tx_utils.h"
@@ -238,7 +239,7 @@ static void addPoolRetirementUIPairs(const certificate_data_t* certificate_data)
 
     switch (pool_credential->type) {
         case EXT_CREDENTIAL_KEY_PATH:
-            bip44_pathToKeyHash(&pool_credential->keyPath, pool_key_hash, sizeof(pool_key_hash));
+            keyPathToKeyHash(&pool_credential->keyPath, pool_key_hash, sizeof(pool_key_hash));
             break;
         case EXT_CREDENTIAL_KEY_HASH: {
             STATIC_ASSERT(ADDRESS_KEY_HASH_LENGTH == POOL_KEY_HASH_LENGTH,

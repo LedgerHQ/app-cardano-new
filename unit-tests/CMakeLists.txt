@@ -233,10 +233,8 @@ add_library(bech32_lib SHARED ../src/addressUtils/bech32.c)
 target_link_libraries(bech32_lib PUBLIC c)
 add_library(text_utils SHARED ../src/utils/textUtils.c ../src/utils/ipUtils.c)
 target_link_libraries(text_utils PUBLIC c format)
-add_library(bip44_lib SHARED libs/format_bip44_path.c)  # Standalone version without crypto dependencies
-target_link_libraries(bip44_lib PUBLIC c)
 add_library(bip44_real SHARED ../src/addressUtils/bip44.c)
-target_link_libraries(bip44_real PUBLIC c read write buffer varint bip32 hash_mocks_lib)
+target_link_libraries(bip44_real PUBLIC c read write buffer varint)
 add_library(cbor_lib SHARED ../src/utils/cbor.c)
 target_link_libraries(cbor_lib PUBLIC c m read)
 add_library(buffer_utils_lib SHARED ../src/utils/buffer_utils.c)
@@ -362,7 +360,7 @@ target_link_libraries(test_cardano_tokens
         buffer_utils_lib
         format
 )
-target_link_libraries(test_bip44 PUBLIC cmocka gcov bip44_lib)
+target_link_libraries(test_bip44 PUBLIC cmocka gcov bip44_real)
 target_link_libraries(test_cbor PUBLIC cmocka gcov cbor_lib hex_utils read write c)
 target_link_libraries(test_buffer_utils PUBLIC cmocka gcov buffer_utils_lib buffer write varint bip32)
 target_link_libraries(test_ip_utils PUBLIC cmocka gcov)
@@ -408,8 +406,8 @@ target_link_libraries(test_address_utils_shelley
         bip32
         cx_crc_support
 )
-target_link_libraries(test_key_derivation PUBLIC cmocka gcov crypto_mocks_lib bip44_real hex_utils write)
-target_link_libraries(test_message_signing PUBLIC cmocka gcov crypto_mocks_lib bip44_real)
+target_link_libraries(test_key_derivation PUBLIC cmocka gcov crypto_mocks_lib bip44_real hex_utils write hash_mocks_lib)
+target_link_libraries(test_message_signing PUBLIC cmocka gcov crypto_mocks_lib bip44_real hash_mocks_lib)
 target_link_libraries(test_aux_data_hash_builder
     PUBLIC
         cmocka
