@@ -3,7 +3,6 @@
 #include "read.h"
 #include "write.h"
 #include "assert.h"
-#include "exceptions.h"
 #include <string.h>
 
 // Note(ppershing): consume functions should either

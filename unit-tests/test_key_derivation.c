@@ -6,7 +6,7 @@
 
 #include <cmocka.h>
 
-#include "keyDerivation/keyDerivation.h"
+#include "keyDerivation.h"
 #include "hexUtils.h"
 
 #define HD HARDENED_BIP32

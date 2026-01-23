@@ -8,7 +8,7 @@
 
 #include "decorators.h"
 #include "crypto.h"
-#include "keyDerivation/keyDerivation.h"
+#include "keyDerivation.h"
 #include "crypto_mock_data.h"
 #include "utils/assert.h"
 
