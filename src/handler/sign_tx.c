@@ -67,13 +67,13 @@ static bool cvote_extract_pubkey(const cvote_credential_t *credential, uint8_t *
     switch (credential->type) {
         case EXT_CREDENTIAL_KEY_HASH:
             LEDGER_ASSERT(credential->publicKey != NULL, "NULL CVote public key");
-            memmove(out_pubkey, credential->publicKey, PUBLIC_KEY_SIZE);
+            memmove(out_pubkey, credential->publicKey, PUBLIC_KEY_LENGTH);
             return true;
         case EXT_CREDENTIAL_KEY_PATH: {
             cx_err_t error = CX_OK;
             extendedPublicKey_t derived_key = {0};
             CX_CHECK(deriveExtendedPublicKey(&credential->keyPath, &derived_key));
-            memmove(out_pubkey, derived_key.pubKey, PUBLIC_KEY_SIZE);
+            memmove(out_pubkey, derived_key.pubKey, PUBLIC_KEY_LENGTH);
         end:
             if (error != CX_OK) {
                 TRACE("Failed to derive CVote key path: 0x%x", error);
@@ -134,7 +134,7 @@ static bool cvote_hash_builder_add_vote_key(cvote_aux_data_t *aux_data) {
     if (aux_data->format != CIP15 && aux_data->format != CIP36) {
         return true;
     }
-    uint8_t pubkey[PUBLIC_KEY_SIZE] = {0};
+    uint8_t pubkey[PUBLIC_KEY_LENGTH] = {0};
     if (!cvote_extract_pubkey(&aux_data->vote_credential, pubkey)) {
         return false;
     }
@@ -145,7 +145,7 @@ static bool cvote_hash_builder_add_vote_key(cvote_aux_data_t *aux_data) {
 static bool cvote_hash_builder_add_staking_key(cvote_aux_data_t *aux_data) {
     LEDGER_ASSERT(aux_data != NULL, "Auxiliary data cannot be null");
 
-    uint8_t pubkey[PUBLIC_KEY_SIZE] = {0};
+    uint8_t pubkey[PUBLIC_KEY_LENGTH] = {0};
     if (!cvote_extract_pubkey(&aux_data->staking_credential, pubkey)) {
         return false;
     }
@@ -245,7 +245,7 @@ static bool cvote_hash_builder_add_delegation(cvote_aux_data_t *aux_data,
     LEDGER_ASSERT(aux_data != NULL, "Auxiliary data cannot be null");
     LEDGER_ASSERT(credential != NULL, "Credential cannot be null");
 
-    uint8_t pubkey[PUBLIC_KEY_SIZE] = {0};
+    uint8_t pubkey[PUBLIC_KEY_LENGTH] = {0};
     if (!cvote_extract_pubkey(credential, pubkey)) {
         return false;
     }
@@ -874,7 +874,7 @@ void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
               cdata->size);
 
         cvote_aux_data_t *aux_data = G_context.tx_info.cvote_aux_data;
-        uint8_t delegation_public_key[PUBLIC_KEY_SIZE];
+        uint8_t delegation_public_key[PUBLIC_KEY_LENGTH];
         uint8_t delegation_script_hash[SCRIPT_HASH_LENGTH];
         cvote_credential_t delegation_credential = {0};
         delegation_credential.publicKey = delegation_public_key;

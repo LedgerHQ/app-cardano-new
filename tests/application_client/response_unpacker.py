@@ -54,11 +54,11 @@ def unpack_get_app_and_version_response(response: bytes) -> Tuple[str, str]:
 #            pub_key (var)
 #            chain_code (var)
 def unpack_get_public_key_response(response: bytes) -> Tuple[bytes, bytes]:
-    PUBLIC_KEY_SIZE = 32
-    CHAIN_CODE_SIZE = 32
-    assert len(response) == PUBLIC_KEY_SIZE + CHAIN_CODE_SIZE
-    public_key = response[:PUBLIC_KEY_SIZE]
-    chain_code = response[PUBLIC_KEY_SIZE:]
+    PUBLIC_KEY_LENGTH = 32
+    CHAIN_CODE_LENGTH = 32
+    assert len(response) == PUBLIC_KEY_LENGTH + CHAIN_CODE_LENGTH
+    public_key = response[:PUBLIC_KEY_LENGTH]
+    chain_code = response[PUBLIC_KEY_LENGTH:]
 
     return public_key, chain_code
 

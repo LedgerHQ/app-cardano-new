@@ -134,7 +134,7 @@ void auxDataHashBuilder_cVoteRegistration_addVoteKey(aux_data_hash_builder_t* bu
     APPEND_CBOR(HC_AUX_DATA | HC_CVOTE_REGISTRATION_PAYLOAD,
                 CBOR_TYPE_UNSIGNED,
                 CVOTE_REGISTRATION_PAYLOAD_KEY_VOTE_KEY);
-    ASSERT(votePubKeySize == PUBLIC_KEY_SIZE);
+    ASSERT(votePubKeySize == PUBLIC_KEY_LENGTH);
     APPEND_CBOR(HC_AUX_DATA | HC_CVOTE_REGISTRATION_PAYLOAD, CBOR_TYPE_BYTES, votePubKeySize);
     APPEND_DATA(HC_AUX_DATA | HC_CVOTE_REGISTRATION_PAYLOAD, votePubKeyBuffer, votePubKeySize);
 
@@ -173,7 +173,7 @@ void auxDataHashBuilder_cVoteRegistration_addDelegation(aux_data_hash_builder_t*
     {
         APPEND_CBOR(HC_AUX_DATA | HC_CVOTE_REGISTRATION_PAYLOAD, CBOR_TYPE_ARRAY, 2);
         {
-            ASSERT(votePubKeySize == PUBLIC_KEY_SIZE);
+            ASSERT(votePubKeySize == PUBLIC_KEY_LENGTH);
             APPEND_CBOR(HC_AUX_DATA | HC_CVOTE_REGISTRATION_PAYLOAD,
                         CBOR_TYPE_BYTES,
                         votePubKeySize);
@@ -211,7 +211,7 @@ void auxDataHashBuilder_cVoteRegistration_addStakingKey(aux_data_hash_builder_t*
                     CBOR_TYPE_UNSIGNED,
                     CVOTE_REGISTRATION_PAYLOAD_KEY_STAKING_KEY);
         {
-            ASSERT(stakingPubKeySize == PUBLIC_KEY_SIZE);
+            ASSERT(stakingPubKeySize == PUBLIC_KEY_LENGTH);
             APPEND_CBOR(HC_AUX_DATA | HC_CVOTE_REGISTRATION_PAYLOAD,
                         CBOR_TYPE_BYTES,
                         stakingPubKeySize);

@@ -10,15 +10,15 @@
 
 static void extractRawPublicKey(uint8_t rawPubkey[static ED25519_PUBKEY_UNCOMPRESSED_LENGTH], uint8_t* outBuffer, size_t outSize) {
     // copy public key little endian to big endian
-    ASSERT(outSize == 32);
+    ASSERT(outSize == PUBLIC_KEY_LENGTH);
 
     uint8_t i;
-    for (i = 0; i < 32; i++) {
-        outBuffer[i] = rawPubkey[64 - i];
+    for (i = 0; i < PUBLIC_KEY_LENGTH; i++) {
+        outBuffer[i] = rawPubkey[ED25519_PUBKEY_UNCOMPRESSED_LENGTH - 1 - i];
     }
 
-    if ((rawPubkey[32] & 1) != 0) {
-        outBuffer[31] |= 0x80;
+    if ((rawPubkey[PUBLIC_KEY_LENGTH] & 1) != 0) {
+        outBuffer[PUBLIC_KEY_LENGTH - 1] |= 0x80;
     }
 }
 
@@ -26,9 +26,9 @@ static void extractRawPublicKey(uint8_t rawPubkey[static ED25519_PUBKEY_UNCOMPRE
 cx_err_t deriveExtendedPublicKey(const bip44_path_t* path, extendedPublicKey_t* out) {
     cx_err_t error = CX_OK;
     uint8_t rawPubkey[ED25519_PUBKEY_UNCOMPRESSED_LENGTH];
-    uint8_t chainCode[CHAIN_CODE_SIZE];
+    uint8_t chainCode[CHAIN_CODE_LENGTH];
 
-    STATIC_ASSERT(SIZEOF(*out) == CHAIN_CODE_SIZE + PUBLIC_KEY_SIZE, "bad ext pub key size");
+    STATIC_ASSERT(SIZEOF(*out) == CHAIN_CODE_LENGTH + PUBLIC_KEY_LENGTH, "bad ext pub key size");
 
     // Sanity check
     ASSERT(path->length <= ARRAY_LEN(path->path));
@@ -41,9 +41,9 @@ cx_err_t deriveExtendedPublicKey(const bip44_path_t* path, extendedPublicKey_t* 
     extractRawPublicKey(rawPubkey, out->pubKey, SIZEOF(out->pubKey));
 
     // Chain code (we copy it second to avoid mid-updates extractRawPublicKey throws
-    STATIC_ASSERT(CHAIN_CODE_SIZE == SIZEOF(out->chainCode), "bad chain code size");
-    STATIC_ASSERT(CHAIN_CODE_SIZE == SIZEOF(chainCode), "bad chain code size");
-    memmove(out->chainCode, chainCode, CHAIN_CODE_SIZE);
+    STATIC_ASSERT(CHAIN_CODE_LENGTH == SIZEOF(out->chainCode), "bad chain code size");
+    STATIC_ASSERT(CHAIN_CODE_LENGTH == SIZEOF(chainCode), "bad chain code size");
+    memmove(out->chainCode, chainCode, CHAIN_CODE_LENGTH);
 
 end:
     if (error != CX_OK) {

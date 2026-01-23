@@ -16,7 +16,7 @@ typedef enum {
     CVOTE_PARSER_OUT_OF_MEMORY,
 } cvote_parser_status_t;
 
-#define CVOTE_PUBLIC_KEY_LENGTH (PUBLIC_KEY_SIZE)
+#define CVOTE_PUBLIC_KEY_LENGTH (PUBLIC_KEY_LENGTH)
 
 typedef struct {
     uint8_t *buffer;
@@ -43,13 +43,13 @@ typedef struct {
 typedef struct {
     cvote_registration_format_t format;
     uint16_t delegation_count;
-    uint8_t staking_credential_public_key[PUBLIC_KEY_SIZE];
+    uint8_t staking_credential_public_key[PUBLIC_KEY_LENGTH];
     uint8_t staking_credential_script_hash[SCRIPT_HASH_LENGTH];
     cvote_credential_t staking_credential;
     cvote_destination_t destination;
     uint64_t nonce;
     uint64_t voting_purpose;
-    uint8_t vote_credential_public_key[PUBLIC_KEY_SIZE];
+    uint8_t vote_credential_public_key[PUBLIC_KEY_LENGTH];
     uint8_t vote_credential_script_hash[SCRIPT_HASH_LENGTH];
     cvote_credential_t vote_credential;
     bool final_fields_processed;

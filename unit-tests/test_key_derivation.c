@@ -27,7 +27,7 @@ static void expect_extended_pubkey(const uint32_t* path,
     extendedPublicKey_t ext = {0};
     assert_int_equal(CX_OK, deriveExtendedPublicKey(&bip, &ext));
 
-    uint8_t expected[PUBLIC_KEY_SIZE] = {0};
+    uint8_t expected[PUBLIC_KEY_LENGTH] = {0};
     size_t decodedLen = 0;
     assert_true(decode_hex(expected_hex, expected, sizeof(expected), &decodedLen));
     assert_int_equal(decodedLen, sizeof(expected));

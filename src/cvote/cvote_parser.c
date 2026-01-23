@@ -84,7 +84,7 @@ cvote_parser_status_t cvote_parse_credential(buffer_t *buf,
             }
             credential->type = EXT_CREDENTIAL_KEY_HASH;
             credential->publicKey = public_key_buffer;
-            if (!buffer_read_bytes(buf, public_key_buffer, PUBLIC_KEY_SIZE)) {
+            if (!buffer_read_bytes(buf, public_key_buffer, PUBLIC_KEY_LENGTH)) {
                 TRACE("%s key hash data truncated", label);
                 return CVOTE_PARSER_INVALID_FORMAT;
             }

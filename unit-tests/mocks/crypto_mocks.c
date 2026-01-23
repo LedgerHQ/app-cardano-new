@@ -84,7 +84,7 @@ cx_err_t crypto_get_pubkey(const uint32_t* path,
         LEDGER_ASSERT(false, "Missing mock public key path");
     }
     encode_raw_pubkey(entry->public_key, raw_pubkey);
-    memcpy(chain_code, entry->chain_code, CHAIN_CODE_SIZE);
+    memcpy(chain_code, entry->chain_code, CHAIN_CODE_LENGTH);
     return CX_OK;
 }
 

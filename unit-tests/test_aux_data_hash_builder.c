@@ -44,13 +44,13 @@ static void test_aux_data_hash_builder_cip15(void** state) {
     auxDataHashBuilder_cVoteRegistration_enterPayload(&builder);
 
     {
-        uint8_t tmp[PUBLIC_KEY_SIZE] = {0};
+        uint8_t tmp[PUBLIC_KEY_LENGTH] = {0};
         decode_hex_bytes(voteKey, tmp, sizeof(tmp));
         auxDataHashBuilder_cVoteRegistration_addVoteKey(&builder, tmp, sizeof(tmp));
     }
 
     {
-        uint8_t tmp[PUBLIC_KEY_SIZE] = {0};
+        uint8_t tmp[PUBLIC_KEY_LENGTH] = {0};
         decode_hex_bytes(stakingKey, tmp, sizeof(tmp));
         auxDataHashBuilder_cVoteRegistration_addStakingKey(&builder, tmp, sizeof(tmp));
     }
@@ -127,7 +127,7 @@ static void test_aux_data_hash_builder_cip36(void** state) {
 
     auxDataHashBuilder_cVoteRegistration_enterDelegations(&builder, 2);
     {
-        uint8_t tmp[PUBLIC_KEY_SIZE] = {0};
+        uint8_t tmp[PUBLIC_KEY_LENGTH] = {0};
         decode_hex_bytes(delegationKey1, tmp, sizeof(tmp));
         auxDataHashBuilder_cVoteRegistration_addDelegation(&builder,
                                                            tmp,
@@ -135,7 +135,7 @@ static void test_aux_data_hash_builder_cip36(void** state) {
                                                            delegationWeight1);
     }
     {
-        uint8_t tmp[PUBLIC_KEY_SIZE] = {0};
+        uint8_t tmp[PUBLIC_KEY_LENGTH] = {0};
         decode_hex_bytes(delegationKey2, tmp, sizeof(tmp));
         auxDataHashBuilder_cVoteRegistration_addDelegation(&builder,
                                                            tmp,
@@ -144,7 +144,7 @@ static void test_aux_data_hash_builder_cip36(void** state) {
     }
 
     {
-        uint8_t tmp[PUBLIC_KEY_SIZE] = {0};
+        uint8_t tmp[PUBLIC_KEY_LENGTH] = {0};
         decode_hex_bytes(stakingKey, tmp, sizeof(tmp));
         auxDataHashBuilder_cVoteRegistration_addStakingKey(&builder, tmp, sizeof(tmp));
     }
