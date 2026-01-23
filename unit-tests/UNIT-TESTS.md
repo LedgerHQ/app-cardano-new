@@ -98,26 +98,6 @@ python3 unit-tests/generate_unit_tests_from_ragger.py mock-data
 This updates public keys, chain codes, and key hashes while preserving signature vectors.
 The file is rewritten in place.
 
-## Regenerating Mock Data
-
-To regenerate all mock cryptographic data in `mocks/crypto_mock_data.h`:
-
-```bash
-cd unit-tests
-# Activate the ragger venv (required!)
-source ../tests/standalone/venv/bin/activate
-# Run the regeneration script
-python3 generate_unit_tests_from_ragger.py mock-data
-```
-
-The script:
-- Uses the standard test mnemonic: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
-- Derives public keys and chain codes using ragger's `calculate_public_key_and_chaincode` with `CurveChoice.Ed25519Kholaw`
-- Computes Blake2b-224 key hashes for Cardano addresses
-- Preserves signatures as-is (they're test vectors for internal C functions)
-
-**Important**: The script requires ragger to be installed. Always run it from within the tests/standalone/venv.
-
 # Mock Data Verification Tests
 
 This document describes the verification system for mock cryptographic data used in unit tests.

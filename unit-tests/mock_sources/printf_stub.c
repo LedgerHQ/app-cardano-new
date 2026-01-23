@@ -59,15 +59,6 @@ find_length_modifier(const char* start, const char* end) {
     return modifier;
 }
 
-static void
-print_hex(FILE* stream, const uint8_t* buffer, size_t length) {
-    static const char HEX_DIGITS[] = "0123456789abcdef";
-    for (size_t i = 0; i < length; ++i) {
-        fputc(HEX_DIGITS[buffer[i] >> 4], stream);
-        fputc(HEX_DIGITS[buffer[i] & 0x0f], stream);
-    }
-}
-
 void PRINTF(const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
@@ -88,16 +79,6 @@ void PRINTF(const char *fmt, ...) {
         if (ptr[1] == '%') {
             fputc('%', stderr);
             ptr += 2;
-            continue;
-        }
-
-        if (ptr[1] == '.' && ptr[2] == '*' && (ptr[3] == 'h' || ptr[3] == 'H')) {
-            int len = va_arg(ap, int);
-            const uint8_t* buffer = va_arg(ap, const uint8_t*);
-            if (len > 0 && buffer != NULL) {
-                print_hex(stderr, buffer, (size_t) len);
-            }
-            ptr += 4;
             continue;
         }
 
