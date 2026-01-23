@@ -97,8 +97,9 @@ bool format_token_amount_output(const uint8_t* policyId,
 
     const char* ticker = (tokenInfo != NULL) ? (const char*) PIC(tokenInfo->ticker) : "(unknown decimals)";
     TRACE("token ticker = %s", ticker);
-    snprintf(out + length, outSize - length, " %s", ticker);
-    length += 1 + strlen(ticker);
+    int written = snprintf(out + length, outSize - length, " %s", ticker);
+    LEDGER_ASSERT(written > 0, "snprintf token ticker formatting failed");
+    length += written;
 
     ASSERT(length + 1 < outSize);
     ASSERT(length == strlen(out));

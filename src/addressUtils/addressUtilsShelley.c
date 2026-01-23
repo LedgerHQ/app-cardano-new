@@ -439,13 +439,14 @@ bool format_blockchain_pointer(blockchainPointer_t blockchainPointer, char* out,
     STATIC_ASSERT(!IS_SIGNED(blockchainPointer.certificateIndex), "signed type for %u");
 
     ASSERT(outSize > 0);
-    snprintf(out,
-             outSize,
-             "(%u, %u, %u)",
-             blockchainPointer.blockIndex,
-             blockchainPointer.txIndex,
-             blockchainPointer.certificateIndex);
-    ASSERT(strlen(out) + 1 < outSize);
+    int written = snprintf(out,
+                           outSize,
+                           "(%u, %u, %u)",
+                           blockchainPointer.blockIndex,
+                           blockchainPointer.txIndex,
+                           blockchainPointer.certificateIndex);
+    LEDGER_ASSERT(written > 0, "snprintf blockchain pointer formatting failed");
+    LEDGER_ASSERT((size_t)written + 1 < outSize, "Blockchain pointer string does not fit");
     return true;
 }
 

@@ -31,7 +31,6 @@ For detailed analysis, see:
 - **Do NOT add custom CBOR serialization**, address manipulation, or BIP44 path functions. Use existing utilities.
 - **Do NOT remove original comments** explaining crucial details without confirmation.
 - **Do NOT perform git operations** (modifications/writes).
-- **Do NOT assume `snprintf` returns written bytes**, this SDK has a special version that does not.
 
 ## Instructions for Reviewing Agent
 

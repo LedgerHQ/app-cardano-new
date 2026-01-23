@@ -130,8 +130,9 @@ bool format_ada_amount(uint64_t amount, char *out, size_t outSize) {
     // make sure all the information is displayed to the user
     LEDGER_ASSERT(rawSize + suffixLength + 1 < outSize, "ADA suffix does not fit in output buffer");
 
-    snprintf(out + rawSize, outSize - rawSize, "%s", suffix);
-    LEDGER_ASSERT(strlen(out) == rawSize + suffixLength, "ADA suffix length mismatch");
+    int written = snprintf(out + rawSize, outSize - rawSize, "%s", suffix);
+    LEDGER_ASSERT(written > 0, "snprintf ADA suffix failed");
+    LEDGER_ASSERT((size_t)written == suffixLength, "ADA suffix length mismatch");
 
     return true;
 }
@@ -166,17 +167,16 @@ static bool format_validity_boundary_mainnet(uint64_t slotNumber, char *out, siz
     STATIC_ASSERT(sizeof(int) >= sizeof(uint32_t), "wrong int size");
 
     LEDGER_ASSERT(outSize > 0, "Output buffer must not be empty");  // so we can write null terminator
+    int written;
     if (epoch > 1000000) {
         // thousands of years
-        snprintf(out, outSize, "epoch more than 1000000");
+        written = snprintf(out, outSize, "epoch more than 1000000");
     } else {
-        snprintf(out, outSize, "epoch %u / slot %u", (unsigned) epoch, (unsigned) slotInEpoch);
+        written = snprintf(out, outSize, "epoch %u / slot %u", (unsigned) epoch, (unsigned) slotInEpoch);
     }
 
-    // snprintf does not return length written
-    size_t len = strlen(out);
-    // make sure we did not truncate
-    LEDGER_ASSERT(len + 1 < outSize, "Epoch/slot string does not fit in output buffer");
+    LEDGER_ASSERT(written > 0, "snprintf epoch/slot formatting failed");
+    LEDGER_ASSERT((size_t)written + 1 < outSize, "Epoch/slot string does not fit in output buffer");
 
     return true;
 }
@@ -214,27 +214,27 @@ bool format_pool_margin(uint64_t numerator, uint64_t denominator, char *out, siz
     uint64_t margin_percentage = (10000 * numerator + (denominator / 2)) / denominator;
     unsigned int percentage = (unsigned int) margin_percentage;
 
-    snprintf(out, outSize, "%u.%u %%", percentage / 100, percentage % 100);
-    size_t len = strlen(out);
-    return len < outSize;
+    int written = snprintf(out, outSize, "%u.%u %%", percentage / 100, percentage % 100);
+    LEDGER_ASSERT(written > 0, "snprintf pool margin formatting failed");
+    return (size_t)written + 1 < outSize;
 }
 
 /**
  * Format 16-bit unsigned integer to string
  */
 bool format_uint16(uint16_t value, char *out, size_t outSize) {
-    snprintf(out, outSize, "%u", value);
-    size_t len = strlen(out);
-    return len < outSize;
+    int written = snprintf(out, outSize, "%u", value);
+    LEDGER_ASSERT(written > 0, "snprintf uint16 formatting failed");
+    return (size_t)written + 1 < outSize;
 }
 
 /**
  * Format unsigned integer with "#" prefix for numbered items
  */
 bool format_index_with_prefix(uint32_t value, char *out, size_t outSize) {
-    snprintf(out, outSize, "#%u", value);
-    size_t len = strlen(out);
-    return len < outSize;
+    int written = snprintf(out, outSize, "#%u", value);
+    LEDGER_ASSERT(written > 0, "snprintf index prefix formatting failed");
+    return (size_t)written + 1 < outSize;
 }
 
 /**
@@ -248,7 +248,9 @@ bool format_ipv4(const ipv4_t *ipv4, char *out, size_t outSize) {
     explicit_bzero(out, outSize);
 
     if (ipv4->isNull) {
-        snprintf(out, outSize, "(none)");
+        int written = snprintf(out, outSize, "(none)");
+        LEDGER_ASSERT(written > 0, "snprintf ipv4 null formatting failed");
+        LEDGER_ASSERT((size_t)written + 1 < outSize, "IPv4 null string does not fit in output buffer");
     } else {
         LEDGER_ASSERT(ipv4->ip != NULL, "IPv4 address buffer cannot be null when not null flag");
         inet_ntop4(ipv4->ip, out, outSize);
@@ -271,7 +273,9 @@ bool format_ipv6(const ipv6_t *ipv6, char *out, size_t outSize) {
     explicit_bzero(out, outSize);
 
     if (ipv6->isNull) {
-        snprintf(out, outSize, "(none)");
+        int written = snprintf(out, outSize, "(none)");
+        LEDGER_ASSERT(written > 0, "snprintf ipv6 null formatting failed");
+        LEDGER_ASSERT((size_t)written + 1 < outSize, "IPv6 null string does not fit in output buffer");
     } else {
         LEDGER_ASSERT(ipv6->ip != NULL, "IPv6 address buffer cannot be null when not null flag");
         inet_ntop6(ipv6->ip, out, outSize);
@@ -303,9 +307,9 @@ bool format_vote_option(vote_t voteOption, char *out, size_t outSize) {
             break;
     }
 
-    snprintf(out, outSize, "%s", vote_str);
-    size_t len = strlen(out);
-    return len < outSize;
+    int written = snprintf(out, outSize, "%s", vote_str);
+    LEDGER_ASSERT(written > 0, "snprintf vote option formatting failed");
+    return (size_t)written + 1 < outSize;
 }
 
 /**
@@ -328,9 +332,9 @@ bool format_constant_drep(ext_drep_type_t drep_type, char *out, size_t outSize) 
             return false;
     }
 
-    snprintf(out, outSize, "%s", drep_str);
-    size_t len = strlen(out);
-    return len < outSize;
+    int written = snprintf(out, outSize, "%s", drep_str);
+    LEDGER_ASSERT(written > 0, "snprintf drep formatting failed");
+    return (size_t)written + 1 < outSize;
 }
 
 /**
@@ -338,9 +342,9 @@ bool format_constant_drep(ext_drep_type_t drep_type, char *out, size_t outSize) 
  */
 bool format_certificate_type(certificate_type_t type, char *out, size_t outSize) {
     const char *cert_type_name = getCertificateTypeName(type);
-    snprintf(out, outSize, "%s", cert_type_name);
-    size_t len = strlen(out);
-    return len < outSize;
+    int written = snprintf(out, outSize, "%s", cert_type_name);
+    LEDGER_ASSERT(written > 0, "snprintf certificate type formatting failed");
+    return (size_t)written + 1 < outSize;
 }
 
 
@@ -418,8 +422,8 @@ bool format_incomplete_hex_with_length(const uint8_t *data,
         return false;
     }
 
-    snprintf(out, outSize, "%s... (%u bytes)", hexPrefix, (unsigned int)dataLen);
-    size_t len = strlen(out);
-    LEDGER_ASSERT(len + 1 < outSize, "Inline datum preview truncated");
-    return len + 1 < outSize;
+    int written = snprintf(out, outSize, "%s... (%u bytes)", hexPrefix, (unsigned int)dataLen);
+    LEDGER_ASSERT(written > 0, "snprintf incomplete hex formatting failed");
+    LEDGER_ASSERT((size_t)written + 1 < outSize, "Inline datum preview truncated");
+    return true;
 }

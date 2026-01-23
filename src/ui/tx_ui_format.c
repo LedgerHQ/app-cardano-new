@@ -103,8 +103,9 @@ static bool format_input_with_index(const tx_input_t *input, char *out, size_t o
     if (hash_len + 1 >= out_size) {
         return false;
     }
-    snprintf(out + hash_len, out_size - hash_len, " / %u", input->index);
-    LEDGER_ASSERT(strlen(out) + 1 <= out_size, "Input display buffer overflow");
+    int written = snprintf(out + hash_len, out_size - hash_len, " / %u", input->index);
+    LEDGER_ASSERT(written > 0, "snprintf input index formatting failed");
+    LEDGER_ASSERT((size_t)written + hash_len + 1 <= out_size, "Input display buffer overflow");
     return true;
 }
 
@@ -805,9 +806,9 @@ static void add_ui_and_free_validity_interval_start(transaction_t *tx) {
 
 // Local formatter for mint summary display (e.g., "2 asset groups", "1 asset group")
 static bool format_mint_summary(uint16_t num_groups, char *out, size_t outSize) {
-    snprintf(out, outSize, "%u asset group%s", num_groups, (num_groups == 1) ? "" : "s");
-    size_t len = strlen(out);
-    return len < outSize;
+    int written = snprintf(out, outSize, "%u asset group%s", num_groups, (num_groups == 1) ? "" : "s");
+    LEDGER_ASSERT(written > 0, "snprintf mint summary formatting failed");
+    return (size_t)written + 1 < outSize;
 }
 
 static void add_ui_and_free_mint(transaction_t *tx) {

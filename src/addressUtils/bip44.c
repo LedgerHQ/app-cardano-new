@@ -379,16 +379,13 @@ bool format_bip44_path(const bip44_path_t* pathSpec, char* out, size_t outSize) 
         ASSERT(ptr <= end);                                                           \
         STATIC_ASSERT(sizeof(end - ptr) == sizeof(size_t), "bad size_t size");        \
         size_t availableSize = (size_t)(end - ptr);                                   \
-        /* Note(ppershing): We do not bother checking return */                       \
-        /* value of snprintf as it always returns 0. */                               \
-        /* Go figure ... */                                                           \
-        snprintf(ptr, availableSize, fmt, ##__VA_ARGS__);                             \
-        size_t res = strlen(ptr);                                                     \
+        int written = snprintf(ptr, availableSize, fmt, ##__VA_ARGS__);               \
+        LEDGER_ASSERT(written > 0, "snprintf formatting failed");                     \
         /* if snprintf filled all the remaining space, there is no space for '\0', */ \
         /* or the information is not displayed in full, */                            \
         /* and that's a serious security risk */                                      \
-        ASSERT(res + 1 < availableSize);                                              \
-        ptr += res;                                                                   \
+        LEDGER_ASSERT((size_t)written + 1 < availableSize, "Formatted string does not fit"); \
+        ptr += written;                                                               \
     }
 
     WRITE("m");

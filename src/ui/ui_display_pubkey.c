@@ -110,10 +110,10 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
 
     char title[64] = {0};
     explicit_bzero(title, sizeof(title));
-    snprintf(title, sizeof(title), "%s %s", exportPrefix, keyTypeLabel);
+    int written = snprintf(title, sizeof(title), "%s %s", exportPrefix, keyTypeLabel);
 
-    LEDGER_ASSERT(strlen(title) > 0, "UI title is empty");
-    LEDGER_ASSERT(strlen(title) + 1 < SIZEOF(title), "UI title truncated");
+    LEDGER_ASSERT(written > 0, "snprintf UI title formatting failed");
+    LEDGER_ASSERT((size_t)written + 1 < SIZEOF(title), "UI title truncated");
     LEDGER_ASSERT(icon != NULL, "UI icon is NULL");
 
     TRACE("Calling nbgl_useCaseChoice(title=%s)", title);

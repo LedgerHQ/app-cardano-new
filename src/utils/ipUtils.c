@@ -52,9 +52,9 @@ void inet_ntop4(const uint8_t* src, char* dst, size_t dstSize) {
 
     static const char fmt[] = "%u.%u.%u.%u";
 
-    snprintf(dst, dstSize, fmt, src[0], src[1], src[2], src[3]);
-
-    ASSERT(strlen(dst) + 1 < dstSize);
+    int written = snprintf(dst, dstSize, fmt, src[0], src[1], src[2], src[3]);
+    LEDGER_ASSERT(written > 0, "snprintf IPv4 formatting failed");
+    LEDGER_ASSERT((size_t)written + 1 < dstSize, "IPv4 string does not fit");
 }
 
 /*
@@ -137,9 +137,9 @@ void inet_ntop6(const uint8_t* src, char* dst, size_t dstSize) {
             break;
         }
         STATIC_ASSERT(sizeof(words[i]) <= sizeof(unsigned), "oversized type for %u");
-        snprintf(tp, sizeof tmp - (tp - tmp), "%x", words[i]);
-
-        tp += strlen(tp);
+        int written = snprintf(tp, sizeof tmp - (tp - tmp), "%x", words[i]);
+        LEDGER_ASSERT(written > 0, "snprintf IPv6 hex formatting failed");
+        tp += written;
     }
     /* Was it a trailing run of 0x00's? */
     if (best.base != -1 && (best.base + best.len) == (NS_IN6ADDRSZ / NS_INT16SZ)) {

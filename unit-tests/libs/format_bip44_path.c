@@ -26,12 +26,12 @@ bool format_bip44_path(const bip44_path_t* pathSpec, char* out, size_t outSize) 
     {                                                                                 \
         ASSERT(ptr <= end);                                                           \
         size_t availableSize = (size_t)(end - ptr);                                   \
-        snprintf(ptr, availableSize, fmt, ##__VA_ARGS__);                             \
-        size_t res = strlen(ptr);                                                     \
-        if (res >= availableSize - 1) {                                               \
+        int written = snprintf(ptr, availableSize, fmt, ##__VA_ARGS__);               \
+        LEDGER_ASSERT(written > 0, "snprintf formatting failed");                     \
+        if ((size_t)written >= availableSize - 1) {                                   \
             ASSERT(!"not enough space for bip44 string");                             \
         }                                                                              \
-        ptr += res;                                                                   \
+        ptr += written;                                                               \
     }
 
     WRITE("m");

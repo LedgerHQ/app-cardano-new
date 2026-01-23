@@ -42,8 +42,9 @@ const char *mem_alloc_and_format_uint_impl(uint32_t value, const char *file, int
     }
     // +1 for the null character
     if ((mem_ptr = app_mem_alloc_impl(sizeof(char) * (size + 1), false, file, line))) {
-        snprintf(mem_ptr, (size + 1), "%u", value);
-        LEDGER_ASSERT(strlen(mem_ptr) == size, "Unexpected digit count");
+        int written = snprintf(mem_ptr, (size + 1), "%u", value);
+        LEDGER_ASSERT(written > 0, "snprintf uint formatting failed");
+        LEDGER_ASSERT((size_t)written == size, "Unexpected digit count");
         LEDGER_ASSERT(mem_ptr[size] == '\0', "Missing null terminator");
     }
     return mem_ptr;
