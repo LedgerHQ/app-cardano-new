@@ -181,6 +181,7 @@ parser_status_e parse_certificate_stake_registration_deregistration_conway(
         return status;
     }
 
+    ASSERT_TYPE(cert_data->deposit, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->deposit, BE)) {
         TRACE("Failed to parse deposit");
         return CERTIFICATES_PARSING_ERROR;
@@ -211,6 +212,7 @@ parser_status_e parse_certificate_stake_pool_retirement(buffer_t *buf,
         return status;
     }
 
+    ASSERT_TYPE(cert_data->retirementEpoch, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->retirementEpoch, BE)) {
         TRACE("Failed to parse retirement epoch");
         return CERTIFICATES_PARSING_ERROR;
@@ -445,6 +447,7 @@ parser_status_e parse_certificate_drep_registration(buffer_t *buf,
         return status;
     }
 
+    ASSERT_TYPE(cert_data->deposit, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->deposit, BE)) {
         TRACE("Failed to parse deposit");
         return CERTIFICATES_PARSING_ERROR;
@@ -473,6 +476,7 @@ parser_status_e parse_certificate_drep_deregistration(buffer_t *buf,
         return status;
     }
 
+    ASSERT_TYPE(cert_data->deposit, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->deposit, BE)) {
         TRACE("Failed to parse deposit");
         return CERTIFICATES_PARSING_ERROR;
@@ -568,6 +572,7 @@ static parser_status_e _parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
             }
             relay->port.isNull = !port_included;
             if (port_included) {
+                ASSERT_TYPE(relay->port.number, uint16_t);
                 if (!buffer_read_u16(buf, &relay->port.number, BE)) {
                     TRACE("Failed to read port number");
                     return CERTIFICATES_PARSING_ERROR;
@@ -643,6 +648,7 @@ static parser_status_e _parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
             }
             relay->port.isNull = !port_included;
             if (port_included) {
+                ASSERT_TYPE(relay->port.number, uint16_t);
                 if (!buffer_read_u16(buf, &relay->port.number, BE)) {
                     TRACE("Failed to read port number");
                     return CERTIFICATES_PARSING_ERROR;
@@ -838,6 +844,7 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
     TRACE("Successfully parsed VRF key hash");
 
     // Parse financials
+    ASSERT_TYPE(cert_data->poolRegistration.pledge, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->poolRegistration.pledge, BE)) {
         TRACE("Failed to read pledge");
         return CERTIFICATES_PARSING_ERROR;
@@ -845,6 +852,7 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
     TRACE("Pledge: ");
     TRACE_UINT64(cert_data->poolRegistration.pledge);
 
+    ASSERT_TYPE(cert_data->poolRegistration.cost, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->poolRegistration.cost, BE)) {
         TRACE("Failed to read cost");
         return CERTIFICATES_PARSING_ERROR;
@@ -853,6 +861,7 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
     TRACE_UINT64(cert_data->poolRegistration.cost);
 
     // Parse margin (unit_interval: numerator + denominator)
+    ASSERT_TYPE(cert_data->poolRegistration.marginNumerator, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->poolRegistration.marginNumerator, BE)) {
         TRACE("Failed to read margin numerator");
         return CERTIFICATES_PARSING_ERROR;
@@ -860,6 +869,7 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
     TRACE("Margin numerator: ");
     TRACE_UINT64(cert_data->poolRegistration.marginNumerator);
 
+    ASSERT_TYPE(cert_data->poolRegistration.marginDenominator, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->poolRegistration.marginDenominator, BE)) {
         TRACE("Failed to read margin denominator");
         return CERTIFICATES_PARSING_ERROR;

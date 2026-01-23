@@ -196,12 +196,14 @@ parser_status_e parse_tx(buffer_t *buf, transaction_t *tx) {
     }
 
     // key 2: fee
+    ASSERT_TYPE(tx->fee, uint64_t);
     if (!buffer_read_u64(buf, &tx->fee, BE)) {
         return FEE_PARSING_ERROR;
     }
 
     // key 3: ttl (optional)
     if (tx->includeTtl) {
+        ASSERT_TYPE(tx->ttl, uint64_t);
         if (!buffer_read_u64(buf, &tx->ttl, BE)) {
             return TTL_PARSING_ERROR;
         }
@@ -224,6 +226,7 @@ parser_status_e parse_tx(buffer_t *buf, transaction_t *tx) {
 
     // key 8: validity_interval_start
     if (tx->includeValidityIntervalStart) {
+        ASSERT_TYPE(tx->validityIntervalStart, uint64_t);
         if (!buffer_read_u64(buf, &tx->validityIntervalStart, BE)) {
             return VALIDITY_INTERVAL_START_PARSING_ERROR;
         }
@@ -270,6 +273,7 @@ parser_status_e parse_tx(buffer_t *buf, transaction_t *tx) {
 
     // key 17: total collateral
     if (tx->includeTotalCollateral) {
+        ASSERT_TYPE(tx->totalCollateral, uint64_t);
         if (!buffer_read_u64(buf, &tx->totalCollateral, BE)) {
             return TOTAL_COLLATERAL_PARSING_ERROR;
         }
@@ -295,6 +299,7 @@ parser_status_e parse_tx(buffer_t *buf, transaction_t *tx) {
 
     // key 21: treasury (optional)
     if (tx->includeTreasury) {
+        ASSERT_TYPE(tx->treasury, uint64_t);
         if (!buffer_read_u64(buf, &tx->treasury, BE)) {
             return TREASURY_PARSING_ERROR;
         }
@@ -302,6 +307,7 @@ parser_status_e parse_tx(buffer_t *buf, transaction_t *tx) {
 
     // key 22: donation (optional)
     if (tx->includeDonation) {
+        ASSERT_TYPE(tx->donation, uint64_t);
         if (!buffer_read_u64(buf, &tx->donation, BE)) {
             return DONATION_PARSING_ERROR;
         }
@@ -337,6 +343,7 @@ static parser_status_e parse_input_item(buffer_t *buf, s_flist_node **list_head,
     }
     ASSERT(item->input.txHash != NULL);
 
+    ASSERT_TYPE(item->input.index, uint32_t);
     if (!buffer_read_u32(buf, &item->input.index, BE)) {
         app_mem_free(item);
         return error_on_failure;
@@ -392,6 +399,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
         }
         TRACE("Deserialize: Output %u destination parsed", i);
 
+        ASSERT_TYPE(item->output_data.adaAmount, uint64_t);
         if (!buffer_read_u64(&output_buf, &item->output_data.adaAmount, BE)) {
             app_mem_free(item);
             return OUTPUTS_PARSING_ERROR;
@@ -405,6 +413,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
         }
         TRACE("Deserialize: Output %u format parsed", i);
 
+        ASSERT_TYPE(item->output_data.numAssetGroups, uint16_t);
         if (!buffer_read_u16(&output_buf, &item->output_data.numAssetGroups, BE)) {
             app_mem_free(item);
             return OUTPUTS_PARSING_ERROR;
@@ -450,6 +459,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
 
                 TRACE("Deserialize: Asset group %u: policy ID read", ag);
 
+                ASSERT_TYPE(group->numTokens, uint16_t);
                 if (!buffer_read_u16(&output_buf, &group->numTokens, BE)) {
                     free_asset_group_node(group_node);
                     free_output_item(item);
@@ -475,6 +485,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
                     }
 
                     output_token_t *token = &token_item->token_data;
+                    ASSERT_TYPE(token->assetNameLen, uint8_t);
                     if (!buffer_read_u8(&output_buf, &token->assetNameLen)) {
                         app_mem_free(token_item);
                         free_asset_group_node(group_node);
@@ -514,6 +525,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
                     previous_token_len = token->assetNameLen;
                     has_previous_token = true;
 
+                    ASSERT_TYPE(token->amount, uint64_t);
                     if (!buffer_read_u64(&output_buf, &token->amount, BE)) {
                         app_mem_free(token_item);
                         free_asset_group_node(group_node);
@@ -605,6 +617,7 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx) {
         has_previous_policy = true;
         TRACE("Deserialize: Mint asset group %u: policy ID read", ag);
 
+        ASSERT_TYPE(item->asset_group.numTokens, uint16_t);
         if (!buffer_read_u16(buf, &item->asset_group.numTokens, BE)) {
             free_mint_item(item);
             return MINT_PARSING_ERROR;
@@ -784,6 +797,7 @@ static parser_status_e parse_tx_withdrawals(buffer_t *buf, transaction_t *tx) {
             return OUT_OF_MEMORY_ERROR;
         }
 
+        ASSERT_TYPE(item->withdrawal.amount, uint64_t);
         if (!buffer_read_u64(buf, &item->withdrawal.amount, BE)) {
             app_mem_free(item);
             return WITHDRAWALS_PARSING_ERROR;
@@ -1295,6 +1309,7 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
                 return VOTING_PROCEDURES_PARSING_ERROR;
         }
 
+        ASSERT_TYPE(voter_item->voter_votes_data.numVotes, uint16_t);
         if (!buffer_read_u16(buf, &voter_item->voter_votes_data.numVotes, BE)) {
             return VOTING_PROCEDURES_PARSING_ERROR;
         }
@@ -1315,6 +1330,7 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
             }
             ASSERT(vote_item->vote_data.govActionId.txHash != NULL);
 
+            ASSERT_TYPE(vote_item->vote_data.govActionId.govActionIndex, uint32_t);
             if (!buffer_read_u32(buf, &vote_item->vote_data.govActionId.govActionIndex, BE)) {
                 return VOTING_PROCEDURES_PARSING_ERROR;
             }

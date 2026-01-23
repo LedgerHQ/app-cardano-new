@@ -228,6 +228,7 @@ cvote_parser_status_t cvote_parse_aux_data_init(buffer_t *buf, cvote_aux_data_t 
     G_context.tx_info.cvote_aux_data = data;
 
     uint8_t format = 0;
+    ASSERT_TYPE(data->delegation_count, uint16_t);
     if (!buffer_read_u8(buf, &format) ||
         !buffer_read_u16(buf, &data->delegation_count, BE)) {
         G_context.tx_info.cvote_aux_data = previous_aux_data;
@@ -256,12 +257,14 @@ cvote_parser_status_t cvote_parse_aux_data_init(buffer_t *buf, cvote_aux_data_t 
         return dest_status;
     }
 
+    ASSERT_TYPE(data->nonce, uint64_t);
     if (!buffer_read_u64(buf, &data->nonce, BE)) {
         G_context.tx_info.cvote_aux_data = previous_aux_data;
         return CVOTE_PARSER_INVALID_FORMAT;
     }
 
     if (data->format == CIP36) {
+        ASSERT_TYPE(data->voting_purpose, uint64_t);
         if (!buffer_read_u64(buf, &data->voting_purpose, BE)) {
             G_context.tx_info.cvote_aux_data = previous_aux_data;
             return CVOTE_PARSER_INVALID_FORMAT;

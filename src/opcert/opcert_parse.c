@@ -34,11 +34,13 @@ opcert_parser_status_e parse_opcert(buffer_t *buf, parsed_opcert_t *opcert)
     }
 
     // KES period
+    ASSERT_TYPE(opcert->kesPeriod, uint64_t);
     if (!buffer_read_u64(buf, &opcert->kesPeriod, BE)) {
         return KES_PERIOD_PARSING_ERROR;
     }
 
     // issue counter
+    ASSERT_TYPE(opcert->issueCounter, uint64_t);
     if (!buffer_read_u64(buf, &opcert->issueCounter, BE)) {
         return ISSUE_COUNTER_PARSING_ERROR;
     }
