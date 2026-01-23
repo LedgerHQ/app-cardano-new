@@ -118,6 +118,7 @@ bool format_token_amount_mint(const uint8_t* policyId,
 
     explicit_bzero(out, outSize);
 
+    // TODO reevaluate the remark below, maybe use + since Nano S is no longer supported
     out[0] = (amount >= 0)
                  ? ' '
                  : '-';  // + sign instead of the space would be nice, but is unreadable on Nano S
