@@ -53,7 +53,7 @@ end:
 
 WARN_UNUSED_RESULT cx_err_t crypto_get_pubkey(const uint32_t* path,
                                               size_t path_len,
-                                              uint8_t raw_pubkey[static 65],
+                                              uint8_t raw_pubkey[static ED25519_PUBKEY_UNCOMPRESSED_LENGTH],
                                               uint8_t* chain_code) {
     cx_err_t error = CX_OK;
 
@@ -75,7 +75,7 @@ WARN_UNUSED_RESULT cx_err_t crypto_get_pubkey(const uint32_t* path,
                                               0));
 
     // Check pubkey length then copy it to raw_pubkey
-    if (pubkey.W_len != 65) {
+    if (pubkey.W_len != ED25519_PUBKEY_UNCOMPRESSED_LENGTH) {
         error = CX_EC_INVALID_CURVE;
         goto end;
     }
@@ -88,7 +88,7 @@ end:
     if (error != CX_OK) {
         // Make sure the caller doesn't use uninitialized data in case
         // the return code is not checked.
-        explicit_bzero(raw_pubkey, 65);
+        explicit_bzero(raw_pubkey, ED25519_PUBKEY_UNCOMPRESSED_LENGTH);
     }
     return error;
 }
