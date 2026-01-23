@@ -46,12 +46,7 @@ void app_main() {
     command_t cmd = {0};
 
     // Initialize dynamic memory allocator
-    TRACE("Initializing dynamic memory allocator");
-    if (!app_mem_init()) {
-        TRACE("Failed to initialize memory allocator");
-    } else {
-        TRACE("Memory allocator initialized successfully");
-    }
+    LEDGER_ASSERT(app_mem_init(), "Failed to initialize memory allocator");
 
     io_init();
 
