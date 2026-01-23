@@ -3,8 +3,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "transaction/tx.h"
-#include "addressUtils/bip44.h"
+#include "tx.h"
+#include "bip44.h"
 
 /**
  * Checks if a witness path violates the single-account security model.

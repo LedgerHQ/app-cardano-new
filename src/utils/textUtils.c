@@ -1,7 +1,7 @@
-#include "utils/assert.h"
-#include "utils/utils.h"
+#include "assert.h"
+#include "utils.h"
 #include "textUtils.h"
-#include "ui/ui_formatters.h"
+#include "ui_formatters.h"
 #include <string.h>
 #include <stdint.h>
 

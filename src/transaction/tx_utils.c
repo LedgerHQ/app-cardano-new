@@ -18,8 +18,8 @@
 #include "tx_utils.h"
 #include "globals.h"
 #include "bip44.h"
-#include "utils/assert.h"
-#include "utils/utils.h"
+#include "assert.h"
+#include "utils.h"
 
 bool violatesSingleAccountOrStoreIt(const bip44_path_t* path) {
     LEDGER_ASSERT(path != NULL, "NULL path in single-account check");

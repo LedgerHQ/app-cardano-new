@@ -23,7 +23,7 @@
 
 #include "get_serial.h"
 #include "cardano_swo.h"
-#include "utils/assert.h"
+#include "assert.h"
 #include "app_context.h"
 
 /**

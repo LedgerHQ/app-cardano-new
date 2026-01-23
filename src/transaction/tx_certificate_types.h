@@ -5,8 +5,8 @@
 #include <stdint.h>
 
 #include "cardano_constants.h"
-#include "addressUtils/addressUtilsShelley.h"
-#include "memory/flist.h"
+#include "addressUtilsShelley.h"
+#include "flist.h"
 
 // Certificate body types (matches CDDL)
 typedef enum {

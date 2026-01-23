@@ -20,9 +20,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "transaction/tx_credential_types.h"
-#include "transaction/tx_certificate_types.h"
-#include "transaction/tx.h"
+#include "tx_credential_types.h"
+#include "tx_certificate_types.h"
+#include "tx.h"
 
 /**
  * Construct reward address from a credential and format to human-readable string

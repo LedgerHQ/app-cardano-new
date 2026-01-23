@@ -16,18 +16,18 @@
  *****************************************************************************/
 
 #include "buffer.h"
-#include "memory/mem.h"
-#include "memory/flist.h"
+#include "mem.h"
+#include "flist.h"
 
 #include "os.h"
 
 #include "cardano_swo.h"
-#include "utils/assert.h"
-#include "utils/buffer_utils.h"
-#include "utils/utils.h"
-#include "utils/textUtils.h"
+#include "assert.h"
+#include "buffer_utils.h"
+#include "utils.h"
+#include "textUtils.h"
 #include "tx_parse_certificates.h"
-#include "transaction/tx.h"
+#include "tx.h"
 
 /// Wire format for credential type encoding by Python client:
 /// 0x00 = KEY_HASH

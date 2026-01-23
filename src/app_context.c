@@ -2,10 +2,10 @@
 
 #include "globals.h"
 #include "app_context.h"
-#include "utils/utils.h"
-#include "memory/mem.h"
-#include "ui/ui_utils.h"
-#include "ui/ui_warnings.h"
+#include "utils.h"
+#include "mem.h"
+#include "ui_utils.h"
+#include "ui_warnings.h"
 #include "io.h"
 
 void reset_app_context(void) {

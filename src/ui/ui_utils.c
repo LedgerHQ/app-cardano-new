@@ -2,12 +2,12 @@
 
 #include "nbgl_use_case.h"
 #include "ui_utils.h"
-#include "memory/mem_utils.h"
-#include "memory/mem.h"
+#include "mem_utils.h"
+#include "mem.h"
 #include "io.h"
 #include "cardano_swo.h"
-#include "utils/utils.h"
-#include "utils/assert.h"
+#include "utils.h"
+#include "assert.h"
 
 nbgl_contentTagValue_t *g_pairs = NULL;
 nbgl_contentTagValueList_t *g_pairsList = NULL;

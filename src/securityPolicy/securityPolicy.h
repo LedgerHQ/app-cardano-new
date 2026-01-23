@@ -4,14 +4,14 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "addressUtils/addressUtilsShelley.h"
-#include "addressUtils/bip44.h"
-#include "cvote/aux_data_hash_builder.h"
-#include "messageSigning/cip8_types.h"
+#include "addressUtilsShelley.h"
+#include "bip44.h"
+#include "aux_data_hash_builder.h"
+#include "cip8_types.h"
 #include "securityPolicyType.h"
-#include "transaction/tx_aux_data_types.h"
-#include "transaction/tx_hash_builder.h"
-#include "transaction/tx.h"
+#include "tx_aux_data_types.h"
+#include "tx_hash_builder.h"
+#include "tx.h"
 
 #include "securityWarnings.h"
 

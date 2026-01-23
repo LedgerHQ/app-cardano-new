@@ -15,20 +15,20 @@
  *  limitations under the License.
  *****************************************************************************/
 #include "buffer.h"
-#include "memory/mem.h"
+#include "mem.h"
 
 #include "cardano_swo.h"
 #include "app_context.h"
-#include "utils/buffer_utils.h"
-#include "utils/cbor.h"
+#include "buffer_utils.h"
+#include "cbor.h"
 #include "tx_parse.h"
 #include "tx_parse_certificates.h"
 #include "tx_parse_outputs.h"
-#include "transaction/tx.h"
+#include "tx.h"
 #include "utils.h"
-#include "utils/assert.h"
-#include "utils/textUtils.h"
-#include "transaction/tx_constants.h"
+#include "assert.h"
+#include "textUtils.h"
+#include "tx_constants.h"
 #include "tx_output_types.h"
 #include "globals.h"
 

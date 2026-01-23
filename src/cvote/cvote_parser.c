@@ -1,13 +1,13 @@
-#include "cvote/cvote_parser.h"
+#include "cvote_parser.h"
 
 #include <stdint.h>
 #include <string.h>
 
-#include "addressUtils/addressUtilsShelley.h"
+#include "addressUtilsShelley.h"
 #include "globals.h"
-#include "memory/mem.h"
-#include "utils/buffer_utils.h"
-#include "utils/utils.h"
+#include "mem.h"
+#include "buffer_utils.h"
+#include "utils.h"
 
 #define TX_OUTPUT_DESTINATION_THIRD_PARTY 0x01
 #define TX_OUTPUT_DESTINATION_DEVICE_OWNED 0x02

@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include "tx_certificate_types.h"  // For ext_voter_t, vote_t, gov_action_id_t, anchor_t
-#include "memory/flist.h"
+#include "flist.h"
 
 // A single vote: gov_action_id + voting_procedure
 typedef struct {

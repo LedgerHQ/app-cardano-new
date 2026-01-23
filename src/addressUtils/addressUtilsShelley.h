@@ -1,9 +1,9 @@
 #pragma once
 
 #include "cardano_constants.h"
-#include "addressUtils/bip44.h"
-#include "transaction/tx_credential_types.h"
-#include "utils/utils.h"
+#include "bip44.h"
+#include "tx_credential_types.h"
+#include "utils.h"
 
 typedef enum {
     KEY_REFERENCE_PATH = 1,  // device-owned path reference

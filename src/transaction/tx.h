@@ -5,13 +5,13 @@
 #include <stdint.h>
 
 #include "cardano_constants.h"
-#include "memory/flist.h"
-#include "addressUtils/bip44.h"
-#include "transaction/tx_aux_data_types.h"
-#include "transaction/tx_credential_types.h"
-#include "transaction/tx_certificate_types.h"
-#include "transaction/tx_output_types.h"
-#include "transaction/tx_voting_procedure_types.h"
+#include "flist.h"
+#include "bip44.h"
+#include "tx_aux_data_types.h"
+#include "tx_credential_types.h"
+#include "tx_certificate_types.h"
+#include "tx_output_types.h"
+#include "tx_voting_procedure_types.h"
 
 // Mint token limits
 // Note: No artificial limits on asset groups or tokens per mint.

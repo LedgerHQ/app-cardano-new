@@ -4,10 +4,10 @@
 #include <stdbool.h>
 
 #include "hash.h"
-#include "addressUtils/addressUtilsShelley.h"
-#include "transaction/tx.h"
-#include "transaction/tx_output_types.h"
-#include "transaction/tx_credential_types.h"
+#include "addressUtilsShelley.h"
+#include "tx.h"
+#include "tx_output_types.h"
+#include "tx_credential_types.h"
 
 enum {
     TX_BODY_KEY_INPUTS = 0,

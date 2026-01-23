@@ -2,7 +2,7 @@
 
 #include "buffer.h"
 
-#include "transaction/tx.h"
+#include "tx.h"
 
 typedef enum {
     PARSING_OK = 1,

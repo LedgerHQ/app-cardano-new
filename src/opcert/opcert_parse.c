@@ -17,8 +17,8 @@
 #include "buffer.h"
 
 #include "opcert_parse.h"
-#include "utils/utils.h"
-#include "utils/buffer_utils.h"
+#include "utils.h"
+#include "buffer_utils.h"
 #include "opcert_types.h"
 #include "assert.h"
 #include "cardano_swo.h"

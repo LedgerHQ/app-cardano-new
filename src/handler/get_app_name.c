@@ -23,7 +23,7 @@
 #include "get_app_name.h"
 #include "globals.h"
 #include "cardano_swo.h"
-#include "utils/assert.h"
+#include "assert.h"
 #include "app_context.h"
 
 void handler_get_app_name(const buffer_t *data_buffer) {

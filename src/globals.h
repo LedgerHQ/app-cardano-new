@@ -8,12 +8,12 @@
 #include "ux.h"
 #include "cardano_constants.h"
 #include "bip32.h"
-#include "securityPolicy/securityWarnings.h"
-#include "cvote/cvote_parser.h"
-#include "transaction/tx.h"
-#include "transaction/tx_state.h"
-#include "opcert/opcert_types.h"
-#include "apdu/apdu_constants.h"
+#include "securityWarnings.h"
+#include "cvote_parser.h"
+#include "tx.h"
+#include "tx_state.h"
+#include "opcert_types.h"
+#include "apdu_constants.h"
 #include "keyDerivation.h"
 
 /**

@@ -1,13 +1,13 @@
-#include "utils/assert.h"
-#include "utils/buffer_utils.h"
+#include "assert.h"
+#include "buffer_utils.h"
 #include "addressUtilsByron.h"
-#include "keyDerivation/keyDerivation.h"
+#include "keyDerivation.h"
 #include "cbor.h"
 #include "cardano_constants.h"
 #include "hash.h"
 #include "lcx_crc.h"
 #include "cardano_swo.h"
-#include "utils/utils.h"
+#include "utils.h"
 
 #define BYRON_ADDRESS_CBOR_HASH_SIZE 32
 #define ADDRESS_ROOT_SIZE 28

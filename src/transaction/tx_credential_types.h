@@ -1,8 +1,8 @@
 #pragma once
 
 #include "cardano_constants.h"
-#include "addressUtils/bip44.h"
-#include "keyDerivation/keyDerivation.h"
+#include "bip44.h"
+#include "keyDerivation.h"
 
 typedef enum {
     EXT_CREDENTIAL_KEY_HASH = 0,      // Wire: 0x02, CBOR: 0

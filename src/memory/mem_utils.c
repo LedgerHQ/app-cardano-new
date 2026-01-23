@@ -21,7 +21,7 @@
 #include "os_print.h"
 #include "mem.h"
 #include "mem_utils.h"
-#include "utils/assert.h"
+#include "assert.h"
 
 /**
  * Format an unsigned number up to 32-bit into memory into an ASCII string.

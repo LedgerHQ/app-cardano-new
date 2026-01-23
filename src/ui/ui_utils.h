@@ -3,9 +3,9 @@
 #include <stdbool.h>
 #include <string.h>
 #include "nbgl_use_case.h"
-#include "utils/assert.h"
+#include "assert.h"
 #include "ui_constants.h"
-#include "addressUtils/bech32.h"
+#include "bech32.h"
 
 /**
  * UI formatting status - tracks result of UI string generation

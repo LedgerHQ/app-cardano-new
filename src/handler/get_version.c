@@ -25,7 +25,7 @@
 #include "get_version.h"
 #include "globals.h"
 #include "cardano_swo.h"
-#include "utils/assert.h"
+#include "assert.h"
 #include "app_context.h"
 
 void handler_get_version(const buffer_t *data_buffer) {

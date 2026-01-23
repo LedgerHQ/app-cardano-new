@@ -1,4 +1,4 @@
-#include "securityPolicy/securityPolicy.h"
+#include "securityPolicy.h"
 
 security_policy_t policyForDerivePrivateKey(const bip44_path_t* path) {
     switch (bip44_classifyPath(path)) {

@@ -3,10 +3,10 @@
 #if defined(TEST)
 #include "hash.h"
 #else
-#include "crypto/hash.h"
+#include "hash.h"
 #endif
-#include "keyDerivation/keyDerivation.h"
-#include "utils/utils.h"
+#include "keyDerivation.h"
+#include "utils.h"
 
 enum {
     METADATA_KEY_CVOTE_REGISTRATION_PAYLOAD = 61284,

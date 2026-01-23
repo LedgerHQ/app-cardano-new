@@ -19,7 +19,7 @@
 #include "ui_utils.h"
 #include "ui_constants.h"
 #include "nbgl_use_case.h"
-#include "utils/assert.h"
+#include "assert.h"
 #include "io.h"
 #include "cardano_swo.h"
 #include "glyphs.h"

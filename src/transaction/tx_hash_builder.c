@@ -1,9 +1,9 @@
-#include "transaction/tx_hash_builder.h"
+#include "tx_hash_builder.h"
 #include "hash.h"
 #include "cbor.h"
 #include "write.h"
-#include "utils/assert.h"
-#include "utils/utils.h"
+#include "assert.h"
+#include "utils.h"
 #include <string.h>
 
 /*

@@ -2,7 +2,7 @@
 
 #include <stdbool.h>
 #include "securityPolicy.h"
-#include "addressUtils/bip44.h"
+#include "bip44.h"
 
 /**
  * Transaction display and signing UI functions

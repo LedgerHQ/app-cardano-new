@@ -4,11 +4,11 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "addressUtils/addressUtilsShelley.h"
+#include "addressUtilsShelley.h"
 #include "buffer.h"
 #include "cardano_constants.h"
-#include "cvote/aux_data_hash_builder.h"
-#include "transaction/tx_credential_types.h"
+#include "aux_data_hash_builder.h"
+#include "tx_credential_types.h"
 
 typedef enum {
     CVOTE_PARSER_OK = 0,

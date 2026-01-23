@@ -1,7 +1,7 @@
 #pragma once
 
 #include "buffer.h"
-#include "transaction/tx.h"
+#include "tx.h"
 #include "tx_parse.h"
 
 /**

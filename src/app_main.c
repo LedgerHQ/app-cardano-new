@@ -28,8 +28,8 @@
 #include "menu.h"
 #include "dispatcher.h"
 #include "cardano_settings.h"
-#include "memory/mem.h"
-#include "utils/utils.h"
+#include "mem.h"
+#include "utils.h"
 #include "app_context.h"
 
 global_ctx_t G_context;

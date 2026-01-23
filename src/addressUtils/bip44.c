@@ -1,7 +1,7 @@
 #include "bip44.h"
 #include "hash.h"
 #include "keyDerivation.h"
-#include "utils/utils.h"
+#include "utils.h"
 #include "cardano_swo.h"
 #include "read.h"
 

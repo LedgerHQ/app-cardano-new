@@ -22,8 +22,8 @@
 // modified by Vacuumlabs
 
 #include <string.h>
-#include "utils/assert.h"
-#include "utils/utils.h"
+#include "assert.h"
+#include "utils.h"
 #include "bech32.h"
 
 uint32_t bech32_polymod_step(uint32_t pre) {

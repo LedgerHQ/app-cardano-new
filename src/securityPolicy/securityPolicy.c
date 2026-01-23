@@ -4,9 +4,9 @@
 #include "addressUtilsShelley.h"
 #include "addressUtilsByron.h"
 #include "cardano_settings.h"
-#include "addressUtils/bip44.h"
-#include "transaction/tx_hash_builder.h"
-#include "transaction/tx_utils.h"
+#include "bip44.h"
+#include "tx_hash_builder.h"
+#include "tx_utils.h"
 
 #define HIGH_FEE_WARNING_THRESHOLD 5000000
 

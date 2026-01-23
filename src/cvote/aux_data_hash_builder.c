@@ -1,8 +1,8 @@
-#include "cvote/aux_data_hash_builder.h"
+#include "aux_data_hash_builder.h"
 
 #include "cardano_constants.h"
 #include "cbor.h"
-#include "utils/utils.h"
+#include "utils.h"
 #include <string.h>
 
 enum {

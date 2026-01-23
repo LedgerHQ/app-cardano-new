@@ -2,7 +2,7 @@
 
 #include "cx.h"
 
-#include "utils/utils.h"
+#include "utils.h"
 
 // This file provides convenience functions for using firmware hashing api
 

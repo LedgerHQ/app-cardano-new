@@ -6,8 +6,8 @@
 #include <stdint.h>
 
 #include "cardano_constants.h"
-#include "memory/flist.h"
-#include "addressUtils/addressUtilsShelley.h"
+#include "flist.h"
+#include "addressUtilsShelley.h"
 
 #define ASSET_NAME_HASH_SIZE 32
 #define ASSET_NAME_DISPLAY_SIZE 32

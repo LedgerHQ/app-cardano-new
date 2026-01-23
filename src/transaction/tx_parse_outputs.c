@@ -16,9 +16,9 @@
  *****************************************************************************/
 
 #include "tx_parse_outputs.h"
-#include "utils/assert.h"
-#include "utils/buffer_utils.h"
-#include "addressUtils/addressUtilsShelley.h"
+#include "assert.h"
+#include "buffer_utils.h"
+#include "addressUtilsShelley.h"
 #include "cardano_swo.h"
 
 parser_status_e parse_output_destination(buffer_t* buf,

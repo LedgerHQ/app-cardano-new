@@ -1,6 +1,6 @@
 #include "cardano_tokens.h"
 #include "buffer_utils.h"
-#include "ui/ui_formatters.h"
+#include "ui_formatters.h"
 #include "hash.h"
 #include "os.h"
 

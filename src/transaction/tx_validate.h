@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cardano_swo.h"
-#include "transaction/tx_ui_plan.h"
+#include "tx_ui_plan.h"
 
 /**
  * @file tx_validate.h

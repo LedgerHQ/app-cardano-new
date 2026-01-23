@@ -1,11 +1,11 @@
 #include "ui_formatters.h"
-#include "utils/utils.h"
-#include "utils/textUtils.h"
-#include "utils/ipUtils.h"
+#include "utils.h"
+#include "textUtils.h"
+#include "ipUtils.h"
 #include "format.h"
-#include "cardano_tokens/cardano_tokens.h"
+#include "cardano_tokens.h"
 #include "cardano_constants.h"
-#include "addressUtils/bech32.h"
+#include "bech32.h"
 #include <string.h>
 
 static const char *getCertificateTypeName(certificate_type_t type) {

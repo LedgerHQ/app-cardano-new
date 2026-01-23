@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#include "utils/utils.h"
+#include "utils.h"
 
 typedef enum {
     WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH = 0,

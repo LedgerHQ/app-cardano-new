@@ -20,7 +20,7 @@
 #include "glyphs.h"
 #include "nbgl_use_case.h"
 #include "main_std_app.h"
-#include "utils/utils.h"
+#include "utils.h"
 
 #include "globals.h"
 #include "menu.h"
