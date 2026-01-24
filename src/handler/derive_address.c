@@ -3,7 +3,6 @@
 #include "utils/utils.h"
 #include "buffer.h"
 #include "derive_address.h"
-#include "deriveAddress/deriveAddress_types.h"
 #include "cardano_swo.h"
 #include "globals.h"
 #include "apdu_constants.h"
@@ -21,7 +20,7 @@
 #include "ui/ui_display_address_derivation.h"
 
 static void prepareResponse() {
-    // Verify we're at the expected state: parameters parsed and policy validated
+    // Verify we're at the expected state: parameters validated by policy
     LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS,
                   "prepareResponse called without REQUEST_DERIVE_ADDRESS");
     LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_VALIDATED,
@@ -39,7 +38,7 @@ static void prepareResponse() {
     G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_PREPARED;
 }
 
-void handler_derive_address(buffer_t *cdata, uint8_t display_type) {
+void handler_derive_address(buffer_t *cdata, uint8_t p1) {
     G_context.req_type = REQUEST_DERIVE_ADDRESS;
     G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_NONE;
     if (!cdata->ptr) {
@@ -56,10 +55,15 @@ void handler_derive_address(buffer_t *cdata, uint8_t display_type) {
         return;
     }
 
-    TRACE("Display type: %d", display_type);
-    switch (display_type) {
+    // Parameters successfully parsed
+    G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_PARSED;
+
+    TRACE("Display type: %d", p1);
+    switch (p1) {
         case P1_ADDRESS_RETURN: {
             TRACE("ADDRESS_RETURN");
+            LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED,
+                          "handleReturn called in wrong state: %d", G_context.state.derive_address_state);
             warning_bits_t warnings = 0;
             warning_bits_init(&warnings);
             security_policy_t policy = policyForReturnDeriveAddress(&ctx->addressParams, &warnings);
@@ -76,6 +80,8 @@ void handler_derive_address(buffer_t *cdata, uint8_t display_type) {
         }
         case P1_ADDRESS_DISPLAY: {
             TRACE("ADDRESS_DISPLAY");
+            LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED,
+                          "handleDisplay called in wrong state: %d", G_context.state.derive_address_state);
             warning_bits_t warnings = 0;
             warning_bits_init(&warnings);
             security_policy_t policy = policyForShowDeriveAddress(&ctx->addressParams, &warnings);

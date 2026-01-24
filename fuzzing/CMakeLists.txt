@@ -104,7 +104,6 @@ include_directories(
     ${CARDANO_PATH}/src/cardano_tokens
     ${CARDANO_PATH}/src/cvote
     ${CARDANO_PATH}/src/crypto
-    ${CARDANO_PATH}/src/deriveAddress
     ${CARDANO_PATH}/src/handler
     ${CARDANO_PATH}/src/keyDerivation
     ${CARDANO_PATH}/src/memory

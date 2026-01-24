@@ -11,11 +11,48 @@
 #include "securityWarnings.h"
 #include "cvote_parser.h"
 #include "tx.h"
-#include "tx_state.h"
 #include "opcert_types.h"
 #include "apdu_constants.h"
-#include "deriveAddress_types.h"
 #include "keyDerivation.h"
+#include "addressUtilsShelley.h"
+
+/**
+ * State machine for transaction processing.
+ * Tracks the progression through receiving, parsing, hashing, UI preparation, and approval.
+ */
+typedef enum {
+    TX_STATE_NONE,         /// idle
+    TX_STATE_AUX_DATA,     /// receiving CVote aux data
+    TX_STATE_CHUNKS,       /// receiving transaction chunks
+    TX_STATE_RECEIVED,     /// all chunks received, waiting to parse
+    TX_STATE_PARSED,       /// transaction parsed, ready for hashing
+    TX_STATE_HASHED,       /// hash computed, UI plan ready
+    TX_STATE_UI_PREPARED,  /// UI strings prepared
+    TX_STATE_APPROVED      /// user approved, waiting for witnesses
+} tx_state_e;
+
+/**
+ * State machine for operational certificate signing.
+ * Tracks the progression through parsing, validation, and approval phases.
+ */
+typedef enum {
+    OPCERT_STATE_NONE,        /// idle
+    OPCERT_STATE_PARSED,      /// parsed from bytes, waiting for policy validation
+    OPCERT_STATE_VALIDATED,   /// parsed and security policy validated, waiting for approval
+    OPCERT_STATE_APPROVED     /// user approved, waiting for signature
+} opcert_state_e;
+
+/**
+ * State machine for address derivation operation.
+ * Tracks the progression through parsing, validation, derivation, and approval phases.
+ */
+typedef enum {
+    DERIVE_ADDRESS_STATE_NONE,        /// idle
+    DERIVE_ADDRESS_STATE_PARSED,      /// parameters parsed, waiting for policy validation
+    DERIVE_ADDRESS_STATE_VALIDATED,   /// parameters parsed, security policy validated
+    DERIVE_ADDRESS_STATE_PREPARED,    /// address derived and ready
+    DERIVE_ADDRESS_STATE_APPROVED     /// user approved or auto-approved
+} derive_address_state_e;
 
 /**
  * Tracks stored account metadata for the single-account security model.
@@ -74,6 +111,17 @@ typedef struct {
     extendedPublicKey_t extPubKey;
     bool silentExport;
 } pubkey_ctx_t;
+
+/**
+ * Structure for derive address information context.
+ */
+typedef struct {
+    addressParams_t addressParams;
+    struct {
+        uint8_t buffer[MAX_ADDRESS_LENGTH];
+        size_t size;
+    } address;
+} derive_address_ctx_t;
 
 /**
  * Global context for user requests.
