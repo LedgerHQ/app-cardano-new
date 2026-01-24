@@ -60,6 +60,9 @@ class CommandSender:
     def get_version(self) -> RAPDU:
         return self._exchange(self._cmd_builder.get_version())
 
+    def get_app_name(self) -> RAPDU:
+        return self._exchange(self._cmd_builder.get_app_name())
+
     def get_serial(self) -> RAPDU:
         return self._exchange(self._cmd_builder.get_serial())
 

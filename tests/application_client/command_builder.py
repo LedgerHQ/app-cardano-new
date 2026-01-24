@@ -269,6 +269,9 @@ class CommandBuilder:
     def get_version(self) -> bytes:
         return self._serialize(InsType.INS_GET_VERSION)
 
+    def get_app_name(self) -> bytes:
+        return self._serialize(InsType.INS_GET_APP_NAME)
+
     def get_serial(self) -> bytes:
         return self._serialize(InsType.INS_GET_SERIAL)
 
