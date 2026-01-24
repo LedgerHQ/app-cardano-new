@@ -11,7 +11,7 @@
 #include "hexUtils.h"
 #include "utils/utils.h"
 #include "addressUtils/bip44.h"
-#include "mocks/crypto_mock_data.h"
+#include "mock_crypto/crypto_mock_data.h"
 
 /**
  * Unit tests for Operational Certificate message construction and validation.

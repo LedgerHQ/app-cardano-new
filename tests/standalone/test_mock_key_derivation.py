@@ -1,7 +1,7 @@
 """
 Test that verifies unit test mock key derivation data matches the standard test mnemonic.
 
-This ensures that hardcoded mock data in unit-tests/mocks/crypto_mock_data.h
+This ensures that hardcoded mock data in unit-tests/mock_crypto/crypto_mock_data.h
 stays synchronized with actual key derivation from the standard test mnemonic:
 "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
 
@@ -57,7 +57,7 @@ def parse_mock_paths_from_header():
     """
     # Find the header file
     test_dir = Path(__file__).parent
-    header_file = test_dir.parent.parent / "unit-tests" / "mocks" / "crypto_mock_data.h"
+    header_file = test_dir.parent.parent / "unit-tests" / "mock_crypto" / "crypto_mock_data.h"
 
     if not header_file.exists():
         pytest.skip(f"Mock data header not found: {header_file}")
@@ -140,14 +140,14 @@ def test_all_mock_key_derivation(backend: BackendInterface) -> None:
             f"{description} ({path}): Public key mismatch!\n" \
             f"  Expected: {expected_pubkey.hex()}\n" \
             f"  Derived:  {derived_pk.hex()}\n" \
-            f"  Check unit-tests/mocks/crypto_mock_data.h"
+            f"  Check unit-tests/mock_crypto/crypto_mock_data.h"
 
         # Verify chain code - this MUST match or test fails
         assert derived_chaincode == expected_chaincode, \
             f"{description} ({path}): Chain code mismatch!\n" \
             f"  Expected: {expected_chaincode.hex()}\n" \
             f"  Derived:  {derived_chaincode.hex()}\n" \
-            f"  Check unit-tests/mocks/crypto_mock_data.h"
+            f"  Check unit-tests/mock_crypto/crypto_mock_data.h"
 
         # Calculate and verify blake2b-224 key hash - this MUST match or test fails
         calculated_keyhash = hashlib.blake2b(derived_pk, digest_size=28).digest()

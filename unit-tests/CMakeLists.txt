@@ -65,6 +65,7 @@ include_directories($ENV{BOLOS_SDK}/include)
 include_directories($ENV{BOLOS_SDK}/lib_alloc)
 include_directories($ENV{BOLOS_SDK}/lib_cxng/include)
 include_directories($ENV{BOLOS_SDK}/lib_nbgl/include)
+include_directories(test_utils)
 
 add_compile_definitions(HAVE_CRC)
 add_compile_definitions(HAVE_PRINTF)
@@ -150,7 +151,7 @@ add_executable(test_tx_hash_builder
 )
 add_executable(test_tx_prepare
     test_tx_prepare.c
-    mock_globals.c
+    mock_sources/mock_globals.c
     ../src/transaction/tx_validate.c
     ../src/transaction/tx_parse.c
     ../src/transaction/tx_parse_certificates.c
@@ -226,7 +227,7 @@ add_library(apdu_parser SHARED $ENV{BOLOS_SDK}/lib_standard_app/parser.c)
 
 # App-specific libraries (testing the REAL source files!)
 # The mock_includes/ directory is prioritized so our SDK mocks override Ledger SDK headers
-add_library(hex_utils SHARED hexUtils.c)
+add_library(hex_utils SHARED test_utils/hexUtils.c)
 target_link_libraries(hex_utils PUBLIC c)
 add_library(bech32_lib SHARED ../src/addressUtils/bech32.c)
 target_link_libraries(bech32_lib PUBLIC c)
@@ -239,7 +240,7 @@ target_link_libraries(cbor_lib PUBLIC c m read)
 add_library(buffer_utils_lib SHARED ../src/utils/buffer_utils.c)
 target_link_libraries(buffer_utils_lib PUBLIC c cbor_lib buffer write)
 add_library(crypto_mocks_lib SHARED
-    mocks/crypto_mocks.c
+    mock_crypto/crypto_mocks.c
 )
 target_link_libraries(crypto_mocks_lib PUBLIC c)
 add_library(mock_printf STATIC mock_sources/printf_stub.c)
@@ -252,7 +253,7 @@ add_library(cx_crc_support SHARED
 target_link_libraries(cx_crc_support PUBLIC c)
 
 set(SIGN_TX_COMMON_SOURCES
-    mock_globals.c
+    mock_sources/mock_globals.c
     ../src/memory/flist.c
     ../src/handler/sign_tx.c
     ../src/cvote/cvote_parser.c
@@ -588,7 +589,7 @@ add_test(test_address_utils_shelley test_address_utils_shelley)
 add_test(test_key_derivation test_key_derivation)
 add_test(test_message_signing test_message_signing)
 
-add_executable(test_opcert_message test_opcert_message.c hexUtils.c)
+add_executable(test_opcert_message test_opcert_message.c test_utils/hexUtils.c)
 target_link_libraries(test_opcert_message PUBLIC cmocka gcov)
 add_test(test_opcert_message test_opcert_message)
 

@@ -1357,8 +1357,8 @@ def regenerate_mock_data() -> None:
             lines.append(prefix + "0x" + ", 0x".join(f"{b:02x}" for b in chunk))
         return (",\n" + indent).join(lines)
 
-    input_file = UNIT_TESTS_DIR / "mocks" / "crypto_mock_data.h"
-    temp_output_file = UNIT_TESTS_DIR / "mocks" / "crypto_mock_data_regenerated.h"
+    input_file = UNIT_TESTS_DIR / "mock_crypto" / "crypto_mock_data.h"
+    temp_output_file = UNIT_TESTS_DIR / "mock_crypto" / "crypto_mock_data_regenerated.h"
 
     content = input_file.read_text()
 
@@ -1537,7 +1537,7 @@ def main() -> None:
     subparsers.add_parser("fixtures", help="Generate sign-tx fixture headers.")
     subparsers.add_parser("generate-test-runners", help="Regenerate test_sign_tx_*.c files.")
     subparsers.add_parser("rejects", help="Generate reject fixture headers.")
-    subparsers.add_parser("mock-data", help="Regenerate mocks/crypto_mock_data.h.")
+    subparsers.add_parser("mock-data", help="Regenerate mock_crypto/crypto_mock_data.h.")
 
     args = parser.parse_args()
 
