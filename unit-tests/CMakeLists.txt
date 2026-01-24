@@ -175,7 +175,6 @@ add_executable(test_tx_prepare
     ../src/app_context.c
     mock_sources/mem_alloc_stub.c
     mock_sources/glyphs_mock.c
-    mock_sources/display_stub.c
     mock_sources/hex_stub.c
     mock_sources/io_stub.c
 )
@@ -280,9 +279,9 @@ set(SIGN_TX_COMMON_SOURCES
     ../src/memory/mem_utils.c
     mock_sources/mem_alloc_stub.c
     mock_sources/glyphs_mock.c
-    mock_sources/display_stub.c
     mock_sources/hex_stub.c
     mock_sources/io_stub.c
+    mock_sources/ui_display_tx_stub.c
 )
 set(SIGN_TX_COMMON_LIBS
     text_utils

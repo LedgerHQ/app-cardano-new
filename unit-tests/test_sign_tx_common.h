@@ -7,7 +7,6 @@
 
 #include "buffer.h"
 #include "handler/sign_tx.h"
-#include "display.h"
 #include "hexUtils.h"
 #include "transaction/tx.h"
 #include "blake2b.h"
@@ -16,6 +15,7 @@
 #include "cardano_constants.h"
 #include "test_fixture_types.h"
 #include "apdu/dispatcher.h"
+#include "ui/ui_display_tx.h"
 
 extern bool app_mem_init(void);
 extern bool unit_test_expert_mode_enabled;

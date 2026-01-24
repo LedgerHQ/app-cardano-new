@@ -13,12 +13,12 @@
 #include "buffer.h"
 #include "cardano_swo.h"
 #include "globals.h"
-#include "display.h"
 #include "securityPolicy/securityPolicy.h"
 #include "transaction/tx_utils.h"
 #include "transaction/tx_parse.h"
 #include "hexUtils.h"
 #include "utils/utils.h"
+#include "ui/ui_display_tx.h"
 
 typedef enum {
     STATUS_TYPE_TRANSACTION_SIGNED = 0,

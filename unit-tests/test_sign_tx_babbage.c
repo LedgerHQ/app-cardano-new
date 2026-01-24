@@ -15,7 +15,6 @@
 #include "cardano_swo.h"
 #include "cardano_constants.h"
 #include "globals.h"
-#include "display.h"
 #include "transaction/tx.h"
 #include "transaction/tx_parse.h"
 #include "securityPolicy/securityPolicy.h"

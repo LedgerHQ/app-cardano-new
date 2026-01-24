@@ -1,4 +1,4 @@
-#include "display.h"
+#include "ui/ui_display_tx.h"
 #include "ui/ui_utils.h"
 #include "ui/ui_warnings.h"
 
