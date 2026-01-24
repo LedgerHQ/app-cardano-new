@@ -509,7 +509,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
                          WARNING_BIT_POOL_REGISTRATION_NO_OWNERS);
         {
             START_COUNT();
-            UI_ADD_STATIC(UI_STATIC_LABEL("Pool owners"), UI_STATIC_LABEL("None"));
+            UI_ADD_STATIC(UI_STATIC_LABEL("Pool owners"), UI_STATIC_LABEL("(none)"));
             CHECK_COUNT(UI_PAIRS_POOL_NO_OWNERS);
         }
     }
@@ -598,7 +598,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
                          WARNING_BIT_POOL_REGISTRATION_NO_RELAYS);
         {
             START_COUNT();
-            UI_ADD_STATIC(UI_STATIC_LABEL("Pool relays"), UI_STATIC_LABEL("None"));
+            UI_ADD_STATIC(UI_STATIC_LABEL("Pool relays"), UI_STATIC_LABEL("(none)"));
             CHECK_COUNT(UI_PAIRS_POOL_NO_RELAYS);
         }
     }
@@ -609,7 +609,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
 
         if (no_metadata_policy == POLICY_SHOW) {
             START_COUNT();
-            UI_ADD_STATIC(UI_STATIC_LABEL("Metadata"), UI_STATIC_LABEL("none (anonymous pool)"));
+            UI_ADD_STATIC(UI_STATIC_LABEL("Metadata"), UI_STATIC_LABEL("(none)"));
             CHECK_COUNT(UI_PAIRS_POOL_NO_METADATA);
         }
     } else {
