@@ -61,27 +61,5 @@
 #define IS_SIGNED_TYPE(type) (((type)(-1)) < 0)
 #define IS_SIGNED(var)       (((typeof(var))(-1)) < 0)
 
-/**
- * Parse item inclusion flag for optional transaction fields.
- *
- * @param value The inclusion flag byte (ITEM_INCLUDED_YES or ITEM_INCLUDED_NO)
- * @param[out] result Pointer to store the result (true if included, false otherwise)
- * @return true if parsing succeeded, false if value is invalid
- */
-typedef enum {
-    ITEM_INCLUDED_NO = 1,   // Field is not included
-    ITEM_INCLUDED_YES = 2,  // Field is included
-} item_included_e;
-
-static inline bool parseIncluded(uint8_t value, bool* result) {
-    switch (value) {
-        case ITEM_INCLUDED_YES:
-            *result = true;
-            return true;
-        case ITEM_INCLUDED_NO:
-            *result = false;
-            return true;
-        default:
-            return false;
-    }
-}
+// Item inclusion parsing moved to parsers/parsers.h
+#include "parsers/parsers.h"

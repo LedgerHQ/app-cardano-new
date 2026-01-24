@@ -24,16 +24,16 @@ def test_bad_ins(backend: BackendInterface) -> None:
 # Ensure the app returns an error when a bad P1 or P2 is used
 def test_wrong_p1p2(backend: BackendInterface) -> None:
     with pytest.raises(ExceptionRAPDU) as e:
-        backend.exchange(cla=CLA, ins=InsType.INS_GET_VERSION, p1=P1Type.P1_UNUSED + 1, p2=P2Type.P2_LAST)
+        backend.exchange(cla=CLA, ins=InsType.INS_GET_VERSION, p1=P1Type.P1_UNUSED + 1, p2=P2Type.P2_TX_LAST)
     assert e.value.status == StatusWord.SWO_INCORRECT_P1_P2
     with pytest.raises(ExceptionRAPDU) as e:
-        backend.exchange(cla=CLA, ins=InsType.INS_GET_VERSION, p1=P1Type.P1_UNUSED, p2=P2Type.P2_MORE)
+        backend.exchange(cla=CLA, ins=InsType.INS_GET_VERSION, p1=P1Type.P1_UNUSED, p2=P2Type.P2_TX_MORE)
     assert e.value.status == StatusWord.SWO_INCORRECT_P1_P2
     with pytest.raises(ExceptionRAPDU) as e:
-        backend.exchange(cla=CLA, ins=InsType.INS_GET_APP_NAME, p1=P1Type.P1_UNUSED + 1, p2=P2Type.P2_LAST)
+        backend.exchange(cla=CLA, ins=InsType.INS_GET_APP_NAME, p1=P1Type.P1_UNUSED + 1, p2=P2Type.P2_TX_LAST)
     assert e.value.status == StatusWord.SWO_INCORRECT_P1_P2
     with pytest.raises(ExceptionRAPDU) as e:
-        backend.exchange(cla=CLA, ins=InsType.INS_GET_APP_NAME, p1=P1Type.P1_UNUSED, p2=P2Type.P2_MORE)
+        backend.exchange(cla=CLA, ins=InsType.INS_GET_APP_NAME, p1=P1Type.P1_UNUSED, p2=P2Type.P2_TX_MORE)
     assert e.value.status == StatusWord.SWO_INCORRECT_P1_P2
 
 
@@ -76,7 +76,7 @@ def test_invalid_state(backend: BackendInterface) -> None:
     with pytest.raises(ExceptionRAPDU) as e:
         backend.exchange(cla=CLA,
                          ins=InsType.INS_SIGN_TX,
-                         p1=P1Type.P1_TX_WITNESSES,
+                         p1=P1Type.P1_TX_SIGN_WITNESS,
                          p2=P2Type.P2_UNUSED,
                          data=b"")
     assert e.value.status == StatusWord.SWO_BAD_STATE

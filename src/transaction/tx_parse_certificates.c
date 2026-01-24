@@ -28,94 +28,14 @@
 #include "textUtils.h"
 #include "tx_parse_certificates.h"
 #include "tx.h"
-
-/// Wire format for credential type encoding by Python client:
-/// 0x00 = KEY_HASH
-/// 0x01 = SCRIPT_HASH
-/// 0x02 = KEY_PATH (converted to KEY_HASH before CBOR serialization)
-/// CBOR credential types (tx_hash_builder, per CDDL): 0=KEY_HASH, 1=SCRIPT_HASH
-static parser_status_e _parse_credential_type(buffer_t *buf, ext_credential_type_t *cred_type) {
-    uint8_t cred_type_wire;
-    if (!buffer_read_u8(buf, &cred_type_wire)) {
-        TRACE("Failed to read credential type byte");
-        return CERTIFICATES_PARSING_ERROR;
-    }
-
-    TRACE("Parsing credential type wire=0x%02x", cred_type_wire);
-
-    switch (cred_type_wire) {
-        case EXT_CREDENTIAL_KEY_HASH:
-            *cred_type = EXT_CREDENTIAL_KEY_HASH;
-            TRACE("Credential type: KEY_HASH");
-            break;
-        case EXT_CREDENTIAL_SCRIPT_HASH:
-            *cred_type = EXT_CREDENTIAL_SCRIPT_HASH;
-            TRACE("Credential type: SCRIPT_HASH");
-            break;
-        case EXT_CREDENTIAL_KEY_PATH:
-            *cred_type = EXT_CREDENTIAL_KEY_PATH;
-            TRACE("Credential type: KEY_PATH");
-            break;
-        default:
-            TRACE("Invalid credential type wire value: 0x%02x", cred_type_wire);
-            return CERTIFICATES_PARSING_ERROR;
-    }
-    return PARSING_OK;
-}
-
-/// Parse credential data based on its type
-static parser_status_e _parse_credential_data(buffer_t *buf,
-                                              ext_credential_type_t cred_type,
-                                              ext_credential_t *credential) {
-    TRACE("Parsing credential data for type=%u", cred_type);
-    switch (cred_type) {
-        case EXT_CREDENTIAL_KEY_PATH:
-            if (!buffer_read_bip44_path(buf, &credential->keyPath)) {
-                TRACE("Failed to read BIP44 path");
-                return CERTIFICATES_PARSING_ERROR;
-            }
-            TRACE("Successfully parsed KEY_PATH credential");
-            break;
-        case EXT_CREDENTIAL_KEY_HASH: {
-            if (!buffer_read_bytes_ptr(buf, &credential->keyHash, ADDRESS_KEY_HASH_LENGTH)) {
-                TRACE("Failed to read key hash");
-                return CERTIFICATES_PARSING_ERROR;
-            }
-            ASSERT(credential->keyHash != NULL);
-            TRACE("Successfully parsed KEY_HASH credential");
-            break;
-        }
-        case EXT_CREDENTIAL_SCRIPT_HASH: {
-            if (!buffer_read_bytes_ptr(buf, &credential->scriptHash, SCRIPT_HASH_LENGTH)) {
-                TRACE("Failed to read script hash");
-                return CERTIFICATES_PARSING_ERROR;
-            }
-            ASSERT(credential->scriptHash != NULL);
-            TRACE("Successfully parsed SCRIPT_HASH credential");
-            break;
-        }
-        default:
-            TRACE("Invalid credential type: %u", cred_type);
-            return CERTIFICATES_PARSING_ERROR;
-    }
-    return PARSING_OK;
-}
+#include "parsers/parsers.h"
 
 /// Parse a complete stake credential (type + data)
 parser_status_e parse_stake_credential(buffer_t *buf, ext_credential_t *credential) {
     TRACE("Parsing stake credential");
-    ext_credential_type_t cred_type = {0};
-    parser_status_e status = _parse_credential_type(buf, &cred_type);
-    if (status != PARSING_OK) {
-        TRACE("Failed to parse credential type");
-        return status;
-    }
-    credential->type = cred_type;
-
-    status = _parse_credential_data(buf, cred_type, credential);
-    if (status != PARSING_OK) {
-        TRACE("Failed to parse credential data");
-        return status;
+    if (!parse_ext_credential(buf, credential)) {
+        TRACE("Failed to parse stake credential");
+        return CERTIFICATES_PARSING_ERROR;
     }
     TRACE("Successfully parsed stake credential");
     return PARSING_OK;
@@ -197,19 +117,10 @@ parser_status_e parse_certificate_stake_pool_retirement(buffer_t *buf,
     TRACE("Parsing STAKE_POOL_RETIREMENT certificate, buf->offset=%u buf->size=%u", buf->offset, buf->size);
     cert_data->type = CERTIFICATE_STAKE_POOL_RETIREMENT;
 
-    ext_credential_type_t pool_cred_type = {0};
-    TRACE("About to parse pool credential type at offset=%u", buf->offset);
-    parser_status_e status = _parse_credential_type(buf, &pool_cred_type);
-    if (status != PARSING_OK) {
-        TRACE("Failed to parse pool credential type, status=%d", status);
-        return status;
-    }
-
-    cert_data->poolCredential.type = pool_cred_type;
-    status = _parse_credential_data(buf, pool_cred_type, &cert_data->poolCredential);
-    if (status != PARSING_OK) {
-        TRACE("Failed to parse pool credential data");
-        return status;
+    TRACE("About to parse pool credential at offset=%u", buf->offset);
+    if (!parse_ext_credential(buf, &cert_data->poolCredential)) {
+        TRACE("Failed to parse pool credential");
+        return CERTIFICATES_PARSING_ERROR;
     }
 
     ASSERT_TYPE(cert_data->retirementEpoch, uint64_t);
@@ -399,16 +310,9 @@ parser_status_e parse_certificate_authorize_committee_hot(buffer_t *buf,
 
     // Second credential is the hot credential
     TRACE("Parsing hot credential");
-    status = _parse_credential_type(buf, &cert_data->hotCredential.type);
-    if (status != PARSING_OK) {
-        TRACE("Failed to parse hot credential type");
-        return status;
-    }
-
-    status = _parse_credential_data(buf, cert_data->hotCredential.type, &cert_data->hotCredential);
-    if (status != PARSING_OK) {
-        TRACE("Failed to parse hot credential data");
-        return status;
+    if (!parse_ext_credential(buf, &cert_data->hotCredential)) {
+        TRACE("Failed to parse hot credential");
+        return CERTIFICATES_PARSING_ERROR;
     }
     TRACE("Successfully parsed AUTHORIZE_COMMITTEE_HOT");
     return PARSING_OK;

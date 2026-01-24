@@ -100,7 +100,7 @@ def _generate_fixture_code_for_one_test_case(
     
     # Determine if address should be displayed to user or just returned
     should_display_address = getattr(test_case, "displayAddress", False)
-    p1_parameter = P1Type.P1_DISPLAY if should_display_address else P1Type.P1_RETURN
+    p1_parameter = P1Type.P1_ADDRESS_DISPLAY if should_display_address else P1Type.P1_ADDRESS_RETURN
     
     # Generate complete APDU command using trusted serialization
     complete_apdu = command_builder.derive_address(p1_parameter, test_case)

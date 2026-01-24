@@ -5,7 +5,7 @@
 
 #include "dispatcher.h"
 #include "fuzz_helpers.h"
-#include "apdu/apdu_constants.h"
+#include "apdu/dispatcher.h"
 
 /**
  * Fuzzing harness for operational certificate signing.

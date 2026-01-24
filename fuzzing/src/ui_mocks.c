@@ -180,3 +180,27 @@ void nbgl_useCaseReviewLight(nbgl_operationType_t operationType,
     UNUSED(finishTitle);
     UNUSED(choiceCallback);
 }
+
+void nbgl_useCaseReviewStreamingStart(nbgl_operationType_t operationType,
+                                      const nbgl_icon_details_t *icon,
+                                      const char *reviewTitle,
+                                      const char *reviewSubTitle,
+                                      nbgl_choiceCallback_t choiceCallback) {
+    UNUSED(operationType);
+    UNUSED(icon);
+    UNUSED(reviewTitle);
+    UNUSED(reviewSubTitle);
+    UNUSED(choiceCallback);
+}
+
+void nbgl_useCaseReviewStreamingContinue(const nbgl_contentTagValueList_t *tagValueList,
+                                         nbgl_choiceCallback_t choiceCallback) {
+    UNUSED(tagValueList);
+    UNUSED(choiceCallback);
+}
+
+void nbgl_useCaseReviewStreamingFinish(const char *finishTitle,
+                                       nbgl_choiceCallback_t choiceCallback) {
+    UNUSED(finishTitle);
+    UNUSED(choiceCallback);
+}

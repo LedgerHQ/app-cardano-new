@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "utils/utils.h"
 #include "buffer.h"
 #include "derive_native_script_hash.h"
@@ -19,6 +21,8 @@
 #include "bip44.h"
 #include "buffer_utils.h"
 #include "cardano_swo.h"
+#include "parsers/parsers.h"
+#include "addressUtils/addressUtilsShelley.h"
 
 // Complex native script handlers
 static void deriveNativeScriptHash_handleAll() {
@@ -48,7 +52,7 @@ static void deriveNativeScriptHash_handleNofK(buffer_t *cdata) {
     bool read32 = buffer_read_u32(cdata, &ctx->scriptContent.requiredScripts, BE);
     if (read32 == false) {
         TRACE("Failed to read requiredScripts");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_TYPE);
         return;
     }
     if (ctx->complexScripts[ctx->level].remainingScripts < ctx->scriptContent.requiredScripts) {
@@ -106,65 +110,52 @@ static inline bool areMoreScriptsExpected() {
 }
 
 // Simple native script handlers
-static void deriveNativeScriptHash_handleDeviceOwnedPubkey(buffer_t *cdata) {
-    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
-    bool read_path = buffer_read_bip44_path(cdata, &ctx->scriptContent.pubkeyPath);
-    if (!read_path) {
-        TRACE("Failed to read pubkeyPath");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
-    }
-    uint8_t pubkeyHash[ADDRESS_KEY_HASH_LENGTH] = {0};
-    bip44_pathToKeyHash(&ctx->scriptContent.pubkeyPath, pubkeyHash, ADDRESS_KEY_HASH_LENGTH);
-    nativeScriptHashBuilder_addScript_pubkey(&ctx->hashBuilder, pubkeyHash, SIZEOF(pubkeyHash));
-    ctx->ui_scriptType = UI_SCRIPT_PUBKEY_PATH;
-    warning_bits_t warnings = 0;
-    warning_bits_init(&warnings);
-    security_policy_t policy = policyForDeriveNativeScriptHashDevicePubkey(&ctx->scriptContent.pubkeyPath, &warnings);
-    ui_display_native_script_hash(policy);
-    return;
-}
-
-static void deriveNativeScriptHash_handleThirdPartyPubkey(buffer_t *cdata) {
-    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
-    LEDGER_ASSERT(SIZEOF(ctx->scriptContent.pubkeyHash) == ADDRESS_KEY_HASH_LENGTH,
-                  "incorrect key hash size in script");
-    bool read_bytes =
-        buffer_read_bytes(cdata, ctx->scriptContent.pubkeyHash, ADDRESS_KEY_HASH_LENGTH);
-    if (!read_bytes) {
-        TRACE("Failed to read pubkeyHash");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
-    }
-    nativeScriptHashBuilder_addScript_pubkey(&ctx->hashBuilder,
-                                             ctx->scriptContent.pubkeyHash,
-                                             SIZEOF(ctx->scriptContent.pubkeyHash));
-    ctx->ui_scriptType = UI_SCRIPT_PUBKEY_HASH;
-    security_policy_t policy = POLICY_SHOW;
-    ui_display_native_script_hash(policy);
-    return;
-}
-
 static void deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
-    uint8_t pubkeyType = 0;
-    bool read_pubkey = buffer_read_u8(cdata, &pubkeyType);
-    if (!read_pubkey) {
-        TRACE("Failed to read pubkeyType");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+
+    // Parse pubkey credential (only KEY_PATH and KEY_HASH allowed, not SCRIPT_HASH)
+    ext_credential_t credential;
+    if (!parse_native_script_pubkey_credential(cdata, &credential)) {
+        TRACE("Failed to parse native script pubkey credential");
+        send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_PUBKEY_CREDENTIAL);
         return;
     }
-    switch (pubkeyType) {
-        case KEY_REFERENCE_PATH:
-            deriveNativeScriptHash_handleDeviceOwnedPubkey(cdata);
-            break;
-        case KEY_REFERENCE_HASH:
-            deriveNativeScriptHash_handleThirdPartyPubkey(cdata);
-            break;
-        default:
-            TRACE("Bad pubkeyType");
-            send_swo_and_reset(SWO_BAD_STATE);
-            return;
+
+    // Derive or extract the pubkey hash
+    uint8_t pubkeyHash[ADDRESS_KEY_HASH_LENGTH] = {0};
+    security_policy_t policy;
+
+    if (credential.type == EXT_CREDENTIAL_KEY_PATH) {
+        // Device-owned key: derive hash from path
+        ctx->scriptContent.pubkeyPath = credential.keyPath;
+        ctx->ui_scriptType = UI_SCRIPT_PUBKEY_PATH;  // Tag the union immediately
+
+        // Derive hash from the path stored in union
+        keyPathToKeyHash(&ctx->scriptContent.pubkeyPath, pubkeyHash, ADDRESS_KEY_HASH_LENGTH);
+
+        // Check security policy for device-owned keys
+        warning_bits_t warnings = 0;
+        warning_bits_init(&warnings);
+        policy = policyForDeriveNativeScriptHashDevicePubkey(&ctx->scriptContent.pubkeyPath, &warnings);
+    } else {
+        // Third-party key: use provided hash
+        LEDGER_ASSERT(credential.type == EXT_CREDENTIAL_KEY_HASH,
+                      "Expected KEY_HASH credential type");
+        LEDGER_ASSERT(SIZEOF(ctx->scriptContent.pubkeyHash) == ADDRESS_KEY_HASH_LENGTH,
+                      "incorrect key hash size in script");
+
+        // Copy hash to context for UI display and to local buffer
+        memmove(ctx->scriptContent.pubkeyHash, credential.keyHash, ADDRESS_KEY_HASH_LENGTH);
+        ctx->ui_scriptType = UI_SCRIPT_PUBKEY_HASH;  // Tag the union immediately
+        memmove(pubkeyHash, credential.keyHash, ADDRESS_KEY_HASH_LENGTH);
+        policy = POLICY_SHOW;
     }
+
+    // Add pubkey hash to script hash builder (single call for both paths)
+    nativeScriptHashBuilder_addScript_pubkey(&ctx->hashBuilder, pubkeyHash, SIZEOF(pubkeyHash));
+
+    // Display to user
+    ui_display_native_script_hash(policy);
     return;
 }
 
@@ -173,7 +164,7 @@ static void deriveNativeScriptHash_handleInvalidBefore(buffer_t *cdata) {
     bool read_timelock = buffer_read_u64(cdata, &ctx->scriptContent.timelock, BE);
     if (!read_timelock) {
         TRACE("Failed to read timelock");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_TIMELOCK);
         return;
     }
     nativeScriptHashBuilder_addScript_invalidBefore(&ctx->hashBuilder, ctx->scriptContent.timelock);
@@ -188,7 +179,7 @@ static void deriveNativeScriptHash_handleInvalidHereafter(buffer_t *cdata) {
     bool read_timelock = buffer_read_u64(cdata, &ctx->scriptContent.timelock, BE);
     if (!read_timelock) {
         TRACE("Failed to read timelock");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_TIMELOCK);
         return;
     }
     nativeScriptHashBuilder_addScript_invalidHereafter(&ctx->hashBuilder,
@@ -222,7 +213,7 @@ static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
 
     if (!areMoreScriptsExpected()) {
         TRACE("More scripts expected");
-        send_swo_and_reset(SWO_BAD_STATE);
+        send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_NESTING);
         return;
     }
 
@@ -232,7 +223,7 @@ static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
     bool read_nativeScriptType = buffer_read_u8(cdata, &nativeScriptType);
     if (!read_nativeScriptType) {
         TRACE("Failed to read nativeScriptType");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_TYPE);
         return;
     }
 
@@ -240,7 +231,7 @@ static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
         buffer_read_u32(cdata, &ctx->complexScripts[ctx->level].remainingScripts, BE);
     if (!read_remainingScripts) {
         TRACE("Failed to read remainingScripts");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_TYPE);
         return;
     }
     ctx->complexScripts[ctx->level].totalScripts = ctx->complexScripts[ctx->level].remainingScripts;
@@ -260,7 +251,7 @@ static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
 
         default:
             TRACE("Bad nativeScriptType");
-            send_swo_and_reset(SWO_BAD_STATE);
+            send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_TYPE);
             return;
     }
 
@@ -275,7 +266,7 @@ static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
 static void deriveNativeScriptHash_handleSimpleScript(buffer_t *cdata) {
     if (!areMoreScriptsExpected()) {
         TRACE("More scripts expected");
-        send_swo_and_reset(SWO_BAD_STATE);
+        send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_NESTING);
         return;
     }
 
@@ -283,7 +274,7 @@ static void deriveNativeScriptHash_handleSimpleScript(buffer_t *cdata) {
     bool read_nativeScriptType = buffer_read_u8(cdata, &nativeScriptType);
     if (!read_nativeScriptType) {
         TRACE("Failed to read nativeScriptType");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_TYPE);
         return;
     }
 
@@ -300,7 +291,7 @@ static void deriveNativeScriptHash_handleSimpleScript(buffer_t *cdata) {
             break;
         default:
             TRACE("Bad nativeScriptType");
-            send_swo_and_reset(SWO_BAD_STATE);
+            send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_TYPE);
             return;
     }
 
@@ -321,7 +312,7 @@ static void deriveNativeScriptHash_handleWholeNativeScriptFinish(buffer_t *cdata
     bool read_displayFormat = buffer_read_u8(cdata, &displayFormat);
     if (!read_displayFormat) {
         TRACE("Failed to read read_displayFormat");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_TYPE);
         return;
     }
     
@@ -374,13 +365,13 @@ void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
     G_context.req_type = REQUEST_DERIVE_NATIVE_SCRIPT_HASH;
 
     switch (script_type) {
-        case STAGE_COMPLEX_SCRIPT_START:
+        case P1_NATIVE_SCRIPT_START_COMPLEX:
             deriveNativeScriptHash_handleComplexScriptStart(cdata);
             break;
-        case STAGE_ADD_SIMPLE_SCRIPT:
+        case P1_NATIVE_SCRIPT_ADD_SIMPLE:
             deriveNativeScriptHash_handleSimpleScript(cdata);
             break;
-        case STAGE_WHOLE_NATIVE_SCRIPT_FINISH:
+        case P1_NATIVE_SCRIPT_FINISH:
             deriveNativeScriptHash_handleWholeNativeScriptFinish(cdata);
             break;
         default:

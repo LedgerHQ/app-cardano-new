@@ -14,7 +14,7 @@
 #include "test_fixture_types.h"
 #include "cardano_swo.h"
 
-#define P1_RETURN  0x01
+#define P1_ADDRESS_RETURN  0x20
 // ======================================================================
 // Address Derivation Rejection Test Fixtures
 // ======================================================================
@@ -168,77 +168,77 @@ static const uint8_t DERIVE_ADDRESS_REJECT_011_ENTERPRISE_WITH_WRONG_SPENDING_PA
 static const derive_address_reject_fixture_t DERIVE_ADDRESS_REJECT_FIXTURES[] = {
 {
     .name = "path too short",
-    .p1 = P1_RETURN,
+    .p1 = P1_ADDRESS_RETURN,
     .data = DERIVE_ADDRESS_REJECT_001_PATH_TOO_SHORT_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_001_PATH_TOO_SHORT_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 {
     .name = "invalid path",
-    .p1 = P1_RETURN,
+    .p1 = P1_ADDRESS_RETURN,
     .data = DERIVE_ADDRESS_REJECT_002_INVALID_PATH_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_002_INVALID_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 {
     .name = "Byron with Shelley path",
-    .p1 = P1_RETURN,
+    .p1 = P1_ADDRESS_RETURN,
     .data = DERIVE_ADDRESS_REJECT_003_BYRON_WITH_SHELLEY_PATH_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_003_BYRON_WITH_SHELLEY_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 {
     .name = "base key/key with Byron spending path",
-    .p1 = P1_RETURN,
+    .p1 = P1_ADDRESS_RETURN,
     .data = DERIVE_ADDRESS_REJECT_004_BASE_KEY_KEY_WITH_BYRON_SPENDING_PATH_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_004_BASE_KEY_KEY_WITH_BYRON_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 {
     .name = "base key/key with wrong spending path",
-    .p1 = P1_RETURN,
+    .p1 = P1_ADDRESS_RETURN,
     .data = DERIVE_ADDRESS_REJECT_005_BASE_KEY_KEY_WITH_WRONG_SPENDING_PATH_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_005_BASE_KEY_KEY_WITH_WRONG_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 {
     .name = "base key/key with wrong staking path 1",
-    .p1 = P1_RETURN,
+    .p1 = P1_ADDRESS_RETURN,
     .data = DERIVE_ADDRESS_REJECT_006_BASE_KEY_KEY_WITH_WRONG_STAKING_PATH_1_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_006_BASE_KEY_KEY_WITH_WRONG_STAKING_PATH_1_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 {
     .name = "base key/script with Byron spending path",
-    .p1 = P1_RETURN,
+    .p1 = P1_ADDRESS_RETURN,
     .data = DERIVE_ADDRESS_REJECT_007_BASE_KEY_SCRIPT_WITH_BYRON_SPENDING_PATH_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_007_BASE_KEY_SCRIPT_WITH_BYRON_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 {
     .name = "pointer with Byron spending path",
-    .p1 = P1_RETURN,
+    .p1 = P1_ADDRESS_RETURN,
     .data = DERIVE_ADDRESS_REJECT_008_POINTER_WITH_BYRON_SPENDING_PATH_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_008_POINTER_WITH_BYRON_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 {
     .name = "pointer with wrong spending path",
-    .p1 = P1_RETURN,
+    .p1 = P1_ADDRESS_RETURN,
     .data = DERIVE_ADDRESS_REJECT_009_POINTER_WITH_WRONG_SPENDING_PATH_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_009_POINTER_WITH_WRONG_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 {
     .name = "enterprise with Byron spending path",
-    .p1 = P1_RETURN,
+    .p1 = P1_ADDRESS_RETURN,
     .data = DERIVE_ADDRESS_REJECT_010_ENTERPRISE_WITH_BYRON_SPENDING_PATH_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_010_ENTERPRISE_WITH_BYRON_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 {
     .name = "enterprise with wrong spending path",
-    .p1 = P1_RETURN,
+    .p1 = P1_ADDRESS_RETURN,
     .data = DERIVE_ADDRESS_REJECT_011_ENTERPRISE_WITH_WRONG_SPENDING_PATH_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_011_ENTERPRISE_WITH_WRONG_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,

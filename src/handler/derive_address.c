@@ -5,7 +5,6 @@
 #include "derive_address.h"
 #include "cardano_swo.h"
 #include "globals.h"
-#include "apdu_constants.h"
 #include "addressUtils/addressUtilsShelley.h"
 #include "securityPolicy.h"
 #include "utils/assert.h"

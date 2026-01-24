@@ -48,9 +48,11 @@ include_directories(../src/utils)
 include_directories(../src/memory)
 include_directories(../src/addressUtils)
 include_directories(../src/crypto)
+include_directories(../src/deriveNativeScriptHash)
 include_directories(../src/transaction)
 include_directories(../src/ui)
 include_directories(../src/opcert)
+include_directories(../src/parsers)
 include_directories(../src/securityPolicy)
 include_directories(../src/messageSigning)
 include_directories(../src/apdu)
@@ -161,6 +163,7 @@ add_executable(test_tx_prepare
     ../src/addressUtils/addressUtilsShelley.c
     ../src/addressUtils/addressUtilsByron.c
     ../src/addressUtils/bip44.c
+    ../src/parsers/parsers.c
     ../src/securityPolicy/securityPolicy.c
     ../src/securityPolicy/securityPolicy_privkey.c
     ../src/keyDerivation/keyDerivation.c
@@ -262,6 +265,7 @@ set(SIGN_TX_COMMON_SOURCES
     ../src/transaction/tx_parse_certificates.c
     ../src/transaction/tx_parse_outputs.c
     ../src/transaction/tx_utils.c
+    ../src/parsers/parsers.c
     ../src/securityPolicy/securityPolicy.c
     ../src/securityPolicy/securityPolicy_privkey.c
     ../src/messageSigning/messageSigning.c

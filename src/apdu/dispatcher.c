@@ -25,7 +25,6 @@
 #include "parser.h"
 #include "dispatcher.h"
 #include "globals.h"
-#include "apdu_constants.h"
 #include "cardano_swo.h"
 #include "assert.h"
 #include "utils.h"
@@ -155,34 +154,39 @@ void apdu_dispatcher(const command_t *cmd) {
 
         case INS_DERIVE_ADDRESS:
             if (cmd->p2 != P2_UNUSED) {
-                io_send_sw(SWO_INCORRECT_P1_P2);
+                send_swo_and_reset(SWO_INCORRECT_P1_P2);
                 return;
             }
 
-            // Validate P1 value
-            if (cmd->p1 != P1_ADDRESS_RETURN && cmd->p1 != P1_ADDRESS_DISPLAY) {
-                io_send_sw(SWO_INCORRECT_P1_P2);
-                return;
+            // Validate and dispatch based on P1 value
+            switch (cmd->p1) {
+                case P1_ADDRESS_RETURN:
+                case P1_ADDRESS_DISPLAY:
+                    handler_derive_address(&data_buffer, cmd->p1);
+                    return;
+                default:
+                    send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                    return;
             }
-
-            handler_derive_address(&data_buffer, cmd->p1);
             return;
 
         case INS_DERIVE_NATIVE_SCRIPT_HASH:
-            // P2 must be unused for all transaction APDU types
+            // P2 must be unused for native script hash APDUs
             if (cmd->p2 != P2_UNUSED) {
-                io_send_sw(SWO_INCORRECT_P1_P2);
+                send_swo_and_reset(SWO_INCORRECT_P1_P2);
                 return;
             }
-            // Validate P1 value
-            if(cmd->p1 != STAGE_COMPLEX_SCRIPT_START &&
-                cmd->p1 != STAGE_ADD_SIMPLE_SCRIPT &&
-                cmd->p1 != STAGE_WHOLE_NATIVE_SCRIPT_FINISH) {
-                io_send_sw(SWO_INCORRECT_P1_P2);
-                return;
+            // Validate and dispatch based on P1 value
+            switch (cmd->p1) {
+                case P1_NATIVE_SCRIPT_START_COMPLEX:
+                case P1_NATIVE_SCRIPT_ADD_SIMPLE:
+                case P1_NATIVE_SCRIPT_FINISH:
+                    handler_derive_native_script_hash(&data_buffer, cmd->p1);
+                    return;
+                default:
+                    send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                    return;
             }
-
-            handler_derive_native_script_hash(&data_buffer, cmd->p1);
             return;
 
         case INS_SIGN_TX:

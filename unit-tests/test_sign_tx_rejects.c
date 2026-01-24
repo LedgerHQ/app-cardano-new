@@ -13,6 +13,7 @@
 #include "buffer.h"
 #include "cardano_swo.h"
 #include "globals.h"
+#include "dispatcher.h"
 #include "securityPolicy/securityPolicy.h"
 #include "transaction/tx_utils.h"
 #include "transaction/tx_parse.h"
@@ -25,10 +26,7 @@ typedef enum {
     STATUS_TYPE_TRANSACTION_REJECTED = 1,
 } nbgl_reviewStatusType_t;
 
-#define P1_TX_INIT 0x00
-#define P1_TX_DATA_CHUNK 0x01
-#define P1_TX_CHUNK_LAST 0x02
-#define P1_TX_WITNESSES 0x0F
+// P1 constants now defined in dispatcher.h (included via globals.h)
 
 // ----------------------------------------------------------------------
 // Simple mocks for IO and UI plumbing so we can drive the handler
@@ -186,7 +184,7 @@ static void run_sign_tx_reject_fixture(const sign_tx_reject_fixture_t *fixture) 
             .offset = 0,
         };
         g_last_sw = 0;
-        if (segment->p1 == P1_TX_WITNESSES) {
+        if (segment->p1 == P1_TX_SIGN_WITNESS) {
             handler_sign_tx_witness(&chunk_buf);
         } else {
             handler_sign_tx(&chunk_buf, segment->p1);

@@ -13,7 +13,8 @@
 #include "tx.h"
 #include "opcert_types.h"
 #include "deriveNativeScriptHash_types.h"
-#include "apdu_constants.h"
+#include "dispatcher.h"
+#include "derive_native_script_hash.h"
 #include "keyDerivation.h"
 #include "addressUtilsShelley.h"
 

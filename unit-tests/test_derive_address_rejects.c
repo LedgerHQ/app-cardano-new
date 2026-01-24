@@ -24,8 +24,7 @@
 // Constants
 // ----------------------------------------------------------------------
 
-#define P1_RETURN  0x01
-#define P1_DISPLAY 0x02
+// P1 constants now defined in dispatcher.h (already included above)
 
 static uint16_t g_last_sw = 0;
 
@@ -79,7 +78,7 @@ static void test_derive_address_rejects(void **state) {
             .offset = 0,
         };
         TRACE_BUFFER(buf.ptr, buf.size);
-        handler_derive_address(&buf, P1_RETURN);
+        handler_derive_address(&buf, P1_ADDRESS_RETURN);
         assert_int_equal(g_last_sw, fixture->check_expected);
     }
 }

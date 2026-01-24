@@ -107,7 +107,7 @@ bool format_position(derive_native_script_hash_ctx_t *ctx,
 bool format_remaining(uint8_t remaining_scripts, char *out, size_t out_size) {
     LEDGER_ASSERT(out != NULL, "NULL output buffer");
     int chars_written = snprintf(out, out_size, "%u nested scripts", remaining_scripts);
-    return (chars_written > 0 && chars_written < out_size);
+    return (chars_written > 0 && chars_written < (int)out_size);
 }
 
 bool format_required_signatures(uint8_t requiredScripts,
@@ -117,7 +117,7 @@ bool format_required_signatures(uint8_t requiredScripts,
     LEDGER_ASSERT(out != NULL, "NULL output buffer");
     int chars_written =
         snprintf(out, out_size, "%u out of %u signatures", requiredScripts, remainingScripts);
-    return (chars_written > 0 && chars_written < out_size);
+    return (chars_written > 0 && chars_written < (int)out_size);
 }
 
 static void derive_native_script_hash_buffer_cleanup(void) {
@@ -165,9 +165,12 @@ static void derive_native_script_hash_review_confirmation_output(bool confirm) {
     if (confirm) {
         TRACE("User confirmed");
         nbgl_useCaseStatus("Confirm\n native script hash", true, ui_menu_main);
+        reset_app_context();
     } else {
         TRACE("User rejected");
         nbgl_useCaseStatus("Native script hash\nrejected", false, ui_menu_main);
+        // send_swo_and_reset already called reset_app_context
+        // TODO we should call reset_app_context anyway? compare with other such functions
     }
 }
 
@@ -324,7 +327,6 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
         }
         case UI_SCRIPT_PUBKEY_HASH: {
             TRACE("UI_SCRIPT_PUBKEY_HASH");
-            derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
             int ui_pairs_count = 2;
             bool required_position = is_required_position(ctx);
             if (required_position) {

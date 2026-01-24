@@ -49,7 +49,7 @@ def test_derive_address(
 
     client = CommandSender(backend)
 
-    p1_type = P1Type.P1_RETURN if mode == "return" else P1Type.P1_DISPLAY
+    p1_type = P1Type.P1_ADDRESS_RETURN if mode == "return" else P1Type.P1_ADDRESS_DISPLAY
 
     # Shelley test cases without confirmation don't require UI interaction (return mode only)
     if testCase in shelleyTestCasesNoConfirm and mode == "return":

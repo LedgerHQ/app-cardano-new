@@ -15,7 +15,7 @@
  * @param[in] display_type
  *   P1 parameter value indicating operation mode (return or display)
  *
- * @see P1_ADDRESS_RETURN and P1_ADDRESS_DISPLAY in apdu_constants.h
+ * @see P1_ADDRESS_RETURN and P1_ADDRESS_DISPLAY in dispatcher.h
  */
 void handler_derive_address(buffer_t *cdata, uint8_t display_type);
 

@@ -2,42 +2,87 @@
 
 #include "parser.h"
 
-enum { P1_UNUSED = 0, P2_UNUSED = 0 };
+/** Instruction class byte for the Cardano app. */
+#define CLA 0xD7
 
 /**
- * Parameter 1 for transaction INIT APDU (new protocol).
- * Signals start of transaction data.
+ * Expected INS values for APDU commands.
+ *
+ * Mirrors `tests/application_client/command_builder.py::InsType` to keep
+ * command constants aligned with the Python helpers.
  */
-#define P1_TX_INIT 0x00
+typedef enum {
+    INS_GET_SERIAL = 0x01,
+    INS_GET_VERSION = 0x03,
+    INS_GET_APP_NAME = 0x04,
+    INS_GET_PUBLIC_KEY = 0x10,
+    INS_DERIVE_ADDRESS = 0x11,
+    INS_DERIVE_NATIVE_SCRIPT_HASH = 0x12,
+    INS_SIGN_TX = 0x21,
+    INS_SIGN_OPCERT = 0x22,
+#ifdef DEBUG
+    INS_DEBUG_SET_SETTINGS = 0xF0,  // Debug-only command for testing
+#endif
+} command_e;
 
 /**
- * Parameter 1 for transaction data chunks (new protocol).
- * Signals more transaction data chunks to follow.
+ * Request types handled by the dispatcher.
  */
-#define P1_TX_DATA_CHUNK 0x01
+typedef enum {
+    REQUEST_NONE = 0,
+    REQUEST_EXPORT_PUBKEY,
+    REQUEST_SIGN_TRANSACTION,
+    REQUEST_SIGN_OPCERT,
+    REQUEST_DERIVE_ADDRESS,
+    REQUEST_DERIVE_NATIVE_SCRIPT_HASH,
+} request_type_e;
 
 /**
- * Parameter 1 for final transaction data chunk (new protocol).
- * Signals last chunk of transaction data - triggers processing.
+ * Parameter 1 (P1) values for APDU commands.
+ * Organized hierarchically: 0x1x for transactions, 0x2x for address, 0x3x for opcert, 0x4x for native scripts.
+ *
+ * Matches `tests/application_client/command_builder.py::P1Type`.
  */
-#define P1_TX_CHUNK_LAST 0x02
+typedef enum {
+    P1_UNUSED = 0x00,
+
+    // Transaction-related P1 values (0x1x range)
+    P1_TX_INIT = 0x10,                      // Start of transaction data
+    P1_TX_DATA_CHUNK = 0x11,                // More transaction data chunks follow
+    P1_TX_CHUNK_LAST = 0x12,                // Last chunk of transaction data
+    P1_TX_AUX_DATA = 0x13,                  // CVote auxiliary data APDU
+    P1_TX_SIGN_WITNESS = 0x1F,              // Transaction witness signing (legacy)
+
+    // Address derivation P1 values (0x2x range)
+    P1_ADDRESS_RETURN = 0x20,               // Return address without display
+    P1_ADDRESS_DISPLAY = 0x21,              // Display address on screen before returning
+
+    // Operational certificate P1 values (0x3x range)
+    // (No multi-step parameters needed for opcert)
+
+    // Native script hash derivation P1 values (0x4x range)
+    P1_NATIVE_SCRIPT_START_COMPLEX = 0x40,  // Start a complex script (ALL/ANY/N-of-K)
+    P1_NATIVE_SCRIPT_ADD_SIMPLE = 0x41,     // Add a simple script (pubkey/timelock)
+    P1_NATIVE_SCRIPT_FINISH = 0x42,         // Finish script tree and compute hash
+} p1_e;
 
 /**
- * Parameter 1 for CVote auxiliary data APDUs.
+ * Parameter 2 (P2) values for APDU commands.
+ * Organized hierarchically: 0x1x for transactions, 0x3x for CVote auxiliary data.
+ *
+ * Matches `tests/application_client/command_builder.py::P2Type`.
  */
-#define P1_TX_AUX_DATA 0x03
+typedef enum {
+    P2_UNUSED = 0x00,
 
-/**
- * Parameter 1 for transaction witness signing (legacy protocol).
- * Signals witness request with BIP32 path.
- */
-#define P1_TX_SIGN_WITNESS 0x0f
+    // Transaction-related P2 values (0x1x range)
+    P2_TX_MORE = 0x10,                      // More chunks to follow
+    P2_TX_LAST = 0x11,                      // Last chunk
 
-/**
- * Parameter 2 values for CVote auxiliary data APDUs.
- */
-#define P2_AUX_DATA_INIT 0x36
-#define P2_AUX_DATA_DELEGATION 0x37
+    // CVote auxiliary data P2 values (0x3x range)
+    P2_AUX_DATA_INIT = 0x36,                // Initialize auxiliary data
+    P2_AUX_DATA_DELEGATION = 0x37,          // Delegation record
+} p2_e;
 
 
 /**

@@ -73,8 +73,7 @@ ITEM_INCLUDED_YES: int = 0x02
 SETTINGS_DISABLED: int = 0x00
 SETTINGS_ENABLED: int = 0x01
 MAX_UINT8: int = 0xFF
-
-
+# Mirrors `src/apdu/dispatcher.h::command_e`
 class InsType(IntEnum):
     INS_GET_VERSION = 0x03
     INS_GET_APP_NAME = 0x04
@@ -86,24 +85,29 @@ class InsType(IntEnum):
     INS_SIGN_OPCERT = 0x22
     INS_DEBUG_SET_SETTINGS = 0xF0  # Debug-only command
 
-
+# Matches `src/apdu/dispatcher.h::p1_e`
 class P1Type(IntEnum):
     P1_UNUSED = 0x00
-    P1_RETURN = 0x01
-    P1_DISPLAY = 0x02
-    P1_TX_INIT = 0x00
-    P1_TX_DATA_CHUNK = 0x01
-    P1_TX_CHUNK_LAST = 0x02
-    P1_TX_AUX_DATA = 0x03
-    P1_TX_WITNESSES = 0x0F
-    P1_COMPLEX_SCRIPT_START = 0x01
-    P1_ADD_SIMPLE_SCRIPT = 0x02
-    P1_WHOLE_NATIVE_SCRIPT_FINISH = 0x03
-
+    # Transaction-related P1 values (0x1x range)
+    P1_TX_INIT = 0x10
+    P1_TX_DATA_CHUNK = 0x11
+    P1_TX_CHUNK_LAST = 0x12
+    P1_TX_AUX_DATA = 0x13
+    P1_TX_SIGN_WITNESS = 0x1F
+    # Address derivation P1 values (0x2x range)
+    P1_ADDRESS_RETURN = 0x20
+    P1_ADDRESS_DISPLAY = 0x21
+    # Native script hash derivation P1 values (0x4x range)
+    P1_NATIVE_SCRIPT_START_COMPLEX = 0x40
+    P1_NATIVE_SCRIPT_ADD_SIMPLE = 0x41
+    P1_NATIVE_SCRIPT_FINISH = 0x42
+# Matches `src/apdu/dispatcher.h::p2_e`
 class P2Type(IntEnum):
     P2_UNUSED = 0x00
-    P2_MORE = 0x01
-    P2_LAST = 0x02
+    # Transaction-related P2 values (0x1x range)
+    P2_TX_MORE = 0x10
+    P2_TX_LAST = 0x11
+    # CVote auxiliary data P2 values (0x3x range)
     P2_AUX_DATA_INIT = 0x36
     P2_AUX_DATA_DELEGATION = 0x37
 
@@ -375,15 +379,19 @@ class CommandBuilder:
         data += scriptType.to_bytes(1, "big")
         if script.type in (NativeScriptType.PUBKEY_DEVICE_OWNED, NativeScriptType.PUBKEY_THIRD_PARTY):
             assert isinstance(script.params, NativeScriptParamsPubkey)
-            data += self._derive_script_pubkey(script.type)
+            # Serialize extended credential format
             if script.params.key.startswith("m/"):
+                # KEY_PATH credential
+                data += CredentialParamsType.KEY_PATH.to_bytes(1, "big")
                 data += pack_derivation_path(script.params.key)
             else:
+                # KEY_HASH credential
+                data += CredentialParamsType.KEY_HASH.to_bytes(1, "big")
                 data += bytes.fromhex(script.params.key)
         elif script.type in (NativeScriptType.INVALID_BEFORE, NativeScriptType.INVALID_HEREAFTER):
             assert isinstance(script.params, NativeScriptParamsInvalid)
             data += script.params.slot.to_bytes(8, "big")
-        return self._serialize(InsType.INS_DERIVE_NATIVE_SCRIPT_HASH, P1Type.P1_ADD_SIMPLE_SCRIPT, 0x00, data)
+        return self._serialize(InsType.INS_DERIVE_NATIVE_SCRIPT_HASH, P1Type.P1_NATIVE_SCRIPT_ADD_SIMPLE, 0x00, data)
 
 
     def derive_script_add_complex(self, script: NativeScript) -> bytes:
@@ -396,23 +404,12 @@ class CommandBuilder:
             assert isinstance(script.params, NativeScriptParamsNofK)
             data += len(script.params.scripts).to_bytes(4, "big")
             data += script.params.requiredCount.to_bytes(4, "big")
-        return self._serialize(InsType.INS_DERIVE_NATIVE_SCRIPT_HASH, P1Type.P1_COMPLEX_SCRIPT_START, 0x00, data)
+        return self._serialize(InsType.INS_DERIVE_NATIVE_SCRIPT_HASH, P1Type.P1_NATIVE_SCRIPT_START_COMPLEX, 0x00, data)
 
 
     def derive_script_finish(self, disp: NativeScriptHashDisplayFormat) -> bytes:
         data = disp.to_bytes(1, "big")
-        return self._serialize(InsType.INS_DERIVE_NATIVE_SCRIPT_HASH, P1Type.P1_WHOLE_NATIVE_SCRIPT_FINISH, 0x00, data)
-    
-    
-    def _derive_script_pubkey(self, scriptType: NativeScriptType) -> bytes:
-        if scriptType == NativeScriptType.PUBKEY_DEVICE_OWNED:
-            encoding = 1
-        elif scriptType == NativeScriptType.PUBKEY_THIRD_PARTY:
-            encoding = 2
-        else:
-            encoding = 0
-
-        return encoding.to_bytes(1, "big")
+        return self._serialize(InsType.INS_DERIVE_NATIVE_SCRIPT_HASH, P1Type.P1_NATIVE_SCRIPT_FINISH, 0x00, data)
 
     def build_tx_init_params(self,
                              tx: Transaction,
@@ -495,7 +492,7 @@ class CommandBuilder:
 
     def sign_tx_witness(self, path: str) -> bytes:
         data = pack_derivation_path(path)
-        return self._serialize(InsType.INS_SIGN_TX, P1Type.P1_TX_WITNESSES, P2Type.P2_UNUSED, data)
+        return self._serialize(InsType.INS_SIGN_TX, P1Type.P1_TX_SIGN_WITNESS, P2Type.P2_UNUSED, data)
 
     def debug_set_settings(self, expert_mode: bool, silent_export: bool) -> bytes:
         """Build debug settings APDU (only works with DEBUG builds).

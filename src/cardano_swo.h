@@ -17,6 +17,11 @@ typedef enum {
     SWO_OPCERT_PARSING_FAIL_ISSUE_COUNTER = 0x6B12,
     SWO_OPCERT_PARSING_FAIL_POOL_KEY_PATH = 0x6B13,
     SWO_INVALID_OPCERT_LENGTH = 0x6B14,
+    // Native script parsing errors
+    SWO_NATIVE_SCRIPT_PARSING_FAIL_PUBKEY_CREDENTIAL = 0x6B41,  // pubkey credential parsing
+    SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_TYPE = 0x6B42,        // invalid script type value
+    SWO_NATIVE_SCRIPT_PARSING_FAIL_NESTING = 0x6B43,            // unexpected script depth/nesting
+    SWO_NATIVE_SCRIPT_PARSING_FAIL_TIMELOCK = 0x6B44,           // timelock parsing
     // Transaction body field parsing errors
     // Organized by CBOR key as per Cardano CDDL: error = 0x6B20 + CBOR_KEY
     SWO_TX_PARSING_FAIL_INPUTS = 0x6B20,              // key 0

@@ -18,9 +18,7 @@
 #include "securityPolicy.h"
 #include "addressUtils/bip44.h"
 
-enum {
-    P1_TX_INIT = 0x00,
-};
+// P1 constants now defined in dispatcher.h (included via globals.h)
 
 static uint16_t g_last_sw = 0;
 

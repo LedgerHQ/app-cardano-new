@@ -640,6 +640,15 @@ def _build_reject_fixtures() -> str:
             reject_reason=reason,
         )
 
+    # Map P1 values to symbolic constants from dispatcher.h
+    P1_CONSTANTS = {
+        0x10: "P1_TX_INIT",
+        0x11: "P1_TX_DATA_CHUNK",
+        0x12: "P1_TX_CHUNK_LAST",
+        0x13: "P1_TX_AUX_DATA",
+        0x1F: "P1_TX_SIGN_WITNESS",
+    }
+
     def generate_header(fixtures: Dict[str, List[FixtureInfo]]) -> str:
         lines = [
             "// Auto-generated file. Do not edit directly.",
@@ -647,6 +656,7 @@ def _build_reject_fixtures() -> str:
             "",
             "#include <stdint.h>",
             "#include <stdbool.h>",
+            "#include \"dispatcher.h\"  // For P1 constants",
             "",
         ]
         for set_name in SET_ORDER:
@@ -663,7 +673,8 @@ def _build_reject_fixtures() -> str:
                     lines.append("    {")
                     lines.append("        .hex_payload =")
                     lines.extend(to_hex_lines(chunk.hex_payload, append_comma=True))
-                    lines.append(f"        .p1 = 0x{chunk.p1:02X},")
+                    p1_constant = P1_CONSTANTS.get(chunk.p1, f"0x{chunk.p1:02X}")
+                    lines.append(f"        .p1 = {p1_constant},")
                     lines.append(f"        .more = {'true' if chunk.more else 'false'},")
                     lines.append("    },")
                 lines.append("};")

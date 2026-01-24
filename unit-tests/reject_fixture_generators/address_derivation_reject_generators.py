@@ -66,9 +66,9 @@ def _serialize_reject_test_case_to_apdu(test_case: Any) -> bytes:
 
     command_builder = CommandBuilder()
 
-    # Use P1_RETURN for rejection tests (simpler, display shouldn't be reached)
+    # Use the address-return P1 parameter for rejection tests (display shouldn't be reached)
     complete_apdu_command = command_builder.derive_address(
-        P1Type.P1_RETURN,
+        P1Type.P1_ADDRESS_RETURN,
         test_case,
     )
 
@@ -308,7 +308,7 @@ def _build_reject_fixtures_header() -> str:
         '#include "test_fixture_types.h"',
         '#include "cardano_swo.h"',
         "",
-        "#define P1_RETURN  0x01",
+        "#define P1_ADDRESS_RETURN  0x20",
         "// ======================================================================",
         "// Address Derivation Rejection Test Fixtures",
         "// ======================================================================",
@@ -344,7 +344,7 @@ def _build_reject_fixtures_header() -> str:
         header_lines.append("{")
 
         header_lines.append(f'    .name = "{test_case.name}",')
-        header_lines.append(f"    .p1 = P1_RETURN,")
+        header_lines.append(f"    .p1 = P1_ADDRESS_RETURN,")
         header_lines.append(f"    .data = {payload_array_name},")
         header_lines.append(f"    .data_len = sizeof({payload_array_name}),")
         header_lines.append(f"    .check_expected = {rejection_reason},")

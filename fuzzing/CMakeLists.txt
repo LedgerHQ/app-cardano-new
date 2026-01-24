@@ -39,7 +39,9 @@ set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/cvote/aux_data_hash_builder.c
     ${CARDANO_PATH}/src/cvote/cvote_parser.c
     ${CARDANO_PATH}/src/crypto/crypto.c
+    ${CARDANO_PATH}/src/deriveNativeScriptHash/derive_native_script_hash_builder.c
     ${CARDANO_PATH}/src/handler/derive_address.c
+    ${CARDANO_PATH}/src/handler/derive_native_script_hash.c
     ${CARDANO_PATH}/src/handler/get_app_name.c
     ${CARDANO_PATH}/src/handler/get_public_key.c
     ${CARDANO_PATH}/src/handler/get_serial.c
@@ -52,6 +54,7 @@ set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/memory/flist.c
     ${CARDANO_PATH}/src/messageSigning/messageSigning.c
     ${CARDANO_PATH}/src/opcert/opcert_parse.c
+    ${CARDANO_PATH}/src/parsers/parsers.c
     ${CARDANO_PATH}/src/securityPolicy/securityPolicy.c
     ${CARDANO_PATH}/src/securityPolicy/securityPolicy_privkey.c
     ${CARDANO_PATH}/src/transaction/tx_parse.c
@@ -62,6 +65,7 @@ set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/transaction/tx_validate.c
     ${CARDANO_PATH}/src/ui/menu.c
     ${CARDANO_PATH}/src/ui/ui_display_address_derivation.c
+    ${CARDANO_PATH}/src/ui/ui_display_native_script_hash.c
     ${CARDANO_PATH}/src/ui/ui_display_opcert.c
     ${CARDANO_PATH}/src/ui/ui_display_pubkey.c
     ${CARDANO_PATH}/src/ui/ui_display_tx.c
@@ -104,11 +108,13 @@ include_directories(
     ${CARDANO_PATH}/src/cardano_tokens
     ${CARDANO_PATH}/src/cvote
     ${CARDANO_PATH}/src/crypto
+    ${CARDANO_PATH}/src/deriveNativeScriptHash
     ${CARDANO_PATH}/src/handler
     ${CARDANO_PATH}/src/keyDerivation
     ${CARDANO_PATH}/src/memory
     ${CARDANO_PATH}/src/messageSigning
     ${CARDANO_PATH}/src/opcert
+    ${CARDANO_PATH}/src/parsers
     ${CARDANO_PATH}/src/securityPolicy
     ${CARDANO_PATH}/src/transaction
     ${CARDANO_PATH}/src/txHashBuilder

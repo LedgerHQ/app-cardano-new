@@ -5,7 +5,7 @@
 
 #include "dispatcher.h"
 #include "fuzz_helpers.h"
-#include "apdu/apdu_constants.h"
+#include "apdu/dispatcher.h"
 
 /**
  * Unified fuzzing harness for all APDU commands.
