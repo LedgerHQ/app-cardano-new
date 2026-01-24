@@ -30,3 +30,9 @@ typedef enum {
     REQUEST_SIGN_OPCERT,
     REQUEST_DERIVE_ADDRESS
 } request_type_e;
+
+/**
+ * Parameter 1 values for address derivation APDUs.
+ */
+#define P1_ADDRESS_RETURN  0x01  // Return address without display
+#define P1_ADDRESS_DISPLAY 0x02  // Display address on screen before returning

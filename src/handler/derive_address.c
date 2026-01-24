@@ -6,6 +6,7 @@
 #include "deriveAddress/deriveAddress_types.h"
 #include "cardano_swo.h"
 #include "globals.h"
+#include "apdu_constants.h"
 #include "addressUtils/addressUtilsShelley.h"
 #include "securityPolicy.h"
 #include "utils/assert.h"
@@ -22,7 +23,7 @@
 static uint16_t RESPONSE_READY_MAGIC = 11223;
 
 static void prepareResponse() {
-    ins_derive_address_ctx_t *ctx = &G_context.derive_address_info;
+    derive_address_ctx_t *ctx = &G_context.derive_address_info;
     ctx->address.size =
         deriveAddress(&ctx->addressParams, ctx->address.buffer, SIZEOF(ctx->address.buffer));
     if (ctx->address.size == 0 || ctx->address.size > SIZEOF(ctx->address.buffer)) {
@@ -40,7 +41,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t display_type) {
     }
     TRACE_BUFFER(cdata->ptr, cdata->size);
 
-    ins_derive_address_ctx_t *ctx = &G_context.derive_address_info;
+    derive_address_ctx_t *ctx = &G_context.derive_address_info;
     ctx->responseReadyMagic = 0;
     bool is_parsed = buffer_parseAddressParams(cdata, &ctx->addressParams);
     TRACE("Parsed address params: %d", is_parsed);
@@ -51,8 +52,8 @@ void handler_derive_address(buffer_t *cdata, uint8_t display_type) {
 
     TRACE("Display type: %d", display_type);
     switch (display_type) {
-        case P1_RETURN: {
-            TRACE("RETURN");
+        case P1_ADDRESS_RETURN: {
+            TRACE("ADDRESS_RETURN");
             warning_bits_t warnings = 0;
             warning_bits_init(&warnings);
             security_policy_t policy = policyForReturnDeriveAddress(&ctx->addressParams, &warnings);
@@ -66,8 +67,8 @@ void handler_derive_address(buffer_t *cdata, uint8_t display_type) {
             ui_deriveAddress_handleReturn(policy, warnings);
             break;
         }
-        case P1_DISPLAY: {
-            TRACE("DISPLAY");
+        case P1_ADDRESS_DISPLAY: {
+            TRACE("ADDRESS_DISPLAY");
             warning_bits_t warnings = 0;
             warning_bits_init(&warnings);
             security_policy_t policy = policyForShowDeriveAddress(&ctx->addressParams, &warnings);

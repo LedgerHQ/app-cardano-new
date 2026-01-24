@@ -229,7 +229,7 @@ security_policy_t policyForReturnDeriveAddress(const addressParams_t *addressPar
 }
 
 security_policy_t policyForDeriveNativeScriptHashDevicePubkey(const bip44_path_t *path,
-                                                              warning_bits_t *warnings) {
+                                                              warning_bits_t *warnings MARK_UNUSED) {
     // TODO: expert mode check ok?
     // in expert mode, do not derive script hash without permission
     security_policy_t policy = is_expert_mode() ? POLICY_SHOW : POLICY_HIDE;

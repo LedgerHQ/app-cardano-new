@@ -319,7 +319,7 @@ class CommandBuilder:
             data += bytes.fromhex(testCase.stakingValue)
         elif staking != StakingDataSourceType.NONE:
             raise NotImplementedError("Not implemented yet")
-        return self._serialize(InsType.INS_DERIVE_ADDRESS, p1, 0x00, data)
+        return self._serialize(InsType.INS_DERIVE_ADDRESS, p1, P2Type.P2_UNUSED, data)
 
     def get_pubkey_path(self, path: str) -> bytes:
         data = pack_derivation_path(path)

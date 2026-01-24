@@ -154,11 +154,11 @@ void apdu_dispatcher(const command_t *cmd) {
             }
 
             // Validate P1 value
-            if (cmd->p1 != P1_RETURN && cmd->p1 != P1_DISPLAY) {
+            if (cmd->p1 != P1_ADDRESS_RETURN && cmd->p1 != P1_ADDRESS_DISPLAY) {
                 io_send_sw(SWO_INCORRECT_P1_P2);
                 return;
             }
-            
+
             handler_derive_address(&data_buffer, cmd->p1);
             return;
 

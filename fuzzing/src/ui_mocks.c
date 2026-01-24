@@ -164,3 +164,19 @@ void nbgl_useCaseReview(nbgl_operationType_t operationType,
     UNUSED(finishTitle);
     UNUSED(choiceCallback);
 }
+
+void nbgl_useCaseReviewLight(nbgl_operationType_t operationType,
+                             const nbgl_contentTagValueList_t *tagValueList,
+                             const nbgl_icon_details_t *icon,
+                             const char *reviewTitle,
+                             const char *reviewSubTitle,
+                             const char *finishTitle,
+                             nbgl_choiceCallback_t choiceCallback) {
+    UNUSED(operationType);
+    UNUSED(tagValueList);
+    UNUSED(icon);
+    UNUSED(reviewTitle);
+    UNUSED(reviewSubTitle);
+    UNUSED(finishTitle);
+    UNUSED(choiceCallback);
+}

@@ -80,7 +80,7 @@ static void derive_address_display_review_choice(bool confirm) {
 }
 
 // Review choice handler for return address derivation
-static void respond_with_address_success(ins_derive_address_ctx_t *ctx) {
+static void respond_with_address_success(derive_address_ctx_t *ctx) {
     ctx->responseReadyMagic = 0;
     LEDGER_ASSERT(ctx->address.size <= sizeof(ctx->address.buffer), "Address size too large");
     io_send_response_pointer(ctx->address.buffer, ctx->address.size, SWO_SUCCESS);
@@ -89,7 +89,7 @@ static void respond_with_address_success(ins_derive_address_ctx_t *ctx) {
 void finalize_return_address_derivation(bool confirmed) {
     TRACE("confirmed = %d", confirmed);
     if (confirmed) {
-        ins_derive_address_ctx_t *ctx = &G_context.derive_address_info;
+        derive_address_ctx_t *ctx = &G_context.derive_address_info;
         respond_with_address_success(ctx);
         reset_app_context();
     } else {
@@ -171,16 +171,16 @@ static ui_status_t format_address_fields(const addressParams_t *params, warning_
 }
 
 static void ui_displayExportAddress(warning_bits_t warnings) {
-    ins_derive_address_ctx_t *ctx = &G_context.derive_address_info;
+    derive_address_ctx_t *ctx = &G_context.derive_address_info;
     ui_status_t status = format_address_fields(&ctx->addressParams, warnings);
     if (status == UI_STATUS_OUT_OF_MEMORY) {
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
     }
     LEDGER_ASSERT(status == UI_STATUS_SUCCESS, "Failed to prepare address UI pairs");
-    LEDGER_ASSERT(ctx->address.size <= MAX_HUMAN_ADDRESS_SIZE, "Address size too large");
+    LEDGER_ASSERT(ctx->address.size <= MAX_HUMAN_ADDRESS_LENGTH, "Address size too large");
     
-    static char humanAddress[MAX_HUMAN_ADDRESS_SIZE] = {0};
+    static char humanAddress[MAX_HUMAN_ADDRESS_LENGTH] = {0};
     format_address_human_readable(ctx->address.buffer,
                                   ctx->address.size,
                                   humanAddress,
@@ -196,7 +196,7 @@ static void ui_displayExportAddress(warning_bits_t warnings) {
 }
 
 static void ui_returnExportAddress(warning_bits_t warnings) {
-    ins_derive_address_ctx_t *ctx = &G_context.derive_address_info;
+    derive_address_ctx_t *ctx = &G_context.derive_address_info;
     ui_status_t status = format_address_fields(&ctx->addressParams, warnings);
     if (status == UI_STATUS_OUT_OF_MEMORY) {
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
@@ -215,7 +215,7 @@ static void ui_returnExportAddress(warning_bits_t warnings) {
 }
 
 void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warnings) {
-    ins_derive_address_ctx_t *ctx = &G_context.derive_address_info;
+    derive_address_ctx_t *ctx = &G_context.derive_address_info;
     switch (policy) {
         case POLICY_SHOW:
             ui_returnExportAddress(warnings);
@@ -232,7 +232,6 @@ void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warn
 }
 
 void ui_deriveAddress_handleDisplay(security_policy_t policy, warning_bits_t warnings) {
-    ins_derive_address_ctx_t *ctx = &G_context.derive_address_info;
     switch (policy) {
         case POLICY_SHOW:
             ui_displayExportAddress(warnings);

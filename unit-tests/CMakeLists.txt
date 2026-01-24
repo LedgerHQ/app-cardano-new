@@ -51,6 +51,7 @@ include_directories(../src/crypto)
 include_directories(../src/transaction)
 include_directories(../src/ui)
 include_directories(../src/opcert)
+include_directories(../src/deriveAddress)
 include_directories(../src/securityPolicy)
 include_directories(../src/messageSigning)
 include_directories(../src/apdu)
@@ -596,7 +597,7 @@ add_test(test_opcert_message test_opcert_message)
 
 # Common sources for address derivation tests
 set(DERIVE_ADDRESS_COMMON_SOURCES
-    mock_globals.c
+    mock_sources/mock_globals.c
     ../src/handler/derive_address.c
     ../src/keyDerivation/keyDerivation.c
     ../src/addressUtils/addressUtilsShelley.c
@@ -612,7 +613,7 @@ set(DERIVE_ADDRESS_COMMON_SOURCES
     ../src/ui/ui_warnings.c
     mock_sources/mem_alloc_stub.c
     mock_sources/glyphs_mock.c
-    mock_sources/display_stub.c
+    mock_sources/ui_display_tx_stub.c
     mock_sources/hex_stub.c
     mock_sources/io_stub.c
 )

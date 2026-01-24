@@ -1,18 +1,21 @@
 #pragma once
 
-enum {
-    P1_RETURN = 0x01,
-    P1_DISPLAY = 0x02,
-};
+#include "buffer.h"
 
-//TODO: comments
 /**
- * Handler for INS_DERIVE_ADDRESS command. Send APDU response with ASCII
- * encoded name of the application.
+ * Handler for INS_DERIVE_ADDRESS command.
+ * Derives a Cardano address from provided address parameters and optionally displays it.
  *
- * @see variable APPNAME in Makefile.
- * @param cdata
+ * Supports two modes via P1 parameter:
+ * - P1_ADDRESS_RETURN: Derive address and return without display
+ * - P1_ADDRESS_DISPLAY: Derive address, display on screen, then return
  *
+ * @param[in] cdata
+ *   Buffer containing APDU data with address parameters
+ * @param[in] display_type
+ *   P1 parameter value indicating operation mode (return or display)
+ *
+ * @see P1_ADDRESS_RETURN and P1_ADDRESS_DISPLAY in apdu_constants.h
  */
 void handler_derive_address(buffer_t *cdata, uint8_t display_type);
 

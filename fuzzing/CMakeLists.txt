@@ -39,6 +39,7 @@ set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/cvote/aux_data_hash_builder.c
     ${CARDANO_PATH}/src/cvote/cvote_parser.c
     ${CARDANO_PATH}/src/crypto/crypto.c
+    ${CARDANO_PATH}/src/handler/derive_address.c
     ${CARDANO_PATH}/src/handler/get_app_name.c
     ${CARDANO_PATH}/src/handler/get_public_key.c
     ${CARDANO_PATH}/src/handler/get_serial.c
@@ -60,6 +61,7 @@ set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/transaction/tx_hash_builder.c
     ${CARDANO_PATH}/src/transaction/tx_validate.c
     ${CARDANO_PATH}/src/ui/menu.c
+    ${CARDANO_PATH}/src/ui/ui_display_address_derivation.c
     ${CARDANO_PATH}/src/ui/ui_display_opcert.c
     ${CARDANO_PATH}/src/ui/ui_display_pubkey.c
     ${CARDANO_PATH}/src/ui/ui_display_tx.c
@@ -102,6 +104,7 @@ include_directories(
     ${CARDANO_PATH}/src/cardano_tokens
     ${CARDANO_PATH}/src/cvote
     ${CARDANO_PATH}/src/crypto
+    ${CARDANO_PATH}/src/deriveAddress
     ${CARDANO_PATH}/src/handler
     ${CARDANO_PATH}/src/keyDerivation
     ${CARDANO_PATH}/src/memory

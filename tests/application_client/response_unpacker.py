@@ -73,3 +73,8 @@ def unpack_sign_tx_response(response: bytes) -> Tuple[int, bytes, int]:
     assert len(response) == 0
 
     return der_sig_len, der_sig, int.from_bytes(v, byteorder='big')
+
+# Unpack from response:
+# response = address (var)
+def unpack_derive_address_response(response: bytes) -> bytes:
+    return response
