@@ -122,11 +122,10 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
     TRACE("=== ui_display_opcert START ===");
     TRACE("securityPolicy: %d", securityPolicy);
 
-    if (G_context.req_type != REQUEST_SIGN_OPCERT || G_context.state.opcert_state != OPCERT_STATE_PARSED) {
-        TRACE("Bad state detected - returning error");
-        send_swo_and_reset(SWO_BAD_STATE);
-        return;
-    }
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_OPCERT,
+                  "ui_display_opcert called with wrong request type: %d", G_context.req_type);
+    LEDGER_ASSERT(G_context.state.opcert_state == OPCERT_STATE_VALIDATED,
+                  "ui_display_opcert called in wrong state: %d", G_context.state.opcert_state);
 
     // Handle security policy
     switch (securityPolicy) {

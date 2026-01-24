@@ -92,15 +92,20 @@ void handler_sign_opcert(buffer_t *cdata) {
         TRACE("Security policy DENY - rejecting operation");
         TRACE("Calling nbgl_useCaseStatus(\"Operational certificate denied\", false, ui_menu_main)");
         nbgl_useCaseStatus("Operational certificate denied", false, ui_menu_main);
-        // TODO make sure the constants are defined in a proper place
         send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
         return;
     }
 
+    G_context.state.opcert_state = OPCERT_STATE_VALIDATED;
     ui_display_opcert(policy, warnings);
 }
 
 void finalize_sign_opcert(bool confirmed) {
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_OPCERT,
+                  "finalize_sign_opcert called without REQUEST_SIGN_OPCERT");
+    LEDGER_ASSERT(G_context.state.opcert_state == OPCERT_STATE_VALIDATED,
+                  "finalize_sign_opcert called in wrong state: %d", G_context.state.opcert_state);
+
     if (!confirmed) {
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
         return;

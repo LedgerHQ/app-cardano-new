@@ -82,6 +82,7 @@ typedef struct {
     union {
         tx_state_e tx_state;
         opcert_state_e opcert_state;
+        derive_address_state_e derive_address_state;
     } state;
 
     union {

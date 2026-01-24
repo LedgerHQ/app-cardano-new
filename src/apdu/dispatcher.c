@@ -76,8 +76,11 @@ void apdu_dispatcher(const command_t *cmd) {
         case REQUEST_SIGN_OPCERT:
             TRACE("G_context.state.opcert_state: %d", G_context.state.opcert_state);
             break;
+        case REQUEST_DERIVE_ADDRESS:
+            TRACE("G_context.state.derive_address_state: %d", G_context.state.derive_address_state);
+            break;
         default:
-            // For stateless operations (GET_PUBLIC_KEY, GET_VERSION, etc.)
+            // Stateless operations (GET_PUBLIC_KEY, GET_VERSION, etc.)
             break;
     }
 

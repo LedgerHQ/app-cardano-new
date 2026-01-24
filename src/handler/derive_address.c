@@ -20,9 +20,13 @@
 #include "os_io_seproxyhal.h"
 #include "ui/ui_display_address_derivation.h"
 
-static uint16_t RESPONSE_READY_MAGIC = 11223;
-
 static void prepareResponse() {
+    // Verify we're at the expected state: parameters parsed and policy validated
+    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS,
+                  "prepareResponse called without REQUEST_DERIVE_ADDRESS");
+    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_VALIDATED,
+                  "prepareResponse called in wrong state: %d", G_context.state.derive_address_state);
+
     derive_address_ctx_t *ctx = &G_context.derive_address_info;
     ctx->address.size =
         deriveAddress(&ctx->addressParams, ctx->address.buffer, SIZEOF(ctx->address.buffer));
@@ -30,11 +34,14 @@ static void prepareResponse() {
         send_swo_and_reset(SWO_INCORRECT_DATA);
         return;
     }
-    ctx->responseReadyMagic = RESPONSE_READY_MAGIC;
+
+    // Address successfully derived and ready for display/response
+    G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_PREPARED;
 }
 
 void handler_derive_address(buffer_t *cdata, uint8_t display_type) {
     G_context.req_type = REQUEST_DERIVE_ADDRESS;
+    G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_NONE;
     if (!cdata->ptr) {
         io_send_sw(SWO_WRONG_DATA_LENGTH);
         return;
@@ -42,7 +49,6 @@ void handler_derive_address(buffer_t *cdata, uint8_t display_type) {
     TRACE_BUFFER(cdata->ptr, cdata->size);
 
     derive_address_ctx_t *ctx = &G_context.derive_address_info;
-    ctx->responseReadyMagic = 0;
     bool is_parsed = buffer_parseAddressParams(cdata, &ctx->addressParams);
     TRACE("Parsed address params: %d", is_parsed);
     if (!is_parsed) {
@@ -63,6 +69,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t display_type) {
                 send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
                 return;
             }
+            G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_VALIDATED;
             prepareResponse();
             ui_deriveAddress_handleReturn(policy, warnings);
             break;
@@ -78,6 +85,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t display_type) {
                 send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
                 return;
             }
+            G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_VALIDATED;
             prepareResponse();
             ui_deriveAddress_handleDisplay(policy, warnings);
             break;

@@ -51,9 +51,15 @@ static void derive_address_buffer_cleanup(void) {
 
 // Review choice handler for display address derivation
 
-void finalize_display_address_derivation(bool confirmed) {
+void finalize_display_address(bool confirmed) {
     TRACE("confirmed = %d", confirmed);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS,
+                  "finalize_display_address called without REQUEST_DERIVE_ADDRESS");
+    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED,
+                  "finalize_display_address called in wrong state: %d",
+                  G_context.state.derive_address_state);
     if (confirmed) {
+        G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_APPROVED;
         io_send_response_pointer(NULL, 0, SWO_SUCCESS);
         reset_app_context();
     } else {
@@ -67,7 +73,7 @@ static void derive_address_display_review_choice(bool confirm) {
     derive_address_buffer_cleanup();
 
     // FINALIZE
-    finalize_display_address_derivation(confirm);
+    finalize_display_address(confirm);
 
     // SHOW STATUS
     if (confirm) {
@@ -81,14 +87,19 @@ static void derive_address_display_review_choice(bool confirm) {
 
 // Review choice handler for return address derivation
 static void respond_with_address_success(derive_address_ctx_t *ctx) {
-    ctx->responseReadyMagic = 0;
     LEDGER_ASSERT(ctx->address.size <= sizeof(ctx->address.buffer), "Address size too large");
     io_send_response_pointer(ctx->address.buffer, ctx->address.size, SWO_SUCCESS);
 }
 
-void finalize_return_address_derivation(bool confirmed) {
+void finalize_return_address(bool confirmed) {
     TRACE("confirmed = %d", confirmed);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS,
+                  "finalize_return_address called without REQUEST_DERIVE_ADDRESS");
+    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED,
+                  "finalize_return_address called in wrong state: %d",
+                  G_context.state.derive_address_state);
     if (confirmed) {
+        G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_APPROVED;
         derive_address_ctx_t *ctx = &G_context.derive_address_info;
         respond_with_address_success(ctx);
         reset_app_context();
@@ -103,7 +114,7 @@ static void derive_address_return_review_choice(bool confirm) {
     derive_address_buffer_cleanup();
 
     // FINALIZE
-    finalize_return_address_derivation(confirm);
+    finalize_return_address(confirm);
 
     // SHOW STATUS
     if (confirm) {
@@ -231,7 +242,14 @@ static void ui_returnExportAddress(warning_bits_t warnings) {
 }
 
 void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warnings) {
+    // Validate state before proceeding (address must be prepared before UI display)
+    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS,
+                  "handleReturn called with wrong request type: %d", G_context.req_type);
+    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED,
+                  "handleReturn called in wrong state: %d", G_context.state.derive_address_state);
+
     derive_address_ctx_t *ctx = &G_context.derive_address_info;
+
     switch (policy) {
         case POLICY_SHOW:
             ui_returnExportAddress(warnings);
@@ -248,6 +266,12 @@ void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warn
 }
 
 void ui_deriveAddress_handleDisplay(security_policy_t policy, warning_bits_t warnings) {
+    // Validate state before proceeding (address must be prepared before UI display)
+    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS,
+                  "handleDisplay called with wrong request type: %d", G_context.req_type);
+    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED,
+                  "handleDisplay called in wrong state: %d", G_context.state.derive_address_state);
+
     switch (policy) {
         case POLICY_SHOW:
             ui_displayExportAddress(warnings);
