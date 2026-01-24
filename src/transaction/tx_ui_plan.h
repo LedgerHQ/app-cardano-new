@@ -25,7 +25,9 @@
 // Ordered by CBOR transaction body keys (0, 1, 2, 3, 4, 5, 7, 8, 9, 11, 13, 14, 17, 18, 21, 22, ...)
 #define UI_PAIRS_INPUT 1                         // key 0: "Input"
 #define UI_PAIRS_OUTPUT_BASE 3                   // key 1: "Output", "Address", "Amount"
-#define UI_PAIRS_OUTPUT_DEVICE_OWNED 2           // key 1: "Payment info", "Staking info" (additional if device-owned)
+#define UI_PAIRS_PAYMENT_INFO 1                  // "Payment key path" or "Payment script hash"
+#define UI_PAIRS_STAKING_INFO 1                  // "Staking path", "Stake key hash", "Stake script hash", "Stake key pointer", or warning
+#define UI_PAIRS_OUTPUT_DEVICE_OWNED (UI_PAIRS_PAYMENT_INFO + UI_PAIRS_STAKING_INFO)  // key 1: Payment + Staking info (additional if device-owned)
 #define UI_PAIRS_OUTPUT_DATUM 1                  // key 1: "Datum hash" or "Inline datum" (if present and shown)
 #define UI_PAIRS_OUTPUT_REF_SCRIPT 1             // key 1: "Reference script" (if present and shown)
 #define UI_PAIRS_FEE 1                           // key 2: "Fee"
@@ -67,7 +69,7 @@
 #define UI_PAIRS_COLLATERAL_INPUT 1              // key 13: "Coll input"
 #define UI_PAIRS_REQUIRED_SIGNER 1               // key 14: "Required signer"
 #define UI_PAIRS_COLLATERAL_OUTPUT_ADDRESS 1     // key 16: "Collateral address"
-#define UI_PAIRS_COLLATERAL_OUTPUT_DEVICE_OWNED 2 // key 16: "Payment info", "Staking info" (additional if device-owned)
+#define UI_PAIRS_COLLATERAL_OUTPUT_DEVICE_OWNED (UI_PAIRS_PAYMENT_INFO + UI_PAIRS_STAKING_INFO)  // key 16: Payment + Staking info (additional if device-owned)
 #define UI_PAIRS_COLLATERAL_OUTPUT_AMOUNT 1      // key 16: "Collateral amount" (if shown)
 #define UI_PAIRS_TOTAL_COLLATERAL 1              // key 17: "Total collateral"
 #define UI_PAIRS_REFERENCE_INPUT 1               // key 18: "Ref input"

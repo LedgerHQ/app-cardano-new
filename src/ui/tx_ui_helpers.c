@@ -449,6 +449,7 @@ void addCertificateUIPairs(const certificate_data_t* certificate_data) {
 }
 
 void addPaymentInfoUIPairs(const addressParams_t* addressParams) {
+    START_COUNT();
     switch (determinePaymentChoice(addressParams->type)) {
         case PAYMENT_PATH: {
             UI_ADD_FORMAT1(UI_STATIC_LABEL("Payment key path"), MAX_BIP44_PATH_STRING_LENGTH, format_bip44_path, &addressParams->paymentKeyPath);
@@ -464,9 +465,11 @@ void addPaymentInfoUIPairs(const addressParams_t* addressParams) {
             // includes PAYMENT_NONE
             LEDGER_ASSERT(false, "Invalid payment choice");
     }
+    CHECK_COUNT(UI_PAIRS_PAYMENT_INFO);
 }
 
 void addStakingInfoUIPairs(const addressParams_t* addressParams) {
+    START_COUNT();
     switch (addressParams->stakingDataSource) {
         case NO_STAKING: {
             switch (addressParams->type) {
@@ -508,4 +511,5 @@ void addStakingInfoUIPairs(const addressParams_t* addressParams) {
         default:
             LEDGER_ASSERT(false, "Invalid staking data source");
     }
+    CHECK_COUNT(UI_PAIRS_STAKING_INFO);
 }

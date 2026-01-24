@@ -116,54 +116,70 @@ static void derive_address_return_review_choice(bool confirm) {
     }
 }
 
+// Address derivation UI pair counts
+#define DERIVE_ADDRESS_PAIRS_REWARD_ONLY        1  // Staking info only
+#define DERIVE_ADDRESS_PAIRS_PAYMENT_AND_STAKE  2  // Payment + Staking info
+#define DERIVE_ADDRESS_PAIRS_WARNING            1  // Warning banner
+
 static ui_status_t format_address_fields(const addressParams_t *params, warning_bits_t warnings) {
     ui_reset_error_status();
     const bool hasWarning = (warnings != 0);
+
     switch (params->type) {
         case REWARD_SCRIPT:
         case REWARD_KEY: {
-            // Initialize UI pairs count
-            int pairCount = 1;
-            // Add extra pair for warning if needed
-            if (hasWarning) {
-                pairCount += 1;
-            }
+            // Calculate expected pair count
+            const int expectedPairs = DERIVE_ADDRESS_PAIRS_REWARD_ONLY +
+                                     (hasWarning ? DERIVE_ADDRESS_PAIRS_WARNING : 0);
+
             // Initialize pairs
-            if (!ui_pairs_init(pairCount)) {
+            if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
                 return UI_STATUS_OUT_OF_MEMORY;
             }
+
+            START_COUNT();
+
             // Add warning banner first, if needed
             if (hasWarning) {
                 TRACE("Adding warning banner");
                 UI_ADD_STATIC(UI_STATIC_LABEL("Warning:"),
                               UI_STATIC_LABEL("Unusual request\nProceed with care"));
             }
+
             // Add staking info only
             addStakingInfoUIPairs(params);
+
+            // Verify we added the expected number of pairs
+            CHECK_COUNT(expectedPairs);
             break;
         }
         default: {
-            // Initialize UI pairs count
-            int pairCount = 2;
-            // Add extra pair for warning if needed
-            if (hasWarning) {
-                pairCount += 1;
-            }
+            // Calculate expected pair count
+            const int expectedPairs = DERIVE_ADDRESS_PAIRS_PAYMENT_AND_STAKE +
+                                     (hasWarning ? DERIVE_ADDRESS_PAIRS_WARNING : 0);
+
             // Initialize pairs
-            if (!ui_pairs_init(pairCount)) {
+            if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
                 return UI_STATUS_OUT_OF_MEMORY;
             }
+
+            START_COUNT();
+
             // Add warning banner first, if needed
             if (hasWarning) {
                 TRACE("Adding warning banner");
                 UI_ADD_STATIC(UI_STATIC_LABEL("Warning:"),
                               UI_STATIC_LABEL("Unusual request\nProceed with care"));
             }
+
             // Add payment and staking info
             addPaymentInfoUIPairs(params);
             addStakingInfoUIPairs(params);
+
+            // Verify we added the expected number of pairs
+            CHECK_COUNT(expectedPairs);
             break;
         }
     }
