@@ -9,14 +9,8 @@
 #include "addressUtils/addressUtilsShelley.h"
 #include "securityPolicy.h"
 #include "utils/assert.h"
-#include "nbgl_use_case.h"
 #include "app_context.h"
-
 #include "io.h"
-
-#include "ux.h"
-#include "utils.h"
-#include "os_io_seproxyhal.h"
 #include "ui/ui_display_address_derivation.h"
 
 static void prepareResponse() {
