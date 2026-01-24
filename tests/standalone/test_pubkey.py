@@ -8,6 +8,7 @@ from ragger.error import ExceptionRAPDU
 
 from application_client.command_sender import CommandSender
 from application_client.status_words import StatusWord
+from application_client.response_unpacker import unpack_get_pubkey_response
 
 from standalone.input_files.pubkey import PubKeyTestCase, rejectTestCases, testsByron, testsShelleyUsual, testsShelleyUnusual, testsMultisig, testsColdKeys, testsCVoteKeysUsual, testsCVoteKeysUnusual, testsDRepKeys, testsCommitteeColdKeys, testsCommitteeHotKeys, testsMintKeys, testsSilentExport
 
@@ -97,5 +98,7 @@ def test_pubkey_reject(backend: BackendInterface,
 
 
 def _check_pubkey_result(data: bytes, path: str) -> None:
+    public_key, chain_code = unpack_get_pubkey_response(data)
     ref_pk, ref_chaincode = get_device_pubkey(path)
-    assert data.hex() == ref_pk.hex() + ref_chaincode
+    assert public_key.hex() == ref_pk.hex()
+    assert chain_code.hex() == ref_chaincode

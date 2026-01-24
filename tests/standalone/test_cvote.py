@@ -14,6 +14,10 @@ from ragger.navigator.navigation_scenario import NavigateWithScenario
 
 from application_client.status_words import StatusWord
 from application_client.command_sender import CommandSender
+from application_client.response_unpacker import (
+    unpack_sign_cip36_confirm_response,
+    unpack_sign_cip36_witness_response
+)
 
 from standalone.input_files.cvote import cvoteTestCases, CVoteTestCase
 
@@ -112,7 +116,7 @@ def _cvote_confirm(device: Device,
     # Check the status (Asynchronous)
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS
-    return response.data
+    return unpack_sign_cip36_confirm_response(response.data)
 
 
 def _cvote_witness(device: Device,
@@ -146,4 +150,4 @@ def _cvote_witness(device: Device,
     # Check the status (Asynchronous)
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS
-    return response.data
+    return unpack_sign_cip36_witness_response(response.data)

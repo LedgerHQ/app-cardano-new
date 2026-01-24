@@ -78,7 +78,7 @@ class CommandSender:
 
 
     @contextmanager
-    def sign_opCert(self, testCase: OpCertTestCase) -> Generator[None, None, None]:
+    def sign_opcert_async(self, testCase: OpCertTestCase) -> Generator[None, None, None]:
         """APDU Sign Operational Certificate
 
         Args:
@@ -133,7 +133,7 @@ class CommandSender:
 
         self._send_tx_aux_data_if_present(tx)
 
-        with self.sign_tx_send_chunks(tx):
+        with self.sign_tx_send_chunks_async(tx):
             if on_review is not None:
                 on_review()
 
@@ -165,7 +165,7 @@ class CommandSender:
                 raise AssertionError(f"AUX_DATA registration failed: {hex(response.status)}")
 
     @contextmanager
-    def sign_tx_send_chunks(self, tx) -> Generator[None, None, None]:
+    def sign_tx_send_chunks_async(self, tx) -> Generator[None, None, None]:
         """Serialize transaction into chunks and send them.
 
         Sends all intermediate chunks synchronously, then the final chunk asynchronously
@@ -270,7 +270,7 @@ class CommandSender:
         return self._exchange(self._cmd_builder.derive_address(p1, testCase))
 
     @contextmanager
-    def derive_script_add_simple(self, script: NativeScript) -> Generator[None, None, None]:
+    def derive_script_add_simple_async(self, script: NativeScript) -> Generator[None, None, None]:
         """APDU NATIVE SCRIPT HASH - SIMPLE SCRIPT step
 
         Args:
@@ -285,7 +285,7 @@ class CommandSender:
 
 
     @contextmanager
-    def derive_script_add_complex(self, script: NativeScript) -> Generator[None, None, None]:
+    def derive_script_add_complex_async(self, script: NativeScript) -> Generator[None, None, None]:
         """APDU NATIVE SCRIPT HASH - COMPLEX SCRIPT step
 
         Args:
@@ -300,7 +300,7 @@ class CommandSender:
 
 
     @contextmanager
-    def derive_script_finish(self, displayFormat: NativeScriptHashDisplayFormat) -> Generator[None, None, None]:
+    def derive_script_finish_async(self, displayFormat: NativeScriptHashDisplayFormat) -> Generator[None, None, None]:
         """APDU NATIVE SCRIPT HASH - FINISH step
 
         Args:

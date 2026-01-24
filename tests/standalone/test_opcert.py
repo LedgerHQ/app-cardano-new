@@ -14,6 +14,7 @@ from ragger.navigator.navigation_scenario import NavigateWithScenario
 
 from application_client.status_words import StatusWord
 from application_client.command_sender import CommandSender
+from application_client.response_unpacker import unpack_sign_opcert_response
 
 from standalone.input_files.signOpCert import opCertTestCases, OpCertTestCase
 
@@ -35,7 +36,7 @@ def test_opCert(device: Device,
     # Use the app interface instead of raw interface
     client = CommandSender(backend)
 
-    with client.sign_opCert(testCase):
+    with client.sign_opcert_async(testCase):
         if device.is_nano:
             # TODO warning not shown ???
             navigator.navigate_until_text(NavInsID.RIGHT_CLICK, [NavInsID.BOTH_CLICK], "Sign certificate")
@@ -49,9 +50,11 @@ def test_opCert(device: Device,
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS
 
+    signature = unpack_sign_opcert_response(response.data)
+
     msg = bytes()
     msg += bytes.fromhex(testCase.opCert.kesPublicKeyHex)
     msg += testCase.opCert.issueCounter.to_bytes(8, 'big')
     msg += testCase.opCert.kesPeriod.to_bytes(8, 'big')
 
-    verify_signature(testCase.opCert.path, response.data, msg)
+    verify_signature(testCase.opCert.path, signature, msg)

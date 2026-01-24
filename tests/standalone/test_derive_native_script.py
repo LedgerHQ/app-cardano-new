@@ -15,6 +15,7 @@ from ragger.error import ExceptionRAPDU
 
 from application_client.status_words import StatusWord
 from application_client.command_sender import CommandSender
+from application_client.response_unpacker import unpack_derive_native_script_hash_response
 
 from standalone.input_files.derive_native_script import ValidNativeScriptTestCases, ValidNativeScriptTestCase
 from standalone.input_files.derive_native_script import NativeScript, NativeScriptType
@@ -86,7 +87,7 @@ def _deriveNativeScriptHash_addSimpleScript(device: Device,
         complex_nav (bool): The complex navigation flag
     """
 
-    with client.derive_script_add_simple(script):
+    with client.derive_script_add_simple_async(script):
         """
             moves = []
             if device.is_nano:
@@ -132,7 +133,7 @@ def _deriveScriptHash_startComplexScript(device: Device,
         complex_nav (bool): The complex navigation flag
     """
 
-    with client.derive_script_add_complex(script):
+    with client.derive_script_add_complex_async(script):
         """
         moves = []
         if device.is_nano:
@@ -176,7 +177,7 @@ def _deriveNativeScriptHash_finishWholeNativeScript(device: Device,
         testCase (ValidNativeScriptTestCase): The test case
     """
 
-    with client.derive_script_finish(testCase.displayFormat):
+    with client.derive_script_finish_async(testCase.displayFormat):
         """
         if device.is_nano:
             moves = []
@@ -210,5 +211,6 @@ def _deriveNativeScriptHash_finishWholeNativeScript(device: Device,
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS
     # Check the response
-    assert response.data.hex() == testCase.expected.hash
+    script_hash = unpack_derive_native_script_hash_response(response.data)
+    assert script_hash.hex() == testCase.expected.hash
     # TODO: Generate the payload and verify the signature

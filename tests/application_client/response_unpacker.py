@@ -1,15 +1,6 @@
 from typing import Tuple
 from struct import unpack
 
-# remainder, data_len, data
-def pop_sized_buf_from_buffer(buffer:bytes, size:int) -> Tuple[bytes, bytes]:
-    return buffer[size:], buffer[0:size]
-
-# remainder, data_len, data
-def pop_size_prefixed_buf_from_buf(buffer:bytes) -> Tuple[bytes, int, bytes]:
-    data_len = buffer[0]
-    return buffer[1+data_len:], data_len, buffer[1:data_len+1]
-
 # Unpack from response:
 # response = app_name (var)
 def unpack_get_app_name_response(response: bytes) -> str:
@@ -32,49 +23,65 @@ def unpack_get_serial_response(response: bytes) -> bytes:
     return response
 
 # Unpack from response:
-# response = format_id (1)
-#            app_name_raw_len (1)
-#            app_name_raw (var)
-#            version_raw_len (1)
-#            version_raw (var)
-#            unused_len (1)
-#            unused (var)
-def unpack_get_app_and_version_response(response: bytes) -> Tuple[str, str]:
-    response, _ = pop_sized_buf_from_buffer(response, 1)
-    response, _, app_name_raw = pop_size_prefixed_buf_from_buf(response)
-    response, _, version_raw = pop_size_prefixed_buf_from_buf(response)
-    response, _, _ = pop_size_prefixed_buf_from_buf(response)
-
-    assert len(response) == 0
-
-    return app_name_raw.decode("ascii"), version_raw.decode("ascii")
-
-# Unpack from response:
-# response =
-#            pub_key (var)
-#            chain_code (var)
-def unpack_get_public_key_response(response: bytes) -> Tuple[bytes, bytes]:
+# response = pub_key (32)
+#            chain_code (32)
+def unpack_get_pubkey_response(response: bytes) -> Tuple[bytes, bytes]:
     PUBLIC_KEY_LENGTH = 32
     CHAIN_CODE_LENGTH = 32
     assert len(response) == PUBLIC_KEY_LENGTH + CHAIN_CODE_LENGTH
     public_key = response[:PUBLIC_KEY_LENGTH]
     chain_code = response[PUBLIC_KEY_LENGTH:]
-
     return public_key, chain_code
 
 # Unpack from response:
-# response = der_sig_len (1)
-#            der_sig (var)
-#            v (1)
-def unpack_sign_tx_response(response: bytes) -> Tuple[int, bytes, int]:
-    response, der_sig_len, der_sig = pop_size_prefixed_buf_from_buf(response)
-    response, v = pop_sized_buf_from_buffer(response, 1)
+# response = signature (64)
+def unpack_sign_opcert_response(response: bytes) -> bytes:
+    SIGNATURE_LENGTH = 64
+    assert len(response) == SIGNATURE_LENGTH
+    return response
 
-    assert len(response) == 0
+# Unpack from response:
+# response = signature (64)
+def unpack_sign_tx_witness_response(response: bytes) -> bytes:
+    SIGNATURE_LENGTH = 64
+    assert len(response) == SIGNATURE_LENGTH
+    return response
 
-    return der_sig_len, der_sig, int.from_bytes(v, byteorder='big')
+# Unpack from response:
+# response = tx_hash (32)
+def unpack_sign_tx_hash_response(response: bytes) -> bytes:
+    TX_HASH_LENGTH = 32
+    assert len(response) == TX_HASH_LENGTH
+    return response
 
 # Unpack from response:
 # response = address (var)
 def unpack_derive_address_response(response: bytes) -> bytes:
+    return response
+
+# Unpack from response:
+# response = script_hash (28)
+def unpack_derive_native_script_hash_response(response: bytes) -> bytes:
+    SCRIPT_HASH_LENGTH = 28
+    assert len(response) == SCRIPT_HASH_LENGTH
+    return response
+
+# Unpack from response:
+# response = signature (64)
+def unpack_sign_message_response(response: bytes) -> bytes:
+    SIGNATURE_LENGTH = 64
+    assert len(response) == SIGNATURE_LENGTH
+    return response
+
+# Unpack from response:
+# response = auth_data (var)
+def unpack_sign_cip36_confirm_response(response: bytes) -> bytes:
+    # Auth data can vary in length depending on the cvote parameters
+    return response
+
+# Unpack from response:
+# response = signature (64)
+def unpack_sign_cip36_witness_response(response: bytes) -> bytes:
+    SIGNATURE_LENGTH = 64
+    assert len(response) == SIGNATURE_LENGTH
     return response

@@ -17,6 +17,7 @@ from ragger.navigator.navigation_scenario import NavigateWithScenario
 from application_client.app_def import AddressType, Mainnet
 from application_client.status_words import StatusWord
 from application_client.command_sender import CommandSender
+from application_client.response_unpacker import unpack_sign_message_response
 
 from standalone.input_files.signMsg import signMsgTestCases, SignMsgTestCase, MessageAddressFieldType
 
@@ -144,6 +145,8 @@ def _signMsg_confirm(device: Device,
     # Check the status (Asynchronous)
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS
+    # Note: response contains signature (64) + pubkey (32) + address field (var)
+    # We don't use unpack_sign_message_response here since response is composite
     return response.data
 
 
@@ -160,8 +163,9 @@ def _check_result(testCase: SignMsgTestCase, buffer: bytes) -> None:
     MAX_ADDRESS_LENGTH = 128
     # Check the response length
     assert len(buffer) <= ED25519_SIGNATURE_LENGTH + PUBLIC_KEY_LENGTH + 4 + MAX_ADDRESS_LENGTH
-    # Get the signature
+    # Get the signature (validate it's 64 bytes)
     buffer, signature = pop_sized_buf_from_buffer(buffer, ED25519_SIGNATURE_LENGTH)
+    assert len(signature) == ED25519_SIGNATURE_LENGTH  # Validate signature format
     # Get the public key
     buffer, signingPublicKey = pop_sized_buf_from_buffer(buffer, PUBLIC_KEY_LENGTH)
     # Get the address field

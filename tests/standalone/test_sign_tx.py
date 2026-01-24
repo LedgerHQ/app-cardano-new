@@ -11,6 +11,7 @@ from ragger.navigator.navigation_scenario import NavigateWithScenario
 
 from application_client.status_words import StatusWord
 from application_client.command_sender import CommandSender
+from application_client.response_unpacker import unpack_sign_tx_witness_response
 from standalone.utils import verify_signature, idTestFunc
 from standalone.input_files.signTx import (
     testsByron,
@@ -153,9 +154,8 @@ def _run_sign_tx_test(device: Device,
         assert response is not None, f"No response for witness {path_idx}: {path}"
         assert response.status == StatusWord.SWO_SUCCESS, f"Witness failed for {path}: {hex(response.status)}"
 
-        signature = response.data
+        signature = unpack_sign_tx_witness_response(response.data)
         print(f"Witness signature for {path} ({len(signature)} bytes): {signature.hex()}")
-        assert len(signature) == 64, f"Expected 64-byte signature for {path}, got {len(signature)}"
         verify_signature(path, signature, tx_hash)
 
 
