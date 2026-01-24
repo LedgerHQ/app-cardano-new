@@ -364,7 +364,7 @@ target_link_libraries(test_cbor PUBLIC cmocka gcov cbor_lib hex_utils read write
 target_link_libraries(test_buffer_utils PUBLIC cmocka gcov buffer_utils_lib buffer write varint bip32)
 target_link_libraries(test_ip_utils PUBLIC cmocka gcov)
 target_link_libraries(test_hash PUBLIC cmocka gcov hex_utils blake2b_lib sha3_lib hash_mocks_lib)
-target_link_libraries(test_apdu_info PUBLIC cmocka gcov)
+target_link_libraries(test_apdu_info PUBLIC cmocka gcov buffer read)
 target_link_libraries(test_address_utils_byron
     PUBLIC
         cmocka
