@@ -6,6 +6,7 @@
 #include "cardano_tokens.h"
 #include "cardano_constants.h"
 #include "bech32.h"
+#include <stdio.h>
 #include <string.h>
 
 static const char *getCertificateTypeName(certificate_type_t type) {
@@ -136,6 +137,39 @@ bool format_ada_amount(uint64_t amount, char *out, size_t outSize) {
 
     return true;
 }
+
+#ifdef DEBUG
+void str_traceAdaAmount(const char* prefix, uint64_t amount) {
+    char adaAmountStr[100] = {0};
+    explicit_bzero(adaAmountStr, SIZEOF(adaAmountStr));
+
+    const size_t prefixLen = strlen(prefix);
+    ASSERT(prefixLen <= 50);
+    int written = snprintf(adaAmountStr, SIZEOF(adaAmountStr), "%s", prefix);
+    LEDGER_ASSERT(written > 0, "snprintf prefix failed");
+    LEDGER_ASSERT((size_t)written == prefixLen, "snprintf prefix length mismatch");
+
+    bool formatted = format_ada_amount(amount, adaAmountStr + prefixLen, SIZEOF(adaAmountStr) - prefixLen);
+    ASSERT(formatted);
+    TRACE("%s", adaAmountStr);
+}
+
+void str_traceUint64(uint64_t number) {
+    char numberStr[30] = {0};
+    explicit_bzero(numberStr, SIZEOF(numberStr));
+
+    format_u64(numberStr, SIZEOF(numberStr), number);
+    TRACE("%s", numberStr);
+}
+
+void str_traceInt64(int64_t number) {
+    char numberStr[30] = {0};
+    explicit_bzero(numberStr, SIZEOF(numberStr));
+
+    format_i64(numberStr, SIZEOF(numberStr), number);
+    TRACE("%s", numberStr);
+}
+#endif  // DEBUG
 
 // Note: This is valid only for mainnet
 static struct {

@@ -1,42 +1,8 @@
 #include "assert.h"
 #include "utils.h"
 #include "textUtils.h"
-#include "ui_formatters.h"
-#include <string.h>
+#include <stddef.h>
 #include <stdint.h>
-
-#ifdef DEBUG
-void str_traceAdaAmount(const char* prefix, uint64_t amount) {
-    char adaAmountStr[100] = {0};
-    explicit_bzero(adaAmountStr, SIZEOF(adaAmountStr));
-
-    const size_t prefixLen = strlen(prefix);
-    ASSERT(prefixLen <= 50);
-    int written = snprintf(adaAmountStr, SIZEOF(adaAmountStr), "%s", prefix);
-    LEDGER_ASSERT(written > 0, "snprintf prefix failed");
-    LEDGER_ASSERT((size_t)written == prefixLen, "snprintf prefix length mismatch");
-
-    bool formatted = format_ada_amount(amount, adaAmountStr + prefixLen, SIZEOF(adaAmountStr) - prefixLen);
-    ASSERT(formatted);
-    TRACE("%s", adaAmountStr);
-}
-
-void str_traceUint64(uint64_t number) {
-    char numberStr[30] = {0};
-    explicit_bzero(numberStr, SIZEOF(numberStr));
-
-    format_u64(numberStr, SIZEOF(numberStr), number);
-    TRACE("%s", numberStr);
-}
-
-void str_traceInt64(int64_t number) {
-    char numberStr[30] = {0};
-    explicit_bzero(numberStr, SIZEOF(numberStr));
-
-    format_i64(numberStr, SIZEOF(numberStr), number);
-    TRACE("%s", numberStr);
-}
-#endif  // DEBUG
 
 // check if a non-null-terminated buffer contains printable ASCII between 33 and 126 (inclusive)
 bool str_isPrintableAsciiWithoutSpaces(const uint8_t* buffer, size_t bufferSize) {

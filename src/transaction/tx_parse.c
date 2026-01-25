@@ -29,6 +29,7 @@
 #include "utils.h"
 #include "assert.h"
 #include "textUtils.h"
+#include "ui_formatters.h"
 #include "tx_constants.h"
 #include "tx_output_types.h"
 #include "globals.h"

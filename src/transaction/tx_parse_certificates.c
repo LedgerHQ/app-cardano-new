@@ -26,6 +26,7 @@
 #include "buffer_utils.h"
 #include "utils.h"
 #include "textUtils.h"
+#include "ui_formatters.h"
 #include "tx_parse_certificates.h"
 #include "tx.h"
 #include "parsers/parsers.h"

@@ -30,6 +30,7 @@
 #include "globals.h"
 #include "utils.h"
 #include "textUtils.h"
+#include "ui_formatters.h"
 #include "app_context.h"
 #include "ui_display_opcert.h"
 #include "opcert_types.h"
