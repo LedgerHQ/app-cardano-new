@@ -6,6 +6,7 @@
 #include "buffer.h"
 #include "transaction/tx_credential_types.h"
 #include "transaction/tx_anchor_types.h"
+#include "transaction/tx_certificate_types.h"
 
 // =============================================================================
 // Optional Item Flags
@@ -76,6 +77,19 @@ bool buffer_read_int64(buffer_t *buffer, int64_t *value, endianness_t endianness
  * @return true on success, false on failure
  */
 bool buffer_read_anchor(buffer_t *buf, anchor_t *anchor);
+
+/**
+ * Read a DRep (Delegated Representative) descriptor from the buffer.
+ *
+ * Wire format:
+ *   - 1 byte: DRep type (KEY_HASH, SCRIPT_HASH, ABSTAIN, NO_CONFIDENCE, KEY_PATH)
+ *   - Optional payload: key hash/script hash/extended key path
+ *
+ * @param[in,out] buf Buffer to read from
+ * @param[out] drep Parsed DRep structure
+ * @return true on success, false otherwise
+ */
+bool buffer_read_drep(buffer_t *buf, ext_drep_t *drep);
 
 // =============================================================================
 // Credential Parsing

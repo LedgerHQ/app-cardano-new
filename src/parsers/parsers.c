@@ -16,6 +16,7 @@
  *****************************************************************************/
 
 #include "parsers.h"
+#include "transaction/tx_certificate_types.h"
 #include "buffer.h"
 #include "cardano_constants.h"
 #include "utils/utils.h"
@@ -137,6 +138,79 @@ bool buffer_read_anchor(buffer_t *buf, anchor_t *anchor) {
     }
     ASSERT(anchor->hash != NULL);
 
+    return true;
+}
+
+bool buffer_read_drep(buffer_t *buf, ext_drep_t *drep) {
+    TRACE("Parsing DRep");
+    uint8_t drep_type_wire;
+    if (!buffer_read_u8(buf, &drep_type_wire)) {
+        TRACE("Failed to read DRep type byte");
+        return false;
+    }
+
+    TRACE("DRep type wire=0x%02x", drep_type_wire);
+    ext_drep_type_t drep_type = {0};
+    switch (drep_type_wire) {
+        case EXT_DREP_KEY_HASH:
+            drep_type = EXT_DREP_KEY_HASH;
+            TRACE("DRep type: KEY_HASH");
+            break;
+        case EXT_DREP_SCRIPT_HASH:
+            drep_type = EXT_DREP_SCRIPT_HASH;
+            TRACE("DRep type: SCRIPT_HASH");
+            break;
+        case EXT_DREP_ABSTAIN:
+            drep_type = EXT_DREP_ABSTAIN;
+            TRACE("DRep type: ABSTAIN");
+            break;
+        case EXT_DREP_NO_CONFIDENCE:
+            drep_type = EXT_DREP_NO_CONFIDENCE;
+            TRACE("DRep type: NO_CONFIDENCE");
+            break;
+        case EXT_DREP_KEY_PATH:
+            drep_type = EXT_DREP_KEY_PATH;
+            TRACE("DRep type: KEY_PATH");
+            break;
+        default:
+            TRACE("Invalid DRep type wire: 0x%02x", drep_type_wire);
+            return false;
+    }
+    drep->type = drep_type;
+
+    switch (drep_type) {
+        case EXT_DREP_KEY_PATH:
+            if (!buffer_read_bip44_path(buf, &drep->keyPath)) {
+                TRACE("Failed to read DRep BIP44 path");
+                return false;
+            }
+            TRACE("Successfully parsed DRep KEY_PATH");
+            break;
+        case EXT_DREP_KEY_HASH: {
+            if (!buffer_read_bytes_ptr(buf, &drep->keyHash, ADDRESS_KEY_HASH_LENGTH)) {
+                TRACE("Failed to read DRep key hash");
+                return false;
+            }
+            TRACE("Successfully parsed DRep KEY_HASH");
+            break;
+        }
+        case EXT_DREP_SCRIPT_HASH: {
+            if (!buffer_read_bytes_ptr(buf, &drep->scriptHash, SCRIPT_HASH_LENGTH)) {
+                TRACE("Failed to read DRep script hash");
+                return false;
+            }
+            TRACE("Successfully parsed DRep SCRIPT_HASH");
+            break;
+        }
+        case EXT_DREP_ABSTAIN:
+        case EXT_DREP_NO_CONFIDENCE:
+            TRACE("DRep has no additional data");
+            break;
+        default:
+            TRACE("Invalid DRep type: %u", drep_type);
+            return false;
+    }
+    TRACE("Successfully parsed DRep");
     return true;
 }
 
