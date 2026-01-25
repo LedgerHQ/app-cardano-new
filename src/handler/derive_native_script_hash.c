@@ -48,7 +48,8 @@ static void deriveNativeScriptHash_handleNofK(buffer_t *cdata) {
         return;
     }
     if (ctx->complexScripts[ctx->level].remainingScripts < ctx->scriptContent.requiredScripts) {
-        LEDGER_ASSERT(false, "remainingScripts less than requiredScripts");
+        TRACE("remainingScripts less than requiredScripts");
+        send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_COUNT);
         return;
     }
     nativeScriptHashBuilder_startComplexScript_n_of_k(
@@ -321,7 +322,8 @@ static void deriveNativeScriptHash_handleWholeNativeScriptFinish(buffer_t *cdata
 
     // we finish only if there are no more scripts to be processed
     if (ctx->level != 0 || ctx->complexScripts[0].remainingScripts != 0) {
-        LEDGER_ASSERT(false, "We finish only if there are no more scripts to be processed");
+        TRACE("Finish received before all scripts were processed");
+        send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_NESTING);
         return;
     }
 

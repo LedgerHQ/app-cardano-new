@@ -23,6 +23,7 @@ typedef enum {
     SWO_NATIVE_SCRIPT_PARSING_FAIL_NESTING = 0x6B43,            // unexpected script depth/nesting
     SWO_NATIVE_SCRIPT_PARSING_FAIL_TIMELOCK = 0x6B44,           // timelock parsing
     SWO_NATIVE_SCRIPT_PARSING_FAIL_DEPTH_UNSUPPORTED = 0x6B45,  // supported depth exceeded
+    SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_COUNT = 0x6B46,       // invalid script count/structure
     // Transaction body field parsing errors
     // Organized by CBOR key as per Cardano CDDL: error = 0x6B20 + CBOR_KEY
     SWO_TX_PARSING_FAIL_INPUTS = 0x6B20,              // key 0
