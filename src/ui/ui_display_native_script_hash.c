@@ -199,6 +199,7 @@ static void derive_native_script_hash_review_ask_confirmation(bool confirm) {
 #define MAX_NESTED_SCRIPTS_DESCRIPTION_LENGTH 87
 #define MAX_SIGNATURES_DESCRIPTION_LENGTH     87
 #define MAX_TIMELOCK_DESCRIPTION_LENGTH       40
+#define MAX_POLICY_ID_STRING_LENGTH           (2 * SCRIPT_HASH_LENGTH)
 
 void display_complex_script_content(ui_native_script_type scriptType) {
     TRACE("display_complex_script_content");
@@ -432,18 +433,16 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
             break;
         }
         case UI_SCRIPT_DISPLAY_POLICY_ID: {
-            char bufferHex[2 * SCRIPT_HASH_LENGTH + 1] = {0};
-            bytes_to_lowercase_hex(bufferHex,
-                                   SIZEOF(bufferHex),
-                                   ctx->scriptHashBuffer,
-                                   SCRIPT_HASH_LENGTH);
             if (!ui_pairs_init(1)) {
                 TRACE("Failed to initialize pairs");
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
-            g_pairs[0].item = "Policy ID";
-            g_pairs[0].value = bufferHex;
+            UI_ADD_FORMAT2(UI_STATIC_LABEL("Policy ID"),
+                           MAX_POLICY_ID_STRING_LENGTH,
+                           format_hex_bytes,
+                           ctx->scriptHashBuffer,
+                           SCRIPT_HASH_LENGTH);
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList,
                                                 derive_native_script_hash_review_ask_confirmation);
