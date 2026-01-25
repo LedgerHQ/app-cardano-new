@@ -268,7 +268,7 @@ static void assertCanLeaveCurrentOutput(tx_hash_builder_t* builder) {
         case TX_OUTPUT_INIT:
         case TX_OUTPUT_TOP_LEVEL_DATA:
             // no tokens
-            TRACE("%d", builder->outputData.multiassetData.remainingAssetGroups);
+            TRACE("%u", builder->outputData.multiassetData.remainingAssetGroups);
             ASSERT(builder->outputData.multiassetData.remainingAssetGroups == 0);
             // no datum or script reference
             ASSERT(!builder->outputData.includeDatum);

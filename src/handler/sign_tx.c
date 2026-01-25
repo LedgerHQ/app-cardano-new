@@ -529,7 +529,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     }
     LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");
 
-    TRACE("TX Mode=%d, Network: ID=%d, Magic=%d, Inputs=%d, Outputs=%d, Withdrawals=%d, Mint=%d, TTL=%d, VIS=%d, Witnesses=%d",
+    TRACE("TX Mode=%d, Network: ID=%d, Magic=%u, Inputs=%u, Outputs=%u, Withdrawals=%u, Mint=%u, includeTTL=%d, includeVIS=%d, Witnesses=%u",
         G_context.tx_info.transaction.txSigningMode,
         G_context.tx_info.transaction.networkId,
         G_context.tx_info.transaction.protocolMagic,
@@ -639,7 +639,7 @@ static void handle_tx_data_chunk(buffer_t *cdata, bool more) {
         return;
     }
     G_context.tx_info.raw_tx_len += cdata->size;
-    TRACE("Copied %d bytes, total: %d", cdata->size, G_context.tx_info.raw_tx_len);
+    TRACE("Copied %u bytes, total: %u", (unsigned)cdata->size, (unsigned)G_context.tx_info.raw_tx_len);
 
     if (more) {
         io_send_sw(SWO_SUCCESS);

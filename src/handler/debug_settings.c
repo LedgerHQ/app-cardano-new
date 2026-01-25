@@ -35,7 +35,8 @@ void handler_debug_set_settings(const buffer_t *buf) {
 
     // Expect exactly 2 bytes of data
     if ((buf->size - buf->offset) != 2) {
-        TRACE("DEBUG: Invalid data length: %d (expected 2)", buf->size - buf->offset);
+        // buf->size and buf->offset are size_t (unsigned); show difference as signed int
+        TRACE("DEBUG: Invalid data length: %d (expected 2)", (int)(buf->size - buf->offset));
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }

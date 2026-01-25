@@ -206,6 +206,7 @@ static bool format_validity_boundary_mainnet(uint64_t slotNumber, char *out, siz
         // thousands of years
         written = snprintf(out, outSize, "epoch more than 1000000");
     } else {
+        // Safe: epoch and slotInEpoch are uint64_t but guaranteed < 1000000 by check above
         written = snprintf(out, outSize, "epoch %u / slot %u", (unsigned) epoch, (unsigned) slotInEpoch);
     }
 
@@ -248,6 +249,7 @@ bool format_pool_margin(uint64_t numerator, uint64_t denominator, char *out, siz
     uint64_t margin_percentage = (10000 * numerator + (denominator / 2)) / denominator;
     unsigned int percentage = (unsigned int) margin_percentage;
 
+    STATIC_ASSERT(!IS_SIGNED(percentage), "signed type for %u");
     int written = snprintf(out, outSize, "%u.%u %%", percentage / 100, percentage % 100);
     LEDGER_ASSERT(written > 0, "snprintf pool margin formatting failed");
     return (size_t)written + 1 < outSize;
@@ -257,6 +259,7 @@ bool format_pool_margin(uint64_t numerator, uint64_t denominator, char *out, siz
  * Format 16-bit unsigned integer to string
  */
 bool format_uint16(uint16_t value, char *out, size_t outSize) {
+    STATIC_ASSERT(!IS_SIGNED(value), "signed type for %u");
     int written = snprintf(out, outSize, "%u", value);
     LEDGER_ASSERT(written > 0, "snprintf uint16 formatting failed");
     return (size_t)written + 1 < outSize;
@@ -266,6 +269,7 @@ bool format_uint16(uint16_t value, char *out, size_t outSize) {
  * Format unsigned integer with "#" prefix for numbered items
  */
 bool format_index_with_prefix(uint32_t value, char *out, size_t outSize) {
+    STATIC_ASSERT(!IS_SIGNED(value), "signed type for %u");
     int written = snprintf(out, outSize, "#%u", value);
     LEDGER_ASSERT(written > 0, "snprintf index prefix formatting failed");
     return (size_t)written + 1 < outSize;
@@ -456,6 +460,7 @@ bool format_incomplete_hex_with_length(const uint8_t *data,
         return false;
     }
 
+    STATIC_ASSERT(!IS_SIGNED(dataLen), "signed type for %u");
     int written = snprintf(out, outSize, "%s... (%u bytes)", hexPrefix, (unsigned int)dataLen);
     LEDGER_ASSERT(written > 0, "snprintf incomplete hex formatting failed");
     LEDGER_ASSERT((size_t)written + 1 < outSize, "Inline datum preview truncated");

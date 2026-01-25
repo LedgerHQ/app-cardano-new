@@ -104,6 +104,7 @@ static bool format_input_with_index(const tx_input_t *input, char *out, size_t o
     if (hash_len + 1 >= out_size) {
         return false;
     }
+    STATIC_ASSERT(!IS_SIGNED(input->index), "signed type for %u");
     int written = snprintf(out + hash_len, out_size - hash_len, " / %u", input->index);
     LEDGER_ASSERT(written > 0, "snprintf input index formatting failed");
     LEDGER_ASSERT((size_t)written + hash_len + 1 <= out_size, "Input display buffer overflow");
@@ -807,6 +808,7 @@ static void add_ui_and_free_validity_interval_start(transaction_t *tx) {
 
 // Local formatter for mint summary display (e.g., "2 asset groups", "1 asset group")
 static bool format_mint_summary(uint16_t num_groups, char *out, size_t outSize) {
+    STATIC_ASSERT(!IS_SIGNED(num_groups), "signed type for %u");
     int written = snprintf(out, outSize, "%u asset group%s", num_groups, (num_groups == 1) ? "" : "s");
     LEDGER_ASSERT(written > 0, "snprintf mint summary formatting failed");
     return (size_t)written + 1 < outSize;
@@ -977,9 +979,9 @@ static void add_ui_and_free_collateral_output(transaction_t *tx) {
     LEDGER_ASSERT(collateral_tokens_policy != POLICY_DENY, "Collateral tokens policy denied during UI");
     bool show_collateral_tokens =
         (collateral_policy == POLICY_SHOW) && (collateral_tokens_policy == POLICY_SHOW);
-    TRACE("Collateral output: policy=%d ada=%d tokens=%d numAssets=%u",
+    TRACE("Collateral output: policy=%d ada_policy=%d tokens_policy=%d numAssets=%u",
           collateral_policy, collateral_ada_policy, collateral_tokens_policy,
-          (unsigned int)tx->collateral_output.numAssetGroups);
+          (unsigned)tx->collateral_output.numAssetGroups);
 
     if (collateral_policy == POLICY_SHOW) {
         START_COUNT();
