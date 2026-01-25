@@ -8,7 +8,7 @@
 #include "buffer.h"
 #include "handler/sign_tx.h"
 #include "hexUtils.h"
-#include "transaction/tx.h"
+#include "tx.h"
 #include "blake2b.h"
 #include "globals.h"
 #include "cardano_settings.h"

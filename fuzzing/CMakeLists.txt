@@ -54,7 +54,7 @@ set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/memory/flist.c
     ${CARDANO_PATH}/src/messageSigning/messageSigning.c
     ${CARDANO_PATH}/src/opcert/opcert_parse.c
-    ${CARDANO_PATH}/src/parsers/parsers.c
+    ${CARDANO_PATH}/src/parsers/cardano_parsers.c
     ${CARDANO_PATH}/src/securityPolicy/securityPolicy.c
     ${CARDANO_PATH}/src/securityPolicy/securityPolicy_privkey.c
     ${CARDANO_PATH}/src/transaction/tx_parse.c

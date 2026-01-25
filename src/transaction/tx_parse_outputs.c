@@ -20,7 +20,7 @@
 #include "buffer_write.h"
 #include "addressUtilsShelley.h"
 #include "cardano_swo.h"
-#include "parsers/parsers.h"
+#include "parsers/cardano_parsers.h"
 
 parser_status_e parse_output_destination(buffer_t* buf,
                                          tx_output_destination_storage_t* destination,

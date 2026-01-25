@@ -15,8 +15,8 @@
  *  limitations under the License.
  *****************************************************************************/
 
-#include "parsers.h"
-#include "transaction/tx_certificate_types.h"
+#include "parsers/cardano_parsers.h"
+#include "tx_certificate_types.h"
 #include "buffer.h"
 #include "cardano_constants.h"
 #include "utils/utils.h"

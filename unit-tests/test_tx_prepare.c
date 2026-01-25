@@ -9,7 +9,7 @@
 
 #include "globals.h"
 #include "cardano_swo.h"
-#include "transaction/tx_validate.h"
+#include "tx_validate.h"
 
 static void reset_context(void) {
     explicit_bzero(&G_context, sizeof(G_context));

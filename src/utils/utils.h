@@ -60,6 +60,3 @@
 
 #define IS_SIGNED_TYPE(type) (((type)(-1)) < 0)
 #define IS_SIGNED(var)       (((typeof(var))(-1)) < 0)
-
-// Item inclusion parsing moved to parsers/parsers.h
-#include "parsers/parsers.h"

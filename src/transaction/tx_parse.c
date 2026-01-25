@@ -22,7 +22,7 @@
 #include "buffer_write.h"
 #include "cbor.h"
 #include "tx_parse.h"
-#include "parsers/parsers.h"
+#include "parsers/cardano_parsers.h"
 #include "tx_parse_certificates.h"
 #include "tx_parse_outputs.h"
 #include "tx.h"

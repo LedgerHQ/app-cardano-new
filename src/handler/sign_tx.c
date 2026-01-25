@@ -44,7 +44,7 @@
 #include "cbor.h"
 #include "tx_hash_builder.h"
 #include "messageSigning.h"
-#include "parsers/parsers.h"
+#include "parsers/cardano_parsers.h"
 #include "securityPolicy.h"
 #include "dispatcher.h"
 #include "cvote_parser.h"

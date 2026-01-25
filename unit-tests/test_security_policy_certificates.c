@@ -8,7 +8,7 @@
 #include <cmocka.h>
 
 #include "securityPolicy/securityPolicy.h"
-#include "transaction/tx_credential_types.h"
+#include "tx_credential_types.h"
 #include "addressUtils/bip44.h"
 #include "cardano_constants.h"
 #include "globals.h"

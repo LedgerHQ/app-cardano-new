@@ -29,7 +29,7 @@
 #include "ui_formatters.h"
 #include "tx_parse_certificates.h"
 #include "tx.h"
-#include "parsers/parsers.h"
+#include "parsers/cardano_parsers.h"
 
 /// Parse a complete stake credential (type + data)
 parser_status_e parse_stake_credential(buffer_t *buf, ext_credential_t *credential) {

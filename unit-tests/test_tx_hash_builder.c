@@ -6,7 +6,7 @@
 
 #include <cmocka.h>
 
-#include "transaction/tx_hash_builder.h"
+#include "tx_hash_builder.h"
 #include "hexUtils.h"
 #include "utils/utils.h"
 

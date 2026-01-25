@@ -5,9 +5,9 @@
 #include <stdint.h>
 
 #include "cardano_constants.h"
-#include "addressUtilsShelley.h"
 #include "flist.h"
-#include "transaction/tx_anchor_types.h"
+#include "tx_credential_types.h"
+#include "tx_address_types.h"
 
 // Certificate body types (matches CDDL)
 typedef enum {
@@ -26,6 +26,13 @@ typedef enum {
     CERTIFICATE_DREP_UPDATE = 18,
     // TODO possibly add support for combined certificates?
 } certificate_type_t;
+
+typedef struct {
+    bool isIncluded;
+    const uint8_t* url;
+    uint16_t urlLength;
+    const uint8_t* hash;
+} anchor_t;
 
 // Relay definitions used by pool registration certificates
 typedef enum {

@@ -4,9 +4,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "buffer.h"
-#include "transaction/tx_credential_types.h"
-#include "transaction/tx_anchor_types.h"
-#include "transaction/tx_certificate_types.h"
+#include "tx_credential_types.h"
+#include "tx_certificate_types.h"
 
 // =============================================================================
 // Optional Item Flags

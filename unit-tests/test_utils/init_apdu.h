@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "../src/parsers/parsers.h"  // for FLAG_INCLUDED_*
+#include "../src/parsers/cardano_parsers.h"  // for FLAG_INCLUDED_*
 #include "../src/transaction/tx_aux_data_types.h"
 
 typedef struct {

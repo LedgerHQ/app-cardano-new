@@ -163,7 +163,7 @@ add_executable(test_tx_prepare
     ../src/addressUtils/addressUtilsShelley.c
     ../src/addressUtils/addressUtilsByron.c
     ../src/addressUtils/bip44.c
-    ../src/parsers/parsers.c
+    ../src/parsers/cardano_parsers.c
     ../src/securityPolicy/securityPolicy.c
     ../src/securityPolicy/securityPolicy_privkey.c
     ../src/keyDerivation/keyDerivation.c
@@ -242,7 +242,7 @@ add_library(cbor_lib SHARED ../src/utils/cbor.c)
 target_link_libraries(cbor_lib PUBLIC c m read)
 add_library(buffer_write_lib SHARED ../src/utils/buffer_write.c)
 target_link_libraries(buffer_write_lib PUBLIC c cbor_lib buffer write)
-add_library(parsers_lib SHARED ../src/parsers/parsers.c)
+add_library(parsers_lib SHARED ../src/parsers/cardano_parsers.c)
 target_link_libraries(parsers_lib PUBLIC c buffer read write varint bip32 text_utils bip44_real)
 add_library(crypto_mocks_lib SHARED
     mock_crypto/crypto_mocks.c
@@ -267,7 +267,7 @@ set(SIGN_TX_COMMON_SOURCES
     ../src/transaction/tx_parse_certificates.c
     ../src/transaction/tx_parse_outputs.c
     ../src/transaction/tx_utils.c
-    ../src/parsers/parsers.c
+    ../src/parsers/cardano_parsers.c
     ../src/securityPolicy/securityPolicy.c
     ../src/securityPolicy/securityPolicy_privkey.c
     ../src/messageSigning/messageSigning.c

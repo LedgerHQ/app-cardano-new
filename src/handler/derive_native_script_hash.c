@@ -21,7 +21,7 @@
 #include "bip44.h"
 #include "buffer_write.h"
 #include "cardano_swo.h"
-#include "parsers/parsers.h"
+#include "parsers/cardano_parsers.h"
 #include "addressUtils/addressUtilsShelley.h"
 
 // Complex native script handlers
