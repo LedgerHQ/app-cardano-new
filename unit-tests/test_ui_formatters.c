@@ -8,7 +8,7 @@
 
 #include <cmocka.h>
 
-#include "ui/ui_formatters.h"
+#include "ui_formatters.h"
 #include "utils/ipUtils.h"
 #include "hexUtils.h"
 #include "cardano_constants.h"

@@ -7,7 +7,7 @@
 #include <cmocka.h>
 
 #include "memory/mem.h"
-#include "ui/ui_utils.h"
+#include "ui_utils.h"
 
 static void test_ui_pairs_add_static_label_stores_value(void **state) {
     (void) state;

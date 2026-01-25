@@ -15,34 +15,28 @@
  *  limitations under the License.
  *****************************************************************************/
 
-#include <stdint.h>   // uint*_t
 #include <stdbool.h>  // bool
 #include <stddef.h>   // size_t
+#include <stdint.h>   // uint*_t
 #include <string.h>   // memset, explicit_bzero
 
-#include "os.h"
-#include "cx.h"
-#include "io.h"
+#include "app_context.h"
+#include "bip44.h"
 #include "buffer.h"
-#include "nbgl_use_case.h"
-
+#include "buffer_write.h"
 #include "cardano_swo.h"
 #include "globals.h"
-#include "utils.h"
-#include "textUtils.h"
-#include "ui_formatters.h"
-#include "app_context.h"
-#include "ui_display_opcert.h"
-#include "opcert_types.h"
-#include "opcert_parse.h"
-#include "securityPolicy.h"
+#include "io.h"
 #include "messageSigning.h"
-#include "buffer_write.h"
-#include "bip44.h"
-#include "write.h"
-#include "sign_opcert.h"
 #include "menu.h"
-#include "ui/menu.h"
+#include "nbgl_use_case.h"
+#include "opcert_parse.h"
+#include "opcert_types.h"
+#include "securityPolicy.h"
+#include "sign_opcert.h"
+#include "ui_formatters.h"
+#include "ui_display_opcert.h"
+#include "utils.h"
 
 #define OP_CERT_BODY_LENGTH (KES_PUBLIC_KEY_LENGTH + 8 + 8)
 

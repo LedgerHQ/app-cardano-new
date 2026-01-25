@@ -9,6 +9,7 @@
 
 #include "utils/buffer_write.h"
 #include "utils/cbor.h"
+#include "../src/parsers/cardano_parsers.h"
 #include "buffer.h"
 
 static void test_buffer_write_u8_and_capacity(void **state) {

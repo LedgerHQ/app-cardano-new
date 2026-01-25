@@ -1,5 +1,7 @@
 #pragma once
 
+#include "buffer.h"
+
 enum {
     STAGE_COMPLEX_SCRIPT_START = 0x01,
     STAGE_ADD_SIMPLE_SCRIPT = 0x02,

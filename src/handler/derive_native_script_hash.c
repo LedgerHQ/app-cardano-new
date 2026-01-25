@@ -1,28 +1,20 @@
 #include <string.h>
 
-#include "utils/utils.h"
-#include "buffer.h"
-#include "derive_native_script_hash.h"
-#include "globals.h"
-#include "securityPolicy.h"
-#include "utils/assert.h"
-#include "nbgl_use_case.h"
-
-#include "io.h"
-
-#include "ux.h"
-#include "utils.h"
+#include "addressUtilsShelley.h"
 #include "app_context.h"
-#include "ui_display_native_script_hash.h"
-#include "deriveNativeScriptHash_types.h"
-#include "derive_native_script_hash_builder.h"
-#include "cbor.h"
-#include "bech32.h"
-#include "bip44.h"
-#include "buffer_write.h"
+#include "assert.h"
+#include "buffer.h"
+#include "cardano_parsers.h"
 #include "cardano_swo.h"
-#include "parsers/cardano_parsers.h"
-#include "addressUtils/addressUtilsShelley.h"
+#include "derive_native_script_hash_builder.h"
+#include "derive_native_script_hash.h"
+#include "deriveNativeScriptHash_types.h"
+#include "globals.h"
+#include "io.h"
+#include "keyDerivation.h"
+#include "securityPolicy.h"
+#include "ui_display_native_script_hash.h"
+#include "utils.h"
 
 // Complex native script handlers
 static void deriveNativeScriptHash_handleAll() {
@@ -333,7 +325,7 @@ static void deriveNativeScriptHash_handleWholeNativeScriptFinish(buffer_t *cdata
         send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_TYPE);
         return;
     }
-    
+
     switch (displayFormat) {
         case DISPLAY_NATIVE_SCRIPT_HASH_BECH32: {
             nativeScriptHashBuilder_finalize(&ctx->hashBuilder,
@@ -368,7 +360,7 @@ void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
     }
 
     TRACE_BUFFER(cdata->ptr, cdata->size);
-    
+
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     if (G_context.req_type != REQUEST_DERIVE_NATIVE_SCRIPT_HASH) {
         explicit_bzero(&G_context, sizeof(G_context));

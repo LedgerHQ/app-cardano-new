@@ -15,7 +15,7 @@
 #include "cardano_constants.h"
 #include "test_fixture_types.h"
 #include "apdu/dispatcher.h"
-#include "ui/ui_display_tx.h"
+#include "ui_display_tx.h"
 
 extern bool app_mem_init(void);
 extern bool unit_test_expert_mode_enabled;

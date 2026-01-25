@@ -15,46 +15,40 @@
  *  limitations under the License.
  *****************************************************************************/
 
-#include <stdint.h>   // uint*_t
 #include <stdbool.h>  // bool
 #include <stddef.h>   // size_t
-#include <string.h>   // memset, explicit_bzero
+#include <stdint.h>   // uint*_t
 #include <stdio.h>    // snprintf
+#include <string.h>   // memset, explicit_bzero
 
-#include "cardano_constants.h"
-#include "os.h"
+#include "app_context.h"
+#include "aux_data_hash_builder.h"
+#include "bip44.h"
 #include "buffer.h"
-#include "nbgl_use_case.h"
-#include "buffer_write.h"
-#include "io.h"
-
-#include "sign_tx.h"
+#include "cardano_constants.h"
+#include "cardano_parsers.h"
 #include "cardano_swo.h"
+#include "cx.h"
+#include "cvote_parser.h"
 #include "globals.h"
+#include "messageSigning.h"
+#include "io.h"
+#include "keyDerivation.h"
+#include "mem.h"
+#include "menu.h"
+#include "nbgl_use_case.h"
+#include "securityPolicy.h"
+#include "ui_display_tx.h"
+#include "sign_tx.h"
+#include "ui_formatters.h"
 #include "ui_display_tx.h"
 #include "tx.h"
 #include "tx_aux_data_types.h"
 #include "tx_credential_types.h"
 #include "tx_output_types.h"
 #include "tx_parse.h"
-#include "mem.h"
-#include "utils.h"
-#include "textUtils.h"
-#include "app_context.h"
-#include "cbor.h"
-#include "tx_hash_builder.h"
-#include "messageSigning.h"
-#include "parsers/cardano_parsers.h"
-#include "securityPolicy.h"
-#include "dispatcher.h"
-#include "cvote_parser.h"
-#include "bip44.h"
-#include "keyDerivation.h"
-#include "aux_data_hash_builder.h"
 #include "tx_utils.h"
-#include "menu.h"
 #include "tx_validate.h"
-
 static bool cvote_aux_data_is_done(void) {
     return G_context.tx_info.cvote_aux_data_expected &&
            G_context.tx_info.cvote_aux_data_initialized &&

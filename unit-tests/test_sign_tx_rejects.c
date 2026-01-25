@@ -19,7 +19,7 @@
 #include "tx_parse.h"
 #include "hexUtils.h"
 #include "utils/utils.h"
-#include "ui/ui_display_tx.h"
+#include "ui_display_tx.h"
 
 typedef enum {
     STATUS_TYPE_TRANSACTION_SIGNED = 0,

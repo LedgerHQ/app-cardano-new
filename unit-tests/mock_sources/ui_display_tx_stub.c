@@ -1,6 +1,6 @@
-#include "ui/ui_display_tx.h"
-#include "ui/ui_utils.h"
-#include "ui/ui_warnings.h"
+#include "ui_display_tx.h"
+#include "ui_utils.h"
+#include "ui_warnings.h"
 
 void tx_review_cleanup(void) {
     ui_cleanup_tracked_allocations();

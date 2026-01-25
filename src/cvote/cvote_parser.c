@@ -7,7 +7,7 @@
 #include "globals.h"
 #include "mem.h"
 #include "buffer_write.h"
-#include "parsers/cardano_parsers.h"
+#include "cardano_parsers.h"
 #include "utils.h"
 
 #define TX_OUTPUT_DESTINATION_THIRD_PARTY 0x01

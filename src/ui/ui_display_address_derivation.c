@@ -20,7 +20,7 @@
 #include "nbgl_use_case.h"
 #include "io.h"
 
-#include "ui/ui_icons.h"
+#include "ui_icons.h"
 #include "cardano_constants.h"
 #include "globals.h"
 #include "app_context.h"

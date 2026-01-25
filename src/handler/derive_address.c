@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#include "utils/utils.h"
+#include "utils.h"
 #include "buffer.h"
 #include "derive_address.h"
 #include "cardano_swo.h"
@@ -10,7 +10,7 @@
 #include "utils/assert.h"
 #include "app_context.h"
 #include "io.h"
-#include "ui/ui_display_address_derivation.h"
+#include "ui_display_address_derivation.h"
 
 static void prepareResponse() {
     // Verify we're at the expected state: parameters validated by policy
