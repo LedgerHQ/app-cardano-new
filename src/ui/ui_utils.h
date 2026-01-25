@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "nbgl_use_case.h"
+#include "mem.h"
 #include "assert.h"
 #include "ui_constants.h"
 #include "bech32.h"
@@ -127,7 +128,7 @@ void *ui_mem_alloc(size_t size);
  * @param value      Value to format (passed as first argument to format_fn)
  */
 #define UI_ADD_FORMAT1(label, max_len, format_fn, value) do { \
-    char *_buf = (char *) app_mem_alloc((max_len) + UI_BUFFER_SAFETY_MARGIN); \
+    char *_buf = (char *) APP_MEM_ALLOC_ZEROED((max_len) + UI_BUFFER_SAFETY_MARGIN); \
     if (_buf == NULL) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
@@ -157,7 +158,7 @@ void *ui_mem_alloc(size_t size);
  * @param param2     Second parameter to pass to format_fn
  */
 #define UI_ADD_FORMAT2(label, max_len, format_fn, param1, param2) do { \
-    char *_buf = (char *) app_mem_alloc((max_len) + UI_BUFFER_SAFETY_MARGIN); \
+    char *_buf = (char *) APP_MEM_ALLOC_ZEROED((max_len) + UI_BUFFER_SAFETY_MARGIN); \
     if (_buf == NULL) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
@@ -188,7 +189,7 @@ void *ui_mem_alloc(size_t size);
  * @param param3     Third parameter to pass to format_fn
  */
 #define UI_ADD_FORMAT3(label, max_len, format_fn, param1, param2, param3) do { \
-    char *_buf = (char *) app_mem_alloc((max_len) + UI_BUFFER_SAFETY_MARGIN); \
+    char *_buf = (char *) APP_MEM_ALLOC_ZEROED((max_len) + UI_BUFFER_SAFETY_MARGIN); \
     if (_buf == NULL) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
@@ -236,7 +237,7 @@ void *ui_mem_alloc(size_t size);
  * @param param4     Fourth parameter to pass to format_fn
  */
 #define UI_ADD_FORMAT4(label, max_len, format_fn, param1, param2, param3, param4) do { \
-    char *_buf = (char *) app_mem_alloc((max_len) + UI_BUFFER_SAFETY_MARGIN); \
+    char *_buf = (char *) APP_MEM_ALLOC_ZEROED((max_len) + UI_BUFFER_SAFETY_MARGIN); \
     if (_buf == NULL) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \

@@ -69,6 +69,8 @@ include_directories($ENV{BOLOS_SDK}/lib_cxng/include)
 include_directories($ENV{BOLOS_SDK}/lib_nbgl/include)
 include_directories(test_utils)
 
+set(UNIT_TEST_MEM_UTILS_STUB mock_sources/mem_utils_stub.c)
+
 add_compile_definitions(HAVE_CRC)
 add_compile_definitions(HAVE_PRINTF)
 # Prevent os.h from defining PRINTF as empty macro
@@ -168,7 +170,6 @@ add_executable(test_tx_prepare
     ../src/securityPolicy/securityPolicy_privkey.c
     ../src/keyDerivation/keyDerivation.c
     ../src/memory/mem.c
-    ../src/memory/mem_utils.c
     ../src/memory/flist.c
     ../src/cardano_tokens/cardano_tokens.c
     ../src/ui/ui_utils.c
@@ -177,7 +178,7 @@ add_executable(test_tx_prepare
     ../src/ui/tx_ui_format.c
     ../src/ui/tx_ui_helpers.c
     ../src/app_context.c
-    mock_sources/mem_alloc_stub.c
+    ${UNIT_TEST_MEM_UTILS_STUB}
     mock_sources/glyphs_mock.c
     mock_sources/hex_stub.c
     mock_sources/io_stub.c
@@ -186,8 +187,7 @@ add_executable(test_ui_utils
     test_ui_utils.c
     ../src/ui/ui_utils.c
     ../src/memory/mem.c
-    ../src/memory/mem_utils.c
-    mock_sources/mem_alloc_stub.c
+    ${UNIT_TEST_MEM_UTILS_STUB}
 )
 
 set(TEST_EXECUTABLES
@@ -260,6 +260,7 @@ target_link_libraries(cx_crc_support PUBLIC c)
 set(SIGN_TX_COMMON_SOURCES
     mock_sources/mock_globals.c
     ../src/memory/flist.c
+    ../src/memory/mem.c
     ../src/handler/sign_tx.c
     ../src/cvote/cvote_parser.c
     ../src/cvote/aux_data_hash_builder.c
@@ -283,8 +284,7 @@ set(SIGN_TX_COMMON_SOURCES
     ../src/ui/ui_warnings.c
     ../src/ui/ui_formatters.c
     ../src/app_context.c
-    ../src/memory/mem_utils.c
-    mock_sources/mem_alloc_stub.c
+    ${UNIT_TEST_MEM_UTILS_STUB}
     mock_sources/glyphs_mock.c
     mock_sources/hex_stub.c
     mock_sources/io_stub.c
@@ -613,11 +613,10 @@ set(DERIVE_ADDRESS_COMMON_SOURCES
     ../src/securityPolicy/securityPolicy.c
     ../src/securityPolicy/securityPolicy_privkey.c
     ../src/app_context.c
-    ../src/memory/mem_utils.c
     ../src/memory/mem.c
     ../src/ui/ui_utils.c
     ../src/ui/ui_warnings.c
-    mock_sources/mem_alloc_stub.c
+    ${UNIT_TEST_MEM_UTILS_STUB}
     mock_sources/glyphs_mock.c
     mock_sources/ui_display_tx_stub.c
     mock_sources/hex_stub.c
@@ -649,9 +648,6 @@ add_library(cardano_derive_address_core STATIC ${DERIVE_ADDRESS_COMMON_SOURCES})
 target_link_libraries(cardano_derive_address_core PUBLIC ${DERIVE_ADDRESS_COMMON_LIBS})
 add_executable(test_derive_address_rejects
     test_derive_address_rejects.c
-    # mem implementation is provided by test fixtures (test_derive_address_rejects.c) to avoid
-    # duplicate allocator state in mocks.
-    mock_sources/mem_alloc_stub.c
 )
 target_link_libraries(test_derive_address_rejects PUBLIC cmocka gcov cardano_derive_address_core)
 target_link_libraries(test_ui_utils PUBLIC cmocka gcov)

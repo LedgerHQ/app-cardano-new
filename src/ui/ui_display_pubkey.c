@@ -35,7 +35,6 @@
 #include "menu.h"
 #include "securityPolicy.h"
 #include "get_public_key.h"
-#include "mem_utils.h"
 #include "ui_utils.h"
 #include "cardano_settings.h"
 

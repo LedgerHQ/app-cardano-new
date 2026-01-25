@@ -60,19 +60,6 @@ int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_
     return 0;
 }
 
-void *app_mem_alloc_impl(size_t size, bool persistent, const char *file, int line) {
-    (void) persistent;
-    (void) file;
-    (void) line;
-    return malloc(size);
-}
-
-void app_mem_free_impl(void *ptr, const char *file, int line) {
-    (void) file;
-    (void) line;
-    free(ptr);
-}
-
 static void reset_context(void) {
     memset(&G_context, 0, sizeof(G_context));
 }

@@ -9,11 +9,15 @@
 #include "memory/mem.h"
 #include "ui_utils.h"
 
+#define TEST_HEAP_SIZE (23 * 1024)
+static uint8_t test_heap[TEST_HEAP_SIZE];
+
 static void test_ui_pairs_add_static_label_stores_value(void **state) {
     (void) state;
+    assert_true(mem_utils_init(test_heap, sizeof(test_heap)));
     assert_true(ui_pairs_init(1));
 
-    char *tmp = (char *) app_mem_alloc(16);
+    char *tmp = (char *) APP_MEM_ALLOC_ZEROED(16);
     assert_non_null(tmp);
     memcpy(tmp, "hello", sizeof("hello"));
 

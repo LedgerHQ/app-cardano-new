@@ -15,8 +15,8 @@ void reset_app_context(void) {
     ui_pairs_cleanup();
     ui_clear_warnings();
 
-    // Reset the allocator to wipe all transient memory
-    LEDGER_ASSERT(app_mem_reset(), "Failed to reset memory allocator");
+    // Reset the SDK allocator to wipe all transient memory
+    LEDGER_ASSERT(mem_utils_reset_app_heap(), "Failed to reset memory allocator");
 
     // Securely zero out the entire global context
     explicit_bzero(&G_context, sizeof(G_context));

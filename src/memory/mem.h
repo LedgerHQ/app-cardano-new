@@ -20,19 +20,20 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 
-#ifdef HAVE_MEMORY_PROFILING
-#define MP_FILE __FILE__
-#define MP_LINE __LINE__
-#else
-#define MP_FILE NULL
-#define MP_LINE 0
-#endif
-#define app_mem_alloc(size) app_mem_alloc_impl(size, false, MP_FILE, MP_LINE)
-#define app_mem_free(ptr)   app_mem_free_impl(ptr, MP_FILE, MP_LINE)
+#include "app_mem_utils.h"
 
-bool app_mem_init(void);
-bool app_mem_reset(void);
-void *app_mem_alloc_impl(size_t size, bool persistent, const char *file, int line);
-void app_mem_free_impl(void *ptr, const char *file, int line);
-void app_mem_dump_stats(void);
+static inline void *app_mem_alloc_zeroed(size_t size) {
+    void *ptr = APP_MEM_ALLOC(size);
+    if (ptr != NULL) {
+        explicit_bzero(ptr, size);
+    }
+    return ptr;
+}
+
+#define APP_MEM_ALLOC_ZEROED(size) app_mem_alloc_zeroed(size)
+
+void *app_mem_get_buffer(void);
+size_t app_mem_get_buffer_size(void);
+bool mem_utils_reset_app_heap(void);

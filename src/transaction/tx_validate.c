@@ -285,7 +285,7 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
         if (output_destination->type == DESTINATION_THIRD_PARTY) {
             txHashBuilder_addOutput_topLevelData(txHashBuilder, &output_desc);
         } else {
-            uint8_t *address_bytes = (uint8_t *) app_mem_alloc(MAX_ADDRESS_LENGTH);
+            uint8_t *address_bytes = (uint8_t *) APP_MEM_ALLOC_ZEROED(MAX_ADDRESS_LENGTH);
             if (address_bytes == NULL) {
                 return SWO_INSUFFICIENT_MEMORY;
             }
@@ -297,7 +297,7 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
             );
 
             if (address_size == 0 || address_size > MAX_ADDRESS_LENGTH) {
-                app_mem_free(address_bytes);
+                APP_MEM_FREE(address_bytes);
                 return SWO_INCORRECT_DATA;
             }
 
@@ -305,7 +305,7 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
             output_desc.destination.address.buffer = address_bytes;
             output_desc.destination.address.size = address_size;
             txHashBuilder_addOutput_topLevelData(txHashBuilder, &output_desc);
-            app_mem_free(address_bytes);
+            APP_MEM_FREE(address_bytes);
         }
 
         {
@@ -1572,7 +1572,7 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
     if (collateral_desc.destination.type == DESTINATION_THIRD_PARTY) {
         txHashBuilder_addCollateralOutput(txHashBuilder, &collateral_desc);
     } else {
-        uint8_t *address_bytes = (uint8_t *) app_mem_alloc(MAX_ADDRESS_LENGTH);
+        uint8_t *address_bytes = (uint8_t *) APP_MEM_ALLOC_ZEROED(MAX_ADDRESS_LENGTH);
         if (address_bytes == NULL) {
             return SWO_INSUFFICIENT_MEMORY;
         }
@@ -1584,7 +1584,7 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
         );
 
         if (address_size == 0 || address_size > MAX_ADDRESS_LENGTH) {
-            app_mem_free(address_bytes);
+            APP_MEM_FREE(address_bytes);
             return SWO_INCORRECT_DATA;
         }
 
@@ -1592,7 +1592,7 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
         collateral_desc.destination.address.buffer = address_bytes;
         collateral_desc.destination.address.size = address_size;
         txHashBuilder_addCollateralOutput(txHashBuilder, &collateral_desc);
-        app_mem_free(address_bytes);
+        APP_MEM_FREE(address_bytes);
     }
 
     uint16_t collateral_group_count = 0;

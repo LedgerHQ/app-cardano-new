@@ -40,6 +40,7 @@ static size_t g_last_response_len = 0;
 static uint16_t g_last_response_sw = 0;
 
 #include "test_sign_tx_common.h"
+#include "app_mem_utils.h"
 
 int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
     assert_true(bufferLength <= sizeof(g_last_response));
@@ -94,26 +95,8 @@ void ui_display_witness(const bip44_path_t *witnessPath,
     return;
 }
 
-bool app_mem_init(void) {
-    return true;
-}
-
-void *app_mem_alloc_impl(size_t size, bool persistent, const char *file, int line) {
-    (void) persistent;
-    (void) file;
-    (void) line;
-    return calloc(1, size);
-}
-
-void app_mem_free_impl(void *ptr, const char *file, int line) {
-    (void) file;
-    (void) line;
-    free(ptr);
-}
-
-void app_mem_dump_stats(void) {
-    // no-op
-}
+#define TEST_HEAP_SIZE (23 * 1024)
+static uint8_t test_heap[TEST_HEAP_SIZE];
 
 // ======================================================================
 // Byron Era Tests

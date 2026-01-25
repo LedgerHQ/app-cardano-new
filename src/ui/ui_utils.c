@@ -2,7 +2,6 @@
 
 #include "nbgl_use_case.h"
 #include "ui_utils.h"
-#include "mem_utils.h"
 #include "mem.h"
 #include "io.h"
 #include "cardano_swo.h"
@@ -79,7 +78,10 @@ void ui_track_allocation(void *ptr) {
 void ui_cleanup_tracked_allocations(void) {
     // Idempotent: resetting count ensures multiple calls do nothing after the first.
     for (uint16_t i = 0; i < g_allocation_tracker.count; i++) {
-        mem_buffer_cleanup(&g_allocation_tracker.ptrs[i]);
+        if (g_allocation_tracker.ptrs[i] != NULL) {
+            APP_MEM_FREE(g_allocation_tracker.ptrs[i]);
+            g_allocation_tracker.ptrs[i] = NULL;
+        }
     }
     g_allocation_tracker.count = 0;
 }
@@ -93,7 +95,7 @@ void ui_cleanup_tracked_allocations(void) {
  * @return pointer to allocated memory, or NULL on failure
  */
 void *ui_mem_alloc(size_t size) {
-    void *ptr = app_mem_alloc(size);
+    void *ptr = APP_MEM_ALLOC_ZEROED(size);
     if (ptr != NULL) {
         ui_track_allocation(ptr);
     }
@@ -104,8 +106,14 @@ void *ui_mem_alloc(size_t size) {
  * Cleanup pairs array (g_pairs and g_pairsList)
  */
 void ui_pairs_cleanup(void) {
-    mem_buffer_cleanup((void **) &g_pairs);
-    mem_buffer_cleanup((void **) &g_pairsList);
+    if (g_pairs != NULL) {
+        APP_MEM_FREE(g_pairs);
+        g_pairs = NULL;
+    }
+    if (g_pairsList != NULL) {
+        APP_MEM_FREE(g_pairsList);
+        g_pairsList = NULL;
+    }
     g_next_pair_index = 0;
 }
 
@@ -127,13 +135,13 @@ bool ui_pairs_add_static_label_impl(const char* label, char* tmp_buf, bool shrin
 
     if (g_pairs == NULL || g_pairsList == NULL) {
         TRACE("Pairs storage not initialized");
-        app_mem_free(tmp_buf);
+        APP_MEM_FREE(tmp_buf);
         return false;
     }
 
     if (g_next_pair_index >= g_pairsList->nbPairs) {
         TRACE("Pairs list overflow: %u/%u", g_next_pair_index, g_pairsList->nbPairs);
-        app_mem_free(tmp_buf);
+        APP_MEM_FREE(tmp_buf);
         return false;
     }
 
@@ -144,11 +152,11 @@ bool ui_pairs_add_static_label_impl(const char* label, char* tmp_buf, bool shrin
         char *shrinked = (char *) ui_mem_alloc(len + 1);
         if (shrinked == NULL) {
             TRACE("Failed to allocate shrunk string");
-            app_mem_free(tmp_buf);
+            APP_MEM_FREE(tmp_buf);
             return false;
         }
         memcpy(shrinked, tmp_buf, len + 1);
-        app_mem_free(tmp_buf);
+        APP_MEM_FREE(tmp_buf);
         value_ptr = shrinked;
     }
 
@@ -169,12 +177,22 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf) {
  */
 bool ui_pairs_init(uint8_t nbPairs) {
     // Allocate the pairsList memory
-    if (!mem_buffer_allocate((void **) &g_pairsList, sizeof(nbgl_contentTagValueList_t))) {
+    if (g_pairsList != NULL) {
+        APP_MEM_FREE(g_pairsList);
+        g_pairsList = NULL;
+    }
+    g_pairsList = (nbgl_contentTagValueList_t *) APP_MEM_ALLOC_ZEROED(sizeof(nbgl_contentTagValueList_t));
+    if (g_pairsList == NULL) {
         goto error;
     }
 
     // Allocate the pairs memory (nbgl_contentTagValue_t for individual pairs, not List_t)
-    if (!mem_buffer_allocate((void **) &g_pairs, nbPairs * sizeof(nbgl_contentTagValue_t))) {
+    if (g_pairs != NULL) {
+        APP_MEM_FREE(g_pairs);
+        g_pairs = NULL;
+    }
+    g_pairs = (nbgl_contentTagValue_t *) APP_MEM_ALLOC_ZEROED(nbPairs * sizeof(nbgl_contentTagValue_t));
+    if (g_pairs == NULL) {
         goto error;
     }
     g_pairsList->nbPairs = nbPairs;

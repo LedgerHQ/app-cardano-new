@@ -121,11 +121,11 @@ static void free_asset_group_node(output_asset_group_node_t *group_node) {
     s_flist_node *token_node = group_node->asset_group.tokens;
     while (token_node != NULL) {
         s_flist_node *token_next = token_node->next;
-        app_mem_free(token_node);
+        APP_MEM_FREE(token_node);
         token_node = token_next;
     }
     group_node->asset_group.tokens = NULL;
-    app_mem_free(group_node);
+    APP_MEM_FREE(group_node);
 }
 
 static void free_asset_groups(s_flist_node *group_node) {
@@ -142,7 +142,7 @@ static void free_output_item(tx_output_node_t *item) {
     }
     free_asset_groups(item->output_data.assetGroups);
     item->output_data.assetGroups = NULL;
-    app_mem_free(item);
+    APP_MEM_FREE(item);
 }
 
 static void free_mint_item(mint_asset_group_node_t *item) {
@@ -152,17 +152,17 @@ static void free_mint_item(mint_asset_group_node_t *item) {
     s_flist_node *token_node = item->asset_group.tokens;
     while (token_node != NULL) {
         s_flist_node *token_next = token_node->next;
-        app_mem_free(token_node);
+        APP_MEM_FREE(token_node);
         token_node = token_next;
     }
     item->asset_group.tokens = NULL;
-    app_mem_free(item);
+    APP_MEM_FREE(item);
 }
 
 static void free_vote_list(s_flist_node *vote_node) {
     while (vote_node != NULL) {
         s_flist_node *vote_next = vote_node->next;
-        app_mem_free(vote_node);
+        APP_MEM_FREE(vote_node);
         vote_node = vote_next;
     }
 }
@@ -333,7 +333,7 @@ void tx_handle_parse_error(parser_status_e status) {
 // Helper function to parse a single input (reused for inputs, collateral inputs, reference inputs)
 // error_on_failure: error code to return if parsing fails (e.g., INPUTS_PARSING_ERROR, COLLATERAL_INPUTS_PARSING_ERROR)
 static parser_status_e parse_input_item(buffer_t *buf, s_flist_node **list_head, parser_status_e error_on_failure) {
-    tx_input_node_t *item = (tx_input_node_t *) app_mem_alloc(sizeof(tx_input_node_t));
+    tx_input_node_t *item = (tx_input_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(tx_input_node_t));
     if (item == NULL) {
         TRACE("parse_input_item: out of memory allocating tx_input_node");
         return OUT_OF_MEMORY_ERROR;
@@ -341,14 +341,14 @@ static parser_status_e parse_input_item(buffer_t *buf, s_flist_node **list_head,
 
     // Store pointer to tx hash in raw buffer instead of copying
     if (!buffer_read_bytes_ptr(buf, &item->input.txHash, TX_HASH_LENGTH)) {
-        app_mem_free(item);
+        APP_MEM_FREE(item);
         return error_on_failure;
     }
     ASSERT(item->input.txHash != NULL);
 
     ASSERT_TYPE(item->input.index, uint32_t);
     if (!buffer_read_u32(buf, &item->input.index, BE)) {
-        app_mem_free(item);
+        APP_MEM_FREE(item);
         return error_on_failure;
     }
 
@@ -386,7 +386,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
             .offset = 0                      // Start parsing from beginning of sub-buffer
         };
 
-        tx_output_node_t *item = (tx_output_node_t *) app_mem_alloc(sizeof(tx_output_node_t));
+        tx_output_node_t *item = (tx_output_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(tx_output_node_t));
         if (item == NULL) {
             TRACE("parse_tx_outputs: out of memory allocating tx_output_node");
             return OUT_OF_MEMORY_ERROR;
@@ -398,25 +398,25 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
                                                           &item->output_data.destination,
                                                           tx->networkId);
         if (status != PARSING_OK) {
-            app_mem_free(item);
+            APP_MEM_FREE(item);
             return status;
         }
         ASSERT_TYPE(item->output_data.adaAmount, uint64_t);
         if (!buffer_read_u64(&output_buf, &item->output_data.adaAmount, BE)) {
-            app_mem_free(item);
+            APP_MEM_FREE(item);
             return OUTPUTS_PARSING_ERROR;
         }
 
         // Parse output format (ARRAY_LEGACY or MAP_BABBAGE)
         status = parse_output_format(&output_buf, &item->output_data.format);
         if (status != PARSING_OK) {
-            app_mem_free(item);
+            APP_MEM_FREE(item);
             return status;
         }
 
         ASSERT_TYPE(item->output_data.numAssetGroups, uint16_t);
         if (!buffer_read_u16(&output_buf, &item->output_data.numAssetGroups, BE)) {
-            app_mem_free(item);
+            APP_MEM_FREE(item);
             return OUTPUTS_PARSING_ERROR;
         }
 
@@ -427,7 +427,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
 
             for (uint16_t ag = 0; ag < item->output_data.numAssetGroups; ag++) {
                 output_asset_group_node_t *group_node =
-                    (output_asset_group_node_t *) app_mem_alloc(sizeof(output_asset_group_node_t));
+                    (output_asset_group_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(output_asset_group_node_t));
                 if (group_node == NULL) {
                     TRACE("parse_tx_outputs: out of memory allocating asset group node");
                     free_output_item(item);
@@ -478,7 +478,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
                 for (uint16_t tk = 0; tk < group->numTokens; tk++) {
                     // Allocate list node for this token
                     output_token_node_t *token_item =
-                        (output_token_node_t *) app_mem_alloc(sizeof(output_token_node_t));
+                        (output_token_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(output_token_node_t));
                     if (token_item == NULL) {
                         TRACE("parse_tx_outputs: out of memory allocating token node");
                         free_asset_group_node(group_node);
@@ -489,13 +489,13 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
                     output_token_t *token = &token_item->token_data;
                     ASSERT_TYPE(token->assetNameLen, uint8_t);
                     if (!buffer_read_u8(&output_buf, &token->assetNameLen)) {
-                        app_mem_free(token_item);
+                        APP_MEM_FREE(token_item);
                         free_asset_group_node(group_node);
                         free_output_item(item);
                         return OUTPUTS_PARSING_ERROR;
                     }
                     if (token->assetNameLen > MAX_ASSET_NAME_LENGTH) {
-                        app_mem_free(token_item);
+                        APP_MEM_FREE(token_item);
                         free_asset_group_node(group_node);
                         free_output_item(item);
                         return OUTPUTS_PARSING_ERROR;
@@ -505,7 +505,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
                     // Note: assetNameLen can be 0 for empty asset names, which is valid
                     // TODO is empty asset name valid?
                     if (!buffer_read_bytes_ptr(&output_buf, &token->assetName, token->assetNameLen)) {
-                        app_mem_free(token_item);
+                        APP_MEM_FREE(token_item);
                         free_asset_group_node(group_node);
                         free_output_item(item);
                         return OUTPUTS_PARSING_ERROR;
@@ -518,7 +518,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
                                           token->assetName,
                                           token->assetNameLen)) {
                         TRACE("Output %u asset group %u tokens not canonical", i, ag);
-                        app_mem_free(token_item);
+                        APP_MEM_FREE(token_item);
                         free_asset_group_node(group_node);
                         free_output_item(item);
                         return CANONICAL_ORDERING_ERROR;
@@ -529,7 +529,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
 
                     ASSERT_TYPE(token->amount, uint64_t);
                     if (!buffer_read_u64(&output_buf, &token->amount, BE)) {
-                        app_mem_free(token_item);
+                        APP_MEM_FREE(token_item);
                         free_asset_group_node(group_node);
                         free_output_item(item);
                         return OUTPUTS_PARSING_ERROR;
@@ -594,7 +594,7 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx) {
     bool has_previous_policy = false;
 
     for (uint16_t ag = 0; ag < tx->num_mint_asset_groups; ag++) {
-        mint_asset_group_node_t *item = (mint_asset_group_node_t *) app_mem_alloc(sizeof(mint_asset_group_node_t));
+        mint_asset_group_node_t *item = (mint_asset_group_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(mint_asset_group_node_t));
         if (item == NULL) {
             TRACE("parse_tx_mint_groups: out of memory allocating mint asset group");
             return OUT_OF_MEMORY_ERROR;
@@ -634,7 +634,7 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx) {
 
         for (uint16_t tk = 0; tk < item->asset_group.numTokens; tk++) {
             // Allocate list node for this token
-            mint_token_node_t *token_item = (mint_token_node_t *) app_mem_alloc(sizeof(mint_token_node_t));
+            mint_token_node_t *token_item = (mint_token_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(mint_token_node_t));
             if (token_item == NULL) {
                 TRACE("parse_tx_mint_groups: out of memory allocating mint token node");
                 free_mint_item(item);
@@ -643,12 +643,12 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx) {
 
             mint_token_t *token = &token_item->token;
             if (!buffer_read_u8(buf, &token->assetNameLen)) {
-                app_mem_free(token_item);
+                APP_MEM_FREE(token_item);
                 free_mint_item(item);
                 return MINT_PARSING_ERROR;
             }
             if (token->assetNameLen > MAX_MINT_ASSET_NAME_LENGTH) {
-                app_mem_free(token_item);
+                APP_MEM_FREE(token_item);
                 free_mint_item(item);
                 return MINT_PARSING_ERROR;
             }
@@ -657,7 +657,7 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx) {
             // Note: assetNameLen can be 0 for empty asset names, which is valid
             // TODO is empty asset name valid?
             if (!buffer_read_bytes_ptr(buf, &token->assetName, token->assetNameLen)) {
-                app_mem_free(token_item);
+                APP_MEM_FREE(token_item);
                 free_mint_item(item);
                 return MINT_PARSING_ERROR;
             }
@@ -669,7 +669,7 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx) {
                                   token->assetName,
                                   token->assetNameLen)) {
                 TRACE("Mint asset group %u tokens not canonical", ag);
-                app_mem_free(token_item);
+                APP_MEM_FREE(token_item);
                 free_mint_item(item);
                 return CANONICAL_ORDERING_ERROR;
             }
@@ -678,7 +678,7 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx) {
             has_previous_token = true;
 
             if (!buffer_read_int64(buf, &token->amount, BE)) {
-                app_mem_free(token_item);
+                APP_MEM_FREE(token_item);
                 free_mint_item(item);
                 return MINT_PARSING_ERROR;
             }
@@ -703,7 +703,7 @@ static parser_status_e parse_tx_certificates(buffer_t *buf, transaction_t *tx) {
           tx->num_certificates, buf->offset, buf->size);
     for (uint16_t i = 0; i < tx->num_certificates; i++) {
         TRACE(">>>>> Allocating memory for certificate %u", i);
-        tx_certificate_node_t *item = (tx_certificate_node_t *) app_mem_alloc(sizeof(tx_certificate_node_t));
+        tx_certificate_node_t *item = (tx_certificate_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(tx_certificate_node_t));
         if (item == NULL) {
             TRACE(">>>>> OUT OF MEMORY");
             return OUT_OF_MEMORY_ERROR;
@@ -714,7 +714,7 @@ static parser_status_e parse_tx_certificates(buffer_t *buf, transaction_t *tx) {
         TRACE(">>>>> About to read certificate type byte at offset %u", buf->offset);
         if (!buffer_read_u8(buf, &cert_type_wire)) {
             TRACE(">>>>> FAILED TO READ CERTIFICATE TYPE BYTE");
-            app_mem_free(item);
+            APP_MEM_FREE(item);
             return CERTIFICATES_PARSING_ERROR;
         }
         certificate_type_t cert_type = (certificate_type_t) cert_type_wire;
@@ -777,7 +777,7 @@ static parser_status_e parse_tx_certificates(buffer_t *buf, transaction_t *tx) {
 
         if (status != PARSING_OK) {
             TRACE("Certificate parse failure: type=%u status=%d", cert_type_wire, status);
-            app_mem_free(item);
+            APP_MEM_FREE(item);
             return status;
         }
 
@@ -794,7 +794,7 @@ static parser_status_e parse_tx_withdrawals(buffer_t *buf, transaction_t *tx) {
     // to the later planning stage where the derived reward addresses are already
     // exposed to policy checks.
     for (uint16_t i = 0; i < tx->num_withdrawals; i++) {
-        tx_withdrawal_node_t *item = (tx_withdrawal_node_t *) app_mem_alloc(sizeof(tx_withdrawal_node_t));
+        tx_withdrawal_node_t *item = (tx_withdrawal_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(tx_withdrawal_node_t));
         if (item == NULL) {
             TRACE("parse_tx_withdrawals: out of memory allocating withdrawal node");
             return OUT_OF_MEMORY_ERROR;
@@ -802,14 +802,14 @@ static parser_status_e parse_tx_withdrawals(buffer_t *buf, transaction_t *tx) {
 
         ASSERT_TYPE(item->withdrawal.amount, uint64_t);
         if (!buffer_read_u64(buf, &item->withdrawal.amount, BE)) {
-            app_mem_free(item);
+            APP_MEM_FREE(item);
             return WITHDRAWALS_PARSING_ERROR;
         }
 
         parser_status_e status = parse_stake_credential(buf, &item->withdrawal.stakeCredential);
         if (status != PARSING_OK) {
             TRACE("Withdrawal %u credential parsing failed: status=%d", i, status);
-            app_mem_free(item);
+            APP_MEM_FREE(item);
             return status;
         }
 
@@ -837,7 +837,7 @@ void transaction_free_outputs(transaction_t *tx) {
         // not separately allocated, so they do not need to be freed
 
         // Free the list item itself
-        app_mem_free(output_node);
+        APP_MEM_FREE(output_node);
         output_node = next;
     }
     tx->outputs = NULL;
@@ -852,7 +852,7 @@ void transaction_free_certificates(transaction_t *tx) {
         // Certificate items don't have additional allocated memory
         // (credential data is stored inline in the union)
         s_flist_node *next = certificate_node->next;
-        app_mem_free(certificate_node);
+        APP_MEM_FREE(certificate_node);
         certificate_node = next;
     }
     tx->certificates = NULL;
@@ -866,7 +866,7 @@ void transaction_free_withdrawals(transaction_t *tx) {
         // Withdrawal items don't have additional allocated memory
         // (credential data is stored inline in the union)
         s_flist_node *next = withdrawal_node->next;
-        app_mem_free(withdrawal_node);
+        APP_MEM_FREE(withdrawal_node);
         withdrawal_node = next;
     }
     tx->withdrawals = NULL;
@@ -885,12 +885,12 @@ void transaction_free_mint(transaction_t *tx) {
         s_flist_node *token_node = item->asset_group.tokens;
         while (token_node != NULL) {
             s_flist_node *token_next = token_node->next;
-            app_mem_free(token_node);
+            APP_MEM_FREE(token_node);
             token_node = token_next;
         }
 
         // Free the list item itself
-        app_mem_free(mint_node);
+        APP_MEM_FREE(mint_node);
         mint_node = next;
     }
     tx->mint_asset_groups = NULL;
@@ -903,7 +903,7 @@ void transaction_free_collateral_inputs(transaction_t *tx) {
     s_flist_node *input_node = tx->collateral_inputs;
     while (input_node != NULL) {
         s_flist_node *next = input_node->next;
-        app_mem_free(input_node);
+        APP_MEM_FREE(input_node);
         input_node = next;
     }
     tx->collateral_inputs = NULL;
@@ -916,7 +916,7 @@ void transaction_free_required_signers(transaction_t *tx) {
     s_flist_node *signer_node = tx->required_signers;
     while (signer_node != NULL) {
         s_flist_node *next = signer_node->next;
-        app_mem_free(signer_node);
+        APP_MEM_FREE(signer_node);
         signer_node = next;
     }
     tx->required_signers = NULL;
@@ -929,7 +929,7 @@ void transaction_free_reference_inputs(transaction_t *tx) {
     s_flist_node *input_node = tx->reference_inputs;
     while (input_node != NULL) {
         s_flist_node *next = input_node->next;
-        app_mem_free(input_node);
+        APP_MEM_FREE(input_node);
         input_node = next;
     }
     tx->reference_inputs = NULL;
@@ -943,7 +943,7 @@ void transaction_free_voting_procedures(transaction_t *tx) {
         voter_votes_node_t *voter_item = (voter_votes_node_t *) voter_node;
         s_flist_node *next = voter_node->next;
         free_vote_list(voter_item->voter_votes_data.votes);
-        app_mem_free(voter_node);
+        APP_MEM_FREE(voter_node);
         voter_node = next;
     }
     tx->voting_procedures = NULL;
@@ -968,7 +968,7 @@ void tx_context_cleanup(void) {
     s_flist_node *input_node = tx->inputs;
     while (input_node != NULL) {
         s_flist_node *next = input_node->next;
-        app_mem_free(input_node);
+        APP_MEM_FREE(input_node);
         input_node = next;
     }
     tx->inputs = NULL;
@@ -1002,7 +1002,7 @@ void tx_context_cleanup(void) {
 
     // Free raw tx buffer
     if (G_context.tx_info.raw_tx != NULL) {
-        app_mem_free(G_context.tx_info.raw_tx);
+        APP_MEM_FREE(G_context.tx_info.raw_tx);
         G_context.tx_info.raw_tx = NULL;
     }
     G_context.tx_info.planned_ui_pairs = 0;
@@ -1023,7 +1023,7 @@ static parser_status_e parse_tx_collateral_inputs(buffer_t *buf, transaction_t *
 static parser_status_e parse_tx_required_signers(buffer_t *buf, transaction_t *tx) {
     for (uint16_t i = 0; i < tx->num_required_signers; i++) {
         tx_required_signer_node_t *item =
-            (tx_required_signer_node_t *) app_mem_alloc(sizeof(tx_required_signer_node_t));
+            (tx_required_signer_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(tx_required_signer_node_t));
         if (item == NULL) {
             TRACE("parse_tx_required_signers: out of memory allocating signer node");
             return OUT_OF_MEMORY_ERROR;
@@ -1032,7 +1032,7 @@ static parser_status_e parse_tx_required_signers(buffer_t *buf, transaction_t *t
         // Read signer type (1 byte)
         uint8_t type;
         if (!buffer_read_u8(buf, &type)) {
-            app_mem_free(item);
+            APP_MEM_FREE(item);
             return REQUIRED_SIGNERS_PARSING_ERROR;
         }
         item->required_signer.type = (required_signer_type_t) type;
@@ -1042,20 +1042,20 @@ static parser_status_e parse_tx_required_signers(buffer_t *buf, transaction_t *t
             case REQUIRED_SIGNER_WITH_PATH:
                 // Parse BIP44 path
                 if (!buffer_read_bip44_path(buf, &item->required_signer.keyPath)) {
-                    app_mem_free(item);
+                    APP_MEM_FREE(item);
                     return REQUIRED_SIGNERS_PARSING_ERROR;
                 }
                 break;
             case REQUIRED_SIGNER_WITH_HASH:
                 // Read 28-byte key hash
                 if (!buffer_read_bytes_ptr(buf, &item->required_signer.keyHash, ADDRESS_KEY_HASH_LENGTH)) {
-                    app_mem_free(item);
+                    APP_MEM_FREE(item);
                     return REQUIRED_SIGNERS_PARSING_ERROR;
                 }
                 ASSERT(item->required_signer.keyHash != NULL);
                 break;
             default:
-                app_mem_free(item);
+                APP_MEM_FREE(item);
                 return REQUIRED_SIGNERS_PARSING_ERROR;
         }
 
@@ -1102,7 +1102,7 @@ static parser_status_e parse_output_structure(buffer_t *output_buf,
 
         for (uint16_t ag = 0; ag < *numAssetGroups; ag++) {
             output_asset_group_node_t *group_node =
-                (output_asset_group_node_t *) app_mem_alloc(sizeof(output_asset_group_node_t));
+                (output_asset_group_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(output_asset_group_node_t));
             if (group_node == NULL) {
                 TRACE("parse_output_asset_data: out of memory allocating asset group for collateral output");
                 free_asset_groups(*assetGroups);
@@ -1148,7 +1148,7 @@ static parser_status_e parse_output_structure(buffer_t *output_buf,
             for (uint16_t tk = 0; tk < group->numTokens; tk++) {
                 // Allocate list node for this token
                 output_token_node_t *token_item =
-                    (output_token_node_t *) app_mem_alloc(sizeof(output_token_node_t));
+                    (output_token_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(output_token_node_t));
                 if (token_item == NULL) {
                     TRACE("parse_output_asset_data: out of memory allocating token node for collateral output");
                     free_asset_group_node(group_node);
@@ -1158,20 +1158,20 @@ static parser_status_e parse_output_structure(buffer_t *output_buf,
 
                 output_token_t *token = &token_item->token_data;
                 if (!buffer_read_u8(output_buf, &token->assetNameLen)) {
-                    app_mem_free(token_item);
+                    APP_MEM_FREE(token_item);
                     free_asset_group_node(group_node);
                     free_asset_groups(*assetGroups);
                     return OUTPUTS_PARSING_ERROR;
                 }
                 if (token->assetNameLen > MAX_ASSET_NAME_LENGTH) {
-                    app_mem_free(token_item);
+                    APP_MEM_FREE(token_item);
                     free_asset_group_node(group_node);
                     free_asset_groups(*assetGroups);
                     return OUTPUTS_PARSING_ERROR;
                 }
 
                 if (!buffer_read_bytes_ptr(output_buf, &token->assetName, token->assetNameLen)) {
-                    app_mem_free(token_item);
+                    APP_MEM_FREE(token_item);
                     free_asset_group_node(group_node);
                     free_asset_groups(*assetGroups);
                     return OUTPUTS_PARSING_ERROR;
@@ -1184,7 +1184,7 @@ static parser_status_e parse_output_structure(buffer_t *output_buf,
                                       token->assetName,
                                       token->assetNameLen)) {
                     TRACE("Collateral asset group %u tokens not canonical", ag);
-                    app_mem_free(token_item);
+                    APP_MEM_FREE(token_item);
                     free_asset_group_node(group_node);
                     free_asset_groups(*assetGroups);
                     return CANONICAL_ORDERING_ERROR;
@@ -1194,7 +1194,7 @@ static parser_status_e parse_output_structure(buffer_t *output_buf,
                 has_previous_token = true;
 
                 if (!buffer_read_u64(output_buf, &token->amount, BE)) {
-                    app_mem_free(token_item);
+                    APP_MEM_FREE(token_item);
                     free_asset_group_node(group_node);
                     free_asset_groups(*assetGroups);
                     return OUTPUTS_PARSING_ERROR;
@@ -1268,7 +1268,7 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
     for (uint16_t voter_idx = 0; voter_idx < tx->num_voters; voter_idx++) {
         // Allocate list node for this voter
         voter_votes_node_t *voter_item =
-            (voter_votes_node_t *) app_mem_alloc(sizeof(voter_votes_node_t));
+            (voter_votes_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(voter_votes_node_t));
         if (voter_item == NULL) {
             TRACE("parse_tx_voting_procedures: out of memory allocating voter node");
             return OUT_OF_MEMORY_ERROR;
@@ -1325,7 +1325,7 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
         for (uint16_t vote_idx = 0; vote_idx < voter_item->voter_votes_data.numVotes; vote_idx++) {
             // Allocate list node for this vote
             vote_node_t *vote_item =
-                (vote_node_t *) app_mem_alloc(sizeof(vote_node_t));
+                (vote_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(vote_node_t));
             if (vote_item == NULL) {
                 TRACE("parse_tx_voting_procedures: out of memory allocating vote node");
                 return OUT_OF_MEMORY_ERROR;

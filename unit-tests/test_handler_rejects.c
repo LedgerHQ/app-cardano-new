@@ -17,6 +17,10 @@
 #include "init_apdu.h"
 #include "securityPolicy.h"
 #include "addressUtils/bip44.h"
+#include "app_mem_utils.h"
+
+#define TEST_HEAP_SIZE (23 * 1024)
+static uint8_t test_heap[TEST_HEAP_SIZE];
 
 // P1 constants now defined in dispatcher.h (included via globals.h)
 
@@ -25,6 +29,7 @@ static uint16_t g_last_sw = 0;
 static void reset_context(void) {
     memset(&G_context, 0, sizeof(G_context));
     g_last_sw = 0;
+    assert_true(mem_utils_init(test_heap, sizeof(test_heap)));
 }
 
 static uint32_t harden(uint32_t value) {
@@ -104,27 +109,6 @@ void ui_display_witness(const bip44_path_t *path,
 void ui_display_pubkey(security_policy_t policy, warning_bits_t warnings) {
     (void) policy;
     (void) warnings;
-}
-
-bool app_mem_init(void) {
-    return true;
-}
-
-void *app_mem_alloc_impl(size_t size, bool persistent, const char *file, int line) {
-    (void) persistent;
-    (void) file;
-    (void) line;
-    return calloc(1, size);
-}
-
-void app_mem_free_impl(void *ptr, const char *file, int line) {
-    (void) file;
-    (void) line;
-    free(ptr);
-}
-
-void app_mem_dump_stats(void) {
-    // no-op
 }
 
 static void test_tx_init_invalid_signing_mode(void **state) {

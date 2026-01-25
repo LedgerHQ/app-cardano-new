@@ -50,8 +50,8 @@ set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/handler/sign_tx.c
     ${CARDANO_PATH}/src/keyDerivation/keyDerivation.c
     ${CARDANO_PATH}/src/memory/mem.c
-    ${CARDANO_PATH}/src/memory/mem_utils.c
     ${CARDANO_PATH}/src/memory/flist.c
+    ${SDK_PATH}/lib_alloc/app_mem_utils.c
     ${CARDANO_PATH}/src/messageSigning/messageSigning.c
     ${CARDANO_PATH}/src/opcert/opcert_parse.c
     ${CARDANO_PATH}/src/parsers/cardano_parsers.c

@@ -26,72 +26,22 @@
 #include <stdint.h>
 #include <string.h>
 #include "mem.h"
-#include "mem_alloc.h"
+#include "app_mem_utils.h"
 #include "os_print.h"
 
 // TODO 24 * 1024 does not compile for Nano X
 #define SIZE_MEM_BUFFER (23 * 1024)
 
 static uint8_t mem_buffer[SIZE_MEM_BUFFER] __attribute__((aligned(sizeof(intmax_t))));
-static mem_ctx_t mem_ctx = NULL;
-
-#ifdef HAVE_MEMORY_PROFILING
-#define MP_LOG_PREFIX "==MP "
-#endif
-
-bool app_mem_init(void) {
-    void *buf = mem_buffer;
-    size_t buf_size = sizeof(mem_buffer);
-
-    mem_ctx = mem_init(buf, buf_size);
-#ifdef HAVE_MEMORY_PROFILING
-    PRINTF(MP_LOG_PREFIX "init;0x%p;%u\n", buf, buf_size);
-#endif
-    return mem_ctx != NULL;
+void *app_mem_get_buffer(void) {
+    return mem_buffer;
 }
 
-bool app_mem_reset(void) {
-    void *buf = mem_buffer;
-    size_t buf_size = sizeof(mem_buffer);
-
-    explicit_bzero(buf, buf_size);
-    mem_ctx = mem_init(buf, buf_size);
-    return mem_ctx != NULL;
+size_t app_mem_get_buffer_size(void) {
+    return sizeof(mem_buffer);
 }
 
-void *app_mem_alloc_impl(size_t size, bool persistent, const char *file, int line) {
-    void *ptr;
-    ptr = mem_alloc(mem_ctx, size);
-    // Zero allocated memory for security
-    if (ptr != NULL) {
-        explicit_bzero(ptr, size);
-    }
-#ifdef HAVE_MEMORY_PROFILING
-    if (persistent) {
-        PRINTF(MP_LOG_PREFIX "persist;%u;0x%p;%s:%u\n", size, ptr, file, line);
-    } else {
-        PRINTF(MP_LOG_PREFIX "alloc;%u;0x%p;%s:%u\n", size, ptr, file, line);
-    }
-#else
-    (void) file;
-    (void) line;
-    (void) persistent;
-#endif
-    return ptr;
-}
-
-void app_mem_free_impl(void *ptr, const char *file, int line) {
-#ifdef HAVE_MEMORY_PROFILING
-    PRINTF(MP_LOG_PREFIX "free;0x%p;%s:%u\n", ptr, file, line);
-#else
-    (void) file;
-    (void) line;
-#endif
-    mem_free(mem_ctx, ptr);
-}
-
-void app_mem_dump_stats(void) {
-#ifdef HAVE_MEMORY_PROFILING
-    mem_dump_stats(mem_ctx);
-#endif
+bool mem_utils_reset_app_heap(void) {
+    explicit_bzero(mem_buffer, sizeof(mem_buffer));
+    return mem_utils_init(mem_buffer, sizeof(mem_buffer));
 }

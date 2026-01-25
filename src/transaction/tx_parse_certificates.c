@@ -630,7 +630,7 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
     cert_data->poolRegistration.poolOwners = NULL;
     for (uint16_t i = 0; i < num_owners; i++) {
         TRACE("Parsing pool owner %u", i);
-        tx_certificate_node_t *owner_item = (tx_certificate_node_t *) app_mem_alloc(sizeof(tx_certificate_node_t));
+        tx_certificate_node_t *owner_item = (tx_certificate_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(tx_certificate_node_t));
         if (owner_item == NULL) {
             TRACE("Failed to allocate memory for pool owner");
             return CERTIFICATES_PARSING_ERROR;
@@ -639,7 +639,7 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
         status = parse_stake_credential(buf, &owner_item->certificate.stakeCredential);
         if (status != PARSING_OK) {
             TRACE("Failed to parse pool owner credential");
-            app_mem_free(owner_item);
+            APP_MEM_FREE(owner_item);
             return status;
         }
 
@@ -661,7 +661,7 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
     cert_data->poolRegistration.relays = NULL;
     for (uint16_t i = 0; i < num_relays; i++) {
         TRACE("Parsing relay %u", i);
-        tx_certificate_node_t *relay_item = (tx_certificate_node_t *) app_mem_alloc(sizeof(tx_certificate_node_t));
+        tx_certificate_node_t *relay_item = (tx_certificate_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(tx_certificate_node_t));
         if (relay_item == NULL) {
             TRACE("Failed to allocate memory for relay");
             return CERTIFICATES_PARSING_ERROR;
@@ -674,7 +674,7 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
         status = _parse_pool_relay(buf, relay);
         if (status != PARSING_OK) {
             TRACE("Failed to parse relay");
-            app_mem_free(relay_item);
+            APP_MEM_FREE(relay_item);
             return status;
         }
 

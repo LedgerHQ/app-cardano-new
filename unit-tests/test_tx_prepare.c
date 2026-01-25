@@ -10,10 +10,15 @@
 #include "globals.h"
 #include "cardano_swo.h"
 #include "tx_validate.h"
+#include "app_mem_utils.h"
+
+#define TEST_HEAP_SIZE (23 * 1024)
+static uint8_t test_heap[TEST_HEAP_SIZE];
 
 static void reset_context(void) {
     explicit_bzero(&G_context, sizeof(G_context));
     G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    assert_true(mem_utils_init(test_heap, sizeof(test_heap)));
 }
 
 static void test_compute_tx_hash_and_plan_ui_counts_ttl(void **state) {

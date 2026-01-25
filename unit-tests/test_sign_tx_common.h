@@ -16,8 +16,14 @@
 #include "test_fixture_types.h"
 #include "apdu/dispatcher.h"
 #include "ui_display_tx.h"
+#include "app_mem_utils.h"
 
-extern bool app_mem_init(void);
+#define TEST_HEAP_SIZE (23 * 1024)
+static uint8_t test_heap[TEST_HEAP_SIZE];
+
+static inline bool test_mem_init(void) {
+    return mem_utils_init(test_heap, sizeof(test_heap));
+}
 extern bool unit_test_expert_mode_enabled;
 static inline void reset_context(void) {
     memset(&G_context, 0, sizeof(G_context));
@@ -106,7 +112,7 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
 
 static inline void run_fixture(const tx_fixture_t *fixture) {
     reset_context();
-    assert_true(app_mem_init());
+    assert_true(test_mem_init());
 
     uint8_t init_raw[512];
     uint8_t aux_data_hash[AUX_DATA_HASH_LENGTH] = {0};

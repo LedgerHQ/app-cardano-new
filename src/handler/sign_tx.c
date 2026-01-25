@@ -611,13 +611,11 @@ static void handle_tx_data_chunk(buffer_t *cdata, bool more) {
     // Allocate buffer on first data chunk
     if (G_context.tx_info.raw_tx == NULL) {
         TRACE("Allocating transaction buffer: %d bytes", TX_BUFFER_SIZE);
-        app_mem_dump_stats();
-        G_context.tx_info.raw_tx = (uint8_t *) app_mem_alloc(TX_BUFFER_SIZE);
+        G_context.tx_info.raw_tx = (uint8_t *) APP_MEM_ALLOC_ZEROED(TX_BUFFER_SIZE);
         if (G_context.tx_info.raw_tx == NULL) {
             TRACE("Failed to allocate %d byte transaction buffer!", TX_BUFFER_SIZE);
-            app_mem_dump_stats();
             send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return;
+            return;
         }
         TRACE("Transaction buffer allocated: %d bytes at %p", TX_BUFFER_SIZE, G_context.tx_info.raw_tx);
     }

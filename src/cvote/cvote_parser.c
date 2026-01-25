@@ -144,7 +144,7 @@ static cvote_parser_status_t parse_third_party_destination(buffer_t *buf, cvote_
         return CVOTE_PARSER_OK;
     }
 
-    uint8_t *buffer = (uint8_t *) app_mem_alloc(address_len);
+    uint8_t *buffer = (uint8_t *) APP_MEM_ALLOC_ZEROED(address_len);
     if (buffer == NULL) {
         TRACE("CVote third-party destination allocate failed");
         return CVOTE_PARSER_OUT_OF_MEMORY;
@@ -219,7 +219,7 @@ cvote_parser_status_t cvote_parse_aux_data_init(buffer_t *buf, cvote_aux_data_t 
         return CVOTE_PARSER_INVALID_FORMAT;
     }
 
-    cvote_aux_data_t *data = (cvote_aux_data_t *) app_mem_alloc(sizeof(*data));
+    cvote_aux_data_t *data = (cvote_aux_data_t *) APP_MEM_ALLOC_ZEROED(sizeof(*data));
     if (data == NULL) {
         return CVOTE_PARSER_OUT_OF_MEMORY;
     }

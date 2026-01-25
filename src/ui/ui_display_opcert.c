@@ -39,7 +39,6 @@
 #include "securityPolicy.h"
 #include "sign_opcert.h"
 #include "mem.h"
-#include "mem_utils.h"
 #include "ui_utils.h"
 #include "ui_warnings.h"
 #include "ui_display_opcert.h"

@@ -45,8 +45,9 @@ void app_main() {
     // Structured APDU command
     command_t cmd = {0};
 
-    // Initialize dynamic memory allocator
-    LEDGER_ASSERT(app_mem_init(), "Failed to initialize memory allocator");
+    // Initialize SDK memory allocator
+    LEDGER_ASSERT(mem_utils_init(app_mem_get_buffer(), app_mem_get_buffer_size()),
+                  "Failed to initialize memory allocator");
 
     io_init();
 

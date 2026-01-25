@@ -90,31 +90,6 @@ void ui_display_witness(const bip44_path_t *path,
     (void) warnings;
 }
 
-bool app_mem_init(void) {
-    return true;
-}
-
-void app_mem_deinit(void) {
-    // no-op
-}
-
-void app_mem_dump_stats(void) {
-    // no-op
-}
-
-void *app_mem_alloc_impl(size_t size, bool persistent, const char *file, int line) {
-    (void) persistent;
-    (void) file;
-    (void) line;
-    return calloc(1, size);
-}
-
-void app_mem_free_impl(void *ptr, const char *file, int line) {
-    (void) file;
-    (void) line;
-    free(ptr);
-}
-
 // ----------------------------------------------------------------------
 // Helpers
 // ----------------------------------------------------------------------
@@ -141,6 +116,10 @@ typedef struct {
 } sign_tx_reject_fixture_t;
 
 #include "test_sign_tx_fixtures_rejects.h"
+#include "app_mem_utils.h"
+
+#define TEST_HEAP_SIZE (23 * 1024)
+static uint8_t test_heap[TEST_HEAP_SIZE];
 
 
 // ----------------------------------------------------------------------
@@ -149,7 +128,7 @@ typedef struct {
 
 static void run_sign_tx_reject_fixture(const sign_tx_reject_fixture_t *fixture) {
     reset_context();
-    assert_true(app_mem_init());
+    assert_true(mem_utils_init(test_heap, sizeof(test_heap)));
 
     uint8_t init_raw[512];
     size_t init_len = hex_to_bytes(fixture->init_hex, init_raw, sizeof(init_raw));

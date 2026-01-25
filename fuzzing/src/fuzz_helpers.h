@@ -19,8 +19,8 @@ static inline void fuzzing_reset_state(void) {
     // Reset the dispatcher state to avoid cross-iteration contamination
     explicit_bzero(&G_context, sizeof(G_context));
 
-    // Reinitialize the simple allocator so dangling pointers cannot trigger frees
-    if (!app_mem_init()) {
+    // Reinitialize the SDK allocator so dangling pointers cannot trigger frees
+    if (!mem_utils_init(app_mem_get_buffer(), app_mem_get_buffer_size())) {
         abort();
     }
 }

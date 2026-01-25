@@ -125,7 +125,7 @@ static void add_ui_and_free_inputs(transaction_t *tx) {
         }
 
         node = node->next;
-        app_mem_free(input_node); // only after next is assigned
+        APP_MEM_FREE(input_node); // only after next is assigned
     }
     tx->inputs = NULL;
 }
@@ -156,7 +156,7 @@ static void add_ui_and_free_output_tokens(const output_asset_group_t *group,
         }
 
         node = node->next;
-        app_mem_free(token_node);
+        APP_MEM_FREE(token_node);
     }
 }
 
@@ -173,7 +173,7 @@ static void add_ui_and_free_output_asset_groups(s_flist_node* asset_group_nodes,
         group->tokens = NULL;
 
         node = node->next;
-        app_mem_free(group_node);
+        APP_MEM_FREE(group_node);
     }
     LEDGER_ASSERT(group_count == numGroups, "Output asset group count mismatch");
 }
@@ -325,7 +325,7 @@ static void add_ui_and_free_outputs(transaction_t *tx) {
         // Note: inline datum and reference script data are pointers into the raw_tx buffer,
         // not separately allocated, so they do not need to be freed
         node = node->next;
-        app_mem_free(output_node);
+        APP_MEM_FREE(output_node);
     }
     tx->outputs = NULL;
 }
@@ -746,7 +746,7 @@ static void add_ui_and_free_certificates(transaction_t *tx) {
         }
 
         node = node->next;
-        app_mem_free(certificate_node);
+        APP_MEM_FREE(certificate_node);
     }
     tx->certificates = NULL;
 }
@@ -775,7 +775,7 @@ static void add_ui_and_free_withdrawals(transaction_t *tx) {
         }
 
         node = node->next;
-        app_mem_free(withdrawal_node);
+        APP_MEM_FREE(withdrawal_node);
     }
     tx->withdrawals = NULL;
 }
@@ -847,12 +847,12 @@ static void add_ui_and_free_mint(transaction_t *tx) {
             }
 
             node2 = node2->next;
-            app_mem_free(token_node_entry);
+            APP_MEM_FREE(token_node_entry);
         }
         asset_group_node->asset_group.tokens = NULL;
 
         node = node->next;
-        app_mem_free(asset_group_node);
+        APP_MEM_FREE(asset_group_node);
     }
 
     tx->mint_asset_groups = NULL;
@@ -895,7 +895,7 @@ static void add_ui_and_free_collateral_inputs(transaction_t *tx) {
         }
 
         node = node->next;
-        app_mem_free(collateral_input_node);
+        APP_MEM_FREE(collateral_input_node);
     }
     tx->collateral_inputs = NULL;
 }
@@ -927,7 +927,7 @@ static void add_ui_and_free_required_signers(transaction_t *tx) {
         }
 
         node = node->next;
-        app_mem_free(required_signer_node); // only after next is assigned
+        APP_MEM_FREE(required_signer_node); // only after next is assigned
     }
     tx->required_signers = NULL;
 }
@@ -1054,7 +1054,7 @@ static void add_ui_and_free_reference_inputs(transaction_t *tx) {
         }
 
         node = node->next;
-        app_mem_free(ref_input_node);
+        APP_MEM_FREE(ref_input_node);
     }
     tx->reference_inputs = NULL;
 }
@@ -1087,12 +1087,12 @@ static void add_ui_and_free_voting_procedures(transaction_t *tx) {
             }
 
             vote_node = vote_node->next;
-            app_mem_free(vote_node_data);
+            APP_MEM_FREE(vote_node_data);
         }
         voter_node->voter_votes_data.votes = NULL;
 
         node = node->next;
-        app_mem_free(voter_node);
+        APP_MEM_FREE(voter_node);
     }
     tx->voting_procedures = NULL;
 }
