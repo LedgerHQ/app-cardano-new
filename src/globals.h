@@ -9,6 +9,7 @@
 #include "cardano_constants.h"
 #include "bip32.h"
 #include "securityWarnings.h"
+#include "cvote_types.h"
 #include "cvote_parser.h"
 #include "tx.h"
 #include "opcert_types.h"
@@ -79,17 +80,19 @@ typedef struct {
     bip44_path_t witness_path;
     uint8_t witness_signature[ED25519_SIGNATURE_LENGTH];
 
-    bool cvote_aux_data_expected;
-    bool cvote_aux_data_initialized;
-    uint16_t cvote_registrations_remaining;
-    cvote_aux_data_t* cvote_aux_data;
+    // CVote auxiliary data buffers and parsed data
+    // (state moved to cvote_aux_data_t.state)
+    uint8_t *raw_cvote_init_data;        /// Raw APDU buffer for CVote init (like raw_tx)
+    size_t raw_cvote_init_data_len;
+    cvote_aux_data_t cvote_aux_data;     /// Parsed CVote data with pointers into raw buffer and state
 
     bool pool_owner_path_present;
     bip44_path_t pool_owner_path;
 
     single_account_data_t single_account_data;
 
-    warning_bits_t warning_bits;
+    warning_bits_t warning_bits;          /// Transaction warnings only
+    warning_bits_t cvote_warning_bits;    /// CVote auxiliary data warnings only
     uint32_t planned_ui_pairs;
 } transaction_ctx_t;
 

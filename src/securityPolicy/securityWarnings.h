@@ -108,3 +108,17 @@ static inline void warning_bits_set(warning_bits_t* warnings, warning_bit_e bit)
 static inline bool warning_bits_has(warning_bits_t warnings, warning_bit_e bit) {
     return ((warnings >> bit) & 1) != 0;
 }
+
+static inline bool warning_bits_is_empty(const warning_bits_t* warnings) {
+    return *warnings == 0;
+}
+
+// Mask for all CVote-specific warnings
+#define CVOTE_WARNING_BITS_MASK \
+    (((warning_bits_t)1 << WARNING_BIT_CVOTE_PAYMENT_THIRD_PARTY) | \
+     ((warning_bits_t)1 << WARNING_BIT_CVOTE_PAYMENT_NONSTANDARD_OWNED))
+
+// Check if warning_bits contains any CVote-specific warnings
+static inline bool warning_bits_has_any_cvote(warning_bits_t warnings) {
+    return (warnings & CVOTE_WARNING_BITS_MASK) != 0;
+}

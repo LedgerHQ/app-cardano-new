@@ -111,7 +111,8 @@ class CommandSender:
                 signing_mode: int,
                 additional_witness_paths: Optional[List[str]] = None,
                 options: int = 0,
-                on_review: Optional[Callable[[], None]] = None) -> Tuple[bytes, List[str]]:
+                on_review: Optional[Callable[[], None]] = None,
+                on_cvote_review: Optional[Callable[[], None]] = None) -> Tuple[bytes, List[str]]:
         """Sign a transaction and return its hash plus the witness paths used.
 
         This builds the init APDU from the transaction body, sends the raw chunks,
@@ -132,7 +133,7 @@ class CommandSender:
         if response.status != StatusWord.SWO_SUCCESS:
             raise AssertionError(f"Init failed: {hex(response.status)}")
 
-        self._send_tx_aux_data_if_present(tx)
+        self._send_tx_aux_data_if_present(tx, on_cvote_review)
 
         with self.sign_tx_send_chunks_async(tx):
             if on_review is not None:
@@ -146,7 +147,7 @@ class CommandSender:
 
         return response.data, witness_paths
 
-    def _send_tx_aux_data_if_present(self, tx: Transaction) -> None:
+    def _send_tx_aux_data_if_present(self, tx: Transaction, on_review: Optional[Callable[[], None]] = None) -> None:
         if tx.auxiliaryData is None:
             return
         if tx.auxiliaryData.type != TxAuxiliaryDataType.CIP36_REGISTRATION:
@@ -156,14 +157,38 @@ class CommandSender:
         if not isinstance(aux_params, TxAuxiliaryDataCIP36):
             raise AssertionError("Unexpected auxiliary data params type")
 
-        response = self._exchange(self._cmd_builder.sign_tx_aux_data_init(tx, aux_params))
-        if response.status != StatusWord.SWO_SUCCESS:
-            raise AssertionError(f"AUX_DATA init failed: {hex(response.status)}")
+        has_delegations = len(aux_params.delegations) > 0
 
-        for delegation in aux_params.delegations:
-            response = self._exchange(self._cmd_builder.sign_tx_aux_data_delegation(delegation))
+        if has_delegations:
+            response = self._exchange(self._cmd_builder.sign_tx_aux_data_init(tx, aux_params))
+            if response.status != StatusWord.SWO_SUCCESS:
+                raise AssertionError(f"AUX_DATA init failed: {hex(response.status)}")
+
+            for delegation in aux_params.delegations[:-1]:
+                response = self._exchange(self._cmd_builder.sign_tx_aux_data_delegation(delegation))
+                if response.status != StatusWord.SWO_SUCCESS:
+                    raise AssertionError(f"AUX_DATA registration failed: {hex(response.status)}")
+
+            last_delegation = aux_params.delegations[-1]
+            with self._exchange_async(self._cmd_builder.sign_tx_aux_data_delegation(last_delegation)):
+                if on_review:
+                    on_review()
+            
+            response = self.get_async_response()
+            if response is None:
+                raise AssertionError("No response from last delegation")
             if response.status != StatusWord.SWO_SUCCESS:
                 raise AssertionError(f"AUX_DATA registration failed: {hex(response.status)}")
+        else:
+            with self._exchange_async(self._cmd_builder.sign_tx_aux_data_init(tx, aux_params)):
+                if on_review:
+                    on_review()
+            
+            response = self.get_async_response()
+            if response is None:
+                raise AssertionError("No response from AUX_DATA init")
+            if response.status != StatusWord.SWO_SUCCESS:
+                raise AssertionError(f"AUX_DATA init failed: {hex(response.status)}")
 
     @contextmanager
     def sign_tx_send_chunks_async(self, tx) -> Generator[None, None, None]:

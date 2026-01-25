@@ -397,6 +397,7 @@ class SignTxTestCase:
     additionalWitnessPaths: List[str] = field(default_factory=list)
     expected_sw: Optional[StatusWord] = StatusWord.SWO_SUCCESS
     has_warning: bool = False
+    has_aux_warning: bool = False  # Warnings in auxiliary data (CVote) review
     # TODO: Debug navigation
     nano_skip: Optional[bool] = False
 
@@ -1936,6 +1937,7 @@ testsCatalystRegistration: List[SignTxTestCase] = [
                                                                                   "4b19e27ffc006ace16592311c4d2f0cafc255eaa47a6178ff540c0a46d07027c"))),
                    TransactionSigningMode.ORDINARY_TRANSACTION,
                    "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820d19f7cb4d48a6ae8d370c64d2a42fca1f61d6b2cf3d0c0c02801541811338deb",
+                   has_aux_warning=True,
                    nano_skip=True),
 ]
 
@@ -1954,6 +1956,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                                                                                   "4b19e27ffc006ace16592311c4d2f0cafc255eaa47a6178ff540c0a46d07027c"))),
                    TransactionSigningMode.ORDINARY_TRANSACTION,
                    "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a0758201999b3bb9102b585c42616e40cf1290518d788f967ab4b3329dcb712ac933da0",
+                   has_aux_warning=True,
                    nano_skip=True),
    SignTxTestCase("Sign_tx_with_CIP36_registration_with_vote_key_path",
                    Transaction(Mainnet,
@@ -1986,6 +1989,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                                                                                   "m/1694'/1815'/101'/0/1"))),
                    TransactionSigningMode.ORDINARY_TRANSACTION,
                    "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582077be323b8df4c6aa1bf2f180112f85ffe8d7f658bc8febdf7dbd5a07453a31cb0807",
+                   has_aux_warning=True,
                    nano_skip=True),
     SignTxTestCase("Sign_tx_with_CIP36_registration_with_thirdparty_payment_address",
                    Transaction(Mainnet,
@@ -2041,6 +2045,25 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                    TransactionSigningMode.ORDINARY_TRANSACTION,
                    "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820f0e62a047ef597d9fb1bfefb9cd3f4e77558c33510ca552484ee8b5c77bbdf650807",
                    nano_skip=True),
+    SignTxTestCase("Sign_tx_with_CIP36_registration_with_many_delegations_streaming",
+                   Transaction(Mainnet,
+                               [inputs["utxoShelley"]],
+                               [outputs["internalBaseWithStakingPath"]],
+                               42,
+                               10,
+                               validityIntervalStart=7,
+                               auxiliaryData=TxAuxiliaryData(TxAuxiliaryDataType.CIP36_REGISTRATION,
+                                                             TxAuxiliaryDataCIP36(CIP36VoteRegistrationFormat.CIP_36,
+                                                                                  "m/1852'/1815'/0'/2/0",
+                                                                                  destinations["internalBaseWithStakingPath"],
+                                                                                  1454448,
+                                                                                  votingPurpose=2790,
+                                                                                  delegations=[CIP36VoteDelegation(CIP36VoteDelegationType.KEY,
+                                                                                                                   "4b19e27ffc006ace16592311c4d2f0cafc255eaa47a6178ff540c0a46d07027c",
+                                                                                                                   1)] * 150))),
+                   TransactionSigningMode.ORDINARY_TRANSACTION,
+                   "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+                   nano_skip=True), # TODO needs navigation fix
 ]
 
 # =================

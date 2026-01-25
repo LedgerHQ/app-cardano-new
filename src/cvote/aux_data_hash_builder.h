@@ -5,6 +5,7 @@
 #else
 #include "hash.h"
 #endif
+#include "cvote_types.h"
 #include "keyDerivation.h"
 #include "utils.h"
 
@@ -39,8 +40,6 @@ typedef enum {
     AUX_DATA_HASH_BUILDER_IN_AUXILIARY_SCRIPTS = 300,
     AUX_DATA_HASH_BUILDER_FINISHED = 400,
 } aux_data_hash_builder_state_t;
-
-typedef enum { CIP15 = 1, CIP36 = 2 } cvote_registration_format_t;
 
 typedef struct {
     struct {

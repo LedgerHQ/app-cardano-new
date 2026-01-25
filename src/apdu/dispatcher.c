@@ -34,6 +34,7 @@
 #include "get_app_name.h"
 #include "get_public_key.h"
 #include "sign_tx.h"
+#include "sign_tx_aux_data.h"
 #include "sign_opcert.h"
 #include "derive_address.h"
 #include "derive_native_script_hash.h"

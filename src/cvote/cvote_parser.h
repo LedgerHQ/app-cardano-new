@@ -4,11 +4,10 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "addressUtilsShelley.h"
 #include "buffer.h"
 #include "cardano_constants.h"
 #include "aux_data_hash_builder.h"
-#include "tx_credential_types.h"
+#include "cvote_types.h"
 
 typedef enum {
     CVOTE_PARSER_OK = 0,
@@ -19,46 +18,59 @@ typedef enum {
 #define CVOTE_PUBLIC_KEY_LENGTH (PUBLIC_KEY_LENGTH)
 
 typedef struct {
-    uint8_t *buffer;
-    size_t length;
-} cvote_third_party_address_t;
-
-typedef struct {
-    bool is_third_party;
-    union {
-        addressParams_t params;
-        cvote_third_party_address_t third_party;
-    };
-} cvote_destination_t;
-
-typedef struct {
-    ext_credential_type_t type;
-    union {
-        bip44_path_t keyPath;
-        const uint8_t* publicKey;
-        const uint8_t* scriptHash;
-    };
-} cvote_credential_t;
-
-typedef struct {
+    // Parsed CVote registration data
+    // Credentials point into raw_cvote_init_data buffer (like TX credentials)
     cvote_registration_format_t format;
-    uint16_t delegation_count;
-    uint8_t staking_credential_public_key[PUBLIC_KEY_LENGTH];
-    uint8_t staking_credential_script_hash[SCRIPT_HASH_LENGTH];
-    cvote_credential_t staking_credential;
-    cvote_destination_t destination;
+    uint16_t remaining_delegations;
+    cvote_credential_t staking_credential;  // CVote-specific credential (KEY_HASH = 32-byte pubkey)
+    cvote_credential_t vote_credential;     // CVote-specific credential (KEY_HASH = 32-byte pubkey)
+    cvote_destination_t destination;        // Address params or pointer into raw buffer
     uint64_t nonce;
     uint64_t voting_purpose;
-    uint8_t vote_credential_public_key[PUBLIC_KEY_LENGTH];
-    uint8_t vote_credential_script_hash[SCRIPT_HASH_LENGTH];
-    cvote_credential_t vote_credential;
+
+    // Hash building state
     bool final_fields_processed;
+    bool hash_finalized;
     aux_data_hash_builder_t hash_builder;
     uint8_t registration_signature[ED25519_SIGNATURE_LENGTH];
+
+    // Validation results - what fields to display based on security policies
+    struct {
+        bool voting_purpose;
+        bool nonce;
+        bool vote_key;
+        bool staking_key;
+        bool payment_destination;
+    } ui_show;
+
+    // UI delegation tracking (all modes)
+    uint16_t ui_delegations_total;           // Total delegation count
+    uint16_t ui_delegations_shown;           // Delegations displayed so far
+
+    // UI streaming state - only populated when ui_streaming.on == true
+    // Streaming is forced when delegation count is too large for single NBGL review
+    // Invariants:
+    // - ui_streaming.on == true IFF (remaining_delegations > CVOTE_DELEGATION_CHUNK_SIZE || too many UI pairs)
+    // - chunk_processed <= chunk_total
+    // - NBGL streaming started IFF review_started == true
+    struct {
+        bool on;                             // Streaming mode forced (>60 delegations or too many pairs)
+        bool review_started;                 // NBGL streaming review session started
+        uint16_t chunk_processed;            // Delegations processed in current chunk
+        uint16_t chunk_total;                // Total delegations for current chunk
+    } ui_streaming;
+
+    // State machine for CVote aux data processing
+    cvote_aux_data_state_e state;
 } cvote_aux_data_t;
 
-cvote_parser_status_t cvote_parse_credential(buffer_t *buf,
-                                             cvote_credential_t *credential,
-                                             const char *label);
+// Parse CVote credential from buffer
+// Supported types: KEY (0, 32-byte pubkey) and KEY_PATH (2, BIP44 path)
+bool buffer_read_cvote_credential(buffer_t *buf, cvote_credential_t *credential);
+
+// Parse CVote destination (device-owned params or third-party address pointer)
 cvote_parser_status_t cvote_parse_destination(buffer_t *buf, cvote_destination_t *destination);
-cvote_parser_status_t cvote_parse_aux_data_init(buffer_t *buf, cvote_aux_data_t **out_data);
+
+// Parse CVote init from global context raw_cvote_init_data into cvote_aux_data structure
+// Credentials and addresses point into the persistent raw_cvote_init_data buffer
+cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data);

@@ -45,6 +45,9 @@ typedef enum {
     SWO_TX_PARSING_FAIL_TREASURY = 0x6B35,            // key 21
     SWO_TX_PARSING_FAIL_DONATION = 0x6B36,            // key 22
 
+    // CVote auxiliary data parsing errors
+    SWO_CVOTE_AUX_DATA_PARSING_FAIL = 0x6B50,        // CVote aux data (init or delegation) parsing error
+
     // Network/Protocol validation errors
     SWO_INVALID_NETWORK_ID = 0x6B37,                  // network ID mismatch
     SWO_INVALID_PROTOCOL_MAGIC = 0x6B38,              // protocol magic mismatch

@@ -68,12 +68,26 @@ def _run_sign_tx_test(device: Device,
     expected_hash = blake2b(expected_cbor, digest_size=32).digest()
     print(f"Expected tx hash: {expected_hash.hex()}")
 
-    def review_transaction() -> None:
+    def review_cvote() -> None:
+        if device.is_nano:
+            # TODO: Add proper navigation for nano devices
+            pass
+        else:
+            # CVote auxiliary data review (if present)
+            if testCase.tx.auxiliaryData is not None:
+                if testCase.tx.auxiliaryData.type == TxAuxiliaryDataType.CIP36_REGISTRATION:
+                    test_name = f"{testCase.name}-{mode_str}/cvote_review"
+                    if testCase.has_aux_warning:
+                        scenario_navigator.review_approve_with_warning(test_name=test_name, custom_screen_text="Confirm")
+                    else:
+                        scenario_navigator.review_approve(test_name=test_name, custom_screen_text="Confirm")
+
+    def review_tx() -> None:
         if device.is_nano:
             # TODO: Add proper navigation for nano devices
             navigator.navigate_until_text(NavInsID.RIGHT_CLICK, [NavInsID.BOTH_CLICK], "Sign transaction")
         else:
-            # Append expert mode to test name for separate snapshot directories
+            # Main transaction review
             test_name = f"{testCase.name}-{mode_str}/review"
             if testCase.has_warning:
                 scenario_navigator.review_approve_with_warning(test_name=test_name)
@@ -85,7 +99,8 @@ def _run_sign_tx_test(device: Device,
         signing_mode=testCase.signingMode,
         additional_witness_paths=testCase.additionalWitnessPaths,
         options=testCase.options,
-        on_review=review_transaction
+        on_review=review_tx,
+        on_cvote_review=review_cvote
     )
     print(f"Witness paths: {witness_paths}")
 
@@ -106,6 +121,8 @@ def _run_sign_tx_test(device: Device,
         # (adapted from Shelley app's _signTx_setWitnesses logic)
         moves = []
 
+        # TODO: Add proper navigation for nano devices
+
         # Parse path to check for unusual paths (non-standard accounts or change addresses)
         path_elements = path.replace("'", "").split("/")
         if len(path_elements) > 1:
@@ -114,19 +131,18 @@ def _run_sign_tx_test(device: Device,
                 # Unusual purpose (not 1852 for Shelley) or unusual change address
                 if purpose > 1852 or (len(path_elements) > 4 and int(path_elements[4]) > 2):
                     moves += [NavInsID.BOTH_CLICK] * 2
-                elif testCase.tx.auxiliaryData is not None:
-                    # With auxiliary data: need extra confirmations in some cases
-                    if testCase.tx.auxiliaryData.type == TxAuxiliaryDataType.CIP36_REGISTRATION:
-                        pass  # No extra moves for CIP36
-                    elif isinstance(testCase.tx.outputs[0].destination.params, ThirdPartyAddressParams):
-                        pass  # No extra moves for third-party addresses
-                    else:
-                        moves += [NavInsID.BOTH_CLICK] * 3
+                elif isinstance(testCase.tx.outputs[0].destination.params, ThirdPartyAddressParams):
+                    # Third-party addresses don't need extra moves
+                    pass
                 elif testCase.signingMode == TransactionSigningMode.PLUTUS_TRANSACTION:
                     moves += [NavInsID.BOTH_CLICK] * 2
                 elif testCase.signingMode in (TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
                                               TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR):
                     moves += [NavInsID.BOTH_CLICK]
+                elif testCase.tx.auxiliaryData is not None and testCase.tx.auxiliaryData.type != TxAuxiliaryDataType.CIP36_REGISTRATION:
+                    # Other auxiliary data (not CIP36/Catalyst) may need extra moves
+                    # CIP36 witnesses with reasonable paths use POLICY_HIDE in non-expert mode
+                    moves += [NavInsID.BOTH_CLICK] * 3
             except (ValueError, IndexError):
                 # If path parsing fails, use no extra moves
                 pass

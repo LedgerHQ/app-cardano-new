@@ -262,7 +262,9 @@ set(SIGN_TX_COMMON_SOURCES
     ../src/memory/flist.c
     ../src/memory/mem.c
     ../src/handler/sign_tx.c
+    ../src/handler/sign_tx_aux_data.c
     ../src/cvote/cvote_parser.c
+    ../src/cvote/cvote_hash.c
     ../src/cvote/aux_data_hash_builder.c
     ../src/transaction/tx_parse.c
     ../src/transaction/tx_parse_certificates.c
@@ -289,6 +291,7 @@ set(SIGN_TX_COMMON_SOURCES
     mock_sources/hex_stub.c
     mock_sources/io_stub.c
     mock_sources/ui_display_tx_stub.c
+    mock_sources/ui_display_cvote_aux_data_stub.c
 )
 set(SIGN_TX_COMMON_LIBS
     text_utils

@@ -1879,23 +1879,45 @@ security_policy_t policyForSignTxDisplayTxHash(sign_tx_signingmode_t signingMode
     }
 }
 
-security_policy_t policyForCVoteRegistrationVoteKey() {
-    SHOW();
+security_policy_t policyForCVoteRegistrationVoteKey(const cvote_credential_t* credential,
+                                                    cvote_registration_format_t format,
+                                                    warning_bits_t* warnings) {
+    LEDGER_ASSERT(credential != NULL, "NULL credential");
+    LEDGER_ASSERT(warnings != NULL, "NULL warnings");
+
+    switch(credential->type) {
+        case CVOTE_CREDENTIAL_KEY: {
+            SHOW();
+        }
+        case CVOTE_CREDENTIAL_KEY_PATH: {
+            // Encourage people to use the new format,
+            // so that we can drop support for CIP15 sooner
+            // TODO drop CIP15 support?
+            DENY_UNLESS(format == CIP36);
+
+            DENY_UNLESS(bip44_classifyPath(&credential->keyPath) == PATH_CVOTE_KEY);
+
+            if (!bip44_isPathReasonable(&credential->keyPath)) {
+                mark_unusual_key_derivation(warnings, &credential->keyPath);
+            }
+            SHOW();
+        }
+        default:
+            LEDGER_ASSERT(false, "Unknown credential type: %u", credential->type);
+            DENY();
+    }
 }
 
-security_policy_t policyForCVoteRegistrationVoteKeyPath(bip44_path_t *path,
-                                                        cvote_registration_format_t format) {
-    // encourages people to use the new format,
-    // so that we can drop support for CIP15 sooner
-    DENY_UNLESS(format == CIP36);
+security_policy_t policyForCVoteRegistrationStakingKey(const bip44_path_t *stakingKeyPath,
+                                                       warning_bits_t* warnings) {
+    LEDGER_ASSERT(stakingKeyPath != NULL, "NULL stakingKeyPath");
+    LEDGER_ASSERT(warnings != NULL, "NULL warnings");
 
-    DENY_UNLESS(bip44_classifyPath(path) == PATH_CVOTE_KEY);
-    SHOW_UNLESS(bip44_isPathReasonable(path));
-    SHOW();
-}
-
-security_policy_t policyForCVoteRegistrationStakingKey(const bip44_path_t *stakingKeyPath) {
     DENY_UNLESS(bip44_isOrdinaryStakingKeyPath(stakingKeyPath));
+
+    if (!bip44_isPathReasonable(stakingKeyPath)) {
+        mark_unusual_key_derivation(warnings, stakingKeyPath);
+    }
     SHOW_UNLESS(bip44_isPathReasonable(stakingKeyPath));
 
     SHOW();
@@ -1903,8 +1925,12 @@ security_policy_t policyForCVoteRegistrationStakingKey(const bip44_path_t *staki
 
 // based on https://input-output-rnd.slack.com/archives/C036XSMFXE3/p1668185230182239
 security_policy_t policyForCVoteRegistrationPaymentDestination(
-    const tx_output_destination_storage_t *destination,
-    const uint8_t networkId) {
+    const cvote_destination_t *destination,
+    const uint8_t networkId,
+    warning_bits_t* warnings) {
+    LEDGER_ASSERT(destination != NULL, "NULL destination");
+    LEDGER_ASSERT(warnings != NULL, "NULL warnings");
+
     switch (destination->type) {
         case DESTINATION_DEVICE_OWNED: {
             DENY_UNLESS(isValidAddressParams(&destination->params));
@@ -1913,6 +1939,9 @@ security_policy_t policyForCVoteRegistrationPaymentDestination(
 
             // in a typical case, the rewards go to an address controlled by this device
             // and the address is sent in a way allowing a verification of that fact
+            if (!is_standard_base_address(&destination->params)) {
+                warning_bits_set(warnings, WARNING_BIT_CVOTE_PAYMENT_NONSTANDARD_OWNED);
+            }
             SHOW_UNLESS(is_standard_base_address(&destination->params));
 
             // we are sure the address belongs to the device
@@ -1945,9 +1974,8 @@ security_policy_t policyForCVoteRegistrationNonce() {
 }
 
 security_policy_t policyForCVoteRegistrationVotingPurpose() {
-    // TODO show it on all devices now that we have a larger display?
-    // Previous policy: SHOW_IF(is_expert_mode()); HIDE();
-    SHOW();
+    SHOW_IF(is_expert_mode());
+    HIDE();
 }
 
 security_policy_t policyForCVoteRegistrationConfirm() {
@@ -2078,7 +2106,7 @@ security_policy_t policyForSignCVoteConfirm() {
     SHOW();
 }
 
-security_policy_t policyForSignCVoteWitness(bip44_path_t *path) {
+security_policy_t policyForSignCVoteWitness(const bip44_path_t *path) {
     switch (bip44_classifyPath(path)) {
         case PATH_CVOTE_KEY:
             SHOW_UNLESS(bip44_isPathReasonable(path));

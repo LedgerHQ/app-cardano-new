@@ -1224,6 +1224,11 @@ int ui_prepare_transaction_review(void) {
         return status;
     }
 
+    // Assert that CVote warnings haven't leaked into transaction warnings
+    // Check that tx warning_bits doesn't contain any CVote-specific warnings
+    LEDGER_ASSERT(!warning_bits_has_any_cvote(G_context.tx_info.warning_bits),
+                  "CVote warning leaked into transaction warnings");
+
     ui_status_t warning_status = ui_build_warnings(G_context.tx_info.warning_bits);
     switch (warning_status) {
         case UI_STATUS_SUCCESS:

@@ -10,128 +10,54 @@
 #include "cardano_parsers.h"
 #include "utils.h"
 
-#define TX_OUTPUT_DESTINATION_THIRD_PARTY 0x01
-#define TX_OUTPUT_DESTINATION_DEVICE_OWNED 0x02
-
-static void trace_credential_path(const char *label, const bip44_path_t *path) {
-    ASSERT(label != NULL);
-    ASSERT(path != NULL);
-
-    char path_str[MAX_BIP44_PATH_STRING_LENGTH + 2] = {0};
-    bool formatted = format_bip44_path(path, path_str, sizeof(path_str));
-    TRACE("%s path %s", label, formatted ? path_str : "<path format failed>");
-}
-
-static bool cvote_resolve_credential_buffers(const cvote_credential_t *credential,
-                                             uint8_t **out_public_key_buffer,
-                                             uint8_t **out_script_hash_buffer) {
+/**
+ * Parse CVote credential
+ *
+ * Per CIP-36 CBOR spec, CVote credentials are:
+ * - Type 0: 32-byte public key (not 28-byte key hash like in regular TX)
+ * - Type 2: BIP44 derivation path
+ * Script hashes (type 1) are NOT allowed per CIP-36 spec.
+ */
+bool buffer_read_cvote_credential(buffer_t *buf, cvote_credential_t *credential) {
+    ASSERT(buf != NULL);
     ASSERT(credential != NULL);
-    ASSERT(out_public_key_buffer != NULL);
-    ASSERT(out_script_hash_buffer != NULL);
 
-    if (credential->publicKey != NULL || credential->scriptHash != NULL) {
-        *out_public_key_buffer = (uint8_t *) credential->publicKey;
-        *out_script_hash_buffer = (uint8_t *) credential->scriptHash;
-        return true;
-    }
-
-    cvote_aux_data_t *aux_data = G_context.tx_info.cvote_aux_data;
-    if (aux_data == NULL) {
+    uint8_t cred_type = 0;
+    if (!buffer_read_u8(buf, &cred_type)) {
+        TRACE("Failed to read CVote credential type");
         return false;
     }
 
-    if (credential == &aux_data->staking_credential) {
-        *out_public_key_buffer = aux_data->staking_credential_public_key;
-        *out_script_hash_buffer = aux_data->staking_credential_script_hash;
-        return true;
-    }
+    credential->type = (cvote_credential_type_t) cred_type;
 
-    if (credential == &aux_data->vote_credential) {
-        *out_public_key_buffer = aux_data->vote_credential_public_key;
-        *out_script_hash_buffer = aux_data->vote_credential_script_hash;
-        return true;
-    }
-
-    return false;
-}
-
-cvote_parser_status_t cvote_parse_credential(buffer_t *buf,
-                                             cvote_credential_t *credential,
-                                             const char *label) {
-    ASSERT(buf != NULL);
-    ASSERT(credential != NULL);
-    ASSERT(label != NULL);
-
-    uint8_t *public_key_buffer = NULL;
-    uint8_t *script_hash_buffer = NULL;
-
-    uint8_t type = 0;
-    if (!buffer_read_u8(buf, &type)) {
-        TRACE("%s credential type missing", label);
-        return CVOTE_PARSER_INVALID_FORMAT;
-    }
-
-    switch (type) {
-        case EXT_CREDENTIAL_KEY_HASH:
-            if (!cvote_resolve_credential_buffers(credential,
-                                                  &public_key_buffer,
-                                                  &script_hash_buffer)) {
-                TRACE("%s key hash buffer missing", label);
-                return CVOTE_PARSER_INVALID_FORMAT;
-            }
-            if (public_key_buffer == NULL) {
-                TRACE("%s key hash buffer unavailable", label);
-                return CVOTE_PARSER_INVALID_FORMAT;
-            }
-            credential->type = EXT_CREDENTIAL_KEY_HASH;
-            credential->publicKey = public_key_buffer;
-            if (!buffer_read_bytes(buf, public_key_buffer, PUBLIC_KEY_LENGTH)) {
-                TRACE("%s key hash data truncated", label);
-                return CVOTE_PARSER_INVALID_FORMAT;
-            }
-            TRACE("%s credential: raw key", label);
-            break;
-        case EXT_CREDENTIAL_SCRIPT_HASH:
-            if (!cvote_resolve_credential_buffers(credential,
-                                                  &public_key_buffer,
-                                                  &script_hash_buffer)) {
-                TRACE("%s script hash buffer missing", label);
-                return CVOTE_PARSER_INVALID_FORMAT;
-            }
-            if (script_hash_buffer == NULL) {
-                TRACE("%s script hash buffer unavailable", label);
-                return CVOTE_PARSER_INVALID_FORMAT;
-            }
-            credential->type = EXT_CREDENTIAL_SCRIPT_HASH;
-            credential->scriptHash = script_hash_buffer;
-            if (!buffer_read_bytes(buf, script_hash_buffer, SCRIPT_HASH_LENGTH)) {
-                TRACE("%s script hash data truncated", label);
-                return CVOTE_PARSER_INVALID_FORMAT;
-            }
-            TRACE("%s credential: script hash", label);
-            break;
-        case EXT_CREDENTIAL_KEY_PATH:
-            credential->type = EXT_CREDENTIAL_KEY_PATH;
+    switch (cred_type) {
+        case CVOTE_CREDENTIAL_KEY_PATH:
             if (!buffer_read_bip44_path(buf, &credential->keyPath)) {
-                TRACE("%s path data truncated", label);
-                return CVOTE_PARSER_INVALID_FORMAT;
+                TRACE("Failed to read CVote BIP44 path");
+                return false;
             }
-            trace_credential_path(label, &credential->keyPath);
+            break;
+        case CVOTE_CREDENTIAL_KEY:
+            // CVote: reads 32-byte public key per CIP-36
+            if (!buffer_read_bytes_ptr(buf, &credential->publicKey, PUBLIC_KEY_LENGTH)) {
+                TRACE("Failed to read CVote public key");
+                return false;
+            }
+            ASSERT(credential->publicKey != NULL);
             break;
         default:
-            TRACE("%s invalid credential type 0x%02x", label, type);
-            return CVOTE_PARSER_INVALID_FORMAT;
+            TRACE("Invalid CVote credential type: %u (only 0=KEY, 2=KEY_PATH allowed)", cred_type);
+            return false;
     }
-
-    return CVOTE_PARSER_OK;
+    return true;
 }
 
 static cvote_parser_status_t parse_third_party_destination(buffer_t *buf, cvote_destination_t *destination) {
     ASSERT(buf != NULL);
     ASSERT(destination != NULL);
 
-    destination->third_party.length = 0;
-    destination->third_party.buffer = NULL;
+    destination->address.size = 0;
+    destination->address.buffer = NULL;
 
     uint16_t address_len = 0;
     if (!buffer_read_u16(buf, &address_len, BE)) {
@@ -141,25 +67,26 @@ static cvote_parser_status_t parse_third_party_destination(buffer_t *buf, cvote_
     TRACE("CVote third-party destination len %u", address_len);
 
     if (address_len == 0) {
-        return CVOTE_PARSER_OK;
+        TRACE("CVote third-party address cannot be zero-length");
+        return CVOTE_PARSER_INVALID_FORMAT;
     }
 
-    uint8_t *buffer = (uint8_t *) APP_MEM_ALLOC_ZEROED(address_len);
-    if (buffer == NULL) {
-        TRACE("CVote third-party destination allocate failed");
-        return CVOTE_PARSER_OUT_OF_MEMORY;
-    }
-
-    if (!buffer_read_bytes(buf, buffer, address_len)) {
+    // Store pointer into raw buffer (like TX does for addresses)
+    if (!buffer_read_bytes_ptr(buf, &destination->address.buffer, address_len)) {
         TRACE("CVote third-party destination truncated");
         return CVOTE_PARSER_INVALID_FORMAT;
     }
 
-    destination->third_party.buffer = buffer;
-    destination->third_party.length = address_len;
+    destination->address.size = address_len;
     return CVOTE_PARSER_OK;
 }
 
+// TODO: Unify destination parsing with TX outputs and collateral outputs
+// Structure now uses tx_output_destination_type_t (fully aligned).
+// Remaining items for unification:
+// 1. Return type: cvote_parse_destination returns cvote_parser_status_t, TX uses parser_status_e
+// 2. Network ID: TX overrides network ID for Shelley addresses, CVote does not (verify against CIP-36 spec)
+// 3. Target: Create unified parser in src/parsers/cardano_parsers.c with configurable network ID handling
 cvote_parser_status_t cvote_parse_destination(buffer_t *buf, cvote_destination_t *destination) {
     ASSERT(buf != NULL);
     ASSERT(destination != NULL);
@@ -172,125 +99,134 @@ cvote_parser_status_t cvote_parse_destination(buffer_t *buf, cvote_destination_t
 
     TRACE("CVote destination payload type 0x%x", destination_type);
 
-    if (destination_type == TX_OUTPUT_DESTINATION_THIRD_PARTY) {
-        destination->is_third_party = true;
-        cvote_parser_status_t dest_status = parse_third_party_destination(buf, destination);
-        if (dest_status != CVOTE_PARSER_OK) {
-            return dest_status;
-        }
-        TRACE("CVote destination: third-party payload");
-        return CVOTE_PARSER_OK;
-    }
+    switch (destination_type) {
+        case DESTINATION_THIRD_PARTY:
+            destination->type = (tx_output_destination_type_t) destination_type;
+            cvote_parser_status_t dest_status = parse_third_party_destination(buf, destination);
+            if (dest_status != CVOTE_PARSER_OK) {
+                return dest_status;
+            }
+            TRACE("CVote destination: third-party payload");
+            return CVOTE_PARSER_OK;
 
-    if (destination_type != TX_OUTPUT_DESTINATION_DEVICE_OWNED) {
-        TRACE("Unsupported CVote destination type 0x%x", destination_type);
-        return CVOTE_PARSER_INVALID_FORMAT;
-    }
+        case DESTINATION_DEVICE_OWNED:
+            destination->type = (tx_output_destination_type_t) destination_type;
+            explicit_bzero(&destination->params, sizeof(destination->params));
+            if (!buffer_parseAddressParams(buf, &destination->params)) {
+                TRACE("CVote destination parsing failed");
+                return CVOTE_PARSER_INVALID_FORMAT;
+            }
+            // TODO: Network ID handling - unlike TX outputs, CVote does not override network ID from wire
+            // Verify this is correct per CIP-36 specification and align with TX output behavior if needed
+            TRACE("CVote destination type 0x%x, staking %d", destination->params.type, destination->params.stakingDataSource);
+            return CVOTE_PARSER_OK;
 
-    destination->is_third_party = false;
-    explicit_bzero(&destination->params, sizeof(destination->params));
-    if (!buffer_parseAddressParams(buf, &destination->params)) {
-        TRACE("CVote destination parsing failed");
-        return CVOTE_PARSER_INVALID_FORMAT;
+        default:
+            TRACE("Unsupported CVote destination type 0x%x", destination_type);
+            return CVOTE_PARSER_INVALID_FORMAT;
     }
-
-    TRACE("CVote destination type 0x%x, staking %d", destination->params.type, destination->params.stakingDataSource);
-    return CVOTE_PARSER_OK;
 }
 
-static cvote_parser_status_t parse_vote_credential(buffer_t *buf, cvote_aux_data_t *data) {
-    ASSERT(buf != NULL);
-    ASSERT(data != NULL);
-
-    cvote_parser_status_t status =
-        cvote_parse_credential(buf, &data->vote_credential, "Vote credential");
-    if (status != CVOTE_PARSER_OK) {
-        return status;
-    }
-    return CVOTE_PARSER_OK;
-}
-
-cvote_parser_status_t cvote_parse_aux_data_init(buffer_t *buf, cvote_aux_data_t **out_data) {
-    ASSERT(buf != NULL);
+cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
     ASSERT(out_data != NULL);
+    ASSERT(G_context.tx_info.raw_cvote_init_data != NULL);
 
-    *out_data = NULL;
-    if (buf->size - buf->offset < 3) {
+    if (G_context.tx_info.raw_cvote_init_data_len < 3) {
+        TRACE("CVote init payload too short: %u bytes", (unsigned)G_context.tx_info.raw_cvote_init_data_len);
         return CVOTE_PARSER_INVALID_FORMAT;
     }
 
-    cvote_aux_data_t *data = (cvote_aux_data_t *) APP_MEM_ALLOC_ZEROED(sizeof(*data));
-    if (data == NULL) {
-        return CVOTE_PARSER_OUT_OF_MEMORY;
-    }
-    explicit_bzero(data, sizeof(*data));
+    buffer_t parse_buf = {
+        .ptr = G_context.tx_info.raw_cvote_init_data,
+        .size = G_context.tx_info.raw_cvote_init_data_len,
+        .offset = 0
+    };
 
-    cvote_aux_data_t *previous_aux_data = G_context.tx_info.cvote_aux_data;
-    G_context.tx_info.cvote_aux_data = data;
+    // Zero out output structure
+    explicit_bzero(out_data, sizeof(*out_data));
 
+    // Parse format and delegation count
     uint8_t format = 0;
-    ASSERT_TYPE(data->delegation_count, uint16_t);
-    if (!buffer_read_u8(buf, &format) ||
-        !buffer_read_u16(buf, &data->delegation_count, BE)) {
-        G_context.tx_info.cvote_aux_data = previous_aux_data;
+    ASSERT_TYPE(out_data->remaining_delegations, uint16_t);
+    if (!buffer_read_u8(&parse_buf, &format) ||
+        !buffer_read_u16(&parse_buf, &out_data->remaining_delegations, BE)) {
+        TRACE("CVote init: failed to read format/remaining_delegations");
         return CVOTE_PARSER_INVALID_FORMAT;
     }
 
     switch (format) {
         case CIP15:
         case CIP36:
-            data->format = (cvote_registration_format_t) format;
+            out_data->format = format;
             break;
         default:
-            G_context.tx_info.cvote_aux_data = previous_aux_data;
+            TRACE("CVote init: invalid format %u", format);
             return CVOTE_PARSER_INVALID_FORMAT;
     }
 
-    if (cvote_parse_credential(buf, &data->staking_credential, "Staking credential") !=
-        CVOTE_PARSER_OK) {
-        G_context.tx_info.cvote_aux_data = previous_aux_data;
+    // Parse staking credential using CVote-specific credential reader
+    // (reads 32-byte public keys for KEY_HASH type, not 28-byte key hashes)
+    // Pointers stored into raw_buffer (no manual allocation needed!)
+    if (!buffer_read_cvote_credential(&parse_buf, &out_data->staking_credential)) {
+        TRACE("CVote init: failed to parse staking credential");
         return CVOTE_PARSER_INVALID_FORMAT;
     }
 
-    cvote_parser_status_t dest_status = cvote_parse_destination(buf, &data->destination);
+    // Parse destination
+    cvote_parser_status_t dest_status = cvote_parse_destination(&parse_buf, &out_data->destination);
     if (dest_status != CVOTE_PARSER_OK) {
-        G_context.tx_info.cvote_aux_data = previous_aux_data;
+        TRACE("CVote init: failed to parse destination");
         return dest_status;
     }
 
-    ASSERT_TYPE(data->nonce, uint64_t);
-    if (!buffer_read_u64(buf, &data->nonce, BE)) {
-        G_context.tx_info.cvote_aux_data = previous_aux_data;
+    // Parse nonce
+    ASSERT_TYPE(out_data->nonce, uint64_t);
+    if (!buffer_read_u64(&parse_buf, &out_data->nonce, BE)) {
+        TRACE("CVote init: failed to read nonce");
         return CVOTE_PARSER_INVALID_FORMAT;
     }
 
-    if (data->format == CIP36) {
-        ASSERT_TYPE(data->voting_purpose, uint64_t);
-        if (!buffer_read_u64(buf, &data->voting_purpose, BE)) {
-            G_context.tx_info.cvote_aux_data = previous_aux_data;
-            return CVOTE_PARSER_INVALID_FORMAT;
-        }
-        if (data->delegation_count == 0) {
-            cvote_parser_status_t vote_status = parse_vote_credential(buf, data);
-            if (vote_status != CVOTE_PARSER_OK) {
-                G_context.tx_info.cvote_aux_data = previous_aux_data;
-                return vote_status;
+    // Parse format-specific fields
+    // Type checks for voting_purpose moved outside switch to avoid static assert in case label
+    ASSERT_TYPE(out_data->voting_purpose, uint64_t);
+    switch (out_data->format) {
+        case CIP36:
+            if (!buffer_read_u64(&parse_buf, &out_data->voting_purpose, BE)) {
+                TRACE("CVote init: failed to read voting_purpose");
+                return CVOTE_PARSER_INVALID_FORMAT;
             }
-        }
-    } else {
-        cvote_parser_status_t vote_status = parse_vote_credential(buf, data);
-        if (vote_status != CVOTE_PARSER_OK) {
-            G_context.tx_info.cvote_aux_data = previous_aux_data;
-            return vote_status;
-        }
+
+            // CIP36 with 0 delegations includes vote credential in init
+            if (out_data->remaining_delegations == 0) {
+                if (!buffer_read_cvote_credential(&parse_buf, &out_data->vote_credential)) {
+                    TRACE("CVote init: failed to parse vote credential (CIP36, no delegations)");
+                    return CVOTE_PARSER_INVALID_FORMAT;
+                }
+            }
+            break;
+
+        case CIP15:
+            // CIP15 always includes vote credential in init
+            if (!buffer_read_cvote_credential(&parse_buf, &out_data->vote_credential)) {
+                TRACE("CVote init: failed to parse vote credential (CIP15)");
+                return CVOTE_PARSER_INVALID_FORMAT;
+            }
+            break;
+
+        default:
+            LEDGER_ASSERT(false, "Invalid CVote registration format: %u", out_data->format);
+            return CVOTE_PARSER_INVALID_FORMAT;
     }
 
-    if (buf->offset != buf->size) {
-        TRACE("CVote init payload not fully consumed");
-        G_context.tx_info.cvote_aux_data = previous_aux_data;
+    // Verify buffer fully consumed
+    if (parse_buf.offset != parse_buf.size) {
+        TRACE("CVote init payload not fully consumed: %u/%u bytes",
+              (unsigned)parse_buf.offset, (unsigned)parse_buf.size);
         return CVOTE_PARSER_INVALID_FORMAT;
     }
 
-    *out_data = data;
+    TRACE("CVote init parsed: format=%u, delegations=%u, nonce=%llu",
+          out_data->format, out_data->remaining_delegations, out_data->nonce);
+
     return CVOTE_PARSER_OK;
 }

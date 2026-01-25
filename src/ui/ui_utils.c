@@ -127,11 +127,21 @@ bool ui_pairs_add_static_label_impl(const char* label, char* tmp_buf, bool shrin
     LEDGER_ASSERT(tmp_buf != NULL, "NULL buffer");
     LEDGER_ASSERT(tmp_buf[0] != '\0', "Empty UI value");
 
-    TRACE("Adding pair %u: label='%s' value='%.20s%s'",
-          g_next_pair_index,
-          label,
-          tmp_buf,
-          strlen(tmp_buf) > 20 ? "..." : "");
+    #ifdef DEBUG
+    {
+        size_t len = strlen(tmp_buf);
+        const size_t preview_len = 40;
+        char value_preview[41] = {0};  // 40 chars + null terminator
+        memcpy(value_preview, tmp_buf, len > preview_len ? preview_len : len);
+
+        TRACE("Adding pair %u: label='%s' value='%s%s (length = %u)'",
+              g_next_pair_index,
+              label,
+              value_preview,
+              len > preview_len ? "..." : "",
+              len);
+    }
+    #endif
 
     if (g_pairs == NULL || g_pairsList == NULL) {
         TRACE("Pairs storage not initialized");

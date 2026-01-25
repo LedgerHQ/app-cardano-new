@@ -7,6 +7,7 @@
 
 #include "buffer.h"
 #include "handler/sign_tx.h"
+#include "handler/sign_tx_aux_data.h"
 #include "hexUtils.h"
 #include "tx.h"
 #include "blake2b.h"

@@ -22,14 +22,12 @@
 #include <string.h>   // memset, explicit_bzero
 
 #include "app_context.h"
-#include "aux_data_hash_builder.h"
 #include "bip44.h"
 #include "buffer.h"
 #include "cardano_constants.h"
 #include "cardano_parsers.h"
 #include "cardano_swo.h"
 #include "cx.h"
-#include "cvote_parser.h"
 #include "globals.h"
 #include "messageSigning.h"
 #include "io.h"
@@ -49,208 +47,6 @@
 #include "tx_parse.h"
 #include "tx_utils.h"
 #include "tx_validate.h"
-static bool cvote_aux_data_is_done(void) {
-    return G_context.tx_info.cvote_aux_data_expected &&
-           G_context.tx_info.cvote_aux_data_initialized &&
-           G_context.tx_info.cvote_registrations_remaining == 0;
-}
-
-static bool cvote_extract_pubkey(const cvote_credential_t *credential, uint8_t *out_pubkey) {
-    LEDGER_ASSERT(credential != NULL, "Credential cannot be null");
-    LEDGER_ASSERT(out_pubkey != NULL, "Output pubkey buffer cannot be null");
-
-    switch (credential->type) {
-        case EXT_CREDENTIAL_KEY_HASH:
-            LEDGER_ASSERT(credential->publicKey != NULL, "NULL CVote public key");
-            memmove(out_pubkey, credential->publicKey, PUBLIC_KEY_LENGTH);
-            return true;
-        case EXT_CREDENTIAL_KEY_PATH: {
-            extendedPublicKey_t derived_key = {0};
-            deriveExtendedPublicKey(&credential->keyPath, &derived_key);
-            memmove(out_pubkey, derived_key.pubKey, PUBLIC_KEY_LENGTH);
-            return true;
-        }
-        default:
-            TRACE("Unsupported CVote credential type %u", credential->type);
-            return false;
-    }
-}
-
-static bool cvote_extract_destination_address(const cvote_destination_t *destination,
-                                              uint8_t *address_buffer,
-                                              size_t *out_len) {
-    LEDGER_ASSERT(destination != NULL, "Destination cannot be null");
-    LEDGER_ASSERT(address_buffer != NULL, "Address buffer cannot be null");
-    LEDGER_ASSERT(out_len != NULL, "Output length pointer cannot be null");
-
-    if (destination->is_third_party) {
-        if (destination->third_party.length == 0 || destination->third_party.buffer == NULL) {
-            TRACE("CVote third-party destination empty");
-            return false;
-        }
-        memmove(address_buffer, destination->third_party.buffer, destination->third_party.length);
-        *out_len = destination->third_party.length;
-        return true;
-    }
-
-    size_t address_size = deriveAddress(&destination->params, address_buffer, MAX_ADDRESS_LENGTH);
-    if (address_size == 0 || address_size > MAX_ADDRESS_LENGTH) {
-        TRACE("CVote destination address derivation failed (%u)", (unsigned) address_size);
-        return false;
-    }
-    *out_len = address_size;
-    return true;
-}
-
-static void cvote_hash_builder_setup(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "Auxiliary data cannot be null");
-
-    auxDataHashBuilder_init(&aux_data->hash_builder);
-    auxDataHashBuilder_cVoteRegistration_enter(&aux_data->hash_builder, aux_data->format);
-    auxDataHashBuilder_cVoteRegistration_enterPayload(&aux_data->hash_builder);
-    if (aux_data->format == CIP36 && aux_data->delegation_count > 0) {
-        auxDataHashBuilder_cVoteRegistration_enterDelegations(&aux_data->hash_builder,
-                                                              aux_data->delegation_count);
-    }
-}
-
-static bool cvote_hash_builder_add_vote_key(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "Auxiliary data cannot be null");
-
-    if (aux_data->format == CIP36 && aux_data->delegation_count > 0) {
-        return true;
-    }
-    if (aux_data->format != CIP15 && aux_data->format != CIP36) {
-        return true;
-    }
-    uint8_t pubkey[PUBLIC_KEY_LENGTH] = {0};
-    if (!cvote_extract_pubkey(&aux_data->vote_credential, pubkey)) {
-        return false;
-    }
-    auxDataHashBuilder_cVoteRegistration_addVoteKey(&aux_data->hash_builder, pubkey, sizeof(pubkey));
-    return true;
-}
-
-static bool cvote_hash_builder_add_staking_key(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "Auxiliary data cannot be null");
-
-    uint8_t pubkey[PUBLIC_KEY_LENGTH] = {0};
-    if (!cvote_extract_pubkey(&aux_data->staking_credential, pubkey)) {
-        return false;
-    }
-    auxDataHashBuilder_cVoteRegistration_addStakingKey(&aux_data->hash_builder, pubkey, sizeof(pubkey));
-    return true;
-}
-
-static bool cvote_hash_builder_add_payment_address(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "Auxiliary data cannot be null");
-
-    uint8_t address_buffer[MAX_ADDRESS_LENGTH] = {0};
-    size_t address_len = 0;
-    if (!cvote_extract_destination_address(&aux_data->destination, address_buffer, &address_len)) {
-        return false;
-    }
-    auxDataHashBuilder_cVoteRegistration_addPaymentAddress(&aux_data->hash_builder,
-                                                          address_buffer,
-                                                          address_len);
-    return true;
-}
-
-static bool cvote_hash_builder_add_nonce(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "Auxiliary data cannot be null");
-
-    auxDataHashBuilder_cVoteRegistration_addNonce(&aux_data->hash_builder, aux_data->nonce);
-    return true;
-}
-
-static bool cvote_hash_builder_add_common_fields(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "Auxiliary data cannot be null");
-
-    if (aux_data->final_fields_processed) {
-        return true;
-    }
-
-    if (!cvote_hash_builder_add_vote_key(aux_data)) {
-        return false;
-    }
-    if (!cvote_hash_builder_add_staking_key(aux_data)) {
-        return false;
-    }
-    if (!cvote_hash_builder_add_payment_address(aux_data)) {
-        return false;
-    }
-    if (!cvote_hash_builder_add_nonce(aux_data)) {
-        return false;
-    }
-    if (aux_data->format == CIP36) {
-        auxDataHashBuilder_cVoteRegistration_addVotingPurpose(&aux_data->hash_builder, aux_data->voting_purpose);
-    }
-    aux_data->final_fields_processed = true;
-    return true;
-}
-
-static bool cvote_append_registration_signature(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "Auxiliary data cannot be null");
-
-    if (aux_data->staking_credential.type != EXT_CREDENTIAL_KEY_PATH) {
-        TRACE("CVote staking credential is not a key path");
-        return false;
-    }
-
-    security_policy_t policy =
-        policyForCVoteRegistrationStakingKey(&aux_data->staking_credential.keyPath);
-    if (policy == POLICY_DENY) {
-        TRACE("CVote staking key policy denied");
-        return false;
-    }
-
-    uint8_t payload_hash[CVOTE_REGISTRATION_PAYLOAD_HASH_LENGTH] = {0};
-    auxDataHashBuilder_cVoteRegistration_finalizePayload(
-        &aux_data->hash_builder,
-        payload_hash,
-        sizeof(payload_hash));
-    TRACE("CVote registration payload hash");
-    TRACE_BUFFER(payload_hash, sizeof(payload_hash));
-
-    getCVoteRegistrationSignature(&aux_data->staking_credential.keyPath,
-                                  payload_hash,
-                                  sizeof(payload_hash),
-                                  aux_data->registration_signature,
-                                  sizeof(aux_data->registration_signature));
-    TRACE("CVote registration signature");
-    TRACE_BUFFER(aux_data->registration_signature, sizeof(aux_data->registration_signature));
-
-    auxDataHashBuilder_cVoteRegistration_addSignature(
-        &aux_data->hash_builder,
-        aux_data->registration_signature,
-        sizeof(aux_data->registration_signature));
-    auxDataHashBuilder_cVoteRegistration_addAuxiliaryScripts(&aux_data->hash_builder);
-    return true;
-}
-
-static bool cvote_hash_builder_add_delegation(cvote_aux_data_t *aux_data,
-                                              const cvote_credential_t *credential,
-                                              uint32_t weight) {
-    LEDGER_ASSERT(aux_data != NULL, "Auxiliary data cannot be null");
-    LEDGER_ASSERT(credential != NULL, "Credential cannot be null");
-
-    uint8_t pubkey[PUBLIC_KEY_LENGTH] = {0};
-    if (!cvote_extract_pubkey(credential, pubkey)) {
-        return false;
-    }
-    auxDataHashBuilder_cVoteRegistration_addDelegation(&aux_data->hash_builder,
-                                                      pubkey,
-                                                      sizeof(pubkey),
-                                                      weight);
-    return true;
-}
-static int cvote_send_aux_data_hash(void) {
-    TRACE("Sending CVote auxiliary data hash");
-    return io_send_response_pointer(G_context.tx_info.transaction.auxDataHash,
-                                    AUX_DATA_HASH_LENGTH,
-                                    SWO_SUCCESS);
-}
-
 static bool is_valid_tx_signing_mode(uint8_t tx_signing_mode) {
     switch (tx_signing_mode) {
         case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
@@ -264,31 +60,6 @@ static bool is_valid_tx_signing_mode(uint8_t tx_signing_mode) {
     }
 }
 
-static void cvote_finalize_aux_data(void) {
-    cvote_aux_data_t *aux_data = G_context.tx_info.cvote_aux_data;
-    LEDGER_ASSERT(aux_data != NULL, "Auxiliary data must be initialized before finalization");
-
-    if (!cvote_hash_builder_add_common_fields(aux_data)) {
-        TRACE("CVote AUX_DATA finalize: failed to add common fields");
-        send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
-        return;
-    }
-
-    if (!cvote_append_registration_signature(aux_data)) {
-        TRACE("CVote AUX_DATA finalize: failed to append signature");
-        send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
-        return;
-    }
-
-    auxDataHashBuilder_finalize(&aux_data->hash_builder,
-                                G_context.tx_info.transaction.auxDataHash,
-                                AUX_DATA_HASH_LENGTH);
-
-    G_context.state.tx_state = TX_STATE_CHUNKS;
-    TRACE("CVote AUX_DATA complete, ready for transaction chunks");
-    cvote_send_aux_data_hash();
-}
-
 /**
  * Helper: Initialize transaction from P1_TX_INIT APDU
  * Validates all transaction metadata and checks security policy
@@ -297,6 +68,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     G_context.tx_info.raw_tx = NULL;
     G_context.tx_info.raw_tx_len = 0;
     warning_bits_init(&G_context.tx_info.warning_bits);
+    warning_bits_init(&G_context.tx_info.cvote_warning_bits);
     G_context.tx_info.planned_ui_pairs = 0;
     explicit_bzero(&G_context.tx_info.single_account_data, sizeof(single_account_data_t));
     explicit_bzero(&G_context.tx_info.pool_owner_path, sizeof(bip44_path_t));
@@ -567,20 +339,20 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         return;
     }
 
-    // Show spinner to indicate transaction data is being processed
+    // Determine if CVote auxiliary data is expected
+    bool cvote_aux_data_expected = (includeAuxDataHash &&
+                                    (G_context.tx_info.transaction.auxDataType == AUX_DATA_TYPE_CVOTE_REGISTRATION));
+
+    // Show spinner to indicate transaction processing
     TRACE("Calling nbgl_useCaseSpinner(\"Processing\")");
     nbgl_useCaseSpinner("Processing");
 
-    G_context.tx_info.cvote_aux_data_expected = includeAuxDataHash &&
-                                                (G_context.tx_info.transaction.auxDataType ==
-                                                 AUX_DATA_TYPE_CVOTE_REGISTRATION);
-    G_context.tx_info.cvote_aux_data_initialized = false;
-    G_context.tx_info.cvote_registrations_remaining = 0;
-
-    if (G_context.tx_info.cvote_aux_data_expected) {
+    if (cvote_aux_data_expected) {
+        G_context.tx_info.cvote_aux_data.state = CVOTE_AUX_DATA_STATE_EXPECTING_INIT;
         G_context.state.tx_state = TX_STATE_AUX_DATA;
         TRACE("Transaction initialized, waiting for CVote AUX_DATA");
     } else {
+        G_context.tx_info.cvote_aux_data.state = CVOTE_AUX_DATA_STATE_NONE;
         // Transition to CHUNKS state - now ready to receive transaction data chunks
         G_context.state.tx_state = TX_STATE_CHUNKS;
         TRACE("Transaction initialized, waiting for data chunks");
@@ -733,127 +505,6 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 }
 
 
-void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_tx_aux_data handler");
-    TRACE_BUFFER(cdata->ptr, cdata->size);
-
-    if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
-        TRACE("AUX_DATA rejected: wrong request type %d", G_context.req_type);
-        send_swo_and_reset(SWO_BAD_STATE);
-        return;
-    }
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "aux_data handler called with wrong request type");
-
-    if (G_context.state.tx_state != TX_STATE_AUX_DATA) {
-        TRACE("Bad state for AUX_DATA: expected TX_STATE_AUX_DATA, got %d", G_context.state.tx_state);
-        send_swo_and_reset(SWO_BAD_STATE);
-        return;
-    }
-    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_AUX_DATA, "aux_data handler called with wrong tx state");
-
-    if (!G_context.tx_info.cvote_aux_data_expected) {
-        TRACE("Unexpected CVote AUX_DATA APDU");
-        send_swo_and_reset(SWO_BAD_STATE);
-        return;
-    }
-
-    if (p2 == P2_AUX_DATA_INIT) {
-        if (G_context.tx_info.cvote_aux_data_initialized) {
-            TRACE("CVote AUX_DATA init received twice");
-            send_swo_and_reset(SWO_BAD_STATE);
-            return;
-        }
-
-        cvote_aux_data_t *parsed = NULL;
-        cvote_parser_status_t status = cvote_parse_aux_data_init(cdata, &parsed);
-        if (status != CVOTE_PARSER_OK) {
-            TRACE("CVote AUX_DATA init parse failed: %d", status);
-            send_swo_and_reset(status == CVOTE_PARSER_OUT_OF_MEMORY
-                               ? SWO_INSUFFICIENT_MEMORY
-                               : SWO_WRONG_TX_INIT_APDU_DATA);
-            return;
-        }
-
-        cvote_hash_builder_setup(parsed);
-
-        G_context.tx_info.cvote_aux_data_initialized = true;
-        G_context.tx_info.cvote_aux_data = parsed;
-        G_context.tx_info.cvote_registrations_remaining = parsed->delegation_count;
-        TRACE("CVote AUX_DATA init: format=%u, delegations=%u", parsed->format, parsed->delegation_count);
-
-        if (cvote_aux_data_is_done()) {
-            cvote_finalize_aux_data();
-            return;
-        }
-
-        io_send_sw(SWO_SUCCESS);
-        return;
-    }
-
-    if (p2 == P2_AUX_DATA_DELEGATION) {
-        if (!G_context.tx_info.cvote_aux_data_initialized) {
-            TRACE("CVote AUX_DATA delegation received before initialization");
-            send_swo_and_reset(SWO_BAD_STATE);
-            return;
-        }
-        if (G_context.tx_info.cvote_registrations_remaining == 0) {
-            TRACE("CVote AUX_DATA delegation received with no remaining slots");
-            send_swo_and_reset(SWO_BAD_STATE);
-            return;
-        }
-
-        TRACE("CVote AUX_DATA delegation received, remaining=%u, payload_len=%u",
-              G_context.tx_info.cvote_registrations_remaining - 1,
-              cdata->size);
-
-        cvote_aux_data_t *aux_data = G_context.tx_info.cvote_aux_data;
-        uint8_t delegation_public_key[PUBLIC_KEY_LENGTH];
-        uint8_t delegation_script_hash[SCRIPT_HASH_LENGTH];
-        cvote_credential_t delegation_credential = {0};
-        delegation_credential.publicKey = delegation_public_key;
-        delegation_credential.scriptHash = delegation_script_hash;
-        if (cvote_parse_credential(cdata, &delegation_credential, "Delegation credential") !=
-            CVOTE_PARSER_OK) {
-            TRACE("CVote AUX_DATA delegation: invalid credential");
-            send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
-            return;
-        }
-
-        uint32_t weight = 0;
-        if (!buffer_read_u32(cdata, &weight, BE)) {
-            TRACE("CVote AUX_DATA delegation: missing weight");
-            send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
-            return;
-        }
-        if (buffer_can_read(cdata, 1)) {
-            TRACE("CVote AUX_DATA delegation APDU not fully consumed");
-            send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
-            return;
-        }
-        LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");
-
-        if (!cvote_hash_builder_add_delegation(aux_data, &delegation_credential, weight)) {
-            TRACE("CVote AUX_DATA delegation: failed to add delegation");
-            send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
-            return;
-        }
-
-        G_context.tx_info.cvote_registrations_remaining--;
-
-        if (cvote_aux_data_is_done()) {
-            cvote_finalize_aux_data();
-            return;
-        }
-
-        io_send_sw(SWO_SUCCESS);
-        return;
-    }
-
-    TRACE("Unexpected P2 for AUX_DATA APDU");
-    send_swo_and_reset(SWO_INCORRECT_P1_P2);
-}
-
-
 // All witnesses processed
 void finalize_witness(bool confirm)
 {
@@ -976,6 +627,14 @@ void handler_sign_tx_witness(buffer_t *cdata) {
             // POLICY_HIDE: witness does not require user confirmation
             // Finalize directly without displaying UI (similar to silent pubkey export)
             finalize_witness(true);
+
+            // Handle UI state: if this was the last witness, return to main menu
+            // Otherwise, the spinner from tx_review_choice will continue showing
+            if (G_context.tx_info.current_witness == G_context.tx_info.num_witnesses) {
+                // All witnesses processed - return to main menu
+                TRACE("All POLICY_HIDE witnesses complete, returning to main menu");
+                ui_menu_main();
+            }
             return;
 
         case POLICY_SHOW:

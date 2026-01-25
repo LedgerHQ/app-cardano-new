@@ -8,6 +8,7 @@
 #include "bip44.h"
 #include "aux_data_hash_builder.h"
 #include "cip8_types.h"
+#include "cvote_types.h"
 #include "securityPolicyType.h"
 #include "tx_aux_data_types.h"
 #include "tx_hash_builder.h"
@@ -180,20 +181,22 @@ security_policy_t policyForSignTxDisplayTxHash(sign_tx_signingmode_t txSigningMo
 security_policy_t policyForSignOpCert(const bip44_path_t* poolColdKeyPathSpec,
                                       warning_bits_t* warnings);
 
-security_policy_t policyForCVoteRegistrationVoteKey();
-security_policy_t policyForCVoteRegistrationVoteKeyPath(bip44_path_t* path,
-                                                        cvote_registration_format_t format);
-security_policy_t policyForCVoteRegistrationStakingKey(const bip44_path_t* stakingKeyPath);
+security_policy_t policyForCVoteRegistrationVoteKey(const cvote_credential_t* credential,
+                                                    cvote_registration_format_t format,
+                                                    warning_bits_t* warnings);
+security_policy_t policyForCVoteRegistrationStakingKey(const bip44_path_t* stakingKeyPath,
+                                                       warning_bits_t* warnings);
 security_policy_t policyForCVoteRegistrationPaymentDestination(
-    const tx_output_destination_storage_t* destination,
-    const uint8_t networkId);
+    const cvote_destination_t* destination,
+    const uint8_t networkId,
+    warning_bits_t* warnings);
 security_policy_t policyForCVoteRegistrationNonce();
 security_policy_t policyForCVoteRegistrationVotingPurpose();
 security_policy_t policyForCVoteRegistrationConfirm();
 
 security_policy_t policyForSignCVoteInit();
 security_policy_t policyForSignCVoteConfirm();
-security_policy_t policyForSignCVoteWitness(bip44_path_t* path);
+security_policy_t policyForSignCVoteWitness(const bip44_path_t* path);
 
 security_policy_t policyForSignMsg(const bip44_path_t* witnessPath,
                                    cip8_address_field_type_t addressFieldType,

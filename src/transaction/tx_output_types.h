@@ -17,13 +17,18 @@ typedef enum {
     DESTINATION_DEVICE_OWNED = 2,
 } tx_output_destination_type_t;
 
+// Third-party address: pointer to raw address bytes and length
+// Used by both TX outputs and CVote destinations
+// TODO: Consider renaming 'size' to 'length' for semantic consistency with anchor_t and urlLength patterns
+typedef struct {
+    const uint8_t* buffer;
+    size_t size;
+} third_party_address_t;
+
 typedef struct {
     tx_output_destination_type_t type;
     union {
-        struct {
-            const uint8_t* buffer;
-            size_t size;
-        } address;
+        third_party_address_t address;
         addressParams_t params;
     };
 } tx_output_destination_storage_t;
@@ -31,10 +36,7 @@ typedef struct {
 typedef struct {
     tx_output_destination_type_t type;
     union {
-        struct {
-            const uint8_t* buffer;
-            size_t size;
-        } address;
+        third_party_address_t address;
         addressParams_t* params;
     };
 } tx_output_destination_t;
