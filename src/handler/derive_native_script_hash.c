@@ -227,7 +227,14 @@ static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
         return;
     }
 
+    if (ctx->level + 1 >= MAX_SCRIPT_DEPTH) {
+        TRACE("Native script depth unsupported");
+        send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_DEPTH_UNSUPPORTED);
+        return;
+    }
+
     ctx->level++;
+    LEDGER_ASSERT(ctx->level < MAX_SCRIPT_DEPTH, "Native script depth overflow");
 
     uint8_t nativeScriptType = 0;
     bool read_nativeScriptType = buffer_read_u8(cdata, &nativeScriptType);
