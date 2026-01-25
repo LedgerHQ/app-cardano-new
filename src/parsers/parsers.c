@@ -20,6 +20,7 @@
 #include "cardano_constants.h"
 #include "utils/utils.h"
 #include "utils/assert.h"
+#include "utils/textUtils.h"
 
 #include <string.h>
 
@@ -79,6 +80,65 @@ bool buffer_read_int64(buffer_t *buffer, int64_t *value, endianness_t endianness
     }
 
     *value = (int64_t) unsigned_value;
+    return true;
+}
+
+bool buffer_read_anchor(buffer_t *buf, anchor_t *anchor) {
+    TRACE("Parsing anchor");
+    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    LEDGER_ASSERT(anchor != NULL, "NULL anchor");
+
+    // used also for pool medatadata which is essentially the same thing
+    STATIC_ASSERT(MAX_ANCHOR_URL_LENGTH == MAX_POOL_METADATA_URL_LENGTH,
+                  "URL length limits must match");
+    STATIC_ASSERT(ANCHOR_HASH_LENGTH == POOL_METADATA_HASH_LENGTH,
+                  "Hash lengths must match");
+
+    anchor->isIncluded = false;
+    anchor->url = NULL;
+    anchor->urlLength = 0;
+    anchor->hash = NULL;
+
+    if (!buffer_read_flag_included(buf, &anchor->isIncluded)) {
+        TRACE("Invalid anchor present flag");
+        return false;
+    }
+    TRACE("Anchor included flag: %u", anchor->isIncluded);
+    if (!anchor->isIncluded) {
+        // finished parsing
+        return true;
+    }
+
+    if (!buffer_read_u16(buf, &anchor->urlLength, BE)) {
+        TRACE("Failed to read anchor URL length");
+        return false;
+    }
+    TRACE("Anchor URL length: %u", anchor->urlLength);
+
+    if (anchor->urlLength > MAX_ANCHOR_URL_LENGTH) {
+        TRACE("Anchor URL length exceeds maximum: %u > %u", anchor->urlLength,
+              MAX_ANCHOR_URL_LENGTH);
+        return false;
+    }
+
+    if (!buffer_read_bytes_ptr(buf, &anchor->url, anchor->urlLength)) {
+        TRACE("Failed to read URL");
+        return false;
+    }
+    ASSERT(anchor->url != NULL);
+    if (!str_isPrintableAsciiWithoutSpaces(anchor->url, anchor->urlLength)) {
+        TRACE("Anchor URL contains non-printable ASCII or spaces");
+        return false;
+    }
+    TRACE("Successfully parsed anchor URL");
+
+    if (!buffer_read_bytes_ptr(buf, &anchor->hash, ANCHOR_HASH_LENGTH)) {
+        TRACE("Failed to read anchor hash");
+        return false;
+    }
+    ASSERT(anchor->hash != NULL);
+
+    TRACE("Successfully parsed anchor");
     return true;
 }
 

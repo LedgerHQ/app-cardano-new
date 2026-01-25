@@ -1343,31 +1343,8 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
             }
             vote_item->vote_data.voteOption = (vote_t) vote_byte;
 
-            // Parse anchor inclusion flag using buffer_read_flag_included
-            bool anchor_included = false;
-            if (!buffer_read_flag_included(buf, &anchor_included)) {
+            if (!buffer_read_anchor(buf, &vote_item->vote_data.anchor)) {
                 return VOTING_PROCEDURES_PARSING_ERROR;
-            }
-            vote_item->vote_data.anchor.isIncluded = anchor_included;
-
-            if (vote_item->vote_data.anchor.isIncluded) {
-                // Parse URL length and pointer
-                uint16_t url_len;
-                if (!buffer_read_u16(buf, &url_len, BE)) {
-                    return VOTING_PROCEDURES_PARSING_ERROR;
-                }
-                vote_item->vote_data.anchor.urlLength = url_len;
-
-                if (!buffer_read_bytes_ptr(buf, &vote_item->vote_data.anchor.url, url_len)) {
-                    return VOTING_PROCEDURES_PARSING_ERROR;
-                }
-                ASSERT(vote_item->vote_data.anchor.url != NULL);
-
-                // Parse hash (32 bytes)
-                if (!buffer_read_bytes_ptr(buf, &vote_item->vote_data.anchor.hash, ANCHOR_HASH_LENGTH)) {
-                    return VOTING_PROCEDURES_PARSING_ERROR;
-                }
-                ASSERT(vote_item->vote_data.anchor.hash != NULL);
             }
 
             // Add vote to voter's vote list

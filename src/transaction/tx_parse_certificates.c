@@ -214,62 +214,6 @@ static parser_status_e _parse_drep(buffer_t *buf, ext_drep_t *drep) {
     return PARSING_OK;
 }
 
-/// Helper to parse anchor (URL + hash)
-static parser_status_e _parse_anchor(buffer_t *buf, anchor_t *anchor) {
-    TRACE("Parsing anchor");
-    // Check if anchor is present (1 byte flag)
-    bool anchor_included = false;
-    if (!buffer_read_flag_included(buf, &anchor_included)) {
-        TRACE("Invalid anchor present flag");
-        return CERTIFICATES_PARSING_ERROR;
-    }
-    TRACE("Anchor present flag: %u", anchor_included);
-    if (!anchor_included) {
-        anchor->isIncluded = false;
-        TRACE("Anchor not included");
-        return PARSING_OK;
-    }
-
-    anchor->isIncluded = true;
-
-    // Read URL length (uint16 BE)
-    uint16_t url_len;
-    if (!buffer_read_u16(buf, &url_len, BE)) {
-        TRACE("Failed to read anchor URL length");
-        return CERTIFICATES_PARSING_ERROR;
-    }
-    anchor->urlLength = url_len;
-    TRACE("Anchor URL length: %u", url_len);
-
-    if (anchor->urlLength > MAX_ANCHOR_URL_LENGTH) {
-        TRACE("Anchor URL length exceeds maximum: %u > %u", anchor->urlLength, MAX_ANCHOR_URL_LENGTH);
-        return CERTIFICATES_PARSING_ERROR;
-    }
-
-    // Store pointer to URL in raw buffer instead of copying
-    // Note: urlLength can be 0 for empty URLs, which is valid
-    if (!buffer_read_bytes_ptr(buf, &anchor->url, anchor->urlLength)) {
-        TRACE("Failed to read anchor URL");
-        return CERTIFICATES_PARSING_ERROR;
-    }
-    ASSERT(anchor->url != NULL);
-    if (!str_isPrintableAsciiWithoutSpaces(anchor->url, anchor->urlLength)) {
-        TRACE("Anchor URL contains non-printable ASCII or spaces");
-        return CERTIFICATES_PARSING_ERROR;
-    }
-    TRACE("Successfully parsed anchor URL");
-
-    // Store pointer to hash in raw buffer instead of copying
-    if (!buffer_read_bytes_ptr(buf, &anchor->hash, ANCHOR_HASH_LENGTH)) {
-        TRACE("Failed to read anchor hash");
-        return CERTIFICATES_PARSING_ERROR;
-    }
-    ASSERT(anchor->hash != NULL);
-
-    TRACE("Successfully parsed anchor");
-    return PARSING_OK;
-}
-
 /// Parse CERTIFICATE_VOTE_DELEGATION
 parser_status_e parse_certificate_vote_delegation(buffer_t *buf,
                                                  certificate_data_t *cert_data) {
@@ -325,10 +269,9 @@ parser_status_e parse_certificate_resign_committee_cold(buffer_t *buf,
         return status;
     }
 
-    status = _parse_anchor(buf, &cert_data->anchor);
-    if (status != PARSING_OK) {
+    if (!buffer_read_anchor(buf, &cert_data->anchor)) {
         TRACE("Failed to parse anchor");
-        return status;
+        return CERTIFICATES_PARSING_ERROR;
     }
     TRACE("Successfully parsed RESIGN_COMMITTEE_COLD");
     return PARSING_OK;
@@ -354,10 +297,9 @@ parser_status_e parse_certificate_drep_registration(buffer_t *buf,
     TRACE("Deposit: ");
     TRACE_UINT64(cert_data->deposit);
 
-    status = _parse_anchor(buf, &cert_data->anchor);
-    if (status != PARSING_OK) {
+    if (!buffer_read_anchor(buf, &cert_data->anchor)) {
         TRACE("Failed to parse anchor");
-        return status;
+        return CERTIFICATES_PARSING_ERROR;
     }
     TRACE("Successfully parsed DREP_REGISTRATION");
     return PARSING_OK;
@@ -399,10 +341,9 @@ parser_status_e parse_certificate_drep_update(buffer_t *buf,
         return status;
     }
 
-    status = _parse_anchor(buf, &cert_data->anchor);
-    if (status != PARSING_OK) {
+    if (!buffer_read_anchor(buf, &cert_data->anchor)) {
         TRACE("Failed to parse anchor");
-        return status;
+        return CERTIFICATES_PARSING_ERROR;
     }
     TRACE("Successfully parsed DREP_UPDATE");
     return PARSING_OK;
@@ -637,51 +578,26 @@ static parser_status_e _parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
 }
 
 /// Helper to parse pool metadata (URL + hash or null)
-static parser_status_e _parse_pool_metadata(buffer_t *buf, pool_metadata_t *metadata, bool *isNull) {
+static parser_status_e _parse_pool_metadata(buffer_t *buf,
+                                            pool_metadata_t *metadata,
+                                            bool *isNull) {
     TRACE("Parsing pool metadata");
-    bool is_included = false;
-    if (!buffer_read_flag_included(buf, &is_included)) {
-        TRACE("Invalid metadata present flag");
+    anchor_t anchor = {0};
+    if (!buffer_read_anchor(buf, &anchor)) {
+        TRACE("Failed to parse pool metadata");
         return CERTIFICATES_PARSING_ERROR;
     }
 
-    if (!is_included) {
+    if (!anchor.isIncluded) {
         *isNull = true;
         TRACE("Pool metadata is null");
         return PARSING_OK;
     }
 
     *isNull = false;
-    // URL (length + data)
-    uint16_t url_len = 0;
-    if (!buffer_read_u16(buf, &url_len, BE)) {
-        TRACE("Failed to read metadata URL length");
-        return CERTIFICATES_PARSING_ERROR;
-    }
-    metadata->urlSize = url_len;
-
-    if (url_len > MAX_ANCHOR_URL_LENGTH) {
-        TRACE("Metadata URL length exceeds maximum: %u > %u", url_len, MAX_ANCHOR_URL_LENGTH);
-        return CERTIFICATES_PARSING_ERROR;
-    }
-
-    if (!buffer_read_bytes_ptr(buf, &metadata->url, url_len)) {
-        TRACE("Failed to read metadata URL");
-        return CERTIFICATES_PARSING_ERROR;
-    }
-    ASSERT(metadata->url != NULL);
-    TRACE("Metadata URL length: %u", url_len);
-    if (!str_isPrintableAsciiWithoutSpaces(metadata->url, metadata->urlSize)) {
-        TRACE("Metadata URL contains non-printable ASCII or spaces");
-        return CERTIFICATES_PARSING_ERROR;
-    }
-
-    // Hash (32 bytes for blake2b-256)
-    if (!buffer_read_bytes_ptr(buf, &metadata->hash, ANCHOR_HASH_LENGTH)) {
-        TRACE("Failed to read metadata hash");
-        return CERTIFICATES_PARSING_ERROR;
-    }
-    ASSERT(metadata->hash != NULL);
+    metadata->url = anchor.url;
+    metadata->urlSize = anchor.urlLength;
+    metadata->hash = anchor.hash;
     TRACE("Successfully parsed pool metadata");
     return PARSING_OK;
 }

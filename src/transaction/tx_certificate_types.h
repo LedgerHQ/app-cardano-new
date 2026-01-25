@@ -7,6 +7,7 @@
 #include "cardano_constants.h"
 #include "addressUtilsShelley.h"
 #include "flist.h"
+#include "transaction/tx_anchor_types.h"
 
 // Certificate body types (matches CDDL)
 typedef enum {
@@ -86,13 +87,6 @@ typedef struct {
     s_flist_node* poolOwners;
     s_flist_node* relays;
 } pool_registration_data_t;
-
-typedef struct {
-    bool isIncluded;
-    const uint8_t* url;
-    size_t urlLength;
-    const uint8_t* hash;
-} anchor_t;
 
 typedef struct {
     const uint8_t* txHash;

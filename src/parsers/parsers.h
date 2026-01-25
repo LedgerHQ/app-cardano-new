@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "buffer.h"
 #include "transaction/tx_credential_types.h"
+#include "transaction/tx_anchor_types.h"
 
 // =============================================================================
 // Optional Item Flags
@@ -60,6 +61,21 @@ bool buffer_read_bytes_ptr(buffer_t *buffer, const uint8_t **destBuffer, size_t 
  * @return true on success, false on failure
  */
 bool buffer_read_int64(buffer_t *buffer, int64_t *value, endianness_t endianness);
+
+/**
+ * Read an optional anchor (URL + hash) from the buffer.
+ *
+ * The format is:
+ *   - 1 byte: inclusion flag (FLAG_INCLUDED_YES/NO)
+ *   - [if included] 2 bytes: URL length (big-endian)
+ *   - [if included] URL bytes
+ *   - [if included] 32-byte anchor hash
+ *
+ * @param[in,out] buf   Buffer to read from
+ * @param[out]    anchor Destination anchor structure
+ * @return true on success, false on failure
+ */
+bool buffer_read_anchor(buffer_t *buf, anchor_t *anchor);
 
 // =============================================================================
 // Credential Parsing
