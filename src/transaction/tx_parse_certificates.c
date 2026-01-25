@@ -34,7 +34,7 @@
 /// Parse a complete stake credential (type + data)
 parser_status_e parse_stake_credential(buffer_t *buf, ext_credential_t *credential) {
     TRACE("Parsing stake credential");
-    if (!parse_ext_credential(buf, credential)) {
+    if (!buffer_read_credential(buf, credential)) {
         TRACE("Failed to parse stake credential");
         return CERTIFICATES_PARSING_ERROR;
     }
@@ -119,7 +119,7 @@ parser_status_e parse_certificate_stake_pool_retirement(buffer_t *buf,
     cert_data->type = CERTIFICATE_STAKE_POOL_RETIREMENT;
 
     TRACE("About to parse pool credential at offset=%u", buf->offset);
-    if (!parse_ext_credential(buf, &cert_data->poolCredential)) {
+    if (!buffer_read_credential(buf, &cert_data->poolCredential)) {
         TRACE("Failed to parse pool credential");
         return CERTIFICATES_PARSING_ERROR;
     }
@@ -305,7 +305,7 @@ parser_status_e parse_certificate_authorize_committee_hot(buffer_t *buf,
 
     // Second credential is the hot credential
     TRACE("Parsing hot credential");
-    if (!parse_ext_credential(buf, &cert_data->hotCredential)) {
+    if (!buffer_read_credential(buf, &cert_data->hotCredential)) {
         TRACE("Failed to parse hot credential");
         return CERTIFICATES_PARSING_ERROR;
     }

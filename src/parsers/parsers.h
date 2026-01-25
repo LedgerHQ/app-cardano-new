@@ -35,7 +35,7 @@ bool buffer_read_flag_included(buffer_t *buf, bool* result);
 // =============================================================================
 
 /**
- * Parse an extended credential (key hash, script hash, or key path).
+ * Read an extended credential (key hash, script hash, or key path).
  *
  * Extended credentials support both CBOR credential types (key hash, script hash)
  * and an additional key path type for device-owned keys.
@@ -48,16 +48,4 @@ bool buffer_read_flag_included(buffer_t *buf, bool* result);
  * @param[out] credential Parsed credential structure
  * @return true on success, false on failure
  */
-bool parse_ext_credential(buffer_t *buf, ext_credential_t *credential);
-
-/**
- * Parse a native script pubkey credential.
- *
- * Similar to parse_ext_credential but only allows KEY_HASH and KEY_PATH types.
- * Script hashes are not valid for native script pubkey constraints.
- *
- * @param[in] buf Buffer to read from
- * @param[out] credential Parsed credential structure (type will be KEY_HASH or KEY_PATH)
- * @return true on success, false on failure
- */
-bool parse_native_script_pubkey_credential(buffer_t *buf, ext_credential_t *credential);
+bool buffer_read_credential(buffer_t *buf, ext_credential_t *credential);

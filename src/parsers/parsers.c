@@ -133,7 +133,7 @@ static bool _parse_credential_data(buffer_t *buf,
     return true;
 }
 
-bool parse_ext_credential(buffer_t *buf, ext_credential_t *credential) {
+bool buffer_read_credential(buffer_t *buf, ext_credential_t *credential) {
     TRACE("Parsing extended credential");
     ext_credential_type_t cred_type = {0};
     if (!_parse_credential_type(buf, &cred_type)) {
@@ -147,24 +147,5 @@ bool parse_ext_credential(buffer_t *buf, ext_credential_t *credential) {
         return false;
     }
     TRACE("Successfully parsed extended credential");
-    return true;
-}
-
-bool parse_native_script_pubkey_credential(buffer_t *buf, ext_credential_t *credential) {
-    TRACE("Parsing native script pubkey credential");
-
-    if (!parse_ext_credential(buf, credential)) {
-        TRACE("Failed to parse credential");
-        return false;
-    }
-
-    // Native script pubkey constraints only allow KEY_HASH and KEY_PATH
-    // Script hashes are not valid
-    if (credential->type == EXT_CREDENTIAL_SCRIPT_HASH) {
-        TRACE("Script hash not allowed for native script pubkey");
-        return false;
-    }
-
-    TRACE("Successfully parsed native script pubkey credential, type=%u", credential->type);
     return true;
 }

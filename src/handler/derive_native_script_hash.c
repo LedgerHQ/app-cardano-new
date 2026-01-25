@@ -109,6 +109,24 @@ static inline bool areMoreScriptsExpected() {
     return ctx->complexScripts[ctx->level].remainingScripts > 0;
 }
 
+static bool parse_native_script_pubkey_credential(buffer_t *buf, ext_credential_t *credential) {
+    TRACE("Parsing native script pubkey credential");
+
+    if (!buffer_read_credential(buf, credential)) {
+        TRACE("Failed to parse credential");
+        return false;
+    }
+
+    // Native script pubkey constraints only allow KEY_HASH and KEY_PATH
+    if (credential->type == EXT_CREDENTIAL_SCRIPT_HASH) {
+        TRACE("Script hash not allowed for native script pubkey");
+        return false;
+    }
+
+    TRACE("Successfully parsed native script pubkey credential, type=%u", credential->type);
+    return true;
+}
+
 // Simple native script handlers
 static void deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
