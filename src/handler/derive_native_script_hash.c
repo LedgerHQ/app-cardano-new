@@ -47,6 +47,11 @@ static void deriveNativeScriptHash_handleNofK(buffer_t *cdata) {
         send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_TYPE);
         return;
     }
+    if (buffer_can_read(cdata, 1)) {
+        TRACE("NofK APDU not fully consumed");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
     if (ctx->complexScripts[ctx->level].remainingScripts < ctx->scriptContent.requiredScripts) {
         TRACE("remainingScripts less than requiredScripts");
         send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_COUNT);
@@ -131,6 +136,11 @@ static void deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
         send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_PUBKEY_CREDENTIAL);
         return;
     }
+    if (buffer_can_read(cdata, 1)) {
+        TRACE("Pubkey APDU not fully consumed");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
 
     // Derive or extract the pubkey hash
     uint8_t pubkeyHash[ADDRESS_KEY_HASH_LENGTH] = {0};
@@ -178,6 +188,11 @@ static void deriveNativeScriptHash_handleInvalidBefore(buffer_t *cdata) {
         send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_TIMELOCK);
         return;
     }
+    if (buffer_can_read(cdata, 1)) {
+        TRACE("Invalid before APDU not fully consumed");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
     nativeScriptHashBuilder_addScript_invalidBefore(&ctx->hashBuilder, ctx->scriptContent.timelock);
     ctx->ui_scriptType = UI_SCRIPT_INVALID_BEFORE;
     security_policy_t policy = POLICY_SHOW;
@@ -191,6 +206,11 @@ static void deriveNativeScriptHash_handleInvalidHereafter(buffer_t *cdata) {
     if (!read_timelock) {
         TRACE("Failed to read timelock");
         send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_TIMELOCK);
+        return;
+    }
+    if (buffer_can_read(cdata, 1)) {
+        TRACE("Invalid hereafter APDU not fully consumed");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     nativeScriptHashBuilder_addScript_invalidHereafter(&ctx->hashBuilder,
@@ -253,6 +273,11 @@ static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
         return;
     }
     ctx->complexScripts[ctx->level].totalScripts = ctx->complexScripts[ctx->level].remainingScripts;
+    if (nativeScriptType != NATIVE_SCRIPT_N_OF_K && buffer_can_read(cdata, 1)) {
+        TRACE("Complex script start APDU not fully consumed");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
 
     switch (nativeScriptType) {
         case NATIVE_SCRIPT_ALL:
@@ -332,6 +357,11 @@ static void deriveNativeScriptHash_handleWholeNativeScriptFinish(buffer_t *cdata
     if (!read_displayFormat) {
         TRACE("Failed to read read_displayFormat");
         send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_TYPE);
+        return;
+    }
+    if (buffer_can_read(cdata, 1)) {
+        TRACE("Finish APDU not fully consumed");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 
