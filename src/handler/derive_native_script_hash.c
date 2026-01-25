@@ -19,7 +19,7 @@
 #include "cbor.h"
 #include "bech32.h"
 #include "bip44.h"
-#include "buffer_utils.h"
+#include "buffer_write.h"
 #include "cardano_swo.h"
 #include "parsers/parsers.h"
 #include "addressUtils/addressUtilsShelley.h"

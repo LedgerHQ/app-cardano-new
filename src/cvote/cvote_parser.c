@@ -6,7 +6,7 @@
 #include "addressUtilsShelley.h"
 #include "globals.h"
 #include "mem.h"
-#include "buffer_utils.h"
+#include "buffer_write.h"
 #include "parsers/parsers.h"
 #include "utils.h"
 

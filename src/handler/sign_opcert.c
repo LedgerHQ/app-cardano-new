@@ -37,7 +37,7 @@
 #include "opcert_parse.h"
 #include "securityPolicy.h"
 #include "messageSigning.h"
-#include "buffer_utils.h"
+#include "buffer_write.h"
 #include "bip44.h"
 #include "write.h"
 #include "sign_opcert.h"

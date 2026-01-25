@@ -109,7 +109,7 @@ add_executable(test_cardano_tokens
 )
 add_executable(test_bip44 test_bip44.c)
 add_executable(test_cbor test_cbor.c)
-add_executable(test_buffer_utils test_buffer_utils.c)
+add_executable(test_buffer_utils test_buffer_write.c)
 add_executable(test_ip_utils test_ip_utils.c ../src/utils/ipUtils.c)
 add_executable(test_hash test_hash.c)
 add_executable(test_apdu_info
@@ -240,8 +240,8 @@ add_library(bip44_real SHARED ../src/addressUtils/bip44.c)
 target_link_libraries(bip44_real PUBLIC c read write buffer varint)
 add_library(cbor_lib SHARED ../src/utils/cbor.c)
 target_link_libraries(cbor_lib PUBLIC c m read)
-add_library(buffer_utils_lib SHARED ../src/utils/buffer_utils.c)
-target_link_libraries(buffer_utils_lib PUBLIC c cbor_lib buffer write)
+add_library(buffer_write_lib SHARED ../src/utils/buffer_write.c)
+target_link_libraries(buffer_write_lib PUBLIC c cbor_lib buffer write)
 add_library(parsers_lib SHARED ../src/parsers/parsers.c)
 target_link_libraries(parsers_lib PUBLIC c buffer read write varint bip32 text_utils bip44_real)
 add_library(crypto_mocks_lib SHARED
@@ -296,7 +296,7 @@ set(SIGN_TX_COMMON_LIBS
     base58
     bech32_lib
     bip44_real
-    buffer_utils_lib
+    buffer_write_lib
     cbor_lib
     blake2b_lib
     sha3_lib
@@ -339,7 +339,7 @@ target_link_libraries(test_text_utils
         hash_mocks_lib
         blake2b_lib
         sha3_lib
-        buffer_utils_lib
+        buffer_write_lib
         format
 )
 target_link_libraries(test_ui_formatters
@@ -351,7 +351,7 @@ target_link_libraries(test_ui_formatters
         hash_mocks_lib
         blake2b_lib
         sha3_lib
-        buffer_utils_lib
+        buffer_write_lib
         format
 )
 target_link_libraries(test_cardano_tokens
@@ -363,12 +363,12 @@ target_link_libraries(test_cardano_tokens
         hash_mocks_lib
         blake2b_lib
         sha3_lib
-        buffer_utils_lib
+        buffer_write_lib
         format
 )
 target_link_libraries(test_bip44 PUBLIC cmocka gcov bip44_real)
 target_link_libraries(test_cbor PUBLIC cmocka gcov cbor_lib hex_utils read write c)
-target_link_libraries(test_buffer_utils PUBLIC cmocka gcov buffer_utils_lib buffer write varint bip32 parsers_lib)
+target_link_libraries(test_buffer_utils PUBLIC cmocka gcov buffer_write_lib buffer write varint bip32 parsers_lib)
 target_link_libraries(test_ip_utils PUBLIC cmocka gcov)
 target_link_libraries(test_hash PUBLIC cmocka gcov hex_utils blake2b_lib sha3_lib hash_mocks_lib)
 target_link_libraries(test_apdu_info PUBLIC cmocka gcov buffer read)
@@ -382,7 +382,7 @@ target_link_libraries(test_address_utils_byron
         hash_mocks_lib
         blake2b_lib
         sha3_lib
-        buffer_utils_lib
+        buffer_write_lib
         cbor_lib
         buffer
         write
@@ -403,7 +403,7 @@ target_link_libraries(test_address_utils_shelley
         hash_mocks_lib
         blake2b_lib
         sha3_lib
-        buffer_utils_lib
+        buffer_write_lib
         parsers_lib
         cbor_lib
         buffer
@@ -437,7 +437,7 @@ target_link_libraries(test_tx_hash_builder
         sha3_lib
         hex_utils
         cbor_lib
-        buffer_utils_lib
+        buffer_write_lib
         buffer
         write
         read
@@ -457,7 +457,7 @@ target_link_libraries(test_tx_prepare
         base58
         bech32_lib
         bip44_real
-        buffer_utils_lib
+        buffer_write_lib
         buffer
         write
         read
@@ -629,7 +629,7 @@ set(DERIVE_ADDRESS_COMMON_LIBS
     base58
     bech32_lib
     bip44_real
-    buffer_utils_lib
+    buffer_write_lib
     cbor_lib
     blake2b_lib
     sha3_lib

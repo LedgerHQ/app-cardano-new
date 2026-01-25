@@ -7,7 +7,7 @@
 
 #include <cmocka.h>
 
-#include "utils/buffer_utils.h"
+#include "utils/buffer_write.h"
 #include "utils/cbor.h"
 #include "buffer.h"
 

@@ -1,4 +1,4 @@
-#include "buffer_utils.h"
+#include "buffer_write.h"
 #include "buffer.h" // for buffer_* functions from SDK
 #include "write.h"  // for write_u16_be, write_u32_be, write_u64_be, write_u16_le, write_u32_le, write_u64_le
 #include "cbor.h"   // for cbor_writeToken

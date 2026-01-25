@@ -19,7 +19,7 @@
 
 #include "cardano_swo.h"
 #include "app_context.h"
-#include "buffer_utils.h"
+#include "buffer_write.h"
 #include "cbor.h"
 #include "tx_parse.h"
 #include "parsers/parsers.h"

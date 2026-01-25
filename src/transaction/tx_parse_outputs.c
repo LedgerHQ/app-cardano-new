@@ -17,7 +17,7 @@
 
 #include "tx_parse_outputs.h"
 #include "assert.h"
-#include "buffer_utils.h"
+#include "buffer_write.h"
 #include "addressUtilsShelley.h"
 #include "cardano_swo.h"
 #include "parsers/parsers.h"

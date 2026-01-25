@@ -25,7 +25,7 @@
 #include "os.h"
 #include "buffer.h"
 #include "nbgl_use_case.h"
-#include "buffer_utils.h"
+#include "buffer_write.h"
 #include "io.h"
 
 #include "sign_tx.h"

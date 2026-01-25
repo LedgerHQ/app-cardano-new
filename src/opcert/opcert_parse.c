@@ -18,7 +18,7 @@
 
 #include "opcert_parse.h"
 #include "utils.h"
-#include "buffer_utils.h"
+#include "buffer_write.h"
 #include "parsers/parsers.h"
 #include "opcert_types.h"
 #include "assert.h"
