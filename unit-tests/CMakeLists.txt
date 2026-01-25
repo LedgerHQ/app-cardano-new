@@ -242,6 +242,8 @@ add_library(cbor_lib SHARED ../src/utils/cbor.c)
 target_link_libraries(cbor_lib PUBLIC c m read)
 add_library(buffer_utils_lib SHARED ../src/utils/buffer_utils.c)
 target_link_libraries(buffer_utils_lib PUBLIC c cbor_lib buffer write)
+add_library(parsers_lib SHARED ../src/parsers/parsers.c)
+target_link_libraries(parsers_lib PUBLIC c buffer read write varint bip32 text_utils bip44_real)
 add_library(crypto_mocks_lib SHARED
     mock_crypto/crypto_mocks.c
 )
@@ -366,7 +368,7 @@ target_link_libraries(test_cardano_tokens
 )
 target_link_libraries(test_bip44 PUBLIC cmocka gcov bip44_real)
 target_link_libraries(test_cbor PUBLIC cmocka gcov cbor_lib hex_utils read write c)
-target_link_libraries(test_buffer_utils PUBLIC cmocka gcov buffer_utils_lib buffer write varint bip32)
+target_link_libraries(test_buffer_utils PUBLIC cmocka gcov buffer_utils_lib buffer write varint bip32 parsers_lib)
 target_link_libraries(test_ip_utils PUBLIC cmocka gcov)
 target_link_libraries(test_hash PUBLIC cmocka gcov hex_utils blake2b_lib sha3_lib hash_mocks_lib)
 target_link_libraries(test_apdu_info PUBLIC cmocka gcov buffer read)
@@ -402,6 +404,7 @@ target_link_libraries(test_address_utils_shelley
         blake2b_lib
         sha3_lib
         buffer_utils_lib
+        parsers_lib
         cbor_lib
         buffer
         write
@@ -639,6 +642,7 @@ set(DERIVE_ADDRESS_COMMON_LIBS
     bip32
     cx_crc_support
     mock_printf
+    parsers_lib
 )
 # Create a static library for address derivation core (reusable across tests)
 add_library(cardano_derive_address_core STATIC ${DERIVE_ADDRESS_COMMON_SOURCES})

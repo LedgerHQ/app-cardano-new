@@ -1,4 +1,5 @@
 #include "buffer_utils.h"
+#include "parsers/parsers.h"
 #include "keyDerivation.h"
 #include "addressUtilsByron.h"
 #include "addressUtilsShelley.h"

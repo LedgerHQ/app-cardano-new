@@ -17,10 +17,11 @@
 
 #include "parsers.h"
 #include "buffer.h"
-#include "buffer_utils.h"
 #include "cardano_constants.h"
 #include "utils/utils.h"
 #include "utils/assert.h"
+
+#include <string.h>
 
 bool buffer_read_flag_included(buffer_t *buf, bool* result) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
@@ -41,6 +42,44 @@ bool buffer_read_flag_included(buffer_t *buf, bool* result) {
         default:
             return false;
     }
+}
+
+bool buffer_read_bytes(buffer_t *buffer, uint8_t *destBuffer, size_t n) {
+    LEDGER_ASSERT(buffer != NULL, "NULL buffer");
+    LEDGER_ASSERT(buffer->ptr != NULL, "NULL buffer ptr");
+    LEDGER_ASSERT(destBuffer != NULL, "NULL destination");
+
+    if (!buffer_can_read(buffer, n)) {
+        return false;
+    }
+
+    memmove(destBuffer, buffer->ptr + buffer->offset, n);
+    return buffer_seek_cur(buffer, n);
+}
+
+bool buffer_read_bytes_ptr(buffer_t *buffer, const uint8_t **destBuffer, size_t n) {
+    LEDGER_ASSERT(buffer != NULL, "NULL buffer");
+    LEDGER_ASSERT(destBuffer != NULL, "NULL destination");
+
+    if (!buffer_can_read(buffer, n)) {
+        return false;
+    }
+
+    *destBuffer = (const uint8_t *)(buffer->ptr + buffer->offset);
+    return buffer_seek_cur(buffer, n);
+}
+
+bool buffer_read_int64(buffer_t *buffer, int64_t *value, endianness_t endianness) {
+    LEDGER_ASSERT(buffer != NULL, "NULL buffer");
+    LEDGER_ASSERT(value != NULL, "NULL value pointer");
+
+    uint64_t unsigned_value;
+    if (!buffer_read_u64(buffer, &unsigned_value, endianness)) {
+        return false;
+    }
+
+    *value = (int64_t) unsigned_value;
+    return true;
 }
 
 // =============================================================================

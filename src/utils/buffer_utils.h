@@ -128,28 +128,3 @@ bool buffer_write_bytes(write_buffer_t *buffer, const uint8_t *data, size_t n);
  * @return true if success, false if not enough space
  */
 bool buffer_write_cbor_token(write_buffer_t *buffer, uint8_t type, uint64_t value);
-
-/**
- * Read n bytes from buffer without copying.
- * Sets destBuffer to point to the beginning of the data in the buffer,
- * and advances buffer position by n bytes.
- *
- * @param[in,out] buffer Pointer to read buffer struct
- * @param[out] destBuffer Pointer to be set to data location in buffer
- * @param[in] n Number of bytes to reference
- * @return true if success, false if not enough data available
- */
-bool buffer_read_bytes(buffer_t *buffer, uint8_t *destBuffer, size_t n);
-bool buffer_read_bytes_ptr(buffer_t *buffer, const uint8_t **destBuffer, size_t n);
-
-/**
- * Read 8 bytes from buffer as signed int64 with specified endianness.
- * Reads 8 bytes as unsigned, then reinterprets as signed int64_t.
- * This allows reading values that can be negative (e.g., for mint amounts).
- *
- * @param[in,out] buffer Pointer to read buffer struct
- * @param[out] value Pointer to store the int64 value
- * @param[in] endianness BE or LE
- * @return true if success, false if not enough data
- */
-bool buffer_read_int64(buffer_t *buffer, int64_t *value, endianness_t endianness);

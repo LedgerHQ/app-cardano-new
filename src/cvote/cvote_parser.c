@@ -7,6 +7,7 @@
 #include "globals.h"
 #include "mem.h"
 #include "buffer_utils.h"
+#include "parsers/parsers.h"
 #include "utils.h"
 
 #define TX_OUTPUT_DESTINATION_THIRD_PARTY 0x01
