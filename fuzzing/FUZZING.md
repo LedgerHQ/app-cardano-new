@@ -13,39 +13,41 @@ Each harness implements `int LLVMFuzzerTestOneInput(const uint8_t *data, size_t 
 
 ## Available Harnesses
 
-### fuzz_signOpCert
-Tests the operational certificate signing handler for robustness against:
-- Malformed KES public keys
-- Invalid path specifications
-- Boundary conditions in period/counter values
+The `fuzzing/harness/` directory contains one fuzzer per APDU instruction plus the
+combined dispatcher fuzzer. Each harness implements `int LLVMFuzzerTestOneInput(...)`
+and is built into a `fuzz_*` binary.
 
-### fuzz_getPublicKeys
-Tests public key derivation for:
-- Invalid BIP44 paths
-- Buffer overflow attempts
-- Path validation enforcement
+Current harnesses:
+- `fuzz_all_handlers`
+- `fuzz_deriveAddress`
+- `fuzz_deriveNativeScriptHash`
+- `fuzz_getAppName`
+- `fuzz_getPublicKeys`
+- `fuzz_getSerial`
+- `fuzz_getVersion`
+- `fuzz_signOpCert`
+- `fuzz_signTx`
 
-### fuzz_all_handlers
-Tests the main APDU dispatcher by:
-- Routing random command sequences
-- Testing state machine consistency
-- Checking instruction validation and routing
-
-## Building and Running Fuzzers
+## Building and Running Fuzzers (SDK Fuzzing Framework)
 
 ### Local Build (Recommended for Development)
 
-The fuzzing harnesses can be built locally using Clang and the Ledger SDK:
+The fuzzing harnesses are built via the Ledger SDK fuzzing framework. You must provide
+the SDK path and target. Stax is the supported target.
 
 ```bash
 cd fuzzing
-cmake -DBOLOS_SDK=/opt/ledger-secure-sdk -DCMAKE_C_COMPILER=/usr/bin/clang -Bbuild -H.
+rm -rf build
+cmake -DBOLOS_SDK=/opt/ledger-secure-sdk \
+      -DTARGET=stax \
+      -DCMAKE_C_COMPILER=/usr/bin/clang \
+      -Bbuild -H.
 make -C build
 ```
 
 **What this does:**
-1. Configures the build with the Ledger SDK path
-2. Compiles all fuzzing harnesses with address sanitizer and libfuzzer
+1. Configures the build with the Ledger SDK fuzzing framework
+2. Compiles all fuzzing harnesses with libFuzzer + address sanitizer
 3. Output binaries: `build/fuzz_signOpCert`, `build/fuzz_getPublicKeys`, `build/fuzz_all_handlers`
 
 ### Container-Based Build (For CI/Continuous Fuzzing)
@@ -84,6 +86,7 @@ cd fuzzing
 
 After container build, binaries will be in `out/` instead of `build/`.
 
+
 ### Crash Reproduction
 
 If fuzzing finds a crash, it will save the input to `crash-*`:
@@ -104,7 +107,7 @@ The repository includes `.clusterfuzzlite/` configuration files that enable auto
    - Stage 1: `ledger-app-builder-lite` compiles BOLOS SDK
    - Stage 2: `oss-fuzz-base/base-builder` provides fuzzing infrastructure
 2. `.clusterfuzzlite/build.sh` - Build script that:
-   - Calls `cmake -DBOLOS_SDK=../BOLOS_SDK`
+   - Calls `cmake -DBOLOS_SDK=../BOLOS_SDK -DTARGET=stax`
    - Compiles all fuzz harnesses
    - Outputs binaries to `$OUT` directory
 
@@ -124,6 +127,7 @@ The `corpus/` directory contains minimal seed inputs to accelerate fuzzing:
 ## Notes
 
 - Fuzzing requires **Clang** compiler
+- Local builds use address sanitizer (configured in CMake)
 - Address sanitizer catches memory errors automatically
 - Coverage mapping tracks which code paths are tested
 - Long-running fuzzing campaigns may find subtle bugs

@@ -5,9 +5,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ux.h>
+#include <setjmp.h>
 
 #include "buffer.h"
 #include "cardano_constants.h"
+#include "fuzz_utils.h"
 #include "globals.h"
 
 typedef struct nbgl_warning_s nbgl_warning_t;
@@ -64,7 +66,8 @@ unsigned int os_serial(unsigned char *serial, unsigned int maxlength) {
 }
 
 void __attribute__((noreturn)) os_sched_exit(bolos_task_status_t exit_code) {
-    exit(exit_code);
+    (void) exit_code;
+    siglongjmp(fuzz_exit_jump_ctx.jmp_buf, 1);
 }
 
 void os_longjmp(unsigned int exception) {
@@ -183,7 +186,7 @@ void assert_exit(bool confirm) {
 }
 
 void __attribute__((noreturn)) app_exit(void) {
-    exit(0);
+    siglongjmp(fuzz_exit_jump_ctx.jmp_buf, 1);
 }
 
 int bytes_to_lowercase_hex(char *out, size_t outl, const void *value, size_t len) {

@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "dispatcher.h"
-#include "fuzz_helpers.h"
+#include "fuzz_utils.h"
 #include "apdu/dispatcher.h"
 
 /**
@@ -32,7 +32,9 @@
  */
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+    if (sigsetjmp(fuzz_exit_jump_ctx.jmp_buf, 1)) return 0;
     fuzzing_reset_state();
+    static const uint8_t dummy = 0;
 
     // Process the fuzzing input as a stream of consecutive APDU commands
     // Continue processing until we run out of data
@@ -66,7 +68,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
             memcpy(cmd_data, data, cmd.lc);
             cmd.data = cmd_data;
         } else {
-            cmd.data = NULL;
+            cmd.data = (uint8_t *) &dummy;
         }
 
         // Dispatch the APDU command

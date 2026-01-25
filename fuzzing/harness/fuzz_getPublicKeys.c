@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "dispatcher.h"
-#include "fuzz_helpers.h"
+#include "fuzz_utils.h"
 #include "apdu/dispatcher.h"
 
 /**
@@ -24,7 +24,9 @@
  */
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+    if (sigsetjmp(fuzz_exit_jump_ctx.jmp_buf, 1)) return 0;
     fuzzing_reset_state();
+    static const uint8_t dummy = 0;
 
     // Need at least: CLA (1) + INS (1) + P1 (1) + P2 (1) + LC (1) = 5 bytes minimum
     if (size < 5) {
@@ -58,7 +60,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         memcpy(cmd_data, data, cmd.lc);
         cmd.data = cmd_data;
     } else {
-        cmd.data = NULL;
+        cmd.data = (uint8_t *) &dummy;
     }
 
     // Call dispatcher - it will route to appropriate handler
