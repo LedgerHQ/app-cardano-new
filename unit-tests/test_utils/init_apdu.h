@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "../src/utils/utils.h"  // for ITEM_INCLUDED_*
+#include "../src/parsers/parsers.h"  // for FLAG_INCLUDED_*
 #include "../src/transaction/tx_aux_data_types.h"
 
 typedef struct {
@@ -37,8 +37,8 @@ typedef struct {
     uint16_t numWitnesses;
 } init_apdu_params_t;
 
-static inline uint8_t _item_flag(bool include) {
-    return include ? ITEM_INCLUDED_YES : ITEM_INCLUDED_NO;
+static inline uint8_t _flag_included(bool include) {
+    return include ? FLAG_INCLUDED_YES : FLAG_INCLUDED_NO;
 }
 
 static inline void _append_u8(uint8_t* buffer, size_t* pos, uint8_t value) {
@@ -76,11 +76,11 @@ static inline size_t build_init_apdu(const init_apdu_params_t* params,
     _append_u16_be(out, &pos, params->numInputs);
     _append_u16_be(out, &pos, params->numOutputs);
 
-    _append_u8(out, &pos, _item_flag(params->includeTtl));
+    _append_u8(out, &pos, _flag_included(params->includeTtl));
     _append_u16_be(out, &pos, params->numCertificates);
     _append_u16_be(out, &pos, params->numWithdrawals);
 
-    _append_u8(out, &pos, _item_flag(params->includeAuxData));
+    _append_u8(out, &pos, _flag_included(params->includeAuxData));
     if (params->includeAuxData) {
         _append_u8(out, &pos, params->auxDataType);
         if (params->auxDataType == AUX_DATA_TYPE_ARBITRARY_HASH) {
@@ -93,18 +93,18 @@ static inline size_t build_init_apdu(const init_apdu_params_t* params,
         }
     }
 
-    _append_u8(out, &pos, _item_flag(params->includeValidityIntervalStart));
+    _append_u8(out, &pos, _flag_included(params->includeValidityIntervalStart));
     _append_u16_be(out, &pos, params->numMintAssetGroups);
-    _append_u8(out, &pos, _item_flag(params->includeScriptDataHash));
+    _append_u8(out, &pos, _flag_included(params->includeScriptDataHash));
     _append_u16_be(out, &pos, params->numCollateralInputs);
     _append_u16_be(out, &pos, params->numRequiredSigners);
-    _append_u8(out, &pos, _item_flag(params->includeNetworkId));
-    _append_u8(out, &pos, _item_flag(params->includeCollateralOutput));
-    _append_u8(out, &pos, _item_flag(params->includeTotalCollateral));
+    _append_u8(out, &pos, _flag_included(params->includeNetworkId));
+    _append_u8(out, &pos, _flag_included(params->includeCollateralOutput));
+    _append_u8(out, &pos, _flag_included(params->includeTotalCollateral));
     _append_u16_be(out, &pos, params->numReferenceInputs);
     _append_u16_be(out, &pos, params->numVoters);
-    _append_u8(out, &pos, _item_flag(params->includeTreasury));
-    _append_u8(out, &pos, _item_flag(params->includeDonation));
+    _append_u8(out, &pos, _flag_included(params->includeTreasury));
+    _append_u8(out, &pos, _flag_included(params->includeDonation));
     _append_u16_be(out, &pos, params->numWitnesses);
 
     (void) out_size;

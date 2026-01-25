@@ -6,39 +6,29 @@
 #include "transaction/tx_credential_types.h"
 
 // =============================================================================
-// Item Inclusion Parsing
+// Optional Item Flags
 // =============================================================================
 
 /**
  * Inclusion flag values for optional transaction fields.
  *
- * These values indicate whether an optional field is present in the
- * transaction wire format.
+ * These values are used on the wire to indicate whether an optional
+ * transaction field is present (FLAG_INCLUDED_YES) or omitted
+ * (FLAG_INCLUDED_NO).
  */
 typedef enum {
-    ITEM_INCLUDED_NO = 1,   // Field is not included
-    ITEM_INCLUDED_YES = 2,  // Field is included
-} item_included_e;
+    FLAG_INCLUDED_NO = 1,   // Field is not included
+    FLAG_INCLUDED_YES = 2,  // Field is included
+} flag_included_e;
 
 /**
- * Parse item inclusion flag for optional transaction fields.
+ * Read and interpret a flag byte as a boolean inclusion indicator.
  *
- * @param[in] value The inclusion flag byte (ITEM_INCLUDED_YES or ITEM_INCLUDED_NO)
- * @param[out] result Pointer to store the result (true if included, false otherwise)
- * @return true if parsing succeeded, false if value is invalid
+ * @param[in] buf Buffer to read from
+ * @param[out] result true if the field is included, false otherwise
+ * @return true if a valid flag was read, false otherwise
  */
-static inline bool parseIncluded(uint8_t value, bool* result) {
-    switch (value) {
-        case ITEM_INCLUDED_YES:
-            *result = true;
-            return true;
-        case ITEM_INCLUDED_NO:
-            *result = false;
-            return true;
-        default:
-            return false;
-    }
-}
+bool buffer_read_flag_included(buffer_t *buf, bool* result);
 
 // =============================================================================
 // Credential Parsing

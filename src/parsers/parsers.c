@@ -22,6 +22,27 @@
 #include "utils/utils.h"
 #include "utils/assert.h"
 
+bool buffer_read_flag_included(buffer_t *buf, bool* result) {
+    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    LEDGER_ASSERT(result != NULL, "NULL result");
+
+    uint8_t value;
+    if (!buffer_read_u8(buf, &value)) {
+        return false;
+    }
+
+    switch (value) {
+        case FLAG_INCLUDED_YES:
+            *result = true;
+            return true;
+        case FLAG_INCLUDED_NO:
+            *result = false;
+            return true;
+        default:
+            return false;
+    }
+}
+
 // =============================================================================
 // Credential Parsing Implementation
 // =============================================================================

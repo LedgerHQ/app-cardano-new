@@ -217,18 +217,12 @@ static parser_status_e _parse_drep(buffer_t *buf, ext_drep_t *drep) {
 static parser_status_e _parse_anchor(buffer_t *buf, anchor_t *anchor) {
     TRACE("Parsing anchor");
     // Check if anchor is present (1 byte flag)
-    uint8_t anchor_present;
-    if (!buffer_read_u8(buf, &anchor_present)) {
-        TRACE("Failed to read anchor present flag");
-        return CERTIFICATES_PARSING_ERROR;
-    }
-
-    TRACE("Anchor present flag: %u", anchor_present);
     bool anchor_included = false;
-    if (!parseIncluded(anchor_present, &anchor_included)) {
-        TRACE("Invalid anchor present flag: 0x%02x", anchor_present);
+    if (!buffer_read_flag_included(buf, &anchor_included)) {
+        TRACE("Invalid anchor present flag");
         return CERTIFICATES_PARSING_ERROR;
     }
+    TRACE("Anchor present flag: %u", anchor_included);
     if (!anchor_included) {
         anchor->isIncluded = false;
         TRACE("Anchor not included");
@@ -464,14 +458,9 @@ static parser_status_e _parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
             relay->format = RELAY_SINGLE_HOST_IP;
 
             // Port (2 bytes) - null or value
-            uint8_t port_present;
             bool port_included = false;
-            if (!buffer_read_u8(buf, &port_present)) {
-                TRACE("Failed to read port present flag");
-                return CERTIFICATES_PARSING_ERROR;
-            }
-            if (!parseIncluded(port_present, &port_included)) {
-                TRACE("Invalid port present flag: %u", port_present);
+            if (!buffer_read_flag_included(buf, &port_included)) {
+                TRACE("Invalid port present flag");
                 return CERTIFICATES_PARSING_ERROR;
             }
             relay->port.isNull = !port_included;
@@ -489,14 +478,9 @@ static parser_status_e _parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
             }
 
             // IPv4 (optional)
-            uint8_t ipv4_present;
             bool ipv4_included = false;
-            if (!buffer_read_u8(buf, &ipv4_present)) {
-                TRACE("Failed to read IPv4 present flag");
-                return CERTIFICATES_PARSING_ERROR;
-            }
-            if (!parseIncluded(ipv4_present, &ipv4_included)) {
-                TRACE("Invalid IPv4 present flag: %u", ipv4_present);
+            if (!buffer_read_flag_included(buf, &ipv4_included)) {
+                TRACE("Invalid IPv4 present flag");
                 return CERTIFICATES_PARSING_ERROR;
             }
             relay->ipv4.isNull = !ipv4_included;
@@ -510,14 +494,9 @@ static parser_status_e _parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
             }
 
             // IPv6 (optional)
-            uint8_t ipv6_present;
             bool ipv6_included = false;
-            if (!buffer_read_u8(buf, &ipv6_present)) {
-                TRACE("Failed to read IPv6 present flag");
-                return CERTIFICATES_PARSING_ERROR;
-            }
-            if (!parseIncluded(ipv6_present, &ipv6_included)) {
-                TRACE("Invalid IPv6 present flag: %u", ipv6_present);
+            if (!buffer_read_flag_included(buf, &ipv6_included)) {
+                TRACE("Invalid IPv6 present flag");
                 return CERTIFICATES_PARSING_ERROR;
             }
             relay->ipv6.isNull = !ipv6_included;
@@ -540,14 +519,9 @@ static parser_status_e _parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
             relay->format = RELAY_SINGLE_HOST_NAME;
 
             // Port (2 bytes) - null or value
-            uint8_t port_present;
             bool port_included = false;
-            if (!buffer_read_u8(buf, &port_present)) {
-                TRACE("Failed to read port present flag");
-                return CERTIFICATES_PARSING_ERROR;
-            }
-            if (!parseIncluded(port_present, &port_included)) {
-                TRACE("Invalid port present flag: %u", port_present);
+            if (!buffer_read_flag_included(buf, &port_included)) {
+                TRACE("Invalid port present flag");
                 return CERTIFICATES_PARSING_ERROR;
             }
             relay->port.isNull = !port_included;
@@ -565,14 +539,9 @@ static parser_status_e _parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
             }
 
             // DNS name (length + data)
-            uint8_t dns_present;
             bool dns_included = false;
-            if (!buffer_read_u8(buf, &dns_present)) {
-                TRACE("Failed to read DNS name present flag");
-                return CERTIFICATES_PARSING_ERROR;
-            }
-            if (!parseIncluded(dns_present, &dns_included)) {
-                TRACE("Invalid DNS name present flag: %u", dns_present);
+            if (!buffer_read_flag_included(buf, &dns_included)) {
+                TRACE("Invalid DNS name present flag");
                 return CERTIFICATES_PARSING_ERROR;
             }
             if (!dns_included) {
@@ -618,14 +587,9 @@ static parser_status_e _parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
             relay->ipv6.isNull = true;
 
             // DNS name (length + data)
-            uint8_t dns_present;
             bool dns_included = false;
-            if (!buffer_read_u8(buf, &dns_present)) {
-                TRACE("Failed to read DNS name present flag");
-                return CERTIFICATES_PARSING_ERROR;
-            }
-            if (!parseIncluded(dns_present, &dns_included)) {
-                TRACE("Invalid DNS name present flag: %u", dns_present);
+            if (!buffer_read_flag_included(buf, &dns_included)) {
+                TRACE("Invalid DNS name present flag");
                 return CERTIFICATES_PARSING_ERROR;
             }
             if (!dns_included) {
@@ -674,15 +638,9 @@ static parser_status_e _parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
 /// Helper to parse pool metadata (URL + hash or null)
 static parser_status_e _parse_pool_metadata(buffer_t *buf, pool_metadata_t *metadata, bool *isNull) {
     TRACE("Parsing pool metadata");
-    uint8_t metadata_present;
-    if (!buffer_read_u8(buf, &metadata_present)) {
-        TRACE("Failed to read metadata present flag");
-        return CERTIFICATES_PARSING_ERROR;
-    }
-
     bool is_included = false;
-    if (!parseIncluded(metadata_present, &is_included)) {
-        TRACE("Invalid metadata present flag: 0x%02x", metadata_present);
+    if (!buffer_read_flag_included(buf, &is_included)) {
+        TRACE("Invalid metadata present flag");
         return CERTIFICATES_PARSING_ERROR;
     }
 

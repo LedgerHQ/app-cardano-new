@@ -20,6 +20,7 @@
 #include "buffer_utils.h"
 #include "addressUtilsShelley.h"
 #include "cardano_swo.h"
+#include "parsers/parsers.h"
 
 parser_status_e parse_output_destination(buffer_t* buf,
                                          tx_output_destination_storage_t* destination,
@@ -103,14 +104,10 @@ parser_status_e parse_output_datum(buffer_t* buf, output_datum_t* datum) {
     LEDGER_ASSERT(datum != NULL, "NULL datum");
 
     size_t offset_before = buf->offset;
-    uint8_t datum_present_wire = 0;
-    if (!buffer_read_u8(buf, &datum_present_wire)) {
+    if (!buffer_read_flag_included(buf, &datum->hasDatum)) {
         return OUTPUTS_PARSING_ERROR;
     }
-    TRACE("Datum present: wire=%u, offset %u -> %u", datum_present_wire, (unsigned int)offset_before, (unsigned int)buf->offset);
-    if (!parseIncluded(datum_present_wire, &datum->hasDatum)) {
-        return OUTPUTS_PARSING_ERROR;
-    }
+    TRACE("Datum present: %u, offset %u -> %u", datum->hasDatum, (unsigned int)offset_before, (unsigned int)buf->offset);
 
     if (!datum->hasDatum) {
         return PARSING_OK;
@@ -166,14 +163,10 @@ parser_status_e parse_output_ref_script(buffer_t* buf,
     LEDGER_ASSERT(refScript != NULL, "NULL refScript");
 
     size_t offset_before = buf->offset;
-    uint8_t ref_script_present_wire = 0;
-    if (!buffer_read_u8(buf, &ref_script_present_wire)) {
+    if (!buffer_read_flag_included(buf, &refScript->hasRefScript)) {
         return OUTPUTS_PARSING_ERROR;
     }
-    TRACE("Reference script present: wire=%u, offset %u -> %u", ref_script_present_wire, (unsigned int)offset_before, (unsigned int)buf->offset);
-    if (!parseIncluded(ref_script_present_wire, &refScript->hasRefScript)) {
-        return OUTPUTS_PARSING_ERROR;
-    }
+    TRACE("Reference script present: %u, offset %u -> %u", refScript->hasRefScript, (unsigned int)offset_before, (unsigned int)buf->offset);
 
     if (!refScript->hasRefScript) {
         refScript->size = 0;

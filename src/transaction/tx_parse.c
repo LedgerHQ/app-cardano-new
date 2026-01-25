@@ -22,6 +22,7 @@
 #include "buffer_utils.h"
 #include "cbor.h"
 #include "tx_parse.h"
+#include "parsers/parsers.h"
 #include "tx_parse_certificates.h"
 #include "tx_parse_outputs.h"
 #include "tx.h"
@@ -1341,14 +1342,12 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
             }
             vote_item->vote_data.voteOption = (vote_t) vote_byte;
 
-            // Parse anchor inclusion flag using parseIncluded pattern
-            uint8_t anchor_included_byte;
-            if (!buffer_read_u8(buf, &anchor_included_byte)) {
+            // Parse anchor inclusion flag using buffer_read_flag_included
+            bool anchor_included = false;
+            if (!buffer_read_flag_included(buf, &anchor_included)) {
                 return VOTING_PROCEDURES_PARSING_ERROR;
             }
-            if (!parseIncluded(anchor_included_byte, &vote_item->vote_data.anchor.isIncluded)) {
-                return VOTING_PROCEDURES_PARSING_ERROR;
-            }
+            vote_item->vote_data.anchor.isIncluded = anchor_included;
 
             if (vote_item->vote_data.anchor.isIncluded) {
                 // Parse URL length and pointer

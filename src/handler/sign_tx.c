@@ -44,6 +44,7 @@
 #include "cbor.h"
 #include "tx_hash_builder.h"
 #include "messageSigning.h"
+#include "parsers/parsers.h"
 #include "securityPolicy.h"
 #include "dispatcher.h"
 #include "cvote_parser.h"
@@ -374,13 +375,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     }
 
     // Field 3 (TTL) - optional
-    uint8_t includeTtlByte;
-    if (!buffer_read_u8(cdata, &includeTtlByte)) {
-        TRACE("TX init: missing TTL inclusion flag");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
-    }
-    if (!parseIncluded(includeTtlByte, &G_context.tx_info.transaction.includeTtl)) {
+    if (!buffer_read_flag_included(cdata, &G_context.tx_info.transaction.includeTtl)) {
         TRACE("TX init: invalid TTL inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
@@ -402,14 +397,8 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     }
 
     // Field 7 (auxiliary data hash) - optional
-    uint8_t includeAuxDataHashByte;
     bool includeAuxDataHash = false;
-    if (!buffer_read_u8(cdata, &includeAuxDataHashByte)) {
-        TRACE("TX init: missing aux data hash inclusion flag");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
-    }
-    if (!parseIncluded(includeAuxDataHashByte, &includeAuxDataHash)) {
+    if (!buffer_read_flag_included(cdata, &includeAuxDataHash)) {
         TRACE("TX init: invalid aux data hash inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
@@ -448,13 +437,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     }
 
     // Field 8 (validity interval start) - optional
-    uint8_t includeValidityIntervalStartByte;
-    if (!buffer_read_u8(cdata, &includeValidityIntervalStartByte)) {
-        TRACE("TX init: missing validity interval start inclusion flag");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
-    }
-    if (!parseIncluded(includeValidityIntervalStartByte, &G_context.tx_info.transaction.includeValidityIntervalStart)) {
+    if (!buffer_read_flag_included(cdata, &G_context.tx_info.transaction.includeValidityIntervalStart)) {
         TRACE("TX init: invalid validity interval start inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
@@ -468,14 +451,8 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     }
 
     // Field 11 (script data hash) - optional
-    uint8_t includeScriptDataHashByte;
     bool includeScriptDataHash = false;
-    if (!buffer_read_u8(cdata, &includeScriptDataHashByte)) {
-        TRACE("TX init: missing script data hash inclusion flag");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
-    }
-    if (!parseIncluded(includeScriptDataHashByte, &includeScriptDataHash)) {
+    if (!buffer_read_flag_included(cdata, &includeScriptDataHash)) {
         TRACE("TX init: invalid script data hash inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
@@ -497,39 +474,21 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     }
 
     // Field 15 (network ID)
-    uint8_t includeNetworkIdByte;
-    if (!buffer_read_u8(cdata, &includeNetworkIdByte)) {
-        TRACE("TX init: missing network id inclusion flag");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
-    }
-    if (!parseIncluded(includeNetworkIdByte, &G_context.tx_info.transaction.includeNetworkId)) {
+    if (!buffer_read_flag_included(cdata, &G_context.tx_info.transaction.includeNetworkId)) {
         TRACE("TX init: invalid network id inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
 
     // Field 16 (collateral output)
-    uint8_t includeCollateralOutputByte;
-    if (!buffer_read_u8(cdata, &includeCollateralOutputByte)) {
-        TRACE("TX init: missing collateral output inclusion flag");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
-    }
-    if (!parseIncluded(includeCollateralOutputByte, &G_context.tx_info.transaction.includeCollateralOutput)) {
+    if (!buffer_read_flag_included(cdata, &G_context.tx_info.transaction.includeCollateralOutput)) {
         TRACE("TX init: invalid collateral output inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
 
     // Field 17 (total collateral)
-    uint8_t includeTotalCollateralByte;
-    if (!buffer_read_u8(cdata, &includeTotalCollateralByte)) {
-        TRACE("TX init: missing total collateral inclusion flag");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
-    }
-    if (!parseIncluded(includeTotalCollateralByte, &G_context.tx_info.transaction.includeTotalCollateral)) {
+    if (!buffer_read_flag_included(cdata, &G_context.tx_info.transaction.includeTotalCollateral)) {
         TRACE("TX init: invalid total collateral inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
@@ -550,26 +509,14 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     }
 
     // Field 21 (treasury) - optional
-    uint8_t includeTreasuryByte;
-    if (!buffer_read_u8(cdata, &includeTreasuryByte)) {
-        TRACE("TX init: missing treasury inclusion flag");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
-    }
-    if (!parseIncluded(includeTreasuryByte, &G_context.tx_info.transaction.includeTreasury)) {
+    if (!buffer_read_flag_included(cdata, &G_context.tx_info.transaction.includeTreasury)) {
         TRACE("TX init: invalid treasury inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
 
     // Field 22 (donation) - optional
-    uint8_t includeDonationByte;
-    if (!buffer_read_u8(cdata, &includeDonationByte)) {
-        TRACE("TX init: missing donation inclusion flag");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
-    }
-    if (!parseIncluded(includeDonationByte, &G_context.tx_info.transaction.includeDonation)) {
+    if (!buffer_read_flag_included(cdata, &G_context.tx_info.transaction.includeDonation)) {
         TRACE("TX init: invalid donation inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;

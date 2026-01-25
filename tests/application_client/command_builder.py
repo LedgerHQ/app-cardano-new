@@ -68,8 +68,8 @@ from standalone.input_files.signTx import (
 
 CLA: int = 0xd7
 
-ITEM_INCLUDED_NO: int = 0x01
-ITEM_INCLUDED_YES: int = 0x02
+FLAG_INCLUDED_NO: int = 0x01
+FLAG_INCLUDED_YES: int = 0x02
 SETTINGS_DISABLED: int = 0x00
 SETTINGS_ENABLED: int = 0x01
 MAX_UINT8: int = 0xFF
@@ -345,10 +345,10 @@ class CommandBuilder:
         data.append(params.signing_mode)
         data.extend(params.num_inputs.to_bytes(2, "big"))
         data.extend(params.num_outputs.to_bytes(2, "big"))
-        data.append(ITEM_INCLUDED_YES if params.include_ttl else ITEM_INCLUDED_NO)
+        data.append(FLAG_INCLUDED_YES if params.include_ttl else FLAG_INCLUDED_NO)
         data.extend(params.num_certificates.to_bytes(2, "big"))
         data.extend(params.num_withdrawals.to_bytes(2, "big"))
-        data.append(ITEM_INCLUDED_YES if params.include_aux_data_hash else ITEM_INCLUDED_NO)
+        data.append(FLAG_INCLUDED_YES if params.include_aux_data_hash else FLAG_INCLUDED_NO)
         if params.include_aux_data_hash:
             if params.aux_data_type is None:
                 raise ValueError("Auxiliary data type is required when include_aux_data_hash is set")
@@ -358,18 +358,18 @@ class CommandBuilder:
                     raise ValueError("Auxiliary data hash is required for arbitrary-hash aux data")
             else:
                 data.extend(bytes.fromhex(params.aux_data_hash_hex))
-        data.append(ITEM_INCLUDED_YES if params.include_validity_interval_start else ITEM_INCLUDED_NO)
+        data.append(FLAG_INCLUDED_YES if params.include_validity_interval_start else FLAG_INCLUDED_NO)
         data.extend(params.num_mint_asset_groups.to_bytes(2, "big"))
-        data.append(ITEM_INCLUDED_YES if params.include_script_data_hash else ITEM_INCLUDED_NO)
+        data.append(FLAG_INCLUDED_YES if params.include_script_data_hash else FLAG_INCLUDED_NO)
         data.extend(params.num_collateral_inputs.to_bytes(2, "big"))
         data.extend(params.num_required_signers.to_bytes(2, "big"))
-        data.append(ITEM_INCLUDED_YES if params.include_network_id else ITEM_INCLUDED_NO)
-        data.append(ITEM_INCLUDED_YES if params.include_collateral_output else ITEM_INCLUDED_NO)
-        data.append(ITEM_INCLUDED_YES if params.include_total_collateral else ITEM_INCLUDED_NO)
+        data.append(FLAG_INCLUDED_YES if params.include_network_id else FLAG_INCLUDED_NO)
+        data.append(FLAG_INCLUDED_YES if params.include_collateral_output else FLAG_INCLUDED_NO)
+        data.append(FLAG_INCLUDED_YES if params.include_total_collateral else FLAG_INCLUDED_NO)
         data.extend(params.num_reference_inputs.to_bytes(2, "big"))
         data.extend(params.num_voters.to_bytes(2, "big"))
-        data.append(ITEM_INCLUDED_YES if params.include_treasury else ITEM_INCLUDED_NO)
-        data.append(ITEM_INCLUDED_YES if params.include_donation else ITEM_INCLUDED_NO)
+        data.append(FLAG_INCLUDED_YES if params.include_treasury else FLAG_INCLUDED_NO)
+        data.append(FLAG_INCLUDED_YES if params.include_donation else FLAG_INCLUDED_NO)
         data.extend(params.num_witnesses.to_bytes(2, "big"))
         return self._serialize(InsType.INS_SIGN_TX, P1Type.P1_TX_INIT, P2Type.P2_UNUSED, bytes(data))
 
@@ -622,7 +622,7 @@ class CommandBuilder:
 
                     # anchor inclusion flag
                     if vote.votingProcedure.anchor is not None:
-                        data.append(ITEM_INCLUDED_YES)
+                        data.append(FLAG_INCLUDED_YES)
 
                         # anchor URL
                         anchor_url_bytes = vote.votingProcedure.anchor.url.encode('utf-8')
@@ -632,7 +632,7 @@ class CommandBuilder:
                         # anchor hash
                         data.extend(bytes.fromhex(vote.votingProcedure.anchor.hashHex))
                     else:
-                        data.append(ITEM_INCLUDED_NO)
+                        data.append(FLAG_INCLUDED_NO)
 
         if getattr(tx, "treasury", None) is not None:
             data.extend(tx.treasury.to_bytes(8, "big"))
@@ -662,7 +662,7 @@ class CommandBuilder:
                     output_data.extend(token.amount.to_bytes(8, "big"))
 
         if hasattr(tx_output, "datum") and tx_output.datum is not None:
-            output_data.append(ITEM_INCLUDED_YES)
+            output_data.append(FLAG_INCLUDED_YES)
             datum_type = tx_output.datum.type
             if datum_type == DatumType.HASH:
                 output_data.append(int(DatumType.HASH))
@@ -673,15 +673,15 @@ class CommandBuilder:
                 output_data.extend(len(datum_bytes).to_bytes(2, "big"))
                 output_data.extend(datum_bytes)
         else:
-            output_data.append(ITEM_INCLUDED_NO)
+            output_data.append(FLAG_INCLUDED_NO)
 
         if isinstance(tx_output, TxOutputBabbage) and tx_output.referenceScriptHex is not None:
-            output_data.append(ITEM_INCLUDED_YES)
+            output_data.append(FLAG_INCLUDED_YES)
             script_bytes = bytes.fromhex(tx_output.referenceScriptHex)
             output_data.extend(len(script_bytes).to_bytes(2, "big"))
             output_data.extend(script_bytes)
         else:
-            output_data.append(ITEM_INCLUDED_NO)
+            output_data.append(FLAG_INCLUDED_NO)
 
         return output_data
 
@@ -770,10 +770,10 @@ class CommandBuilder:
     def _serialize_anchor(self, anchor: Optional[AnchorParams]) -> bytes:
         result = bytearray()
         if anchor is None:
-            result.append(ITEM_INCLUDED_NO)
+            result.append(FLAG_INCLUDED_NO)
             return bytes(result)
 
-        result.append(ITEM_INCLUDED_YES)
+        result.append(FLAG_INCLUDED_YES)
         url_bytes = anchor.url.encode("utf-8")
         if len(url_bytes) > MAX_UINT8:
             raise ValueError("Anchor URL exceeds maximum length")
@@ -811,32 +811,32 @@ class CommandBuilder:
             params = relay.params
             assert isinstance(params, SingleHostIpAddrRelayParams)
             if params.portNumber is None:
-                data.append(ITEM_INCLUDED_NO)
+                data.append(FLAG_INCLUDED_NO)
             else:
-                data.append(ITEM_INCLUDED_YES)
+                data.append(FLAG_INCLUDED_YES)
                 data.extend(params.portNumber.to_bytes(2, "big"))
             if not params.ipv4:
-                data.append(ITEM_INCLUDED_NO)
+                data.append(FLAG_INCLUDED_NO)
             else:
-                data.append(ITEM_INCLUDED_YES)
+                data.append(FLAG_INCLUDED_YES)
                 data.extend(ipaddress.IPv4Address(params.ipv4).packed)
             if not params.ipv6:
-                data.append(ITEM_INCLUDED_NO)
+                data.append(FLAG_INCLUDED_NO)
             else:
-                data.append(ITEM_INCLUDED_YES)
+                data.append(FLAG_INCLUDED_YES)
                 data.extend(ipaddress.IPv6Address(params.ipv6).packed)
         elif relay.type == RelayType.SINGLE_HOST_HOSTNAME:
             params = relay.params
             assert isinstance(params, SingleHostHostnameRelayParams)
             if params.portNumber is None:
-                data.append(ITEM_INCLUDED_NO)
+                data.append(FLAG_INCLUDED_NO)
             else:
-                data.append(ITEM_INCLUDED_YES)
+                data.append(FLAG_INCLUDED_YES)
                 data.extend(params.portNumber.to_bytes(2, "big"))
             if params.dnsName is None:
-                data.append(ITEM_INCLUDED_NO)
+                data.append(FLAG_INCLUDED_NO)
                 return bytes(data)
-            data.append(ITEM_INCLUDED_YES)
+            data.append(FLAG_INCLUDED_YES)
             dns_bytes = params.dnsName.encode("utf-8")
             if len(dns_bytes) > MAX_UINT8:
                 raise ValueError("Relay DNS name exceeds maximum length")
@@ -846,9 +846,9 @@ class CommandBuilder:
             params = relay.params
             assert isinstance(params, MultiHostRelayParams)
             if params.dnsName is None:
-                data.append(ITEM_INCLUDED_NO)
+                data.append(FLAG_INCLUDED_NO)
                 return bytes(data)
-            data.append(ITEM_INCLUDED_YES)
+            data.append(FLAG_INCLUDED_YES)
             dns_bytes = params.dnsName.encode("utf-8")
             if len(dns_bytes) > MAX_UINT8:
                 raise ValueError("Relay DNS name exceeds maximum length")
@@ -861,9 +861,9 @@ class CommandBuilder:
     def _serialize_pool_metadata(self, metadata: Optional[PoolMetadataParams]) -> bytes:
         data = bytearray()
         if metadata is None:
-            data.append(ITEM_INCLUDED_NO)
+            data.append(FLAG_INCLUDED_NO)
             return bytes(data)
-        data.append(ITEM_INCLUDED_YES)
+        data.append(FLAG_INCLUDED_YES)
         url_bytes = metadata.metadataUrl.encode("utf-8")
         data.append(len(url_bytes))
         data.extend(url_bytes)
