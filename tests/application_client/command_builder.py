@@ -288,40 +288,56 @@ class CommandBuilder:
     def get_serial(self) -> bytes:
         return self._serialize(InsType.INS_GET_SERIAL)
 
-    def derive_address(self, p1: P1Type, testCase: DeriveAddressTestCase) -> bytes:
-        data = bytes()
-        data += testCase.addrType.to_bytes(1, "big")
-        if testCase.addrType == AddressType.BYRON:
-            data += testCase.netDesc.protocol.to_bytes(4, "big")
+    def _serialize_voter(self, voter: object) -> bytes:
+        voter_type = VoterType(voter.type)
+        voter_data = bytearray()
+        voter_data.append(int(voter_type))
+
+        if voter_type in (
+            VoterType.COMMITTEE_KEY_PATH,
+            VoterType.DREP_KEY_PATH,
+            VoterType.STAKE_POOL_KEY_PATH,
+        ):
+            voter_data.extend(pack_derivation_path(voter.keyValue))
         else:
-            data += testCase.netDesc.networkId.to_bytes(1, "big")
+            voter_data.extend(bytes.fromhex(voter.keyValue))
 
-        if not testCase.spendingValue.startswith("m/"):
-            data += bytes.fromhex(testCase.spendingValue)
-        elif testCase.spendingValue:
-            data += pack_derivation_path(testCase.spendingValue)
+        return bytes(voter_data)
 
-        if testCase.addrType in (AddressType.BYRON, AddressType.ENTERPRISE_KEY,
+    def derive_address(self, p1: P1Type, test_case: DeriveAddressTestCase) -> bytes:
+        data = bytes()
+        data += test_case.addrType.to_bytes(1, "big")
+        if test_case.addrType == AddressType.BYRON:
+            data += test_case.netDesc.protocol.to_bytes(4, "big")
+        else:
+            data += test_case.netDesc.networkId.to_bytes(1, "big")
+
+        if not test_case.spendingValue.startswith("m/"):
+            data += bytes.fromhex(test_case.spendingValue)
+        elif test_case.spendingValue:
+            data += pack_derivation_path(test_case.spendingValue)
+
+        if test_case.addrType in (AddressType.BYRON, AddressType.ENTERPRISE_KEY,
                         AddressType.ENTERPRISE_SCRIPT):
             staking = StakingDataSourceType.NONE
-        elif testCase.addrType in (AddressType.BASE_PAYMENT_KEY_STAKE_SCRIPT,
+        elif test_case.addrType in (AddressType.BASE_PAYMENT_KEY_STAKE_SCRIPT,
                           AddressType.BASE_PAYMENT_SCRIPT_STAKE_SCRIPT,
                           AddressType.REWARD_SCRIPT):
             staking = StakingDataSourceType.SCRIPT_HASH
-        elif testCase.addrType in (AddressType.POINTER_KEY, AddressType.POINTER_SCRIPT):
+        elif test_case.addrType in (AddressType.POINTER_KEY, AddressType.POINTER_SCRIPT):
             staking = StakingDataSourceType.BLOCKCHAIN_POINTER
-        elif not testCase.stakingValue.startswith("m/"):
+        elif not test_case.stakingValue.startswith("m/"):
             staking = StakingDataSourceType.KEY_HASH
         else:
             staking = StakingDataSourceType.KEY_PATH
         data += staking.to_bytes(1, "big")
 
         if staking == StakingDataSourceType.KEY_PATH:
-            data += pack_derivation_path(testCase.stakingValue)
+            data += pack_derivation_path(test_case.stakingValue)
         elif staking in (StakingDataSourceType.KEY_HASH,
                          StakingDataSourceType.SCRIPT_HASH,
                          StakingDataSourceType.BLOCKCHAIN_POINTER):
-            data += bytes.fromhex(testCase.stakingValue)
+            data += bytes.fromhex(test_case.stakingValue)
         elif staking != StakingDataSourceType.NONE:
             raise NotImplementedError("Not implemented yet")
         return self._serialize(InsType.INS_DERIVE_ADDRESS, p1, P2Type.P2_UNUSED, data)
@@ -330,13 +346,16 @@ class CommandBuilder:
         data = pack_derivation_path(path)
         return self._serialize(InsType.INS_GET_PUBLIC_KEY, P1Type.P1_UNUSED, P2Type.P2_UNUSED, data)
 
-    def sign_opCert(self, testCase: OpCertTestCase) -> bytes:
+    def sign_opcert(self, test_case: OpCertTestCase) -> bytes:
         data = bytearray()
-        data.extend(bytes.fromhex(testCase.opCert.kesPublicKeyHex))
-        data.extend(testCase.opCert.kesPeriod.to_bytes(8, "big"))
-        data.extend(testCase.opCert.issueCounter.to_bytes(8, "big"))
-        data.extend(pack_derivation_path(testCase.opCert.path))
+        data.extend(bytes.fromhex(test_case.opCert.kesPublicKeyHex))
+        data.extend(test_case.opCert.kesPeriod.to_bytes(8, "big"))
+        data.extend(test_case.opCert.issueCounter.to_bytes(8, "big"))
+        data.extend(pack_derivation_path(test_case.opCert.path))
         return self._serialize(InsType.INS_SIGN_OPCERT, P1Type.P1_UNUSED, P2Type.P2_UNUSED, bytes(data))
+
+    def sign_opCert(self, test_case: OpCertTestCase) -> bytes:
+        return self.sign_opcert(test_case)
 
     def sign_tx_init(self, params: TxInitParams) -> bytes:
         data = bytearray()
@@ -376,8 +395,8 @@ class CommandBuilder:
 
     def derive_script_add_simple(self, script: NativeScript) -> bytes:
         data = bytes()
-        scriptType = 0 if script.type == NativeScriptType.PUBKEY_THIRD_PARTY else script.type
-        data += scriptType.to_bytes(1, "big")
+        script_type = 0 if script.type == NativeScriptType.PUBKEY_THIRD_PARTY else script.type
+        data += script_type.to_bytes(1, "big")
         if script.type in (NativeScriptType.PUBKEY_DEVICE_OWNED, NativeScriptType.PUBKEY_THIRD_PARTY):
             assert isinstance(script.params, NativeScriptParamsPubkey)
             # Serialize extended credential format
@@ -600,14 +619,7 @@ class CommandBuilder:
         voting_procedures = getattr(tx, "votingProcedures", None)
         if voting_procedures:
             for voter_votes in voting_procedures:
-                # Serialize voter type
-                data.append(voter_votes.voter.type)
-
-                # Serialize voter data based on type
-                if voter_votes.voter.type in [100, 102, 104]:  # KEY_PATH types
-                    data.extend(pack_derivation_path(voter_votes.voter.keyValue))
-                else:  # KEY_HASH or SCRIPT_HASH types
-                    data.extend(bytes.fromhex(voter_votes.voter.keyValue))
+                data.extend(self._serialize_voter(voter_votes.voter))
 
                 # Serialize number of votes for this voter
                 data.extend(len(voter_votes.votes).to_bytes(2, "big"))
@@ -622,20 +634,7 @@ class CommandBuilder:
                     data.append(vote.votingProcedure.vote)
 
                     # anchor inclusion flag
-                    if vote.votingProcedure.anchor is not None:
-                        data.append(FLAG_INCLUDED_YES)
-
-                        # anchor URL
-                        anchor_url_bytes = vote.votingProcedure.anchor.url.encode('utf-8')
-                        if len(anchor_url_bytes) > MAX_UINT16:
-                            raise ValueError("Anchor URL exceeds maximum encodable length")
-                        data.extend(len(anchor_url_bytes).to_bytes(2, "big"))
-                        data.extend(anchor_url_bytes)
-
-                        # anchor hash
-                        data.extend(bytes.fromhex(vote.votingProcedure.anchor.hashHex))
-                    else:
-                        data.append(FLAG_INCLUDED_NO)
+                    data.extend(self._serialize_anchor(vote.votingProcedure.anchor))
 
         if getattr(tx, "treasury", None) is not None:
             data.extend(tx.treasury.to_bytes(8, "big"))

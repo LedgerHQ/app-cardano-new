@@ -1,34 +1,30 @@
-# Application Client for Functional Tests
+# Application Client for Tests
 
-This minimalist Python client is used in the functional tests of the [boilerplate Ledger application](https://github.com/LedgerHQ/app-boilerplate).  
-It serves as a communication layer between the test framework (`pytest`) and the device-under-test (Ledger app), sending commands and parsing responses.
+This package is a minimal Python client used by the test suite to talk to the Cardano app over APDUs. It is intentionally small and mirrors the on-device dispatcher and response formats.
 
-## Purpose
+## Files
 
-This module is not intended to be a full SDK. Instead, it offers just enough abstraction to:
+- `command_builder.py` — Builds APDUs and transaction chunks; owns CLA/INS/P1/P2 constants.
+- `command_sender.py` — Sends APDUs via `ragger` backends; provides sync and `*_async` helpers for UI flows.
+- `app_def.py` — Shared enums/structures used by the test vectors and builders.
+- `response_unpacker.py` — Validates and unpacks response payloads.
+- `status_words.py` — Status word constants (SDK + Cardano-specific).
 
-- Send APDUs to the application
-- Decode structured responses
-- Facilitate clear and maintainable test code
+## Mapping to the Device Dispatcher
 
-It is intentionally lightweight, focusing on what is strictly necessary to write functional tests.
+The APDU constants are defined here to mirror the C dispatcher:
 
-## When to Use
+- `command_builder.CLA` ↔ `src/apdu/dispatcher.h` (`CLA`).
+- `command_builder.InsType` ↔ `src/apdu/dispatcher.h` (`command_e`).
+- `command_builder.P1Type` ↔ `src/apdu/dispatcher.h` (`p1_e`).
+- `command_builder.P2Type` ↔ `src/apdu/dispatcher.h` (`p2_e`).
 
-Use this client as-is when testing the original boilerplate application.  
-When you **fork the boilerplate** to implement your own Ledger app, you can **extend or modify this client** to support your custom instruction set, encodings, and behavior.
+When adding or changing APDU commands, update both `command_builder.py` and `src/apdu/dispatcher.h` (and keep any P1/P2 ranges consistent).
 
-## Structure
+## Status Words
 
-The `application_client` package contains:
+`status_words.py` mirrors the app status words defined in `src/cardano_swo.h` (plus ISO/IEC 7816-4 SDK words). Keep them aligned when introducing new error codes.
 
-- `boilerplate_command_sender.py` — Low-level command encoding and APDU transmission
-- `boilerplate_transaction.py` — Helpers to craft and serialize transactions
-- `boilerplate_response_unpacker.py` — Functions to decode responses from the app
-- `boilerplate_currency_utils.py` — Utility functions for currency-specific formatting
-- `boilerplate_utils.py` — Miscellaneous helpers (e.g. encoding, validation)
-- `py.typed` — Marker file for type checkers (e.g. `mypy`)
+## Usage
 
-## How to Use
-
-Look at the existing tests for example on how to use this client
+See the tests under `tests/standalone` for examples.

@@ -78,18 +78,19 @@ class CommandSender:
 
 
     @contextmanager
-    def sign_opcert_async(self, testCase: OpCertTestCase) -> Generator[None, None, None]:
+    def sign_opcert_async(self, test_case: OpCertTestCase) -> Generator[None, None, None]:
         """APDU Sign Operational Certificate
 
         Args:
-            testCase (OpCertTestCase): Test parameters
+            test_case (OpCertTestCase): Test parameters
 
         Returns:
             Generator
         """
 
-        with self._exchange_async(self._cmd_builder.sign_opCert(testCase)):
+        with self._exchange_async(self._cmd_builder.sign_opcert(test_case)):
             yield
+
 
     @contextmanager
     def sign_tx_witness_async(self, path: str) -> Generator[None, None, None]:
@@ -242,32 +243,32 @@ class CommandSender:
         return response
 
     @contextmanager
-    def derive_address_async(self, p1: P1Type, testCase: DeriveAddressTestCase) -> Generator[None, None, None]:
+    def derive_address_async(self, p1: P1Type, test_case: DeriveAddressTestCase) -> Generator[None, None, None]:
         """APDU Derive Address
 
         Args:
             p1 (P1Type): APDU Parameter 1
-            testCase (DeriveAddressTestCase): Test parameters
+            test_case (DeriveAddressTestCase): Test parameters
 
         Returns:
             Generator
         """
 
-        with self._exchange_async(self._cmd_builder.derive_address(p1, testCase)):
+        with self._exchange_async(self._cmd_builder.derive_address(p1, test_case)):
             yield
 
-    def derive_address(self, p1: P1Type, testCase: DeriveAddressTestCase) -> RAPDU:
+    def derive_address(self, p1: P1Type, test_case: DeriveAddressTestCase) -> RAPDU:
         """APDU Derive Address
 
         Args:
             p1 (P1Type): APDU Parameter 1
-            testCase (DeriveAddressTestCase): Test parameters
+            test_case (DeriveAddressTestCase): Test parameters
 
         Returns:
             Response APDU
         """
 
-        return self._exchange(self._cmd_builder.derive_address(p1, testCase))
+        return self._exchange(self._cmd_builder.derive_address(p1, test_case))
 
     @contextmanager
     def derive_script_add_simple_async(self, script: NativeScript) -> Generator[None, None, None]:
@@ -300,15 +301,15 @@ class CommandSender:
 
 
     @contextmanager
-    def derive_script_finish_async(self, displayFormat: NativeScriptHashDisplayFormat) -> Generator[None, None, None]:
+    def derive_script_finish_async(self, display_format: NativeScriptHashDisplayFormat) -> Generator[None, None, None]:
         """APDU NATIVE SCRIPT HASH - FINISH step
 
         Args:
-            displayFormat (NativeScriptHashDisplayFormat): Input Test param
+            display_format (NativeScriptHashDisplayFormat): Input Test param
 
         Returns:
             Generator
         """
 
-        with self._exchange_async(self._cmd_builder.derive_script_finish(displayFormat)):
+        with self._exchange_async(self._cmd_builder.derive_script_finish(display_format)):
             yield
