@@ -6,6 +6,7 @@
 #include "cardano_tokens.h"
 #include "cardano_constants.h"
 #include "bech32.h"
+#include "buffer_write.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -57,56 +58,60 @@ bool format_uint64(uint64_t value, char *out, size_t outSize) {
     return format_u64(out, outSize, value);
 }
 
-#define WRITE_CHAR(ptr, end, c) \
-    {                           \
-        LEDGER_ASSERT(ptr + 1 <= end, "Buffer overflow in char write"); \
-        *ptr = (c);             \
-        ptr++;                  \
-    }
-
 bool format_decimal_amount(uint64_t amount, size_t places, char *out, size_t outSize) {
     LEDGER_ASSERT(outSize < BUFFER_SIZE_PARANOIA, "Output buffer size exceeds paranoia limit");
     LEDGER_ASSERT(places <= UINT8_MAX, "Decimal places exceed maximum value");
 
-    explicit_bzero(out, outSize);
-
     char scratchBuffer[40] = {0};
     explicit_bzero(scratchBuffer, SIZEOF(scratchBuffer));
-    char *ptr = scratchBuffer;
-    char *end = scratchBuffer + SIZEOF(scratchBuffer);
+    write_buffer_t scratch_buf = buffer_init(scratchBuffer, SIZEOF(scratchBuffer));
 
     // We print in reverse
-
     // decimal digits
     for (size_t dec = 0; dec < places; dec++) {
-        WRITE_CHAR(ptr, end, '0' + (amount % 10));
+        if (!buffer_write_u8(&scratch_buf, (uint8_t)('0' + (amount % 10)))) {
+            return false;
+        }
         amount /= 10;
     }
     if (places > 0) {
-        WRITE_CHAR(ptr, end, '.');
+        if (!buffer_write_u8(&scratch_buf, (uint8_t)'.')) {
+            return false;
+        }
     }
     // We want at least one iteration
     int place = 0;
     do {
         // thousands separator
         if (place && (place % 3 == 0)) {
-            WRITE_CHAR(ptr, end, ',');
+            if (!buffer_write_u8(&scratch_buf, (uint8_t)',')) {
+                return false;
+            }
         }
-        WRITE_CHAR(ptr, end, '0' + (amount % 10));
+        if (!buffer_write_u8(&scratch_buf, (uint8_t)('0' + (amount % 10)))) {
+            return false;
+        }
         amount /= 10;
         place++;
     } while (amount > 0);
 
     // Size without terminating character
-    STATIC_ASSERT(sizeof(ptr - scratchBuffer) == sizeof(size_t), "bad size_t size");
-    size_t rawSize = (size_t)(ptr - scratchBuffer);
-    LEDGER_ASSERT(rawSize + 1 <= outSize, "Formatted string does not fit in output buffer");
+    size_t rawSize = buffer_written_size(&scratch_buf);
+    if (rawSize + 1 > outSize) {
+        return false;
+    }
 
     // Copy reversed & append terminator
+    explicit_bzero(out, outSize);
+    write_buffer_t out_buf = buffer_init(out, outSize);
     for (size_t i = 0; i < rawSize; i++) {
-        out[i] = scratchBuffer[rawSize - 1 - i];
+        if (!buffer_write_u8(&out_buf, (uint8_t)scratchBuffer[rawSize - 1 - i])) {
+            return false;
+        }
     }
-    out[rawSize] = 0;
+    if (!buffer_write_u8(&out_buf, 0)) {
+        return false;
+    }
 
     // make sure all the information is displayed to the user
     LEDGER_ASSERT(strlen(out) == rawSize, "Formatted string length mismatch");
