@@ -201,6 +201,17 @@ static void derive_native_script_hash_review_ask_confirmation(bool confirm) {
 #define MAX_TIMELOCK_DESCRIPTION_LENGTH       40
 #define MAX_POLICY_ID_STRING_LENGTH           (2 * SCRIPT_HASH_LENGTH)
 
+// Native script UI pair counts
+#define UI_PAIRS_POSITION     1
+#define UI_PAIRS_SCRIPT_TYPE  1
+#define UI_PAIRS_REQUIREMENT  1
+#define UI_PAIRS_CONTENT      1
+#define UI_PAIRS_PUBKEY_PATH  1
+#define UI_PAIRS_PUBKEY_HASH  1
+#define UI_PAIRS_TIMELOCK     1
+#define UI_PAIRS_SCRIPT_HASH  1
+#define UI_PAIRS_POLICY_ID    1
+
 void display_complex_script_content(ui_native_script_type scriptType) {
     TRACE("display_complex_script_content");
 
@@ -209,19 +220,19 @@ void display_complex_script_content(ui_native_script_type scriptType) {
                   "Invalid script type for complex script display");
 
     const char *script_label = NULL;
-    int ui_pairs_count = 0;
+    int expectedPairs = 0;
     switch (scriptType) {
         case UI_SCRIPT_ALL:
             script_label = "ALL";
-            ui_pairs_count = 2;
+            expectedPairs = UI_PAIRS_SCRIPT_TYPE + UI_PAIRS_CONTENT;
             break;
         case UI_SCRIPT_ANY:
             script_label = "ANY";
-            ui_pairs_count = 2;
+            expectedPairs = UI_PAIRS_SCRIPT_TYPE + UI_PAIRS_CONTENT;
             break;
         case UI_SCRIPT_N_OF_K:
             script_label = "N out K";
-            ui_pairs_count = 3;
+            expectedPairs = UI_PAIRS_SCRIPT_TYPE + UI_PAIRS_REQUIREMENT + UI_PAIRS_CONTENT;
             break;
         default:
             break;
@@ -230,13 +241,14 @@ void display_complex_script_content(ui_native_script_type scriptType) {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     bool required_position = is_required_position(ctx);
     if (required_position) {
-        ui_pairs_count++;
+        expectedPairs += UI_PAIRS_POSITION;
     }
-    if (!ui_pairs_init(ui_pairs_count)) {
+    if (!ui_pairs_init(expectedPairs)) {
         TRACE("Failed to initialize pairs");
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
     }
+    START_COUNT();
     if (required_position) {
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Position"),
                        MAX_POSITION_DESCRIPTION_LENGTH,
@@ -255,6 +267,7 @@ void display_complex_script_content(ui_native_script_type scriptType) {
                    MAX_NESTED_SCRIPTS_DESCRIPTION_LENGTH,
                    format_remaining,
                    ctx->complexScripts[ctx->level].remainingScripts);
+    CHECK_COUNT(expectedPairs);
 
     nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_review_continue);
 }
@@ -297,16 +310,17 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
         }
         case UI_SCRIPT_PUBKEY_PATH: {
             TRACE("UI_SCRIPT_PUBKEY_PATH");
-            int ui_pairs_count = 2;
+            int expectedPairs = UI_PAIRS_SCRIPT_TYPE + UI_PAIRS_PUBKEY_PATH;
             bool required_position = is_required_position(ctx);
             if (required_position) {
-                ui_pairs_count++;
+                expectedPairs += UI_PAIRS_POSITION;
             }
-            if (!ui_pairs_init(ui_pairs_count)) {
+            if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
+            START_COUNT();
             if (required_position) {
                 UI_ADD_FORMAT1(UI_STATIC_LABEL("Position"),
                                MAX_POSITION_DESCRIPTION_LENGTH,
@@ -318,6 +332,7 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
                            MAX_BIP44_PATH_STRING_LENGTH,
                            format_bip44_path,
                            &ctx->scriptContent.pubkeyPath);
+            CHECK_COUNT(expectedPairs);
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList,
                                                 derive_native_script_hash_review_continue);
@@ -325,16 +340,17 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
         }
         case UI_SCRIPT_PUBKEY_HASH: {
             TRACE("UI_SCRIPT_PUBKEY_HASH");
-            int ui_pairs_count = 2;
+            int expectedPairs = UI_PAIRS_SCRIPT_TYPE + UI_PAIRS_PUBKEY_HASH;
             bool required_position = is_required_position(ctx);
             if (required_position) {
-                ui_pairs_count++;
+                expectedPairs += UI_PAIRS_POSITION;
             }
-            if (!ui_pairs_init(ui_pairs_count)) {
+            if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
+            START_COUNT();
             if (required_position) {
                 UI_ADD_FORMAT1(UI_STATIC_LABEL("Position"),
                                MAX_POSITION_DESCRIPTION_LENGTH,
@@ -348,6 +364,7 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
                            "addr_shared_vkh",
                            ctx->scriptContent.pubkeyHash,
                            ADDRESS_KEY_HASH_LENGTH);
+            CHECK_COUNT(expectedPairs);
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList,
                                                 derive_native_script_hash_review_continue);
@@ -355,16 +372,17 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
         }
         case UI_SCRIPT_INVALID_BEFORE: {
             TRACE("UI_SCRIPT_INVALID_BEFORE");
-            int ui_pairs_count = 2;
+            int expectedPairs = UI_PAIRS_SCRIPT_TYPE + UI_PAIRS_TIMELOCK;
             bool required_position = is_required_position(ctx);
             if (required_position) {
-                ui_pairs_count++;
+                expectedPairs += UI_PAIRS_POSITION;
             }
-            if (!ui_pairs_init(ui_pairs_count)) {
+            if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
+            START_COUNT();
             if (required_position) {
                 UI_ADD_FORMAT1(UI_STATIC_LABEL("Position"),
                                MAX_POSITION_DESCRIPTION_LENGTH,
@@ -377,6 +395,7 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
                            format_decimal_amount,
                            ctx->scriptContent.timelock,
                            0);
+            CHECK_COUNT(expectedPairs);
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList,
                                                 derive_native_script_hash_review_continue);
@@ -384,16 +403,17 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
         }
         case UI_SCRIPT_INVALID_HEREAFTER: {
             TRACE("UI_SCRIPT_INVALID_HEREAFTER");
-            int ui_pairs_count = 2;
+            int expectedPairs = UI_PAIRS_SCRIPT_TYPE + UI_PAIRS_TIMELOCK;
             bool required_position = is_required_position(ctx);
             if (required_position) {
-                ui_pairs_count++;
+                expectedPairs += UI_PAIRS_POSITION;
             }
-            if (!ui_pairs_init(ui_pairs_count)) {
+            if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
+            START_COUNT();
             if (required_position) {
                 UI_ADD_FORMAT1(UI_STATIC_LABEL("Position"),
                                MAX_POSITION_DESCRIPTION_LENGTH,
@@ -406,43 +426,46 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
                            format_decimal_amount,
                            ctx->scriptContent.timelock,
                            0);
+            CHECK_COUNT(expectedPairs);
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList,
                                                 derive_native_script_hash_review_continue);
             break;
         }
         case UI_SCRIPT_DISPLAY_BECH32: {
-            static char encodedStr[MAX_BECH32_STRING_LENGTH] = {0};
-            explicit_bzero(encodedStr, SIZEOF(encodedStr));
-            format_bech32("script",
-                          ctx->scriptHashBuffer,
-                          SCRIPT_HASH_LENGTH,
-                          encodedStr,
-                          SIZEOF(encodedStr));
-
-            if (!ui_pairs_init(1)) {
+            const int expectedPairs = UI_PAIRS_SCRIPT_HASH;
+            if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
-            g_pairs[0].item = "Script hash";
-            g_pairs[0].value = encodedStr;
+            START_COUNT();
+            UI_ADD_FORMAT3(UI_STATIC_LABEL("Script hash"),
+                           MAX_BECH32_STRING_LENGTH,
+                           format_bech32,
+                           "script",
+                           ctx->scriptHashBuffer,
+                           SCRIPT_HASH_LENGTH);
+            CHECK_COUNT(expectedPairs);
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList,
                                                 derive_native_script_hash_review_ask_confirmation);
             break;
         }
         case UI_SCRIPT_DISPLAY_POLICY_ID: {
-            if (!ui_pairs_init(1)) {
+            const int expectedPairs = UI_PAIRS_POLICY_ID;
+            if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
+            START_COUNT();
             UI_ADD_FORMAT2(UI_STATIC_LABEL("Policy ID"),
                            MAX_POLICY_ID_STRING_LENGTH,
                            format_hex_bytes,
                            ctx->scriptHashBuffer,
                            SCRIPT_HASH_LENGTH);
+            CHECK_COUNT(expectedPairs);
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList,
                                                 derive_native_script_hash_review_ask_confirmation);
