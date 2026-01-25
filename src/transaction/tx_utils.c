@@ -40,20 +40,20 @@ bool violatesSingleAccountOrStoreIt(const bip44_path_t* path) {
     if (singleAccountData->isStored) {
         const uint32_t storedAccount = singleAccountData->accountNumber;
         if (account != storedAccount) {
-            TRACE("Account mismatch: current=%d, stored=%d", account, storedAccount);
+            TRACE("Account mismatch: current=%u, stored=%u", account, storedAccount);
             return true;
         }
         const bool combinesByronAndShelley = singleAccountData->isByron != isByron;
         const bool combinationAllowed = (storedAccount == bip44_harden(0));
         if (combinesByronAndShelley && !combinationAllowed) {
-            TRACE("Byron/Shelley mixing not allowed for account %d", storedAccount);
+            TRACE("Byron/Shelley mixing not allowed for account %u", storedAccount);
             return true;
         }
     } else {
         singleAccountData->isStored = true;
         singleAccountData->isByron = isByron;
         singleAccountData->accountNumber = account;
-        TRACE("Stored single account data: account=%d, isByron=%d", account, isByron);
+        TRACE("Stored single account data: account=%u, isByron=%d", account, isByron);
     }
 
     return false;
