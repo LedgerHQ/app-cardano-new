@@ -295,6 +295,11 @@ def _build_reject_fixtures() -> str:
     def convert_pool_registration_params(params_json: Dict[str, Any]) -> PoolRegistrationParams:
         margin_json = params_json["margin"]
         metadata_json = params_json.get("metadata")
+        metadata_url = ""
+        metadata_hash = ""
+        if metadata_json is not None:
+            metadata_url = metadata_json.get("metadataUrl", "")
+            metadata_hash = metadata_json.get("metadataHashHex", "")
         return PoolRegistrationParams(
             poolKey=convert_pool_key(params_json["poolKey"]),
             vrfKeyHashHex=params_json["vrfKeyHashHex"].lower(),
@@ -305,7 +310,7 @@ def _build_reject_fixtures() -> str:
             poolOwners=[convert_pool_key(owner) for owner in params_json["poolOwners"]],
             relays=[convert_relay(relay) for relay in params_json["relays"]],
             metadata=PoolMetadataParams(
-                metadata_json["metadataUrl"], metadata_json["metadataHashHex"].lower()
+                metadata_url, metadata_hash.lower()
             )
             if metadata_json
             else None,
@@ -607,16 +612,15 @@ def _build_reject_fixtures() -> str:
             )
             for chunk in builder.serialize_transaction_chunks(tx)
         ]
-        if prefix in ("REJECT_WITNESS", "REJECT_SINGLE_ACCOUNT"):
-            for path in witness_paths:
-                witness_apdu = builder.sign_tx_witness(path)
-                chunks.append(
-                    ChunkInfo(
-                        p1=P1Type.P1_TX_WITNESSES,
-                        more=False,
-                        hex_payload=witness_apdu[5:].hex().upper(),
-                    )
+        for path in witness_paths:
+            witness_apdu = builder.sign_tx_witness(path)
+            chunks.append(
+                ChunkInfo(
+                    p1=P1Type.P1_TX_WITNESSES,
+                    more=False,
+                    hex_payload=witness_apdu[5:].hex().upper(),
                 )
+            )
         reason = fixture_json.get("rejectReason")
         expect_init_failure = prefix == "REJECT_INIT"
         if prefix == "REJECT_ADDRESS":

@@ -15,6 +15,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_NON_MAINNET_PROTOCOL_MA
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.NETWORK_INVALID_NETWORK_ID
@@ -28,6 +34,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_INVALID_NETWORK_ID[] = 
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.SIGN_MODE_POOL_OPERATOR__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
@@ -39,6 +51,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800000001"
     "01000000000000002A000000000000000A",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -80,6 +98,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
@@ -108,6 +132,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.SIGN_MODE_POOL_OPERATOR__WITHDRAWALS_NOT_ALLOWED
@@ -129,6 +159,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
         .hex_payload =
     "E80129FB5FD4AA8CADD6705ACC8263CEE0FC62EDCA5AC38DB593FEC2F9FD",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -155,6 +191,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.SIGN_MODE_POOL_OPERATOR__MINT_NOT_ALLOWED
@@ -177,6 +219,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     "BCFFBDF9112487C443466E1EA7D8C834DF5AC5C42500010875657374436F696E"
     "FFFFFFFFFF87C79E",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -204,6 +252,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.SIGN_MODE_ORDINARY__COLLATERAL_INPUTS_NOT_ALLOWED
@@ -216,6 +270,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_COLLATERAL_
     "01000000000000002A000000000000000A3B40265111D8BB3C3C608D95B3A0BF"
     "83461ACE32D79336579A1939B3AAD1C0B700000000",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -255,6 +315,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.SIGN_MODE_POOL_OWNER__COLLATERAL_INPUTS_NOT_ALLOWED
@@ -279,6 +345,18 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.SIGN_MODE_POOL_OPERATOR__REQUIRED_SIGNERS_NOT_ALLOWED
@@ -300,6 +378,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
         .hex_payload =
     "000717800000000000000000000000",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -326,6 +410,18 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.SIGN_MODE_ORDINARY__COLLATERAL_OUTPUT_NOT_ALLOWED
@@ -339,6 +435,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_COLLATERAL_
     "1ABB4F62BC455E217D4A51FDE909FA9AEA545443AC53C046CF6A42095E3C6031"
     "0FA802771D0672F8FE2D1861138B0900000000000000010000000101",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -381,6 +483,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.SIGN_MODE_POOL_OWNER__REFERENCE_INPUTS_NOT_ALLOWED
@@ -407,6 +515,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.SIGN_MODE_ORDINARY__TOTAL_COLLATERAL_NOT_ALLOWED
@@ -418,6 +532,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_TOTAL_COLLA
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800000001"
     "01000000000000002A000000000000000A0000000000000008",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -456,6 +576,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.SIGN_MODE_POOL_OWNER__TOTAL_COLLATERAL_NOT_ALLOWED
@@ -479,6 +605,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.SIGN_MODE_ORDINARY__REFERENCE_INPUTS_NOT_ALLOWED
@@ -491,6 +623,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_REFERENCE_I
     "01000000000000002A000000000000000A3B40265111D8BB3C3C608D95B3A0BF"
     "83461ACE32D79336579A1939B3AAD1C0B700000000",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -530,6 +668,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.SIGN_MODE_POOL_OWNER__REFERENCE_INPUTS_NOT_ALLOWED
@@ -554,6 +698,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 
@@ -565,6 +715,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_KEY[]
     "000000000026020E0122058000073C8000071780000000000000020000000000"
     "0000000000000A0000000101000000000000002A000000000000000A",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -580,6 +736,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_SCRIP
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.OUTPUT_INVALID_ADDRESS_PARAMS
@@ -591,6 +753,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORD
     "93FEC2F9FD33122A946B9AD3D2DDF029D3A828F0468AECE76895F15C9EFBD69B"
     "427700000000002DD2E80000000101000000000000002A000000000000000A",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -606,6 +774,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORD
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.OUTPUT_INVALID_ADDRESS_PARAMS
@@ -617,6 +791,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OPERATOR_SPENDI
     "FBD69B427722058000073C80000717800001C800000002000000000000000000"
     "00000A0000000101000000000000002A000000000000000A",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -663,6 +843,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_OR
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.SIGN_MODE_MULTISIG__POOL_REGISTRATION_NOT_ALLOWED
@@ -697,6 +883,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_PL
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.SIGN_MODE_MULTISIG__POOL_RETIREMENT_NOT_ALLOWED
@@ -723,6 +915,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_REGISTRATION_IN_P
     "01000000000000002A000000000000000A0002058000073C8000071780000000"
     "0000000200000000",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -752,6 +950,18 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DEREGISTRATION_IN
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
@@ -763,6 +973,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DEREGISTRATION_IN
     "000000002A000000000000000A0102058000073C800007178000000000000002"
     "00000000",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -779,6 +995,18 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DELEGATION_IN_POO
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.CERTIFICATE_INVALID_POOL_KEY_HASH
@@ -790,6 +1018,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DELEGATION_IN_POO
     "000000002A000000000000000A0202058000073C800007178000000000000002"
     "00000000",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -806,6 +1040,18 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "048000073D800007178000000080000001",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
@@ -817,6 +1063,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL
     "000000002A000000000000000A0402048000073D800007178000000080000001"
     "000000000000002A",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "048000073D800007178000000080000001",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -834,6 +1086,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_SCRIPT_HASH_IN_
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.LEDGER_POLICY
@@ -846,6 +1104,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_NON_STAKING_PAT
     "01000000000000002A000000000000000A0002058000073C8000071780000000"
     "0000000000000000",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -877,6 +1141,18 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIRE_NON_POOL_CO
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "048000073D800007178000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 
@@ -889,6 +1165,24 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_REJECT_TX_WITH_IN
     "073C80000717800000000000000200000001000000000000823502058000073C"
     "80000717800000000000000200000000",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000001",
+        .p1 = 0x0F,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -905,6 +1199,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_SCRIPT_HASH_AS_ST
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.LEDGER_POLICY
@@ -917,6 +1217,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_NON_STAKING_PATH_
     "01000000000000002A000000000000000A00000000000003E802058000073C80"
     "000717800000000000000000000000",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -945,6 +1251,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_NON_STAKING_PATH_
     "01000000000000002A000000000000000A00000000000003E802058000073C80"
     "000717800000000000000000000000",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -1710,6 +2022,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.COLLATERAL_INPUT_CONTAINS_DATUM
@@ -1751,6 +2069,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.COLLATERAL_INPUT_CONTAINS_REFERENCE_SCRIPT
@@ -1765,6 +2089,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL
     "572310E265EDB31330448B36B7179E00000000006CA79301000001020014DEAD"
     "BEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -1784,6 +2114,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_A
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.MULTIASSET_INVALID_TOKEN_BUNDLE_NOT_UNIQUE
@@ -1798,6 +2134,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_A
     "EE938BE03E9BAE5657982A74E9014EB4960108C9E23A5B390001087564247542"
     "686911000000000000002F0101000000000000002A000000000000000A",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -1815,6 +2157,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_T
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.MULTIASSET_INVALID_ASSET_GROUP_ORDERING
@@ -1828,6 +2176,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_T
     "B4960108C9E23A5B390002087564247542686911000000000000002F06756424"
     "75426800000000007838620101000000000000002A000000000000000A",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -1845,6 +2199,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_T
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.MULTIASSET_INVALID_TOKEN_BUNDLE_ORDERING
@@ -1860,6 +2220,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WITH_MI
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.MULTIASSET_INVALID_ASSET_GROUP_ORDERING
@@ -1871,6 +2237,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WITH_MI
     "68AE52A49B73725E326DC16579DCC37400021C1E349C9BDEA19FD6C147626A52"
     "60BC44B71635F398B67C59881DF209FFFFFFFFFFFFFFFF000000000000000000",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -2061,6 +2433,18 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_ID_PATH_SENT_IN_FOR_POO
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.SIGN_MODE_POOL_OPERATOR__DEVICE_OWNED_POOL_KEY_REQUIRED
@@ -2085,6 +2469,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_ID_HASH_SENT_IN_FOR_POO
     "6D6C6162732E636F6D2F73616D706C6555726C2E6A736F6ECDB714FD722C24AE"
     "B10C93DBB0FF03BD4783441CD5BA2A8B6F373390520535BB",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -2114,6 +2504,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NON_STAKING_PATH_
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 
@@ -2140,6 +2536,18 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_INVALID_POOL_REGISTRATI
     "73616D706C6555726C2E6A736F6ECDB714FD722C24AEB10C93DBB0FF03BD4783"
     "441CD5BA2A8B6F373390520535BB",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000001",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -2198,6 +2606,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.POOL_REGISTRATION_METADATA_INVALID_URL
@@ -2221,6 +2635,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_
     "00000100020BB80236E44B9A0102010A6BF124F217D0E5A0A8ADB1DBD8540E13"
     "34280D49AB861127868339F43B3948",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -2249,6 +2669,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.POOL_REGISTRATION_METADATA_INVALID_HASH
@@ -2272,6 +2698,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_
     "00000100020BB80236E44B9A01022968747470733A2F2F7777772E7661637575"
     "6D6C6162732E636F6D2F73616D706C6555726C2E6A736F6E",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };
@@ -2301,6 +2733,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_RELAY_SINGLEHOSTHOSTNAME_MIS
         .p1 = 0x02,
         .more = false,
     },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
+        .more = false,
+    },
 };
 
 // InvalidDataReason.RELAY_INVALID_DNS
@@ -2325,6 +2763,12 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_RELAY_MULTIHOST_MISSING_DNS[
     "6D2F73616D706C6555726C2E6A736F6ECDB714FD722C24AEB10C93DBB0FF03BD"
     "4783441CD5BA2A8B6F373390520535BB",
         .p1 = 0x02,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = 0x0F,
         .more = false,
     },
 };

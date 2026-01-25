@@ -32,6 +32,8 @@ from reject_fixture_generators.address_derivation_reject_generators import (
     generate_reject_address_derivation_fixtures,
 )
 
+REPO_ROOT = Path(__file__).resolve().parent.parent
+
 def _add_tests_to_sys_path() -> None:
     sys.path.insert(0, str(REPO_ROOT / "tests"))
     sys.path.insert(0, str(REPO_ROOT / "tests" / "application_client"))
@@ -1236,10 +1238,7 @@ def _build_reject_fixtures() -> str:
             to_bip32_path(path) if isinstance(path, list) else path
             for path in fixture_json.get("additionalWitnessPaths", [])
         ]
-        if prefix == "REJECT_WITNESS":
-            witness_paths = list(additional_paths)
-        else:
-            witness_paths = gather_witness_paths(tx, signing_mode, additional_paths)
+        witness_paths = gather_witness_paths(tx, signing_mode, additional_paths)
         init_params = builder.build_tx_init_params(
             tx=tx,
             signing_mode=signing_mode,
