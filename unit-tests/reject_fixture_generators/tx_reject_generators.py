@@ -616,7 +616,7 @@ def _build_reject_fixtures() -> str:
             witness_apdu = builder.sign_tx_witness(path)
             chunks.append(
                 ChunkInfo(
-                    p1=P1Type.P1_TX_WITNESSES,
+                    p1=P1Type.P1_TX_SIGN_WITNESS,
                     more=False,
                     hex_payload=witness_apdu[5:].hex().upper(),
                 )

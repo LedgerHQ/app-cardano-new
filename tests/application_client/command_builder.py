@@ -73,6 +73,7 @@ FLAG_INCLUDED_YES: int = 0x02
 SETTINGS_DISABLED: int = 0x00
 SETTINGS_ENABLED: int = 0x01
 MAX_UINT8: int = 0xFF
+MAX_UINT16: int = 0xFFFF
 # Mirrors `src/apdu/dispatcher.h::command_e`
 class InsType(IntEnum):
     INS_GET_VERSION = 0x03
@@ -626,6 +627,8 @@ class CommandBuilder:
 
                         # anchor URL
                         anchor_url_bytes = vote.votingProcedure.anchor.url.encode('utf-8')
+                        if len(anchor_url_bytes) > MAX_UINT16:
+                            raise ValueError("Anchor URL exceeds maximum encodable length")
                         data.extend(len(anchor_url_bytes).to_bytes(2, "big"))
                         data.extend(anchor_url_bytes)
 
@@ -775,13 +778,11 @@ class CommandBuilder:
 
         result.append(FLAG_INCLUDED_YES)
         url_bytes = anchor.url.encode("utf-8")
-        if len(url_bytes) > MAX_UINT8:
-            raise ValueError("Anchor URL exceeds maximum length")
-        result.append(len(url_bytes))
+        if len(url_bytes) > MAX_UINT16:
+            raise ValueError("Anchor URL exceeds maximum encodable length")
+        result.extend(len(url_bytes).to_bytes(2, "big"))
         result.extend(url_bytes)
         hash_bytes = bytes.fromhex(anchor.hashHex)
-        if len(hash_bytes) != 32:
-            raise ValueError("Anchor hash must be 32 bytes")
         result.extend(hash_bytes)
         return bytes(result)
 
@@ -865,7 +866,9 @@ class CommandBuilder:
             return bytes(data)
         data.append(FLAG_INCLUDED_YES)
         url_bytes = metadata.metadataUrl.encode("utf-8")
-        data.append(len(url_bytes))
+        if len(url_bytes) > MAX_UINT16:
+            raise ValueError("Pool metadata URL exceeds maximum encodable length")
+        data.extend(len(url_bytes).to_bytes(2, "big"))
         data.extend(url_bytes)
         hash_bytes = bytes.fromhex(metadata.metadataHashHex.lower())
         data.extend(hash_bytes)

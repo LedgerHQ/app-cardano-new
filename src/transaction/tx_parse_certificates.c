@@ -232,14 +232,14 @@ static parser_status_e _parse_anchor(buffer_t *buf, anchor_t *anchor) {
 
     anchor->isIncluded = true;
 
-    // Read URL length
-    uint8_t url_len_byte;
-    if (!buffer_read_u8(buf, &url_len_byte)) {
+    // Read URL length (uint16 BE)
+    uint16_t url_len;
+    if (!buffer_read_u16(buf, &url_len, BE)) {
         TRACE("Failed to read anchor URL length");
         return CERTIFICATES_PARSING_ERROR;
     }
-    anchor->urlLength = url_len_byte;
-    TRACE("Anchor URL length: %u", anchor->urlLength);
+    anchor->urlLength = url_len;
+    TRACE("Anchor URL length: %u", url_len);
 
     if (anchor->urlLength > MAX_ANCHOR_URL_LENGTH) {
         TRACE("Anchor URL length exceeds maximum: %u > %u", anchor->urlLength, MAX_ANCHOR_URL_LENGTH);
@@ -653,8 +653,8 @@ static parser_status_e _parse_pool_metadata(buffer_t *buf, pool_metadata_t *meta
 
     *isNull = false;
     // URL (length + data)
-    uint8_t url_len;
-    if (!buffer_read_u8(buf, &url_len)) {
+    uint16_t url_len = 0;
+    if (!buffer_read_u16(buf, &url_len, BE)) {
         TRACE("Failed to read metadata URL length");
         return CERTIFICATES_PARSING_ERROR;
     }
