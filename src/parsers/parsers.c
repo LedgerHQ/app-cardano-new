@@ -36,11 +36,14 @@ bool buffer_read_flag_included(buffer_t *buf, bool* result) {
     switch (value) {
         case FLAG_INCLUDED_YES:
             *result = true;
+            TRACE("Flag included = true");
             return true;
         case FLAG_INCLUDED_NO:
             *result = false;
+            TRACE("Flag included = false");
             return true;
         default:
+            TRACE("Invalid flag included value: 0x%02x", value);
             return false;
     }
 }
@@ -84,7 +87,6 @@ bool buffer_read_int64(buffer_t *buffer, int64_t *value, endianness_t endianness
 }
 
 bool buffer_read_anchor(buffer_t *buf, anchor_t *anchor) {
-    TRACE("Parsing anchor");
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     LEDGER_ASSERT(anchor != NULL, "NULL anchor");
 
@@ -114,7 +116,6 @@ bool buffer_read_anchor(buffer_t *buf, anchor_t *anchor) {
         return false;
     }
     TRACE("Anchor URL length: %u", anchor->urlLength);
-
     if (anchor->urlLength > MAX_ANCHOR_URL_LENGTH) {
         TRACE("Anchor URL length exceeds maximum: %u > %u", anchor->urlLength,
               MAX_ANCHOR_URL_LENGTH);
@@ -130,15 +131,12 @@ bool buffer_read_anchor(buffer_t *buf, anchor_t *anchor) {
         TRACE("Anchor URL contains non-printable ASCII or spaces");
         return false;
     }
-    TRACE("Successfully parsed anchor URL");
-
     if (!buffer_read_bytes_ptr(buf, &anchor->hash, ANCHOR_HASH_LENGTH)) {
         TRACE("Failed to read anchor hash");
         return false;
     }
     ASSERT(anchor->hash != NULL);
 
-    TRACE("Successfully parsed anchor");
     return true;
 }
 
@@ -170,15 +168,12 @@ static bool _parse_credential_type(buffer_t *buf, ext_credential_type_t *cred_ty
     switch (cred_type_wire) {
         case EXT_CREDENTIAL_KEY_HASH:
             *cred_type = EXT_CREDENTIAL_KEY_HASH;
-            TRACE("Credential type: KEY_HASH");
             break;
         case EXT_CREDENTIAL_SCRIPT_HASH:
             *cred_type = EXT_CREDENTIAL_SCRIPT_HASH;
-            TRACE("Credential type: SCRIPT_HASH");
             break;
         case EXT_CREDENTIAL_KEY_PATH:
             *cred_type = EXT_CREDENTIAL_KEY_PATH;
-            TRACE("Credential type: KEY_PATH");
             break;
         default:
             TRACE("Invalid credential type wire value: 0x%02x", cred_type_wire);
@@ -205,7 +200,6 @@ static bool _parse_credential_data(buffer_t *buf,
                 TRACE("Failed to read BIP44 path");
                 return false;
             }
-            TRACE("Successfully parsed KEY_PATH credential");
             break;
         case EXT_CREDENTIAL_KEY_HASH: {
             if (!buffer_read_bytes_ptr(buf, &credential->keyHash, ADDRESS_KEY_HASH_LENGTH)) {
@@ -213,7 +207,6 @@ static bool _parse_credential_data(buffer_t *buf,
                 return false;
             }
             ASSERT(credential->keyHash != NULL);
-            TRACE("Successfully parsed KEY_HASH credential");
             break;
         }
         case EXT_CREDENTIAL_SCRIPT_HASH: {
@@ -222,7 +215,6 @@ static bool _parse_credential_data(buffer_t *buf,
                 return false;
             }
             ASSERT(credential->scriptHash != NULL);
-            TRACE("Successfully parsed SCRIPT_HASH credential");
             break;
         }
         default:
@@ -233,7 +225,6 @@ static bool _parse_credential_data(buffer_t *buf,
 }
 
 bool buffer_read_credential(buffer_t *buf, ext_credential_t *credential) {
-    TRACE("Parsing extended credential");
     ext_credential_type_t cred_type = {0};
     if (!_parse_credential_type(buf, &cred_type)) {
         TRACE("Failed to parse credential type");
@@ -245,6 +236,5 @@ bool buffer_read_credential(buffer_t *buf, ext_credential_t *credential) {
         TRACE("Failed to parse credential data");
         return false;
     }
-    TRACE("Successfully parsed extended credential");
     return true;
 }

@@ -335,6 +335,7 @@ void tx_handle_parse_error(parser_status_e status) {
 static parser_status_e parse_input_item(buffer_t *buf, s_flist_node **list_head, parser_status_e error_on_failure) {
     tx_input_node_t *item = (tx_input_node_t *) app_mem_alloc(sizeof(tx_input_node_t));
     if (item == NULL) {
+        TRACE("parse_input_item: out of memory allocating tx_input_node");
         return OUT_OF_MEMORY_ERROR;
     }
 
@@ -387,6 +388,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
 
         tx_output_node_t *item = (tx_output_node_t *) app_mem_alloc(sizeof(tx_output_node_t));
         if (item == NULL) {
+            TRACE("parse_tx_outputs: out of memory allocating tx_output_node");
             return OUT_OF_MEMORY_ERROR;
         }
         explicit_bzero(item, sizeof(*item));
@@ -399,8 +401,6 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
             app_mem_free(item);
             return status;
         }
-        TRACE("Deserialize: Output %u destination parsed", i);
-
         ASSERT_TYPE(item->output_data.adaAmount, uint64_t);
         if (!buffer_read_u64(&output_buf, &item->output_data.adaAmount, BE)) {
             app_mem_free(item);
@@ -413,14 +413,12 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
             app_mem_free(item);
             return status;
         }
-        TRACE("Deserialize: Output %u format parsed", i);
 
         ASSERT_TYPE(item->output_data.numAssetGroups, uint16_t);
         if (!buffer_read_u16(&output_buf, &item->output_data.numAssetGroups, BE)) {
             app_mem_free(item);
             return OUTPUTS_PARSING_ERROR;
         }
-        TRACE("Deserialize: Output %u: %u asset groups", i, item->output_data.numAssetGroups);
 
         item->output_data.assetGroups = NULL;
         if (item->output_data.numAssetGroups > 0) {
@@ -431,6 +429,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
                 output_asset_group_node_t *group_node =
                     (output_asset_group_node_t *) app_mem_alloc(sizeof(output_asset_group_node_t));
                 if (group_node == NULL) {
+                    TRACE("parse_tx_outputs: out of memory allocating asset group node");
                     free_output_item(item);
                     return OUT_OF_MEMORY_ERROR;
                 }
@@ -481,6 +480,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
                     output_token_node_t *token_item =
                         (output_token_node_t *) app_mem_alloc(sizeof(output_token_node_t));
                     if (token_item == NULL) {
+                        TRACE("parse_tx_outputs: out of memory allocating token node");
                         free_asset_group_node(group_node);
                         free_output_item(item);
                         return OUT_OF_MEMORY_ERROR;
@@ -596,6 +596,7 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx) {
     for (uint16_t ag = 0; ag < tx->num_mint_asset_groups; ag++) {
         mint_asset_group_node_t *item = (mint_asset_group_node_t *) app_mem_alloc(sizeof(mint_asset_group_node_t));
         if (item == NULL) {
+            TRACE("parse_tx_mint_groups: out of memory allocating mint asset group");
             return OUT_OF_MEMORY_ERROR;
         }
         explicit_bzero(item, sizeof(*item));
@@ -617,14 +618,12 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx) {
         }
         previous_policy_id = item->asset_group.policyId;
         has_previous_policy = true;
-        TRACE("Deserialize: Mint asset group %u: policy ID read", ag);
 
         ASSERT_TYPE(item->asset_group.numTokens, uint16_t);
         if (!buffer_read_u16(buf, &item->asset_group.numTokens, BE)) {
             free_mint_item(item);
             return MINT_PARSING_ERROR;
         }
-        TRACE("Deserialize: Mint asset group %u: %u tokens", ag, item->asset_group.numTokens);
 
         // Initialize tokens linked list
         item->asset_group.tokens = NULL;
@@ -637,6 +636,7 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx) {
             // Allocate list node for this token
             mint_token_node_t *token_item = (mint_token_node_t *) app_mem_alloc(sizeof(mint_token_node_t));
             if (token_item == NULL) {
+                TRACE("parse_tx_mint_groups: out of memory allocating mint token node");
                 free_mint_item(item);
                 return OUT_OF_MEMORY_ERROR;
             }
@@ -796,6 +796,7 @@ static parser_status_e parse_tx_withdrawals(buffer_t *buf, transaction_t *tx) {
     for (uint16_t i = 0; i < tx->num_withdrawals; i++) {
         tx_withdrawal_node_t *item = (tx_withdrawal_node_t *) app_mem_alloc(sizeof(tx_withdrawal_node_t));
         if (item == NULL) {
+            TRACE("parse_tx_withdrawals: out of memory allocating withdrawal node");
             return OUT_OF_MEMORY_ERROR;
         }
 
@@ -1024,6 +1025,7 @@ static parser_status_e parse_tx_required_signers(buffer_t *buf, transaction_t *t
         tx_required_signer_node_t *item =
             (tx_required_signer_node_t *) app_mem_alloc(sizeof(tx_required_signer_node_t));
         if (item == NULL) {
+            TRACE("parse_tx_required_signers: out of memory allocating signer node");
             return OUT_OF_MEMORY_ERROR;
         }
 
@@ -1102,6 +1104,7 @@ static parser_status_e parse_output_structure(buffer_t *output_buf,
             output_asset_group_node_t *group_node =
                 (output_asset_group_node_t *) app_mem_alloc(sizeof(output_asset_group_node_t));
             if (group_node == NULL) {
+                TRACE("parse_output_asset_data: out of memory allocating asset group for collateral output");
                 free_asset_groups(*assetGroups);
                 return OUT_OF_MEMORY_ERROR;
             }
@@ -1147,6 +1150,7 @@ static parser_status_e parse_output_structure(buffer_t *output_buf,
                 output_token_node_t *token_item =
                     (output_token_node_t *) app_mem_alloc(sizeof(output_token_node_t));
                 if (token_item == NULL) {
+                    TRACE("parse_output_asset_data: out of memory allocating token node for collateral output");
                     free_asset_group_node(group_node);
                     free_asset_groups(*assetGroups);
                     return OUT_OF_MEMORY_ERROR;
@@ -1266,6 +1270,7 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
         voter_votes_node_t *voter_item =
             (voter_votes_node_t *) app_mem_alloc(sizeof(voter_votes_node_t));
         if (voter_item == NULL) {
+            TRACE("parse_tx_voting_procedures: out of memory allocating voter node");
             return OUT_OF_MEMORY_ERROR;
         }
         explicit_bzero(voter_item, sizeof(*voter_item));
@@ -1322,6 +1327,7 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
             vote_node_t *vote_item =
                 (vote_node_t *) app_mem_alloc(sizeof(vote_node_t));
             if (vote_item == NULL) {
+                TRACE("parse_tx_voting_procedures: out of memory allocating vote node");
                 return OUT_OF_MEMORY_ERROR;
             }
             explicit_bzero(vote_item, sizeof(*vote_item));
@@ -1341,7 +1347,15 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
             if (!buffer_read_u8(buf, &vote_byte)) {
                 return VOTING_PROCEDURES_PARSING_ERROR;
             }
-            vote_item->vote_data.voteOption = (vote_t) vote_byte;
+            switch (vote_byte) {
+                case VOTE_NO:
+                case VOTE_YES:
+                case VOTE_ABSTAIN:
+                    vote_item->vote_data.voteOption = (vote_t) vote_byte;
+                    break;
+                default:
+                    return VOTING_PROCEDURES_PARSING_ERROR;
+            }
 
             if (!buffer_read_anchor(buf, &vote_item->vote_data.anchor)) {
                 return VOTING_PROCEDURES_PARSING_ERROR;
