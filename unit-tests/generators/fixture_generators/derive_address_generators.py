@@ -9,7 +9,7 @@ from common import (
     REPO_ROOT,
 )
 
-GENERATED_HEADER = (
+FIXTURES_FILE = (
     REPO_ROOT / "unit-tests" / "test_derive_address_fixtures.h"
 )
 
@@ -283,12 +283,12 @@ def _generate_fixture_code_for_test_case(
 # ==============================================================================
 
 
-def _build_fixtures_header() -> str:
+def _build_fixtures() -> str:
     """
-    Generate complete C header file content for address derivation fixtures.
+    Generate complete C file content for address derivation fixtures.
 
     Returns:
-        Complete C header file content as string
+        Complete C file content as string
     """
     # Load test cases from ragger tests
     all_test_cases, categorized_test_cases = _load_address_derivation_test_cases()
@@ -380,7 +380,7 @@ def generate_address_derivation_fixtures() -> None:
     """
 
     # Build header file content
-    header_content = _build_fixtures_header()
+    fixtures = _build_fixtures()
     # Write to file
-    GENERATED_HEADER.write_text(header_content)
-    print(f"Generated {GENERATED_HEADER}")
+    FIXTURES_FILE.write_text(fixtures)
+    print(f"Generated {FIXTURES_FILE}")

@@ -181,3 +181,20 @@ ValidNativeScriptTestCases = [
                               SignedData("ed1dd7ef95caf389669c62618eb7f7aa7eadd08feb76618db2ae0cfc"),
                               nano_skip=True),
 ]
+
+"""
+InvalidScriptTestCases = [
+    ValidNativeScriptTestCase("PUBKEY - invalid key path",
+                              NativeScript(NativeScriptType.PUBKEY_DEVICE_OWNED,
+                                           NativeScriptParamsPubkey("m/0/0/0/0/0/0")),
+                              SignedData(sw=Errors.SW_INVALID_DATA)),
+    ValidNativeScriptTestCase("N_OF_K - invalid required count (higher than number of scripts)",
+                              NativeScript(NativeScriptType.N_OF_K,
+                                           NativeScriptParamsNofK(1)),
+                              SignedData(sw=Errors.SW_INVALID_DATA)),
+    ValidNativeScriptTestCase("PUBKEY - invalid key path",
+                              NativeScript(NativeScriptType.PUBKEY_DEVICE_OWNED,
+                                           NativeScriptParamsPubkey("m/0/0/0/0/0/0")),
+                              SignedData(sw=Errors.SW_INVALID_DATA)),
+]
+"""

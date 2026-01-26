@@ -23,6 +23,10 @@ from fixture_generators.derive_address_generators import (
     generate_address_derivation_fixtures,
 )
 
+from fixture_generators.derive_native_script_generators import (
+    generate_derive_native_script_fixtures,
+)
+
 # Import reject generators
 from reject_fixture_generators.tx_reject_generators import (
     generate_tx_reject_fixtures,
@@ -38,7 +42,10 @@ from test_runner_generators.tx_test_runner_generators import (
 )
 from test_runner_generators.derive_address_test_runner_generators import (
     generate_address_derivation_test_runners,
-)   
+)    
+from test_runner_generators.derive_native_script_runner_generators import (
+    generate_native_script_test_runners,
+)
 
 def regenerate_mock_data() -> None:
     try:
@@ -249,6 +256,7 @@ def run_all() -> None:
     # Generate fixtures
     generate_tx_fixtures()
     generate_address_derivation_fixtures()
+    generate_derive_native_script_fixtures()
     # Generate test runners
     generate_tx_test_runners()
     generate_address_derivation_test_runners()
@@ -282,12 +290,17 @@ def main() -> None:
     elif args.command == "fixtures":
         generate_tx_fixtures()
         generate_address_derivation_fixtures()
+        # TODO: fix native script fixtures
+        generate_derive_native_script_fixtures()
     elif args.command == "generate-test-runners":
         generate_tx_test_runners()
         generate_address_derivation_test_runners()
+        # TODO: fix native script test runners
+        #generate_native_script_test_runners()
     elif args.command == "rejects":
         generate_tx_reject_fixtures()
         generate_address_derivation_reject_fixtures()
+        
     elif args.command == "mock-data":
         regenerate_mock_data()
     else:
