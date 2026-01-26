@@ -5,16 +5,13 @@
 #include "securityPolicy.h"
 #include "crypto.h"
 
-int signRawMessageWithPath(const bip44_path_t* path,
+void signRawMessageWithPath(const bip44_path_t* path,
                             const uint8_t* messageBuffer,
                             size_t messageSize,
                             uint8_t* outBuffer,
                             size_t outSize) {
-    cx_err_t error = CX_OK;
-    size_t sigLen = outSize;
-
     ASSERT(messageSize < BUFFER_SIZE_PARANOIA);
-    ASSERT(sigLen == ED25519_SIGNATURE_LENGTH);
+    ASSERT(outSize == ED25519_SIGNATURE_LENGTH);
 
     // Sanity check
     ASSERT(path->length <= ARRAY_LEN(path->path));
@@ -27,21 +24,13 @@ int signRawMessageWithPath(const bip44_path_t* path,
     BIP44_PRINTF(path);
     TRACE("");
 
-    CX_CHECK(crypto_eddsa_sign(path->path,
-                               path->length,
-                               messageBuffer,
-                               messageSize,
-                               outBuffer,
-                               &sigLen));
+    crypto_eddsa_sign(path->path,
+                      path->length,
+                      messageBuffer,
+                      messageSize,
+                      outBuffer,
+                      outSize);
 #endif
-
-    ASSERT(sigLen == ED25519_SIGNATURE_LENGTH);
-
-end:
-    if (error != CX_OK) {
-        TRACE("error: %d", error);
-    }
-    return error;
 }
 
 // sign the given hash by the private key derived according to the given path

@@ -128,20 +128,16 @@ void finalize_sign_opcert(bool confirmed) {
     }
 
     ASSERT(bip44_isPoolColdKeyPath(&opcert->poolColdKeyPath));
-    int r = signRawMessageWithPath(
+    signRawMessageWithPath(
         &opcert->poolColdKeyPath,
         opCertBodyBuffer, SIZEOF(opCertBodyBuffer),
         G_context.opcert_info.signature, SIZEOF(G_context.opcert_info.signature)
     );
 
-    if (r != 0) {
-        send_swo_and_reset(SWO_SIGNATURE_FAIL);
-    } else {
-        io_send_response_pointer(
-            G_context.opcert_info.signature,
-            SIZEOF(G_context.opcert_info.signature),
-            SWO_SUCCESS
-        );
-        reset_app_context();
-    }
+    io_send_response_pointer(
+        G_context.opcert_info.signature,
+        SIZEOF(G_context.opcert_info.signature),
+        SWO_SUCCESS
+    );
+    reset_app_context();
 }

@@ -79,14 +79,7 @@ void handler_get_public_key(buffer_t *cdata) {
         return;
     }
 
-    {
-        cx_err_t error = deriveExtendedPublicKey(&G_context.pk_info.path, &G_context.pk_info.extPubKey);
-        if (error != CX_OK) {
-            TRACE("Failed to derive extended public key: 0x%X", error);
-            send_swo_and_reset(error);
-            return;
-        }
-    }  // Note: CX_CHECK not applicable here since we need custom error handling
+    deriveExtendedPublicKey(&G_context.pk_info.path, &G_context.pk_info.extPubKey);
 
     ui_display_pubkey(policy, warnings);
 }

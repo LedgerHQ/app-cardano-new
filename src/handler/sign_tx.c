@@ -65,15 +65,9 @@ static bool cvote_extract_pubkey(const cvote_credential_t *credential, uint8_t *
             memmove(out_pubkey, credential->publicKey, PUBLIC_KEY_LENGTH);
             return true;
         case EXT_CREDENTIAL_KEY_PATH: {
-            cx_err_t error = CX_OK;
             extendedPublicKey_t derived_key = {0};
-            CX_CHECK(deriveExtendedPublicKey(&credential->keyPath, &derived_key));
+            deriveExtendedPublicKey(&credential->keyPath, &derived_key);
             memmove(out_pubkey, derived_key.pubKey, PUBLIC_KEY_LENGTH);
-        end:
-            if (error != CX_OK) {
-                TRACE("Failed to derive CVote key path: 0x%x", error);
-                return false;
-            }
             return true;
         }
         default:

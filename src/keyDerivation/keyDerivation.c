@@ -23,8 +23,9 @@ static void extractRawPublicKey(uint8_t rawPubkey[static ED25519_PUBKEY_UNCOMPRE
 }
 
 // pub_key + chain_code
-cx_err_t deriveExtendedPublicKey(const bip44_path_t* path, extendedPublicKey_t* out) {
-    cx_err_t error = CX_OK;
+// This function either succeeds or crashes the app (via CX_ASSERT).
+// Crypto failures are unrecoverable and indicate broken device, buggy crypto, or wrong usage.
+void deriveExtendedPublicKey(const bip44_path_t* path, extendedPublicKey_t* out) {
     uint8_t rawPubkey[ED25519_PUBKEY_UNCOMPRESSED_LENGTH];
     uint8_t chainCode[CHAIN_CODE_LENGTH];
 
@@ -36,7 +37,7 @@ cx_err_t deriveExtendedPublicKey(const bip44_path_t* path, extendedPublicKey_t* 
     // if the path is invalid, it's a bug in previous validation
     ASSERT(policyForDerivePrivateKey(path) != POLICY_DENY);
 
-    CX_CHECK(crypto_get_pubkey(path->path, path->length, rawPubkey, chainCode));
+    crypto_get_pubkey(path->path, path->length, rawPubkey, chainCode);
 
     extractRawPublicKey(rawPubkey, out->pubKey, SIZEOF(out->pubKey));
 
@@ -44,12 +45,6 @@ cx_err_t deriveExtendedPublicKey(const bip44_path_t* path, extendedPublicKey_t* 
     STATIC_ASSERT(CHAIN_CODE_LENGTH == SIZEOF(out->chainCode), "bad chain code size");
     STATIC_ASSERT(CHAIN_CODE_LENGTH == SIZEOF(chainCode), "bad chain code size");
     memmove(out->chainCode, chainCode, CHAIN_CODE_LENGTH);
-
-end:
-    if (error != CX_OK) {
-        TRACE("error: %d", error);
-    }
-    return error;
 }
 
 void keyPathToKeyHash(const bip44_path_t* pathSpec, uint8_t* hash, size_t hashSize) {
@@ -61,7 +56,6 @@ void keyPathToKeyHash(const bip44_path_t* pathSpec, uint8_t* hash, size_t hashSi
     switch (hashSize) {
         case 28:
             ASSERT(hashSize * 8 == 224);
-
             blake2b_224_hash(extPubKey.pubKey, SIZEOF(extPubKey.pubKey), hash, hashSize);
             return;
 

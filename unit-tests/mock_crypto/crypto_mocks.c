@@ -70,10 +70,10 @@ static void encode_raw_pubkey(const uint8_t public_key[32], uint8_t raw_pubkey[R
     raw_pubkey[32] = (uint8_t)(sign_bit ? 0x01 : 0x00);
 }
 
-cx_err_t crypto_get_pubkey(const uint32_t* path,
-                           size_t path_len,
-                           uint8_t raw_pubkey[static RAW_PUBKEY_SIZE],
-                           uint8_t* chain_code) {
+void crypto_get_pubkey(const uint32_t* path,
+                       size_t path_len,
+                       uint8_t raw_pubkey[static RAW_PUBKEY_SIZE],
+                       uint8_t* chain_code) {
     const mock_path_data_t* entry = find_path_entry(path, path_len);
     if (entry == NULL) {
         fprintf(stderr, "crypto_mock: missing pubkey path len=%zu [", path_len);
@@ -85,21 +85,21 @@ cx_err_t crypto_get_pubkey(const uint32_t* path,
     }
     encode_raw_pubkey(entry->public_key, raw_pubkey);
     memcpy(chain_code, entry->chain_code, CHAIN_CODE_LENGTH);
-    return CX_OK;
 }
 
-cx_err_t crypto_eddsa_sign(const uint32_t* path,
-                           size_t path_len,
-                           const uint8_t* hash,
-                           size_t hash_len,
-                           uint8_t* sig,
-                           size_t* sig_len) {
-    if (sig_len == NULL || sig == NULL) {
-        return CX_INVALID_PARAMETER;
-    }
-    if (*sig_len < ED25519_SIGNATURE_LENGTH) {
-        return CX_INVALID_PARAMETER;
-    }
+void crypto_eddsa_sign(const uint32_t* path,
+                       size_t path_len,
+                       const uint8_t* hash,
+                       size_t hash_len,
+                       uint8_t* sig,
+                       size_t expected_sig_len) {
+    LEDGER_ASSERT(path != NULL, "path is NULL");
+    LEDGER_ASSERT(path_len > 0, "path_len is zero");
+    LEDGER_ASSERT(hash != NULL, "hash is NULL");
+    LEDGER_ASSERT(hash_len > 0, "hash_len is zero");
+    LEDGER_ASSERT(sig != NULL, "sig is NULL");
+    LEDGER_ASSERT(expected_sig_len == ED25519_SIGNATURE_LENGTH, "expected_sig_len must equal ED25519_SIGNATURE_LENGTH");
+
     const mock_signature_data_t* entry = find_signature_entry(path, path_len, hash, hash_len);
     if (entry == NULL) {
         fprintf(stderr, "crypto_mock: missing signature path len=%zu [", path_len);
@@ -107,12 +107,10 @@ cx_err_t crypto_eddsa_sign(const uint32_t* path,
             fprintf(stderr, "%s0x%08x", (i == 0 ? "" : ", "), path[i]);
         }
         fprintf(stderr, "] message_len=%zu\n", hash_len);
-        memset(sig, 0, ED25519_SIGNATURE_LENGTH);
-        *sig_len = ED25519_SIGNATURE_LENGTH;
-        return CX_OK;
+        // Clear the buffer before asserting
+        explicit_bzero(sig, expected_sig_len);
+        LEDGER_ASSERT(false, "Missing mock signature");
     }
 
     memcpy(sig, entry->signature, ED25519_SIGNATURE_LENGTH);
-    *sig_len = ED25519_SIGNATURE_LENGTH;
-    return CX_OK;
 }

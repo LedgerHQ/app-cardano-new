@@ -51,14 +51,13 @@ end:
     return error;
 }
 
-WARN_UNUSED_RESULT cx_err_t crypto_get_pubkey(const uint32_t* path,
-                                              size_t path_len,
-                                              uint8_t raw_pubkey[static ED25519_PUBKEY_UNCOMPRESSED_LENGTH],
-                                              uint8_t* chain_code) {
-    cx_err_t error = CX_OK;
-
+void crypto_get_pubkey(const uint32_t* path,
+                       size_t path_len,
+                       uint8_t raw_pubkey[static ED25519_PUBKEY_UNCOMPRESSED_LENGTH],
+                       uint8_t* chain_code) {
     cx_ecfp_256_extended_private_key_t privkey = {0};
     cx_ecfp_256_public_key_t pubkey = {0};
+    cx_err_t error = CX_OK;
 
     // Derive private key according to BIP32 path
     CX_CHECK(crypto_init_privkey(path, path_len, &privkey, chain_code));
@@ -86,28 +85,37 @@ end:
 
     // CX_CHECK above would set the value of `error` in case of error
     if (error != CX_OK) {
-        // Make sure the caller doesn't use uninitialized data in case
-        // the return code is not checked.
+        // Make sure the caller doesn't use uninitialized data if the operation failed.
         explicit_bzero(raw_pubkey, ED25519_PUBKEY_UNCOMPRESSED_LENGTH);
+        LEDGER_ASSERT(!error, "crypto_get_pubkey failed with error 0x%X", error);
     }
-    return error;
 }
 
-WARN_UNUSED_RESULT cx_err_t crypto_eddsa_sign(const uint32_t* path,
-                                              size_t path_len,
-                                              const uint8_t* hash,
-                                              size_t hash_len,
-                                              uint8_t* sig,
-                                              size_t* sig_len) {
-    cx_err_t error = CX_OK;
-    cx_ecfp_256_extended_private_key_t privkey = {0};
-    size_t size;
-    size_t buf_len = *sig_len;
+void crypto_eddsa_sign(const uint32_t* path,
+                       size_t path_len,
+                       const uint8_t* hash,
+                       size_t hash_len,
+                       uint8_t* sig,
+                       size_t sig_len) {
 
-    if (sig_len == NULL) {
-        error = CX_INVALID_PARAMETER_VALUE;
-        goto end;
+    LEDGER_ASSERT(path != NULL, "path is NULL");
+    LEDGER_ASSERT(path_len > 0, "path is empty");
+    LEDGER_ASSERT(hash != NULL, "hash is NULL");
+    LEDGER_ASSERT(hash_len > 0, "hash_len is zero");
+    LEDGER_ASSERT(sig != NULL, "sig is NULL");
+    LEDGER_ASSERT(sig_len == ED25519_SIGNATURE_LENGTH, "expected_sig_len must equal ED25519_SIGNATURE_LENGTH");
+
+    cx_ecfp_256_extended_private_key_t privkey = {0};
+    cx_err_t error = CX_OK;
+
+    {
+        // Verify the signature length matches what we expected
+        size_t size;
+        CX_CHECK(cx_ecdomain_parameters_length(CX_CURVE_Ed25519, &size));
+        size_t computed_sig_len = size * 2;
+        LEDGER_ASSERT(computed_sig_len == sig_len, "unexpected signature length");
     }
+
     // Derive private key according to BIP32 path
     CX_CHECK(crypto_init_privkey(path, path_len, &privkey, NULL));
 
@@ -116,19 +124,15 @@ WARN_UNUSED_RESULT cx_err_t crypto_eddsa_sign(const uint32_t* path,
                                     hash,
                                     hash_len,
                                     sig,
-                                    *sig_len));
-
-    CX_CHECK(cx_ecdomain_parameters_length(CX_CURVE_Ed25519, &size));
-    *sig_len = size * 2;
+                                    sig_len));
 
 end:
     explicit_bzero(&privkey, sizeof(privkey));
 
     // CX_CHECK above would set the value of `error` in case of error
     if (error != CX_OK) {
-        // Make sure the caller doesn't use uninitialized data in case
-        // the return code is not checked.
-        explicit_bzero(sig, buf_len);
+        // wipe possibly modified sig buffer, unsafe to let anyone read it
+        explicit_bzero(sig, sig_len);
+        LEDGER_ASSERT(!error, "crypto_eddsa_sign failed with error 0x%X", error);
     }
-    return error;
 }

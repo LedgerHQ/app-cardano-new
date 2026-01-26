@@ -50,54 +50,36 @@ enum {
                                                                                                 \
     static inline __attribute__((unused)) void cipher##_##bits##_init(                  \
         cipher##_##bits##_context_t* ctx) {                                                     \
-        cx_err_t error = CX_OK;                                                                 \
         STATIC_ASSERT(bits == CIPHER##_##bits##_SIZE * 8, "bad cipher size");                   \
-        CX_CHECK(cx_##cipher##_init_no_throw(&ctx->cx_ctx, CIPHER##_##bits##_SIZE * 8 / 8));    \
+        CX_ASSERT(cx_##cipher##_init_no_throw(&ctx->cx_ctx, CIPHER##_##bits##_SIZE * 8 / 8));   \
         ctx->initialized_magic = HASH_CONTEXT_INITIALIZED_MAGIC;                                \
-    end:                                                                                        \
-        if (error != CX_OK) {                                                                   \
-            TRACE("error: %d", error);                                                          \
-            ASSERT(false);                                                                      \
-        }                                                                                       \
     }                                                                                           \
                                                                                                 \
     static inline __attribute__((unused)) void cipher##_##bits##_append(                \
         cipher##_##bits##_context_t* ctx,                                                       \
         const uint8_t* inBuffer,                                                                \
         size_t inSize) {                                                                        \
-        cx_err_t error = CX_OK;                                                                 \
         ASSERT(ctx->initialized_magic == HASH_CONTEXT_INITIALIZED_MAGIC);                       \
-        CX_CHECK(cx_hash_no_throw(&ctx->cx_ctx.header,                                          \
+        CX_ASSERT(cx_hash_no_throw(&ctx->cx_ctx.header,                                         \
                                   0, /* Do not output the hash, yet */                          \
                                   inBuffer,                                                     \
                                   inSize,                                                       \
                                   NULL,                                                         \
                                   0));                                                          \
-    end:                                                                                        \
-        if (error != CX_OK) {                                                                   \
-            TRACE("error: %d", error);                                                          \
-            ASSERT(false);                                                                      \
-        }                                                                                       \
     }                                                                                           \
                                                                                                 \
     static inline __attribute__((unused)) void cipher##_##bits##_finalize(              \
         cipher##_##bits##_context_t* ctx,                                                       \
         uint8_t* outBuffer,                                                                     \
         size_t outSize) {                                                                       \
-        cx_err_t error = CX_OK;                                                                 \
         ASSERT(ctx->initialized_magic == HASH_CONTEXT_INITIALIZED_MAGIC);                       \
         ASSERT(outSize == CIPHER##_##bits##_SIZE);                                              \
-        CX_CHECK(cx_hash_no_throw(&ctx->cx_ctx.header,                                          \
+        CX_ASSERT(cx_hash_no_throw(&ctx->cx_ctx.header,                                         \
                                   CX_LAST, /* Output the hash */                                \
                                   NULL,                                                         \
                                   0,                                                            \
                                   outBuffer,                                                    \
                                   CIPHER##_##bits##_SIZE));                                     \
-    end:                                                                                        \
-        if (error != CX_OK) {                                                                   \
-            TRACE("error: %d", error);                                                          \
-            ASSERT(false);                                                                      \
-        }                                                                                       \
     }                                                                                           \
     /* Convenience function to make all in one step */                                          \
     static inline __attribute__((unused)) void cipher##_##bits##_hash(                  \

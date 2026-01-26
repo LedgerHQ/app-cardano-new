@@ -30,8 +30,7 @@ static void test_sign_raw_message(void **state) {
     uint8_t signature[ED25519_SIGNATURE_LENGTH] = {0};
     size_t sigLen = sizeof(signature);
 
-    assert_int_equal(CX_OK,
-                     signRawMessageWithPath(&path, message, sizeof(message), signature, sigLen));
+    signRawMessageWithPath(&path, message, sizeof(message), signature, sigLen);
 
     const uint8_t expected[] = {
         0x18, 0xd7, 0xbe, 0xbd, 0x09, 0x6d, 0x84, 0x08, 0x22, 0xcd, 0xb0, 0x92, 0xf3, 0xa1, 0x20, 0xf2,

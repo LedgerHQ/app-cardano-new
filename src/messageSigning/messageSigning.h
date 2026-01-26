@@ -2,7 +2,7 @@
 
 #include "bip44.h"
 
-int signRawMessageWithPath(const bip44_path_t* path,
+void signRawMessageWithPath(const bip44_path_t* path,
                             const uint8_t* messageBuffer,
                             size_t messageSize,
                             uint8_t* outBuffer,

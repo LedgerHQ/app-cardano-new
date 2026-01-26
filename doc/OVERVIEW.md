@@ -86,3 +86,9 @@ Apart from avoiding memory leaks and bugs in general, the security of the app ha
 There is an ["expert mode"](expert_mode.xlsx) setting that allows the user to somewhat control the amount of data being displayed. It is mostly relevant for Plutus transactions.
 
 The reasoning behind specific restrictions is the result of years of discussion among all the stakeholders (IOG, Intersect, Vacuumlabs, stake pool operators, wallet developers, power users etc.). You can find the historical documentation in `doc/spec_*.md`. It is organized by Cardano eras or specific features as they were added over time.
+
+## Cryptographic Error Handling
+
+Cryptographic operations in this app use **CX_ASSERT** rather than error checking. Crypto errors are unrecoverable:
+broken device hardware, buggy crypto implementation, wrong usage of crypto API (app bug) etc.
+**CX_CHECK** is appropriate if we need to wipe out some memory buffers before exiting (so that no attacker can read them).
