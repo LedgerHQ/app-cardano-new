@@ -13,7 +13,6 @@ class FixtureDetails(NamedTuple):
     """
     Complete details of a single fixture within an array.
     
-    Following AGENTS.md: "Use long, descriptive variable names"
     """
     name: str                   # .name field (e.g., "Mainnet 1")
     p1_value: int              # .p1 field (P1_ADDRESS_RETURN or P1_ADDRESS_DISPLAY)
@@ -26,7 +25,6 @@ class FixtureArrayDetails(NamedTuple):
     """
     Complete information about a fixture array.
     
-    Following AGENTS.md: "Use long, descriptive variable names"
     """
     array_name: str                     # C array identifier
     fixture_count: int                  # Total number of fixtures
@@ -50,9 +48,6 @@ def extract_fixture_array_names_from_header(fixture_header_path: Path) -> List[s
     Returns:
         List of fixture array names in declaration order
         
-    Following AGENTS.md:
-        - "Use long, descriptive variable names"
-        - "Security focus: Be thorough and paranoid" - validates each match
     """
     if not fixture_header_path.exists():
         raise FileNotFoundError(f"Fixture header not found: {fixture_header_path}")
@@ -71,7 +66,6 @@ def extract_fixture_array_names_from_header(fixture_header_path: Path) -> List[s
         array_name = match.group(1)
         
         # Validate that array name follows expected pattern
-        # Following AGENTS.md: "Security focus: Be thorough and paranoid"
         if not array_name.startswith("DERIVE_ADDRESS_FIXTURES_"):
             raise ValueError(f"Unexpected array name format: {array_name}")
         
@@ -106,9 +100,6 @@ def extract_complete_fixture_details_from_array(
     Returns:
         List of FixtureDetails with all fields
         
-    Following AGENTS.md:
-        - "Use long, descriptive variable names"
-        - "Security focus: Be thorough and paranoid" - validates all required fields
     """
     # Match entire array definition
     array_pattern = re.compile(
@@ -130,7 +121,6 @@ def extract_complete_fixture_details_from_array(
         struct_body = struct_match.group(1)
         
         # Extract .name field
-        # Following AGENTS.md: "Security focus: Be thorough and paranoid"
         name_match = re.search(r'\.name\s*=\s*"([^"]+)"', struct_body)
         if not name_match:
             raise ValueError(
@@ -165,7 +155,6 @@ def extract_complete_fixture_details_from_array(
         data_array_name = data_match.group(1)
         
         # Validate data array name format
-        # Following AGENTS.md: "Security focus: Be thorough and paranoid"
         if not data_array_name.startswith("DERIVE_ADDRESS_"):
             raise ValueError(
                 f"Unexpected data array name format in fixture {index}: {data_array_name}"
@@ -216,8 +205,6 @@ def extract_all_fixture_array_details(
     
     Returns:
         List of FixtureArrayDetails objects
-        
-    Following AGENTS.md: "Use long, descriptive variable names"
     """
     if not fixture_header_path.exists():
         raise FileNotFoundError(f"Fixture header not found: {fixture_header_path}")
@@ -252,7 +239,6 @@ def _sanitize_fixture_name_for_c_function(fixture_name: str) -> str:
         "Mainnet 1" -> "mainnet_1"
         "Base address with script payment" -> "base_address_with_script_payment"
     
-    Following AGENTS.md: "Use long, descriptive variable names"
     """
     sanitized = fixture_name.lower()
     sanitized = re.sub(r'[^a-z0-9_]+', '_', sanitized)
@@ -268,7 +254,6 @@ def _build_test_file_header() -> str:
     """
     Generate C file header with includes and helper functions.
     
-    Following AGENTS.md: "Mimic Established Patterns"
     Matches structure of test_sign_tx_allegra.c with proper includes.
     """
     return """// Unit tests for address derivation (auto-generated)
@@ -300,12 +285,10 @@ def _build_main_function(all_fixture_array_details: Sequence[str], test_c_file: 
         
         for fixture in fixture_array_details.fixtures:
             # Build unique test name for THIS fixture
-            # Following AGENTS.md: "Use long, descriptive variable names"
             sanitized_fixture_name = _sanitize_fixture_name_for_c_function(fixture.name)
             test_function_name = f"test_derive_address_{array_suffix}_{sanitized_fixture_name}"
             
             # Add to list of all test names
-            # Following AGENTS.md: "Security focus: Be thorough and paranoid"
             # Using list accumulation ensures no test is accidentally dropped
             all_test_function_names.append(test_function_name)
             
@@ -318,7 +301,6 @@ def _build_main_function(all_fixture_array_details: Sequence[str], test_c_file: 
             all_test_function_definitions.append(test_function_definition)
             
     # Generate cmocka test registrations
-    # Following AGENTS.md: "Mimic Established Patterns"
     # Pattern from test_sign_tx_*.c: cmocka_unit_test(test_name),
     test_registrations = ",\n        ".join(
         f"cmocka_unit_test({name})" for name in all_test_function_names
@@ -347,7 +329,6 @@ def generate_address_derivation_test_runners() -> None:
     """
     Generate address derivation test runner files.
     
-    Following AGENTS.md: "Mimic Established Patterns"
     """
     fixture_header_path = UNIT_TESTS_DIR / "test_derive_address_fixtures.h"
     test_c_file = UNIT_TESTS_DIR / "test_derive_address.c"

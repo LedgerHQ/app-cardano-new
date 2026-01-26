@@ -335,8 +335,6 @@ def _build_fixtures_header() -> str:
     # For each category, generate fixture arrays
     for category_name, category in categorized_test_cases.items():
         test_cases = category.test_cases
-        #print(f"Generating fixture array for category: {category_name} with {len(test_cases)} test cases")
-        #print(f"Generating fixture array for test type: {category.type}")
         
         header_lines.append(
             f"static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_{category_name.upper()}[] = {{"
