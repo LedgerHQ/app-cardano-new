@@ -3,7 +3,7 @@ import sys
 import types
 from pathlib import Path
 
-UNIT_TESTS_DIR = Path(__file__).resolve().parent
+UNIT_TESTS_DIR = Path(__file__).resolve().parent.parent
 REPO_ROOT = UNIT_TESTS_DIR.parent
 NODE_VERSION = "16.20.2"
 

@@ -66,7 +66,7 @@ static void test_derive_address_rejects(void **state) {
     // Iterate through all generated rejection fixtures
     for (size_t i = 0; i < DERIVE_ADDRESS_REJECT_FIXTURE_COUNT; i++) {
         TRACE("+++++++++++++++++++++++Registering test: %d +++++++++++++++++++++++", i);
-        const derive_address_reject_fixture_t *fixture = &DERIVE_ADDRESS_REJECT_FIXTURES[i];
+        const derive_address_fixture_t *fixture = &DERIVE_ADDRESS_REJECT_FIXTURES[i];
 
         // Mock the handler call with fixture data
         // The handler should reject and return the expected status word

@@ -1,0 +1,554 @@
+// Unit tests for address derivation (auto-generated)
+
+#include <stdarg.h>
+#include <stddef.h>
+#include <setjmp.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+
+#include <cmocka.h>
+
+#include "test_address_derivation_fixtures.h"
+
+// ======================================================================
+// Address Derivation Tests (Auto-Generated)
+// ======================================================================
+
+static void test_derive_address_byron_derive_address_byron_mainnet_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_BYRON[0]);
+}
+
+static void test_derive_address_byron_derive_address_byron_mainnet_2(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_BYRON[1]);
+}
+
+static void test_derive_address_byron_derive_address_byron_mainnet_3(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_BYRON[2]);
+}
+
+static void test_derive_address_byron_derive_address_byron_mainnet_4(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_BYRON[3]);
+}
+
+static void test_derive_address_byron_derive_address_byron_testnet_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_BYRON[4]);
+}
+
+static void test_derive_address_byron_show_derive_address_byron_mainnet_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_BYRON_SHOW[0]);
+}
+
+static void test_derive_address_byron_show_derive_address_byron_mainnet_2(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_BYRON_SHOW[1]);
+}
+
+static void test_derive_address_byron_show_derive_address_byron_mainnet_3(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_BYRON_SHOW[2]);
+}
+
+static void test_derive_address_byron_show_derive_address_byron_mainnet_4(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_BYRON_SHOW[3]);
+}
+
+static void test_derive_address_byron_show_derive_address_byron_testnet_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_BYRON_SHOW[4]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_fakenet_base_path_path_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[0]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_testnet_base_path_path_2(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[1]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_testnet_base_path_path_multidelegation(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[2]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_testnet_base_path_keyhash_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[3]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_fakenet_base_path_keyhash_2(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[4]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_fakenet_base_scripthash_path(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[5]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_fakenet_base_scripthash_path_multidelegation(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[6]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_fakenet_base_path_scripthash(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[7]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_fakenet_base_scripthash_scripthash(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[8]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_testnet_enterprise_path_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[9]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_fakenet_enterprise_path_2(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[10]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_testnet_enterprise_script_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[11]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_fakenet_enterprise_script_2(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[12]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_testnet_pointer_path_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[13]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_fakenet_pointer_path_2(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[14]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_fakenet_pointer_path_3(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[15]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_testnet_pointer_script_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[16]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_fakenet_pointer_script_2(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[17]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_fakenet_pointer_script_3(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[18]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_testnet_reward_path_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[19]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_fakenet_reward_path_2(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[20]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_testnet_reward_multidelegation(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[21]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_testnet_reward_script_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[22]);
+}
+
+static void test_derive_address_shelley_derive_address_shelley_fakenet_reward_script_2(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY[23]);
+}
+
+static void test_derive_address_shelley_confirm_derive_address_shelley_fakenet_base_path_path_unusual_spending_account(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_CONFIRM[0]);
+}
+
+static void test_derive_address_shelley_confirm_derive_address_shelley_fakenet_base_path_path_unusual_spending_index(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_CONFIRM[1]);
+}
+
+static void test_derive_address_shelley_confirm_derive_address_shelley_fakenet_base_path_path_unusual_staking_account(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_CONFIRM[2]);
+}
+
+static void test_derive_address_shelley_confirm_derive_address_shelley_fakenet_base_path_path_multidelegation_unusual_account(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_CONFIRM[3]);
+}
+
+static void test_derive_address_shelley_confirm_derive_address_shelley_fakenet_base_path_path_multidelegation_unusual_index(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_CONFIRM[4]);
+}
+
+static void test_derive_address_shelley_confirm_derive_address_shelley_testnet_base_path_keyhash_unusual_account(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_CONFIRM[5]);
+}
+
+static void test_derive_address_shelley_confirm_derive_address_shelley_testnet_base_path_keyhash_unusual_index(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_CONFIRM[6]);
+}
+
+static void test_derive_address_shelley_confirm_derive_address_shelley_testnet_base_scripthash_path_unusual_account(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_CONFIRM[7]);
+}
+
+static void test_derive_address_shelley_confirm_derive_address_shelley_testnet_base_path_scripthash_unusual_account(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_CONFIRM[8]);
+}
+
+static void test_derive_address_shelley_confirm_derive_address_shelley_testnet_base_path_scripthash_unusual_index(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_CONFIRM[9]);
+}
+
+static void test_derive_address_shelley_confirm_derive_address_shelley_testnet_pointer_unusual_account(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_CONFIRM[10]);
+}
+
+static void test_derive_address_shelley_confirm_derive_address_shelley_testnet_pointer_unusual_index(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_CONFIRM[11]);
+}
+
+static void test_derive_address_shelley_confirm_derive_address_shelley_testnet_reward_multidelegation_unusual_account(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_CONFIRM[12]);
+}
+
+static void test_derive_address_shelley_confirm_derive_address_shelley_testnet_reward_multidelegation_unusual_index(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_CONFIRM[13]);
+}
+
+static void test_derive_address_shelley_confirm_derive_address_shelley_fakenet_reward_unusual_account(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_CONFIRM[14]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_base_path_path_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[0]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_base_path_path_2(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[1]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_base_path_path_multidelegation(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[2]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_base_path_keyhash_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[3]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_base_path_keyhash_2(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[4]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_base_scripthash_path(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[5]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_base_scripthash_path_multidelegation(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[6]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_base_path_scripthash(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[7]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_base_scripthash_scripthash(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[8]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_enterprise_path_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[9]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_enterprise_path_2(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[10]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_enterprise_script_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[11]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_enterprise_script_2(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[12]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_pointer_path_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[13]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_pointer_path_2(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[14]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_pointer_path_3(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[15]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_pointer_script_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[16]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_pointer_script_2(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[17]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_pointer_script_3(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[18]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_reward_path_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[19]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_reward_path_2(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[20]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_reward_multidelegation(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[21]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_reward_script_1(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[22]);
+}
+
+static void test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_reward_script_2(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_NO_CONFIRM[23]);
+}
+
+static void test_derive_address_shelley_show_with_confirm_derive_address_shelley_fakenet_base_path_path_unusual_spending_account(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_WITH_CONFIRM[0]);
+}
+
+static void test_derive_address_shelley_show_with_confirm_derive_address_shelley_fakenet_base_path_path_unusual_spending_index(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_WITH_CONFIRM[1]);
+}
+
+static void test_derive_address_shelley_show_with_confirm_derive_address_shelley_fakenet_base_path_path_unusual_staking_account(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_WITH_CONFIRM[2]);
+}
+
+static void test_derive_address_shelley_show_with_confirm_derive_address_shelley_fakenet_base_path_path_multidelegation_unusual_account(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_WITH_CONFIRM[3]);
+}
+
+static void test_derive_address_shelley_show_with_confirm_derive_address_shelley_fakenet_base_path_path_multidelegation_unusual_index(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_WITH_CONFIRM[4]);
+}
+
+static void test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_base_path_keyhash_unusual_account(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_WITH_CONFIRM[5]);
+}
+
+static void test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_base_path_keyhash_unusual_index(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_WITH_CONFIRM[6]);
+}
+
+static void test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_base_scripthash_path_unusual_account(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_WITH_CONFIRM[7]);
+}
+
+static void test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_base_path_scripthash_unusual_account(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_WITH_CONFIRM[8]);
+}
+
+static void test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_base_path_scripthash_unusual_index(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_WITH_CONFIRM[9]);
+}
+
+static void test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_pointer_unusual_account(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_WITH_CONFIRM[10]);
+}
+
+static void test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_pointer_unusual_index(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_WITH_CONFIRM[11]);
+}
+
+static void test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_reward_multidelegation_unusual_account(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_WITH_CONFIRM[12]);
+}
+
+static void test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_reward_multidelegation_unusual_index(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_WITH_CONFIRM[13]);
+}
+
+static void test_derive_address_shelley_show_with_confirm_derive_address_shelley_fakenet_reward_unusual_account(void **state) {
+    (void) state;
+    run_fixture(&DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_SHELLEY_SHOW_WITH_CONFIRM[14]);
+}
+
+// ======================================================================
+// Main
+// ======================================================================
+
+int main(void) {
+    const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_derive_address_byron_derive_address_byron_mainnet_1),
+        cmocka_unit_test(test_derive_address_byron_derive_address_byron_mainnet_2),
+        cmocka_unit_test(test_derive_address_byron_derive_address_byron_mainnet_3),
+        cmocka_unit_test(test_derive_address_byron_derive_address_byron_mainnet_4),
+        cmocka_unit_test(test_derive_address_byron_derive_address_byron_testnet_1),
+        cmocka_unit_test(test_derive_address_byron_show_derive_address_byron_mainnet_1),
+        cmocka_unit_test(test_derive_address_byron_show_derive_address_byron_mainnet_2),
+        cmocka_unit_test(test_derive_address_byron_show_derive_address_byron_mainnet_3),
+        cmocka_unit_test(test_derive_address_byron_show_derive_address_byron_mainnet_4),
+        cmocka_unit_test(test_derive_address_byron_show_derive_address_byron_testnet_1),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_fakenet_base_path_path_1),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_testnet_base_path_path_2),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_testnet_base_path_path_multidelegation),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_testnet_base_path_keyhash_1),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_fakenet_base_path_keyhash_2),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_fakenet_base_scripthash_path),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_fakenet_base_scripthash_path_multidelegation),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_fakenet_base_path_scripthash),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_fakenet_base_scripthash_scripthash),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_testnet_enterprise_path_1),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_fakenet_enterprise_path_2),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_testnet_enterprise_script_1),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_fakenet_enterprise_script_2),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_testnet_pointer_path_1),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_fakenet_pointer_path_2),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_fakenet_pointer_path_3),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_testnet_pointer_script_1),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_fakenet_pointer_script_2),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_fakenet_pointer_script_3),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_testnet_reward_path_1),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_fakenet_reward_path_2),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_testnet_reward_multidelegation),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_testnet_reward_script_1),
+        cmocka_unit_test(test_derive_address_shelley_derive_address_shelley_fakenet_reward_script_2),
+        cmocka_unit_test(test_derive_address_shelley_confirm_derive_address_shelley_fakenet_base_path_path_unusual_spending_account),
+        cmocka_unit_test(test_derive_address_shelley_confirm_derive_address_shelley_fakenet_base_path_path_unusual_spending_index),
+        cmocka_unit_test(test_derive_address_shelley_confirm_derive_address_shelley_fakenet_base_path_path_unusual_staking_account),
+        cmocka_unit_test(test_derive_address_shelley_confirm_derive_address_shelley_fakenet_base_path_path_multidelegation_unusual_account),
+        cmocka_unit_test(test_derive_address_shelley_confirm_derive_address_shelley_fakenet_base_path_path_multidelegation_unusual_index),
+        cmocka_unit_test(test_derive_address_shelley_confirm_derive_address_shelley_testnet_base_path_keyhash_unusual_account),
+        cmocka_unit_test(test_derive_address_shelley_confirm_derive_address_shelley_testnet_base_path_keyhash_unusual_index),
+        cmocka_unit_test(test_derive_address_shelley_confirm_derive_address_shelley_testnet_base_scripthash_path_unusual_account),
+        cmocka_unit_test(test_derive_address_shelley_confirm_derive_address_shelley_testnet_base_path_scripthash_unusual_account),
+        cmocka_unit_test(test_derive_address_shelley_confirm_derive_address_shelley_testnet_base_path_scripthash_unusual_index),
+        cmocka_unit_test(test_derive_address_shelley_confirm_derive_address_shelley_testnet_pointer_unusual_account),
+        cmocka_unit_test(test_derive_address_shelley_confirm_derive_address_shelley_testnet_pointer_unusual_index),
+        cmocka_unit_test(test_derive_address_shelley_confirm_derive_address_shelley_testnet_reward_multidelegation_unusual_account),
+        cmocka_unit_test(test_derive_address_shelley_confirm_derive_address_shelley_testnet_reward_multidelegation_unusual_index),
+        cmocka_unit_test(test_derive_address_shelley_confirm_derive_address_shelley_fakenet_reward_unusual_account),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_base_path_path_1),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_base_path_path_2),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_base_path_path_multidelegation),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_base_path_keyhash_1),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_base_path_keyhash_2),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_base_scripthash_path),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_base_scripthash_path_multidelegation),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_base_path_scripthash),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_base_scripthash_scripthash),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_enterprise_path_1),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_enterprise_path_2),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_enterprise_script_1),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_enterprise_script_2),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_pointer_path_1),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_pointer_path_2),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_pointer_path_3),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_pointer_script_1),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_pointer_script_2),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_pointer_script_3),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_reward_path_1),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_reward_path_2),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_reward_multidelegation),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_testnet_reward_script_1),
+        cmocka_unit_test(test_derive_address_shelley_show_no_confirm_derive_address_shelley_fakenet_reward_script_2),
+        cmocka_unit_test(test_derive_address_shelley_show_with_confirm_derive_address_shelley_fakenet_base_path_path_unusual_spending_account),
+        cmocka_unit_test(test_derive_address_shelley_show_with_confirm_derive_address_shelley_fakenet_base_path_path_unusual_spending_index),
+        cmocka_unit_test(test_derive_address_shelley_show_with_confirm_derive_address_shelley_fakenet_base_path_path_unusual_staking_account),
+        cmocka_unit_test(test_derive_address_shelley_show_with_confirm_derive_address_shelley_fakenet_base_path_path_multidelegation_unusual_account),
+        cmocka_unit_test(test_derive_address_shelley_show_with_confirm_derive_address_shelley_fakenet_base_path_path_multidelegation_unusual_index),
+        cmocka_unit_test(test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_base_path_keyhash_unusual_account),
+        cmocka_unit_test(test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_base_path_keyhash_unusual_index),
+        cmocka_unit_test(test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_base_scripthash_path_unusual_account),
+        cmocka_unit_test(test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_base_path_scripthash_unusual_account),
+        cmocka_unit_test(test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_base_path_scripthash_unusual_index),
+        cmocka_unit_test(test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_pointer_unusual_account),
+        cmocka_unit_test(test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_pointer_unusual_index),
+        cmocka_unit_test(test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_reward_multidelegation_unusual_account),
+        cmocka_unit_test(test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_reward_multidelegation_unusual_index),
+        cmocka_unit_test(test_derive_address_shelley_show_with_confirm_derive_address_shelley_fakenet_reward_unusual_account),
+    };
+    return _cmocka_run_group_tests("test_address_derivation", tests, ARRAY_LEN(tests), NULL, NULL);
+}

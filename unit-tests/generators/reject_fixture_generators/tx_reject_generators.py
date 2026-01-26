@@ -6,7 +6,7 @@ import json
 import subprocess
 from dataclasses import dataclass
 
-from common_generators import (
+from common import (
     _ensure_base58_module,
     _add_tests_to_sys_path,
     REPO_ROOT,

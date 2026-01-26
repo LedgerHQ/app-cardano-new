@@ -4,7 +4,7 @@ import hashlib
 import re
 from typing import Any, Dict, List, Optional, Sequence
 
-from common_generators import (
+from common import (
     _ensure_base58_module,
     _add_tests_to_sys_path,
     UNIT_TESTS_DIR,

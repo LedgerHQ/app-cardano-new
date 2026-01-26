@@ -165,7 +165,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_011_ENTERPRISE_WITH_WRONG_SPENDING_PA
     0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x11,
 };
 
-static const derive_address_reject_fixture_t DERIVE_ADDRESS_REJECT_FIXTURES[] = {
+static const derive_address_fixture_t DERIVE_ADDRESS_REJECT_FIXTURES[] = {
 {
     .name = "path too short",
     .p1 = P1_ADDRESS_RETURN,

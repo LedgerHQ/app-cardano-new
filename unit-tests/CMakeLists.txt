@@ -559,6 +559,7 @@ add_executable(test_handler_rejects
 )
 target_link_libraries(test_handler_rejects PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_handler_rejects test_handler_rejects)
+
 # target_link_libraries(test_tokens PUBLIC cmocka gcov tokens_lib bech32_lib hex_utils)  # TODO: when tokens_lib is ready
 
 # TODO: uncomment when test files are created
@@ -652,6 +653,14 @@ add_executable(test_derive_address_rejects
 target_link_libraries(test_derive_address_rejects PUBLIC cmocka gcov cardano_derive_address_core)
 target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
 add_test(test_derive_address_rejects test_derive_address_rejects)
+
+add_executable(test_derive_address
+    test_derive_address.c
+)
+target_link_libraries(test_derive_address PUBLIC cmocka gcov cardano_derive_address_core)
+target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
+add_test(test_derive_address test_derive_address)
+
 
 # add_test(test_tokens test_tokens)  # TODO: uncomment when crypto dependencies are mocked
 # add_test(test_tx_parser test_tx_parser)  # TODO: uncomment when created
