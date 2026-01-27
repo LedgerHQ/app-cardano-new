@@ -8,8 +8,7 @@ from common import UNIT_TESTS_DIR
 def extract_native_script_fixture_names(header_file_path: Path) -> List[str]:
     """
     Extract test case names from native script fixtures header.
-    
-    Following AGENTS.md: "Use long, descriptive variable names"
+
     
     Args:
         header_file_path: Path to test_derive_native_script_fixtures.h
@@ -37,8 +36,7 @@ def extract_native_script_fixture_names(header_file_path: Path) -> List[str]:
 def _sanitize_test_function_name(test_case_name: str) -> str:
     """
     Sanitize test case name for C function identifier.
-    
-    Following AGENTS.md: "Use long, descriptive variable names"
+
     
     Args:
         test_case_name: Original test case name from fixtures
@@ -63,13 +61,10 @@ def _build_test_file_header() -> str:
     """
     Build header section of test file.
     
-    Following AGENTS.md: "Mimic Established Patterns"
-    
     Returns:
         Header section as string
     """
     return """// Unit tests for native script hash derivation (auto-generated)
-// Following AGENTS.md: 'Mimic Established Patterns'
 
 #include <stdarg.h>
 #include <stddef.h>
@@ -94,7 +89,6 @@ def _build_test_functions(fixture_names: List[str]) -> tuple[str, List[str]]:
     """
     Build individual test functions for each fixture.
     
-    Following AGENTS.md: "Mimic Established Patterns"
     Mimics structure from test_derive_address.c
     
     Args:
@@ -126,8 +120,6 @@ def _build_test_functions(fixture_names: List[str]) -> tuple[str, List[str]]:
 def _build_main_function(test_function_names: List[str]) -> str:
     """
     Build main() function with CMocka test array.
-    
-    Following AGENTS.md: "Mimic Established Patterns"
     
     Args:
         test_function_names: List of test function names
@@ -162,7 +154,6 @@ def generate_native_script_test_runners() -> None:
     """
     Generate native script test runner C file from existing fixtures header.
     
-    Following AGENTS.md: "Mimic Established Patterns"
     This generator reads the already-generated test_derive_native_script_fixtures.h
     and creates the corresponding test_derive_native_script.c runner file.
     """
@@ -196,6 +187,7 @@ def generate_native_script_test_runners() -> None:
     print()
     
     # Build complete test file
+
     header_section = _build_test_file_header()
     test_functions_section, test_function_names = _build_test_functions(fixture_names)
     main_section = _build_main_function(test_function_names)

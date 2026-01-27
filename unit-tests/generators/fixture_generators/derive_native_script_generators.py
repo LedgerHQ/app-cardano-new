@@ -8,7 +8,7 @@ from common import (
     _add_tests_to_sys_path,
     REPO_ROOT,
 )
-
+    
 FIXTURES_FILE = (
     REPO_ROOT / "unit-tests" / "test_derive_native_script_fixtures.h"
 )
@@ -37,8 +37,6 @@ def _load_native_script_test_cases() -> List[Any]:
 def _is_simple_native_script(native_script) -> bool:
     """
     Determine if a native script is SIMPLE (leaf node in tree).
-    
-    Following AGENTS.md: "Use long, descriptive variable names"
     
     SIMPLE scripts (LEAF NODES) are:
     - PUBKEY_DEVICE_OWNED
@@ -76,8 +74,6 @@ def _is_simple_native_script(native_script) -> bool:
 def _parse_bip44_path(path_str: str) -> List[int]:
     """
     Parse BIP44 path string to list of uint32_t components.
-    
-    Following AGENTS.md: "Use long, descriptive variable names"
     
     Example:
         "m/1852'/1815'/0'/0/0" -> [0x8000073c, 0x80000717, 0x80000000, 0x00000000, 0x00000000]
@@ -125,107 +121,252 @@ def _format_path_component(component: int) -> str:
         return f"{value}'"
     else:
         return str(component)
-
-
-def _generate_simple_native_script_c_struct(
-    native_script,
-    unique_id: str,
-    indent_level: int = 0
-) -> List[str]:
+    
+def _extract_apdu_payload(full_apdu: bytes) -> bytes:
     """
-    Generate C struct for a SIMPLE native script (leaf node).
+    Extract payload from APDU command.
     
-    Following AGENTS.md: "Mimic Established Patterns"
-    
-    SIMPLE scripts are leaf nodes in the tree with no children.
+    APDU format: [CLA: 1][INS: 1][P1: 1][P2: 1][LC: 1][DATA: LC bytes]
     
     Args:
-        native_script: NativeScript object (SIMPLE type)
-        unique_id: Unique identifier for this script node
-        indent_level: Current indentation depth (for nested scripts)
-        
+        full_apdu: Complete APDU command
+    
     Returns:
-        List of C code lines for the script struct
+        APDU payload (DATA portion only)
     """
-    from standalone.input_files.derive_native_script import NativeScriptType  # type: ignore
-    
-    fixture_lines = []
-    indent = "    " * indent_level
-    script_type = native_script.type
-    
-    # Access params fields correctly based on Python dataclass structure
-    
-    if script_type == NativeScriptType.PUBKEY_DEVICE_OWNED:
-        # NativeScriptParamsPubkey: has 'key' field (BIP44 path string)
-        path_str = native_script.params.key
-        path_components = _parse_bip44_path(path_str)
-        
-        fixture_lines.append(f"{indent}// PUBKEY_DEVICE_OWNED (leaf): {path_str}")
-        fixture_lines.append(f"{indent}static const uint32_t PATH_{unique_id}[] = {{")
-        for component in path_components:
-            fixture_lines.append(f"{indent}    0x{component:08x},  // {_format_path_component(component)}")
-        fixture_lines.append(f"{indent}}};")
-        fixture_lines.append(f"{indent}static const native_script_simple_t SCRIPT_{unique_id} = {{")
-        fixture_lines.append(f"{indent}    .type = NATIVE_SCRIPT_TYPE_PUBKEY_DEVICE_OWNED,")
-        fixture_lines.append(f"{indent}    .params = {{")
-        fixture_lines.append(f"{indent}        .pubkey_device_owned = {{")
-        fixture_lines.append(f"{indent}            .path = PATH_{unique_id},")
-        fixture_lines.append(f"{indent}            .path_len = {len(path_components)},")
-        fixture_lines.append(f"{indent}        }}")
-        fixture_lines.append(f"{indent}    }}")
-        fixture_lines.append(f"{indent}}};")
-        
-    elif script_type == NativeScriptType.PUBKEY_THIRD_PARTY:
-        # NativeScriptParamsPubkey: has 'key' field (key hash hex string)
-        key_hash_hex = native_script.params.key
-        key_hash_bytes = bytes.fromhex(key_hash_hex)
-        
-        fixture_lines.append(f"{indent}// PUBKEY_THIRD_PARTY (leaf): {key_hash_hex}")
-        fixture_lines.append(f"{indent}static const uint8_t KEY_HASH_{unique_id}[KEY_HASH_LENGTH] = {{")
-        for chunk_start in range(0, len(key_hash_bytes), 8):
-            chunk = key_hash_bytes[chunk_start:chunk_start + 8]
-            hex_str = ", ".join(f"0x{byte:02x}" for byte in chunk)
-            fixture_lines.append(f"{indent}    {hex_str},")
-        fixture_lines.append(f"{indent}}};")
-        fixture_lines.append(f"{indent}static const native_script_simple_t SCRIPT_{unique_id} = {{")
-        fixture_lines.append(f"{indent}    .type = NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY,")
-        fixture_lines.append(f"{indent}    .params = {{")
-        fixture_lines.append(f"{indent}        .pubkey_third_party = {{")
-        fixture_lines.append(f"{indent}            .key_hash = KEY_HASH_{unique_id},")
-        fixture_lines.append(f"{indent}        }}")
-        fixture_lines.append(f"{indent}    }}")
-        fixture_lines.append(f"{indent}}};")
-        
-    elif script_type == NativeScriptType.INVALID_BEFORE:
-        # NativeScriptParamsInvalid: has 'slot' field
-        slot_number = native_script.params.slot
-        
-        fixture_lines.append(f"{indent}// INVALID_BEFORE (leaf): slot {slot_number}")
-        fixture_lines.append(f"{indent}static const native_script_simple_t SCRIPT_{unique_id} = {{")
-        fixture_lines.append(f"{indent}    .type = NATIVE_SCRIPT_TYPE_INVALID_BEFORE,")
-        fixture_lines.append(f"{indent}    .params = {{")
-        fixture_lines.append(f"{indent}        .timelock = {{")
-        fixture_lines.append(f"{indent}            .slot = {slot_number}ULL,")
-        fixture_lines.append(f"{indent}        }}")
-        fixture_lines.append(f"{indent}    }}")
-        fixture_lines.append(f"{indent}}};")
-        
-    elif script_type == NativeScriptType.INVALID_HEREAFTER:
-        # NativeScriptParamsInvalid: has 'slot' field
-        slot_number = native_script.params.slot
-        
-        fixture_lines.append(f"{indent}// INVALID_HEREAFTER (leaf): slot {slot_number}")
-        fixture_lines.append(f"{indent}static const native_script_simple_t SCRIPT_{unique_id} = {{")
-        fixture_lines.append(f"{indent}    .type = NATIVE_SCRIPT_TYPE_INVALID_HEREAFTER,")
-        fixture_lines.append(f"{indent}    .params = {{")
-        fixture_lines.append(f"{indent}        .timelock = {{")
-        fixture_lines.append(f"{indent}            .slot = {slot_number}ULL,")
-        fixture_lines.append(f"{indent}        }}")
-        fixture_lines.append(f"{indent}    }}")
-        fixture_lines.append(f"{indent}}};")
-    
-    return fixture_lines
+    if len(full_apdu) < 5:
+        raise ValueError("APDU too short")
+    return full_apdu[5:]
 
+def _generate_simple_script_apdu_array(
+    script_identifier: str,
+    script: NativeScript,
+) -> tuple[List[str], str]:
+    """
+    Generate APDU payload array for a simple script.
+    
+    Args:
+        script_identifier: Unique identifier for this script
+        script: Native script object
+    
+    Returns:
+        Tuple of (C code lines, array name)
+    """
+    from application_client.command_builder import CommandBuilder, P1Type  # type: ignore
+
+    command_builder = CommandBuilder()
+    full_apdu = command_builder.derive_script_add_simple(script)
+    apdu_payload = _extract_apdu_payload(full_apdu)
+    
+    lines = []
+    array_name = f"APDU_PAYLOAD_{script_identifier}"
+    
+    lines.append(f"// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE")
+    lines.append(f"// Script type: {script.type.name}")
+    lines.append(f"static const uint8_t {array_name}[{len(apdu_payload)}] = {{")
+    
+    # Format bytes in rows of 8 for readability
+    for i in range(0, len(apdu_payload), 8):
+        byte_chunk = apdu_payload[i:i+8]
+        hex_bytes = ", ".join(f"0x{b:02x}" for b in byte_chunk)
+        trailing_comma = "," if i + 8 < len(apdu_payload) else ""
+        lines.append(f"    {hex_bytes}{trailing_comma}")
+    
+    lines.append("};")
+    lines.append("")
+    
+    return lines, array_name
+
+def _generate_simple_script_fixture(
+    script_identifier: str,
+    script: NativeScript,
+) -> List[str]:
+    """
+    Generate complete simple script fixture.
+    
+    Args:
+        script_identifier: Unique identifier
+        script: Native script object
+    
+    Returns:
+        List of C code lines
+    """
+    lines = []
+    
+    # Generate APDU payload array
+    apdu_lines, apdu_array_name = _generate_simple_script_apdu_array(
+        script_identifier, script
+    )
+    lines.extend(apdu_lines)
+    
+    # Generate script structure
+    script_type_enum = f"NATIVE_SCRIPT_TYPE_{script.type.name}"
+    
+    lines.append(f"static const native_script_t SCRIPT_{script_identifier} = {{")
+    lines.append(f"    .type = {script_type_enum},")
+    lines.append(f"    .impl = {{")
+    lines.append(f"        .simple = {{")
+    lines.append(f"            .apdu_payload = {apdu_array_name},")
+    lines.append(f"            .apdu_payload_length = sizeof({apdu_array_name}),")
+    lines.append(f"        }}")
+    lines.append(f"    }}")
+    lines.append("};")
+    lines.append("")
+    
+    return lines
+
+
+# def _generate_simple_native_script_c_struct(
+#     native_script,
+#     unique_id: str,
+#     indent_level: int = 0
+# ) -> List[str]:
+#     """
+#     Generate C struct for a SIMPLE native script (leaf node).
+    
+#     SIMPLE scripts are leaf nodes in the tree with no children.
+    
+#     Args:
+#         native_script: NativeScript object (SIMPLE type)
+#         unique_id: Unique identifier for this script node
+#         indent_level: Current indentation depth (for nested scripts)
+        
+#     Returns:
+#         List of C code lines for the script struct
+#     """
+#     from standalone.input_files.derive_native_script import NativeScriptType  # type: ignore
+    
+#     fixture_lines = []
+#     indent = "    " * indent_level
+#     script_type = native_script.type
+    
+#     # Access params fields correctly based on Python dataclass structure
+    
+#     if script_type == NativeScriptType.PUBKEY_DEVICE_OWNED:
+#         # NativeScriptParamsPubkey: has 'key' field (BIP44 path string)
+#         path_str = native_script.params.key
+#         path_components = _parse_bip44_path(path_str)
+        
+#         fixture_lines.append(f"{indent}// PUBKEY_DEVICE_OWNED (leaf): {path_str}")
+#         fixture_lines.append(f"{indent}static const uint32_t PATH_{unique_id}[] = {{")
+#         for component in path_components:
+#             fixture_lines.append(f"{indent}    0x{component:08x},  // {_format_path_component(component)}")
+#         fixture_lines.append(f"{indent}}};")
+#         fixture_lines.append(f"{indent}static const native_script_t SCRIPT_{unique_id} = {{")
+#         fixture_lines.append(f"{indent}    .type = NATIVE_SCRIPT_TYPE_PUBKEY_DEVICE_OWNED,")
+#         fixture_lines.append(f"{indent}    .impl = {{")  
+#         fixture_lines.append(f"{indent}         .simple = {{")         
+#         fixture_lines.append(f"{indent}             .params = {{")
+#         fixture_lines.append(f"{indent}                 .pubkey_device_owned = {{")
+#         fixture_lines.append(f"{indent}                     .path = PATH_{unique_id},")
+#         fixture_lines.append(f"{indent}                     .path_len = {len(path_components)},")
+#         fixture_lines.append(f"{indent}                 }}")
+#         fixture_lines.append(f"{indent}             }}")
+#         fixture_lines.append(f"{indent}         }}")
+#         fixture_lines.append(f"{indent}     }}")
+#         fixture_lines.append(f"{indent}}};")
+        
+#     elif script_type == NativeScriptType.PUBKEY_THIRD_PARTY:
+#         # NativeScriptParamsPubkey: has 'key' field (key hash hex string)
+#         key_hash_hex = native_script.params.key
+#         key_hash_bytes = bytes.fromhex(key_hash_hex)
+        
+#         fixture_lines.append(f"{indent}// PUBKEY_THIRD_PARTY (leaf): {key_hash_hex}")
+#         fixture_lines.append(f"{indent}static const uint8_t KEY_HASH_{unique_id}[KEY_HASH_LENGTH] = {{")
+#         for chunk_start in range(0, len(key_hash_bytes), 8):
+#             chunk = key_hash_bytes[chunk_start:chunk_start + 8]
+#             hex_str = ", ".join(f"0x{byte:02x}" for byte in chunk)
+#             fixture_lines.append(f"{indent}    {hex_str},")
+#         fixture_lines.append(f"{indent}}};")
+#         fixture_lines.append(f"{indent}static const native_script_t SCRIPT_{unique_id} = {{")
+#         fixture_lines.append(f"{indent}    .type = NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY,")
+#         fixture_lines.append(f"{indent}    .impl = {{")
+#         fixture_lines.append(f"{indent}         .simple = {{")
+#         fixture_lines.append(f"{indent}             .params = {{")
+#         fixture_lines.append(f"{indent}                 .pubkey_third_party = {{")
+#         fixture_lines.append(f"{indent}                     .key_hash = KEY_HASH_{unique_id},")
+#         fixture_lines.append(f"{indent}                 }}")
+#         fixture_lines.append(f"{indent}             }}")
+#         fixture_lines.append(f"{indent}         }}")
+#         fixture_lines.append(f"{indent}     }}")
+#         fixture_lines.append(f"{indent}}};")
+        
+#     elif script_type == NativeScriptType.INVALID_BEFORE:
+#         # NativeScriptParamsInvalid: has 'slot' field
+#         slot_number = native_script.params.slot
+        
+#         fixture_lines.append(f"{indent}// INVALID_BEFORE (leaf): slot {slot_number}")
+#         fixture_lines.append(f"{indent}static const native_script_t SCRIPT_{unique_id} = {{")
+#         fixture_lines.append(f"{indent}    .type = NATIVE_SCRIPT_TYPE_INVALID_BEFORE,")
+#         fixture_lines.append(f"{indent}    .impl = {{")
+#         fixture_lines.append(f"{indent}         .simple = {{")
+#         fixture_lines.append(f"{indent}             .params = {{")
+#         fixture_lines.append(f"{indent}                 .timelock = {{")
+#         fixture_lines.append(f"{indent}                     .slot = {slot_number}ULL,")
+#         fixture_lines.append(f"{indent}                 }}")
+#         fixture_lines.append(f"{indent}             }}")
+#         fixture_lines.append(f"{indent}         }}")
+#         fixture_lines.append(f"{indent}     }}")
+#         fixture_lines.append(f"{indent}}};")
+        
+#     elif script_type == NativeScriptType.INVALID_HEREAFTER:
+#         # NativeScriptParamsInvalid: has 'slot' field
+#         slot_number = native_script.params.slot
+        
+#         fixture_lines.append(f"{indent}// INVALID_HEREAFTER (leaf): slot {slot_number}")
+#         fixture_lines.append(f"{indent}static const native_script_t SCRIPT_{unique_id} = {{")
+#         fixture_lines.append(f"{indent}    .type = NATIVE_SCRIPT_TYPE_INVALID_HEREAFTER,")
+#         fixture_lines.append(f"{indent}    .impl = {{")
+#         fixture_lines.append(f"{indent}         .simple = {{")
+#         fixture_lines.append(f"{indent}             .params = {{")
+#         fixture_lines.append(f"{indent}                 .timelock = {{")
+#         fixture_lines.append(f"{indent}                     .slot = {slot_number}ULL,")
+#         fixture_lines.append(f"{indent}                 }}")
+#         fixture_lines.append(f"{indent}             }}")
+#         fixture_lines.append(f"{indent}         }}")
+#         fixture_lines.append(f"{indent}     }}")
+#         fixture_lines.append(f"{indent}}};")
+    
+#     return fixture_lines
+
+
+def _generate_complex_script_apdu_array(
+    script_identifier: str,
+    script: NativeScript,
+) -> tuple[List[str], str]:
+    """
+    Generate APDU payload array for a complex script.
+    
+    Args:
+        script_identifier: Unique identifier for this script
+        script: Native script object
+    
+    Returns:
+        Tuple of (C code lines, array name)
+    """
+    from application_client.command_builder import CommandBuilder, P1Type  # type: ignore
+
+    command_builder = CommandBuilder()
+    full_apdu = command_builder.derive_script_add_complex(script)
+    apdu_payload = _extract_apdu_payload(full_apdu)
+    
+    lines = []
+    array_name = f"SCRIPT_{script_identifier}"
+    
+    lines.append(f"// APDU payload for P1_NATIVE_SCRIPT_START_COMPLEX")
+    lines.append(f"// Script type: {script.type.name}")
+    lines.append(f"static const uint8_t {array_name}[{len(apdu_payload)}] = {{")
+    
+    for i in range(0, len(apdu_payload), 8):
+        byte_chunk = apdu_payload[i:i+8]
+        hex_bytes = ", ".join(f"0x{b:02x}" for b in byte_chunk)
+        trailing_comma = "," if i + 8 < len(apdu_payload) else ""
+        lines.append(f"    {hex_bytes}{trailing_comma}")
+    
+    lines.append("};")
+    lines.append("")
+    
+    return lines, array_name
 
 def _generate_native_script_tree_recursive(
     native_script,
@@ -234,8 +375,6 @@ def _generate_native_script_tree_recursive(
 ) -> tuple[List[str], str]:
     """
     Recursively generate C structs for a native script tree.
-    
-    Following AGENTS.md: "Security focus: Be thorough and paranoid"
     
     Tree structure:
     - Leaf nodes: SIMPLE scripts (PUBKEY, INVALID_BEFORE/HEREAFTER)
@@ -261,10 +400,16 @@ def _generate_native_script_tree_recursive(
     
     if is_leaf_node:
         # Leaf node: SIMPLE script (no children)
+        simple_script_lines = _generate_simple_script_fixture(
+            current_unique_id,
+            native_script
+        )
+        """
         simple_script_lines = _generate_simple_native_script_c_struct(
             native_script,
             current_unique_id
         )
+        """
         fixture_lines.extend(simple_script_lines)
         return fixture_lines, f"SCRIPT_{current_unique_id}"
     
@@ -275,7 +420,7 @@ def _generate_native_script_tree_recursive(
         script_type = native_script.type
         child_script_identifiers = []
         
-        if script_type in (NativeScriptType.ALL, NativeScriptType.ANY):
+        if script_type == NativeScriptType.ALL:
             # NativeScriptParamsScripts: has 'scripts' field (list of NativeScript)
             child_scripts_list = native_script.params.scripts
             
@@ -291,9 +436,7 @@ def _generate_native_script_tree_recursive(
                 fixture_lines.extend(child_lines)
                 fixture_lines.append("")
                 child_script_identifiers.append(child_struct_id)
-            
-            # TODO: Handle zero children - add NULL pointer if needed
-            
+
             # Generate array of child script pointers
             fixture_lines.append(f"static const native_script_t* CHILDREN_{current_unique_id}[] = {{")
             if(len(child_script_identifiers) == 0):
@@ -305,14 +448,60 @@ def _generate_native_script_tree_recursive(
             fixture_lines.append("")
             
             # Generate parent COMPLEX script struct
-            fixture_lines.append(f"static const native_script_complex_t SCRIPT_{current_unique_id} = {{")
+            fixture_lines.append(f"static const native_script_t SCRIPT_{current_unique_id} = {{")
             fixture_lines.append(f"    .type = NATIVE_SCRIPT_TYPE_{script_type.name},")
-            fixture_lines.append(f"    .params = {{")
-            fixture_lines.append(f"        .scripts = {{")
-            fixture_lines.append(f"            .scripts = CHILDREN_{current_unique_id},")
-            fixture_lines.append(f"            .scripts_count = {len(child_scripts_list)},")
-            fixture_lines.append(f"        }}")
-            fixture_lines.append(f"    }}")
+            fixture_lines.append(f"    .impl = {{")
+            fixture_lines.append(f"        .complex = {{")
+            fixture_lines.append(f"             .params = {{")
+            fixture_lines.append(f"                 .all = {{")
+            fixture_lines.append(f"                     .scripts = CHILDREN_{current_unique_id},")
+            fixture_lines.append(f"                     .scripts_count = {len(child_scripts_list)},")
+            fixture_lines.append(f"                 }}")
+            fixture_lines.append(f"             }}")
+            fixture_lines.append(f"         }}")
+            fixture_lines.append(f"     }}")
+            fixture_lines.append("};")
+    
+        elif script_type == NativeScriptType.ANY:
+            # NativeScriptParamsScripts: has 'scripts' field (list of NativeScript)
+            child_scripts_list = native_script.params.scripts
+            
+            fixture_lines.append(f"// {script_type.name} (internal node): {len(child_scripts_list)} children")
+            
+            # Recursively generate each child
+            for child_idx, child_script in enumerate(child_scripts_list):
+                child_lines, child_struct_id = _generate_native_script_tree_recursive(
+                    child_script,
+                    current_unique_id,
+                    child_idx
+                )
+                fixture_lines.extend(child_lines)
+                fixture_lines.append("")
+                child_script_identifiers.append(child_struct_id)
+
+            # Generate array of child script pointers
+            fixture_lines.append(f"static const native_script_t* CHILDREN_{current_unique_id}[] = {{")
+            if(len(child_script_identifiers) == 0):
+                fixture_lines.append(f"    NULL")
+            else:
+                for child_id in child_script_identifiers:
+                    fixture_lines.append(f"    (const native_script_t*)&{child_id},")
+            fixture_lines.append("};")
+            fixture_lines.append("")
+            
+            # Generate parent COMPLEX script struct
+            fixture_lines.append(f"static const native_script_t SCRIPT_{current_unique_id} = {{")
+            fixture_lines.append(f"    .type = NATIVE_SCRIPT_TYPE_{script_type.name},")
+            fixture_lines.append(f"    .impl = {{")
+            fixture_lines.append(f"        .complex = {{")
+            fixture_lines.append(f"             .params = {{")
+            fixture_lines.append(f"                 .any = {{")
+            fixture_lines.append(f"                     .scripts = CHILDREN_{current_unique_id},")
+            fixture_lines.append(f"                     .scripts_count = {len(child_scripts_list)},")
+            fixture_lines.append(f"                 }}")
+            fixture_lines.append(f"             }}")
+            fixture_lines.append(f"         }}")
+            fixture_lines.append(f"     }}")
             fixture_lines.append("};")
             
         elif script_type == NativeScriptType.N_OF_K:
@@ -334,20 +523,28 @@ def _generate_native_script_tree_recursive(
                 child_script_identifiers.append(child_struct_id)
             
             # Generate array of child script pointers
+            
             fixture_lines.append(f"static const native_script_t* CHILDREN_{current_unique_id}[] = {{")
-            for child_id in child_script_identifiers:
-                fixture_lines.append(f"    (const native_script_t*)&{child_id},")
+            if(len(child_script_identifiers) == 0):
+                fixture_lines.append(f"    NULL")
+            else:
+                for child_id in child_script_identifiers:
+                    fixture_lines.append(f"    (const native_script_t*)&{child_id},")
             fixture_lines.append("};")
             fixture_lines.append("")
             
             # Generate parent COMPLEX script struct
-            fixture_lines.append(f"static const native_script_complex_t SCRIPT_{current_unique_id} = {{")
+            fixture_lines.append(f"static const native_script_t SCRIPT_{current_unique_id} = {{")
             fixture_lines.append(f"    .type = NATIVE_SCRIPT_TYPE_N_OF_K,")
-            fixture_lines.append(f"    .params = {{")
-            fixture_lines.append(f"        .n_of_k = {{")
-            fixture_lines.append(f"            .required_count = {required_count},")
-            fixture_lines.append(f"            .scripts = CHILDREN_{current_unique_id},")
-            fixture_lines.append(f"            .scripts_count = {len(child_scripts_list)},")
+            fixture_lines.append(f"    .impl = {{")
+            fixture_lines.append(f"        .complex = {{")
+            fixture_lines.append(f"            .params = {{")
+            fixture_lines.append(f"                 .n_of_k = {{")
+            fixture_lines.append(f"                     .required_count = {required_count},")
+            fixture_lines.append(f"                     .scripts = CHILDREN_{current_unique_id},")
+            fixture_lines.append(f"                     .scripts_count = {len(child_scripts_list)},")
+            fixture_lines.append(f"                 }}")
+            fixture_lines.append(f"            }}")
             fixture_lines.append(f"        }}")
             fixture_lines.append(f"    }}")
             fixture_lines.append("};")
@@ -358,9 +555,7 @@ def _generate_native_script_tree_recursive(
 def _build_fixtures() -> str:
     """
     Generate complete C file content for native script hash derivation fixtures.
-    
-    Following AGENTS.md: "Mimic Established Patterns"
-    
+     
     Tree structure:
     - Each test case is a root of a native script tree
     - Leaf nodes: SIMPLE scripts (PUBKEY, INVALID_BEFORE/HEREAFTER)
@@ -380,7 +575,6 @@ def _build_fixtures() -> str:
         "// Auto-generated native script hash derivation test fixtures",
         "// Generated from ragger standalone test cases",
         "//",
-        "// Following AGENTS.md: 'Mimic Established Patterns'",
         "//",
         "// Tree Structure:",
         "//   - Each test case is a root of a native script tree",
@@ -395,7 +589,6 @@ def _build_fixtures() -> str:
         "#include <stddef.h>",
         '#include "cardano_swo.h"',
         "",
-        "// Following AGENTS.md: 'Use long, descriptive variable names'",
         "#define SCRIPT_HASH_LENGTH 28  // Blake2b-224",
         "#define KEY_HASH_LENGTH 28     // Blake2b-224",
         "",
@@ -415,29 +608,21 @@ def _build_fixtures() -> str:
         "",
         "// SIMPLE script structure (leaf node)",
         "typedef struct {",
-        "    native_script_type_e type;",
-        "    union {",
-        "        struct {",
-        "            const uint32_t* path;",
-        "            uint32_t path_len;",
-        "        } pubkey_device_owned;",
-        "        struct {",
-        "            const uint8_t* key_hash;",
-        "        } pubkey_third_party;",
-        "        struct {",
-        "            uint64_t slot;",
-        "        } timelock;",
-        "    } params;",
+        "   const uint8_t* apdu_payload;         // Raw APDU data from command_builder.derive_script_add_complex:",
+        "   size_t apdu_payload_length;          // Length of APDU payload",
         "} native_script_simple_t;",
         "",
         "// COMPLEX script structure (internal node with children)",
         "typedef struct {",
-        "    native_script_type_e type;",
         "    union {",
         "        struct {",
         "            const native_script_t** scripts;",
         "            size_t scripts_count;",
-        "        } scripts;",
+        "        } all;",
+        "        struct {",
+        "            const native_script_t** scripts;",
+        "            size_t scripts_count;",
+        "        } any;",
         "        struct {",
         "            uint32_t required_count;",
         "            const native_script_t** scripts;",
@@ -461,6 +646,8 @@ def _build_fixtures() -> str:
         "    const native_script_t* root_script;  // Root of script tree",
         "    const uint8_t* expected_hash;",
         "    bool nano_skip;",
+        "    const uint8_t* finish_apdu_payload;     // Raw APDU data from command_builder.derive_script_finish",
+        "    size_t finish_apdu_payload_length;      // Length of finish APDU payload",
         "} native_script_test_case_t;",
         "",
         "// ======================================================================",
@@ -502,9 +689,21 @@ def _build_fixtures() -> str:
         header_lines.extend(tree_lines)
         header_lines.append("")
         
+        # Generate finish APDU payload
+        finish_lines, finish_array_name = _generate_finish_apdu_payload(
+            base_id,
+            test_case.displayFormat
+        )
+        header_lines.extend(finish_lines)
+        
         # Store root identifier for test case array
-        test_case_root_identifiers.append((base_id, test_case.name, root_script_id, test_case.nano_skip))
-    
+        test_case_root_identifiers.append((
+            base_id,
+            test_case.name,
+            root_script_id,
+            finish_array_name,
+            test_case.nano_skip
+        ))
     # Generate test case array
     header_lines.extend([
         "// ======================================================================",
@@ -514,13 +713,15 @@ def _build_fixtures() -> str:
         "static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {",
     ])
     
-    for base_id, name, root_id, nano_skip in test_case_root_identifiers:
+    for base_id, name, root_id, finish_apdu_array, nano_skip in test_case_root_identifiers:
         nano_skip_str = "true" if nano_skip else "false"
         header_lines.append(f"    {{")
         header_lines.append(f'        .name = "{name}",')
         header_lines.append(f"        .root_script = (const native_script_t*)&{root_id},")
         header_lines.append(f"        .expected_hash = EXPECTED_HASH_{base_id},")
         header_lines.append(f"        .nano_skip = {nano_skip_str},")
+        header_lines.append(f"        .finish_apdu_payload = {finish_apdu_array},")
+        header_lines.append(f"        .finish_apdu_payload_length = sizeof({finish_apdu_array}),")
         header_lines.append(f"    }},")
     
     header_lines.extend([
@@ -532,6 +733,44 @@ def _build_fixtures() -> str:
     
     return "\n".join(header_lines)
 
+def _generate_finish_apdu_payload(
+    test_case_id: str,
+    display_format,
+) -> tuple[List[str], str]:
+    """
+    Generate APDU payload for derive_script_finish.
+    
+    Args:
+        test_case_id: Test case identifier
+        display_format: NativeScriptHashDisplayFormat enum value from test case
+    
+    Returns:
+        Tuple of (C code lines, array name)
+    """
+    from application_client.command_builder import CommandBuilder  # type: ignore
+    
+    command_builder = CommandBuilder()
+    full_apdu = command_builder.derive_script_finish(display_format)
+    apdu_payload = _extract_apdu_payload(full_apdu)
+    
+    lines = []
+    array_name = f"FINISH_APDU_PAYLOAD_{test_case_id}"
+    
+    lines.append(f"// APDU payload for P1_NATIVE_SCRIPT_FINISH")
+    lines.append(f"// Display format: {display_format.name} (0x{display_format.value:02x})")
+    lines.append(f"static const uint8_t {array_name}[{len(apdu_payload)}] = {{")
+    
+    # Format bytes in rows of 8 for readability
+    for i in range(0, len(apdu_payload), 8):
+        byte_chunk = apdu_payload[i:i+8]
+        hex_bytes = ", ".join(f"0x{b:02x}" for b in byte_chunk)
+        trailing_comma = "," if i + 8 < len(apdu_payload) else ""
+        lines.append(f"    {hex_bytes}{trailing_comma}")
+    
+    lines.append("};")
+    lines.append("")
+    
+    return lines, array_name
 
 def generate_derive_native_script_fixtures() -> None:
     """
@@ -542,7 +781,7 @@ def generate_derive_native_script_fixtures() -> None:
     - Leaf nodes: SIMPLE scripts (PUBKEY, INVALID_BEFORE/HEREAFTER)
     - Internal nodes: COMPLEX scripts (ALL, ANY, N_OF_K) containing children
     
-    Following AGENTS.md: "Mimic Established Patterns"
+
     """
     print("Generating derive_native_script_fixtures.h...")
     print()

@@ -1,7 +1,6 @@
 // Auto-generated native script hash derivation test fixtures
 // Generated from ragger standalone test cases
 //
-// Following AGENTS.md: 'Mimic Established Patterns'
 //
 // Tree Structure:
 //   - Each test case is a root of a native script tree
@@ -16,7 +15,6 @@
 #include <stddef.h>
 #include "cardano_swo.h"
 
-// Following AGENTS.md: 'Use long, descriptive variable names'
 #define SCRIPT_HASH_LENGTH 28  // Blake2b-224
 #define KEY_HASH_LENGTH 28     // Blake2b-224
 
@@ -36,29 +34,21 @@ typedef enum {
 
 // SIMPLE script structure (leaf node)
 typedef struct {
-    native_script_type_e type;
-    union {
-        struct {
-            const uint32_t* path;
-            uint32_t path_len;
-        } pubkey_device_owned;
-        struct {
-            const uint8_t* key_hash;
-        } pubkey_third_party;
-        struct {
-            uint64_t slot;
-        } timelock;
-    } params;
+   const uint8_t* apdu_payload;         // Raw APDU data from command_builder.derive_script_add_complex:
+   size_t apdu_payload_length;          // Length of APDU payload
 } native_script_simple_t;
 
 // COMPLEX script structure (internal node with children)
 typedef struct {
-    native_script_type_e type;
     union {
         struct {
             const native_script_t** scripts;
             size_t scripts_count;
-        } scripts;
+        } all;
+        struct {
+            const native_script_t** scripts;
+            size_t scripts_count;
+        } any;
         struct {
             uint32_t required_count;
             const native_script_t** scripts;
@@ -82,6 +72,8 @@ typedef struct {
     const native_script_t* root_script;  // Root of script tree
     const uint8_t* expected_hash;
     bool nano_skip;
+    const uint8_t* finish_apdu_payload;     // Raw APDU data from command_builder.derive_script_finish
+    size_t finish_apdu_payload_length;      // Length of finish APDU payload
 } native_script_test_case_t;
 
 // ======================================================================
@@ -99,22 +91,29 @@ static const uint8_t EXPECTED_HASH_TC0_PUBKEY_DEVICE_OWNED[SCRIPT_HASH_LENGTH] =
     0x5a, 0x2c, 0xff, 0xc0,
 };
 
-// PUBKEY_DEVICE_OWNED (leaf): m/1852'/1815'/0'/0/0
-static const uint32_t PATH_TC0_PUBKEY_DEVICE_OWNED_C0[] = {
-    0x8000073c,  // 1852'
-    0x80000717,  // 1815'
-    0x80000000,  // 0'
-    0x00000000,  // 0
-    0x00000000,  // 0
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_DEVICE_OWNED
+static const uint8_t APDU_PAYLOAD_TC0_PUBKEY_DEVICE_OWNED_C0[23] = {
+    0x00, 0x02, 0x05, 0x80, 0x00, 0x07, 0x3c, 0x80,
+    0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
-static const native_script_simple_t SCRIPT_TC0_PUBKEY_DEVICE_OWNED_C0 = {
+
+static const native_script_t SCRIPT_TC0_PUBKEY_DEVICE_OWNED_C0 = {
     .type = NATIVE_SCRIPT_TYPE_PUBKEY_DEVICE_OWNED,
-    .params = {
-        .pubkey_device_owned = {
-            .path = PATH_TC0_PUBKEY_DEVICE_OWNED_C0,
-            .path_len = 5,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC0_PUBKEY_DEVICE_OWNED_C0,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC0_PUBKEY_DEVICE_OWNED_C0),
         }
     }
+};
+
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC0_PUBKEY_DEVICE_OWNED[1] = {
+    0x01
 };
 
 // ======================================================================
@@ -128,20 +127,30 @@ static const uint8_t EXPECTED_HASH_TC1_PUBKEY_THIRD_PARTY[SCRIPT_HASH_LENGTH] = 
     0x79, 0x3f, 0xe0, 0xeb,
 };
 
-// PUBKEY_THIRD_PARTY (leaf): 3a55d9f68255dfbefa1efd711f82d005fae1be2e145d616c90cf0fa9
-static const uint8_t KEY_HASH_TC1_PUBKEY_THIRD_PARTY_C0[KEY_HASH_LENGTH] = {
-    0x3a, 0x55, 0xd9, 0xf6, 0x82, 0x55, 0xdf, 0xbe,
-    0xfa, 0x1e, 0xfd, 0x71, 0x1f, 0x82, 0xd0, 0x05,
-    0xfa, 0xe1, 0xbe, 0x2e, 0x14, 0x5d, 0x61, 0x6c,
-    0x90, 0xcf, 0x0f, 0xa9,
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_THIRD_PARTY
+static const uint8_t APDU_PAYLOAD_TC1_PUBKEY_THIRD_PARTY_C0[30] = {
+    0x00, 0x00, 0x3a, 0x55, 0xd9, 0xf6, 0x82, 0x55,
+    0xdf, 0xbe, 0xfa, 0x1e, 0xfd, 0x71, 0x1f, 0x82,
+    0xd0, 0x05, 0xfa, 0xe1, 0xbe, 0x2e, 0x14, 0x5d,
+    0x61, 0x6c, 0x90, 0xcf, 0x0f, 0xa9
 };
-static const native_script_simple_t SCRIPT_TC1_PUBKEY_THIRD_PARTY_C0 = {
+
+static const native_script_t SCRIPT_TC1_PUBKEY_THIRD_PARTY_C0 = {
     .type = NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY,
-    .params = {
-        .pubkey_third_party = {
-            .key_hash = KEY_HASH_TC1_PUBKEY_THIRD_PARTY_C0,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC1_PUBKEY_THIRD_PARTY_C0,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC1_PUBKEY_THIRD_PARTY_C0),
         }
     }
+};
+
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC1_PUBKEY_THIRD_PARTY[1] = {
+    0x01
 };
 
 // ======================================================================
@@ -155,20 +164,30 @@ static const uint8_t EXPECTED_HASH_TC2_PUBKEY_THIRD_PARTY_SCRIPT_HASH_DISPLAYED_
     0x79, 0x3f, 0xe0, 0xeb,
 };
 
-// PUBKEY_THIRD_PARTY (leaf): 3a55d9f68255dfbefa1efd711f82d005fae1be2e145d616c90cf0fa9
-static const uint8_t KEY_HASH_TC2_PUBKEY_THIRD_PARTY_SCRIPT_HASH_DISPLAYED_AS_POLICY_ID_C0[KEY_HASH_LENGTH] = {
-    0x3a, 0x55, 0xd9, 0xf6, 0x82, 0x55, 0xdf, 0xbe,
-    0xfa, 0x1e, 0xfd, 0x71, 0x1f, 0x82, 0xd0, 0x05,
-    0xfa, 0xe1, 0xbe, 0x2e, 0x14, 0x5d, 0x61, 0x6c,
-    0x90, 0xcf, 0x0f, 0xa9,
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_THIRD_PARTY
+static const uint8_t APDU_PAYLOAD_TC2_PUBKEY_THIRD_PARTY_SCRIPT_HASH_DISPLAYED_AS_POLICY_ID_C0[30] = {
+    0x00, 0x00, 0x3a, 0x55, 0xd9, 0xf6, 0x82, 0x55,
+    0xdf, 0xbe, 0xfa, 0x1e, 0xfd, 0x71, 0x1f, 0x82,
+    0xd0, 0x05, 0xfa, 0xe1, 0xbe, 0x2e, 0x14, 0x5d,
+    0x61, 0x6c, 0x90, 0xcf, 0x0f, 0xa9
 };
-static const native_script_simple_t SCRIPT_TC2_PUBKEY_THIRD_PARTY_SCRIPT_HASH_DISPLAYED_AS_POLICY_ID_C0 = {
+
+static const native_script_t SCRIPT_TC2_PUBKEY_THIRD_PARTY_SCRIPT_HASH_DISPLAYED_AS_POLICY_ID_C0 = {
     .type = NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY,
-    .params = {
-        .pubkey_third_party = {
-            .key_hash = KEY_HASH_TC2_PUBKEY_THIRD_PARTY_SCRIPT_HASH_DISPLAYED_AS_POLICY_ID_C0,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC2_PUBKEY_THIRD_PARTY_SCRIPT_HASH_DISPLAYED_AS_POLICY_ID_C0,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC2_PUBKEY_THIRD_PARTY_SCRIPT_HASH_DISPLAYED_AS_POLICY_ID_C0),
         }
     }
+};
+
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: POLICY_ID (0x02)
+static const uint8_t FINISH_APDU_PAYLOAD_TC2_PUBKEY_THIRD_PARTY_SCRIPT_HASH_DISPLAYED_AS_POLICY_ID[1] = {
+    0x02
 };
 
 // ======================================================================
@@ -183,51 +202,69 @@ static const uint8_t EXPECTED_HASH_TC3_ALL_SCRIPT[SCRIPT_HASH_LENGTH] = {
 };
 
 // ALL (internal node): 2 children
-// PUBKEY_THIRD_PARTY (leaf): c4b9265645fde9536c0795adbcc5291767a0c61fd62448341d7e0386
-static const uint8_t KEY_HASH_TC3_ALL_SCRIPT_C0_C0[KEY_HASH_LENGTH] = {
-    0xc4, 0xb9, 0x26, 0x56, 0x45, 0xfd, 0xe9, 0x53,
-    0x6c, 0x07, 0x95, 0xad, 0xbc, 0xc5, 0x29, 0x17,
-    0x67, 0xa0, 0xc6, 0x1f, 0xd6, 0x24, 0x48, 0x34,
-    0x1d, 0x7e, 0x03, 0x86,
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_THIRD_PARTY
+static const uint8_t APDU_PAYLOAD_TC3_ALL_SCRIPT_C0_C0[30] = {
+    0x00, 0x00, 0xc4, 0xb9, 0x26, 0x56, 0x45, 0xfd,
+    0xe9, 0x53, 0x6c, 0x07, 0x95, 0xad, 0xbc, 0xc5,
+    0x29, 0x17, 0x67, 0xa0, 0xc6, 0x1f, 0xd6, 0x24,
+    0x48, 0x34, 0x1d, 0x7e, 0x03, 0x86
 };
-static const native_script_simple_t SCRIPT_TC3_ALL_SCRIPT_C0_C0 = {
+
+static const native_script_t SCRIPT_TC3_ALL_SCRIPT_C0_C0 = {
     .type = NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY,
-    .params = {
-        .pubkey_third_party = {
-            .key_hash = KEY_HASH_TC3_ALL_SCRIPT_C0_C0,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC3_ALL_SCRIPT_C0_C0,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC3_ALL_SCRIPT_C0_C0),
         }
     }
 };
 
-// PUBKEY_THIRD_PARTY (leaf): 0241f2d196f52a92fbd2183d03b370c30b6960cfdeae364ffabac889
-static const uint8_t KEY_HASH_TC3_ALL_SCRIPT_C0_C1[KEY_HASH_LENGTH] = {
-    0x02, 0x41, 0xf2, 0xd1, 0x96, 0xf5, 0x2a, 0x92,
-    0xfb, 0xd2, 0x18, 0x3d, 0x03, 0xb3, 0x70, 0xc3,
-    0x0b, 0x69, 0x60, 0xcf, 0xde, 0xae, 0x36, 0x4f,
-    0xfa, 0xba, 0xc8, 0x89,
+
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_THIRD_PARTY
+static const uint8_t APDU_PAYLOAD_TC3_ALL_SCRIPT_C0_C1[30] = {
+    0x00, 0x00, 0x02, 0x41, 0xf2, 0xd1, 0x96, 0xf5,
+    0x2a, 0x92, 0xfb, 0xd2, 0x18, 0x3d, 0x03, 0xb3,
+    0x70, 0xc3, 0x0b, 0x69, 0x60, 0xcf, 0xde, 0xae,
+    0x36, 0x4f, 0xfa, 0xba, 0xc8, 0x89
 };
-static const native_script_simple_t SCRIPT_TC3_ALL_SCRIPT_C0_C1 = {
+
+static const native_script_t SCRIPT_TC3_ALL_SCRIPT_C0_C1 = {
     .type = NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY,
-    .params = {
-        .pubkey_third_party = {
-            .key_hash = KEY_HASH_TC3_ALL_SCRIPT_C0_C1,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC3_ALL_SCRIPT_C0_C1,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC3_ALL_SCRIPT_C0_C1),
         }
     }
 };
+
 
 static const native_script_t* CHILDREN_TC3_ALL_SCRIPT_C0[] = {
     (const native_script_t*)&SCRIPT_TC3_ALL_SCRIPT_C0_C0,
     (const native_script_t*)&SCRIPT_TC3_ALL_SCRIPT_C0_C1,
 };
 
-static const native_script_complex_t SCRIPT_TC3_ALL_SCRIPT_C0 = {
+static const native_script_t SCRIPT_TC3_ALL_SCRIPT_C0 = {
     .type = NATIVE_SCRIPT_TYPE_ALL,
-    .params = {
-        .scripts = {
-            .scripts = CHILDREN_TC3_ALL_SCRIPT_C0,
-            .scripts_count = 2,
-        }
-    }
+    .impl = {
+        .complex = {
+             .params = {
+                 .all = {
+                     .scripts = CHILDREN_TC3_ALL_SCRIPT_C0,
+                     .scripts_count = 2,
+                 }
+             }
+         }
+     }
+};
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC3_ALL_SCRIPT[1] = {
+    0x01
 };
 
 // ======================================================================
@@ -246,14 +283,24 @@ static const native_script_t* CHILDREN_TC4_ALL_SCRIPT_NO_SUBSCRIPTS_C0[] = {
     NULL
 };
 
-static const native_script_complex_t SCRIPT_TC4_ALL_SCRIPT_NO_SUBSCRIPTS_C0 = {
+static const native_script_t SCRIPT_TC4_ALL_SCRIPT_NO_SUBSCRIPTS_C0 = {
     .type = NATIVE_SCRIPT_TYPE_ALL,
-    .params = {
-        .scripts = {
-            .scripts = CHILDREN_TC4_ALL_SCRIPT_NO_SUBSCRIPTS_C0,
-            .scripts_count = 0,
-        }
-    }
+    .impl = {
+        .complex = {
+             .params = {
+                 .all = {
+                     .scripts = CHILDREN_TC4_ALL_SCRIPT_NO_SUBSCRIPTS_C0,
+                     .scripts_count = 0,
+                 }
+             }
+         }
+     }
+};
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC4_ALL_SCRIPT_NO_SUBSCRIPTS[1] = {
+    0x01
 };
 
 // ======================================================================
@@ -268,51 +315,69 @@ static const uint8_t EXPECTED_HASH_TC5_ANY_SCRIPT[SCRIPT_HASH_LENGTH] = {
 };
 
 // ANY (internal node): 2 children
-// PUBKEY_THIRD_PARTY (leaf): c4b9265645fde9536c0795adbcc5291767a0c61fd62448341d7e0386
-static const uint8_t KEY_HASH_TC5_ANY_SCRIPT_C0_C0[KEY_HASH_LENGTH] = {
-    0xc4, 0xb9, 0x26, 0x56, 0x45, 0xfd, 0xe9, 0x53,
-    0x6c, 0x07, 0x95, 0xad, 0xbc, 0xc5, 0x29, 0x17,
-    0x67, 0xa0, 0xc6, 0x1f, 0xd6, 0x24, 0x48, 0x34,
-    0x1d, 0x7e, 0x03, 0x86,
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_THIRD_PARTY
+static const uint8_t APDU_PAYLOAD_TC5_ANY_SCRIPT_C0_C0[30] = {
+    0x00, 0x00, 0xc4, 0xb9, 0x26, 0x56, 0x45, 0xfd,
+    0xe9, 0x53, 0x6c, 0x07, 0x95, 0xad, 0xbc, 0xc5,
+    0x29, 0x17, 0x67, 0xa0, 0xc6, 0x1f, 0xd6, 0x24,
+    0x48, 0x34, 0x1d, 0x7e, 0x03, 0x86
 };
-static const native_script_simple_t SCRIPT_TC5_ANY_SCRIPT_C0_C0 = {
+
+static const native_script_t SCRIPT_TC5_ANY_SCRIPT_C0_C0 = {
     .type = NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY,
-    .params = {
-        .pubkey_third_party = {
-            .key_hash = KEY_HASH_TC5_ANY_SCRIPT_C0_C0,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC5_ANY_SCRIPT_C0_C0,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC5_ANY_SCRIPT_C0_C0),
         }
     }
 };
 
-// PUBKEY_THIRD_PARTY (leaf): 0241f2d196f52a92fbd2183d03b370c30b6960cfdeae364ffabac889
-static const uint8_t KEY_HASH_TC5_ANY_SCRIPT_C0_C1[KEY_HASH_LENGTH] = {
-    0x02, 0x41, 0xf2, 0xd1, 0x96, 0xf5, 0x2a, 0x92,
-    0xfb, 0xd2, 0x18, 0x3d, 0x03, 0xb3, 0x70, 0xc3,
-    0x0b, 0x69, 0x60, 0xcf, 0xde, 0xae, 0x36, 0x4f,
-    0xfa, 0xba, 0xc8, 0x89,
+
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_THIRD_PARTY
+static const uint8_t APDU_PAYLOAD_TC5_ANY_SCRIPT_C0_C1[30] = {
+    0x00, 0x00, 0x02, 0x41, 0xf2, 0xd1, 0x96, 0xf5,
+    0x2a, 0x92, 0xfb, 0xd2, 0x18, 0x3d, 0x03, 0xb3,
+    0x70, 0xc3, 0x0b, 0x69, 0x60, 0xcf, 0xde, 0xae,
+    0x36, 0x4f, 0xfa, 0xba, 0xc8, 0x89
 };
-static const native_script_simple_t SCRIPT_TC5_ANY_SCRIPT_C0_C1 = {
+
+static const native_script_t SCRIPT_TC5_ANY_SCRIPT_C0_C1 = {
     .type = NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY,
-    .params = {
-        .pubkey_third_party = {
-            .key_hash = KEY_HASH_TC5_ANY_SCRIPT_C0_C1,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC5_ANY_SCRIPT_C0_C1,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC5_ANY_SCRIPT_C0_C1),
         }
     }
 };
+
 
 static const native_script_t* CHILDREN_TC5_ANY_SCRIPT_C0[] = {
     (const native_script_t*)&SCRIPT_TC5_ANY_SCRIPT_C0_C0,
     (const native_script_t*)&SCRIPT_TC5_ANY_SCRIPT_C0_C1,
 };
 
-static const native_script_complex_t SCRIPT_TC5_ANY_SCRIPT_C0 = {
+static const native_script_t SCRIPT_TC5_ANY_SCRIPT_C0 = {
     .type = NATIVE_SCRIPT_TYPE_ANY,
-    .params = {
-        .scripts = {
-            .scripts = CHILDREN_TC5_ANY_SCRIPT_C0,
-            .scripts_count = 2,
-        }
-    }
+    .impl = {
+        .complex = {
+             .params = {
+                 .any = {
+                     .scripts = CHILDREN_TC5_ANY_SCRIPT_C0,
+                     .scripts_count = 2,
+                 }
+             }
+         }
+     }
+};
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC5_ANY_SCRIPT[1] = {
+    0x01
 };
 
 // ======================================================================
@@ -331,14 +396,24 @@ static const native_script_t* CHILDREN_TC6_ANY_SCRIPT_NO_SUBSCRIPTS_C0[] = {
     NULL
 };
 
-static const native_script_complex_t SCRIPT_TC6_ANY_SCRIPT_NO_SUBSCRIPTS_C0 = {
+static const native_script_t SCRIPT_TC6_ANY_SCRIPT_NO_SUBSCRIPTS_C0 = {
     .type = NATIVE_SCRIPT_TYPE_ANY,
-    .params = {
-        .scripts = {
-            .scripts = CHILDREN_TC6_ANY_SCRIPT_NO_SUBSCRIPTS_C0,
-            .scripts_count = 0,
-        }
-    }
+    .impl = {
+        .complex = {
+             .params = {
+                 .any = {
+                     .scripts = CHILDREN_TC6_ANY_SCRIPT_NO_SUBSCRIPTS_C0,
+                     .scripts_count = 0,
+                 }
+             }
+         }
+     }
+};
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC6_ANY_SCRIPT_NO_SUBSCRIPTS[1] = {
+    0x01
 };
 
 // ======================================================================
@@ -353,52 +428,70 @@ static const uint8_t EXPECTED_HASH_TC7_N_OF_K_SCRIPT[SCRIPT_HASH_LENGTH] = {
 };
 
 // N_OF_K (internal node): 2 of 2 children required
-// PUBKEY_THIRD_PARTY (leaf): c4b9265645fde9536c0795adbcc5291767a0c61fd62448341d7e0386
-static const uint8_t KEY_HASH_TC7_N_OF_K_SCRIPT_C0_C0[KEY_HASH_LENGTH] = {
-    0xc4, 0xb9, 0x26, 0x56, 0x45, 0xfd, 0xe9, 0x53,
-    0x6c, 0x07, 0x95, 0xad, 0xbc, 0xc5, 0x29, 0x17,
-    0x67, 0xa0, 0xc6, 0x1f, 0xd6, 0x24, 0x48, 0x34,
-    0x1d, 0x7e, 0x03, 0x86,
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_THIRD_PARTY
+static const uint8_t APDU_PAYLOAD_TC7_N_OF_K_SCRIPT_C0_C0[30] = {
+    0x00, 0x00, 0xc4, 0xb9, 0x26, 0x56, 0x45, 0xfd,
+    0xe9, 0x53, 0x6c, 0x07, 0x95, 0xad, 0xbc, 0xc5,
+    0x29, 0x17, 0x67, 0xa0, 0xc6, 0x1f, 0xd6, 0x24,
+    0x48, 0x34, 0x1d, 0x7e, 0x03, 0x86
 };
-static const native_script_simple_t SCRIPT_TC7_N_OF_K_SCRIPT_C0_C0 = {
+
+static const native_script_t SCRIPT_TC7_N_OF_K_SCRIPT_C0_C0 = {
     .type = NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY,
-    .params = {
-        .pubkey_third_party = {
-            .key_hash = KEY_HASH_TC7_N_OF_K_SCRIPT_C0_C0,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC7_N_OF_K_SCRIPT_C0_C0,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC7_N_OF_K_SCRIPT_C0_C0),
         }
     }
 };
 
-// PUBKEY_THIRD_PARTY (leaf): 0241f2d196f52a92fbd2183d03b370c30b6960cfdeae364ffabac889
-static const uint8_t KEY_HASH_TC7_N_OF_K_SCRIPT_C0_C1[KEY_HASH_LENGTH] = {
-    0x02, 0x41, 0xf2, 0xd1, 0x96, 0xf5, 0x2a, 0x92,
-    0xfb, 0xd2, 0x18, 0x3d, 0x03, 0xb3, 0x70, 0xc3,
-    0x0b, 0x69, 0x60, 0xcf, 0xde, 0xae, 0x36, 0x4f,
-    0xfa, 0xba, 0xc8, 0x89,
+
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_THIRD_PARTY
+static const uint8_t APDU_PAYLOAD_TC7_N_OF_K_SCRIPT_C0_C1[30] = {
+    0x00, 0x00, 0x02, 0x41, 0xf2, 0xd1, 0x96, 0xf5,
+    0x2a, 0x92, 0xfb, 0xd2, 0x18, 0x3d, 0x03, 0xb3,
+    0x70, 0xc3, 0x0b, 0x69, 0x60, 0xcf, 0xde, 0xae,
+    0x36, 0x4f, 0xfa, 0xba, 0xc8, 0x89
 };
-static const native_script_simple_t SCRIPT_TC7_N_OF_K_SCRIPT_C0_C1 = {
+
+static const native_script_t SCRIPT_TC7_N_OF_K_SCRIPT_C0_C1 = {
     .type = NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY,
-    .params = {
-        .pubkey_third_party = {
-            .key_hash = KEY_HASH_TC7_N_OF_K_SCRIPT_C0_C1,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC7_N_OF_K_SCRIPT_C0_C1,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC7_N_OF_K_SCRIPT_C0_C1),
         }
     }
 };
+
 
 static const native_script_t* CHILDREN_TC7_N_OF_K_SCRIPT_C0[] = {
     (const native_script_t*)&SCRIPT_TC7_N_OF_K_SCRIPT_C0_C0,
     (const native_script_t*)&SCRIPT_TC7_N_OF_K_SCRIPT_C0_C1,
 };
 
-static const native_script_complex_t SCRIPT_TC7_N_OF_K_SCRIPT_C0 = {
+static const native_script_t SCRIPT_TC7_N_OF_K_SCRIPT_C0 = {
     .type = NATIVE_SCRIPT_TYPE_N_OF_K,
-    .params = {
-        .n_of_k = {
-            .required_count = 2,
-            .scripts = CHILDREN_TC7_N_OF_K_SCRIPT_C0,
-            .scripts_count = 2,
+    .impl = {
+        .complex = {
+            .params = {
+                 .n_of_k = {
+                     .required_count = 2,
+                     .scripts = CHILDREN_TC7_N_OF_K_SCRIPT_C0,
+                     .scripts_count = 2,
+                 }
+            }
         }
     }
+};
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC7_N_OF_K_SCRIPT[1] = {
+    0x01
 };
 
 // ======================================================================
@@ -414,17 +507,28 @@ static const uint8_t EXPECTED_HASH_TC8_N_OF_K_SCRIPT_NO_SUBSCRIPTS[SCRIPT_HASH_L
 
 // N_OF_K (internal node): 0 of 0 children required
 static const native_script_t* CHILDREN_TC8_N_OF_K_SCRIPT_NO_SUBSCRIPTS_C0[] = {
+    NULL
 };
 
-static const native_script_complex_t SCRIPT_TC8_N_OF_K_SCRIPT_NO_SUBSCRIPTS_C0 = {
+static const native_script_t SCRIPT_TC8_N_OF_K_SCRIPT_NO_SUBSCRIPTS_C0 = {
     .type = NATIVE_SCRIPT_TYPE_N_OF_K,
-    .params = {
-        .n_of_k = {
-            .required_count = 0,
-            .scripts = CHILDREN_TC8_N_OF_K_SCRIPT_NO_SUBSCRIPTS_C0,
-            .scripts_count = 0,
+    .impl = {
+        .complex = {
+            .params = {
+                 .n_of_k = {
+                     .required_count = 0,
+                     .scripts = CHILDREN_TC8_N_OF_K_SCRIPT_NO_SUBSCRIPTS_C0,
+                     .scripts_count = 0,
+                 }
+            }
         }
     }
+};
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC8_N_OF_K_SCRIPT_NO_SUBSCRIPTS[1] = {
+    0x01
 };
 
 // ======================================================================
@@ -438,14 +542,28 @@ static const uint8_t EXPECTED_HASH_TC9_INVALID_BEFORE_SCRIPT[SCRIPT_HASH_LENGTH]
     0x5d, 0x31, 0x4c, 0x4e,
 };
 
-// INVALID_BEFORE (leaf): slot 42
-static const native_script_simple_t SCRIPT_TC9_INVALID_BEFORE_SCRIPT_C0 = {
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: INVALID_BEFORE
+static const uint8_t APDU_PAYLOAD_TC9_INVALID_BEFORE_SCRIPT_C0[9] = {
+    0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x2a
+};
+
+static const native_script_t SCRIPT_TC9_INVALID_BEFORE_SCRIPT_C0 = {
     .type = NATIVE_SCRIPT_TYPE_INVALID_BEFORE,
-    .params = {
-        .timelock = {
-            .slot = 42ULL,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC9_INVALID_BEFORE_SCRIPT_C0,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC9_INVALID_BEFORE_SCRIPT_C0),
         }
     }
+};
+
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC9_INVALID_BEFORE_SCRIPT[1] = {
+    0x01
 };
 
 // ======================================================================
@@ -459,14 +577,28 @@ static const uint8_t EXPECTED_HASH_TC10_INVALID_BEFORE_SCRIPT_SLOT_IS_A_BIG_NUMB
     0xae, 0x84, 0xc0, 0x4b,
 };
 
-// INVALID_BEFORE (leaf): slot 18446744073709551615
-static const native_script_simple_t SCRIPT_TC10_INVALID_BEFORE_SCRIPT_SLOT_IS_A_BIG_NUMBER_C0 = {
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: INVALID_BEFORE
+static const uint8_t APDU_PAYLOAD_TC10_INVALID_BEFORE_SCRIPT_SLOT_IS_A_BIG_NUMBER_C0[9] = {
+    0x04, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff
+};
+
+static const native_script_t SCRIPT_TC10_INVALID_BEFORE_SCRIPT_SLOT_IS_A_BIG_NUMBER_C0 = {
     .type = NATIVE_SCRIPT_TYPE_INVALID_BEFORE,
-    .params = {
-        .timelock = {
-            .slot = 18446744073709551615ULL,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC10_INVALID_BEFORE_SCRIPT_SLOT_IS_A_BIG_NUMBER_C0,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC10_INVALID_BEFORE_SCRIPT_SLOT_IS_A_BIG_NUMBER_C0),
         }
     }
+};
+
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC10_INVALID_BEFORE_SCRIPT_SLOT_IS_A_BIG_NUMBER[1] = {
+    0x01
 };
 
 // ======================================================================
@@ -480,14 +612,28 @@ static const uint8_t EXPECTED_HASH_TC11_INVALID_HEREAFTER_SCRIPT[SCRIPT_HASH_LEN
     0xc8, 0xa2, 0x01, 0x94,
 };
 
-// INVALID_HEREAFTER (leaf): slot 42
-static const native_script_simple_t SCRIPT_TC11_INVALID_HEREAFTER_SCRIPT_C0 = {
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: INVALID_HEREAFTER
+static const uint8_t APDU_PAYLOAD_TC11_INVALID_HEREAFTER_SCRIPT_C0[9] = {
+    0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x2a
+};
+
+static const native_script_t SCRIPT_TC11_INVALID_HEREAFTER_SCRIPT_C0 = {
     .type = NATIVE_SCRIPT_TYPE_INVALID_HEREAFTER,
-    .params = {
-        .timelock = {
-            .slot = 42ULL,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC11_INVALID_HEREAFTER_SCRIPT_C0,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC11_INVALID_HEREAFTER_SCRIPT_C0),
         }
     }
+};
+
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC11_INVALID_HEREAFTER_SCRIPT[1] = {
+    0x01
 };
 
 // ======================================================================
@@ -501,14 +647,28 @@ static const uint8_t EXPECTED_HASH_TC12_INVALID_HEREAFTER_SCRIPT_SLOT_IS_A_BIG_N
     0xac, 0x25, 0x10, 0x05,
 };
 
-// INVALID_HEREAFTER (leaf): slot 18446744073709551615
-static const native_script_simple_t SCRIPT_TC12_INVALID_HEREAFTER_SCRIPT_SLOT_IS_A_BIG_NUMBER_C0 = {
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: INVALID_HEREAFTER
+static const uint8_t APDU_PAYLOAD_TC12_INVALID_HEREAFTER_SCRIPT_SLOT_IS_A_BIG_NUMBER_C0[9] = {
+    0x05, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff
+};
+
+static const native_script_t SCRIPT_TC12_INVALID_HEREAFTER_SCRIPT_SLOT_IS_A_BIG_NUMBER_C0 = {
     .type = NATIVE_SCRIPT_TYPE_INVALID_HEREAFTER,
-    .params = {
-        .timelock = {
-            .slot = 18446744073709551615ULL,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC12_INVALID_HEREAFTER_SCRIPT_SLOT_IS_A_BIG_NUMBER_C0,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC12_INVALID_HEREAFTER_SCRIPT_SLOT_IS_A_BIG_NUMBER_C0),
         }
     }
+};
+
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC12_INVALID_HEREAFTER_SCRIPT_SLOT_IS_A_BIG_NUMBER[1] = {
+    0x01
 };
 
 // ======================================================================
@@ -523,118 +683,146 @@ static const uint8_t EXPECTED_HASH_TC13_NESTED_NATIVE_SCRIPTS[SCRIPT_HASH_LENGTH
 };
 
 // ALL (internal node): 5 children
-// PUBKEY_THIRD_PARTY (leaf): c4b9265645fde9536c0795adbcc5291767a0c61fd62448341d7e0386
-static const uint8_t KEY_HASH_TC13_NESTED_NATIVE_SCRIPTS_C0_C0[KEY_HASH_LENGTH] = {
-    0xc4, 0xb9, 0x26, 0x56, 0x45, 0xfd, 0xe9, 0x53,
-    0x6c, 0x07, 0x95, 0xad, 0xbc, 0xc5, 0x29, 0x17,
-    0x67, 0xa0, 0xc6, 0x1f, 0xd6, 0x24, 0x48, 0x34,
-    0x1d, 0x7e, 0x03, 0x86,
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_THIRD_PARTY
+static const uint8_t APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C0[30] = {
+    0x00, 0x00, 0xc4, 0xb9, 0x26, 0x56, 0x45, 0xfd,
+    0xe9, 0x53, 0x6c, 0x07, 0x95, 0xad, 0xbc, 0xc5,
+    0x29, 0x17, 0x67, 0xa0, 0xc6, 0x1f, 0xd6, 0x24,
+    0x48, 0x34, 0x1d, 0x7e, 0x03, 0x86
 };
-static const native_script_simple_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C0 = {
+
+static const native_script_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C0 = {
     .type = NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY,
-    .params = {
-        .pubkey_third_party = {
-            .key_hash = KEY_HASH_TC13_NESTED_NATIVE_SCRIPTS_C0_C0,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C0,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C0),
         }
     }
 };
+
 
 // ANY (internal node): 2 children
-// PUBKEY_THIRD_PARTY (leaf): c4b9265645fde9536c0795adbcc5291767a0c61fd62448341d7e0386
-static const uint8_t KEY_HASH_TC13_NESTED_NATIVE_SCRIPTS_C0_C1_C0[KEY_HASH_LENGTH] = {
-    0xc4, 0xb9, 0x26, 0x56, 0x45, 0xfd, 0xe9, 0x53,
-    0x6c, 0x07, 0x95, 0xad, 0xbc, 0xc5, 0x29, 0x17,
-    0x67, 0xa0, 0xc6, 0x1f, 0xd6, 0x24, 0x48, 0x34,
-    0x1d, 0x7e, 0x03, 0x86,
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_THIRD_PARTY
+static const uint8_t APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C1_C0[30] = {
+    0x00, 0x00, 0xc4, 0xb9, 0x26, 0x56, 0x45, 0xfd,
+    0xe9, 0x53, 0x6c, 0x07, 0x95, 0xad, 0xbc, 0xc5,
+    0x29, 0x17, 0x67, 0xa0, 0xc6, 0x1f, 0xd6, 0x24,
+    0x48, 0x34, 0x1d, 0x7e, 0x03, 0x86
 };
-static const native_script_simple_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C1_C0 = {
+
+static const native_script_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C1_C0 = {
     .type = NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY,
-    .params = {
-        .pubkey_third_party = {
-            .key_hash = KEY_HASH_TC13_NESTED_NATIVE_SCRIPTS_C0_C1_C0,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C1_C0,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C1_C0),
         }
     }
 };
 
-// PUBKEY_THIRD_PARTY (leaf): 0241f2d196f52a92fbd2183d03b370c30b6960cfdeae364ffabac889
-static const uint8_t KEY_HASH_TC13_NESTED_NATIVE_SCRIPTS_C0_C1_C1[KEY_HASH_LENGTH] = {
-    0x02, 0x41, 0xf2, 0xd1, 0x96, 0xf5, 0x2a, 0x92,
-    0xfb, 0xd2, 0x18, 0x3d, 0x03, 0xb3, 0x70, 0xc3,
-    0x0b, 0x69, 0x60, 0xcf, 0xde, 0xae, 0x36, 0x4f,
-    0xfa, 0xba, 0xc8, 0x89,
+
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_THIRD_PARTY
+static const uint8_t APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C1_C1[30] = {
+    0x00, 0x00, 0x02, 0x41, 0xf2, 0xd1, 0x96, 0xf5,
+    0x2a, 0x92, 0xfb, 0xd2, 0x18, 0x3d, 0x03, 0xb3,
+    0x70, 0xc3, 0x0b, 0x69, 0x60, 0xcf, 0xde, 0xae,
+    0x36, 0x4f, 0xfa, 0xba, 0xc8, 0x89
 };
-static const native_script_simple_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C1_C1 = {
+
+static const native_script_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C1_C1 = {
     .type = NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY,
-    .params = {
-        .pubkey_third_party = {
-            .key_hash = KEY_HASH_TC13_NESTED_NATIVE_SCRIPTS_C0_C1_C1,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C1_C1,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C1_C1),
         }
     }
 };
+
 
 static const native_script_t* CHILDREN_TC13_NESTED_NATIVE_SCRIPTS_C0_C1[] = {
     (const native_script_t*)&SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C1_C0,
     (const native_script_t*)&SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C1_C1,
 };
 
-static const native_script_complex_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C1 = {
+static const native_script_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C1 = {
     .type = NATIVE_SCRIPT_TYPE_ANY,
-    .params = {
-        .scripts = {
-            .scripts = CHILDREN_TC13_NESTED_NATIVE_SCRIPTS_C0_C1,
-            .scripts_count = 2,
-        }
-    }
+    .impl = {
+        .complex = {
+             .params = {
+                 .any = {
+                     .scripts = CHILDREN_TC13_NESTED_NATIVE_SCRIPTS_C0_C1,
+                     .scripts_count = 2,
+                 }
+             }
+         }
+     }
 };
 
 // N_OF_K (internal node): 2 of 3 children required
-// PUBKEY_THIRD_PARTY (leaf): c4b9265645fde9536c0795adbcc5291767a0c61fd62448341d7e0386
-static const uint8_t KEY_HASH_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C0[KEY_HASH_LENGTH] = {
-    0xc4, 0xb9, 0x26, 0x56, 0x45, 0xfd, 0xe9, 0x53,
-    0x6c, 0x07, 0x95, 0xad, 0xbc, 0xc5, 0x29, 0x17,
-    0x67, 0xa0, 0xc6, 0x1f, 0xd6, 0x24, 0x48, 0x34,
-    0x1d, 0x7e, 0x03, 0x86,
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_THIRD_PARTY
+static const uint8_t APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C0[30] = {
+    0x00, 0x00, 0xc4, 0xb9, 0x26, 0x56, 0x45, 0xfd,
+    0xe9, 0x53, 0x6c, 0x07, 0x95, 0xad, 0xbc, 0xc5,
+    0x29, 0x17, 0x67, 0xa0, 0xc6, 0x1f, 0xd6, 0x24,
+    0x48, 0x34, 0x1d, 0x7e, 0x03, 0x86
 };
-static const native_script_simple_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C0 = {
+
+static const native_script_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C0 = {
     .type = NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY,
-    .params = {
-        .pubkey_third_party = {
-            .key_hash = KEY_HASH_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C0,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C0,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C0),
         }
     }
 };
 
-// PUBKEY_THIRD_PARTY (leaf): 0241f2d196f52a92fbd2183d03b370c30b6960cfdeae364ffabac889
-static const uint8_t KEY_HASH_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C1[KEY_HASH_LENGTH] = {
-    0x02, 0x41, 0xf2, 0xd1, 0x96, 0xf5, 0x2a, 0x92,
-    0xfb, 0xd2, 0x18, 0x3d, 0x03, 0xb3, 0x70, 0xc3,
-    0x0b, 0x69, 0x60, 0xcf, 0xde, 0xae, 0x36, 0x4f,
-    0xfa, 0xba, 0xc8, 0x89,
+
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_THIRD_PARTY
+static const uint8_t APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C1[30] = {
+    0x00, 0x00, 0x02, 0x41, 0xf2, 0xd1, 0x96, 0xf5,
+    0x2a, 0x92, 0xfb, 0xd2, 0x18, 0x3d, 0x03, 0xb3,
+    0x70, 0xc3, 0x0b, 0x69, 0x60, 0xcf, 0xde, 0xae,
+    0x36, 0x4f, 0xfa, 0xba, 0xc8, 0x89
 };
-static const native_script_simple_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C1 = {
+
+static const native_script_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C1 = {
     .type = NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY,
-    .params = {
-        .pubkey_third_party = {
-            .key_hash = KEY_HASH_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C1,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C1,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C1),
         }
     }
 };
 
-// PUBKEY_THIRD_PARTY (leaf): cecb1d427c4ae436d28cc0f8ae9bb37501a5b77bcc64cd1693e9ae20
-static const uint8_t KEY_HASH_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C2[KEY_HASH_LENGTH] = {
-    0xce, 0xcb, 0x1d, 0x42, 0x7c, 0x4a, 0xe4, 0x36,
-    0xd2, 0x8c, 0xc0, 0xf8, 0xae, 0x9b, 0xb3, 0x75,
-    0x01, 0xa5, 0xb7, 0x7b, 0xcc, 0x64, 0xcd, 0x16,
-    0x93, 0xe9, 0xae, 0x20,
+
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_THIRD_PARTY
+static const uint8_t APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C2[30] = {
+    0x00, 0x00, 0xce, 0xcb, 0x1d, 0x42, 0x7c, 0x4a,
+    0xe4, 0x36, 0xd2, 0x8c, 0xc0, 0xf8, 0xae, 0x9b,
+    0xb3, 0x75, 0x01, 0xa5, 0xb7, 0x7b, 0xcc, 0x64,
+    0xcd, 0x16, 0x93, 0xe9, 0xae, 0x20
 };
-static const native_script_simple_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C2 = {
+
+static const native_script_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C2 = {
     .type = NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY,
-    .params = {
-        .pubkey_third_party = {
-            .key_hash = KEY_HASH_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C2,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C2,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C2),
         }
     }
 };
+
 
 static const native_script_t* CHILDREN_TC13_NESTED_NATIVE_SCRIPTS_C0_C2[] = {
     (const native_script_t*)&SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C0,
@@ -642,36 +830,56 @@ static const native_script_t* CHILDREN_TC13_NESTED_NATIVE_SCRIPTS_C0_C2[] = {
     (const native_script_t*)&SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C2_C2,
 };
 
-static const native_script_complex_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C2 = {
+static const native_script_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C2 = {
     .type = NATIVE_SCRIPT_TYPE_N_OF_K,
-    .params = {
-        .n_of_k = {
-            .required_count = 2,
-            .scripts = CHILDREN_TC13_NESTED_NATIVE_SCRIPTS_C0_C2,
-            .scripts_count = 3,
+    .impl = {
+        .complex = {
+            .params = {
+                 .n_of_k = {
+                     .required_count = 2,
+                     .scripts = CHILDREN_TC13_NESTED_NATIVE_SCRIPTS_C0_C2,
+                     .scripts_count = 3,
+                 }
+            }
         }
     }
 };
 
-// INVALID_BEFORE (leaf): slot 100
-static const native_script_simple_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C3 = {
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: INVALID_BEFORE
+static const uint8_t APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C3[9] = {
+    0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x64
+};
+
+static const native_script_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C3 = {
     .type = NATIVE_SCRIPT_TYPE_INVALID_BEFORE,
-    .params = {
-        .timelock = {
-            .slot = 100ULL,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C3,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C3),
         }
     }
 };
 
-// INVALID_HEREAFTER (leaf): slot 200
-static const native_script_simple_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C4 = {
+
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: INVALID_HEREAFTER
+static const uint8_t APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C4[9] = {
+    0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0xc8
+};
+
+static const native_script_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C4 = {
     .type = NATIVE_SCRIPT_TYPE_INVALID_HEREAFTER,
-    .params = {
-        .timelock = {
-            .slot = 200ULL,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C4,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_C0_C4),
         }
     }
 };
+
 
 static const native_script_t* CHILDREN_TC13_NESTED_NATIVE_SCRIPTS_C0[] = {
     (const native_script_t*)&SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C0,
@@ -681,14 +889,24 @@ static const native_script_t* CHILDREN_TC13_NESTED_NATIVE_SCRIPTS_C0[] = {
     (const native_script_t*)&SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0_C4,
 };
 
-static const native_script_complex_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0 = {
+static const native_script_t SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0 = {
     .type = NATIVE_SCRIPT_TYPE_ALL,
-    .params = {
-        .scripts = {
-            .scripts = CHILDREN_TC13_NESTED_NATIVE_SCRIPTS_C0,
-            .scripts_count = 5,
-        }
-    }
+    .impl = {
+        .complex = {
+             .params = {
+                 .all = {
+                     .scripts = CHILDREN_TC13_NESTED_NATIVE_SCRIPTS_C0,
+                     .scripts_count = 5,
+                 }
+             }
+         }
+     }
+};
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS[1] = {
+    0x01
 };
 
 // ======================================================================
@@ -704,65 +922,87 @@ static const uint8_t EXPECTED_HASH_TC14_NESTED_NATIVE_SCRIPTS_NUM2[SCRIPT_HASH_L
 
 // ALL (internal node): 1 children
 // ANY (internal node): 2 children
-// PUBKEY_THIRD_PARTY (leaf): c4b9265645fde9536c0795adbcc5291767a0c61fd62448341d7e0386
-static const uint8_t KEY_HASH_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0_C0[KEY_HASH_LENGTH] = {
-    0xc4, 0xb9, 0x26, 0x56, 0x45, 0xfd, 0xe9, 0x53,
-    0x6c, 0x07, 0x95, 0xad, 0xbc, 0xc5, 0x29, 0x17,
-    0x67, 0xa0, 0xc6, 0x1f, 0xd6, 0x24, 0x48, 0x34,
-    0x1d, 0x7e, 0x03, 0x86,
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_THIRD_PARTY
+static const uint8_t APDU_PAYLOAD_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0_C0[30] = {
+    0x00, 0x00, 0xc4, 0xb9, 0x26, 0x56, 0x45, 0xfd,
+    0xe9, 0x53, 0x6c, 0x07, 0x95, 0xad, 0xbc, 0xc5,
+    0x29, 0x17, 0x67, 0xa0, 0xc6, 0x1f, 0xd6, 0x24,
+    0x48, 0x34, 0x1d, 0x7e, 0x03, 0x86
 };
-static const native_script_simple_t SCRIPT_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0_C0 = {
+
+static const native_script_t SCRIPT_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0_C0 = {
     .type = NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY,
-    .params = {
-        .pubkey_third_party = {
-            .key_hash = KEY_HASH_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0_C0,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0_C0,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0_C0),
         }
     }
 };
 
-// PUBKEY_THIRD_PARTY (leaf): 0241f2d196f52a92fbd2183d03b370c30b6960cfdeae364ffabac889
-static const uint8_t KEY_HASH_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0_C1[KEY_HASH_LENGTH] = {
-    0x02, 0x41, 0xf2, 0xd1, 0x96, 0xf5, 0x2a, 0x92,
-    0xfb, 0xd2, 0x18, 0x3d, 0x03, 0xb3, 0x70, 0xc3,
-    0x0b, 0x69, 0x60, 0xcf, 0xde, 0xae, 0x36, 0x4f,
-    0xfa, 0xba, 0xc8, 0x89,
+
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_THIRD_PARTY
+static const uint8_t APDU_PAYLOAD_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0_C1[30] = {
+    0x00, 0x00, 0x02, 0x41, 0xf2, 0xd1, 0x96, 0xf5,
+    0x2a, 0x92, 0xfb, 0xd2, 0x18, 0x3d, 0x03, 0xb3,
+    0x70, 0xc3, 0x0b, 0x69, 0x60, 0xcf, 0xde, 0xae,
+    0x36, 0x4f, 0xfa, 0xba, 0xc8, 0x89
 };
-static const native_script_simple_t SCRIPT_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0_C1 = {
+
+static const native_script_t SCRIPT_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0_C1 = {
     .type = NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY,
-    .params = {
-        .pubkey_third_party = {
-            .key_hash = KEY_HASH_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0_C1,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0_C1,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0_C1),
         }
     }
 };
+
 
 static const native_script_t* CHILDREN_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0[] = {
     (const native_script_t*)&SCRIPT_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0_C0,
     (const native_script_t*)&SCRIPT_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0_C1,
 };
 
-static const native_script_complex_t SCRIPT_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0 = {
+static const native_script_t SCRIPT_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0 = {
     .type = NATIVE_SCRIPT_TYPE_ANY,
-    .params = {
-        .scripts = {
-            .scripts = CHILDREN_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0,
-            .scripts_count = 2,
-        }
-    }
+    .impl = {
+        .complex = {
+             .params = {
+                 .any = {
+                     .scripts = CHILDREN_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0,
+                     .scripts_count = 2,
+                 }
+             }
+         }
+     }
 };
 
 static const native_script_t* CHILDREN_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0[] = {
     (const native_script_t*)&SCRIPT_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0_C0,
 };
 
-static const native_script_complex_t SCRIPT_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0 = {
+static const native_script_t SCRIPT_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0 = {
     .type = NATIVE_SCRIPT_TYPE_ALL,
-    .params = {
-        .scripts = {
-            .scripts = CHILDREN_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0,
-            .scripts_count = 1,
-        }
-    }
+    .impl = {
+        .complex = {
+             .params = {
+                 .all = {
+                     .scripts = CHILDREN_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0,
+                     .scripts_count = 1,
+                 }
+             }
+         }
+     }
+};
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC14_NESTED_NATIVE_SCRIPTS_NUM2[1] = {
+    0x01
 };
 
 // ======================================================================
@@ -781,15 +1021,20 @@ static const uint8_t EXPECTED_HASH_TC15_NESTED_NATIVE_SCRIPTS_NUM3[SCRIPT_HASH_L
 // ANY (internal node): 1 children
 // N_OF_K (internal node): 0 of 0 children required
 static const native_script_t* CHILDREN_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0_C0_C0_C0[] = {
+    NULL
 };
 
-static const native_script_complex_t SCRIPT_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0_C0_C0_C0 = {
+static const native_script_t SCRIPT_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0_C0_C0_C0 = {
     .type = NATIVE_SCRIPT_TYPE_N_OF_K,
-    .params = {
-        .n_of_k = {
-            .required_count = 0,
-            .scripts = CHILDREN_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0_C0_C0_C0,
-            .scripts_count = 0,
+    .impl = {
+        .complex = {
+            .params = {
+                 .n_of_k = {
+                     .required_count = 0,
+                     .scripts = CHILDREN_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0_C0_C0_C0,
+                     .scripts_count = 0,
+                 }
+            }
         }
     }
 };
@@ -798,43 +1043,61 @@ static const native_script_t* CHILDREN_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0_C0_C0[
     (const native_script_t*)&SCRIPT_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0_C0_C0_C0,
 };
 
-static const native_script_complex_t SCRIPT_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0_C0_C0 = {
+static const native_script_t SCRIPT_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0_C0_C0 = {
     .type = NATIVE_SCRIPT_TYPE_ANY,
-    .params = {
-        .scripts = {
-            .scripts = CHILDREN_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0_C0_C0,
-            .scripts_count = 1,
-        }
-    }
+    .impl = {
+        .complex = {
+             .params = {
+                 .any = {
+                     .scripts = CHILDREN_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0_C0_C0,
+                     .scripts_count = 1,
+                 }
+             }
+         }
+     }
 };
 
 static const native_script_t* CHILDREN_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0_C0[] = {
     (const native_script_t*)&SCRIPT_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0_C0_C0,
 };
 
-static const native_script_complex_t SCRIPT_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0_C0 = {
+static const native_script_t SCRIPT_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0_C0 = {
     .type = NATIVE_SCRIPT_TYPE_ALL,
-    .params = {
-        .scripts = {
-            .scripts = CHILDREN_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0_C0,
-            .scripts_count = 1,
-        }
-    }
+    .impl = {
+        .complex = {
+             .params = {
+                 .all = {
+                     .scripts = CHILDREN_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0_C0,
+                     .scripts_count = 1,
+                 }
+             }
+         }
+     }
 };
 
 static const native_script_t* CHILDREN_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0[] = {
     (const native_script_t*)&SCRIPT_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0_C0,
 };
 
-static const native_script_complex_t SCRIPT_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0 = {
+static const native_script_t SCRIPT_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0 = {
     .type = NATIVE_SCRIPT_TYPE_N_OF_K,
-    .params = {
-        .n_of_k = {
-            .required_count = 0,
-            .scripts = CHILDREN_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0,
-            .scripts_count = 1,
+    .impl = {
+        .complex = {
+            .params = {
+                 .n_of_k = {
+                     .required_count = 0,
+                     .scripts = CHILDREN_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0,
+                     .scripts_count = 1,
+                 }
+            }
         }
     }
+};
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC15_NESTED_NATIVE_SCRIPTS_NUM3[1] = {
+    0x01
 };
 
 // ======================================================================
@@ -847,96 +1110,128 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .root_script = (const native_script_t*)&SCRIPT_TC0_PUBKEY_DEVICE_OWNED_C0,
         .expected_hash = EXPECTED_HASH_TC0_PUBKEY_DEVICE_OWNED,
         .nano_skip = false,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC0_PUBKEY_DEVICE_OWNED,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC0_PUBKEY_DEVICE_OWNED),
     },
     {
         .name = "PUBKEY_third_party",
         .root_script = (const native_script_t*)&SCRIPT_TC1_PUBKEY_THIRD_PARTY_C0,
         .expected_hash = EXPECTED_HASH_TC1_PUBKEY_THIRD_PARTY,
         .nano_skip = false,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC1_PUBKEY_THIRD_PARTY,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC1_PUBKEY_THIRD_PARTY),
     },
     {
         .name = "PUBKEY_third_party_script_hash_displayed_as_policy_id",
         .root_script = (const native_script_t*)&SCRIPT_TC2_PUBKEY_THIRD_PARTY_SCRIPT_HASH_DISPLAYED_AS_POLICY_ID_C0,
         .expected_hash = EXPECTED_HASH_TC2_PUBKEY_THIRD_PARTY_SCRIPT_HASH_DISPLAYED_AS_POLICY_ID,
         .nano_skip = false,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC2_PUBKEY_THIRD_PARTY_SCRIPT_HASH_DISPLAYED_AS_POLICY_ID,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC2_PUBKEY_THIRD_PARTY_SCRIPT_HASH_DISPLAYED_AS_POLICY_ID),
     },
     {
         .name = "ALL_script",
         .root_script = (const native_script_t*)&SCRIPT_TC3_ALL_SCRIPT_C0,
         .expected_hash = EXPECTED_HASH_TC3_ALL_SCRIPT,
         .nano_skip = false,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC3_ALL_SCRIPT,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC3_ALL_SCRIPT),
     },
     {
         .name = "ALL_script_no_subscripts",
         .root_script = (const native_script_t*)&SCRIPT_TC4_ALL_SCRIPT_NO_SUBSCRIPTS_C0,
         .expected_hash = EXPECTED_HASH_TC4_ALL_SCRIPT_NO_SUBSCRIPTS,
         .nano_skip = false,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC4_ALL_SCRIPT_NO_SUBSCRIPTS,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC4_ALL_SCRIPT_NO_SUBSCRIPTS),
     },
     {
         .name = "ANY_script",
         .root_script = (const native_script_t*)&SCRIPT_TC5_ANY_SCRIPT_C0,
         .expected_hash = EXPECTED_HASH_TC5_ANY_SCRIPT,
         .nano_skip = false,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC5_ANY_SCRIPT,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC5_ANY_SCRIPT),
     },
     {
         .name = "ANY_script_no_subscripts",
         .root_script = (const native_script_t*)&SCRIPT_TC6_ANY_SCRIPT_NO_SUBSCRIPTS_C0,
         .expected_hash = EXPECTED_HASH_TC6_ANY_SCRIPT_NO_SUBSCRIPTS,
         .nano_skip = false,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC6_ANY_SCRIPT_NO_SUBSCRIPTS,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC6_ANY_SCRIPT_NO_SUBSCRIPTS),
     },
     {
         .name = "N_OF_K_script",
         .root_script = (const native_script_t*)&SCRIPT_TC7_N_OF_K_SCRIPT_C0,
         .expected_hash = EXPECTED_HASH_TC7_N_OF_K_SCRIPT,
         .nano_skip = false,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC7_N_OF_K_SCRIPT,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC7_N_OF_K_SCRIPT),
     },
     {
         .name = "N_OF_K_script_no_subscripts",
         .root_script = (const native_script_t*)&SCRIPT_TC8_N_OF_K_SCRIPT_NO_SUBSCRIPTS_C0,
         .expected_hash = EXPECTED_HASH_TC8_N_OF_K_SCRIPT_NO_SUBSCRIPTS,
         .nano_skip = false,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC8_N_OF_K_SCRIPT_NO_SUBSCRIPTS,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC8_N_OF_K_SCRIPT_NO_SUBSCRIPTS),
     },
     {
         .name = "INVALID_BEFORE_script",
         .root_script = (const native_script_t*)&SCRIPT_TC9_INVALID_BEFORE_SCRIPT_C0,
         .expected_hash = EXPECTED_HASH_TC9_INVALID_BEFORE_SCRIPT,
         .nano_skip = false,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC9_INVALID_BEFORE_SCRIPT,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC9_INVALID_BEFORE_SCRIPT),
     },
     {
         .name = "INVALID_BEFORE_script_slot_is_a_big_number",
         .root_script = (const native_script_t*)&SCRIPT_TC10_INVALID_BEFORE_SCRIPT_SLOT_IS_A_BIG_NUMBER_C0,
         .expected_hash = EXPECTED_HASH_TC10_INVALID_BEFORE_SCRIPT_SLOT_IS_A_BIG_NUMBER,
         .nano_skip = false,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC10_INVALID_BEFORE_SCRIPT_SLOT_IS_A_BIG_NUMBER,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC10_INVALID_BEFORE_SCRIPT_SLOT_IS_A_BIG_NUMBER),
     },
     {
         .name = "INVALID_HEREAFTER_script",
         .root_script = (const native_script_t*)&SCRIPT_TC11_INVALID_HEREAFTER_SCRIPT_C0,
         .expected_hash = EXPECTED_HASH_TC11_INVALID_HEREAFTER_SCRIPT,
         .nano_skip = false,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC11_INVALID_HEREAFTER_SCRIPT,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC11_INVALID_HEREAFTER_SCRIPT),
     },
     {
         .name = "INVALID_HEREAFTER_script_slot_is_a_big_number",
         .root_script = (const native_script_t*)&SCRIPT_TC12_INVALID_HEREAFTER_SCRIPT_SLOT_IS_A_BIG_NUMBER_C0,
         .expected_hash = EXPECTED_HASH_TC12_INVALID_HEREAFTER_SCRIPT_SLOT_IS_A_BIG_NUMBER,
         .nano_skip = false,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC12_INVALID_HEREAFTER_SCRIPT_SLOT_IS_A_BIG_NUMBER,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC12_INVALID_HEREAFTER_SCRIPT_SLOT_IS_A_BIG_NUMBER),
     },
     {
         .name = "Nested_native_scripts",
         .root_script = (const native_script_t*)&SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_C0,
         .expected_hash = EXPECTED_HASH_TC13_NESTED_NATIVE_SCRIPTS,
         .nano_skip = true,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS),
     },
     {
         .name = "Nested native scripts #2",
         .root_script = (const native_script_t*)&SCRIPT_TC14_NESTED_NATIVE_SCRIPTS_NUM2_C0,
         .expected_hash = EXPECTED_HASH_TC14_NESTED_NATIVE_SCRIPTS_NUM2,
         .nano_skip = true,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC14_NESTED_NATIVE_SCRIPTS_NUM2,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC14_NESTED_NATIVE_SCRIPTS_NUM2),
     },
     {
         .name = "Nested native scripts #3",
         .root_script = (const native_script_t*)&SCRIPT_TC15_NESTED_NATIVE_SCRIPTS_NUM3_C0,
         .expected_hash = EXPECTED_HASH_TC15_NESTED_NATIVE_SCRIPTS_NUM3,
         .nano_skip = true,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC15_NESTED_NATIVE_SCRIPTS_NUM3,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC15_NESTED_NATIVE_SCRIPTS_NUM3),
     },
 };
 

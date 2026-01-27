@@ -1,5 +1,4 @@
 // Unit tests for native script hash derivation (auto-generated)
-// Following AGENTS.md: 'Mimic Established Patterns'
 
 #include <stdarg.h>
 #include <stddef.h>

@@ -260,6 +260,7 @@ def run_all() -> None:
     # Generate test runners
     generate_tx_test_runners()
     generate_address_derivation_test_runners()
+    generate_native_script_test_runners()
     # Generate reject fixtures
     generate_tx_reject_fixtures()
     generate_address_derivation_reject_fixtures()
@@ -290,13 +291,11 @@ def main() -> None:
     elif args.command == "fixtures":
         generate_tx_fixtures()
         generate_address_derivation_fixtures()
-        # TODO: fix native script fixtures
         generate_derive_native_script_fixtures()
     elif args.command == "generate-test-runners":
         generate_tx_test_runners()
         generate_address_derivation_test_runners()
-        # TODO: fix native script test runners
-        #generate_native_script_test_runners()
+        generate_native_script_test_runners()
     elif args.command == "rejects":
         generate_tx_reject_fixtures()
         generate_address_derivation_reject_fixtures()

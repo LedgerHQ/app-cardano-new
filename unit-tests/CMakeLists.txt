@@ -661,12 +661,56 @@ target_link_libraries(test_derive_address PUBLIC cmocka gcov cardano_derive_addr
 target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
 add_test(test_derive_address test_derive_address)
 
-# add_executable(test_derive_native_script
-#     test_derive_native_script.c
-# )
-# target_link_libraries(test_derive_native_script PUBLIC cmocka gcov cardano_derive_address_core)
-# target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
-# add_test(test_derive_native_script test_derive_native_script)
+set(DERIVE_NATIVE_SCRIPT_COMMON_SOURCES
+   mock_sources/mock_globals.c
+    ../src/deriveNativeScriptHash/derive_native_script_hash_builder.c
+    ../src/handler/derive_native_script_hash.c
+    ../src/keyDerivation/keyDerivation.c
+    ../src/parsers/cardano_parsers.c
+    ../src/addressUtils/addressUtilsShelley.c
+    ../src/addressUtils/addressUtilsByron.c
+    ../src/addressUtils/bip44.c
+    ../src/transaction/tx_utils.c
+    ../src/securityPolicy/securityPolicy.c
+    ../src/securityPolicy/securityPolicy_privkey.c
+    ../src/app_context.c
+    ../src/memory/mem.c
+    ../src/ui/ui_utils.c
+    ../src/ui/ui_warnings.c
+    ${UNIT_TEST_MEM_UTILS_STUB}
+    mock_sources/glyphs_mock.c
+    mock_sources/ui_display_tx_stub.c
+    mock_sources/hex_stub.c
+    mock_sources/io_stub.c
+)
+set(DERIVE_NATIVE_SCRIPT_COMMON_LIBS
+    hex_utils
+    base58
+    bech32_lib
+    bip44_real
+    buffer_write_lib
+    cbor_lib
+    blake2b_lib
+    sha3_lib
+    hash_mocks_lib
+    crypto_mocks_lib
+    buffer
+    write
+    read
+    varint
+    bip32
+    cx_crc_support
+    mock_printf
+    parsers_lib
+)
+add_executable(test_derive_native_script
+    test_derive_native_script.c
+)
+add_library(cardano_derive_native_script_core STATIC ${DERIVE_NATIVE_SCRIPT_COMMON_SOURCES})
+target_link_libraries(cardano_derive_native_script_core PUBLIC ${DERIVE_NATIVE_SCRIPT_COMMON_LIBS})
+target_link_libraries(test_derive_native_script PUBLIC cmocka gcov cardano_derive_native_script_core)
+target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
+add_test(test_derive_native_script test_derive_native_script)
 
 # add_test(test_tokens test_tokens)  # TODO: uncomment when crypto dependencies are mocked
 # add_test(test_tx_parser test_tx_parser)  # TODO: uncomment when created
