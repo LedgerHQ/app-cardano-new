@@ -147,6 +147,7 @@ static void deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
     security_policy_t policy;
 
     if (credential.type == EXT_CREDENTIAL_KEY_PATH) {
+        TRACE("Credential type - device-owned key: derive hash from path");
         // Device-owned key: derive hash from path
         ctx->scriptContent.pubkeyPath = credential.keyPath;
         ctx->ui_scriptType = UI_SCRIPT_PUBKEY_PATH;  // Tag the union immediately
@@ -159,6 +160,7 @@ static void deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
         warning_bits_init(&warnings);
         policy = policyForDeriveNativeScriptHashDevicePubkey(&ctx->scriptContent.pubkeyPath, &warnings);
     } else {
+        TRACE("Credential type - third-party key: use provided hash");
         // Third-party key: use provided hash
         LEDGER_ASSERT(credential.type == EXT_CREDENTIAL_KEY_HASH,
                       "Expected KEY_HASH credential type");
@@ -172,8 +174,17 @@ static void deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
         policy = POLICY_SHOW;
     }
 
+    for (size_t i = 0; i < SIZEOF(pubkeyHash); i++) {
+    if (i % 16 == 0) {
+        TRACE("\n  [%04zx] ", i);
+    }
+    TRACE("%02x ", pubkeyHash[i]);
+    }
+    TRACE("\n");
+
     // Add pubkey hash to script hash builder (single call for both paths)
     nativeScriptHashBuilder_addScript_pubkey(&ctx->hashBuilder, pubkeyHash, SIZEOF(pubkeyHash));
+    
 
     // Display to user
     ui_display_native_script_hash(policy);
@@ -397,7 +408,6 @@ void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
         io_send_sw(SWO_WRONG_DATA_LENGTH);
         return;
     }
-
     TRACE_BUFFER(cdata->ptr, cdata->size);
 
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
