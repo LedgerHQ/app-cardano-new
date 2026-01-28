@@ -34,8 +34,6 @@ def _load_address_derivation_test_cases() -> List[Any]:
     These test cases verify that the device properly handles address
     derivation requests.
 
-    Returns:
-        List of DeriveAddressTestCase objects from ragger tests
     """
     _ensure_base58_module()
     _add_tests_to_sys_path()

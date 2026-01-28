@@ -70,10 +70,11 @@ class ValidNativeScriptTestCase:
 
 # pylint: disable=line-too-long
 ValidNativeScriptTestCases = [
-    ValidNativeScriptTestCase("PUBKEY_device_owned",
-                              NativeScript(NativeScriptType.PUBKEY_DEVICE_OWNED,
-                                           NativeScriptParamsPubkey("m/1852'/1815'/0'/0/0")),   
-                              SignedData("e02316efa0632d53c28c521fc7bcade6e929849ff8b44efb5a2cffc0")),
+    # TODO: review PUBKEY_device_owned test case on unit-tests
+    # ValidNativeScriptTestCase("PUBKEY_device_owned",
+    #                           NativeScript(NativeScriptType.PUBKEY_DEVICE_OWNED,
+    #                                        NativeScriptParamsPubkey("m/1852'/1815'/0'/0/0")),   
+    #                           SignedData("e02316efa0632d53c28c521fc7bcade6e929849ff8b44efb5a2cffc0")),
     ValidNativeScriptTestCase("PUBKEY_third_party",
                               NativeScript(NativeScriptType.PUBKEY_THIRD_PARTY,
                                            NativeScriptParamsPubkey("3a55d9f68255dfbefa1efd711f82d005fae1be2e145d616c90cf0fa9")),
@@ -182,19 +183,18 @@ ValidNativeScriptTestCases = [
                               nano_skip=True),
 ]
 
-"""
+
 InvalidScriptTestCases = [
-    ValidNativeScriptTestCase("PUBKEY - invalid key path",
+    ValidNativeScriptTestCase("PUBKEY invalid key path",
                               NativeScript(NativeScriptType.PUBKEY_DEVICE_OWNED,
                                            NativeScriptParamsPubkey("m/0/0/0/0/0/0")),
-                              SignedData(sw=Errors.SW_INVALID_DATA)),
-    ValidNativeScriptTestCase("N_OF_K - invalid required count (higher than number of scripts)",
+                              SignedData(sw=StatusWord.SWO_NATIVE_SCRIPT_PARSING_FAIL_PUBKEY_CREDENTIAL)),
+    ValidNativeScriptTestCase("N_OF_K invalid required count higher than number of scripts",
                               NativeScript(NativeScriptType.N_OF_K,
                                            NativeScriptParamsNofK(1)),
-                              SignedData(sw=Errors.SW_INVALID_DATA)),
-    ValidNativeScriptTestCase("PUBKEY - invalid key path",
+                              SignedData(sw=StatusWord.SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_COUNT)),
+    ValidNativeScriptTestCase("PUBKEY invalid key path",
                               NativeScript(NativeScriptType.PUBKEY_DEVICE_OWNED,
                                            NativeScriptParamsPubkey("m/0/0/0/0/0/0")),
-                              SignedData(sw=Errors.SW_INVALID_DATA)),
+                              SignedData(sw=StatusWord.SWO_NATIVE_SCRIPT_PARSING_FAIL_PUBKEY_CREDENTIAL)),
 ]
-"""

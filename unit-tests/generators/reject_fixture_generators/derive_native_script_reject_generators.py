@@ -10,7 +10,7 @@ from common import (
 )
     
 FIXTURES_FILE = (
-    REPO_ROOT / "unit-tests" / "test_derive_native_script_fixtures.h"
+    REPO_ROOT / "unit-tests" / "test_derive_native_script_reject_fixtures.h"
 )
 
 def _load_native_script_test_cases() -> List[Any]:
@@ -28,10 +28,10 @@ def _load_native_script_test_cases() -> List[Any]:
 
     # Import test cases from ragger standalone input files
     from standalone.input_files.derive_native_script import (  # type: ignore
-        ValidNativeScriptTestCases
+        InvalidScriptTestCases
     )
 
-    return ValidNativeScriptTestCases
+    return InvalidScriptTestCases
 
 
 def _is_simple_native_script(native_script) -> bool:
@@ -100,7 +100,7 @@ def _generate_simple_script_apdu_array(
     Returns:
         Tuple of (C code lines, array name)
     """
-    from application_client.command_builder import CommandBuilder
+    from application_client.command_builder import CommandBuilder, P1Type  # type: ignore
 
     command_builder = CommandBuilder()
     full_apdu = command_builder.derive_script_add_simple(script)
@@ -383,12 +383,11 @@ def _build_fixtures() -> str:
         "#include <stdint.h>",
         "#include <stddef.h>",
         '#include "cardano_swo.h"',
+        '#include "status_words.h"',
         '#include "test_fixture_types.h"',
         "",
         "#define SCRIPT_HASH_LENGTH 28  // Blake2b-224",
         "#define KEY_HASH_LENGTH 28     // Blake2b-224",
-        "",
-        "",
         "",
         "",
         "// ======================================================================",
@@ -403,20 +402,12 @@ def _build_fixtures() -> str:
     for test_case_index, test_case in enumerate(all_test_cases):
         test_case_name_sanitized = test_case.name.replace(" ", "_").replace("#", "NUM")
         base_id = f"TC{test_case_index}_{test_case_name_sanitized.upper()}"
-         
+        
+        print(f"  [{test_case_index:2d}] Generating tree for: {test_case.name}")
+        
         header_lines.append(f"// ======================================================================")
         header_lines.append(f"// Test Case [{test_case_index}]: {test_case.name}")
         header_lines.append(f"// ======================================================================")
-        header_lines.append("")
-        
-        # Generate expected hash
-        expected_hash_bytes = bytes.fromhex(test_case.expected.hash)
-        header_lines.append(f"static const uint8_t EXPECTED_HASH_{base_id}[SCRIPT_HASH_LENGTH] = {{")
-        for chunk_start in range(0, len(expected_hash_bytes), 8):
-            chunk = expected_hash_bytes[chunk_start:chunk_start + 8]
-            hex_str = ", ".join(f"0x{byte:02x}" for byte in chunk)
-            header_lines.append(f"    {hex_str},")
-        header_lines.append("};")
         header_lines.append("")
         
         # Recursively generate script tree
@@ -441,7 +432,8 @@ def _build_fixtures() -> str:
             test_case.name,
             root_script_id,
             finish_array_name,
-            test_case.nano_skip
+            test_case.nano_skip,
+            test_case.expected.sw.name
         ))
     # Generate test case array
     header_lines.extend([
@@ -452,12 +444,12 @@ def _build_fixtures() -> str:
         "static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {",
     ])
     
-    for base_id, name, root_id, finish_apdu_array, nano_skip in test_case_root_identifiers:
+    for base_id, name, root_id, finish_apdu_array, nano_skip, expected_swo in test_case_root_identifiers:
         nano_skip_str = "true" if nano_skip else "false"
         header_lines.append(f"    {{")
         header_lines.append(f'        .name = "{name}",')
         header_lines.append(f"        .root_script = (const native_script_t*)&{root_id},")
-        header_lines.append(f"        .expected_hash = EXPECTED_HASH_{base_id},")
+        header_lines.append(f"        .expected_response = {expected_swo},")
         header_lines.append(f"        .nano_skip = {nano_skip_str},")
         header_lines.append(f"        .finish_apdu_payload = {finish_apdu_array},")
         header_lines.append(f"        .finish_apdu_payload_length = sizeof({finish_apdu_array}),")
@@ -511,7 +503,7 @@ def _generate_finish_apdu_payload(
     
     return lines, array_name
 
-def generate_derive_native_script_fixtures() -> None:
+def generate_derive_native_script_reject_fixtures() -> None:
     """
     Generate native script hash derivation test fixture header.
 

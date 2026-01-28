@@ -173,15 +173,7 @@ static void deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
         memmove(pubkeyHash, credential.keyHash, ADDRESS_KEY_HASH_LENGTH);
         policy = POLICY_SHOW;
     }
-
-    for (size_t i = 0; i < SIZEOF(pubkeyHash); i++) {
-    if (i % 16 == 0) {
-        TRACE("\n  [%04zx] ", i);
-    }
-    TRACE("%02x ", pubkeyHash[i]);
-    }
-    TRACE("\n");
-
+    
     // Add pubkey hash to script hash builder (single call for both paths)
     nativeScriptHashBuilder_addScript_pubkey(&ctx->hashBuilder, pubkeyHash, SIZEOF(pubkeyHash));
     

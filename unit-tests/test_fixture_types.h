@@ -55,3 +55,62 @@ typedef struct {
     size_t data_len;
     uint16_t check_expected;
 } derive_address_fixture_t;
+
+
+
+// Native script types (matching CBOR encoding)
+typedef enum {
+    NATIVE_SCRIPT_TYPE_PUBKEY_DEVICE_OWNED = 0x00,
+    NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY = 0xF0,
+    NATIVE_SCRIPT_TYPE_ALL = 0x01,
+    NATIVE_SCRIPT_TYPE_ANY = 0x02,
+    NATIVE_SCRIPT_TYPE_N_OF_K = 0x03,
+    NATIVE_SCRIPT_TYPE_INVALID_BEFORE = 0x04,
+    NATIVE_SCRIPT_TYPE_INVALID_HEREAFTER = 0x05,
+} native_script_type_e;
+
+typedef struct native_script_s native_script_t;
+// SIMPLE script structure (leaf node)
+typedef struct {
+   const uint8_t* apdu_payload;         // Raw APDU data from command_builder.derive_script_add_complex:
+   size_t apdu_payload_length;          // Length of APDU payload
+} native_script_simple_t;
+
+// COMPLEX script structure (internal node with children)
+typedef struct {
+    union {
+        struct {
+            const native_script_t** scripts;
+            uint32_t scripts_count;
+        } all;
+        struct {
+            const native_script_t** scripts;
+            uint32_t scripts_count;
+        } any;
+        struct {
+            uint32_t required_count;
+            const native_script_t** scripts;
+            uint32_t scripts_count;
+        } n_of_k;
+    } params;
+} native_script_complex_t;
+
+// Generic native script (can be simple or complex)
+struct native_script_s {
+    native_script_type_e type;
+    union {
+        native_script_simple_t simple;
+        native_script_complex_t complex;
+    } impl;
+};
+
+// Test case structure
+typedef struct {
+    const char* name;
+    const native_script_t* root_script;  // Root of script tree
+    const uint16_t expected_response;
+    const uint8_t* expected_hash;
+    bool nano_skip;
+    const uint8_t* finish_apdu_payload;     // Raw APDU data from command_builder.derive_script_finish
+    size_t finish_apdu_payload_length;      // Length of finish APDU payload
+} native_script_test_case_t;

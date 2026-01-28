@@ -36,16 +36,23 @@ from reject_fixture_generators.derive_address_reject_generators import (
     generate_address_derivation_reject_fixtures,
 )
 
+from reject_fixture_generators.derive_native_script_reject_generators import (
+    generate_derive_native_script_reject_fixtures,
+)
+
 # Import test runners
 from test_runner_generators.tx_test_runner_generators import (
     generate_tx_test_runners,
 )
+
 from test_runner_generators.derive_address_test_runner_generators import (
     generate_address_derivation_test_runners,
-)    
+)
+
 from test_runner_generators.derive_native_script_runner_generators import (
     generate_native_script_test_runners,
 )
+
 
 def regenerate_mock_data() -> None:
     try:
@@ -264,6 +271,7 @@ def run_all() -> None:
     # Generate reject fixtures
     generate_tx_reject_fixtures()
     generate_address_derivation_reject_fixtures()
+    generate_derive_native_script_reject_fixtures()
     # Regenerate mock data
     regenerate_mock_data()
 
@@ -285,7 +293,6 @@ def main() -> None:
 
     print(f"Unit tests directory: {UNIT_TESTS_DIR}")
 
-
     if args.command in (None, "all"):
         run_all()
     elif args.command == "fixtures":
@@ -299,7 +306,8 @@ def main() -> None:
     elif args.command == "rejects":
         generate_tx_reject_fixtures()
         generate_address_derivation_reject_fixtures()
-        
+        generate_derive_native_script_reject_fixtures()
+
     elif args.command == "mock-data":
         regenerate_mock_data()
     else:

@@ -712,6 +712,12 @@ target_link_libraries(test_derive_native_script PUBLIC cmocka gcov cardano_deriv
 target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
 add_test(test_derive_native_script test_derive_native_script)
 
+add_executable(test_derive_native_script_rejects
+    test_derive_native_script_rejects.c
+)
+target_link_libraries(test_derive_native_script_rejects PUBLIC cmocka gcov cardano_derive_native_script_core)
+add_test(test_derive_native_script_rejects test_derive_native_script_rejects)
+
 # add_test(test_tokens test_tokens)  # TODO: uncomment when crypto dependencies are mocked
 # add_test(test_tx_parser test_tx_parser)  # TODO: uncomment when created
 # add_test(test_tx_utils test_tx_utils)    # TODO: uncomment when created

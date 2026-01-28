@@ -75,7 +75,7 @@ def _build_test_file_header() -> str:
 
 #include <cmocka.h>
 
-//#include "test_derive_native_script_fixtures.h"
+#include "test_derive_native_script_fixtures.h"
 #include "test_derive_native_script_common.h"
 
 // ======================================================================
@@ -157,10 +157,6 @@ def generate_native_script_test_runners() -> None:
     This generator reads the already-generated test_derive_native_script_fixtures.h
     and creates the corresponding test_derive_native_script.c runner file.
     """
-    print("=" * 80)
-    print("Generating native script test runner...")
-    print("=" * 80)
-    print()
     
     fixture_header_path = UNIT_TESTS_DIR / "test_derive_native_script_fixtures.h"
     test_c_file = UNIT_TESTS_DIR / "test_derive_native_script.c"
@@ -201,10 +197,10 @@ def generate_native_script_test_runners() -> None:
     # Write test file
     test_c_file.write_text(complete_file_content)
     
-    print(f"✓ Generated {test_c_file}")
-    print(f"  - {len(test_function_names)} test functions")
+    print(f"Generated {test_c_file}")
+    print(f"  - Generated test function names:")
+    for function_index, function_name in enumerate(test_function_names):
+        print(f"      [{function_index:2d}] {function_name}")
+    
     print(f"  - CMocka test array with {len(test_function_names)} tests")
     print()
-    print("=" * 80)
-    print("Native script test runner generation complete!")
-    print("=" * 80)

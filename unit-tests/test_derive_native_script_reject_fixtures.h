@@ -1,0 +1,149 @@
+// Auto-generated native script hash derivation test fixtures
+// Generated from ragger standalone test cases
+//
+//
+// Tree Structure:
+//   - Each test case is a root of a native script tree
+//   - Leaf nodes (SIMPLE scripts): PUBKEY_DEVICE_OWNED, PUBKEY_THIRD_PARTY,
+//                                   INVALID_BEFORE, INVALID_HEREAFTER
+//   - Internal nodes (COMPLEX scripts): ALL, ANY, N_OF_K
+//   - Internal nodes contain children (can be leaf or internal nodes)
+//
+#pragma once
+
+#include <stdint.h>
+#include <stddef.h>
+#include "cardano_swo.h"
+#include "status_words.h"
+#include "test_fixture_types.h"
+
+#define SCRIPT_HASH_LENGTH 28  // Blake2b-224
+#define KEY_HASH_LENGTH 28     // Blake2b-224
+
+
+// ======================================================================
+// Native Script Tree Fixtures
+// ======================================================================
+
+// ======================================================================
+// Test Case [0]: PUBKEY invalid key path
+// ======================================================================
+
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_DEVICE_OWNED
+static const uint8_t APDU_PAYLOAD_TC0_PUBKEY_INVALID_KEY_PATH_C0[27] = {
+    0x00, 0x02, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00
+};
+
+static const native_script_t SCRIPT_TC0_PUBKEY_INVALID_KEY_PATH_C0 = {
+    .type = NATIVE_SCRIPT_TYPE_PUBKEY_DEVICE_OWNED,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC0_PUBKEY_INVALID_KEY_PATH_C0,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC0_PUBKEY_INVALID_KEY_PATH_C0),
+        }
+    }
+};
+
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC0_PUBKEY_INVALID_KEY_PATH[1] = {
+    0x01
+};
+
+// ======================================================================
+// Test Case [1]: N_OF_K invalid required count higher than number of scripts
+// ======================================================================
+
+// N_OF_K (internal node): 1 of 0 children required
+static const native_script_t* CHILDREN_TC1_N_OF_K_INVALID_REQUIRED_COUNT_HIGHER_THAN_NUMBER_OF_SCRIPTS_C0[] = {
+    NULL
+};
+
+static const native_script_t SCRIPT_TC1_N_OF_K_INVALID_REQUIRED_COUNT_HIGHER_THAN_NUMBER_OF_SCRIPTS_C0 = {
+    .type = NATIVE_SCRIPT_TYPE_N_OF_K,
+    .impl = {
+        .complex = {
+            .params = {
+                 .n_of_k = {
+                     .required_count = 1,
+                     .scripts = CHILDREN_TC1_N_OF_K_INVALID_REQUIRED_COUNT_HIGHER_THAN_NUMBER_OF_SCRIPTS_C0,
+                     .scripts_count = 0,
+                 }
+            }
+        }
+    }
+};
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC1_N_OF_K_INVALID_REQUIRED_COUNT_HIGHER_THAN_NUMBER_OF_SCRIPTS[1] = {
+    0x01
+};
+
+// ======================================================================
+// Test Case [2]: PUBKEY invalid key path
+// ======================================================================
+
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_DEVICE_OWNED
+static const uint8_t APDU_PAYLOAD_TC2_PUBKEY_INVALID_KEY_PATH_C0[27] = {
+    0x00, 0x02, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00
+};
+
+static const native_script_t SCRIPT_TC2_PUBKEY_INVALID_KEY_PATH_C0 = {
+    .type = NATIVE_SCRIPT_TYPE_PUBKEY_DEVICE_OWNED,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC2_PUBKEY_INVALID_KEY_PATH_C0,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC2_PUBKEY_INVALID_KEY_PATH_C0),
+        }
+    }
+};
+
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC2_PUBKEY_INVALID_KEY_PATH[1] = {
+    0x01
+};
+
+// ======================================================================
+// Test Case Array
+// ======================================================================
+
+static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
+    {
+        .name = "PUBKEY invalid key path",
+        .root_script = (const native_script_t*)&SCRIPT_TC0_PUBKEY_INVALID_KEY_PATH_C0,
+        .expected_response = SWO_NATIVE_SCRIPT_PARSING_FAIL_PUBKEY_CREDENTIAL,
+        .nano_skip = false,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC0_PUBKEY_INVALID_KEY_PATH,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC0_PUBKEY_INVALID_KEY_PATH),
+    },
+    {
+        .name = "N_OF_K invalid required count higher than number of scripts",
+        .root_script = (const native_script_t*)&SCRIPT_TC1_N_OF_K_INVALID_REQUIRED_COUNT_HIGHER_THAN_NUMBER_OF_SCRIPTS_C0,
+        .expected_response = SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_COUNT,
+        .nano_skip = false,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC1_N_OF_K_INVALID_REQUIRED_COUNT_HIGHER_THAN_NUMBER_OF_SCRIPTS,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC1_N_OF_K_INVALID_REQUIRED_COUNT_HIGHER_THAN_NUMBER_OF_SCRIPTS),
+    },
+    {
+        .name = "PUBKEY invalid key path",
+        .root_script = (const native_script_t*)&SCRIPT_TC2_PUBKEY_INVALID_KEY_PATH_C0,
+        .expected_response = SWO_NATIVE_SCRIPT_PARSING_FAIL_PUBKEY_CREDENTIAL,
+        .nano_skip = false,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC2_PUBKEY_INVALID_KEY_PATH,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC2_PUBKEY_INVALID_KEY_PATH),
+    },
+};
+
+#define NATIVE_SCRIPT_FIXTURES_COUNT 3
