@@ -29,7 +29,7 @@ void addressRootFromExtPubKey(const extendedPublicKey_t* extPubKey,
     ASSERT(outSize == ADDRESS_ROOT_SIZE);
 
     uint8_t cborBuffer[64 + 10] = {0};
-    write_buffer_t cbor = buffer_init(cborBuffer, SIZEOF(cborBuffer));
+    write_buffer_t cbor = buffer_init_write(cborBuffer, SIZEOF(cborBuffer));
 
     {
         // [0, [0, publicKey:chainCode], Map(0)]
@@ -63,7 +63,7 @@ size_t cborEncodePubkeyAddressInner(const uint8_t* addressRoot,
     ASSERT(addressRootSize == ADDRESS_ROOT_SIZE);  // should be result of blake2b_224
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
 
-    write_buffer_t out = buffer_init(outBuffer, outSize);
+    write_buffer_t out = buffer_init_write(outBuffer, outSize);
     {
         // [0, [0, publicKey:chainCode], Map(0)]
         ASSERT(buffer_write_cbor_token(&out, CBOR_TYPE_ARRAY, 3));
@@ -113,7 +113,7 @@ size_t cborPackRawAddressWithChecksum(const uint8_t* rawAddressBuffer,
     ASSERT(rawAddressSize < BUFFER_SIZE_PARANOIA);
     ASSERT(outputSize < BUFFER_SIZE_PARANOIA);
 
-    write_buffer_t output = buffer_init(outputBuffer, outputSize);
+    write_buffer_t output = buffer_init_write(outputBuffer, outputSize);
     {
         // Format is
         // Array[

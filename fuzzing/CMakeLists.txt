@@ -52,8 +52,10 @@ set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/cvote/aux_data_hash_builder.c
     ${CARDANO_PATH}/src/cvote/cvote_hash.c
     ${CARDANO_PATH}/src/cvote/cvote_parser.c
+    ${CARDANO_PATH}/src/cvote/vote_cast_hash_builder.c
     ${CARDANO_PATH}/src/crypto/crypto.c
     ${CARDANO_PATH}/src/deriveNativeScriptHash/derive_native_script_hash_builder.c
+    ${CARDANO_PATH}/src/handler/cvote.c
     ${CARDANO_PATH}/src/handler/derive_address.c
     ${CARDANO_PATH}/src/handler/derive_native_script_hash.c
     ${CARDANO_PATH}/src/handler/get_app_name.c
@@ -78,6 +80,7 @@ set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/transaction/tx_hash_builder.c
     ${CARDANO_PATH}/src/transaction/tx_validate.c
     ${CARDANO_PATH}/src/ui/menu.c
+    ${CARDANO_PATH}/src/ui/ui_cvote.c
     ${CARDANO_PATH}/src/ui/ui_display_address_derivation.c
     ${CARDANO_PATH}/src/ui/ui_display_cvote_aux_data.c
     ${CARDANO_PATH}/src/ui/ui_display_native_script_hash.c

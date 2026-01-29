@@ -64,7 +64,7 @@ bool format_decimal_amount(uint64_t amount, size_t places, char *out, size_t out
 
     char scratchBuffer[40] = {0};
     explicit_bzero(scratchBuffer, SIZEOF(scratchBuffer));
-    write_buffer_t scratch_buf = buffer_init(scratchBuffer, SIZEOF(scratchBuffer));
+    write_buffer_t scratch_buf = buffer_init_write(scratchBuffer, SIZEOF(scratchBuffer));
 
     // We print in reverse
     // decimal digits
@@ -103,7 +103,7 @@ bool format_decimal_amount(uint64_t amount, size_t places, char *out, size_t out
 
     // Copy reversed & append terminator
     explicit_bzero(out, outSize);
-    write_buffer_t out_buf = buffer_init(out, outSize);
+    write_buffer_t out_buf = buffer_init_write(out, outSize);
     for (size_t i = 0; i < rawSize; i++) {
         if (!buffer_write_u8(&out_buf, (uint8_t)scratchBuffer[rawSize - 1 - i])) {
             return false;

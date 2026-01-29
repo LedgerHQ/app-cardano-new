@@ -15,7 +15,7 @@
 static void test_buffer_write_u8_and_capacity(void **state) {
     (void) state;
     uint8_t raw[1] = {0};
-    write_buffer_t buf = buffer_init(raw, sizeof(raw));
+    write_buffer_t buf = buffer_init_write(raw, sizeof(raw));
 
     assert_true(buffer_write_u8(&buf, 0xAB));
     assert_int_equal(raw[0], 0xAB);
@@ -29,7 +29,7 @@ static void test_buffer_write_u8_and_capacity(void **state) {
 static void test_buffer_write_u16_endianness(void **state) {
     (void) state;
     uint8_t raw[4] = {0};
-    write_buffer_t buf = buffer_init(raw, sizeof(raw));
+    write_buffer_t buf = buffer_init_write(raw, sizeof(raw));
 
     assert_true(buffer_write_u16(&buf, 0x1234, BE));
     assert_int_equal(raw[0], 0x12);
@@ -46,7 +46,7 @@ static void test_buffer_write_u16_endianness(void **state) {
 static void test_buffer_write_u32_u64(void **state) {
     (void) state;
     uint8_t raw[12] = {0};
-    write_buffer_t buf = buffer_init(raw, sizeof(raw));
+    write_buffer_t buf = buffer_init_write(raw, sizeof(raw));
 
     assert_true(buffer_write_u32(&buf, 0xA1B2C3D4, BE));
     uint8_t expected_u32[] = {0xA1, 0xB2, 0xC3, 0xD4};
@@ -62,7 +62,7 @@ static void test_buffer_write_u32_u64(void **state) {
 static void test_buffer_write_bytes(void **state) {
     (void) state;
     uint8_t raw[5] = {0};
-    write_buffer_t buf = buffer_init(raw, sizeof(raw));
+    write_buffer_t buf = buffer_init_write(raw, sizeof(raw));
 
     uint8_t first[] = {1, 2, 3};
     assert_true(buffer_write_bytes(&buf, first, sizeof(first)));
@@ -78,7 +78,7 @@ static void test_buffer_write_bytes(void **state) {
 static void test_buffer_write_cbor_token(void **state) {
     (void) state;
     uint8_t raw[16] = {0};
-    write_buffer_t buf = buffer_init(raw, sizeof(raw));
+    write_buffer_t buf = buffer_init_write(raw, sizeof(raw));
 
     // Value fits into single byte
     assert_true(buffer_write_cbor_token(&buf, CBOR_TYPE_UNSIGNED, 0x15));
@@ -91,7 +91,7 @@ static void test_buffer_write_cbor_token(void **state) {
     assert_int_equal(buf.offset, 4);
 
     // Force failure by limiting buffer size so cbor_writeToken cannot fit data
-    write_buffer_t tiny = buffer_init(raw, 1);
+    write_buffer_t tiny = buffer_init_write(raw, 1);
     assert_false(buffer_write_cbor_token(&tiny, CBOR_TYPE_UNSIGNED, 0xFFFF));
     assert_int_equal(tiny.offset, 0);
 }

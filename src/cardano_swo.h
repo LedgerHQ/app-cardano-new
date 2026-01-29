@@ -56,6 +56,12 @@ typedef enum {
     SWO_TX_PARSING_FAIL_INCLUSION_FLAG = 0x6B39,      // optional field flag error
     SWO_TX_PARSING_FAIL_BUFFER_NOT_FULLY_CONSUMED = 0x6B3A,  // extra data in buffer
     SWO_TX_PARSING_FAIL_CANONICAL_ORDER = 0x6B3B,     // CBOR canonical ordering
+
+    SWO_CVOTE_PARSING_FAIL_REMAINING_VOTECAST_BYTES = 0x6B50, // failed to read remaining votecast bytes
+    SWO_CVOTE_PARSING_FAIL_VOTE_PLAN_ID = 0x6B51, // failed to read vote plan id
+    SWO_CVOTE_PARSING_FAIL_PROPOSAL_INDEX = 0x6B52, // failed to read proposal index
+    SWO_CVOTE_PARSING_FAIL_PAYLOAD_TYPE_TAG = 0x6B53, // failed to read payload type tag
+    
     // TODO we might want to support non-canonical ordering,
     // TODO but checking for uniqueness is somewhat hard
     // TODO a quadratic algorithm with cbor serialization computed on demand is doable

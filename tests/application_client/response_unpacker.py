@@ -74,10 +74,14 @@ def unpack_sign_message_response(response: bytes) -> bytes:
     return response
 
 # Unpack from response:
-# response = auth_data (var)
-def unpack_sign_cip36_confirm_response(response: bytes) -> bytes:
-    # Auth data can vary in length depending on the cvote parameters
-    return response
+# response = votecast_hash (32) + signature (64)
+def unpack_sign_cip36_confirm_response(response: bytes) -> tuple[bytes, bytes]:
+    HASH_LENGTH = 32
+    SIGNATURE_LENGTH = 64
+    assert len(response) == HASH_LENGTH + SIGNATURE_LENGTH
+    votecast_hash = response[:HASH_LENGTH]
+    signature = response[HASH_LENGTH:]
+    return votecast_hash, signature
 
 # Unpack from response:
 # response = signature (64)

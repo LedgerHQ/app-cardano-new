@@ -19,6 +19,7 @@ from ragger.bip import pack_derivation_path
 
 from application_client.app_def import AddressType, StakingDataSourceType
 from standalone.input_files.signOpCert import OpCertTestCase
+from standalone.input_files.cvote import CVoteTestCase, MAX_CIP36_PAYLOAD_SIZE
 from standalone.input_files.derive_address import DeriveAddressTestCase
 from standalone.input_files.derive_native_script import NativeScript, NativeScriptType, NativeScriptHashDisplayFormat
 from standalone.input_files.derive_native_script import NativeScriptParamsPubkey, NativeScriptParamsInvalid
@@ -84,6 +85,7 @@ class InsType(IntEnum):
     INS_DERIVE_NATIVE_SCRIPT_HASH = 0x12
     INS_SIGN_TX = 0x21
     INS_SIGN_OPCERT = 0x22
+    INS_SIGN_CVOTE = 0x23
     INS_DEBUG_SET_SETTINGS = 0xF0  # Debug-only command
 
 # Matches `src/apdu/dispatcher.h::p1_e`
@@ -102,6 +104,11 @@ class P1Type(IntEnum):
     P1_NATIVE_SCRIPT_START_COMPLEX = 0x40
     P1_NATIVE_SCRIPT_ADD_SIMPLE = 0x41
     P1_NATIVE_SCRIPT_FINISH = 0x42
+    # Cvote P1 values (0x5x range)
+    P1_CVOTE_INIT = 0x50
+    P1_CVOTE_CHUNK = 0x51
+    P1_CVOTE_CONFIRM = 0x52
+    P1_CVOTE_WITNESS = 0x53
 # Matches `src/apdu/dispatcher.h::p2_e`
 class P2Type(IntEnum):
     P2_UNUSED = 0x00
@@ -356,6 +363,88 @@ class CommandBuilder:
 
     def sign_opCert(self, test_case: OpCertTestCase) -> bytes:
         return self.sign_opcert(test_case)
+
+    def sign_cvote_init(self, testCase: CVoteTestCase) -> bytes:
+        """APDU Builder for CIP36 Vote - INIT step
+
+        Args:
+            testCase (CVoteTestCase): Test parameters
+
+        Returns:
+            Serial data APDU
+        """
+
+        # Serialization format:
+        #    Full length of voteCastDataHex (4B)
+        #    voteCastDataHex (first chunk, up to 240 B)
+        data = bytes()
+        # 2 hex chars per byte
+        data_size = int(len(testCase.cVote.voteCastDataHex) / 2)
+        chunk_size = min(MAX_CIP36_PAYLOAD_SIZE * 2, len(testCase.cVote.voteCastDataHex))
+        data += data_size.to_bytes(4, "big")
+        data += bytes.fromhex(testCase.cVote.voteCastDataHex[:chunk_size])
+        # Remove the data sent in this step
+        testCase.cVote.voteCastDataHex = testCase.cVote.voteCastDataHex[chunk_size:]
+        return self._serialize(InsType.INS_SIGN_CVOTE, P1Type.P1_CVOTE_INIT, 0x00, data)
+
+
+    def sign_cvote_chunk(self, testCase: CVoteTestCase) -> List[bytes]:
+        """APDU Builder for CIP36 Vote - CHUNK step
+
+        Args:
+            testCase (CVoteTestCase): Test parameters
+
+        Returns:
+            Response APDU
+        """
+
+        # Serialization format:
+        #    voteCastDataHex (following data, up to MAX_CIP36_PAYLOAD_SIZE B each)
+        chunks = []
+        payload = testCase.cVote.voteCastDataHex
+        max_payload_size = MAX_CIP36_PAYLOAD_SIZE * 2 # 2 hex chars per byte
+        while len(payload) > 0:
+            chunks.append(self._serialize(InsType.INS_SIGN_CVOTE,
+                                          P1Type.P1_CVOTE_CHUNK,
+                                          0x00,
+                                          bytes.fromhex(payload[:max_payload_size])))
+            payload = payload[max_payload_size:]
+
+        return chunks
+
+
+    def sign_cvote_confirm(self, testCase: CVoteTestCase) -> bytes:
+        """APDU Builder for CIP36 Vote - CONFIRM step
+
+        Args:
+            testCase (CVoteTestCase): Test parameters
+
+        Returns:
+            Serial data APDU
+        """
+
+        # Serialization format:
+        #    Witness path (1B for length + [0-5] x 4B)
+        data = pack_derivation_path(testCase.cVote.witnessPath)
+        return self._serialize(InsType.INS_SIGN_CVOTE, P1Type.P1_CVOTE_CONFIRM, 0x00, data)
+
+
+    def sign_cvote_witness(self, testCase: CVoteTestCase) -> bytes:
+        """APDU Builder for CIP36 Vote - WITNESS step
+
+        Args:
+            testCase (CVoteTestCase): Test parameters
+
+        Returns:
+            Serial data APDU
+        """
+
+        # Serialization format:
+        #     witness path (1B for length + [0-10] x 4B)
+        return self._serialize(InsType.INS_SIGN_CVOTE,
+                               P1Type.P1_CVOTE_WITNESS,
+                               0x00,
+                               pack_derivation_path(testCase.cVote.witnessPath))
 
     def sign_tx_init(self, params: TxInitParams) -> bytes:
         data = bytearray()

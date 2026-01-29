@@ -196,7 +196,7 @@ security_policy_t policyForCVoteRegistrationConfirm();
 
 security_policy_t policyForSignCVoteInit();
 security_policy_t policyForSignCVoteConfirm();
-security_policy_t policyForSignCVoteWitness(const bip44_path_t* path);
+security_policy_t policyForSignCVoteWitness(const bip44_path_t* path, warning_bits_t* warnings);
 
 security_policy_t policyForSignMsg(const bip44_path_t* witnessPath,
                                    cip8_address_field_type_t addressFieldType,

@@ -38,6 +38,7 @@
 #include "sign_opcert.h"
 #include "derive_address.h"
 #include "derive_native_script_hash.h"
+#include "cvote.h"
 
 #ifdef DEBUG
 #include "debug_settings.h"
@@ -61,6 +62,8 @@ static command_e req_type_to_instruction(request_type_e req_type) {
             return INS_DERIVE_ADDRESS;
         case REQUEST_DERIVE_NATIVE_SCRIPT_HASH:
             return INS_DERIVE_NATIVE_SCRIPT_HASH;
+        case REQUEST_CVOTE:
+            return INS_SIGN_CVOTE;
         default:
             LEDGER_ASSERT(false, "Unknown request type");
             return INS_GET_VERSION;  // Unreachable
@@ -93,7 +96,9 @@ void apdu_dispatcher(const command_t *cmd) {
         command_e expected_ins = req_type_to_instruction(G_context.req_type);
         if (cmd->ins != expected_ins) {
             TRACE("Instruction interleaving detected: current=%d (req_type=%d), attempted=%d",
-                  expected_ins, G_context.req_type, cmd->ins);
+                  expected_ins,
+                  G_context.req_type,
+                  cmd->ins);
             send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
             return;
         }
@@ -109,11 +114,7 @@ void apdu_dispatcher(const command_t *cmd) {
     }
 
     // Create data buffer upfront from APDU data
-    buffer_t data_buffer = {
-        .ptr = cmd->data,
-        .size = cmd->lc,
-        .offset = 0
-    };
+    buffer_t data_buffer = {.ptr = cmd->data, .size = cmd->lc, .offset = 0};
 
     switch (cmd->ins) {
         case INS_GET_SERIAL:
@@ -224,7 +225,6 @@ void apdu_dispatcher(const command_t *cmd) {
             handler_sign_tx(&data_buffer, cmd->p1);
             return;
 
-
         case INS_SIGN_OPCERT: {
             if (cmd->p1 != P1_UNUSED || cmd->p2 != P2_UNUSED) {
                 send_swo_and_reset(SWO_INCORRECT_P1_P2);
@@ -233,6 +233,26 @@ void apdu_dispatcher(const command_t *cmd) {
 
             handler_sign_opcert(&data_buffer);
             return;
+        }
+
+        case INS_SIGN_CVOTE: {
+            // P2 must be unused for cvote
+            if (cmd->p2 != P2_UNUSED) {
+                send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                return;
+            }
+            // Validate and dispatch based on P1 value
+            switch (cmd->p1) {
+                case P1_CVOTE_INIT:
+                case P1_CVOTE_CHUNK:
+                case P1_CVOTE_CONFIRM:
+                case P1_CVOTE_WITNESS:
+                    handler_cvote(&data_buffer, cmd->p1);
+                    return;
+                default:
+                    send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                    return;
+            }
         }
 
 #ifdef DEBUG

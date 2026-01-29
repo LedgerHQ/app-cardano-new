@@ -1,7 +1,7 @@
 #pragma once
 
 #include "securityPolicy.h"
-//TODO: add warning bits
+
 /**
  * Display address derivation
  *

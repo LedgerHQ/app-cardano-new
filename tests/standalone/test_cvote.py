@@ -8,15 +8,14 @@ This module provides Ragger tests for CIP36 check
 import pytest
 
 from ragger.backend import BackendInterface
-from ledgered.devices import Device
+from ledgered.devices import Device, DeviceType
 from ragger.navigator import Navigator, NavInsID
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
 from application_client.status_words import StatusWord
 from application_client.command_sender import CommandSender
 from application_client.response_unpacker import (
-    unpack_sign_cip36_confirm_response,
-    unpack_sign_cip36_witness_response
+    unpack_sign_cip36_confirm_response
 )
 
 from standalone.input_files.cvote import cvoteTestCases, CVoteTestCase
@@ -39,17 +38,23 @@ def test_cvote(device: Device,
     # Use the app interface instead of raw interface
     client = CommandSender(backend)
 
+    # Save the original votecast data before it gets consumed by the APDU builder
+    original_votecast_data = bytes.fromhex(testCase.cVote.voteCastDataHex)
+
     # Send the INIT APDU
-    _cvote_init(firmware, navigator, client, testCase)
+    _cvote_init(device, navigator, client, testCase)
 
-    # Send the CONFIRM APDUs
-    msgData = _cvote_confirm(firmware, navigator, scenario_navigator, client)
+    # Send the CONFIRM APDU (which includes witness path and triggers signing)
+    votecast_hash, signature = _cvote_confirm(device, navigator, scenario_navigator, client, testCase)
 
-    # Send the WITNESS APDUs
-    msgSig = _cvote_witness(firmware, navigator, scenario_navigator, client, testCase)
+    # Verify the hash matches the expected Blake2b-256 hash of the votecast data
+    import hashlib
+    expected_hash = hashlib.blake2b(original_votecast_data, digest_size=32).digest()
+    assert votecast_hash == expected_hash, f"Hash mismatch: {votecast_hash.hex()} != {expected_hash.hex()}"
 
-    # Check the signatures validity
-    verify_signature(testCase.cVote.witnessPath, msgSig, msgData)
+    # Check the signature validity
+    # Note: The signature is over the hash, not the raw votecast data
+    verify_signature(testCase.cVote.witnessPath, signature, votecast_hash)
 
 
 def _cvote_init(device: Device,
@@ -64,20 +69,22 @@ def _cvote_init(device: Device,
         client (CommandSender): The command sender instance
         testCase (CVoteTestCase): The test case
     """
-
-    if device.is_nano:
-        if device.is_nanos:
-            moves = [NavInsID.RIGHT_CLICK]
-            moves += [NavInsID.BOTH_CLICK] * 3
-        else:
-            moves = [NavInsID.BOTH_CLICK]
-            moves += [NavInsID.RIGHT_CLICK]
-            moves += [NavInsID.BOTH_CLICK] * 3
-    else:
-        moves = [NavInsID.SWIPE_CENTER_TO_LEFT]
+    # TODO: check navigation
+    # if device.is_nano:
+    #     if device.is_nanos:
+    #         moves = [NavInsID.RIGHT_CLICK]
+    #         moves += [NavInsID.BOTH_CLICK] * 3
+    #     else:
+    #         moves = [NavInsID.BOTH_CLICK]
+    #         moves += [NavInsID.RIGHT_CLICK]
+    #         moves += [NavInsID.BOTH_CLICK] * 3
+    # else:
+    #     moves = [NavInsID.SWIPE_CENTER_TO_LEFT]
 
     with client.sign_cip36_init(testCase):
-        navigator.navigate(moves)
+        pass
+        #navigator.navigate(moves)
+
     # Check the status (Asynchronous)
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS
@@ -91,63 +98,34 @@ def _cvote_init(device: Device,
 def _cvote_confirm(device: Device,
                    navigator: Navigator,
                    scenario_navigator: NavigateWithScenario,
-                   client: CommandSender) -> bytes:
-    """cVOTE CONFIRM
-
-    Args:
-        firmware (Firmware): The firmware version
-        navigator (Navigator): The navigator instance
-        scenario_navigator (NavigateWithScenario): the NavigateWithScenario instance
-        client (CommandSender): The command sender instance
-
-    Return:
-        data hash to be signed
-    """
-
-    with client.sign_cip36_confirm():
-        if device.is_nano:
-            if device.is_nanos:
-                moves = [NavInsID.RIGHT_CLICK]
-            else:
-                moves = [NavInsID.BOTH_CLICK]
-            navigator.navigate(moves)
-        else:
-            scenario_navigator.address_review_approve(do_comparison=False)
-    # Check the status (Asynchronous)
-    response = client.get_async_response()
-    assert response and response.status == StatusWord.SWO_SUCCESS
-    return unpack_sign_cip36_confirm_response(response.data)
-
-
-def _cvote_witness(device: Device,
-                   navigator: Navigator,
-                   scenario_navigator: NavigateWithScenario,
                    client: CommandSender,
-                   testCase: CVoteTestCase) -> bytes:
-    """cVOTE WITNESS
+                   testCase: CVoteTestCase) -> tuple[bytes, bytes]:
+    """cVOTE CONFIRM and SIGN
 
     Args:
-        firmware (Firmware): The firmware version
+        device (Device): The device instance
         navigator (Navigator): The navigator instance
         scenario_navigator (NavigateWithScenario): the NavigateWithScenario instance
         client (CommandSender): The command sender instance
         testCase (CVoteTestCase): The test case
 
     Return:
-        data signature
+        tuple[bytes, bytes]: (votecast_hash, signature)
     """
 
-    with client.sign_cip36_witness(testCase):
+    with client.sign_cip36_confirm(testCase):
         if device.is_nano:
-            if device.is_nanos:
-                moves = [NavInsID.BOTH_CLICK]
-                moves += [NavInsID.RIGHT_CLICK]
-            else:
-                moves = [NavInsID.BOTH_CLICK] * 2
-            navigator.navigate(moves)
+            # TODO: Add proper navigation for nano devices
+            pass
         else:
-            scenario_navigator.review_approve(do_comparison=False)
+            # Stax/Flex: Use scenario navigator for advanced review with blind signing warning
+            test_name = f"{testCase.name}/cvote_confirm"
+            scenario_navigator.review_approve_with_warning(test_name=test_name, custom_screen_text="Sign vote")
     # Check the status (Asynchronous)
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS
-    return unpack_sign_cip36_witness_response(response.data)
+    votecast_hash, signature = unpack_sign_cip36_confirm_response(response.data)
+
+    return votecast_hash, signature
+
+

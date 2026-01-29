@@ -34,7 +34,7 @@ typedef struct {
  * @param[in] size Size of buffer in bytes
  * @return Initialized write_buffer_t with offset=0
  */
-static inline write_buffer_t buffer_init(void *ptr, size_t size) {
+static inline write_buffer_t buffer_init_write(void *ptr, size_t size) {
     return (write_buffer_t){.ptr = (uint8_t *)ptr, .size = size, .offset = 0};
 }
 

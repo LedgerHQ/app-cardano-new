@@ -20,6 +20,7 @@ typedef enum {
     INS_DERIVE_NATIVE_SCRIPT_HASH = 0x12,
     INS_SIGN_TX = 0x21,
     INS_SIGN_OPCERT = 0x22,
+    INS_SIGN_CVOTE = 0x23,
 #ifdef DEBUG
     INS_DEBUG_SET_SETTINGS = 0xF0,  // Debug-only command for testing
 #endif
@@ -35,11 +36,13 @@ typedef enum {
     REQUEST_SIGN_OPCERT,
     REQUEST_DERIVE_ADDRESS,
     REQUEST_DERIVE_NATIVE_SCRIPT_HASH,
+    REQUEST_CVOTE,
 } request_type_e;
 
 /**
  * Parameter 1 (P1) values for APDU commands.
- * Organized hierarchically: 0x1x for transactions, 0x2x for address, 0x3x for opcert, 0x4x for native scripts.
+ * Organized hierarchically: 0x1x for transactions, 0x2x for address, 0x3x for opcert, 0x4x for
+ * native scripts.
  *
  * Matches `tests/application_client/command_builder.py::P1Type`.
  */
@@ -47,15 +50,15 @@ typedef enum {
     P1_UNUSED = 0x00,
 
     // Transaction-related P1 values (0x1x range)
-    P1_TX_INIT = 0x10,                      // Start of transaction data
-    P1_TX_DATA_CHUNK = 0x11,                // More transaction data chunks follow
-    P1_TX_CHUNK_LAST = 0x12,                // Last chunk of transaction data
-    P1_TX_AUX_DATA = 0x13,                  // CVote auxiliary data APDU
-    P1_TX_SIGN_WITNESS = 0x1F,              // Transaction witness signing (legacy)
+    P1_TX_INIT = 0x10,          // Start of transaction data
+    P1_TX_DATA_CHUNK = 0x11,    // More transaction data chunks follow
+    P1_TX_CHUNK_LAST = 0x12,    // Last chunk of transaction data
+    P1_TX_AUX_DATA = 0x13,      // CVote auxiliary data APDU
+    P1_TX_SIGN_WITNESS = 0x1F,  // Transaction witness signing (legacy)
 
     // Address derivation P1 values (0x2x range)
-    P1_ADDRESS_RETURN = 0x20,               // Return address without display
-    P1_ADDRESS_DISPLAY = 0x21,              // Display address on screen before returning
+    P1_ADDRESS_RETURN = 0x20,   // Return address without display
+    P1_ADDRESS_DISPLAY = 0x21,  // Display address on screen before returning
 
     // Operational certificate P1 values (0x3x range)
     // (No multi-step parameters needed for opcert)
@@ -64,6 +67,12 @@ typedef enum {
     P1_NATIVE_SCRIPT_START_COMPLEX = 0x40,  // Start a complex script (ALL/ANY/N-of-K)
     P1_NATIVE_SCRIPT_ADD_SIMPLE = 0x41,     // Add a simple script (pubkey/timelock)
     P1_NATIVE_SCRIPT_FINISH = 0x42,         // Finish script tree and compute hash
+
+    // Cvote P1 values (0x5x range)
+    P1_CVOTE_INIT = 0x50,     // Initialize votecast signing
+    P1_CVOTE_CHUNK = 0x51,    // Votecast data chunk
+    P1_CVOTE_CONFIRM = 0x52,  // Confirm votecast details
+    P1_CVOTE_WITNESS = 0x53,  // Sign votecast witness
 } p1_e;
 
 /**
@@ -76,14 +85,13 @@ typedef enum {
     P2_UNUSED = 0x00,
 
     // Transaction-related P2 values (0x1x range)
-    P2_TX_MORE = 0x10,                      // More chunks to follow
-    P2_TX_LAST = 0x11,                      // Last chunk
+    P2_TX_MORE = 0x10,  // More chunks to follow
+    P2_TX_LAST = 0x11,  // Last chunk
 
     // CVote auxiliary data P2 values (0x3x range)
-    P2_AUX_DATA_INIT = 0x36,                // Initialize auxiliary data
-    P2_AUX_DATA_DELEGATION = 0x37,          // Delegation record
+    P2_AUX_DATA_INIT = 0x36,        // Initialize auxiliary data
+    P2_AUX_DATA_DELEGATION = 0x37,  // Delegation record
 } p2_e;
-
 
 /**
  * Dispatch APDU command received to the right handler.

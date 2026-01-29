@@ -179,7 +179,7 @@ static size_t deriveAddress_base(const addressParams_t* addressParams,
 
     const uint8_t header =
         constructShelleyAddressHeader(addressParams->type, addressParams->networkId);
-    write_buffer_t out = buffer_init(outBuffer, outSize);
+    write_buffer_t out = buffer_init_write(outBuffer, outSize);
     {
         ASSERT(buffer_write_bytes(&out, &header, 1));
     }
@@ -262,7 +262,7 @@ static size_t deriveAddress_pointer(const addressParams_t* addressParams,
     const uint8_t addressHeader =
         constructShelleyAddressHeader(addressType, addressParams->networkId);
 
-    write_buffer_t out = buffer_init(outBuffer, outSize);
+    write_buffer_t out = buffer_init_write(outBuffer, outSize);
     {
         ASSERT(buffer_write_bytes(&out, &addressHeader, 1));
     }
@@ -298,7 +298,7 @@ static size_t deriveAddress_enterprise(const addressParams_t* addressParams,
     const uint8_t addressHeader =
         constructShelleyAddressHeader(addressType, addressParams->networkId);
 
-    write_buffer_t out = buffer_init(outBuffer, outSize);
+    write_buffer_t out = buffer_init_write(outBuffer, outSize);
     {
         ASSERT(buffer_write_bytes(&out, &addressHeader, 1));
     }
@@ -328,7 +328,7 @@ static size_t deriveAddress_reward(const addressParams_t* addressParams,
     const uint8_t addressHeader =
         constructShelleyAddressHeader(addressType, addressParams->networkId);
 
-    write_buffer_t out = buffer_init(outBuffer, outSize);
+    write_buffer_t out = buffer_init_write(outBuffer, outSize);
     {
         ASSERT(buffer_write_bytes(&out, &addressHeader, 1));
     }
@@ -379,7 +379,7 @@ size_t constructRewardAddressFromHash(uint8_t networkId,
     STATIC_ASSERT(ADDRESS_KEY_HASH_LENGTH == SCRIPT_HASH_LENGTH, "incompatible hash sizes");
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
 
-    write_buffer_t out = buffer_init(outBuffer, outSize);
+    write_buffer_t out = buffer_init_write(outBuffer, outSize);
     {
         const uint8_t addressHeader = constructShelleyAddressHeader(
             (source == REWARD_HASH_SOURCE_KEY) ? REWARD_KEY : REWARD_SCRIPT,

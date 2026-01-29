@@ -18,7 +18,7 @@
 #include "derive_native_script_hash.h"
 #include "keyDerivation.h"
 #include "addressUtilsShelley.h"
-
+#include "cvote/vote_cast_hash_builder.h"
 /**
  * State machine for transaction processing.
  * Tracks the progression through receiving, parsing, hashing, UI preparation, and approval.
@@ -56,6 +56,17 @@ typedef enum {
     DERIVE_ADDRESS_STATE_PREPARED,    /// address derived and ready
     DERIVE_ADDRESS_STATE_APPROVED     /// user approved or auto-approved
 } derive_address_state_e;
+
+/**
+ * State machine for CVote votecast operation.
+ * Tracks the progression through initialization, reception, and confirmation phases.
+ */
+typedef enum {
+    VOTECAST_STAGE_NONE = 0,
+    VOTECAST_STAGE_INIT,
+    VOTECAST_STAGE_CHUNK,
+    VOTECAST_STAGE_CONFIRM,
+} cvote_stage_e;
 
 /**
  * Tracks stored account metadata for the single-account security model.
@@ -145,6 +156,23 @@ typedef struct {
     } address;
 } derive_address_ctx_t;
 
+#define MAX_VOTECAST_CHUNK_SIZE 240
+#define VOTE_PLAN_ID_SIZE       32
+#define VOTECAST_HASH_LENGTH 32
+
+/**
+ * Context for signing a CVote votecast.
+ */
+typedef struct {
+    uint32_t remaining_votecast_bytes;
+    votecast_hash_builder_t votecast_hash_builder;
+    uint8_t vote_plan_id[VOTE_PLAN_ID_SIZE];
+    uint8_t proposal_index;
+    uint8_t payload_type_tag;
+    bip44_path_t witness_path;
+    uint8_t witness_signature[ED25519_SIGNATURE_LENGTH];
+} cvote_cxt_t;
+
 /**
  * Global context for user requests.
  */
@@ -153,6 +181,7 @@ typedef struct {
         tx_state_e tx_state;
         opcert_state_e opcert_state;
         derive_address_state_e derive_address_state;
+        cvote_stage_e cvote_state;
     } state;
 
     union {
@@ -161,6 +190,7 @@ typedef struct {
         sign_opcert_ctx_t opcert_info;
         derive_address_ctx_t derive_address_info;
         derive_native_script_hash_ctx_t derive_native_script_hash_info;
+        cvote_cxt_t cvote_info;
     };
 
     request_type_e req_type;

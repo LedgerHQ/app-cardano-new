@@ -114,7 +114,7 @@ void finalize_sign_opcert(bool confirmed) {
     uint8_t opCertBodyBuffer[OP_CERT_BODY_LENGTH] = {0};
     explicit_bzero(opCertBodyBuffer, SIZEOF(opCertBodyBuffer));
     {
-        write_buffer_t buf = buffer_init(opCertBodyBuffer, SIZEOF(opCertBodyBuffer));
+        write_buffer_t buf = buffer_init_write(opCertBodyBuffer, SIZEOF(opCertBodyBuffer));
 
         // Buffer is exactly sized - failure is programming error
         ASSERT(buffer_write_bytes(&buf,

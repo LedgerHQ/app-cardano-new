@@ -16,7 +16,7 @@ from standalone.input_files.derive_address import DeriveAddressTestCase
 from standalone.input_files.derive_native_script import NativeScript, NativeScriptHashDisplayFormat
 from application_client.status_words import StatusWord
 from standalone.input_files.signTx import Transaction, TxAuxiliaryDataCIP36, TxAuxiliaryDataType
-
+from standalone.input_files.cvote import CVoteTestCase
 
 
 class CommandSender:
@@ -337,4 +337,65 @@ class CommandSender:
         """
 
         with self._exchange_async(self._cmd_builder.derive_script_finish(display_format)):
+            yield
+
+    @contextmanager
+    def sign_cip36_init(self, testCase: CVoteTestCase) -> Generator[None, None, None]:
+        """APDU CIP36 Vote - INIT step
+
+        Args:
+            testCase (CVoteTestCase): Test parameters
+
+        Returns:
+            Generator
+        """
+
+        with self._exchange_async(self._cmd_builder.sign_cvote_init(testCase)):
+            yield
+
+
+    def sign_cip36_chunk(self, testCase: CVoteTestCase) -> RAPDU:
+        """APDU CIP36 Vote - INIT step
+
+        Args:
+            testCase (CVoteTestCase): Test parameters
+
+        Returns:
+            Response APDU
+        """
+
+        chunks = self._cmd_builder.sign_cvote_chunk(testCase)
+        for chunk in chunks[:-1]:
+            resp = self._exchange(chunk)
+            assert resp.status == StatusWord.SWO_SUCCESS
+        return self._exchange(chunks[-1])
+
+
+    @contextmanager
+    def sign_cip36_confirm(self, testCase: CVoteTestCase) -> Generator[None, None, None]:
+        """APDU CIP36 Vote - CONFIRM step
+
+        Args:
+            testCase (CVoteTestCase): Test parameters
+
+        Returns:
+            Generator
+        """
+
+        with self._exchange_async(self._cmd_builder.sign_cvote_confirm(testCase)):
+            yield
+
+
+    @contextmanager
+    def sign_cip36_witness(self, testCase: CVoteTestCase) -> Generator[None, None, None]:
+        """APDU CIP36 Vote - WITNESS step
+
+        Args:
+            testCase (CVoteTestCase): Test parameters
+
+        Returns:
+            Generator
+        """
+
+        with self._exchange_async(self._cmd_builder.sign_cvote_witness(testCase)):
             yield

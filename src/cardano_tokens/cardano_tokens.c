@@ -27,7 +27,7 @@ void deriveAssetFingerprintBytes(const uint8_t* policyId,
     uint8_t hashInput[MINTING_POLICY_ID_LENGTH + MAX_ASSET_NAME_LENGTH] = {0};
     const size_t hashInputSize = policyIdSize + assetNameSize;
     {
-        write_buffer_t buf = buffer_init(hashInput, SIZEOF(hashInput));
+        write_buffer_t buf = buffer_init_write(hashInput, SIZEOF(hashInput));
 
         // Buffer is sized correctly by design - failure is programming error
         bool success = buffer_write_bytes(&buf, policyId, policyIdSize);
