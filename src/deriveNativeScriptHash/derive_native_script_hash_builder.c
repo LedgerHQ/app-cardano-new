@@ -188,8 +188,8 @@ void nativeScriptHashBuilder_addScript_pubkey(native_script_hash_builder_t* buil
         advanceState(builder);                                                           \
     }
 
-_DEFINE_SIMPLE_TIMELOCK_SCRIPT(invalidBefore, NATIVE_SCRIPT_INVALID_BEFORE);
-_DEFINE_SIMPLE_TIMELOCK_SCRIPT(invalidHereafter, NATIVE_SCRIPT_INVALID_HEREAFTER);
+_DEFINE_SIMPLE_TIMELOCK_SCRIPT(invalidBefore, NATIVE_SCRIPT_INVALID_BEFORE)
+_DEFINE_SIMPLE_TIMELOCK_SCRIPT(invalidHereafter, NATIVE_SCRIPT_INVALID_HEREAFTER)
 
 #undef _DEFINE_SIMPLE_TIMELOCK_SCRIPT
 
