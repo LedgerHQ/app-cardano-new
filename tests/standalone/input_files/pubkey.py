@@ -18,91 +18,69 @@ class PubKeyTestCase:
 
 # pylint: disable=line-too-long
 testsByron = [
-    PubKeyTestCase("Export_pubkey_byronpath_1",
-                   "m/44'/1815'/1'"),
-    PubKeyTestCase("Export_pubkey_byronpath_2",
-                   "m/44'/1815'/1'/0/55'"),
-    PubKeyTestCase("Export_pubkey_byronpath_3",
-                   "m/44'/1815'/1'/0/12'"),
+    PubKeyTestCase("Export_pubkey_byronpath_1", "m/44'/1815'/1'"),
+    PubKeyTestCase("Export_pubkey_byronpath_2", "m/44'/1815'/1'/0/55'"),
+    PubKeyTestCase("Export_pubkey_byronpath_3", "m/44'/1815'/1'/0/12'"),
 ]
 
 testsShelleyUsual = [
-    PubKeyTestCase("Export_pubkey_shelley_usual_path_0",
-                   "m/1852'/1815'/4'"),
-    PubKeyTestCase("Export_pubkey_shelley_usual_path_1",
-                   "m/1852'/1815'/0'/0/1"),
-    PubKeyTestCase("Export_pubkey_shelley_usual_path_2",
-                   "m/1852'/1815'/0'/2/0"),
-    PubKeyTestCase("Export_pubkey_shelley_usual_path_3",
-                   "m/1852'/1815'/0'/2/1001"),
-    PubKeyTestCase("Export_pubkey_shelley_usual_path_4",
-                   "m/1852'/1815'/0'/3/0"),
-    PubKeyTestCase("Export_pubkey_shelley_usual_path_5",
-                   "m/1852'/1815'/0'/4/0"),
-    PubKeyTestCase("Export_pubkey_shelley_usual_path_6",
-                   "m/1852'/1815'/1'/5/0"),
+    PubKeyTestCase("Export_pubkey_shelley_usual_path_0", "m/1852'/1815'/4'"),
+    PubKeyTestCase("Export_pubkey_shelley_usual_path_1", "m/1852'/1815'/0'/0/1"),
+    PubKeyTestCase("Export_pubkey_shelley_usual_path_2", "m/1852'/1815'/0'/2/0"),
+    PubKeyTestCase("Export_pubkey_shelley_usual_path_3", "m/1852'/1815'/0'/2/1001"),
+    PubKeyTestCase("Export_pubkey_shelley_usual_path_4", "m/1852'/1815'/0'/3/0"),
+    PubKeyTestCase("Export_pubkey_shelley_usual_path_5", "m/1852'/1815'/0'/4/0"),
+    PubKeyTestCase("Export_pubkey_shelley_usual_path_6", "m/1852'/1815'/1'/5/0"),
 ]
 
 testsShelleyUnusual = [
-    PubKeyTestCase("Export_pubkey_shelley_unusual_path_1",
-                   "m/1852'/1815'/101'"),
-    PubKeyTestCase("Export_pubkey_shelley_unusual_path_2",
-                   "m/1852'/1815'/100'/0/1000001'"),
-    PubKeyTestCase("Export_pubkey_shelley_unusual_path_3",
-                   "m/1852'/1815'/0'/2/1000001"),
-    PubKeyTestCase("Export_pubkey_shelley_unusual_path_4",
-                   "m/1852'/1815'/101'/3/0"),
-    PubKeyTestCase("Export_pubkey_shelley_unusual_path_5",
-                   "m/1852'/1815'/101'/4/0"),
-    PubKeyTestCase("Export_pubkey_shelley_unusual_path_6",
-                   "m/1852'/1815'/101'/5/0"),
+    PubKeyTestCase("Export_pubkey_shelley_unusual_path_1", "m/1852'/1815'/101'"),
+    PubKeyTestCase(
+        "Export_pubkey_shelley_unusual_path_2", "m/1852'/1815'/100'/0/1000001'"
+    ),
+    PubKeyTestCase(
+        "Export_pubkey_shelley_unusual_path_3", "m/1852'/1815'/0'/2/1000001"
+    ),
+    PubKeyTestCase("Export_pubkey_shelley_unusual_path_4", "m/1852'/1815'/101'/3/0"),
+    PubKeyTestCase("Export_pubkey_shelley_unusual_path_5", "m/1852'/1815'/101'/4/0"),
+    PubKeyTestCase("Export_pubkey_shelley_unusual_path_6", "m/1852'/1815'/101'/5/0"),
 ]
 
 testsMultisig = [
-    PubKeyTestCase("Export_pubkey_multisig_account_path_0",
-                   "m/1854'/1815'/0'"),
-    PubKeyTestCase("Export_pubkey_multisig_payment_path_0",
-                   "m/1854'/1815'/0'/0/0"),
-    PubKeyTestCase("Export_pubkey_multisig_staking_path_0",
-                   "m/1854'/1815'/0'/2/0"),
+    PubKeyTestCase("Export_pubkey_multisig_account_path_0", "m/1854'/1815'/0'"),
+    PubKeyTestCase("Export_pubkey_multisig_payment_path_0", "m/1854'/1815'/0'/0/0"),
+    PubKeyTestCase("Export_pubkey_multisig_staking_path_0", "m/1854'/1815'/0'/2/0"),
 ]
 
 testsColdKeys = [
-     PubKeyTestCase("Export_pubkey_cold_case",
-                    "m/1853'/1815'/0'/0'"),
+    PubKeyTestCase("Export_pubkey_cold_case", "m/1853'/1815'/0'/0'"),
 ]
 
 testsCVoteKeysUsual = [
-    PubKeyTestCase("Export_pubkey_CVote_keys_path_2",
-                   "m/1694'/1815'/100'"),
+    PubKeyTestCase("Export_pubkey_CVote_keys_path_2", "m/1694'/1815'/100'"),
 ]
 
 testsCVoteKeysUnusual = [
-    PubKeyTestCase("Export_pubkey_CVote_keys_path_1",
-                   "m/1694'/1815'/0'/0/1"),
-    PubKeyTestCase("Export_pubkey_CVote_keys_path_3",
-                   "m/1694'/1815'/101'"),
+    PubKeyTestCase("Export_pubkey_CVote_keys_path_1", "m/1694'/1815'/0'/0/1"),
+    PubKeyTestCase("Export_pubkey_CVote_keys_path_3", "m/1694'/1815'/101'"),
 ]
 
 testsDRepKeys = [
-    PubKeyTestCase("Export_pubkey_drep_key_path_0",
-                   "m/1852'/1815'/0'/3/0"),
+    PubKeyTestCase("Export_pubkey_drep_key_path_0", "m/1852'/1815'/0'/3/0"),
 ]
 
 testsCommitteeColdKeys = [
-    PubKeyTestCase("Export_pubkey_committee_cold_key_path_0",
-                   "m/1852'/1815'/0'/4/0"),
+    PubKeyTestCase("Export_pubkey_committee_cold_key_path_0", "m/1852'/1815'/0'/4/0"),
 ]
 
 testsCommitteeHotKeys = [
-    PubKeyTestCase("Export_pubkey_committee_hot_key_path_0",
-                   "m/1852'/1815'/0'/5/0"),
+    PubKeyTestCase("Export_pubkey_committee_hot_key_path_0", "m/1852'/1815'/0'/5/0"),
 ]
 
 testsMintKeys = [
-    PubKeyTestCase("Export_pubkey_mint_key_path_0",
-                   "m/1855'/1815'/0'"),
+    PubKeyTestCase("Export_pubkey_mint_key_path_0", "m/1855'/1815'/0'"),
 ]
+
 
 def _parse_bip44_path(path: str) -> list[tuple[int, bool]]:
     parts = path.split("/")[1:]
@@ -144,38 +122,46 @@ def _is_silent_export_path(path: str) -> bool:
 
 
 testsSilentExport = [
-    test_case for test_case in (
-        testsByron + testsShelleyUsual + testsShelleyUnusual + testsMultisig + testsColdKeys +
-        testsCVoteKeysUsual + testsCVoteKeysUnusual + testsDRepKeys +
-        testsCommitteeColdKeys + testsCommitteeHotKeys + testsMintKeys
-    ) if _is_silent_export_path(test_case.path)
+    test_case
+    for test_case in (
+        testsByron
+        + testsShelleyUsual
+        + testsShelleyUnusual
+        + testsMultisig
+        + testsColdKeys
+        + testsCVoteKeysUsual
+        + testsCVoteKeysUnusual
+        + testsDRepKeys
+        + testsCommitteeColdKeys
+        + testsCommitteeHotKeys
+        + testsMintKeys
+    )
+    if _is_silent_export_path(test_case.path)
 ]
 
 rejectTestCases = [
-    PubKeyTestCase("Export_pubkey_path_shorter_than_3_indexes",
-                   "m/44'/1815'"),
-    PubKeyTestCase("Export_pubkey_path_not_matching_cold_key_structure",
-                   "m/1853'/1900'/0'/0/0"),
-    PubKeyTestCase("Export_pubkey_invalid_vote_key_path_1",
-                   "m/1694'/1815'/0'/1/0"),
-    PubKeyTestCase("Export_pubkey_invalid_vote_key_path_2",
-                   "m/1694'/1815'/17"),
-    PubKeyTestCase("Export_pubkey_invalid_vote_key_path_3",
-                   "m/1694'/1815'/0'/1"),
-    PubKeyTestCase("Export_pubkey_invalid_multisig_account_not_hardened",
-                   "m/1854'/1815'/0"),
-    PubKeyTestCase("Export_pubkey_invalid_multisig_chain",
-                   "m/1854'/1815'/0'/3/0"),
-    PubKeyTestCase("Export_pubkey_invalid_multisig_address_hardened",
-                   "m/1854'/1815'/0'/0/0'"),
-    PubKeyTestCase("Export_pubkey_invalid_mint_policy_not_hardened",
-                   "m/1855'/1815'/0"),
-    PubKeyTestCase("Export_pubkey_invalid_drep_chain",
-                   "m/1852'/1815'/0'/6/0"),
-    PubKeyTestCase("Export_pubkey_invalid_committee_cold_address_hardened",
-                   "m/1852'/1815'/0'/4/0'"),
-    PubKeyTestCase("Export_pubkey_invalid_committee_hot_account_not_hardened",
-                   "m/1852'/1815'/0/5/0"),
-    PubKeyTestCase("Export_pubkey_invalid_pool_cold_usecase",
-                   "m/1853'/1815'/1'/0'"),
+    PubKeyTestCase("Export_pubkey_path_shorter_than_3_indexes", "m/44'/1815'"),
+    PubKeyTestCase(
+        "Export_pubkey_path_not_matching_cold_key_structure", "m/1853'/1900'/0'/0/0"
+    ),
+    PubKeyTestCase("Export_pubkey_invalid_vote_key_path_1", "m/1694'/1815'/0'/1/0"),
+    PubKeyTestCase("Export_pubkey_invalid_vote_key_path_2", "m/1694'/1815'/17"),
+    PubKeyTestCase("Export_pubkey_invalid_vote_key_path_3", "m/1694'/1815'/0'/1"),
+    PubKeyTestCase(
+        "Export_pubkey_invalid_multisig_account_not_hardened", "m/1854'/1815'/0"
+    ),
+    PubKeyTestCase("Export_pubkey_invalid_multisig_chain", "m/1854'/1815'/0'/3/0"),
+    PubKeyTestCase(
+        "Export_pubkey_invalid_multisig_address_hardened", "m/1854'/1815'/0'/0/0'"
+    ),
+    PubKeyTestCase("Export_pubkey_invalid_mint_policy_not_hardened", "m/1855'/1815'/0"),
+    PubKeyTestCase("Export_pubkey_invalid_drep_chain", "m/1852'/1815'/0'/6/0"),
+    PubKeyTestCase(
+        "Export_pubkey_invalid_committee_cold_address_hardened", "m/1852'/1815'/0'/4/0'"
+    ),
+    PubKeyTestCase(
+        "Export_pubkey_invalid_committee_hot_account_not_hardened",
+        "m/1852'/1815'/0/5/0",
+    ),
+    PubKeyTestCase("Export_pubkey_invalid_pool_cold_usecase", "m/1853'/1815'/1'/0'"),
 ]

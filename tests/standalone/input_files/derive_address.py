@@ -18,6 +18,7 @@ from application_client.app_def import (
     FakeNet,
 )
 
+
 @dataclass
 class DeriveAddressTestCase:
     name: str
@@ -46,18 +47,29 @@ def pointer_to_str(blockIndex: int, txIndex: int, certificateIndex: int) -> str:
 
 # pylint: disable=line-too-long
 byronTestCases = [
-
     DeriveAddressTestCase(
-        "Derive_address_byron_mainnet_1", Mainnet, AddressType.BYRON, "m/44'/1815'/1'/0/55'"
+        "Derive_address_byron_mainnet_1",
+        Mainnet,
+        AddressType.BYRON,
+        "m/44'/1815'/1'/0/55'",
     ),
     DeriveAddressTestCase(
-        "Derive_address_byron_mainnet_2", Mainnet, AddressType.BYRON, "m/44'/1815'/1'/0/12'"
+        "Derive_address_byron_mainnet_2",
+        Mainnet,
+        AddressType.BYRON,
+        "m/44'/1815'/1'/0/12'",
     ),
     DeriveAddressTestCase(
-        "Derive_address_byron_mainnet_3", Mainnet, AddressType.BYRON, "m/44'/1815'/101'/0/12'"
+        "Derive_address_byron_mainnet_3",
+        Mainnet,
+        AddressType.BYRON,
+        "m/44'/1815'/101'/0/12'",
     ),
     DeriveAddressTestCase(
-        "Derive_address_byron_mainnet_4", Mainnet, AddressType.BYRON, "m/44'/1815'/0'/0/1000001'"
+        "Derive_address_byron_mainnet_4",
+        Mainnet,
+        AddressType.BYRON,
+        "m/44'/1815'/0'/0/1000001'",
     ),
     DeriveAddressTestCase(
         "Derive_address_byron_testnet_1",
@@ -69,7 +81,6 @@ byronTestCases = [
 ]
 
 rejectTestCases = [
-
     DeriveAddressTestCase(
         "path too short", Mainnet, AddressType.BYRON, "m/44'/1815'/1'"
     ),
@@ -140,7 +151,6 @@ rejectTestCases = [
         AddressType.ENTERPRISE_KEY,
         "m/1852'/1815'/1'/2/0",
     ),
-
 ]
 
 nav_review_2 = [NavInsID.USE_CASE_REVIEW_TAP] * 2 + [
@@ -156,7 +166,6 @@ nav_review_1 = [NavInsID.USE_CASE_REVIEW_TAP] + [
 ]
 
 shelleyTestCasesNoConfirm = [
-
     # LedgerJS: base address path/path 1
     DeriveAddressTestCase(
         "Derive_address_shelley_fakenet_base_path_path_1",
@@ -385,11 +394,9 @@ shelleyTestCasesNoConfirm = [
         "122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
         nano_nav_show=nav_review_1,
     ),
-
 ]
 
 shelleyTestCasesWithConfirm = [
-
     # LedgerJS: base address path/path unusual spending path account
     DeriveAddressTestCase(
         "Derive_address_shelley_fakenet_base_path_path_unusual_spending_account",
@@ -579,5 +586,4 @@ shelleyTestCasesWithConfirm = [
         nano_nav_confirm=nav_review_2,
         nano_nav_show=nav_review_2,
     ),
-
 ]
