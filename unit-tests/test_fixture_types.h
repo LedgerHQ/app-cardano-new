@@ -54,6 +54,8 @@ typedef struct {
     const uint8_t *data;
     size_t data_len;
     uint16_t check_expected;
+    const uint8_t *expected_address;
+    size_t expected_address_len;
 } derive_address_fixture_t;
 
 

@@ -1494,8 +1494,8 @@ static const tx_fixture_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_W
     .name = "Sign_tx_with_CIP36_registration_with_many_delegations_streaming",
     .raw_tx = FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_MANY_DELEGATIONS_STREAMING_RAW_TX,
     .raw_tx_len = sizeof(FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_MANY_DELEGATIONS_STREAMING_RAW_TX),
-    .tx_body_cbor_hex = "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
-    .expected_hash_hex = "d5aa2aba96004b367b0d7879b8aac43938ed4edd5634357d2f9b35fde1500cb7",
+    .tx_body_cbor_hex = "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582071a59069086e44bc95f32816cf9a281c41e7922a7ec4e0dcbca229a4665833110807",
+    .expected_hash_hex = "81c9ff686584c87e76f9f2c63178e34b5b3f94815f35595f5f4e8325637814a7",
     .signing_mode = 3,
     .network_id = 1,
     .protocol_magic = 764824073,
@@ -1525,7 +1525,7 @@ static const tx_fixture_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_W
     .treasury = 0,
     .include_donation = false,
     .donation = 0,
-    .aux_data_hash_hex = NULL,
+    .aux_data_hash_hex = "71a59069086e44bc95f32816cf9a281c41e7922a7ec4e0dcbca229a466583311",
     .options = 0,
 };
 

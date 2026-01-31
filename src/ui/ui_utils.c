@@ -130,8 +130,8 @@ bool ui_pairs_add_static_label_impl(const char* label, char* tmp_buf, bool shrin
     #ifdef DEBUG
     {
         size_t len = strlen(tmp_buf);
-        const size_t preview_len = 40;
-        char value_preview[41] = {0};  // 40 chars + null terminator
+        const size_t preview_len = 256;
+        char value_preview[257] = {0};  // 256 chars + null terminator
         memcpy(value_preview, tmp_buf, len > preview_len ? preview_len : len);
 
         TRACE("Adding pair %u: label='%s' value='%s%s (length = %u)'",

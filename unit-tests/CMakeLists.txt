@@ -315,7 +315,7 @@ set(SIGN_TX_COMMON_LIBS
 )
 add_library(cardano_sign_tx_core STATIC ${SIGN_TX_COMMON_SOURCES})
 target_link_libraries(cardano_sign_tx_core PUBLIC ${SIGN_TX_COMMON_LIBS})
-#target_compile_definitions(cardano_sign_tx_core PRIVATE TRACE_TX_HASH_BUILDER)
+target_compile_definitions(cardano_sign_tx_core PRIVATE TRACE_TX_HASH_BUILDER)
 
 # Crypto reference implementations
 add_library(blake2b_lib SHARED libs/blake2b.c)

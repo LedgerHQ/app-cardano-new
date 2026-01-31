@@ -68,17 +68,18 @@ Generators (run from repo root with the standalone venv):
 
 ```bash
 source tests/standalone/venv/bin/activate
-python3 unit-tests/generate_unit_tests_from_ragger.py
+pushd unit-tests
+python3 generators/generate_unit_tests_from_ragger.py
 # or individual steps:
-python3 unit-tests/generate_unit_tests_from_ragger.py fixtures
-python3 unit-tests/generate_unit_tests_from_ragger.py generate-test-runners
-
+python3 generators/generate_unit_tests_from_ragger.py fixtures
+python3 generators/generate_unit_tests_from_ragger.py generate-test-runners
+popd
 ```
 
 The default command runs all generators in order (fixtures, complete-tests, rejects, mock-data).
 
 Notes:
-- `unit-tests/generate_unit_tests_from_ragger.py` produces `unit-tests/test_sign_tx_fixtures_*.h` from
+-- `unit-tests/generators/generate_unit_tests_from_ragger.py` produces `unit-tests/test_sign_tx_fixtures_*.h` from
   `tests/standalone/input_files/signTx.py`, rewrites each `unit-tests/test_sign_tx_*.c`
   with `tx_fixture_t` + `run_fixture_with_expert_mode`, and emits `unit-tests/test_sign_tx_fixtures_rejects.h`.
 - `unit-tests/export_sign_tx_rejects.js` runs inside `../ledgerjs-cardano-shelley` (via Node)
@@ -92,7 +93,9 @@ Mock key material lives in `unit-tests/mock_crypto/crypto_mock_data.h` and is re
 
 ```bash
 source tests/standalone/venv/bin/activate
-python3 unit-tests/generate_unit_tests_from_ragger.py mock-data
+pushd unit-tests
+python3 generators/generate_unit_tests_from_ragger.py mock-data
+popd
 ```
 
 This updates public keys, chain codes, and key hashes while preserving signature vectors.

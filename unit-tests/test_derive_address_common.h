@@ -115,4 +115,13 @@ static inline void run_fixture(const derive_address_fixture_t *fixture) {
     TRACE_BUFFER(buf.ptr, buf.size);
     handler_derive_address(&buf, fixture->p1);
     assert_int_equal(g_last_sw, fixture->check_expected);
+
+    if (fixture->expected_address != NULL && fixture->expected_address_len > 0) {
+        derive_address_ctx_t *ctx = &G_context.derive_address_info;
+        assert_int_equal(ctx->address.size, fixture->expected_address_len);
+        assert_memory_equal(
+            ctx->address.buffer,
+            fixture->expected_address,
+            fixture->expected_address_len);
+    }
 }

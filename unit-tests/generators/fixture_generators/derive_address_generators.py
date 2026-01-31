@@ -181,6 +181,21 @@ def _generate_c_byte_array_for_apdu(
     return code_lines
 
 
+def _generate_c_byte_array_from_bytes(
+    array_bytes: bytes,
+    array_name: str,
+    bytes_per_line: int = 16,
+) -> List[str]:
+    code_lines = []
+    code_lines.append(f"static const uint8_t {array_name}[] = {{")
+    for byte_index in range(0, len(array_bytes), bytes_per_line):
+        byte_chunk = array_bytes[byte_index : byte_index + bytes_per_line]
+        hex_values = ", ".join(f"0x{byte:02X}" for byte in byte_chunk)
+        code_lines.append(f"    {hex_values},")
+    code_lines.append("};")
+    return code_lines
+
+
 def _extract_apdu_payload_bytes(complete_apdu_command: bytes) -> bytes:
     """
     Extract payload data from a complete APDU command.
@@ -273,6 +288,20 @@ def _generate_fixture_code_for_test_case(
     code_lines.extend(payload_array_code)
     code_lines.append("")
 
+    expected_hex = getattr(test_case, "result_hex", None)
+    if expected_hex:
+        expected_bytes = bytes.fromhex(expected_hex)
+        expected_array_name = (
+            f"DERIVE_ADDRESS_{type_test}_{test_number:03d}_{safe_test_name}_EXPECTED_ADDRESS"
+        )
+        expected_array_code = _generate_c_byte_array_from_bytes(
+            expected_bytes,
+            expected_array_name,
+            bytes_per_line=16,
+        )
+        code_lines.extend(expected_array_code)
+        code_lines.append("")
+
     return code_lines
 
 
@@ -339,7 +368,7 @@ def _build_fixtures() -> str:
         )
 
         for test_number, test_case in enumerate(test_cases):
-        
+
             # Generate fixture struct
             # Extract just the payload (skip the 5-byte APDU header: CLA, INS, P1, P2, Lc)
             safe_test_name = _sanitize_test_name_for_c_identifier(test_case.name)
@@ -356,6 +385,16 @@ def _build_fixtures() -> str:
             header_lines.append(f"    .data = {payload_array_name},")
             header_lines.append(f"    .data_len = sizeof({payload_array_name}),")
             header_lines.append(f"    .check_expected = SWO_SUCCESS,")
+            expected_hex = getattr(test_case, "result_hex", None)
+            if expected_hex:
+                expected_array_name = (
+                    f"DERIVE_ADDRESS_{category.type}_{test_number:03d}_{safe_test_name}_EXPECTED_ADDRESS"
+                )
+                header_lines.append(f"    .expected_address = {expected_array_name},")
+                header_lines.append(f"    .expected_address_len = sizeof({expected_array_name}),")
+            else:
+                header_lines.append("    .expected_address = NULL,")
+                header_lines.append("    .expected_address_len = 0,")
             header_lines.append("},")
 
         header_lines.append("};")
