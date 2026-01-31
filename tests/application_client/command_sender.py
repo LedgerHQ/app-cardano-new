@@ -385,17 +385,3 @@ class CommandSender:
         with self._exchange_async(self._cmd_builder.sign_cvote_confirm(testCase)):
             yield
 
-
-    @contextmanager
-    def sign_cip36_witness(self, testCase: CVoteTestCase) -> Generator[None, None, None]:
-        """APDU CIP36 Vote - WITNESS step
-
-        Args:
-            testCase (CVoteTestCase): Test parameters
-
-        Returns:
-            Generator
-        """
-
-        with self._exchange_async(self._cmd_builder.sign_cvote_witness(testCase)):
-            yield

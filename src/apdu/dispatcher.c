@@ -246,7 +246,6 @@ void apdu_dispatcher(const command_t *cmd) {
                 case P1_CVOTE_INIT:
                 case P1_CVOTE_CHUNK:
                 case P1_CVOTE_CONFIRM:
-                case P1_CVOTE_WITNESS:
                     handler_cvote(&data_buffer, cmd->p1);
                     return;
                 default:

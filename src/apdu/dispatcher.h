@@ -72,7 +72,6 @@ typedef enum {
     P1_CVOTE_INIT = 0x50,     // Initialize votecast signing
     P1_CVOTE_CHUNK = 0x51,    // Votecast data chunk
     P1_CVOTE_CONFIRM = 0x52,  // Confirm votecast details
-    P1_CVOTE_WITNESS = 0x53,  // Sign votecast witness
 } p1_e;
 
 /**

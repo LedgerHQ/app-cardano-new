@@ -82,10 +82,3 @@ def unpack_sign_cip36_confirm_response(response: bytes) -> tuple[bytes, bytes]:
     votecast_hash = response[:HASH_LENGTH]
     signature = response[HASH_LENGTH:]
     return votecast_hash, signature
-
-# Unpack from response:
-# response = signature (64)
-def unpack_sign_cip36_witness_response(response: bytes) -> bytes:
-    SIGNATURE_LENGTH = 64
-    assert len(response) == SIGNATURE_LENGTH
-    return response

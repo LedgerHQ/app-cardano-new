@@ -2100,16 +2100,6 @@ size_t warning_bits_to_definitions(warning_bits_t warnings,
     return count;
 }
 
-// TODO: check if can be removed
-security_policy_t policyForSignCVoteInit() {
-    SHOW();
-}
-
-// TODO: check if can be removed
-security_policy_t policyForSignCVoteConfirm() {
-    SHOW();
-}
-
 security_policy_t policyForSignCVoteWitness(const bip44_path_t *path, warning_bits_t *warnings) {
     LEDGER_ASSERT(path != NULL, "NULL path");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");

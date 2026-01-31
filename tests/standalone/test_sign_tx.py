@@ -147,11 +147,16 @@ def _run_sign_tx_test(device: Device,
                 # If path parsing fails, use no extra moves
                 pass
 
-        # Expert mode shows ordinary witness paths that are hidden otherwise.
+        # Pool registration witnesses (owner/operator) always need confirmation.
+        pool_or_plutus_modes = (
+            TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+            TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+            TransactionSigningMode.PLUTUS_TRANSACTION,
+        )
         should_confirm_witness = (
-            len(moves) > 0 or
-            (expert_mode and _is_ordinary_witness_path(path)) or
-            (testCase.signingMode == TransactionSigningMode.PLUTUS_TRANSACTION)
+            testCase.signingMode in pool_or_plutus_modes
+            or len(moves) > 0
+            or (expert_mode and _is_ordinary_witness_path(path))
         )
         if should_confirm_witness and device.is_nano and len(moves) == 0:
             moves = [NavInsID.BOTH_CLICK]

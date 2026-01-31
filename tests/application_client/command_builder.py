@@ -108,7 +108,6 @@ class P1Type(IntEnum):
     P1_CVOTE_INIT = 0x50
     P1_CVOTE_CHUNK = 0x51
     P1_CVOTE_CONFIRM = 0x52
-    P1_CVOTE_WITNESS = 0x53
 # Matches `src/apdu/dispatcher.h::p2_e`
 class P2Type(IntEnum):
     P2_UNUSED = 0x00
@@ -428,23 +427,6 @@ class CommandBuilder:
         data = pack_derivation_path(testCase.cVote.witnessPath)
         return self._serialize(InsType.INS_SIGN_CVOTE, P1Type.P1_CVOTE_CONFIRM, 0x00, data)
 
-
-    def sign_cvote_witness(self, testCase: CVoteTestCase) -> bytes:
-        """APDU Builder for CIP36 Vote - WITNESS step
-
-        Args:
-            testCase (CVoteTestCase): Test parameters
-
-        Returns:
-            Serial data APDU
-        """
-
-        # Serialization format:
-        #     witness path (1B for length + [0-10] x 4B)
-        return self._serialize(InsType.INS_SIGN_CVOTE,
-                               P1Type.P1_CVOTE_WITNESS,
-                               0x00,
-                               pack_derivation_path(testCase.cVote.witnessPath))
 
     def sign_tx_init(self, params: TxInitParams) -> bytes:
         data = bytearray()
