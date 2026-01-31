@@ -14,6 +14,15 @@ from common import (
     format_bytes_as_c_array,
 )
 
+
+# ======================================================================
+# Compiled Regex Patterns (module level for performance)
+# ======================================================================
+
+# Match tx_fixture_t declarations
+_TX_FIXTURE_PATTERN = re.compile(r"static const tx_fixture_t [A-Z0-9_]+\s*=\s*\{")
+
+
 def _split_hex_string(hex_str: str, chunk_size: int = 1024) -> List[str]:
     return [hex_str[i : i + chunk_size] for i in range(0, len(hex_str), chunk_size)]
 
@@ -49,8 +58,7 @@ def _extract_aux_data_hash_from_tx_body(hex_str: str) -> Optional[str]:
 
 
 def _count_fixture_structs(header_text: str) -> int:
-    pattern = re.compile(r"static const tx_fixture_t [A-Z0-9_]+\s*=\s*\{")
-    return len(pattern.findall(header_text))
+    return len(_TX_FIXTURE_PATTERN.findall(header_text))
 
 
 def _generate_fixtures_for_era(

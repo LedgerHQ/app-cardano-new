@@ -18,6 +18,26 @@ from common import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
+
+# ======================================================================
+# Compiled Regex Patterns (module level for performance)
+# ======================================================================
+
+# Match MOCK_PATHS array definition
+_MOCK_PATHS_PATTERN = re.compile(
+    r'(static\s+const\s+mock_path_data_t\s+MOCK_PATHS\[\]\s*=\s*\{)(.*?)(\};)',
+    flags=re.DOTALL,
+)
+
+# Match MOCK_SIGNATURES array definition
+_MOCK_SIGNATURES_PATTERN = re.compile(
+    r'(static\s+const\s+mock_signature_data_t\s+MOCK_SIGNATURES\[\]\s*=\s*\{)(.*?)(\};)',
+    flags=re.DOTALL,
+)
+
+# Match entry start pattern like: { .path =
+_ENTRY_START_PATTERN = re.compile(r"\{\s*\.path\s*=")
+
 # Import fixture generators
 from fixture_generators.tx_generators import (
     generate_tx_fixtures,
@@ -141,23 +161,17 @@ def regenerate_mock_data() -> None:
     print(f"Input:  {input_file}")
     print(f"Output: {temp_output_file}\n")
 
-    mock_paths_pattern = re.compile(
-        r'(static\s+const\s+mock_path_data_t\s+MOCK_PATHS\[\]\s*=\s*\{)(.*?)(\};)',
-        flags=re.DOTALL,
-    )
-    mock_paths_match = mock_paths_pattern.search(content)
+    mock_paths_match = _MOCK_PATHS_PATTERN.search(content)
     if not mock_paths_match:
         raise ValueError("MOCK_PATHS definition not found in mock_crypto/crypto_mock_data.h")
 
     mock_paths_body = mock_paths_match.group(2)
 
-    entry_start_pattern = re.compile(r"\{\s*\.path\s*=")
-
     def _extract_entries(body: str) -> List[str]:
         entries: List[str] = []
         search_pos = 0
         while True:
-            match = entry_start_pattern.search(body, search_pos)
+            match = _ENTRY_START_PATTERN.search(body, search_pos)
             if not match:
                 break
             start = match.start()
@@ -281,11 +295,7 @@ def regenerate_mock_data() -> None:
         extended_key = child.PrivateKey().Raw().ToBytes()
         return sign_with_extended_key(extended_key, messages[message_name])
 
-    signature_pattern = re.compile(
-        r'(static\s+const\s+mock_signature_data_t\s+MOCK_SIGNATURES\[\]\s*=\s*\{)(.*?)(\};)',
-        flags=re.DOTALL,
-    )
-    signature_match = signature_pattern.search(content)
+    signature_match = _MOCK_SIGNATURES_PATTERN.search(content)
     if not signature_match:
         raise ValueError(
             "MOCK_SIGNATURES definition not found in mock_crypto/crypto_mock_data.h"

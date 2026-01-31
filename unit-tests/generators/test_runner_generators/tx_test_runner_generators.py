@@ -18,6 +18,20 @@ from common import (
     UNIT_TESTS_DIR,
 )
 
+
+# ======================================================================
+# Compiled Regex Patterns (module level for performance)
+# ======================================================================
+
+# Match fixture declarations like: static const tx_fixture_t FIXTURE_NAME = { ... };
+_FIXTURE_PATTERN = re.compile(
+    r"static const tx_fixture_t (FIXTURE_[A-Z0-9_]+)\s*=\s*\{(.*?)\};", re.S
+)
+
+# Match .name fields within fixture bodies
+_NAME_FIELD_PATTERN = re.compile(r'\.name\s*=\s*"([^"]+)"')
+
+
 ERA_COMMENT_OVERRIDES = {
     "conway_without_certificates": "CONWAY_WITHOUT_CERTIFICATES Era Tests",
     "alonzo_catalyst": "ALONZO_CATALYST Era Tests",
@@ -118,13 +132,10 @@ def _build_main_function(test_names: Sequence[str], test_c_file: str) -> str:
 def _extract_fixtures_from_header(fixture_path: Path) -> List[Tuple[str, str]]:
     content = read_file_safe(fixture_path)
     fixtures: List[Tuple[str, str]] = []
-    pattern = re.compile(
-        r"static const tx_fixture_t (FIXTURE_[A-Z0-9_]+)\s*=\s*\{(.*?)\};", re.S
-    )
-    for match in pattern.finditer(content):
+    for match in _FIXTURE_PATTERN.finditer(content):
         fixture_name = match.group(1)
         body = match.group(2)
-        name_match = re.search(r'\.name\s*=\s*"([^"]+)"', body)
+        name_match = _NAME_FIELD_PATTERN.search(body)
         if not name_match:
             continue
         display_name = name_match.group(1)

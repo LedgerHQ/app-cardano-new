@@ -6,16 +6,29 @@ from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe, sanitize_c_i
 
 
 # ======================================================================
+# Compiled Regex Patterns (module level for performance)
+# ======================================================================
+
+# Match fixture array declarations
+_FIXTURE_ARRAY_PATTERN = re.compile(
+    r"^static\s+const\s+derive_address_fixture_t\s+(DERIVE_ADDRESS_FIXTURES_[A-Z0-9_]+)\s*\[\]\s*=\s*\{",
+    re.MULTILINE
+)
+
+# Match fixture struct blocks
+_FIXTURE_STRUCT_PATTERN = re.compile(r'\{(.*?)\}', re.DOTALL)
+
+
+# ======================================================================
 # Data Structures
 # ======================================================================
 
 class FixtureDetails(NamedTuple):
     """
     Complete details of a single fixture within an array.
-    
+
     """
     name: str                   # .name field (e.g., "Mainnet 1")
-    p1_value: int              # .p1 field (P1_ADDRESS_RETURN or P1_ADDRESS_DISPLAY)
     data_array_name: str       # .data field (e.g., "DERIVE_ADDRESS_byronTestCases_000_MAINNET_1_APDU")
     check_expected: int        # .check_expected field (e.g., SWO_SUCCESS)
     index: int                 # Position in array (0-based)
@@ -50,16 +63,9 @@ def extract_fixture_array_names_from_header(fixture_header_path: Path) -> List[s
         
     """
     header_content = read_file_safe(fixture_header_path)
-    
-    # Match: static const derive_address_fixture_t <ARRAY_NAME>[] = {
-    # The array name must start with DERIVE_ADDRESS_FIXTURES_
-    fixture_array_pattern = re.compile(
-        r"^static\s+const\s+derive_address_fixture_t\s+(DERIVE_ADDRESS_FIXTURES_[A-Z0-9_]+)\s*\[\]\s*=\s*\{",
-        re.MULTILINE
-    )
-    
+
     fixture_array_names = []
-    for match in fixture_array_pattern.finditer(header_content):
+    for match in _FIXTURE_ARRAY_PATTERN.finditer(header_content):
         array_name = match.group(1)
         
         # Validate that array name follows expected pattern
@@ -109,12 +115,9 @@ def extract_complete_fixture_details_from_array(
         raise ValueError(f"Array {array_name} not found in header")
     
     array_body = match.group(1)
-    
-    # Extract each fixture struct (matches { ... }, pattern)
-    fixture_struct_pattern = re.compile(r'\{(.*?)\}', re.DOTALL)
-    
+
     fixtures = []
-    for index, struct_match in enumerate(fixture_struct_pattern.finditer(array_body)):
+    for index, struct_match in enumerate(_FIXTURE_STRUCT_PATTERN.finditer(array_body)):
         struct_body = struct_match.group(1)
         
         # Extract .name field
@@ -131,18 +134,6 @@ def extract_complete_fixture_details_from_array(
             raise ValueError(
                 f"Missing .p1 field in fixture {index} of array {array_name}"
             )
-        p1_str = p1_match.group(1)
-        
-        # Convert P1 value to integer
-        if p1_str == "P1_ADDRESS_RETURN":
-            p1_value = 0x01
-        elif p1_str == "P1_ADDRESS_DISPLAY":
-            p1_value = 0x02
-        elif p1_str.startswith("0x"):
-            p1_value = int(p1_str, 16)
-        else:
-            p1_value = int(p1_str)
-        
         # Extract .data field (the APDU array name)
         data_match = re.search(r'\.data\s*=\s*([A-Z0-9_]+)', struct_body)
         if not data_match:
@@ -180,7 +171,6 @@ def extract_complete_fixture_details_from_array(
         
         fixtures.append(FixtureDetails(
             name=fixture_name,
-            p1_value=p1_value,
             data_array_name=data_array_name,
             check_expected=check_expected,
             index=index

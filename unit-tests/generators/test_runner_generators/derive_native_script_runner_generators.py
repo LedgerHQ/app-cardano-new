@@ -5,6 +5,14 @@ from typing import List
 from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe, sanitize_c_identifier
 
 
+# ======================================================================
+# Compiled Regex Patterns (module level for performance)
+# ======================================================================
+
+# Match .name = "..." patterns in fixture structs
+_NAME_PATTERN = re.compile(r'\.name\s*=\s*"([^"]+)"')
+
+
 def extract_native_script_fixture_names(header_file_path: Path) -> List[str]:
     """
     Extract test case names from native script fixtures header.
@@ -19,13 +27,9 @@ def extract_native_script_fixture_names(header_file_path: Path) -> List[str]:
     fixture_names = []
     
     header_content = read_file_safe(header_file_path)
-    
-    # Find the NATIVE_SCRIPT_FIXTURES array definition
-    # Pattern matches: .name = "test_name",
-    name_pattern = re.compile(r'\.name\s*=\s*"([^"]+)"')
-    
+
     # Extract all test case names
-    for match in name_pattern.finditer(header_content):
+    for match in _NAME_PATTERN.finditer(header_content):
         test_case_name = match.group(1)
         fixture_names.append(test_case_name)
     
