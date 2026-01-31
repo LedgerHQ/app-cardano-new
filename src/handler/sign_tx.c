@@ -47,6 +47,8 @@
 #include "tx_parse.h"
 #include "tx_utils.h"
 #include "tx_validate.h"
+#include "utils.h"
+
 static bool is_valid_tx_signing_mode(uint8_t tx_signing_mode) {
     switch (tx_signing_mode) {
         case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
@@ -620,7 +622,7 @@ void handler_sign_tx_witness(buffer_t *cdata) {
                G_context.tx_info.witness_signature,
                sizeof(G_context.tx_info.witness_signature));
 
-    TRACE("Witness signature: %.*H", ED25519_SIGNATURE_LENGTH, G_context.tx_info.witness_signature);
+    TRACE_BUFFER(G_context.tx_info.witness_signature, ED25519_SIGNATURE_LENGTH);
 
     switch (policy) {
         case POLICY_HIDE:

@@ -189,6 +189,17 @@ void PRINTF(const char *fmt, ...) {
                 break;
             }
 
+            case 'h': {
+                // Handle %.*h format for printing hex buffers
+                // This is a Ledger-specific format where the width is the number of bytes to print
+                size_t length = va_arg(ap, size_t);
+                const uint8_t* buffer = va_arg(ap, const uint8_t*);
+                for (size_t i = 0; i < length; i++) {
+                    fprintf(stderr, "%02x", buffer[i]);
+                }
+                break;
+            }
+
             case 'f':
             case 'F':
             case 'g':

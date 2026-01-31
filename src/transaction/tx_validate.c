@@ -1960,7 +1960,8 @@ int tx_validate_and_compute_hash(tx_ui_plan_t* plan) {
                           G_context.tx_info.tx_hash,
                           sizeof(G_context.tx_info.tx_hash));
 
-    TRACE("Hash: %.*H", sizeof(G_context.tx_info.tx_hash), G_context.tx_info.tx_hash);
+    TRACE("Transaction body hash:");
+    TRACE_BUFFER(G_context.tx_info.tx_hash, sizeof(G_context.tx_info.tx_hash));
 
     security_policy_t tx_hash_policy =
         policyForSignTxDisplayTxHash(G_context.tx_info.transaction.txSigningMode);

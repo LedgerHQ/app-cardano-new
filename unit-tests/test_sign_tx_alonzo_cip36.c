@@ -165,6 +165,16 @@ static void test_sign_tx_with_cip36_registration_with_delegations_expert_on(void
     run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATIONS, true);
 }
 
+static void test_sign_tx_with_cip36_registration_with_many_delegations_streaming_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_MANY_DELEGATIONS_STREAMING, false);
+}
+
+static void test_sign_tx_with_cip36_registration_with_many_delegations_streaming_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_MANY_DELEGATIONS_STREAMING, true);
+}
+
 // ======================================================================
 // Main
 // ======================================================================
@@ -183,6 +193,8 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_voting_purpose_expert_on),
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegations_expert_off),
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegations_expert_on),
+        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_many_delegations_streaming_expert_off),
+        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_many_delegations_streaming_expert_on),
     };
     return _cmocka_run_group_tests("test_sign_tx_alonzo_cip36", tests, ARRAY_LEN(tests), NULL, NULL);
 }

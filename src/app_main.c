@@ -74,19 +74,19 @@ void app_main() {
 
         // Parse APDU command from G_io_apdu_buffer
         if (!apdu_parser(&cmd, G_io_apdu_buffer, input_len)) {
-            TRACE("BAD LENGTH: %.*H", input_len, G_io_apdu_buffer);
+            TRACE("BAD LENGTH:");
+            TRACE_BUFFER(G_io_apdu_buffer, input_len);
             send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
             continue;
         }
 
-        TRACE("CLA=%02X | INS=%02X | P1=%02X | P2=%02X | Lc=%02X | CData=%.*H",
+        TRACE("CLA=%02X | INS=%02X | P1=%02X | P2=%02X | Lc=%02X | CData=",
               cmd.cla,
               cmd.ins,
               cmd.p1,
               cmd.p2,
-              cmd.lc,
-              cmd.lc,
-              cmd.data);
+              cmd.lc);
+        TRACE_BUFFER(cmd.data, cmd.lc);
 
         // Dispatch structured APDU command to handler
         apdu_dispatcher(&cmd);
