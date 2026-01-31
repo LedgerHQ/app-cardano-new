@@ -7,12 +7,16 @@ from __future__ import annotations
 import argparse
 import hashlib
 import re
+import subprocess
 import sys
+from pathlib import Path
 from typing import Dict, List
 
 from common import (
     UNIT_TESTS_DIR,
 )
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Import fixture generators
 from fixture_generators.tx_generators import (
@@ -347,6 +351,156 @@ def regenerate_mock_data() -> None:
     print(f"\n✓ Regenerated mock data written to: {input_file}")
 
 
+def _verify_ragger_test_coverage() -> None:
+    """Verify that all ragger tests have corresponding unit test coverage."""
+    # Collect ragger test names using pytest --collect-only
+    ragger_tests_dir = REPO_ROOT / "tests" / "standalone"
+    if not ragger_tests_dir.exists():
+        print("WARNING: Ragger tests directory not found, skipping coverage check")
+        return
+
+    try:
+        # Try to collect with a device parameter (ragger tests require --device)
+        result = subprocess.run(
+            ["pytest", "--collect-only", "-q", "--device", "stax", str(ragger_tests_dir)],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        # Parse test names from pytest output (format: test_file.py::test_name[...])
+        ragger_tests = [
+            line.strip() for line in result.stdout.split("\n")
+            if "::" in line and "test_" in line
+        ]
+    except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
+        print(f"WARNING: Could not collect ragger tests: {exc}")
+        return
+
+    if not ragger_tests:
+        print("WARNING: No ragger tests found")
+        return
+
+    # Count total test cases (including parameterized variants)
+    total_ragger_test_cases = len(ragger_tests)
+
+    # Check unit tests for coverage (C test files in UNIT_TESTS_DIR)
+    if not UNIT_TESTS_DIR.exists():
+        print(f"WARNING: Unit test directory not found at {UNIT_TESTS_DIR}")
+        return
+
+    try:
+        result = subprocess.run(
+            ["grep", "-r", "test_", str(UNIT_TESTS_DIR)],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        unit_tests_content = result.stdout
+    except subprocess.TimeoutExpired:
+        print("WARNING: grep timeout while checking unit tests")
+        return
+
+    # Count unit test cases from generated test files only
+    # Generated files: test_sign_tx_*.c, test_derive_address.c, test_derive_native_script.c, etc.
+    generated_test_patterns = [
+        "test_sign_tx_",
+        "test_derive_address.c",
+        "test_derive_native_script.c",
+        "test_derive_address_rejects.c",
+        "test_derive_native_script_rejects.c",
+        "test_opcert_message.c",
+        "test_message_signing.c",
+    ]
+
+    total_unit_test_funcs = 0
+    try:
+        result = subprocess.run(
+            ["find", str(UNIT_TESTS_DIR), "-maxdepth", "1", "-name", "*.c", "-type", "f"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        generated_files = []
+        for file_path in result.stdout.split("\n"):
+            if file_path.strip():
+                file_name = Path(file_path).name
+                if any(pattern in file_name for pattern in generated_test_patterns):
+                    generated_files.append(file_path.strip())
+
+        if generated_files:
+            result = subprocess.run(
+                ["grep", "-h", "static void test_"] + generated_files,
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            total_unit_test_funcs = len([line for line in result.stdout.split("\n") if line.strip()])
+    except (subprocess.TimeoutExpired, subprocess.CalledProcessError):
+        total_unit_test_funcs = 0
+
+    # Extract unique test function names from ragger tests
+    # Format: test_file.py::test_func_name[param] -> extract test_func_name
+    # Skip tests that don't need C unit test fixtures
+    skip_test_files = {"test_client_constants.py", "test_app_mainmenu.py", "test_error_cmd.py"}
+    skip_test_funcs = {"test_wrong_data_length"}
+    ragger_test_funcs = set()
+    for test_line in ragger_tests:
+        if "::" in test_line:
+            # Skip tests from certain files that don't need C fixtures
+            if any(skip_file in test_line for skip_file in skip_test_files):
+                continue
+            # Extract test function name (between :: and [ or end of line)
+            parts = test_line.split("::")
+            if len(parts) >= 2:
+                func_with_params = parts[1]
+                func_name = func_with_params.split("[")[0]
+                if func_name and func_name not in skip_test_funcs:
+                    ragger_test_funcs.add(func_name)
+
+    missing_coverage = []
+    covered_coverage = []
+    for func_name in sorted(ragger_test_funcs):
+        if func_name not in unit_tests_content:
+            missing_coverage.append(func_name)
+        else:
+            covered_coverage.append(func_name)
+
+    print(f"\nRagger test coverage check:")
+    print(f"  Ragger: {total_ragger_test_cases} total test cases from {len(ragger_tests)} parameterized variants")
+    print(f"  Unit tests: {total_unit_test_funcs} test functions generated")
+    print(f"  Found {len(ragger_test_funcs)} unique ragger test functions to cover")
+    print(f"  Coverage: {len(covered_coverage)} functions covered, {len(missing_coverage)} missing")
+
+    if missing_coverage:
+        print(f"\n  WARNING: {len(missing_coverage)} test function(s) lack unit test coverage:")
+        for test in missing_coverage:
+            print(f"    - {test}")
+
+        # Show which test cases are missing for each uncovered function
+        print(f"\n  Missing test cases by function:")
+        for func_name in missing_coverage:
+            # Find all ragger test cases for this function
+            missing_test_cases = [
+                line.strip() for line in ragger_tests
+                if f"::{func_name}[" in line
+            ]
+            if missing_test_cases:
+                print(f"    {func_name}: ({len(missing_test_cases)} cases)")
+                for case in missing_test_cases:
+                    # Extract just the test case name part for readability
+                    if "::" in case:
+                        _, test_case = case.split("::", 1)
+                        print(f"      - {test_case}")
+    else:
+        print(f"\n  ✓ All ragger test functions have unit test coverage")
+
+    # Show breakdown of covered tests
+    if covered_coverage:
+        print(f"\n  Covered test functions:")
+        for test in covered_coverage:
+            print(f"    + {test}")
+
+
 def run_all() -> None:
     _log_stage("Generating fixtures")
     generate_tx_fixtures()
@@ -363,6 +517,8 @@ def run_all() -> None:
     generate_derive_native_script_reject_fixtures()
     _log_stage("Regenerating mock data")
     regenerate_mock_data()
+    _log_stage("Verifying Ragger coverage")
+    _verify_ragger_test_coverage()
 
 
 def main() -> None:
