@@ -70,6 +70,10 @@ REJECT_REASON_SW: Dict[str, str] = {
     "InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_POOL_REG_CERTIFICATE_REQUIRED": "SWO_TX_PARSING_FAIL_CERTIFICATES",
     "InvalidDataReason.CERTIFICATE_INVALID_POOL_KEY_HASH": "SWO_TX_PARSING_FAIL_CERTIFICATES",
     "InvalidDataReason.WITHDRAWAL_INVALID_ORDERING": "SWO_TX_PARSING_FAIL_WITHDRAWALS",
+    "InvalidDataReason.RELAY_INVALID_DNS": "SWO_TX_PARSING_FAIL_CERTIFICATES",
+    "InvalidDataReason.POOL_REGISTRATION_METADATA_INVALID_URL": "SWO_TX_PARSING_FAIL_CERTIFICATES",
+    "InvalidDataReason.POOL_REGISTRATION_METADATA_INVALID_HASH": "SWO_TX_PARSING_FAIL_CERTIFICATES",
+    "InvalidDataReason.POOL_REGISTRATION_INVALID_MARGIN": "SWO_TX_PARSING_FAIL_CERTIFICATES",
 }
 
 def _parse_enum(enum_cls: Type[Any], value: Any) -> Any:
@@ -514,7 +518,7 @@ def _build_reject_fixtures() -> str:
         return cleaned
 
     def format_display_name(prefix: str, test_name: str, reason: Optional[str] = None) -> str:
-        cleaned = test_name.replace("-", "").replace(" ", "_")
+        cleaned = test_name.replace("-", "_").replace(" ", "_")
         cleaned = "_".join(part for part in cleaned.split("_") if part)
         if reason:
             reason_label = reason.split(".")[-1]

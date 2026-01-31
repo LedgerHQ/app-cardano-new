@@ -2486,7 +2486,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NO_PATH_GIVEN[] =
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Invalid numerator-denominator relationship
+// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Invalid_numerator_denominator_relationship
 // Reject reason: InvalidDataReason.POOL_REGISTRATION_INVALID_MARGIN
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_INVALID_NUMERATOR_DENOMINATOR_RELATIONSHIP[] = {
     {
@@ -2599,7 +2599,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_ID_HASH_SENT_IN_FOR_POO
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerRejectTestCases > Non-staking path for Pool Registration Owner Tx
+// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerRejectTestCases > Non_staking_path_for_Pool_Registration_Owner_Tx
 // Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NON_STAKING_PATH_FOR_POOL_REGISTRATION_OWNER_TX[] = {
     {
@@ -2906,7 +2906,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Non-mainnet protocol magic
     // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_INIT] Nonmainnet_protocol_magic_LEDGER_POLICY",
+        .name = "[REJECT_INIT] Non_mainnet_protocol_magic_LEDGER_POLICY",
         .init_hex =
         "0000000000000000012D964A0803000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3530,7 +3530,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
     // Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Non-staking path in Ordinary Tx
     // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_CERT_STAKING] Nonstaking_path_in_Ordinary_Tx_LEDGER_POLICY",
+        .name = "[REJECT_CERT_STAKING] Non_staking_path_in_Ordinary_Tx_LEDGER_POLICY",
         .init_hex =
         "0000000000000000012D964A0903000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3556,7 +3556,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
     // Source: tests/standalone/input_files/signTx.py > certificateStakePoolRetirementRejectTestCases > Non-pool cold key in Ordinary Tx
     // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_CERT_POOL_RETIRE] Nonpool_cold_key_in_Ordinary_Tx_LEDGER_POLICY",
+        .name = "[REJECT_CERT_POOL_RETIRE] Non_pool_cold_key_in_Ordinary_Tx_LEDGER_POLICY",
         .init_hex =
         "0000000000000000012D964A0903000100010200010000010100000100000000"
         "0101010000000001010002",
@@ -3595,7 +3595,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
     // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Non-staking path as stake credential in Ordinary Tx
     // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITHDRAWAL] Nonstaking_path_as_stake_credential_in_Ordinary_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITHDRAWAL] Non_staking_path_as_stake_credential_in_Ordinary_Tx_LEDGER_POLICY",
         .init_hex =
         "0000000000000000012D964A0903000100010200000001010100000100000000"
         "0101010000000001010001",
@@ -3621,7 +3621,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
     // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Non-staking path as stake credential in Plutus Tx
     // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITHDRAWAL] Nonstaking_path_as_stake_credential_in_Plutus_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITHDRAWAL] Non_staking_path_as_stake_credential_in_Plutus_Tx_LEDGER_POLICY",
         .init_hex =
         "0000000000000000012D964A0907000100010200000001010100000100000000"
         "0101010000000001010001",
@@ -4216,16 +4216,16 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Invalid numerator-denominator relationship
+    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Invalid_numerator_denominator_relationship
     // Reject reason: InvalidDataReason.POOL_REGISTRATION_INVALID_MARGIN
     {
-        .name = "[REJECT_POOL_OWNER] Invalid_numeratordenominator_relationship_POOL_REGISTRATION_INVALID_MARGIN",
+        .name = "[REJECT_POOL_OWNER] Invalid_numerator_denominator_relationship_POOL_REGISTRATION_INVALID_MARGIN",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010002",
         .chunks = SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_INVALID_NUMERATOR_DENOMINATOR_RELATIONSHIP,
         .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_INVALID_NUMERATOR_DENOMINATOR_RELATIONSHIP),
-        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_sw = SWO_TX_PARSING_FAIL_CERTIFICATES,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
@@ -4255,10 +4255,10 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerRejectTestCases > Non-staking path for Pool Registration Owner Tx
+    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerRejectTestCases > Non_staking_path_for_Pool_Registration_Owner_Tx
     // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_POOL_OWNER] Nonstaking_path_for_Pool_Registration_Owner_Tx_LEDGER_POLICY",
+        .name = "[REJECT_POOL_OWNER] Non_staking_path_for_Pool_Registration_Owner_Tx_LEDGER_POLICY",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -4303,7 +4303,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         "0101010000000001010001",
         .chunks = SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_URL_TOO_LONG,
         .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_URL_TOO_LONG),
-        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_sw = SWO_TX_PARSING_FAIL_CERTIFICATES,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
@@ -4316,7 +4316,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         "0101010000000001010001",
         .chunks = SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_INVALID_URL,
         .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_INVALID_URL),
-        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_sw = SWO_TX_PARSING_FAIL_CERTIFICATES,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
@@ -4329,7 +4329,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         "0101010000000001010001",
         .chunks = SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_INVALID_HASH_LENGTH,
         .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_INVALID_HASH_LENGTH),
-        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_sw = SWO_TX_PARSING_FAIL_CERTIFICATES,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
@@ -4342,7 +4342,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         "0101010000000001010001",
         .chunks = SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_MISSING_HASH,
         .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_MISSING_HASH),
-        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_sw = SWO_TX_PARSING_FAIL_CERTIFICATES,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
@@ -4355,7 +4355,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         "0101010000000001010001",
         .chunks = SIGN_TX_SEGMENTS_REJECT_RELAY_SINGLEHOSTHOSTNAME_MISSING_DNS,
         .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_RELAY_SINGLEHOSTHOSTNAME_MISSING_DNS),
-        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_sw = SWO_TX_PARSING_FAIL_CERTIFICATES,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
@@ -4368,7 +4368,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         "0101010000000001010001",
         .chunks = SIGN_TX_SEGMENTS_REJECT_RELAY_MULTIHOST_MISSING_DNS,
         .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_RELAY_MULTIHOST_MISSING_DNS),
-        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_sw = SWO_TX_PARSING_FAIL_CERTIFICATES,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
