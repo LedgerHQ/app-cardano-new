@@ -201,7 +201,7 @@ def regenerate_mock_data() -> None:
             derived_cc = bytes.fromhex(derived_cc_hex)
             derived_kh = hashlib.blake2b(derived_pk, digest_size=28).digest()
 
-            print(f"✓ {path_desc}")
+            print(f"OK {path_desc}")
 
             lines: List[str] = []
             lines.append(f"{base_indent}/* Path \"{path_desc}\" */")
@@ -323,7 +323,7 @@ def regenerate_mock_data() -> None:
         signature = derive_signature(path_array, message_name)
         signature_hex = signature.hex()
 
-        print(f"✓ Signature {message_name} ({bip32_path})")
+        print(f"OK Signature {message_name} ({bip32_path})")
         print(f"  message={message_hex}")
 
         lines: List[str] = []
@@ -369,7 +369,7 @@ def regenerate_mock_data() -> None:
         print(f"ERROR: Failed to replace {input_file} with regenerated content: {exc}")
         sys.exit(1)
 
-    print(f"\n✓ Regenerated mock data written to: {input_file}")
+    print(f"\nOK Regenerated mock data written to: {input_file}")
 
 
 def _verify_ragger_test_coverage() -> None:
@@ -554,7 +554,7 @@ def _verify_ragger_test_coverage() -> None:
                         _, test_case = case.split("::", 1)
                         print(f"      - {test_case}")
     else:
-        print(f"\n  ✓ All ragger test functions have unit test coverage")
+        print(f"\n  OK All ragger test functions have unit test coverage")
 
     # Show breakdown of covered tests
     if covered_coverage:

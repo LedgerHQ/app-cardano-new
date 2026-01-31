@@ -27,6 +27,7 @@
 
 // ======================================================================
 // Test Case [0]: PUBKEY invalid key path
+// Source: tests/standalone/input_files/native_script.py > reject tests
 // ======================================================================
 
 // APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
@@ -57,6 +58,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC0_PUBKEY_INVALID_KEY_PATH[1] = {
 
 // ======================================================================
 // Test Case [1]: N_OF_K invalid required count higher than number of scripts
+// Source: tests/standalone/input_files/native_script.py > reject tests
 // ======================================================================
 
 // N_OF_K (internal node): 1 of 0 children required
@@ -87,6 +89,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC1_N_OF_K_INVALID_REQUIRED_COUNT_HIGHE
 
 // ======================================================================
 // Test Case [2]: PUBKEY invalid key path
+// Source: tests/standalone/input_files/native_script.py > reject tests
 // ======================================================================
 
 // APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
@@ -120,6 +123,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC2_PUBKEY_INVALID_KEY_PATH[1] = {
 // ======================================================================
 
 static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
+    // Source: tests/standalone/input_files/native_script.py > reject tests > PUBKEY invalid key path
     {
         .name = "PUBKEY invalid key path",
         .root_script = (const native_script_t*)&SCRIPT_TC0_PUBKEY_INVALID_KEY_PATH_C0,
@@ -128,6 +132,7 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC0_PUBKEY_INVALID_KEY_PATH,
         .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC0_PUBKEY_INVALID_KEY_PATH),
     },
+    // Source: tests/standalone/input_files/native_script.py > reject tests > N_OF_K invalid required count higher than number of scripts
     {
         .name = "N_OF_K invalid required count higher than number of scripts",
         .root_script = (const native_script_t*)&SCRIPT_TC1_N_OF_K_INVALID_REQUIRED_COUNT_HIGHER_THAN_NUMBER_OF_SCRIPTS_C0,
@@ -136,6 +141,7 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC1_N_OF_K_INVALID_REQUIRED_COUNT_HIGHER_THAN_NUMBER_OF_SCRIPTS,
         .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC1_N_OF_K_INVALID_REQUIRED_COUNT_HIGHER_THAN_NUMBER_OF_SCRIPTS),
     },
+    // Source: tests/standalone/input_files/native_script.py > reject tests > PUBKEY invalid key path
     {
         .name = "PUBKEY invalid key path",
         .root_script = (const native_script_t*)&SCRIPT_TC2_PUBKEY_INVALID_KEY_PATH_C0,

@@ -24,6 +24,7 @@
 // Reject Test 1: path too short
 // Expected rejection: SWO_SECURITY_CONDITION_NOT_SATISFIED
 // Address Type: BYRON
+// Source: tests/standalone/input_files/derive_address.py > reject tests > path too short
 // Spending: m/44'/1815'/1'
 // ----------------------------------------------------------------------
 
@@ -37,6 +38,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_001_PATH_TOO_SHORT_APDU[] = {
 // Reject Test 2: invalid path
 // Expected rejection: SWO_SECURITY_CONDITION_NOT_SATISFIED
 // Address Type: BYRON
+// Source: tests/standalone/input_files/derive_address.py > reject tests > invalid path
 // Spending: m/44'/1815'/1'/5/10'
 // ----------------------------------------------------------------------
 
@@ -50,6 +52,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_002_INVALID_PATH_APDU[] = {
 // Reject Test 3: Byron with Shelley path
 // Expected rejection: SWO_SECURITY_CONDITION_NOT_SATISFIED
 // Address Type: BYRON
+// Source: tests/standalone/input_files/derive_address.py > reject tests > Byron with Shelley path
 // Spending: m/1852'/1815'/1'/0/10
 // ----------------------------------------------------------------------
 
@@ -63,6 +66,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_003_BYRON_WITH_SHELLEY_PATH_APDU[] = 
 // Reject Test 4: base key/key with Byron spending path
 // Expected rejection: SWO_SECURITY_CONDITION_NOT_SATISFIED
 // Address Type: BASE_PAYMENT_KEY_STAKE_KEY
+// Source: tests/standalone/input_files/derive_address.py > reject tests > base key/key with Byron spending path
 // Spending: m/44'/1815'/1'/0/1
 // Staking: m/1852'/1815'/1'/2/0
 // ----------------------------------------------------------------------
@@ -78,6 +82,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_004_BASE_KEY_KEY_WITH_BYRON_SPENDING_
 // Reject Test 5: base key/key with wrong spending path
 // Expected rejection: SWO_SECURITY_CONDITION_NOT_SATISFIED
 // Address Type: BASE_PAYMENT_KEY_STAKE_KEY
+// Source: tests/standalone/input_files/derive_address.py > reject tests > base key/key with wrong spending path
 // Spending: m/1852'/1815'/1'/2/0
 // Staking: m/1852'/1815'/1'/2/0
 // ----------------------------------------------------------------------
@@ -93,6 +98,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_005_BASE_KEY_KEY_WITH_WRONG_SPENDING_
 // Reject Test 6: base key/key with wrong staking path 1
 // Expected rejection: SWO_SECURITY_CONDITION_NOT_SATISFIED
 // Address Type: BASE_PAYMENT_KEY_STAKE_KEY
+// Source: tests/standalone/input_files/derive_address.py > reject tests > base key/key with wrong staking path 1
 // Spending: m/1852'/1815'/1'/0/0
 // Staking: m/1852'/1815'/1'/0/1
 // ----------------------------------------------------------------------
@@ -108,6 +114,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_006_BASE_KEY_KEY_WITH_WRONG_STAKING_P
 // Reject Test 7: base key/script with Byron spending path
 // Expected rejection: SWO_SECURITY_CONDITION_NOT_SATISFIED
 // Address Type: BASE_PAYMENT_KEY_STAKE_SCRIPT
+// Source: tests/standalone/input_files/derive_address.py > reject tests > base key/script with Byron spending path
 // Spending: m/44'/1815'/1'/0/1
 // Staking: 222a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277
 // ----------------------------------------------------------------------
@@ -124,6 +131,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_007_BASE_KEY_SCRIPT_WITH_BYRON_SPENDI
 // Reject Test 8: base address scripthash/keyhash not allowed
 // Expected rejection: SWO_SECURITY_CONDITION_NOT_SATISFIED
 // Address Type: BASE_PAYMENT_SCRIPT_STAKE_KEY
+// Source: tests/standalone/input_files/derive_address.py > reject tests > base address scripthash/keyhash not allowed
 // Spending: 122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277
 // Staking: 222a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277
 // ----------------------------------------------------------------------
@@ -140,6 +148,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_008_BASE_ADDRESS_SCRIPTHASH_KEYHASH_N
 // Reject Test 9: pointer with Byron spending path
 // Expected rejection: SWO_SECURITY_CONDITION_NOT_SATISFIED
 // Address Type: POINTER_KEY
+// Source: tests/standalone/input_files/derive_address.py > reject tests > pointer with Byron spending path
 // Spending: m/44'/1815'/1'/0/0
 // Staking: 000000010000000200000003
 // ----------------------------------------------------------------------
@@ -155,6 +164,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_009_POINTER_WITH_BYRON_SPENDING_PATH_
 // Reject Test 10: pointer with wrong spending path
 // Expected rejection: SWO_SECURITY_CONDITION_NOT_SATISFIED
 // Address Type: POINTER_KEY
+// Source: tests/standalone/input_files/derive_address.py > reject tests > pointer with wrong spending path
 // Spending: m/1852'/1815'/1'/2/0
 // Staking: 000000010000000200000003
 // ----------------------------------------------------------------------
@@ -170,6 +180,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_010_POINTER_WITH_WRONG_SPENDING_PATH_
 // Reject Test 11: enterprise with Byron spending path
 // Expected rejection: SWO_SECURITY_CONDITION_NOT_SATISFIED
 // Address Type: ENTERPRISE_KEY
+// Source: tests/standalone/input_files/derive_address.py > reject tests > enterprise with Byron spending path
 // Spending: m/44'/1815'/1'/0/0
 // ----------------------------------------------------------------------
 
@@ -183,6 +194,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_011_ENTERPRISE_WITH_BYRON_SPENDING_PA
 // Reject Test 12: enterprise with wrong spending path
 // Expected rejection: SWO_SECURITY_CONDITION_NOT_SATISFIED
 // Address Type: ENTERPRISE_KEY
+// Source: tests/standalone/input_files/derive_address.py > reject tests > enterprise with wrong spending path
 // Spending: m/1852'/1815'/1'/2/0
 // ----------------------------------------------------------------------
 
@@ -193,6 +205,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_012_ENTERPRISE_WITH_WRONG_SPENDING_PA
 // 0601058000073C8000071780000001000000020000000011
 
 static const derive_address_fixture_t DERIVE_ADDRESS_REJECT_FIXTURES[] = {
+// Source: tests/standalone/input_files/derive_address.py > reject tests > path too short
 {
     .name = "path too short",
     .p1 = P1_ADDRESS_RETURN,
@@ -200,6 +213,7 @@ static const derive_address_fixture_t DERIVE_ADDRESS_REJECT_FIXTURES[] = {
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_001_PATH_TOO_SHORT_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
+// Source: tests/standalone/input_files/derive_address.py > reject tests > invalid path
 {
     .name = "invalid path",
     .p1 = P1_ADDRESS_RETURN,
@@ -207,6 +221,7 @@ static const derive_address_fixture_t DERIVE_ADDRESS_REJECT_FIXTURES[] = {
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_002_INVALID_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
+// Source: tests/standalone/input_files/derive_address.py > reject tests > Byron with Shelley path
 {
     .name = "Byron with Shelley path",
     .p1 = P1_ADDRESS_RETURN,
@@ -214,6 +229,7 @@ static const derive_address_fixture_t DERIVE_ADDRESS_REJECT_FIXTURES[] = {
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_003_BYRON_WITH_SHELLEY_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
+// Source: tests/standalone/input_files/derive_address.py > reject tests > base key/key with Byron spending path
 {
     .name = "base key/key with Byron spending path",
     .p1 = P1_ADDRESS_RETURN,
@@ -221,6 +237,7 @@ static const derive_address_fixture_t DERIVE_ADDRESS_REJECT_FIXTURES[] = {
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_004_BASE_KEY_KEY_WITH_BYRON_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
+// Source: tests/standalone/input_files/derive_address.py > reject tests > base key/key with wrong spending path
 {
     .name = "base key/key with wrong spending path",
     .p1 = P1_ADDRESS_RETURN,
@@ -228,6 +245,7 @@ static const derive_address_fixture_t DERIVE_ADDRESS_REJECT_FIXTURES[] = {
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_005_BASE_KEY_KEY_WITH_WRONG_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
+// Source: tests/standalone/input_files/derive_address.py > reject tests > base key/key with wrong staking path 1
 {
     .name = "base key/key with wrong staking path 1",
     .p1 = P1_ADDRESS_RETURN,
@@ -235,6 +253,7 @@ static const derive_address_fixture_t DERIVE_ADDRESS_REJECT_FIXTURES[] = {
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_006_BASE_KEY_KEY_WITH_WRONG_STAKING_PATH_1_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
+// Source: tests/standalone/input_files/derive_address.py > reject tests > base key/script with Byron spending path
 {
     .name = "base key/script with Byron spending path",
     .p1 = P1_ADDRESS_RETURN,
@@ -242,6 +261,7 @@ static const derive_address_fixture_t DERIVE_ADDRESS_REJECT_FIXTURES[] = {
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_007_BASE_KEY_SCRIPT_WITH_BYRON_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
+// Source: tests/standalone/input_files/derive_address.py > reject tests > base address scripthash/keyhash not allowed
 {
     .name = "base address scripthash/keyhash not allowed",
     .p1 = P1_ADDRESS_RETURN,
@@ -249,6 +269,7 @@ static const derive_address_fixture_t DERIVE_ADDRESS_REJECT_FIXTURES[] = {
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_008_BASE_ADDRESS_SCRIPTHASH_KEYHASH_NOT_ALLOWED_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
+// Source: tests/standalone/input_files/derive_address.py > reject tests > pointer with Byron spending path
 {
     .name = "pointer with Byron spending path",
     .p1 = P1_ADDRESS_RETURN,
@@ -256,6 +277,7 @@ static const derive_address_fixture_t DERIVE_ADDRESS_REJECT_FIXTURES[] = {
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_009_POINTER_WITH_BYRON_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
+// Source: tests/standalone/input_files/derive_address.py > reject tests > pointer with wrong spending path
 {
     .name = "pointer with wrong spending path",
     .p1 = P1_ADDRESS_RETURN,
@@ -263,6 +285,7 @@ static const derive_address_fixture_t DERIVE_ADDRESS_REJECT_FIXTURES[] = {
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_010_POINTER_WITH_WRONG_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
+// Source: tests/standalone/input_files/derive_address.py > reject tests > enterprise with Byron spending path
 {
     .name = "enterprise with Byron spending path",
     .p1 = P1_ADDRESS_RETURN,
@@ -270,6 +293,7 @@ static const derive_address_fixture_t DERIVE_ADDRESS_REJECT_FIXTURES[] = {
     .data_len = sizeof(DERIVE_ADDRESS_REJECT_011_ENTERPRISE_WITH_BYRON_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
+// Source: tests/standalone/input_files/derive_address.py > reject tests > enterprise with wrong spending path
 {
     .name = "enterprise with wrong spending path",
     .p1 = P1_ADDRESS_RETURN,

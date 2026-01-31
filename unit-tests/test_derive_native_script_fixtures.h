@@ -28,6 +28,7 @@
 
 // ======================================================================
 // Test Case [0]: PUBKEY_third_party
+// Source: tests/standalone/input_files/native_script.py
 // ======================================================================
 
 static const uint8_t EXPECTED_HASH_TC0_PUBKEY_THIRD_PARTY[SCRIPT_HASH_LENGTH] = {
@@ -65,6 +66,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC0_PUBKEY_THIRD_PARTY[1] = {
 
 // ======================================================================
 // Test Case [1]: PUBKEY_third_party_script_hash_displayed_as_policy_id
+// Source: tests/standalone/input_files/native_script.py
 // ======================================================================
 
 static const uint8_t EXPECTED_HASH_TC1_PUBKEY_THIRD_PARTY_SCRIPT_HASH_DISPLAYED_AS_POLICY_ID[SCRIPT_HASH_LENGTH] = {
@@ -102,6 +104,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC1_PUBKEY_THIRD_PARTY_SCRIPT_HASH_DISP
 
 // ======================================================================
 // Test Case [2]: ALL_script
+// Source: tests/standalone/input_files/native_script.py
 // ======================================================================
 
 static const uint8_t EXPECTED_HASH_TC2_ALL_SCRIPT[SCRIPT_HASH_LENGTH] = {
@@ -179,6 +182,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC2_ALL_SCRIPT[1] = {
 
 // ======================================================================
 // Test Case [3]: ALL_script_no_subscripts
+// Source: tests/standalone/input_files/native_script.py
 // ======================================================================
 
 static const uint8_t EXPECTED_HASH_TC3_ALL_SCRIPT_NO_SUBSCRIPTS[SCRIPT_HASH_LENGTH] = {
@@ -215,6 +219,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC3_ALL_SCRIPT_NO_SUBSCRIPTS[1] = {
 
 // ======================================================================
 // Test Case [4]: ANY_script
+// Source: tests/standalone/input_files/native_script.py
 // ======================================================================
 
 static const uint8_t EXPECTED_HASH_TC4_ANY_SCRIPT[SCRIPT_HASH_LENGTH] = {
@@ -292,6 +297,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC4_ANY_SCRIPT[1] = {
 
 // ======================================================================
 // Test Case [5]: ANY_script_no_subscripts
+// Source: tests/standalone/input_files/native_script.py
 // ======================================================================
 
 static const uint8_t EXPECTED_HASH_TC5_ANY_SCRIPT_NO_SUBSCRIPTS[SCRIPT_HASH_LENGTH] = {
@@ -328,6 +334,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC5_ANY_SCRIPT_NO_SUBSCRIPTS[1] = {
 
 // ======================================================================
 // Test Case [6]: N_OF_K_script
+// Source: tests/standalone/input_files/native_script.py
 // ======================================================================
 
 static const uint8_t EXPECTED_HASH_TC6_N_OF_K_SCRIPT[SCRIPT_HASH_LENGTH] = {
@@ -406,6 +413,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC6_N_OF_K_SCRIPT[1] = {
 
 // ======================================================================
 // Test Case [7]: N_OF_K_script_no_subscripts
+// Source: tests/standalone/input_files/native_script.py
 // ======================================================================
 
 static const uint8_t EXPECTED_HASH_TC7_N_OF_K_SCRIPT_NO_SUBSCRIPTS[SCRIPT_HASH_LENGTH] = {
@@ -443,6 +451,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC7_N_OF_K_SCRIPT_NO_SUBSCRIPTS[1] = {
 
 // ======================================================================
 // Test Case [8]: INVALID_BEFORE_script
+// Source: tests/standalone/input_files/native_script.py
 // ======================================================================
 
 static const uint8_t EXPECTED_HASH_TC8_INVALID_BEFORE_SCRIPT[SCRIPT_HASH_LENGTH] = {
@@ -478,6 +487,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC8_INVALID_BEFORE_SCRIPT[1] = {
 
 // ======================================================================
 // Test Case [9]: INVALID_BEFORE_script_slot_is_a_big_number
+// Source: tests/standalone/input_files/native_script.py
 // ======================================================================
 
 static const uint8_t EXPECTED_HASH_TC9_INVALID_BEFORE_SCRIPT_SLOT_IS_A_BIG_NUMBER[SCRIPT_HASH_LENGTH] = {
@@ -513,6 +523,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC9_INVALID_BEFORE_SCRIPT_SLOT_IS_A_BIG
 
 // ======================================================================
 // Test Case [10]: INVALID_HEREAFTER_script
+// Source: tests/standalone/input_files/native_script.py
 // ======================================================================
 
 static const uint8_t EXPECTED_HASH_TC10_INVALID_HEREAFTER_SCRIPT[SCRIPT_HASH_LENGTH] = {
@@ -548,6 +559,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC10_INVALID_HEREAFTER_SCRIPT[1] = {
 
 // ======================================================================
 // Test Case [11]: INVALID_HEREAFTER_script_slot_is_a_big_number
+// Source: tests/standalone/input_files/native_script.py
 // ======================================================================
 
 static const uint8_t EXPECTED_HASH_TC11_INVALID_HEREAFTER_SCRIPT_SLOT_IS_A_BIG_NUMBER[SCRIPT_HASH_LENGTH] = {
@@ -583,6 +595,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC11_INVALID_HEREAFTER_SCRIPT_SLOT_IS_A
 
 // ======================================================================
 // Test Case [12]: Nested_native_scripts
+// Source: tests/standalone/input_files/native_script.py
 // ======================================================================
 
 static const uint8_t EXPECTED_HASH_TC12_NESTED_NATIVE_SCRIPTS[SCRIPT_HASH_LENGTH] = {
@@ -821,6 +834,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC12_NESTED_NATIVE_SCRIPTS[1] = {
 
 // ======================================================================
 // Test Case [13]: Nested native scripts #2
+// Source: tests/standalone/input_files/native_script.py
 // ======================================================================
 
 static const uint8_t EXPECTED_HASH_TC13_NESTED_NATIVE_SCRIPTS_NUM2[SCRIPT_HASH_LENGTH] = {
@@ -917,6 +931,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_NUM2[1] = {
 
 // ======================================================================
 // Test Case [14]: Nested native scripts #3
+// Source: tests/standalone/input_files/native_script.py
 // ======================================================================
 
 static const uint8_t EXPECTED_HASH_TC14_NESTED_NATIVE_SCRIPTS_NUM3[SCRIPT_HASH_LENGTH] = {
@@ -1015,6 +1030,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC14_NESTED_NATIVE_SCRIPTS_NUM3[1] = {
 // ======================================================================
 
 static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
+    // Source: tests/standalone/input_files/native_script.py > PUBKEY_third_party
     {
         .name = "PUBKEY_third_party",
         .root_script = (const native_script_t*)&SCRIPT_TC0_PUBKEY_THIRD_PARTY_C0,
@@ -1023,6 +1039,7 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC0_PUBKEY_THIRD_PARTY,
         .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC0_PUBKEY_THIRD_PARTY),
     },
+    // Source: tests/standalone/input_files/native_script.py > PUBKEY_third_party_script_hash_displayed_as_policy_id
     {
         .name = "PUBKEY_third_party_script_hash_displayed_as_policy_id",
         .root_script = (const native_script_t*)&SCRIPT_TC1_PUBKEY_THIRD_PARTY_SCRIPT_HASH_DISPLAYED_AS_POLICY_ID_C0,
@@ -1031,6 +1048,7 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC1_PUBKEY_THIRD_PARTY_SCRIPT_HASH_DISPLAYED_AS_POLICY_ID,
         .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC1_PUBKEY_THIRD_PARTY_SCRIPT_HASH_DISPLAYED_AS_POLICY_ID),
     },
+    // Source: tests/standalone/input_files/native_script.py > ALL_script
     {
         .name = "ALL_script",
         .root_script = (const native_script_t*)&SCRIPT_TC2_ALL_SCRIPT_C0,
@@ -1039,6 +1057,7 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC2_ALL_SCRIPT,
         .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC2_ALL_SCRIPT),
     },
+    // Source: tests/standalone/input_files/native_script.py > ALL_script_no_subscripts
     {
         .name = "ALL_script_no_subscripts",
         .root_script = (const native_script_t*)&SCRIPT_TC3_ALL_SCRIPT_NO_SUBSCRIPTS_C0,
@@ -1047,6 +1066,7 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC3_ALL_SCRIPT_NO_SUBSCRIPTS,
         .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC3_ALL_SCRIPT_NO_SUBSCRIPTS),
     },
+    // Source: tests/standalone/input_files/native_script.py > ANY_script
     {
         .name = "ANY_script",
         .root_script = (const native_script_t*)&SCRIPT_TC4_ANY_SCRIPT_C0,
@@ -1055,6 +1075,7 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC4_ANY_SCRIPT,
         .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC4_ANY_SCRIPT),
     },
+    // Source: tests/standalone/input_files/native_script.py > ANY_script_no_subscripts
     {
         .name = "ANY_script_no_subscripts",
         .root_script = (const native_script_t*)&SCRIPT_TC5_ANY_SCRIPT_NO_SUBSCRIPTS_C0,
@@ -1063,6 +1084,7 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC5_ANY_SCRIPT_NO_SUBSCRIPTS,
         .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC5_ANY_SCRIPT_NO_SUBSCRIPTS),
     },
+    // Source: tests/standalone/input_files/native_script.py > N_OF_K_script
     {
         .name = "N_OF_K_script",
         .root_script = (const native_script_t*)&SCRIPT_TC6_N_OF_K_SCRIPT_C0,
@@ -1071,6 +1093,7 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC6_N_OF_K_SCRIPT,
         .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC6_N_OF_K_SCRIPT),
     },
+    // Source: tests/standalone/input_files/native_script.py > N_OF_K_script_no_subscripts
     {
         .name = "N_OF_K_script_no_subscripts",
         .root_script = (const native_script_t*)&SCRIPT_TC7_N_OF_K_SCRIPT_NO_SUBSCRIPTS_C0,
@@ -1079,6 +1102,7 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC7_N_OF_K_SCRIPT_NO_SUBSCRIPTS,
         .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC7_N_OF_K_SCRIPT_NO_SUBSCRIPTS),
     },
+    // Source: tests/standalone/input_files/native_script.py > INVALID_BEFORE_script
     {
         .name = "INVALID_BEFORE_script",
         .root_script = (const native_script_t*)&SCRIPT_TC8_INVALID_BEFORE_SCRIPT_C0,
@@ -1087,6 +1111,7 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC8_INVALID_BEFORE_SCRIPT,
         .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC8_INVALID_BEFORE_SCRIPT),
     },
+    // Source: tests/standalone/input_files/native_script.py > INVALID_BEFORE_script_slot_is_a_big_number
     {
         .name = "INVALID_BEFORE_script_slot_is_a_big_number",
         .root_script = (const native_script_t*)&SCRIPT_TC9_INVALID_BEFORE_SCRIPT_SLOT_IS_A_BIG_NUMBER_C0,
@@ -1095,6 +1120,7 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC9_INVALID_BEFORE_SCRIPT_SLOT_IS_A_BIG_NUMBER,
         .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC9_INVALID_BEFORE_SCRIPT_SLOT_IS_A_BIG_NUMBER),
     },
+    // Source: tests/standalone/input_files/native_script.py > INVALID_HEREAFTER_script
     {
         .name = "INVALID_HEREAFTER_script",
         .root_script = (const native_script_t*)&SCRIPT_TC10_INVALID_HEREAFTER_SCRIPT_C0,
@@ -1103,6 +1129,7 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC10_INVALID_HEREAFTER_SCRIPT,
         .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC10_INVALID_HEREAFTER_SCRIPT),
     },
+    // Source: tests/standalone/input_files/native_script.py > INVALID_HEREAFTER_script_slot_is_a_big_number
     {
         .name = "INVALID_HEREAFTER_script_slot_is_a_big_number",
         .root_script = (const native_script_t*)&SCRIPT_TC11_INVALID_HEREAFTER_SCRIPT_SLOT_IS_A_BIG_NUMBER_C0,
@@ -1111,6 +1138,7 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC11_INVALID_HEREAFTER_SCRIPT_SLOT_IS_A_BIG_NUMBER,
         .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC11_INVALID_HEREAFTER_SCRIPT_SLOT_IS_A_BIG_NUMBER),
     },
+    // Source: tests/standalone/input_files/native_script.py > Nested_native_scripts
     {
         .name = "Nested_native_scripts",
         .root_script = (const native_script_t*)&SCRIPT_TC12_NESTED_NATIVE_SCRIPTS_C0,
@@ -1119,6 +1147,7 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC12_NESTED_NATIVE_SCRIPTS,
         .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC12_NESTED_NATIVE_SCRIPTS),
     },
+    // Source: tests/standalone/input_files/native_script.py > Nested native scripts #2
     {
         .name = "Nested native scripts #2",
         .root_script = (const native_script_t*)&SCRIPT_TC13_NESTED_NATIVE_SCRIPTS_NUM2_C0,
@@ -1127,6 +1156,7 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_NUM2,
         .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC13_NESTED_NATIVE_SCRIPTS_NUM2),
     },
+    // Source: tests/standalone/input_files/native_script.py > Nested native scripts #3
     {
         .name = "Nested native scripts #3",
         .root_script = (const native_script_t*)&SCRIPT_TC14_NESTED_NATIVE_SCRIPTS_NUM3_C0,

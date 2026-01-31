@@ -242,6 +242,7 @@ def _generate_fixture_code_for_reject_test_case(
     code_lines.append(f"// Reject Test {test_number}: {test_case.name}")
     code_lines.append(f"// Expected rejection: {rejection_reason}")
     code_lines.append(f"// Address Type: {test_case.addrType.name}")
+    code_lines.append(f"// Source: tests/standalone/input_files/derive_address.py > reject tests > {test_case.name}")
     code_lines.append(f"// Spending: {test_case.spendingValue}")
     if test_case.stakingValue:
         code_lines.append(f"// Staking: {test_case.stakingValue}")
@@ -342,7 +343,8 @@ def _build_reject_fixtures_header() -> str:
         # Generate safe C identifier from test name
         rejection_reason = _get_expected_rejection_reason(test_case)
 
-        # Generate C array for complete APDU command
+        # Add source traceability comment
+        header_lines.append(f"// Source: tests/standalone/input_files/derive_address.py > reject tests > {test_case.name}")
         header_lines.append("{")
 
         header_lines.append(f'    .name = "{test_case.name}",')
