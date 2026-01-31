@@ -112,7 +112,7 @@ class CommandSender:
                 additional_witness_paths: Optional[List[str]] = None,
                 options: int = 0,
                 on_review: Optional[Callable[[], None]] = None,
-                on_cvote_review: Optional[Callable[[], None]] = None) -> Tuple[bytes, List[str]]:
+                on_cvote_review: Optional[Callable[[], None]] = None) -> bytes:
         """Sign a transaction and return its hash plus the witness paths used.
 
         This builds the init APDU from the transaction body, sends the raw chunks,
@@ -145,7 +145,7 @@ class CommandSender:
         if response.status != StatusWord.SWO_SUCCESS:
             raise AssertionError(f"Transaction failed: {hex(response.status)}")
 
-        return response.data, witness_paths
+        return response.data
 
     def _send_tx_aux_data_if_present(self, tx: Transaction, on_review: Optional[Callable[[], None]] = None) -> None:
         if tx.auxiliaryData is None:
@@ -340,7 +340,7 @@ class CommandSender:
             yield
 
     @contextmanager
-    def sign_cip36_init(self, testCase: CVoteTestCase) -> Generator[None, None, None]:
+    def sign_cip36_init_async(self, testCase: CVoteTestCase) -> Generator[None, None, None]:
         """APDU CIP36 Vote - INIT step
 
         Args:
@@ -372,7 +372,7 @@ class CommandSender:
 
 
     @contextmanager
-    def sign_cip36_confirm(self, testCase: CVoteTestCase) -> Generator[None, None, None]:
+    def sign_cip36_confirm_async(self, testCase: CVoteTestCase) -> Generator[None, None, None]:
         """APDU CIP36 Vote - CONFIRM step
 
         Args:
@@ -385,3 +385,58 @@ class CommandSender:
         with self._exchange_async(self._cmd_builder.sign_cvote_confirm(testCase)):
             yield
 
+    @contextmanager
+    def sign_msg_init_async(self, testCase) -> Generator[None, None, None]:
+        """APDU Sign Message - INIT step
+
+        Args:
+            testCase: SignMsgTestCase with message data
+
+        Returns:
+            Generator
+        """
+        with self._exchange_async(self._cmd_builder.sign_msg_init(testCase)):
+            yield
+
+    def sign_msg(self,
+                 testCase,
+                 on_review: Optional[Callable[[], None]] = None) -> bytes:
+        """Sign a message, returning the composite response
+
+        Args:
+            testCase: SignMsgTestCase data
+            on_review: Optional callback invoked while waiting for user confirmation
+
+        Returns:
+            Raw response bytes (signature + pubkey + address field)
+        """
+        response = self._exchange(self._cmd_builder.sign_msg_init(testCase))
+        if response.status != StatusWord.SWO_SUCCESS:
+            raise AssertionError(f"Init failed: {hex(response.status)}")
+
+        chunk_apdus = self._cmd_builder.sign_msg_chunks(testCase)
+        for chunk_apdu in chunk_apdus:
+            response = self._exchange(chunk_apdu)
+            if response.status != StatusWord.SWO_SUCCESS:
+                raise AssertionError(f"Chunk failed: {hex(response.status)}")
+
+        with self.sign_msg_confirm_async():
+            if on_review is not None:
+                on_review()
+
+        response = self.get_async_response()
+        if response is None:
+            raise AssertionError("No response from confirm")
+        if response.status != StatusWord.SWO_SUCCESS:
+            raise AssertionError(f"Confirm failed: {hex(response.status)}")
+        return response.data
+
+    @contextmanager
+    def sign_msg_confirm_async(self) -> Generator[None, None, None]:
+        """APDU Sign Message - CONFIRM step
+
+        Returns:
+            Generator
+        """
+        with self._exchange_async(self._cmd_builder.sign_msg_confirm()):
+            yield

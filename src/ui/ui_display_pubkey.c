@@ -50,11 +50,11 @@ static void pubkey_review_choice(bool confirm) {
         ui_menu_main();
     } else {
         if (confirm) {
-            TRACE("Calling nbgl_useCaseStatus(\"Public key\\nexported\", true, ui_menu_main)");
-            nbgl_useCaseStatus("Public key\nexported", true, ui_menu_main);
+            TRACE("Calling nbgl_useCaseStatus(\"Public key exported\", true, ui_menu_main)");
+            nbgl_useCaseStatus("Public key exported", true, ui_menu_main);
         } else {
-            TRACE("Calling nbgl_useCaseStatus(\"Public key\\ndenied\", true, ui_menu_main)");
-            nbgl_useCaseStatus("Public key\ndenied", true, ui_menu_main);
+            TRACE("Calling nbgl_useCaseStatus(\"Public key denied\", true, ui_menu_main)");
+            nbgl_useCaseStatus("Public key denied", true, ui_menu_main);
         }
     }
 }

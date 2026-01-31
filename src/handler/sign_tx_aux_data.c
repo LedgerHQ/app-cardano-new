@@ -203,24 +203,30 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
 
     ui_cvote_aux_data_init_vars(aux_data);
 
-    if (!aux_data->ui_streaming.on) {
-        if (!ui_cvote_aux_data_init_non_streaming(aux_data)) {
-            TRACE("CVote AUX_DATA non-streaming UI init failed");
-            send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-            return;
-        }
+    if (aux_data->ui_streaming.on) {
+        LEDGER_ASSERT(aux_data->remaining_delegations > 0,
+                      "Streaming enabled with zero delegations");
+        aux_data->state = CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE;
+        ui_cvote_aux_data_streaming_show_initial_page(aux_data);
+        return;
+    }
 
-        // Non-streaming with zero delegations: show final review immediately
-        if (aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED) {
-            LEDGER_ASSERT(aux_data->remaining_delegations == 0,
-                          "ALL_DATA_RECEIVED with delegations remaining: %u",
-                          aux_data->remaining_delegations);
+    if (!ui_cvote_aux_data_init_non_streaming(aux_data)) {
+        TRACE("CVote AUX_DATA non-streaming UI init failed");
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return;
+    }
 
-            aux_data->state = CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED;
-            TRACE("CVote AUX_DATA ready for UI confirmation");
-            ui_cvote_aux_data_show_non_streaming_final_review(aux_data);
-            return;
-        }
+    // Non-streaming with zero delegations: show final review immediately
+    if (aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED) {
+        LEDGER_ASSERT(aux_data->remaining_delegations == 0,
+                      "ALL_DATA_RECEIVED with delegations remaining: %u",
+                      aux_data->remaining_delegations);
+
+        aux_data->state = CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED;
+        TRACE("CVote AUX_DATA ready for UI confirmation");
+        ui_cvote_aux_data_show_non_streaming_final_review(aux_data);
+        return;
     }
 
     io_send_sw(SWO_SUCCESS);

@@ -98,7 +98,7 @@ void ui_menu_main(void) {
     // Initialize switches data
     switches[EXPERT_MODE_ID].initState = (nbgl_state_t) N_storage.expert_mode_enabled;
     switches[EXPERT_MODE_ID].text = "Expert mode";
-    switches[EXPERT_MODE_ID].subText = "Show expert details\nin transactions";
+    switches[EXPERT_MODE_ID].subText = "Show expert details in transactions";
     switches[EXPERT_MODE_ID].token = EXPERT_MODE_TOKEN;
 #ifdef HAVE_PIEZO_SOUND
     switches[EXPERT_MODE_ID].tuneId = TUNE_TAP_CASUAL;
@@ -106,7 +106,7 @@ void ui_menu_main(void) {
 
     switches[SILENT_PUBKEY_EXPORT_ID].initState = (nbgl_state_t) N_storage.silent_pubkey_export_enabled;
     switches[SILENT_PUBKEY_EXPORT_ID].text = "Silent public key export";
-    switches[SILENT_PUBKEY_EXPORT_ID].subText = "Allow usual public keys\nto be exported silently";
+    switches[SILENT_PUBKEY_EXPORT_ID].subText = "Allow usual public keys to be exported silently";
     switches[SILENT_PUBKEY_EXPORT_ID].token = SILENT_PUBKEY_EXPORT_TOKEN;
 #ifdef HAVE_PIEZO_SOUND
     switches[SILENT_PUBKEY_EXPORT_ID].tuneId = TUNE_TAP_CASUAL;

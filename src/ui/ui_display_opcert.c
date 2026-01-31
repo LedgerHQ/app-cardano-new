@@ -178,7 +178,7 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
     nbgl_useCaseAdvancedReview(TYPE_OPERATION,
                         g_pairsList,
                         &ICON_APP_CARDANO,
-                        "Sign operational\ncertificate",
+                        "Sign operational certificate",
                         NULL,
                         "Sign certificate",
                         NULL,

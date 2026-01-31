@@ -81,7 +81,7 @@ def _cvote_init(device: Device,
     # else:
     #     moves = [NavInsID.SWIPE_CENTER_TO_LEFT]
 
-    with client.sign_cip36_init(testCase):
+    with client.sign_cip36_init_async(testCase):
         pass
         #navigator.navigate(moves)
 
@@ -113,7 +113,7 @@ def _cvote_confirm(device: Device,
         tuple[bytes, bytes]: (votecast_hash, signature)
     """
 
-    with client.sign_cip36_confirm(testCase):
+    with client.sign_cip36_confirm_async(testCase):
         if device.is_nano:
             # TODO: Add proper navigation for nano devices
             pass
@@ -127,5 +127,4 @@ def _cvote_confirm(device: Device,
     votecast_hash, signature = unpack_sign_cip36_confirm_response(response.data)
 
     return votecast_hash, signature
-
 

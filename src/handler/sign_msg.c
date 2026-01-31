@@ -1,0 +1,554 @@
+/*****************************************************************************
+ *   Ledger App Cardano.
+ *   (c) 2025 Vacuumlabs
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *****************************************************************************/
+
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+
+#include "utils.h"
+#include "buffer.h"
+#include "sign_msg.h"
+#include "cardano_swo.h"
+#include "globals.h"
+#include "addressUtilsShelley.h"
+#include "securityPolicy.h"
+#include "utils/assert.h"
+#include "app_context.h"
+#include "io.h"
+#include "parsers/cardano_parsers.h"
+#include "buffer_write.h"
+#include "messageSigning.h"
+#include "ui_sign_msg.h"
+#include "keyDerivation.h"
+#include "textUtils.h"
+#include "cbor.h"
+#include "nbgl_use_case.h"
+
+static bool ensure_sign_msg_stage(const char *command_name, sign_msg_stage_e required_stage) {
+    if (G_context.state.sign_msg_state != required_stage) {
+        TRACE("Rejecting %s in stage %d (expected %d)",
+              command_name,
+              G_context.state.sign_msg_state,
+              required_stage);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return false;
+    }
+    return true;
+}
+
+// ============================== INIT ==============================
+
+__noinline_due_to_stack__ void signMsg_handle_init(buffer_t *cdata) {
+    LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
+    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STAGE_INIT, "Invalid sign_msg state");
+
+    sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
+
+    // Parse INIT APDU payload:
+    // [4 bytes: msgLength] [BIP44 path] [1 byte: hashPayload] [1 byte: isAscii]
+    // [1 byte: addressFieldType] [addressParams if addressFieldType == ADDRESS]
+
+    if (!buffer_read_u32(cdata, &ctx->msgLength, BE)) {
+        TRACE("Failed to read msgLength");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+    TRACE("Message length = %u", ctx->msgLength);
+
+    if (!buffer_read_bip44_path(cdata, &ctx->signingPath)) {
+        TRACE("Failed to read signing path");
+        send_swo_and_reset(SWO_BIP44_PATH_PARSING_FAIL);
+        return;
+    }
+    TRACE("Signing path:");
+    BIP44_PRINTF(&ctx->signingPath);
+
+    uint8_t hashPayload_byte;
+    if (!buffer_read_u8(cdata, &hashPayload_byte)) {
+        TRACE("Failed to read hashPayload");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+    ctx->hashPayload = (hashPayload_byte != 0);
+    TRACE("Hash payload = %d", ctx->hashPayload);
+
+    uint8_t isAscii_byte;
+    if (!buffer_read_u8(cdata, &isAscii_byte)) {
+        TRACE("Failed to read isAscii");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+    ctx->isAscii = (isAscii_byte != 0);
+    TRACE("Is ASCII = %d", ctx->isAscii);
+
+    uint8_t addressFieldType_byte;
+    if (!buffer_read_u8(cdata, &addressFieldType_byte)) {
+        TRACE("Failed to read addressFieldType");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+    ctx->addressFieldType = (cip8_address_field_type_t) addressFieldType_byte;
+    TRACE("Address field type = %d", ctx->addressFieldType);
+
+    switch (ctx->addressFieldType) {
+        case CIP8_ADDRESS_FIELD_ADDRESS:
+            if (!buffer_parseAddressParams(cdata, &ctx->addressParams)) {
+                TRACE("Failed to parse address params");
+                send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+                return;
+            }
+            break;
+        case CIP8_ADDRESS_FIELD_KEYHASH:
+            // No additional data to parse
+            break;
+        default:
+            TRACE("Invalid address field type");
+            send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+            return;
+    }
+
+    // Verify APDU fully consumed
+    LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");
+
+    // Check security policy
+    security_policy_t policy = policyForSignMsg(&ctx->signingPath,
+                                                 ctx->addressFieldType,
+                                                 &ctx->addressParams);
+    TRACE("Policy: %d", (int) policy);
+    if (policy == POLICY_DENY) {
+        TRACE("Policy denied");
+        send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
+        return;
+    }
+
+    // Initialize hash context (always compute hash even for non-hashed payload)
+    blake2b_224_init(&ctx->msgHashCtx);
+
+    // Derive and store witness public key (needed for response and possibly address field)
+    extendedPublicKey_t extPubKey;
+    deriveExtendedPublicKey(&ctx->signingPath, &extPubKey);
+    STATIC_ASSERT(SIZEOF(extPubKey.pubKey) == SIZEOF(ctx->witnessKey),
+                  "wrong witness key size");
+    memmove(ctx->witnessKey, extPubKey.pubKey, SIZEOF(extPubKey.pubKey));
+
+    // Initialize chunk tracking
+    ctx->remainingBytes = ctx->msgLength;
+    ctx->receivedChunks = 0;
+    ctx->chunkSize = 0;
+
+    // Show spinner to indicate message processing
+    TRACE("Calling nbgl_useCaseSpinner(\"Processing\")");
+    nbgl_useCaseSpinner("Processing");
+
+    // Transition to CHUNK stage
+    G_context.state.sign_msg_state = SIGN_MSG_STAGE_CHUNK;
+
+    io_send_sw(SWO_SUCCESS);
+}
+
+// ============================== CHUNK ==============================
+
+__noinline_due_to_stack__ void signMsg_handle_chunk(buffer_t *cdata) {
+    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STAGE_CHUNK, "Invalid sign_msg state");
+    LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
+
+    sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
+
+    // Parse chunk: [4 bytes: chunkSize] [chunkSize bytes: data]
+    uint32_t chunkSize_u32;
+    if (!buffer_read_u32(cdata, &chunkSize_u32, BE)) {
+        TRACE("Failed to read chunk size");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+    TRACE("Chunk size = %u", chunkSize_u32);
+
+    // Validate chunk size doesn't exceed remaining bytes
+    if (chunkSize_u32 > ctx->remainingBytes) {
+        TRACE("Chunk size exceeds remaining bytes");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+
+    // Enforce chunk size rules (matching old app exactly)
+    ctx->receivedChunks++;
+
+    if (!ctx->hashPayload) {
+        // Non-hashed payload: only single chunk allowed
+        if (ctx->receivedChunks != 1) {
+            TRACE("Non-hashed payload expects single chunk");
+            send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+            return;
+        }
+    }
+
+    if (ctx->receivedChunks == 1) {
+        // First chunk must be displayable with maximum allowed size
+        uint32_t expected_first_chunk_size;
+        if (ctx->isAscii) {
+            expected_first_chunk_size = MIN(ctx->msgLength, MAX_CIP8_MSG_FIRST_CHUNK_ASCII_SIZE);
+        } else {
+            expected_first_chunk_size = MIN(ctx->msgLength, MAX_CIP8_MSG_FIRST_CHUNK_HEX_SIZE);
+        }
+        if (chunkSize_u32 != expected_first_chunk_size) {
+            TRACE("First chunk size mismatch: expected %u, got %u",
+                  expected_first_chunk_size,
+                  chunkSize_u32);
+            send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+            return;
+        }
+    } else {
+        // Subsequent chunks must be maximum allowed size
+        uint32_t expected_chunk_size = MIN(ctx->remainingBytes, MAX_CIP8_MSG_HIDDEN_CHUNK_SIZE);
+        if (chunkSize_u32 != expected_chunk_size) {
+            TRACE("Subsequent chunk size mismatch: expected %u, got %u",
+                  expected_chunk_size,
+                  chunkSize_u32);
+            send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+            return;
+        }
+    }
+
+    // Validate chunk size fits in our buffer
+    if (chunkSize_u32 > SIZEOF(ctx->chunk)) {
+        TRACE("Chunk size too large for buffer");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+
+    // Validate buffer has enough data
+    if (!buffer_can_read(cdata, chunkSize_u32)) {
+        TRACE("Insufficient data in buffer");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+
+    // Read chunk data
+    if (!buffer_read_bytes(cdata, ctx->chunk, chunkSize_u32)) {
+        TRACE("Failed to read chunk data");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+    ctx->chunkSize = chunkSize_u32;
+
+    // Verify APDU fully consumed
+    LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");
+
+    // ASCII validation if needed
+    if (ctx->isAscii) {
+        if (!str_isUnambiguousAscii(ctx->chunk, ctx->chunkSize)) {
+            TRACE("ASCII validation failed");
+            send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+            return;
+        }
+    }
+
+    // Add chunk to hash
+    blake2b_224_append(&ctx->msgHashCtx, ctx->chunk, ctx->chunkSize);
+
+    // Update remaining bytes
+    ctx->remainingBytes -= chunkSize_u32;
+
+    // Transition to CONFIRM if all bytes received
+    if (ctx->remainingBytes == 0) {
+        G_context.state.sign_msg_state = SIGN_MSG_STAGE_CONFIRM;
+    }
+
+    io_send_sw(SWO_SUCCESS);
+}
+
+// ============================== CONFIRM ==============================
+
+// Helper: prepare address field (derive address or compute key hash)
+static void _prepareAddressField(sign_msg_ctx_t *ctx) {
+    switch (ctx->addressFieldType) {
+        case CIP8_ADDRESS_FIELD_ADDRESS: {
+            ctx->addressFieldSize =
+                deriveAddress(&ctx->addressParams, ctx->addressField, SIZEOF(ctx->addressField));
+            LEDGER_ASSERT(ctx->addressFieldSize > 0 && ctx->addressFieldSize <= SIZEOF(ctx->addressField),
+                          "Invalid address size");
+            break;
+        }
+
+        case CIP8_ADDRESS_FIELD_KEYHASH: {
+            STATIC_ASSERT(SIZEOF(ctx->addressField) >= ADDRESS_KEY_HASH_LENGTH,
+                          "wrong address field size");
+            keyPathToKeyHash(&ctx->signingPath, ctx->addressField, ADDRESS_KEY_HASH_LENGTH);
+            ctx->addressFieldSize = ADDRESS_KEY_HASH_LENGTH;
+            break;
+        }
+
+        default:
+            LEDGER_ASSERT(false, "Invalid address field type");
+    }
+}
+
+// Helper: create CBOR-encoded protected header
+__noinline_due_to_stack__ static size_t _createProtectedHeader(sign_msg_ctx_t *ctx,
+                                                                uint8_t *protectedHeaderBuffer,
+                                                                size_t maxSize) {
+    // protectedHeader = {
+    //     1 : -8,                         // set algorithm to EdDSA
+    //     "address" : address_bytes       // raw address or key hash
+    // }
+    uint8_t *p = protectedHeaderBuffer;
+    uint8_t *end = protectedHeaderBuffer + maxSize;
+
+    size_t written;
+
+    // Map with 2 entries
+    if (!cbor_writeToken(CBOR_TYPE_MAP, 2, p, end - p, &written)) {
+        LEDGER_ASSERT(false, "CBOR write failed");
+    }
+    p += written;
+    LEDGER_ASSERT(p < end, "Buffer overflow");
+
+    // Key: 1 (unsigned)
+    if (!cbor_writeToken(CBOR_TYPE_UNSIGNED, 1, p, end - p, &written)) {
+        LEDGER_ASSERT(false, "CBOR write failed");
+    }
+    p += written;
+    LEDGER_ASSERT(p < end, "Buffer overflow");
+
+    // Value: -8 (algorithm EdDSA)
+    // cbor_writeToken expects the actual negative value, not the CBOR-encoded form
+    int64_t negValue = -8;
+    uint64_t negValueAsU64;
+    STATIC_ASSERT(SIZEOF(negValue) == SIZEOF(negValueAsU64), "size mismatch");
+    memmove(&negValueAsU64, &negValue, SIZEOF(negValue));
+    if (!cbor_writeToken(CBOR_TYPE_NEGATIVE, negValueAsU64, p, end - p, &written)) {
+        LEDGER_ASSERT(false, "CBOR write failed");
+    }
+    p += written;
+    LEDGER_ASSERT(p < end, "Buffer overflow");
+
+    // Key: "address" (text string)
+    const char *address_key = "address";
+    const size_t address_key_len = strlen(address_key);
+    if (!cbor_writeToken(CBOR_TYPE_TEXT, address_key_len, p, end - p, &written)) {
+        LEDGER_ASSERT(false, "CBOR write failed");
+    }
+    p += written;
+    LEDGER_ASSERT(p + address_key_len < end, "Buffer overflow");
+    memmove(p, address_key, address_key_len);
+    p += address_key_len;
+
+    // Value: address bytes
+    _prepareAddressField(ctx);
+    LEDGER_ASSERT(ctx->addressFieldSize > 0, "Address field not prepared");
+
+    if (!cbor_writeToken(CBOR_TYPE_BYTES, ctx->addressFieldSize, p, end - p, &written)) {
+        LEDGER_ASSERT(false, "CBOR write failed");
+    }
+    p += written;
+    LEDGER_ASSERT(p + ctx->addressFieldSize < end, "Buffer overflow");
+    memmove(p, ctx->addressField, ctx->addressFieldSize);
+    p += ctx->addressFieldSize;
+
+    const size_t protectedHeaderSize = p - protectedHeaderBuffer;
+    LEDGER_ASSERT(protectedHeaderSize > 0 && protectedHeaderSize < maxSize, "Invalid header size");
+
+    return protectedHeaderSize;
+}
+
+// Helper: build Sig_structure and sign it
+__noinline_due_to_stack__ static void _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
+    // Sig_structure = [
+    //     context : "Signature1",
+    //     body_protected : CBOR_encode(protectedHeader),
+    //     external_aad : bstr,            // empty buffer
+    //     payload : bstr                  // message hash or raw message
+    // ]
+
+    uint8_t sigStructure[400];
+    explicit_bzero(sigStructure, SIZEOF(sigStructure));
+    uint8_t *p = sigStructure;
+    uint8_t *end = sigStructure + SIZEOF(sigStructure);
+    size_t written;
+
+    // Array with 4 elements
+    if (!cbor_writeToken(CBOR_TYPE_ARRAY, 4, p, end - p, &written)) {
+        LEDGER_ASSERT(false, "CBOR write failed");
+    }
+    p += written;
+
+    // Element 1: "Signature1" (text string)
+    const char *context = "Signature1";
+    const size_t context_len = strlen(context);
+    if (!cbor_writeToken(CBOR_TYPE_TEXT, context_len, p, end - p, &written)) {
+        LEDGER_ASSERT(false, "CBOR write failed");
+    }
+    p += written;
+    LEDGER_ASSERT(p + context_len < end, "Buffer overflow");
+    memmove(p, context, context_len);
+    p += context_len;
+
+    // Element 2: CBOR-encoded protectedHeader (as bytes)
+    uint8_t protectedHeaderBuffer[100];
+    const size_t protectedHeaderSize =
+        _createProtectedHeader(ctx, protectedHeaderBuffer, SIZEOF(protectedHeaderBuffer));
+
+    if (!cbor_writeToken(CBOR_TYPE_BYTES, protectedHeaderSize, p, end - p, &written)) {
+        LEDGER_ASSERT(false, "CBOR write failed");
+    }
+    p += written;
+    LEDGER_ASSERT(p + protectedHeaderSize < end, "Buffer overflow");
+    memmove(p, protectedHeaderBuffer, protectedHeaderSize);
+    p += protectedHeaderSize;
+
+    // Element 3: empty external_aad (empty byte string)
+    if (!cbor_writeToken(CBOR_TYPE_BYTES, 0, p, end - p, &written)) {
+        LEDGER_ASSERT(false, "CBOR write failed");
+    }
+    p += written;
+
+    // Element 4: payload (message hash or raw message)
+    // Finalize hash first
+    STATIC_ASSERT(SIZEOF(ctx->msgHash) * 8 == 224, "inconsistent message hash size");
+    blake2b_224_finalize(&ctx->msgHashCtx, ctx->msgHash, SIZEOF(ctx->msgHash));
+
+    if (ctx->hashPayload) {
+        // Payload is the hash
+        if (!cbor_writeToken(CBOR_TYPE_BYTES, SIZEOF(ctx->msgHash), p, end - p, &written)) {
+            LEDGER_ASSERT(false, "CBOR write failed");
+        }
+        p += written;
+        LEDGER_ASSERT(p + SIZEOF(ctx->msgHash) < end, "Buffer overflow");
+        memmove(p, ctx->msgHash, SIZEOF(ctx->msgHash));
+        p += SIZEOF(ctx->msgHash);
+    } else {
+        // Payload is the raw message (stored in chunk from previous APDU)
+        LEDGER_ASSERT(ctx->receivedChunks == 1, "Non-hashed payload must be single chunk");
+        if (!cbor_writeToken(CBOR_TYPE_BYTES, ctx->chunkSize, p, end - p, &written)) {
+            LEDGER_ASSERT(false, "CBOR write failed");
+        }
+        p += written;
+        LEDGER_ASSERT(p + ctx->chunkSize < end, "Buffer overflow");
+        memmove(p, ctx->chunk, ctx->chunkSize);
+        p += ctx->chunkSize;
+    }
+
+    const size_t sigStructureSize = p - sigStructure;
+    TRACE("Sig_structure size = %u", sigStructureSize);
+    TRACE_BUFFER(sigStructure, sigStructureSize);
+
+    // Safety check: Sig_structure must not be exactly TX_HASH_LENGTH (32 bytes)
+    LEDGER_ASSERT(sigStructureSize != TX_HASH_LENGTH,
+                  "Sig_structure size equals TX_HASH_LENGTH");
+
+    // Sign the Sig_structure
+    signRawMessageWithPath(&ctx->signingPath,
+                           sigStructure,
+                           sigStructureSize,
+                           ctx->signature,
+                           SIZEOF(ctx->signature));
+}
+
+__noinline_due_to_stack__ void signMsg_handle_confirm(buffer_t *cdata) {
+    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STAGE_CONFIRM,
+                  "Invalid sign_msg state");
+    LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
+
+    sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
+
+    // CONFIRM APDU must be empty
+    if (buffer_can_read(cdata, 1)) {
+        TRACE("CONFIRM APDU must be empty");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+
+    // Build Sig_structure and sign it
+    _buildAndSignSigStructure(ctx);
+
+    // Display UI for user confirmation
+    ui_display_sign_msg(POLICY_SHOW);
+}
+
+void finalize_sign_msg(bool confirmed) {
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_MSG,
+                  "finalize_sign_msg called without REQUEST_SIGN_MSG");
+    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STAGE_CONFIRM,
+                  "finalize_sign_msg called in wrong state: %d",
+                  G_context.state.sign_msg_state);
+
+    if (!confirmed) {
+        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
+        return;
+    }
+
+    // User confirmed - send response
+    sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
+
+    // Response format (matching old app):
+    // [64 bytes: signature] [32 bytes: witnessKey] [4 bytes: addressFieldSize BE]
+    // [addressFieldSize bytes: addressField]
+    uint8_t response_buffer[ED25519_SIGNATURE_LENGTH + PUBLIC_KEY_LENGTH + 4 + MAX_ADDRESS_LENGTH];
+    write_buffer_t response = buffer_init_write(response_buffer, SIZEOF(response_buffer));
+
+    buffer_write_bytes(&response, ctx->signature, SIZEOF(ctx->signature));
+    buffer_write_bytes(&response, ctx->witnessKey, SIZEOF(ctx->witnessKey));
+    buffer_write_u32(&response, ctx->addressFieldSize, BE);
+    buffer_write_bytes(&response, ctx->addressField, ctx->addressFieldSize);
+
+    const size_t response_size = buffer_written_size(&response);
+    TRACE("Response size = %u", response_size);
+
+    io_send_response_pointer(response_buffer, response_size, SWO_SUCCESS);
+
+    // Reset state
+    G_context.state.sign_msg_state = SIGN_MSG_STAGE_NONE;
+}
+
+// ============================== MAIN HANDLER ==============================
+
+void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
+    if (G_context.req_type != REQUEST_SIGN_MSG) {
+        explicit_bzero(&G_context, sizeof(G_context));
+        G_context.state.sign_msg_state = SIGN_MSG_STAGE_NONE;
+    }
+    G_context.req_type = REQUEST_SIGN_MSG;
+
+    switch (p1) {
+        case P1_SIGN_MSG_INIT: {
+            TRACE("P1_SIGN_MSG_INIT");
+            G_context.state.sign_msg_state = SIGN_MSG_STAGE_INIT;
+            signMsg_handle_init(cdata);
+            break;
+        }
+        case P1_SIGN_MSG_CHUNK: {
+            TRACE("P1_SIGN_MSG_CHUNK");
+            if (!ensure_sign_msg_stage("P1_SIGN_MSG_CHUNK", SIGN_MSG_STAGE_CHUNK)) {
+                return;
+            }
+            signMsg_handle_chunk(cdata);
+            break;
+        }
+        case P1_SIGN_MSG_CONFIRM: {
+            TRACE("P1_SIGN_MSG_CONFIRM");
+            if (!ensure_sign_msg_stage("P1_SIGN_MSG_CONFIRM", SIGN_MSG_STAGE_CONFIRM)) {
+                return;
+            }
+            signMsg_handle_confirm(cdata);
+            break;
+        }
+        default:
+            TRACE("Bad P1 value");
+            LEDGER_ASSERT(false, "P1 should be handled before");
+            break;
+    }
+}

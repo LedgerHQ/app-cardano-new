@@ -39,6 +39,7 @@
 #include "derive_address.h"
 #include "derive_native_script_hash.h"
 #include "cvote.h"
+#include "sign_msg.h"
 
 #ifdef DEBUG
 #include "debug_settings.h"
@@ -64,6 +65,8 @@ static command_e req_type_to_instruction(request_type_e req_type) {
             return INS_DERIVE_NATIVE_SCRIPT_HASH;
         case REQUEST_CVOTE:
             return INS_SIGN_CVOTE;
+        case REQUEST_SIGN_MSG:
+            return INS_SIGN_MSG;
         default:
             LEDGER_ASSERT(false, "Unknown request type");
             return INS_GET_VERSION;  // Unreachable
@@ -215,7 +218,7 @@ void apdu_dispatcher(const command_t *cmd) {
             }
 
             // Transaction processing
-            // P1 controls flow: P1_TX_INIT (0x00), P1_TX_DATA_CHUNK (0x01), P1_TX_CHUNK_LAST (0x02)
+            // P1 controls flow: P1_TX_INIT (0x00), P1_TX_CHUNK (0x01), P1_TX_CONFIRM (0x02)
             // P2 must be unused for transaction body APDUs
             if (cmd->p2 != P2_UNUSED) {
                 send_swo_and_reset(SWO_INCORRECT_P1_P2);
@@ -247,6 +250,25 @@ void apdu_dispatcher(const command_t *cmd) {
                 case P1_CVOTE_CHUNK:
                 case P1_CVOTE_CONFIRM:
                     handler_cvote(&data_buffer, cmd->p1);
+                    return;
+                default:
+                    send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                    return;
+            }
+        }
+
+        case INS_SIGN_MSG: {
+            // P2 must be unused for message signing
+            if (cmd->p2 != P2_UNUSED) {
+                send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                return;
+            }
+            // Validate and dispatch based on P1 value
+            switch (cmd->p1) {
+                case P1_SIGN_MSG_INIT:
+                case P1_SIGN_MSG_CHUNK:
+                case P1_SIGN_MSG_CONFIRM:
+                    handler_sign_msg(&data_buffer, cmd->p1);
                     return;
                 default:
                     send_swo_and_reset(SWO_INCORRECT_P1_P2);

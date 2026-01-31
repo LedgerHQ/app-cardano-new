@@ -145,6 +145,9 @@ add_executable(test_message_signing
     ../src/keyDerivation/keyDerivation.c
     ../src/securityPolicy/securityPolicy_privkey.c
 )
+add_executable(test_sign_msg
+    test_sign_msg.c
+)
 add_executable(test_aux_data_hash_builder
     test_aux_data_hash_builder.c
     ../src/cvote/aux_data_hash_builder.c
@@ -207,6 +210,7 @@ set(TEST_EXECUTABLES
     test_address_utils_shelley
     test_key_derivation
     test_message_signing
+    test_sign_msg
     test_aux_data_hash_builder
     test_tx_hash_builder
     test_tx_prepare
@@ -418,6 +422,7 @@ target_link_libraries(test_address_utils_shelley
 )
 target_link_libraries(test_key_derivation PUBLIC cmocka gcov crypto_mocks_lib bip44_real hex_utils write hash_mocks_lib)
 target_link_libraries(test_message_signing PUBLIC cmocka gcov crypto_mocks_lib bip44_real hash_mocks_lib)
+target_link_libraries(test_sign_msg PUBLIC cmocka gcov cardano_sign_msg_core)
 target_link_libraries(test_aux_data_hash_builder
     PUBLIC
         cmocka
@@ -599,6 +604,7 @@ add_test(test_address_utils_byron test_address_utils_byron)
 add_test(test_address_utils_shelley test_address_utils_shelley)
 add_test(test_key_derivation test_key_derivation)
 add_test(test_message_signing test_message_signing)
+add_test(test_sign_msg test_sign_msg)
 
 add_executable(test_opcert_message test_opcert_message.c test_utils/hexUtils.c)
 target_link_libraries(test_opcert_message PUBLIC cmocka gcov)
@@ -706,6 +712,56 @@ set(PUBKEY_COMMON_LIBS
 )
 add_library(cardano_pubkey_core STATIC ${PUBKEY_COMMON_SOURCES})
 target_link_libraries(cardano_pubkey_core PUBLIC ${PUBKEY_COMMON_LIBS})
+
+set(SIGN_MSG_COMMON_SOURCES
+    mock_sources/mock_globals.c
+    ../src/app_context.c
+    ../src/memory/flist.c
+    ../src/memory/mem.c
+    ../src/handler/sign_msg.c
+    ../src/messageSigning/messageSigning.c
+    ../src/keyDerivation/keyDerivation.c
+    ../src/securityPolicy/securityPolicy.c
+    ../src/securityPolicy/securityPolicy_privkey.c
+    ../src/addressUtils/addressUtilsShelley.c
+    ../src/addressUtils/addressUtilsByron.c
+    ../src/addressUtils/bip44.c
+    ../src/cardano_tokens/cardano_tokens.c
+    ../src/parsers/cardano_parsers.c
+    ../src/utils/buffer_write.c
+    ../src/utils/cbor.c
+    ../src/utils/textUtils.c
+    ../src/ui/ui_utils.c
+    ../src/ui/ui_warnings.c
+    ../src/transaction/tx_utils.c
+    ${UNIT_TEST_MEM_UTILS_STUB}
+    mock_sources/glyphs_mock.c
+    mock_sources/hex_stub.c
+    mock_sources/io_stub.c
+)
+set(SIGN_MSG_COMMON_LIBS
+    text_utils
+    hex_utils
+    base58
+    bech32_lib
+    bip44_real
+    buffer_write_lib
+    cbor_lib
+    blake2b_lib
+    sha3_lib
+    hash_mocks_lib
+    crypto_mocks_lib
+    buffer
+    write
+    read
+    varint
+    bip32
+    cx_crc_support
+    mock_printf
+    parsers_lib
+)
+add_library(cardano_sign_msg_core STATIC ${SIGN_MSG_COMMON_SOURCES})
+target_link_libraries(cardano_sign_msg_core PUBLIC ${SIGN_MSG_COMMON_LIBS})
 
 add_executable(test_pubkey
     test_pubkey.c

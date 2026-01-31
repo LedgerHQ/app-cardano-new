@@ -50,6 +50,9 @@ from fixture_generators.derive_native_script_generators import (
 from fixture_generators.pubkey_generators import (
     generate_pubkey_fixtures,
 )
+from fixture_generators.sign_msg_generators import (
+    generate_sign_msg_fixtures,
+)
 
 # Import reject generators
 from reject_fixture_generators.tx_reject_generators import (
@@ -87,6 +90,9 @@ from test_runner_generators.pubkey_test_runner_generators import (
 )
 from test_runner_generators.pubkey_reject_runner_generators import (
     generate_pubkey_reject_test_runners,
+)
+from test_runner_generators.sign_msg_test_runner_generators import (
+    generate_sign_msg_test_runners,
 )
 
 def _log_stage(message: str) -> None:
@@ -462,6 +468,7 @@ def _verify_ragger_test_coverage() -> None:
         "test_pubkey_rejects.c",
         "test_opcert_message.c",
         "test_message_signing.c",
+        "test_sign_msg.c",
     ]
 
     total_unit_test_funcs = 0
@@ -582,12 +589,14 @@ def run_all() -> None:
     generate_address_derivation_fixtures()
     generate_derive_native_script_fixtures()
     generate_pubkey_fixtures()
+    generate_sign_msg_fixtures()
     _log_stage("Generating test runners")
     generate_tx_test_runners()
     generate_address_derivation_test_runners()
     generate_native_script_test_runners()
     generate_address_derivation_reject_test_runners()
     generate_pubkey_test_runners()
+    generate_sign_msg_test_runners()
     _log_stage("Generating reject fixtures")
     generate_tx_reject_fixtures()
     generate_address_derivation_reject_fixtures()
@@ -625,6 +634,7 @@ def main() -> None:
         generate_address_derivation_fixtures()
         generate_derive_native_script_fixtures()
         generate_pubkey_fixtures()
+        generate_sign_msg_fixtures()
     elif args.command == "generate-test-runners":
         _log_stage("Generating test runners")
         generate_tx_test_runners()
@@ -632,6 +642,7 @@ def main() -> None:
         generate_native_script_test_runners()
         generate_address_derivation_reject_test_runners()
         generate_pubkey_test_runners()
+        generate_sign_msg_test_runners()
         generate_pubkey_reject_fixtures()
         generate_pubkey_reject_test_runners()
     elif args.command == "rejects":

@@ -61,7 +61,21 @@ typedef enum {
     SWO_CVOTE_PARSING_FAIL_VOTE_PLAN_ID = 0x6B51, // failed to read vote plan id
     SWO_CVOTE_PARSING_FAIL_PROPOSAL_INDEX = 0x6B52, // failed to read proposal index
     SWO_CVOTE_PARSING_FAIL_PAYLOAD_TYPE_TAG = 0x6B53, // failed to read payload type tag
-    
+
+    // Message signing (CIP-8) parsing errors (0x6B60-0x6B6F range)
+    SWO_SIGN_MSG_PARSING_FAIL_MSG_LENGTH = 0x6B60,        // failed to parse message length
+    SWO_SIGN_MSG_PARSING_FAIL_SIGNING_PATH = 0x6B61,      // failed to parse signing path
+    SWO_SIGN_MSG_PARSING_FAIL_HASH_PAYLOAD = 0x6B62,      // failed to parse hash payload flag
+    SWO_SIGN_MSG_PARSING_FAIL_IS_ASCII = 0x6B63,          // failed to parse isAscii flag
+    SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_FIELD_TYPE = 0x6B64, // failed to parse address field type
+    SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS = 0x6B65,    // failed to parse address params
+    SWO_SIGN_MSG_PARSING_FAIL_CHUNK_SIZE = 0x6B66,        // failed to parse chunk size
+    SWO_SIGN_MSG_PARSING_FAIL_CHUNK_DATA = 0x6B67,        // failed to parse chunk data
+    SWO_SIGN_MSG_INVALID_CHUNK_SIZE = 0x6B68,             // chunk size validation failed
+    SWO_SIGN_MSG_INVALID_ASCII = 0x6B69,                  // ASCII validation failed
+    SWO_SIGN_MSG_INVALID_ADDRESS_FIELD_TYPE = 0x6B6A,     // invalid address field type
+    SWO_SIGN_MSG_CONFIRM_MUST_BE_EMPTY = 0x6B6B,          // confirm APDU must be empty
+
     // TODO we might want to support non-canonical ordering,
     // TODO but checking for uniqueness is somewhat hard
     // TODO a quadratic algorithm with cbor serialization computed on demand is doable

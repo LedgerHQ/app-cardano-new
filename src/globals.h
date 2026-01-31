@@ -19,6 +19,8 @@
 #include "keyDerivation.h"
 #include "addressUtilsShelley.h"
 #include "cvote/vote_cast_hash_builder.h"
+#include "cip8_types.h"
+#include "hash.h"
 /**
  * State machine for transaction processing.
  * Tracks the progression through receiving, parsing, hashing, UI preparation, and approval.
@@ -67,6 +69,17 @@ typedef enum {
     VOTECAST_STAGE_CHUNK,
     VOTECAST_STAGE_CONFIRM,
 } cvote_stage_e;
+
+/**
+ * State machine for CIP-8 message signing operation.
+ * Tracks the progression through initialization, message chunk reception, and confirmation phases.
+ */
+typedef enum {
+    SIGN_MSG_STAGE_NONE = 0,
+    SIGN_MSG_STAGE_INIT,
+    SIGN_MSG_STAGE_CHUNK,
+    SIGN_MSG_STAGE_CONFIRM,
+} sign_msg_stage_e;
 
 /**
  * Tracks stored account metadata for the single-account security model.
@@ -173,6 +186,39 @@ typedef struct {
     uint8_t witness_signature[ED25519_SIGNATURE_LENGTH];
 } cvote_cxt_t;
 
+// CIP-8 message signing constants
+#define CIP8_MSG_HASH_LENGTH 28
+#define MAX_CIP8_MSG_FIRST_CHUNK_ASCII_SIZE 198
+#define MAX_CIP8_MSG_FIRST_CHUNK_HEX_SIZE   99
+#define MAX_CIP8_MSG_HIDDEN_CHUNK_SIZE      250
+
+/**
+ * Context for CIP-8 message signing.
+ */
+typedef struct {
+    bip44_path_t signingPath;
+    cip8_address_field_type_t addressFieldType;
+    addressParams_t addressParams;
+
+    bool isAscii;
+    bool hashPayload;
+
+    uint32_t msgLength;
+    uint32_t remainingBytes;
+    uint32_t receivedChunks;
+
+    // First chunk stored for display (full if short message, prefix if long)
+    uint8_t chunk[MAX_CIP8_MSG_HIDDEN_CHUNK_SIZE];
+    size_t chunkSize;
+
+    blake2b_224_context_t msgHashCtx;
+    uint8_t msgHash[CIP8_MSG_HASH_LENGTH];
+    uint8_t signature[ED25519_SIGNATURE_LENGTH];
+    uint8_t witnessKey[PUBLIC_KEY_LENGTH];
+    uint8_t addressField[MAX_ADDRESS_LENGTH];
+    size_t addressFieldSize;
+} sign_msg_ctx_t;
+
 /**
  * Global context for user requests.
  */
@@ -182,6 +228,7 @@ typedef struct {
         opcert_state_e opcert_state;
         derive_address_state_e derive_address_state;
         cvote_stage_e cvote_state;
+        sign_msg_stage_e sign_msg_state;
     } state;
 
     union {
@@ -191,6 +238,7 @@ typedef struct {
         derive_address_ctx_t derive_address_info;
         derive_native_script_hash_ctx_t derive_native_script_hash_info;
         cvote_cxt_t cvote_info;
+        sign_msg_ctx_t sign_msg_info;
     };
 
     request_type_e req_type;

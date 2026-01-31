@@ -68,10 +68,41 @@ def unpack_derive_native_script_hash_response(response: bytes) -> bytes:
 
 # Unpack from response:
 # response = signature (64)
-def unpack_sign_message_response(response: bytes) -> bytes:
+#            public_key (32)
+#            address_field_size (4)
+#            address_field (variable, up to 128)
+def unpack_sign_message_response(response: bytes) -> Tuple[bytes, bytes, bytes]:
     SIGNATURE_LENGTH = 64
-    assert len(response) == SIGNATURE_LENGTH
-    return response
+    PUBLIC_KEY_LENGTH = 32
+    ADDRESS_FIELD_SIZE_LENGTH = 4
+    MAX_ADDRESS_FIELD_LENGTH = 128
+
+    # Validate minimum response length
+    min_length = SIGNATURE_LENGTH + PUBLIC_KEY_LENGTH + ADDRESS_FIELD_SIZE_LENGTH
+    assert len(response) >= min_length, f"Response too short: {len(response)} < {min_length}"
+    assert len(response) <= min_length + MAX_ADDRESS_FIELD_LENGTH, \
+        f"Response too long: {len(response)} > {min_length + MAX_ADDRESS_FIELD_LENGTH}"
+
+    # Extract signature
+    offset = 0
+    signature = response[offset:offset + SIGNATURE_LENGTH]
+    assert len(signature) == SIGNATURE_LENGTH
+    offset += SIGNATURE_LENGTH
+
+    # Extract public key
+    public_key = response[offset:offset + PUBLIC_KEY_LENGTH]
+    assert len(public_key) == PUBLIC_KEY_LENGTH
+    offset += PUBLIC_KEY_LENGTH
+
+    # Extract address field size
+    address_field_size = int.from_bytes(response[offset:offset + ADDRESS_FIELD_SIZE_LENGTH], 'big')
+    offset += ADDRESS_FIELD_SIZE_LENGTH
+
+    # Extract address field
+    address_field = response[offset:offset + address_field_size]
+    assert len(address_field) == address_field_size
+
+    return signature, public_key, address_field
 
 # Unpack from response:
 # response = votecast_hash (32) + signature (64)

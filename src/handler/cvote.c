@@ -43,6 +43,11 @@ __noinline_due_to_stack__ void signCVote_handle_init(buffer_t *cdata) {
         send_swo_and_reset(SWO_CVOTE_PARSING_FAIL_REMAINING_VOTECAST_BYTES);
         return;
     }
+    if (ctx->remaining_votecast_bytes == 0) {
+        TRACE("Remaining votecast bytes is zero");
+        send_swo_and_reset(SWO_WRONG_LENGTH);
+        return;
+    }
     TRACE("Remaining votecast bytes = %u", ctx->remaining_votecast_bytes);
 
     // Verify that the rest of the APDU contains exactly the amount of data specified
@@ -154,7 +159,6 @@ __noinline_due_to_stack__ void signCVote_handle_confirm(buffer_t *cdata) {
     }
     TRACE("Witness path:");
     BIP44_PRINTF(&ctx->witness_path);
-    PRINTF("\n");
 
     // Ensure the entire APDU has been consumed
     LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");

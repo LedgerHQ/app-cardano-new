@@ -1,0 +1,222 @@
+/*****************************************************************************
+ *   Ledger App Cardano.
+ *   (c) 2025 Vacuumlabs
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *****************************************************************************/
+
+#include <stdbool.h>
+#include <string.h>
+
+#include "os.h"
+#include "nbgl_use_case.h"
+#include "io.h"
+#include "bip44.h"
+#include "format.h"
+
+#include "ui_constants.h"
+#include "ui_icons.h"
+#include "ui_formatters.h"
+#include "ui_utils.h"
+#include "ui_sign_msg.h"
+#include "globals.h"
+#include "cardano_constants.h"
+#include "cardano_swo.h"
+#include "menu.h"
+#include "securityPolicy.h"
+#include "app_context.h"
+#include "sign_msg.h"
+#include "addressUtilsShelley.h"
+#include "mem.h"
+
+/**
+ * Cleanup dynamically allocated buffers and UI pairs
+ */
+static void sign_msg_buffer_cleanup(void) {
+    ui_cleanup_tracked_allocations();
+    ui_pairs_cleanup();
+}
+
+static void sign_msg_review_choice(bool confirm) {
+    // CLEANUP
+    sign_msg_buffer_cleanup();
+
+    // FINALIZE
+    finalize_sign_msg(confirm);
+
+    // SHOW STATUS
+    if (confirm) {
+        TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_SIGNED, ui_menu_main)");
+        nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_SIGNED, ui_menu_main);
+    } else {
+        TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main)");
+        nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
+    }
+}
+
+void ui_display_sign_msg(security_policy_t securityPolicy) {
+    sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
+
+    TRACE("=== ui_display_sign_msg START ===");
+
+    // Check state
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_MSG,
+                  "ui_display_sign_msg called with wrong request type: %d",
+                  G_context.req_type);
+    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STAGE_CONFIRM,
+                  "ui_display_sign_msg called in wrong state: %d",
+                  G_context.state.sign_msg_state);
+
+    // Check policy
+    TRACE("securityPolicy: %d", securityPolicy);
+    LEDGER_ASSERT(securityPolicy == POLICY_SHOW,
+                  "ui_display_sign_msg called with wrong security policy: %d",
+                  securityPolicy);
+
+    // Initialize pairs for display (6 fields)
+    if (!ui_pairs_init(6)) {
+        TRACE("Failed to initialize pairs");
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return;
+    }
+
+    // Field 1: Payload type (hashed or non-hashed)
+    if (ctx->hashPayload) {
+        UI_ADD_STATIC(UI_STATIC_LABEL("Payload type"), UI_STATIC_LABEL("Hashed"));
+    } else {
+        UI_ADD_STATIC(UI_STATIC_LABEL("Payload type"), UI_STATIC_LABEL("Non-hashed"));
+    }
+
+    // Field 2: Signing path
+    UI_ADD_FORMAT1(UI_STATIC_LABEL("Signing path"),
+                   MAX_BIP44_PATH_STRING_LENGTH,
+                   format_bip44_path,
+                   &ctx->signingPath);
+
+    // Field 3: Address field (address or key hash)
+    switch (ctx->addressFieldType) {
+        case CIP8_ADDRESS_FIELD_ADDRESS: {
+            // Display human-readable address
+            char *addr_str = (char *) ui_mem_alloc(MAX_HUMAN_ADDRESS_LENGTH);
+            if (addr_str == NULL) {
+                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+                return;
+            }
+            format_address_human_readable(ctx->addressField,
+                                          ctx->addressFieldSize,
+                                          addr_str,
+                                          MAX_HUMAN_ADDRESS_LENGTH);
+            UI_ADD_STATIC(UI_STATIC_LABEL("Address field"), addr_str);
+            break;
+        }
+        case CIP8_ADDRESS_FIELD_KEYHASH: {
+            // Display key hash as hex
+            UI_ADD_FORMAT2(UI_STATIC_LABEL("Address field (keyhash)"),
+                           2 * ADDRESS_KEY_HASH_LENGTH + 1,
+                           format_hex_bytes,
+                           ctx->addressField,
+                           ctx->addressFieldSize);
+            break;
+        }
+        default:
+            LEDGER_ASSERT(false, "Invalid address field type");
+            return;
+    }
+
+    // Field 4: Message length
+    char *msg_len_str = (char *) ui_mem_alloc(MAX_UINT64_STRING_LENGTH + 10);
+    if (msg_len_str == NULL) {
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return;
+    }
+    if (!format_uint64(ctx->msgLength, msg_len_str, MAX_UINT64_STRING_LENGTH)) {
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return;
+    }
+    // Append " bytes" suffix
+    size_t len = strlen(msg_len_str);
+    if (len + 7 < MAX_UINT64_STRING_LENGTH + 10) {
+        strcat(msg_len_str, " bytes");
+    }
+    UI_ADD_STATIC(UI_STATIC_LABEL("Message length"), msg_len_str);
+
+    // Field 5: Message preview (ASCII or hex)
+    // Show first chunk (full if short message, prefix if long)
+    if (ctx->msgLength == 0) {
+        // Empty message
+        if (ctx->isAscii) {
+            UI_ADD_STATIC(UI_STATIC_LABEL("Message (ASCII)"), UI_STATIC_LABEL("(empty)"));
+        } else {
+            UI_ADD_STATIC(UI_STATIC_LABEL("Message (hex)"), UI_STATIC_LABEL("(empty)"));
+        }
+    } else if (ctx->remainingBytes == 0 && ctx->receivedChunks == 1) {
+        // Full message displayed (short message)
+        if (ctx->isAscii) {
+            // Display as ASCII text (chunk is already validated as unambiguous ASCII)
+            // Format as string by null-terminating
+            char *msg_str = (char *) ui_mem_alloc(ctx->chunkSize + 1);
+            if (msg_str == NULL) {
+                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+                return;
+            }
+            memmove(msg_str, ctx->chunk, ctx->chunkSize);
+            msg_str[ctx->chunkSize] = '\0';
+            UI_ADD_STATIC(UI_STATIC_LABEL("Message (ASCII)"), msg_str);
+        } else {
+            // Display as hex
+            UI_ADD_FORMAT2(UI_STATIC_LABEL("Message (hex)"),
+                           2 * ctx->chunkSize + 1,
+                           format_hex_bytes,
+                           ctx->chunk,
+                           ctx->chunkSize);
+        }
+    } else {
+        // Partial message (long message with multiple chunks)
+        // Show "starts with..." prefix
+        if (ctx->isAscii) {
+            char *msg_str = (char *) ui_mem_alloc(ctx->chunkSize + 1);
+            if (msg_str == NULL) {
+                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+                return;
+            }
+            memmove(msg_str, ctx->chunk, ctx->chunkSize);
+            msg_str[ctx->chunkSize] = '\0';
+            UI_ADD_STATIC(UI_STATIC_LABEL("Message starts with"), msg_str);
+        } else {
+            UI_ADD_FORMAT2(UI_STATIC_LABEL("Message starts with"),
+                           2 * ctx->chunkSize + 1,
+                           format_hex_bytes,
+                           ctx->chunk,
+                           ctx->chunkSize);
+        }
+    }
+
+    // Field 6: Message hash (always computed)
+    UI_ADD_FORMAT2(UI_STATIC_LABEL("Message hash"),
+                   2 * CIP8_MSG_HASH_LENGTH + 1,
+                   format_hex_bytes,
+                   ctx->msgHash,
+                   SIZEOF(ctx->msgHash));
+
+    // Display review screen
+    TRACE("Calling nbgl_useCaseAdvancedReview(TYPE_OPERATION)");
+    nbgl_useCaseAdvancedReview(TYPE_OPERATION,
+                               g_pairsList,
+                               &ICON_APP_CARDANO,
+                               "Sign message",
+                               "CIP-8",
+                               "Sign message",
+                               NULL,
+                               NULL,  // No warnings for message signing
+                               sign_msg_review_choice);
+}

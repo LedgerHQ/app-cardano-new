@@ -21,6 +21,7 @@ typedef enum {
     INS_SIGN_TX = 0x21,
     INS_SIGN_OPCERT = 0x22,
     INS_SIGN_CVOTE = 0x23,
+    INS_SIGN_MSG = 0x24,  // CIP-8 message signing
 #ifdef DEBUG
     INS_DEBUG_SET_SETTINGS = 0xF0,  // Debug-only command for testing
 #endif
@@ -37,6 +38,7 @@ typedef enum {
     REQUEST_DERIVE_ADDRESS,
     REQUEST_DERIVE_NATIVE_SCRIPT_HASH,
     REQUEST_CVOTE,
+    REQUEST_SIGN_MSG,
 } request_type_e;
 
 /**
@@ -51,8 +53,8 @@ typedef enum {
 
     // Transaction-related P1 values (0x1x range)
     P1_TX_INIT = 0x10,          // Start of transaction data
-    P1_TX_DATA_CHUNK = 0x11,    // More transaction data chunks follow
-    P1_TX_CHUNK_LAST = 0x12,    // Last chunk of transaction data
+    P1_TX_CHUNK = 0x11,         // More transaction data chunks follow
+    P1_TX_CONFIRM = 0x12,       // Last chunk of transaction data / confirmation
     P1_TX_AUX_DATA = 0x13,      // CVote auxiliary data APDU
     P1_TX_SIGN_WITNESS = 0x1F,  // Transaction witness signing (legacy)
 
@@ -72,6 +74,11 @@ typedef enum {
     P1_CVOTE_INIT = 0x50,     // Initialize votecast signing
     P1_CVOTE_CHUNK = 0x51,    // Votecast data chunk
     P1_CVOTE_CONFIRM = 0x52,  // Confirm votecast details
+
+    // Message signing P1 values (0x6x range, CIP-8)
+    P1_SIGN_MSG_INIT = 0x60,     // Initialize message signing
+    P1_SIGN_MSG_CHUNK = 0x61,    // Message data chunk
+    P1_SIGN_MSG_CONFIRM = 0x62,  // Confirm and sign message
 } p1_e;
 
 /**

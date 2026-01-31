@@ -11,6 +11,10 @@ bool ui_cvote_aux_data_init_non_streaming(cvote_aux_data_t *aux_data MARK_UNUSED
     return true;
 }
 
+void ui_cvote_aux_data_streaming_show_initial_page(cvote_aux_data_t *aux_data MARK_UNUSED) {
+    // Stub: no-op
+}
+
 void ui_cvote_aux_data_add_delegation_non_streaming(cvote_aux_data_t *aux_data MARK_UNUSED,
                                                      const cvote_credential_t *credential MARK_UNUSED,
                                                      uint32_t weight MARK_UNUSED) {

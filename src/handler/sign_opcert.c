@@ -63,7 +63,7 @@ void handler_sign_opcert(buffer_t *cdata) {
     TRACE_BUFFER(buf.ptr, buf.size);
 
     opcert_parser_status_e status = parse_opcert(&buf, &G_context.opcert_info.opcert);
-    TRACE("Opcert parsing status: %d\n", status);
+    TRACE("Opcert parsing status: %d", status);
     if (status != PARSING_OK) {
         send_swo_and_reset(opcert_map_parser_status_to_swo(status));
         return;
@@ -82,7 +82,7 @@ void handler_sign_opcert(buffer_t *cdata) {
     warning_bits_t warnings = 0;
     warning_bits_init(&warnings);
     security_policy_t policy = policyForSignOpCert(&opcert->poolColdKeyPath, &warnings);
-    TRACE("Security policy: %d\n", policy);
+    TRACE("Security policy: %d", policy);
     if (policy == POLICY_DENY) {
         TRACE("Security policy DENY - rejecting operation");
         TRACE("Calling nbgl_useCaseStatus(\"Operational certificate denied\", false, ui_menu_main)");

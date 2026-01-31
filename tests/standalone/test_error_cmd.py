@@ -53,21 +53,21 @@ def test_wrong_data_length(backend: BackendInterface) -> None:
 def test_invalid_state(backend: BackendInterface) -> None:
     """Test state machine guards prevent instruction interleaving and invalid sequences."""
 
-    # Test 1: Try to send transaction data chunk (P1_TX_DATA_CHUNK) without initializing (P1_TX_INIT) first
+    # Test 1: Try to send transaction data chunk (P1_TX_CHUNK) without initializing (P1_TX_INIT) first
     # This violates the state machine: can only send chunks when req_type == REQUEST_SIGN_TRANSACTION
     with pytest.raises(ExceptionRAPDU) as e:
         backend.exchange(cla=CLA,
                          ins=InsType.INS_SIGN_TX,
-                         p1=P1Type.P1_TX_DATA_CHUNK,  # Try to continue without init
+                         p1=P1Type.P1_TX_CHUNK,  # Try to continue without init
                          p2=P2Type.P2_UNUSED,
                          data=b"abcde")
     assert e.value.status == StatusWord.SWO_BAD_STATE
 
-    # Test 2: Try to send final chunk (P1_TX_CHUNK_LAST) without initializing first
+    # Test 2: Try to send final chunk (P1_TX_CONFIRM) without initializing first
     with pytest.raises(ExceptionRAPDU) as e:
         backend.exchange(cla=CLA,
                          ins=InsType.INS_SIGN_TX,
-                         p1=P1Type.P1_TX_CHUNK_LAST,
+                         p1=P1Type.P1_TX_CONFIRM,
                          p2=P2Type.P2_UNUSED,
                          data=b"")
     assert e.value.status == StatusWord.SWO_BAD_STATE

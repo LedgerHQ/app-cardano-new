@@ -72,31 +72,16 @@ void ui_display_transaction(void) {
     }
 
     const nbgl_warning_t *warningPtr = ui_get_warnings();
-    if (warningPtr != NULL) {
-        TRACE("Calling nbgl_useCaseAdvancedReview(TYPE_TRANSACTION)");
-        nbgl_useCaseAdvancedReview(TYPE_TRANSACTION,
-                                   g_pairsList,
-                                   &ICON_APP_CARDANO,
-                                   "Review transaction",
-                                   review_subtitle,
-                                   "Sign transaction",
-                                   NULL,
-                                   warningPtr,
-                                   tx_review_choice);
-    } else {
-        TRACE("Calling nbgl_useCaseReview(TYPE_TRANSACTION)");
-        nbgl_useCaseReview(TYPE_TRANSACTION,
-                           g_pairsList,
-                           &ICON_APP_CARDANO,
-                           "Review transaction",
-                           review_subtitle,
-#ifdef SCREEN_SIZE_WALLET
-                           "Sign transaction",
-#else
-                           NULL,
-#endif
-                           tx_review_choice);
-    }
+    TRACE("Calling nbgl_useCaseAdvancedReview(TYPE_TRANSACTION)");
+    nbgl_useCaseAdvancedReview(TYPE_TRANSACTION,
+                               g_pairsList,
+                               &ICON_APP_CARDANO,
+                               "Review transaction",
+                               review_subtitle,
+                               "Sign transaction",
+                               NULL,
+                               warningPtr,
+                               tx_review_choice);
 
     return;
 }

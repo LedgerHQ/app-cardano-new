@@ -23,7 +23,6 @@ from standalone.input_files.signMsg import signMsgTestCases, SignMsgTestCase, Me
 
 from standalone.test_derive_address import DeriveAddressTestCase
 
-from standalone.utils import pop_sized_buf_from_buffer, pop_size_prefixed_buf_from_buf
 from standalone.utils import idTestFunc, get_device_pubkey, verify_signature, derive_address
 
 
@@ -42,151 +41,51 @@ def test_sign_message(device: Device,
     # Use the app interface instead of raw interface
     client = CommandSender(backend)
 
-    # Send the INIT APDU
-    _signMsg_init(firmware, navigator, client, testCase)
-
-    # Send the CHUNK APDUs
-    _signMsg_chunk(firmware, backend, navigator, client, testCase)
-
-    # Send the CONFIRM APDUs
-    signedData = _signMsg_confirm(firmware, navigator, scenario_navigator, client, testCase)
-
-    # Check the response
-    _check_result(testCase, signedData)
-
-
-def _signMsg_init(device: Device,
-                  navigator: Navigator,
-                  client: CommandSender,
-                  testCase: SignMsgTestCase) -> None:
-    """Sign Message INIT
-
-    Args:
-        firmware (Firmware): The firmware version
-        navigator (Navigator): The navigator instance
-        client (CommandSender): The command sender instance
-        testCase (SignMsgTestCase): The test case
-    """
-
-    with client.sign_msg_init(testCase):
+    def review_msg() -> None:
         if device.is_nano:
             if device.is_nanos:
-                moves = [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2
-            else:
-                moves = testCase.nav.init
-            navigator.navigate(moves)
-        else:
-            navigator.navigate([NavInsID.SWIPE_CENTER_TO_LEFT])
-    # Check the status (Asynchronous)
-    response = client.get_async_response()
-    assert response and response.status == StatusWord.SWO_SUCCESS
-
-
-def _signMsg_chunk(device: Device,
-                   backend: BackendInterface,
-                   navigator: Navigator,
-                   client: CommandSender,
-                   testCase: SignMsgTestCase) -> None:
-    """Sign Message CHUNK
-
-    Args:
-        firmware (Firmware): The firmware version
-        navigator (Navigator): The navigator instance
-        client (CommandSender): The command sender instance
-        testCase (SignMsgTestCase): The test case
-    """
-
-    with client.sign_msg_chunk(testCase):
-        if device.is_nano:
-            if device.is_nanos:
-                moves = [NavInsID.BOTH_CLICK]
-                if testCase.msgData.messageHex:
-                    moves += [NavInsID.BOTH_CLICK]
-            else:
-                moves = testCase.nav.chunk
-            navigator.navigate(moves)
-        else:
-            if len(testCase.msgData.messageHex) > 0:
-                backend.wait_for_text_not_on_screen("Processing")
-            navigator.navigate([NavInsID.TAPPABLE_CENTER_TAP],
-                               screen_change_before_first_instruction=False,
-                               screen_change_after_last_instruction=False)
-    # Check the status (Asynchronous)
-    response = client.get_async_response()
-    assert response and response.status == StatusWord.SWO_SUCCESS
-
-
-def _signMsg_confirm(device: Device,
-                     navigator: Navigator,
-                     scenario_navigator: NavigateWithScenario,
-                     client: CommandSender,
-                     testCase: SignMsgTestCase) -> bytes:
-    """Sign Message CONFIRM
-
-    Args:
-        firmware (Firmware): The firmware version
-        navigator (Navigator): The navigator instance
-        client (CommandSender): The command sender instance
-        testCase (SignMsgTestCase): The test case
-
-    Return:
-        Signed data
-    """
-
-    with client.sign_msg_confirm():
-        if device.is_nano:
-            if device.is_nanos:
-                moves = [NavInsID.BOTH_CLICK] + [NavInsID.RIGHT_CLICK]
+                moves = [NavInsID.BOTH_CLICK, NavInsID.RIGHT_CLICK]
             else:
                 moves = testCase.nav.confirm
             navigator.navigate(moves)
         else:
-            scenario_navigator.address_review_approve(do_comparison=False)
-    # Check the status (Asynchronous)
-    response = client.get_async_response()
-    assert response and response.status == StatusWord.SWO_SUCCESS
-    # Note: response contains signature (64) + pubkey (32) + address field (var)
-    # We don't use unpack_sign_message_response here since response is composite
-    return response.data
+            scenario_navigator.review_approve(test_name=testCase.name)
+
+    signedData = client.sign_msg(testCase, on_review=review_msg)
+
+    # Unpack the response
+    signature, public_key, address_field = unpack_sign_message_response(signedData)
+
+    # Check the response
+    _check_result(testCase, signature, public_key, address_field)
 
 
-def _check_result(testCase: SignMsgTestCase, buffer: bytes) -> None:
-    """Check the response, containing
-    - ED25519 signature (64 bytes)
-    - Public key (32 bytes)
-    - Address field size (4 bytes)
-    - Address field (Up to 128 bytes)
+def _check_result(testCase: SignMsgTestCase, signature: bytes, public_key: bytes, address_field: bytes) -> None:
+    """Check the unpacked response values
+
+    Args:
+        testCase: The test case
+        signature: ED25519 signature (64 bytes)
+        public_key: Device public key (32 bytes)
+        address_field: Address field (up to 128 bytes)
     """
 
-    ED25519_SIGNATURE_LENGTH = 64
-    PUBLIC_KEY_LENGTH = 32
-    MAX_ADDRESS_LENGTH = 128
-    # Check the response length
-    assert len(buffer) <= ED25519_SIGNATURE_LENGTH + PUBLIC_KEY_LENGTH + 4 + MAX_ADDRESS_LENGTH
-    # Get the signature (validate it's 64 bytes)
-    buffer, signature = pop_sized_buf_from_buffer(buffer, ED25519_SIGNATURE_LENGTH)
-    assert len(signature) == ED25519_SIGNATURE_LENGTH  # Validate signature format
-    # Get the public key
-    buffer, signingPublicKey = pop_sized_buf_from_buffer(buffer, PUBLIC_KEY_LENGTH)
-    # Get the address field
-    buffer, _, addressField = pop_size_prefixed_buf_from_buf(buffer, 4)
-
     # Check the public key
-    pk, _ = get_device_pubkey(testCase.msgData.signingPath)
-    assert signingPublicKey == pk
+    expected_pk, _ = get_device_pubkey(testCase.msgData.signingPath)
+    assert public_key == expected_pk
 
     # Check the address field
     if testCase.msgData.addressFieldType == MessageAddressFieldType.ADDRESS:
-        assert addressField == derive_address(testCase.msgData.addressDesc)
+        assert address_field == derive_address(testCase.msgData.addressDesc)
     else:
         address = derive_address(DeriveAddressTestCase("",
                                                        Mainnet,
                                                        AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
                                                        testCase.msgData.signingPath))
-        assert addressField == address[1:]
+        assert address_field == address[1:]
 
     # Check the signature
-    payload = _generate_payload(testCase, addressField)
+    payload = _generate_payload(testCase, address_field)
     verify_signature(testCase.msgData.signingPath, signature, payload)
 
 

@@ -474,7 +474,7 @@ void addStakingInfoUIPairs(const addressParams_t* addressParams) {
         case NO_STAKING: {
             switch (addressParams->type) {
                 case BYRON:
-                    UI_ADD_STATIC(UI_STATIC_LABEL("Warning:"), UI_STATIC_LABEL("Legacy Byron address\n(no staking rewards)"));
+                    UI_ADD_STATIC(UI_STATIC_LABEL("Warning:"), UI_STATIC_LABEL("Legacy Byron address (no staking rewards)"));
                     break;
 
                 case ENTERPRISE_KEY:

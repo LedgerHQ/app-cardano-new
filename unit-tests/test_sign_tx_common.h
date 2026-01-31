@@ -92,7 +92,7 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
         .size = raw_tx_len,
         .offset = 0,
     };
-    handler_sign_tx(&tx_buf, P1_TX_CHUNK_LAST);
+    handler_sign_tx(&tx_buf, P1_TX_CONFIRM);
 
     uint8_t expected_cbor[100 * 1024];
     size_t cbor_len = hex_to_bytes(cbor_hex, expected_cbor, sizeof(expected_cbor));

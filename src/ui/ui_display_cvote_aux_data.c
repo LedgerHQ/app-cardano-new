@@ -40,12 +40,7 @@
 #include "ui_warnings.h"
 #include "utils.h"
 
-// CVote delegation chunk size: Each delegation uses 3 UI pairs (index, key, weight).
-// NBGL has a limit of ~250 pairs per review. 60 delegations * 3 pairs = 180 pairs,
-// leaving room for initial fields (registration count, keys, destination, nonce, voting purpose)
-// and the final aux data hash. This is sufficient for common use cases while staying
-// well within the NBGL limit and maintaining good UI usability.
-#define CVOTE_DELEGATION_CHUNK_SIZE 60
+// Each delegation uses 3 UI pairs (index, key, weight).
 #define CVOTE_DELEGATION_UI_PAIRS 3
 #define CVOTE_REGISTRATIONS_UI_PAIRS 1
 #define CVOTE_VOTE_KEY_UI_PAIRS 1
@@ -57,10 +52,10 @@
 
 static const char cvote_review_title[] = "Review vote delegation";
 
-// Helper to check if this is the last chunk in streaming mode
+// Helper to check if this is the last streaming page
 static inline bool cvote_is_last_chunk(const cvote_aux_data_t *aux_data) {
     uint16_t remaining = aux_data->ui_delegations_total - aux_data->ui_delegations_shown;
-    return (remaining == aux_data->ui_streaming.chunk_total);
+    return (remaining == 0);
 }
 
 static void cvote_aux_data_review_cleanup(void) {
@@ -127,11 +122,15 @@ static void cvote_aux_data_review_streaming_continue(bool confirm) {
 
         // TODO: nbgl_useCaseReviewStreamingFinish does not support passing warnings
         // NBGL API limitation: streaming finish only takes title and callback, no warning parameter
-        // Warnings are built but cannot be displayed in streaming mode (>60 delegations)
-        // This affects rare cases with many delegations and warnings (e.g., unusual payment destination)
+        // Warnings are built but cannot be displayed in streaming mode
+        // This affects cases where streaming is used and warnings exist (e.g., unusual payment destination)
         nbgl_useCaseReviewStreamingFinish("Confirm vote delegation",
                                           cvote_aux_data_review_choice);
         return;
+    }
+
+    if (aux_data->state == CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE) {
+        aux_data->state = CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS;
     }
 
     io_send_sw(SWO_SUCCESS);
@@ -226,11 +225,6 @@ static bool cvote_add_initial_pairs(cvote_aux_data_t *aux_data) {
     LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
 
     START_COUNT();
-    UI_ADD_FORMAT1(UI_STATIC_LABEL("Delegations"),
-                   MAX_UINT16_STRING_LENGTH,
-                   format_uint16,
-                   aux_data->ui_delegations_total);
-
     if (aux_data->ui_show.vote_key) {
         cvote_add_vote_key_pair(UI_STATIC_LABEL("Vote key"), &aux_data->vote_credential);
     }
@@ -263,6 +257,11 @@ static bool cvote_add_initial_pairs(cvote_aux_data_t *aux_data) {
                        format_uint64,
                        aux_data->voting_purpose);
     }
+
+    UI_ADD_FORMAT1(UI_STATIC_LABEL("Delegations"),
+                   MAX_UINT16_STRING_LENGTH,
+                   format_uint16,
+                   aux_data->ui_delegations_total);
 
     CHECK_COUNT(cvote_initial_pairs_count(aux_data));
     return (ui_get_error_status() == UI_STATUS_SUCCESS);
@@ -314,42 +313,17 @@ static bool cvote_add_delegation_pairs(cvote_aux_data_t *aux_data,
     return (ui_get_error_status() == UI_STATUS_SUCCESS);
 }
 
-static bool cvote_init_pairs_for_streaming_chunk(cvote_aux_data_t *aux_data) {
+static bool cvote_init_pairs_for_streaming_page(cvote_aux_data_t *aux_data) {
     LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
+    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS,
+                  "Streaming delegation page in wrong state: %d",
+                  aux_data->state);
 
-    uint16_t remaining_delegations = aux_data->ui_delegations_total - aux_data->ui_delegations_shown;
-    uint16_t chunk_delegations = remaining_delegations > CVOTE_DELEGATION_CHUNK_SIZE
-                                     ? CVOTE_DELEGATION_CHUNK_SIZE
-                                     : remaining_delegations;
+    uint16_t pair_count = CVOTE_DELEGATION_UI_PAIRS;
 
-    // First chunk includes initial pairs (registration count, keys, etc.), subsequent chunks don't
-    uint16_t initial_pairs = (aux_data->ui_delegations_shown > 0) ? 0 : cvote_initial_pairs_count(aux_data);
-
-    // Calculate how many delegations fit in the remaining pair budget
-    // This should always be > 0 with correct constants:
-    // MAX_UI_PAIRS (250) - max_initial_pairs (~7) = ~243
-    // 243 / CVOTE_DELEGATION_UI_PAIRS (3) = ~81 delegations minimum
-    LEDGER_ASSERT(MAX_UI_PAIRS > initial_pairs,
-                  "UI pair budget too small: MAX_UI_PAIRS=%u, initial=%u",
-                  MAX_UI_PAIRS, initial_pairs);
-    uint16_t max_delegations_for_pairs =
-        (MAX_UI_PAIRS - initial_pairs) / CVOTE_DELEGATION_UI_PAIRS;
-    LEDGER_ASSERT(max_delegations_for_pairs > 0,
-                  "No space for delegations: MAX_UI_PAIRS=%u, initial=%u, delegation_pairs=%u",
-                  MAX_UI_PAIRS, initial_pairs, CVOTE_DELEGATION_UI_PAIRS);
-    if (chunk_delegations > max_delegations_for_pairs) {
-        chunk_delegations = max_delegations_for_pairs;
-    }
-
-    aux_data->ui_streaming.chunk_total = chunk_delegations;
-
-    uint16_t pair_count = initial_pairs + (chunk_delegations * CVOTE_DELEGATION_UI_PAIRS);
-
-    TRACE("CVote chunk: delegations=%u/%u (target=%u), initial_pairs=%u, total_pairs=%u, max_pairs=%u, is_last=%d",
+    TRACE("CVote streaming page: shown=%u/%u, total_pairs=%u, max_pairs=%u, is_last=%d",
           aux_data->ui_delegations_shown,
           aux_data->ui_delegations_total,
-          chunk_delegations,
-          initial_pairs,
           pair_count,
           MAX_UI_PAIRS,
           cvote_is_last_chunk(aux_data));
@@ -358,14 +332,6 @@ static bool cvote_init_pairs_for_streaming_chunk(cvote_aux_data_t *aux_data) {
     if (!ui_pairs_init(pair_count)) {
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return false;
-    }
-
-    // First chunk: add initial pairs (registration count, keys, destination, etc.)
-    if (aux_data->ui_delegations_shown == 0) {
-        if (!cvote_add_initial_pairs(aux_data)) {
-            send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-            return false;
-        }
     }
 
     return true;
@@ -395,7 +361,8 @@ bool ui_cvote_aux_data_init_non_streaming(cvote_aux_data_t *aux_data) {
 void ui_cvote_aux_data_init_vars(cvote_aux_data_t *aux_data) {
     LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
     LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED ||
-                  aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS,
+                  aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS ||
+                  aux_data->state == CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE,
                   "ui_cvote_aux_data_init_vars called in wrong state: %d",
                   aux_data->state);
 
@@ -406,11 +373,47 @@ void ui_cvote_aux_data_init_vars(cvote_aux_data_t *aux_data) {
     // Initialize streaming state (all fields zeroed)
     explicit_bzero(&aux_data->ui_streaming, sizeof(aux_data->ui_streaming));
 
-    // Determine if streaming is forced: >60 delegations OR too many UI pairs
+    // Determine if streaming is forced: too many UI pairs
     uint16_t total_pair_count = cvote_initial_pairs_count(aux_data) +
                                 (aux_data->remaining_delegations * CVOTE_DELEGATION_UI_PAIRS);
-    aux_data->ui_streaming.on = (aux_data->remaining_delegations > CVOTE_DELEGATION_CHUNK_SIZE) ||
-                                (total_pair_count > MAX_UI_PAIRS);
+    aux_data->ui_streaming.on = (total_pair_count > MAX_UI_PAIRS);
+}
+
+void ui_cvote_aux_data_streaming_show_initial_page(cvote_aux_data_t *aux_data) {
+    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
+    LEDGER_ASSERT(aux_data->ui_streaming.on, "Called with streaming disabled");
+    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE,
+                  "Streaming initial page in wrong state: %d",
+                  aux_data->state);
+
+    uint16_t initial_pairs = cvote_initial_pairs_count(aux_data);
+    LEDGER_ASSERT(initial_pairs > 0, "No initial pairs for streaming page");
+
+    TRACE("CVote streaming initial page: initial_pairs=%u, max_pairs=%u",
+          initial_pairs,
+          MAX_UI_PAIRS);
+
+    ui_reset_error_status();
+    if (!ui_pairs_init(initial_pairs)) {
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return;
+    }
+
+    if (!cvote_add_initial_pairs(aux_data)) {
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return;
+    }
+
+    if (!aux_data->ui_streaming.review_started) {
+        nbgl_useCaseReviewStreamingStart(TYPE_OPERATION,
+                                         &ICON_APP_CARDANO,
+                                         cvote_review_title,
+                                         NULL,
+                                         cvote_aux_data_review_streaming_continue);
+        aux_data->ui_streaming.review_started = true;
+    }
+    nbgl_useCaseReviewStreamingContinue(g_pairsList,
+                                        cvote_aux_data_review_streaming_continue);
 }
 
 void ui_cvote_aux_data_add_delegation_non_streaming(cvote_aux_data_t *aux_data,
@@ -440,11 +443,9 @@ bool ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
                   "ui_cvote_aux_data_add_delegation_streaming called in wrong state: %d",
                   aux_data->state);
 
-    // Initialize pairs for new chunk
-    if (aux_data->ui_streaming.chunk_processed == 0) {
-        if (!cvote_init_pairs_for_streaming_chunk(aux_data)) {
-            return true; // Error already sent
-        }
+    // Initialize pairs for this delegation page
+    if (!cvote_init_pairs_for_streaming_page(aux_data)) {
+        return true; // Error already sent
     }
 
     if (!cvote_add_delegation_pairs(aux_data, credential, weight)) {
@@ -454,17 +455,7 @@ bool ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
         return true;
     }
 
-    aux_data->ui_streaming.chunk_processed++;
-
-    // Chunk not yet complete, continue accumulating delegations
-    if (aux_data->ui_streaming.chunk_processed < aux_data->ui_streaming.chunk_total) {
-        return false;
-    }
-
-    // Chunk complete, display it
-    // Streaming UI is initiated lazily when the first chunk of delegations is ready,
-    // not when the first delegation APDU is received. This allows accumulating enough
-    // delegations to fill a chunk before starting the NBGL streaming review session.
+    // Display this delegation immediately.
     if (!aux_data->ui_streaming.review_started) {
         nbgl_useCaseReviewStreamingStart(TYPE_OPERATION,
                                          &ICON_APP_CARDANO,
@@ -476,7 +467,6 @@ bool ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
     nbgl_useCaseReviewStreamingContinue(g_pairsList,
                                         cvote_aux_data_review_streaming_continue);
 
-    aux_data->ui_streaming.chunk_processed = 0;
     return true; // Chunk displayed, waiting for callback
 }
 
@@ -502,27 +492,15 @@ void ui_cvote_aux_data_show_non_streaming_final_review(cvote_aux_data_t *aux_dat
         return;
     }
 
-    // Get warning pointer - if warnings exist, use AdvancedReview, otherwise use normal Review
     const nbgl_warning_t *warningPtr = ui_get_warnings();
-    if (warningPtr != NULL) {
-        TRACE("Calling nbgl_useCaseAdvancedReview for CVote with warnings");
-        nbgl_useCaseAdvancedReview(TYPE_OPERATION,
-                                   g_pairsList,
-                                   &ICON_APP_CARDANO,
-                                   cvote_review_title,
-                                   NULL,
-                                   "Confirm vote delegation",
-                                   NULL,
-                                   warningPtr,
-                                   cvote_aux_data_review_choice);
-    } else {
-        TRACE("Calling nbgl_useCaseReview for CVote");
-        nbgl_useCaseReview(TYPE_OPERATION,
-                           g_pairsList,
-                           &ICON_APP_CARDANO,
-                           cvote_review_title,
-                           NULL,
-                           "Confirm vote delegation",
-                           cvote_aux_data_review_choice);
-    }
+    TRACE("Calling nbgl_useCaseAdvancedReview for CVote");
+    nbgl_useCaseAdvancedReview(TYPE_OPERATION,
+                               g_pairsList,
+                               &ICON_APP_CARDANO,
+                               cvote_review_title,
+                               NULL,
+                               "Confirm vote delegation",
+                               NULL,
+                               warningPtr,
+                               cvote_aux_data_review_choice);
 }

@@ -117,19 +117,30 @@ def extract_apdu_payload(apdu: bytes) -> bytes:
         >>> extract_apdu_payload(apdu)
         b'\\xAA\\xBB\\xCC\\xDD\\xEE'
     """
-    APDU_HEADER_LENGTH = 5
+    MIN_HEADER_LENGTH = 5
 
-    if len(apdu) < APDU_HEADER_LENGTH:
+    if len(apdu) < MIN_HEADER_LENGTH:
         raise ValueError(
             f"APDU command too short: {len(apdu)} bytes "
-            f"(expected at least {APDU_HEADER_LENGTH})"
+            f"(expected at least {MIN_HEADER_LENGTH})"
         )
 
-    # Byte 4 (index 4) contains the payload length (Lc field)
-    payload_length = apdu[4]
+    lc = apdu[4]
+    payload_start = 5
 
-    # Extract payload starting at byte 5 (index 5)
-    payload_bytes = apdu[5 : 5 + payload_length]
+    if lc == 0:
+        if len(apdu) == payload_start:
+            payload_length = 0
+        elif len(apdu) >= payload_start + 2:
+            payload_length = (apdu[payload_start] << 8) | apdu[payload_start + 1]
+            payload_start += 2
+        else:
+            raise ValueError("Extended length header is truncated")
+    else:
+        payload_length = lc
+
+    payload_end = payload_start + payload_length
+    payload_bytes = apdu[payload_start:payload_end]
 
     if len(payload_bytes) != payload_length:
         raise ValueError(

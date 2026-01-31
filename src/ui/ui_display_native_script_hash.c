@@ -140,7 +140,7 @@ static void derive_native_script_hash_review_continue(bool confirm) {
         TRACE("User confirmed");
     } else {
         TRACE("User rejected");
-        nbgl_useCaseStatus("Native script hash\nrejected", false, ui_menu_main);
+        nbgl_useCaseStatus("Native script rejected", false, ui_menu_main);
     }
 }
 
@@ -161,11 +161,11 @@ static void derive_native_script_hash_review_confirmation_output(bool confirm) {
     // SHOW STATUS
     if (confirm) {
         TRACE("User confirmed");
-        nbgl_useCaseStatus("Confirm\n native script hash", true, ui_menu_main);
+        nbgl_useCaseStatus("Confirm native script hash", true, ui_menu_main);
         reset_app_context();
     } else {
         TRACE("User rejected");
-        nbgl_useCaseStatus("Native script hash\nrejected", false, ui_menu_main);
+        nbgl_useCaseStatus("Native script rejected", false, ui_menu_main);
         // send_swo_and_reset already called reset_app_context
         // TODO we should call reset_app_context anyway? compare with other such functions
     }
@@ -191,7 +191,7 @@ static void derive_native_script_hash_review_ask_confirmation(bool confirm) {
                                           derive_native_script_hash_review_confirmation_output);
     } else {
         TRACE("User rejected");
-        nbgl_useCaseStatus("Native script hash\nrejected", false, ui_menu_main);
+        nbgl_useCaseStatus("Native script rejected", false, ui_menu_main);
     }
 }
 

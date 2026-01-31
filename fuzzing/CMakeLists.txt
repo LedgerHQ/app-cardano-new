@@ -62,6 +62,7 @@ set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/handler/get_public_key.c
     ${CARDANO_PATH}/src/handler/get_serial.c
     ${CARDANO_PATH}/src/handler/get_version.c
+    ${CARDANO_PATH}/src/handler/sign_msg.c
     ${CARDANO_PATH}/src/handler/sign_opcert.c
     ${CARDANO_PATH}/src/handler/sign_tx.c
     ${CARDANO_PATH}/src/handler/sign_tx_aux_data.c
@@ -88,6 +89,7 @@ set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/ui/ui_display_pubkey.c
     ${CARDANO_PATH}/src/ui/ui_display_tx.c
     ${CARDANO_PATH}/src/ui/ui_display_witness.c
+    ${CARDANO_PATH}/src/ui/ui_sign_msg.c
     ${CARDANO_PATH}/src/ui/tx_ui_format.c
     ${CARDANO_PATH}/src/ui/tx_ui_helpers.c
     ${CARDANO_PATH}/src/ui/ui_formatters.c

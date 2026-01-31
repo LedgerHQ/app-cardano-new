@@ -434,7 +434,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             handle_tx_init_apdu(cdata);
             return;
 
-        case P1_TX_DATA_CHUNK:
+        case P1_TX_CHUNK:
             if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
                 TRACE("TX data chunk rejected: wrong request type %d", G_context.req_type);
                 send_swo_and_reset(SWO_BAD_STATE);
@@ -445,7 +445,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             handle_tx_data_chunk(cdata, true);
             return;
 
-        case P1_TX_CHUNK_LAST:
+        case P1_TX_CONFIRM:
             if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
                 TRACE("TX final chunk rejected: wrong request type %d", G_context.req_type);
                 send_swo_and_reset(SWO_BAD_STATE);

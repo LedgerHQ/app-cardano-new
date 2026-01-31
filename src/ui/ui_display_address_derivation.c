@@ -130,7 +130,7 @@ static ui_status_t format_address_fields(const addressParams_t *params, warning_
             if (hasWarning) {
                 TRACE("Adding warning banner");
                 UI_ADD_STATIC(UI_STATIC_LABEL("Warning:"),
-                              UI_STATIC_LABEL("Unusual request\nProceed with care"));
+                              UI_STATIC_LABEL("Unusual request, proceed with care"));
             }
 
             addStakingInfoUIPairs(params);
@@ -164,7 +164,7 @@ static ui_status_t format_address_fields(const addressParams_t *params, warning_
             if (hasWarning) {
                 TRACE("Adding warning banner");
                 UI_ADD_STATIC(UI_STATIC_LABEL("Warning:"),
-                              UI_STATIC_LABEL("Unusual request\nProceed with care"));
+                              UI_STATIC_LABEL("Unusual request, proceed with care"));
             }
 
             addPaymentInfoUIPairs(params);

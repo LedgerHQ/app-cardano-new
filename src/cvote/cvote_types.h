@@ -10,6 +10,7 @@
 typedef enum {
     CVOTE_AUX_DATA_STATE_NONE,                  /// No CVote aux data expected
     CVOTE_AUX_DATA_STATE_EXPECTING_INIT,        /// Waiting for P2_AUX_DATA_INIT APDU
+    CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE, /// Waiting for initial streaming page confirmation
     CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS, /// Receiving P2_AUX_DATA_DELEGATION APDUs
     CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED,     /// All delegations received, ready to finalize hash
     CVOTE_AUX_DATA_STATE_FINALIZED,             /// Hash computed, ready for UI

@@ -160,7 +160,7 @@ def _build_reject_fixtures() -> str:
         chunks = [
             ChunkInfo(
                 p1=chunk[2],
-                more=chunk[2] != P1Type.P1_TX_CHUNK_LAST,
+                more=chunk[2] != P1Type.P1_TX_CONFIRM,
                 hex_payload=chunk[5:].hex().upper(),
             )
             for chunk in builder.serialize_transaction_chunks(tx)
@@ -199,8 +199,8 @@ def _build_reject_fixtures() -> str:
     # Map P1 values to symbolic constants from dispatcher.h
     P1_CONSTANTS = {
         0x10: "P1_TX_INIT",
-        0x11: "P1_TX_DATA_CHUNK",
-        0x12: "P1_TX_CHUNK_LAST",
+        0x11: "P1_TX_CHUNK",
+        0x12: "P1_TX_CONFIRM",
         0x13: "P1_TX_AUX_DATA",
         0x1F: "P1_TX_SIGN_WITNESS",
     }

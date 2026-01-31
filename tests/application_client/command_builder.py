@@ -75,6 +75,9 @@ SETTINGS_DISABLED: int = 0x00
 SETTINGS_ENABLED: int = 0x01
 MAX_UINT8: int = 0xFF
 MAX_UINT16: int = 0xFFFF
+MAX_CIP8_MSG_FIRST_CHUNK_ASCII_SIZE = 198
+MAX_CIP8_MSG_FIRST_CHUNK_HEX_SIZE = 99
+MAX_CIP8_MSG_HIDDEN_CHUNK_SIZE = 250
 # Mirrors `src/apdu/dispatcher.h::command_e`
 class InsType(IntEnum):
     INS_GET_VERSION = 0x03
@@ -86,6 +89,7 @@ class InsType(IntEnum):
     INS_SIGN_TX = 0x21
     INS_SIGN_OPCERT = 0x22
     INS_SIGN_CVOTE = 0x23
+    INS_SIGN_MSG = 0x24
     INS_DEBUG_SET_SETTINGS = 0xF0  # Debug-only command
 
 # Matches `src/apdu/dispatcher.h::p1_e`
@@ -93,8 +97,8 @@ class P1Type(IntEnum):
     P1_UNUSED = 0x00
     # Transaction-related P1 values (0x1x range)
     P1_TX_INIT = 0x10
-    P1_TX_DATA_CHUNK = 0x11
-    P1_TX_CHUNK_LAST = 0x12
+    P1_TX_CHUNK = 0x11
+    P1_TX_CONFIRM = 0x12
     P1_TX_AUX_DATA = 0x13
     P1_TX_SIGN_WITNESS = 0x1F
     # Address derivation P1 values (0x2x range)
@@ -108,6 +112,10 @@ class P1Type(IntEnum):
     P1_CVOTE_INIT = 0x50
     P1_CVOTE_CHUNK = 0x51
     P1_CVOTE_CONFIRM = 0x52
+    # Message signing P1 values (0x6x range, CIP-8)
+    P1_SIGN_MSG_INIT = 0x60
+    P1_SIGN_MSG_CHUNK = 0x61
+    P1_SIGN_MSG_CONFIRM = 0x62
 # Matches `src/apdu/dispatcher.h::p2_e`
 class P2Type(IntEnum):
     P2_UNUSED = 0x00
@@ -282,7 +290,12 @@ class CommandBuilder:
         header.append(ins)
         header.append(p1)
         header.append(p2)
-        header.append(len(cdata))
+        if len(cdata) < 256:
+            header.append(len(cdata))
+        else:
+            header.append(0)
+            header.append((len(cdata) >> 8) & 0xFF)
+            header.append(len(cdata) & 0xFF)
         return header + cdata
 
     def get_version(self) -> bytes:
@@ -310,7 +323,8 @@ class CommandBuilder:
 
         return bytes(voter_data)
 
-    def derive_address(self, p1: P1Type, test_case: DeriveAddressTestCase) -> bytes:
+    def _serialize_address_params(self, test_case: DeriveAddressTestCase) -> bytes:
+        """Serialize address parameters (shared by derive_address and sign_msg_init)"""
         data = bytes()
         data += test_case.addrType.to_bytes(1, "big")
         if test_case.addrType == AddressType.BYRON:
@@ -346,6 +360,10 @@ class CommandBuilder:
             data += bytes.fromhex(test_case.stakingValue)
         elif staking != StakingDataSourceType.NONE:
             raise NotImplementedError("Not implemented yet")
+        return data
+
+    def derive_address(self, p1: P1Type, test_case: DeriveAddressTestCase) -> bytes:
+        data = self._serialize_address_params(test_case)
         return self._serialize(InsType.INS_DERIVE_ADDRESS, p1, P2Type.P2_UNUSED, data)
 
     def get_pubkey_path(self, path: str) -> bytes:
@@ -613,7 +631,7 @@ class CommandBuilder:
             chunk_data = tx_data[offset:offset + chunk_size]
             offset += chunk_size
             more = offset < len(tx_data)
-            p1 = P1Type.P1_TX_DATA_CHUNK if more else P1Type.P1_TX_CHUNK_LAST
+            p1 = P1Type.P1_TX_CHUNK if more else P1Type.P1_TX_CONFIRM
             chunk_apdu = self._serialize(InsType.INS_SIGN_TX, p1, P2Type.P2_UNUSED, chunk_data)
             chunks.append(chunk_apdu)
         return chunks
@@ -769,38 +787,7 @@ class CommandBuilder:
             return bytes(destination_data)
 
         address_params = tx_output_destination.params
-        destination_data.append(address_params.addrType)
-        if address_params.addrType == AddressType.BYRON:
-            destination_data.extend(address_params.netDesc.protocol.to_bytes(4, "big"))
-        else:
-            destination_data.append(tx.network.networkId)
-        if address_params.spendingValue.startswith("m/"):
-            destination_data.extend(pack_derivation_path(address_params.spendingValue))
-        else:
-            destination_data.extend(bytes.fromhex(address_params.spendingValue))
-
-        if address_params.addrType in (AddressType.BYRON, AddressType.ENTERPRISE_KEY,
-                                       AddressType.ENTERPRISE_SCRIPT):
-            staking_choice = StakingDataSourceType.NONE
-        elif address_params.addrType in (AddressType.BASE_PAYMENT_KEY_STAKE_SCRIPT,
-                                         AddressType.BASE_PAYMENT_SCRIPT_STAKE_SCRIPT,
-                                         AddressType.REWARD_SCRIPT):
-            staking_choice = StakingDataSourceType.SCRIPT_HASH
-        elif address_params.addrType in (AddressType.POINTER_KEY, AddressType.POINTER_SCRIPT):
-            staking_choice = StakingDataSourceType.BLOCKCHAIN_POINTER
-        elif address_params.stakingValue.startswith("m/"):
-            staking_choice = StakingDataSourceType.KEY_PATH
-        else:
-            staking_choice = StakingDataSourceType.KEY_HASH
-
-        destination_data.append(staking_choice)
-        if staking_choice == StakingDataSourceType.KEY_PATH:
-            destination_data.extend(pack_derivation_path(address_params.stakingValue))
-        elif staking_choice in (StakingDataSourceType.KEY_HASH, StakingDataSourceType.SCRIPT_HASH):
-            destination_data.extend(bytes.fromhex(address_params.stakingValue))
-        elif staking_choice == StakingDataSourceType.BLOCKCHAIN_POINTER:
-            destination_data.extend(bytes.fromhex(address_params.stakingValue))
-
+        destination_data.extend(self._serialize_address_params(address_params))
         return bytes(destination_data)
 
     def _serialize_cvote_key_or_path(self, key_or_path: str) -> bytes:
@@ -1020,3 +1007,86 @@ class CommandBuilder:
             raise ValueError(f"Unsupported certificate type: {cert_type}")
 
         return bytes(result)
+
+    def sign_msg_init(self, testCase) -> bytes:
+        """APDU Builder for CIP-8 Message Signing - INIT step
+
+        Args:
+            testCase: SignMsgTestCase with message data
+
+        Returns:
+            Serial data APDU
+        """
+        from standalone.input_files.signMsg import MessageAddressFieldType
+
+        data = bytearray()
+
+        # Message length (4 bytes BE)
+        messageBytes = bytes.fromhex(testCase.msgData.messageHex)
+        data.extend(len(messageBytes).to_bytes(4, "big"))
+
+        # Signing path
+        data.extend(pack_derivation_path(testCase.msgData.signingPath))
+
+        # Hash payload flag (1 byte)
+        data.append(1 if testCase.msgData.hashPayload else 0)
+
+        # Is ASCII flag (1 byte)
+        data.append(1 if testCase.msgData.isAscii else 0)
+
+        # Address field type (1 byte)
+        data.append(int(testCase.msgData.addressFieldType))
+
+        # Address params (if type is ADDRESS)
+        if testCase.msgData.addressFieldType == MessageAddressFieldType.ADDRESS:
+            data.extend(self._serialize_address_params(testCase.msgData.addressDesc))
+
+        return self._serialize(InsType.INS_SIGN_MSG, P1Type.P1_SIGN_MSG_INIT, 0x00, bytes(data))
+
+    def build_sign_msg_chunk_payloads(self, testCase) -> list[bytes]:
+        messageBytes = bytes.fromhex(testCase.msgData.messageHex)
+        chunk_sizes: list[int] = []
+        remaining_bytes = len(messageBytes)
+
+        if not testCase.msgData.hashPayload:
+            chunk_sizes.append(remaining_bytes)
+        else:
+            first_chunk_limit = (
+                MAX_CIP8_MSG_FIRST_CHUNK_ASCII_SIZE if testCase.msgData.isAscii
+                else MAX_CIP8_MSG_FIRST_CHUNK_HEX_SIZE
+            )
+            first_chunk_size = min(remaining_bytes, first_chunk_limit)
+            chunk_sizes.append(first_chunk_size)
+            remaining_bytes -= first_chunk_size
+
+            while remaining_bytes > 0:
+                next_chunk = min(remaining_bytes, MAX_CIP8_MSG_HIDDEN_CHUNK_SIZE)
+                chunk_sizes.append(next_chunk)
+                remaining_bytes -= next_chunk
+
+        offset = 0
+        payloads: list[bytes] = []
+        for size in chunk_sizes:
+            chunk_data = messageBytes[offset:offset + size]
+            payloads.append(len(chunk_data).to_bytes(4, "big") + chunk_data)
+            offset += size
+
+        return payloads
+
+    def sign_msg_chunks(self, testCase) -> list[bytes]:
+        """APDU Builder for CIP-8 Message Signing - all CHUNK APDUs"""
+        payloads = self.build_sign_msg_chunk_payloads(testCase)
+        apdus: list[bytes] = []
+        for payload in payloads:
+            apdus.append(
+                self._serialize(InsType.INS_SIGN_MSG, P1Type.P1_SIGN_MSG_CHUNK, 0x00, payload)
+            )
+        return apdus
+
+    def sign_msg_confirm(self) -> bytes:
+        """APDU Builder for CIP-8 Message Signing - CONFIRM step
+
+        Returns:
+            Serial data APDU (empty payload)
+        """
+        return self._serialize(InsType.INS_SIGN_MSG, P1Type.P1_SIGN_MSG_CONFIRM, 0x00, bytes())

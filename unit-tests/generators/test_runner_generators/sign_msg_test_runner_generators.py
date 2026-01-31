@@ -1,0 +1,106 @@
+import re
+from pathlib import Path
+from typing import List
+
+from common import (
+    UNIT_TESTS_DIR,
+    read_file_safe,
+    sanitize_c_identifier,
+    write_file_safe,
+)
+
+
+_FIXTURE_ARRAY_PATTERN = re.compile(
+    r"static\s+const\s+sign_msg_fixture_t\s+SIGN_MSG_FIXTURES\[\]\s*=\s*\{(.*?)\};",
+    re.DOTALL,
+)
+_NAME_PATTERN = re.compile(r'\.name\s*=\s*"([^"]+)"')
+
+
+def _extract_fixture_names(header_content: str) -> List[str]:
+    match = _FIXTURE_ARRAY_PATTERN.search(header_content)
+    if not match:
+        raise ValueError("SIGN_MSG_FIXTURES array not found")
+    body = match.group(1)
+    names = _NAME_PATTERN.findall(body)
+    return names
+
+
+def _build_test_file_header() -> str:
+    return """// Unit tests for message signing (auto-generated)
+
+#include <stdarg.h>
+#include <stddef.h>
+#include <setjmp.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+
+#include <cmocka.h>
+
+#include "test_sign_msg_fixtures.h"
+#include "test_sign_msg_common.h"
+
+// ======================================================================
+// CIP-8 Message Signing Tests (Auto-Generated)
+// ======================================================================
+
+"""
+
+
+def _build_test_functions(names: List[str]) -> tuple[List[str], List[str]]:
+    functions: List[str] = []
+    registrations: List[str] = []
+
+    for index, name in enumerate(names):
+        sanitized = sanitize_c_identifier(name, uppercase=False, handle_leading_digit=True)
+        if not sanitized:
+            sanitized = f"fixture_{index}"
+        test_function_name = f"test_sign_message_{sanitized}_{index}"
+        functions.append(
+            f"static void {test_function_name}(void **state) {{\n"
+            f"    (void) state;\n"
+            f"    run_fixture(&SIGN_MSG_FIXTURES[{index}]);\n"
+            f"}}\n"
+        )
+        registrations.append(test_function_name)
+
+    return functions, registrations
+
+
+def _build_main_function(test_names: List[str]) -> str:
+    registrations = ",\n        ".join(f"cmocka_unit_test({name})" for name in test_names)
+    return (
+        "// ======================================================================\n"
+        "// Main\n"
+        "// ======================================================================\n\n"
+        "int main(void) {\n"
+        "    const struct CMUnitTest tests[] = {\n"
+        f"        {registrations},\n"
+        "    };\n"
+        "    return cmocka_run_group_tests(tests, NULL, NULL);\n"
+        "}\n"
+    )
+
+
+def generate_sign_msg_test_runners() -> None:
+    fixture_header = UNIT_TESTS_DIR / "test_sign_msg_fixtures.h"
+    test_c_file = UNIT_TESTS_DIR / "test_sign_msg.c"
+
+    header_content = read_file_safe(fixture_header)
+    fixture_names = _extract_fixture_names(header_content)
+    if not fixture_names:
+        raise ValueError("No sign message fixtures found")
+
+    test_sections, test_names = _build_test_functions(fixture_names)
+    main_section = _build_main_function(test_names)
+
+    complete_file = (
+        _build_test_file_header()
+        + "\n".join(test_sections)
+        + "\n"
+        + main_section
+    )
+
+    write_file_safe(test_c_file, complete_file)
+    print(f"Generated {test_c_file}")

@@ -69,6 +69,32 @@ typedef struct {
     uint8_t expected_policy;
 } pubkey_fixture_t;
 
+typedef struct {
+    const uint8_t *data;
+    size_t data_len;
+} sign_msg_chunk_t;
+
+typedef struct {
+    const uint8_t *signature;
+    size_t signature_len;
+    const uint8_t *public_key;
+    size_t public_key_len;
+    const uint8_t *address_field;
+    size_t address_field_len;
+} sign_msg_expected_t;
+
+typedef struct {
+    const char *name;
+    const uint8_t *init_data;
+    size_t init_data_len;
+    const sign_msg_chunk_t *chunks;
+    size_t chunk_count;
+    const uint8_t *confirm_data;
+    size_t confirm_data_len;
+    uint16_t check_expected;
+    const sign_msg_expected_t *expected;
+} sign_msg_fixture_t;
+
 
 
 // Native script types (matching CBOR encoding)

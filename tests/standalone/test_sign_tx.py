@@ -5,11 +5,11 @@ import pytest
 from hashlib import blake2b
 from ledgered.devices import Device
 from ragger.backend import BackendInterface
-from ragger.error import ExceptionRAPDU
 from ragger.navigator import Navigator, NavInsID
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
 from application_client.status_words import StatusWord
+from application_client.command_builder import gather_witness_paths
 from application_client.command_sender import CommandSender
 from application_client.response_unpacker import unpack_sign_tx_witness_response
 from standalone.utils import verify_signature, idTestFunc
@@ -94,7 +94,8 @@ def _run_sign_tx_test(device: Device,
             else:
                 scenario_navigator.review_approve(test_name=test_name)
 
-    tx_hash, witness_paths = client.sign_tx(
+    witness_paths = gather_witness_paths(tx, testCase.signingMode, testCase.additionalWitnessPaths or [])
+    tx_hash = client.sign_tx(
         tx=tx,
         signing_mode=testCase.signingMode,
         additional_witness_paths=testCase.additionalWitnessPaths,

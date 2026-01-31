@@ -3240,12 +3240,12 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                             1,
                         )
                     ]
-                    * 150,
+                    * 90,
                 ),
             ),
         ),
         TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582071a59069086e44bc95f32816cf9a281c41e7922a7ec4e0dcbca229a4665833110807",
+        "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582092cc23c0ff5952db0243e891ef08d1360ed9a33c6970156dfe945dd4df284d980807",
         nano_skip=True,
     ),  # TODO needs navigation fix
 ]

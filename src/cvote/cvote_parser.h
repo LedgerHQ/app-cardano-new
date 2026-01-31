@@ -48,16 +48,13 @@ typedef struct {
     uint16_t ui_delegations_shown;           // Delegations displayed so far
 
     // UI streaming state - only populated when ui_streaming.on == true
-    // Streaming is forced when delegation count is too large for single NBGL review
+    // Streaming is forced when there are too many UI pairs for a single review
     // Invariants:
-    // - ui_streaming.on == true IFF (remaining_delegations > CVOTE_DELEGATION_CHUNK_SIZE || too many UI pairs)
-    // - chunk_processed <= chunk_total
+    // - ui_streaming.on == true IFF (too many UI pairs)
     // - NBGL streaming started IFF review_started == true
     struct {
-        bool on;                             // Streaming mode forced (>60 delegations or too many pairs)
+        bool on;                             // Streaming mode forced (too many pairs)
         bool review_started;                 // NBGL streaming review session started
-        uint16_t chunk_processed;            // Delegations processed in current chunk
-        uint16_t chunk_total;                // Total delegations for current chunk
     } ui_streaming;
 
     // State machine for CVote aux data processing
