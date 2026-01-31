@@ -116,9 +116,9 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
 
 void run_recursive_fixture(const native_script_t *script, uint16_t expected_response) {
     if (script == NULL) {
-        TRACE("  NULL script!\n");
+        TRACE("  NULL script!");
     } else {
-        TRACE("Running script type: %d\n", script->type);
+        TRACE("Running script type: %d", script->type);
         switch (script->type) {
             case NATIVE_SCRIPT_TYPE_INVALID_HEREAFTER:
             case NATIVE_SCRIPT_TYPE_INVALID_BEFORE:
@@ -136,7 +136,7 @@ void run_recursive_fixture(const native_script_t *script, uint16_t expected_resp
                 }
             } break;
             case NATIVE_SCRIPT_TYPE_ALL: {
-                TRACE("  ALL\n");
+                TRACE("  ALL");
                 g_last_sw = 0;
 
                 uint8_t apdu_buffer[64] = {0};
@@ -168,7 +168,7 @@ void run_recursive_fixture(const native_script_t *script, uint16_t expected_resp
                 break;
             }
             case NATIVE_SCRIPT_TYPE_ANY: {
-                TRACE("  ANY\n");
+                TRACE("  ANY");
                 g_last_sw = 0;
 
                 uint8_t apdu_buffer[64] = {0};
@@ -201,12 +201,12 @@ void run_recursive_fixture(const native_script_t *script, uint16_t expected_resp
                 break;
             }
             case NATIVE_SCRIPT_TYPE_N_OF_K: {
-                TRACE("  N_OF_K\n");
+                TRACE("  N_OF_K");
                 g_last_sw = 0;
 
                 uint8_t apdu_buffer[64] = {0};
                 size_t apdu_length = 0;
-                TRACE("    scripts_count=%u, required_count=%u\n",
+                TRACE("    scripts_count=%u, required_count=%u",
                       script->impl.complex.params.n_of_k.scripts_count,
                       script->impl.complex.params.n_of_k.required_count);
                 build_complex_script_start_buffer(
@@ -235,7 +235,7 @@ void run_recursive_fixture(const native_script_t *script, uint16_t expected_resp
                 break;
             }
             default:
-                TRACE("  Unknown script type!\n");
+                TRACE("  Unknown script type!");
                 assert_true(false);
         }
     }
@@ -251,11 +251,11 @@ static inline void run_fixture(const native_script_test_case_t *fixture) {
     g_last_sw = 0;
 
     // Check not null
-    TRACE("Running derive address fixture: %s\n", fixture->name);
+    TRACE("Running derive address fixture: %s", fixture->name);
 
     assert_true(fixture->root_script != NULL);
 
-    TRACE("Expected response: 0x%04X\n", fixture->expected_response);
+    TRACE("Expected response: 0x%04X", fixture->expected_response);
     // Send all scripts recursively
     run_recursive_fixture(fixture->root_script, fixture->expected_response);
 
@@ -276,23 +276,31 @@ static inline void run_fixture(const native_script_test_case_t *fixture) {
 }
 
 // Test function that iterates through all rejection fixtures
-static void test_derive_address_rejects(void **state) {
-    (void) state;
-
-    // Iterate through all generated rejection fixtures
-    for (size_t i = 0; i < NATIVE_SCRIPT_FIXTURES_COUNT; i++) {
-        TRACE("+++++++++++++++++++++++Registering test: %d +++++++++++++++++++++++", i);
-        const native_script_test_case_t *fixture = &NATIVE_SCRIPT_FIXTURES[i];
-        run_fixture(fixture);
-    }
+static void test_native_script_fixture(void **state) {
+    const native_script_test_case_t *fixture = *state;
+    TRACE("Starting fixture: %s", fixture->name);
+    run_fixture(fixture);
 }
 
-// Register the test
 int main(void) {
-    TRACE("Starting test_derive_address_rejects");
-    const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_derive_address_rejects),
-    };
+    TRACE("Starting test_native_script_rejects");
 
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    struct CMUnitTest *tests = calloc(NATIVE_SCRIPT_FIXTURES_COUNT, sizeof(*tests));
+    if (tests == NULL) {
+        return 1;
+    }
+
+    for (size_t i = 0; i < NATIVE_SCRIPT_FIXTURES_COUNT; i++) {
+        tests[i].name = NATIVE_SCRIPT_FIXTURES[i].name;
+        tests[i].test_func = test_native_script_fixture;
+        tests[i].initial_state = (void *)&NATIVE_SCRIPT_FIXTURES[i];
+    }
+
+    int result = _cmocka_run_group_tests("native_script_rejects",
+                                         tests,
+                                         NATIVE_SCRIPT_FIXTURES_COUNT,
+                                         NULL,
+                                         NULL);
+    free(tests);
+    return result;
 }
