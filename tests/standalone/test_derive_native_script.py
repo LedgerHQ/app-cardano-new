@@ -17,10 +17,10 @@ from application_client.status_words import StatusWord
 from application_client.command_sender import CommandSender
 from application_client.response_unpacker import unpack_derive_native_script_hash_response
 
-from standalone.input_files.derive_native_script import ValidNativeScriptTestCases, ValidNativeScriptTestCase
-from standalone.input_files.derive_native_script import NativeScript, NativeScriptType
-from standalone.input_files.derive_native_script import NativeScriptParamsPubkey, NativeScriptHashDisplayFormat
-from standalone.input_files.derive_native_script import NativeScriptParamsScripts, NativeScriptParamsNofK
+from standalone.input_files.native_script import ValidNativeScriptTestCases, ValidNativeScriptTestCase
+from standalone.input_files.native_script import NativeScript, NativeScriptType
+from standalone.input_files.native_script import NativeScriptParamsPubkey, NativeScriptHashDisplayFormat
+from standalone.input_files.native_script import NativeScriptParamsScripts, NativeScriptParamsNofK
 
 from standalone.utils import idTestFunc
 

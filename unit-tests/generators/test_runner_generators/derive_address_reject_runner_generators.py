@@ -2,7 +2,7 @@ import re
 from pathlib import Path
 from typing import List
 
-from common import UNIT_TESTS_DIR
+from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe
 
 
 def _sanitize_fixture_name_for_c_function(fixture_name: str) -> str:
@@ -22,7 +22,7 @@ def _extract_reject_fixture_names(header_path: Path) -> List[str]:
     if not header_path.exists():
         raise FileNotFoundError(f"Fixture header not found: {header_path}")
 
-    header_content = header_path.read_text()
+    header_content = read_file_safe(header_path)
     fixture_names = re.findall(r'\.name\s*=\s*"([^"]+)"', header_content)
 
     if not fixture_names:
@@ -160,5 +160,5 @@ def generate_address_derivation_reject_test_runners() -> None:
         + main_section
     )
 
-    test_c_file.write_text(complete_file)
+    write_file_safe(test_c_file, complete_file)
     print(f"Generated {test_c_file}")

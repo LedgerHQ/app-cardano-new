@@ -21,9 +21,9 @@ from application_client.app_def import AddressType, StakingDataSourceType
 from standalone.input_files.signOpCert import OpCertTestCase
 from standalone.input_files.cvote import CVoteTestCase, MAX_CIP36_PAYLOAD_SIZE
 from standalone.input_files.derive_address import DeriveAddressTestCase
-from standalone.input_files.derive_native_script import NativeScript, NativeScriptType, NativeScriptHashDisplayFormat
-from standalone.input_files.derive_native_script import NativeScriptParamsPubkey, NativeScriptParamsInvalid
-from standalone.input_files.derive_native_script import NativeScriptParamsScripts, NativeScriptParamsNofK
+from standalone.input_files.native_script import NativeScript, NativeScriptType, NativeScriptHashDisplayFormat
+from standalone.input_files.native_script import NativeScriptParamsPubkey, NativeScriptParamsInvalid
+from standalone.input_files.native_script import NativeScriptParamsScripts, NativeScriptParamsNofK
 from standalone.input_files.signTx import (
     AnchorParams,
     AuthorizeCommitteeParams,

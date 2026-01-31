@@ -706,20 +706,20 @@ set(DERIVE_NATIVE_SCRIPT_COMMON_LIBS
     mock_printf
     parsers_lib
 )
-add_executable(test_derive_native_script
-    test_derive_native_script.c
+add_executable(test_native_script
+    test_native_script.c
 )
 add_library(cardano_derive_native_script_core STATIC ${DERIVE_NATIVE_SCRIPT_COMMON_SOURCES})
 target_link_libraries(cardano_derive_native_script_core PUBLIC ${DERIVE_NATIVE_SCRIPT_COMMON_LIBS})
-target_link_libraries(test_derive_native_script PUBLIC cmocka gcov cardano_derive_native_script_core)
+target_link_libraries(test_native_script PUBLIC cmocka gcov cardano_derive_native_script_core)
 target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
-add_test(test_derive_native_script test_derive_native_script)
+add_test(test_native_script test_native_script)
 
-add_executable(test_derive_native_script_rejects
-    test_derive_native_script_rejects.c
+add_executable(test_native_script_rejects
+    test_native_script_rejects.c
 )
-target_link_libraries(test_derive_native_script_rejects PUBLIC cmocka gcov cardano_derive_native_script_core)
-add_test(test_derive_native_script_rejects test_derive_native_script_rejects)
+target_link_libraries(test_native_script_rejects PUBLIC cmocka gcov cardano_derive_native_script_core)
+add_test(test_native_script_rejects test_native_script_rejects)
 
 # add_test(test_tokens test_tokens)  # TODO: uncomment when crypto dependencies are mocked
 # add_test(test_tx_parser test_tx_parser)  # TODO: uncomment when created

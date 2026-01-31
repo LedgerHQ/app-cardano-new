@@ -4,6 +4,7 @@ from typing import Any, List, NamedTuple
 from enum import Enum
 
 from common import (
+    write_file_safe,
     _ensure_base58_module,
     _add_tests_to_sys_path,
     REPO_ROOT,
@@ -419,5 +420,5 @@ def generate_address_derivation_fixtures() -> None:
     # Build header file content
     fixtures = _build_fixtures()
     # Write to file
-    FIXTURES_FILE.write_text(fixtures)
+    write_file_safe(FIXTURES_FILE, fixtures)
     print(f"Generated {FIXTURES_FILE}")

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, List
 
 from common import (
+    write_file_safe,
     _ensure_base58_module,
     _add_tests_to_sys_path,
     REPO_ROOT,
@@ -410,5 +411,5 @@ def generate_address_derivation_reject_fixtures() -> None:
     # Build header file content
     header_content = _build_reject_fixtures_header()
     # Write to file
-    GENERATED_REJECT_HEADER.write_text(header_content)
+    write_file_safe(GENERATED_REJECT_HEADER, header_content)
     print(f"Generated {GENERATED_REJECT_HEADER}")

@@ -2,7 +2,7 @@ import re
 from pathlib import Path
 from typing import List
 
-from common import UNIT_TESTS_DIR
+from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe
 
 
 def extract_native_script_fixture_names(header_file_path: Path) -> List[str]:
@@ -18,8 +18,7 @@ def extract_native_script_fixture_names(header_file_path: Path) -> List[str]:
     """
     fixture_names = []
     
-    with open(header_file_path, 'r') as header_file:
-        header_content = header_file.read()
+    header_content = read_file_safe(header_file_path)
     
     # Find the NATIVE_SCRIPT_FIXTURES array definition
     # Pattern matches: .name = "test_name",
@@ -159,7 +158,7 @@ def generate_native_script_test_runners() -> None:
     """
     
     fixture_header_path = UNIT_TESTS_DIR / "test_derive_native_script_fixtures.h"
-    test_c_file = UNIT_TESTS_DIR / "test_derive_native_script.c"
+    test_c_file = UNIT_TESTS_DIR / "test_native_script.c"
 
     if not fixture_header_path.exists():
         raise FileNotFoundError(
@@ -195,7 +194,7 @@ def generate_native_script_test_runners() -> None:
     )
     
     # Write test file
-    test_c_file.write_text(complete_file_content)
+    write_file_safe(test_c_file, complete_file_content)
     
     print(f"Generated {test_c_file}")
     print(f"  - Generated test function names:")

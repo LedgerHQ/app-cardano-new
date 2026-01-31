@@ -8,6 +8,7 @@ from common import (
     _ensure_base58_module,
     _add_tests_to_sys_path,
     UNIT_TESTS_DIR,
+    write_file_safe,
 )
 
 def _format_bytes_as_c_array(data: bytes, name: str, bytes_per_line: int = 16) -> str:
@@ -332,7 +333,7 @@ def _generate_fixtures_for_era(
 
     header_content = "\n".join(header_lines)
     output_file = UNIT_TESTS_DIR / f"test_sign_tx_fixtures_{era_key.lower()}.h"
-    output_file.write_text(header_content)
+    write_file_safe(output_file, header_content)
 
     fixture_count = _count_fixture_structs(header_content)
     if fixture_count != len(tests):

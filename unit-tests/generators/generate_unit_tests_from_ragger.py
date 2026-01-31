@@ -127,7 +127,15 @@ def regenerate_mock_data() -> None:
     input_file = UNIT_TESTS_DIR / "mock_crypto" / "crypto_mock_data.h"
     temp_output_file = UNIT_TESTS_DIR / "mock_crypto" / "crypto_mock_data_regenerated.h"
 
-    content = input_file.read_text()
+    if not input_file.exists():
+        print(f"ERROR: Mock data input file not found: {input_file}")
+        sys.exit(1)
+
+    try:
+        content = input_file.read_text()
+    except Exception as exc:
+        print(f"ERROR: Failed to read mock data input file {input_file}: {exc}")
+        sys.exit(1)
 
     print("Regenerating mock data from standard test mnemonic...")
     print(f"Input:  {input_file}")
@@ -217,8 +225,8 @@ def regenerate_mock_data() -> None:
             ])
             return "\n".join(lines)
         except Exception as exc:
-            print(f"✗ {path_desc}: {exc}")
-            return entry_text
+            print(f"ERROR: Failed to derive key for {path_desc}: {exc}")
+            sys.exit(1)
 
     path_entries = _extract_entries(mock_paths_body)
     if not path_entries:
@@ -335,7 +343,11 @@ def regenerate_mock_data() -> None:
         ])
         return "\n".join(lines)
 
-    regenerated_signatures = [_build_signature_entry(entry) for entry in signature_entries]
+    try:
+        regenerated_signatures = [_build_signature_entry(entry) for entry in signature_entries]
+    except Exception as exc:
+        print(f"ERROR: Failed to regenerate mock signatures: {exc}")
+        sys.exit(1)
     new_signature_body = "\n".join(regenerated_signatures).strip()
     new_content = (
         content[: signature_match.start(2)]
@@ -345,8 +357,17 @@ def regenerate_mock_data() -> None:
         + content[signature_match.end(2) :]
     )
 
-    temp_output_file.write_text(new_content)
-    temp_output_file.replace(input_file)
+    try:
+        temp_output_file.write_text(new_content)
+    except Exception as exc:
+        print(f"ERROR: Failed to write temporary mock data file {temp_output_file}: {exc}")
+        sys.exit(1)
+
+    try:
+        temp_output_file.replace(input_file)
+    except Exception as exc:
+        print(f"ERROR: Failed to replace {input_file} with regenerated content: {exc}")
+        sys.exit(1)
 
     print(f"\n✓ Regenerated mock data written to: {input_file}")
 
@@ -367,26 +388,36 @@ def _verify_ragger_test_coverage() -> None:
             text=True,
             timeout=30,
         )
+        # Check for collection errors (non-zero return code indicates failure)
+        if result.returncode != 0:
+            print(f"ERROR: pytest collection failed with return code {result.returncode}")
+            if result.stderr:
+                print("STDERR output:")
+                print(result.stderr)
+            if result.stdout:
+                print("STDOUT output:")
+                print(result.stdout)
+            sys.exit(1)
         # Parse test names from pytest output (format: test_file.py::test_name[...])
         ragger_tests = [
             line.strip() for line in result.stdout.split("\n")
             if "::" in line and "test_" in line
         ]
     except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
-        print(f"WARNING: Could not collect ragger tests: {exc}")
-        return
+        print(f"ERROR: Could not collect ragger tests: {exc}")
+        sys.exit(1)
 
     if not ragger_tests:
-        print("WARNING: No ragger tests found")
-        return
+        print("ERROR: No ragger tests found - check that test files are present and importable")
+        sys.exit(1)
 
     # Count total test cases (including parameterized variants)
     total_ragger_test_cases = len(ragger_tests)
 
     # Check unit tests for coverage (C test files in UNIT_TESTS_DIR)
     if not UNIT_TESTS_DIR.exists():
-        print(f"WARNING: Unit test directory not found at {UNIT_TESTS_DIR}")
-        return
+        print(f"ERROR: Unit test directory not found at {UNIT_TESTS_DIR}")
+        sys.exit(1)
 
     try:
         result = subprocess.run(
@@ -395,19 +426,27 @@ def _verify_ragger_test_coverage() -> None:
             text=True,
             timeout=10,
         )
+        if result.returncode not in (0, 1):  # 0 = found, 1 = not found, anything else is error
+            print(f"ERROR: grep command failed with return code {result.returncode}")
+            if result.stderr:
+                print(f"STDERR: {result.stderr}")
+            sys.exit(1)
         unit_tests_content = result.stdout
     except subprocess.TimeoutExpired:
-        print("WARNING: grep timeout while checking unit tests")
-        return
+        print("ERROR: grep timeout while checking unit tests (exceeded 10 seconds)")
+        sys.exit(1)
+    except Exception as exc:
+        print(f"ERROR: Failed to search unit test files: {exc}")
+        sys.exit(1)
 
     # Count unit test cases from generated test files only
-    # Generated files: test_sign_tx_*.c, test_derive_address.c, test_derive_native_script.c, etc.
+    # Generated files: test_sign_tx_*.c, test_derive_address.c, test_native_script.c, etc.
     generated_test_patterns = [
         "test_sign_tx_",
         "test_derive_address.c",
-        "test_derive_native_script.c",
+        "test_native_script.c",
         "test_derive_address_rejects.c",
-        "test_derive_native_script_rejects.c",
+        "test_native_script_rejects.c",
         "test_opcert_message.c",
         "test_message_signing.c",
     ]
@@ -420,6 +459,12 @@ def _verify_ragger_test_coverage() -> None:
             text=True,
             timeout=10,
         )
+        if result.returncode != 0:
+            print(f"ERROR: find command failed with return code {result.returncode}")
+            if result.stderr:
+                print(f"STDERR: {result.stderr}")
+            sys.exit(1)
+
         generated_files = []
         for file_path in result.stdout.split("\n"):
             if file_path.strip():
@@ -434,14 +479,24 @@ def _verify_ragger_test_coverage() -> None:
                 text=True,
                 timeout=10,
             )
+            # grep returns 1 if no matches found, which is OK
+            if result.returncode not in (0, 1):
+                print(f"ERROR: grep command failed with return code {result.returncode}")
+                if result.stderr:
+                    print(f"STDERR: {result.stderr}")
+                sys.exit(1)
             total_unit_test_funcs = len([line for line in result.stdout.split("\n") if line.strip()])
-    except (subprocess.TimeoutExpired, subprocess.CalledProcessError):
-        total_unit_test_funcs = 0
+    except subprocess.TimeoutExpired as exc:
+        print(f"ERROR: Command timed out while scanning unit tests: {exc}")
+        sys.exit(1)
+    except Exception as exc:
+        print(f"ERROR: Failed to scan unit test files: {exc}")
+        sys.exit(1)
 
     # Extract unique test function names from ragger tests
     # Format: test_file.py::test_func_name[param] -> extract test_func_name
     # Skip tests that don't need C unit test fixtures
-    skip_test_files = {"test_client_constants.py", "test_app_mainmenu.py", "test_error_cmd.py"}
+    skip_test_files = {"test_client_constants.py", "test_app_mainmenu.py", "test_error_cmd.py", "test_mock_key_derivation.py"}
     skip_test_funcs = {"test_wrong_data_length"}
     ragger_test_funcs = set()
     for test_line in ragger_tests:
@@ -460,10 +515,17 @@ def _verify_ragger_test_coverage() -> None:
     missing_coverage = []
     covered_coverage = []
     for func_name in sorted(ragger_test_funcs):
-        if func_name not in unit_tests_content:
-            missing_coverage.append(func_name)
-        else:
+        # Check if the ragger test function name appears in unit tests
+        # Some functions like test_derive_native_script_hash expand to test_derive_native_script_*
+        # So we check for both exact match and prefix match (with underscore)
+        found = (func_name in unit_tests_content or
+                 f"{func_name}_" in unit_tests_content or
+                 func_name.rstrip("_hash") in unit_tests_content or
+                 func_name.rstrip("_rejects") in unit_tests_content)
+        if found:
             covered_coverage.append(func_name)
+        else:
+            missing_coverage.append(func_name)
 
     print(f"\nRagger test coverage check:")
     print(f"  Ragger: {total_ragger_test_cases} total test cases from {len(ragger_tests)} parameterized variants")

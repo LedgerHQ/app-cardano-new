@@ -7,6 +7,7 @@ import subprocess
 from dataclasses import dataclass
 
 from common import (
+    write_file_safe,
     _ensure_base58_module,
     _add_tests_to_sys_path,
     REPO_ROOT,
@@ -722,5 +723,5 @@ def _build_reject_fixtures() -> str:
 
 def generate_tx_reject_fixtures() -> None:
     header = _build_reject_fixtures()
-    GENERATED_REJECT_HEADER.write_text(header)
+    write_file_safe(GENERATED_REJECT_HEADER, header)
     print(f"Generated {GENERATED_REJECT_HEADER}")

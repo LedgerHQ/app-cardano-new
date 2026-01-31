@@ -13,7 +13,7 @@ from application_client.command_builder import (
     P1Type,
 )
 from standalone.input_files.derive_address import DeriveAddressTestCase
-from standalone.input_files.derive_native_script import NativeScript, NativeScriptHashDisplayFormat
+from standalone.input_files.native_script import NativeScript, NativeScriptHashDisplayFormat
 from application_client.status_words import StatusWord
 from standalone.input_files.signTx import Transaction, TxAuxiliaryDataCIP36, TxAuxiliaryDataType
 from standalone.input_files.cvote import CVoteTestCase

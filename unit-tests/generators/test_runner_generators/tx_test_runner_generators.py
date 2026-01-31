@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Type
 
 from common import (
+    read_file_safe,
+    write_file_safe,
     UNIT_TESTS_DIR,
 )
 
@@ -119,7 +121,7 @@ def _build_main_function(test_names: Sequence[str], test_c_file: str) -> str:
 
 
 def _extract_fixtures_from_header(fixture_path: Path) -> List[Tuple[str, str]]:
-    content = fixture_path.read_text()
+    content = read_file_safe(fixture_path)
     fixtures: List[Tuple[str, str]] = []
     pattern = re.compile(
         r"static const tx_fixture_t (FIXTURE_[A-Z0-9_]+)\s*=\s*\{(.*?)\};", re.S
@@ -144,7 +146,7 @@ def _generate_complete_test_file(
     if not fixture_path.exists():
         raise FileNotFoundError(f"Missing fixture header: {fixture_path}")
 
-    existing = test_path.read_text()
+    existing = read_file_safe(test_path)
 
     era_block_match = re.search(
         r"^// =+\n// ([^\n]+ Era Tests)\n// =+\n", existing, re.MULTILINE
@@ -192,7 +194,7 @@ def _generate_complete_test_file(
         + main_block
     )
 
-    test_path.write_text(complete_file)
+    write_file_safe(test_path, complete_file)
     print(f"Generated {test_c_file}: {len(fixtures)} tests")
 
 

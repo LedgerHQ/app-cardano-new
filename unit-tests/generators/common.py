@@ -8,6 +8,50 @@ REPO_ROOT = UNIT_TESTS_DIR.parent
 NODE_VERSION = "16.20.2"
 
 
+def read_file_safe(file_path: Path) -> str:
+    """Read file with proper error handling. Exits immediately on error."""
+    if not file_path.exists():
+        print(f"ERROR: Input file not found: {file_path}")
+        sys.exit(1)
+
+    try:
+        return file_path.read_text(encoding='utf-8')
+    except PermissionError as exc:
+        print(f"ERROR: Permission denied reading {file_path}: {exc}")
+        sys.exit(1)
+    except UnicodeDecodeError as exc:
+        print(f"ERROR: File encoding error in {file_path}: {exc}")
+        sys.exit(1)
+    except OSError as exc:
+        print(f"ERROR: Failed to read file {file_path}: {exc}")
+        sys.exit(1)
+    except Exception as exc:
+        print(f"ERROR: Unexpected error reading {file_path}: {exc}")
+        sys.exit(1)
+
+
+def write_file_safe(file_path: Path, content: str) -> None:
+    """Write file with proper error handling. Exits immediately on error."""
+    try:
+        # Create parent directories if needed
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+    except Exception as exc:
+        print(f"ERROR: Failed to create directory {file_path.parent}: {exc}")
+        sys.exit(1)
+
+    try:
+        file_path.write_text(content, encoding='utf-8')
+    except PermissionError as exc:
+        print(f"ERROR: Permission denied writing to {file_path}: {exc}")
+        sys.exit(1)
+    except OSError as exc:
+        print(f"ERROR: Failed to write file {file_path}: {exc}")
+        sys.exit(1)
+    except Exception as exc:
+        print(f"ERROR: Unexpected error writing {file_path}: {exc}")
+        sys.exit(1)
+
+
 def _add_tests_to_sys_path() -> None:
     sys.path.insert(0, str(REPO_ROOT / "tests"))
     sys.path.insert(0, str(REPO_ROOT / "tests" / "application_client"))

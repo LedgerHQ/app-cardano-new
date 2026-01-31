@@ -2,7 +2,7 @@ import re
 from pathlib import Path
 from typing import List, NamedTuple, Dict, Sequence
 
-from common import UNIT_TESTS_DIR
+from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe
 
 
 # ======================================================================
@@ -49,10 +49,7 @@ def extract_fixture_array_names_from_header(fixture_header_path: Path) -> List[s
         List of fixture array names in declaration order
         
     """
-    if not fixture_header_path.exists():
-        raise FileNotFoundError(f"Fixture header not found: {fixture_header_path}")
-    
-    header_content = fixture_header_path.read_text()
+    header_content = read_file_safe(fixture_header_path)
     
     # Match: static const derive_address_fixture_t <ARRAY_NAME>[] = {
     # The array name must start with DERIVE_ADDRESS_FIXTURES_
@@ -206,10 +203,7 @@ def extract_all_fixture_array_details(
     Returns:
         List of FixtureArrayDetails objects
     """
-    if not fixture_header_path.exists():
-        raise FileNotFoundError(f"Fixture header not found: {fixture_header_path}")
-    
-    header_content = fixture_header_path.read_text()
+    header_content = read_file_safe(fixture_header_path)
     
     # Get all array names
     array_names = extract_fixture_array_names_from_header(fixture_header_path)
@@ -343,5 +337,5 @@ def generate_address_derivation_test_runners() -> None:
         main_block
     )
 
-    test_c_file.write_text(complete_file)
+    write_file_safe(test_c_file, complete_file)
     print(f"Generated {test_c_file} test")

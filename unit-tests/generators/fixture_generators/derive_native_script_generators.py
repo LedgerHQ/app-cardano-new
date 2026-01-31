@@ -4,6 +4,7 @@ from typing import Any, List
 from pathlib import Path
 
 from common import (
+    write_file_safe,
     _ensure_base58_module,
     _add_tests_to_sys_path,
     REPO_ROOT,
@@ -27,7 +28,7 @@ def _load_native_script_test_cases() -> List[Any]:
     _add_tests_to_sys_path()
 
     # Import test cases from ragger standalone input files
-    from standalone.input_files.derive_native_script import (  # type: ignore
+    from standalone.input_files.native_script import (  # type: ignore
         ValidNativeScriptTestCases
     )
 
@@ -59,7 +60,7 @@ def _is_simple_native_script(native_script) -> bool:
     Returns:
         True if script is SIMPLE (leaf), False if COMPLEX (internal node)
     """
-    from standalone.input_files.derive_native_script import NativeScriptType  # type: ignore
+    from standalone.input_files.native_script import NativeScriptType  # type: ignore
     
     simple_script_types = {
         NativeScriptType.PUBKEY_DEVICE_OWNED,
@@ -186,7 +187,7 @@ def _generate_native_script_tree_recursive(
     Returns:
         Tuple of (list of C code lines, identifier of generated struct)
     """
-    from standalone.input_files.derive_native_script import NativeScriptType  # type: ignore
+    from standalone.input_files.native_script import NativeScriptType  # type: ignore
     
     current_unique_id = f"{base_unique_id}_C{child_index}"
     fixture_lines = []
@@ -526,7 +527,7 @@ def generate_derive_native_script_fixtures() -> None:
     print()
 
     fixtures = _build_fixtures()
-    FIXTURES_FILE.write_text(fixtures)
+    write_file_safe(FIXTURES_FILE, fixtures)
     
     print()
     print(f"Generated {FIXTURES_FILE}")
