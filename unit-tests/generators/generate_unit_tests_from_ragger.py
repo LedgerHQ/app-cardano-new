@@ -8,7 +8,7 @@ import argparse
 import hashlib
 import re
 import sys
-from typing import Dict
+from typing import Dict, List
 
 from common import (
     UNIT_TESTS_DIR,
@@ -56,6 +56,9 @@ from test_runner_generators.derive_address_reject_runner_generators import (
     generate_address_derivation_reject_test_runners,
 )
 
+def _log_stage(message: str) -> None:
+    print(f"\n--- {message} ---")
+
 
 def regenerate_mock_data() -> None:
     try:
@@ -79,8 +82,12 @@ def regenerate_mock_data() -> None:
 
     mnemonic = resolve_mnemonic()
 
-    def parse_bip32_path_from_c_array(path_array_str: str) -> str:
+    def parse_bip32_path_from_c_array(
+        path_array_str: str, path_len: int | None = None
+    ) -> str:
         hex_values = re.findall(r"0x[0-9a-fA-F]+", path_array_str)
+        if path_len is not None:
+            hex_values = hex_values[:path_len]
         path_parts = ["m"]
         for hex_val in hex_values:
             val = int(hex_val, 16)
@@ -98,6 +105,21 @@ def regenerate_mock_data() -> None:
             lines.append(prefix + "0x" + ", 0x".join(f"{b:02x}" for b in chunk))
         return (",\n" + indent).join(lines)
 
+    def format_c_array_block(
+        data: bytes,
+        inner_indent: str = "          ",
+    ) -> list[str]:
+        """Return multi-line lines for a C array, one chunk per line."""
+        if not data:
+            return [f"{inner_indent}0x00,"]
+
+        chunks = [data[i : i + 8] for i in range(0, len(data), 8)]
+        lines = []
+        for chunk in chunks:
+            hex_values = ", ".join(f"0x{b:02x}" for b in chunk)
+            lines.append(f"{inner_indent}{hex_values},")
+        return lines
+
     input_file = UNIT_TESTS_DIR / "mock_crypto" / "crypto_mock_data.h"
     temp_output_file = UNIT_TESTS_DIR / "mock_crypto" / "crypto_mock_data_regenerated.h"
 
@@ -107,73 +129,111 @@ def regenerate_mock_data() -> None:
     print(f"Input:  {input_file}")
     print(f"Output: {temp_output_file}\n")
 
-    entry_match_count = 0
+    mock_paths_pattern = re.compile(
+        r'(static\s+const\s+mock_path_data_t\s+MOCK_PATHS\[\]\s*=\s*\{)(.*?)(\};)',
+        flags=re.DOTALL,
+    )
+    mock_paths_match = mock_paths_pattern.search(content)
+    if not mock_paths_match:
+        raise ValueError("MOCK_PATHS definition not found in mock_crypto/crypto_mock_data.h")
 
-    def regenerate_entry(match: re.Match[str]) -> str:
-        nonlocal entry_match_count
-        entry_match_count += 1
-        path_desc = match.group(2)
-        path_array = match.group(3)
+    mock_paths_body = mock_paths_match.group(2)
 
-        bip32_path = parse_bip32_path_from_c_array(path_array)
+    entry_start_pattern = re.compile(r"\{\s*\.path\s*=")
+
+    def _extract_entries(body: str) -> List[str]:
+        entries: List[str] = []
+        search_pos = 0
+        while True:
+            match = entry_start_pattern.search(body, search_pos)
+            if not match:
+                break
+            start = match.start()
+            depth = 0
+            idx = start
+            while idx < len(body):
+                char = body[idx]
+                if char == "{":
+                    depth += 1
+                elif char == "}":
+                    depth -= 1
+                    if depth == 0:
+                        end_idx = idx + 1
+                        break
+                idx += 1
+            else:
+                raise ValueError("Unbalanced braces while parsing mock entries")
+            while end_idx < len(body) and body[end_idx] in " \t\r\n,":
+                end_idx += 1
+            entries.append(body[start:end_idx])
+            search_pos = end_idx
+        return entries
+
+    def _build_path_entry(entry_text: str) -> str:
+        path_match = re.search(r'\.path\s*=\s*(\{[^}]+\})', entry_text)
+        path_len_match = re.search(r'\.path_len\s*=\s*(\d+)', entry_text)
+        if not path_match or not path_len_match:
+            raise ValueError("Failed to parse path information in mock entry")
+        path_array = path_match.group(1)
+        path_len = int(path_len_match.group(1))
+        path_desc = parse_bip32_path_from_c_array(path_array, path_len)
+        base_indent = "    "
+        field_indent = base_indent + "      "
+        array_indent = field_indent + "    "
 
         try:
             derived_pk_hex, derived_cc_hex = calculate_public_key_and_chaincode(
-                CurveChoice.Ed25519Kholaw, bip32_path, mnemonic=mnemonic
+                CurveChoice.Ed25519Kholaw, path_desc, mnemonic=mnemonic
             )
-
             derived_pk = bytes.fromhex(derived_pk_hex[2:])
             derived_cc = bytes.fromhex(derived_cc_hex)
             derived_kh = hashlib.blake2b(derived_pk, digest_size=28).digest()
 
-            print(f"✓ {path_desc} ({bip32_path})")
+            print(f"✓ {path_desc}")
 
-            entry_text = match.group(0)
-            entry_text = re.sub(
-                r'/\* Public key \(hex\): "[^"]*" \*/',
-                f'/* Public key (hex): "{derived_pk.hex()}" */',
-                entry_text,
-            )
-            entry_text = re.sub(
-                r"\.public_key = \{[^}]+\}",
-                f".public_key = {{{format_c_array(derived_pk)}}}",
-                entry_text,
-            )
-            entry_text = re.sub(
-                r'/\* Chain code \(hex\): "[^"]*" \*/',
-                f'/* Chain code (hex): "{derived_cc.hex()}" */',
-                entry_text,
-            )
-            entry_text = re.sub(
-                r"\.chain_code = \{[^}]+\}",
-                f".chain_code = {{{format_c_array(derived_cc)}}}",
-                entry_text,
-            )
-            entry_text = re.sub(
-                r"/\* Blake2b-224 key hash: [a-f0-9]+ \*/",
-                f"/* Blake2b-224 key hash: {derived_kh.hex()} */",
-                entry_text,
-            )
-            entry_text = re.sub(
-                r"\.key_hash = \{[^}]+\}",
-                f".key_hash = {{{format_c_array(derived_kh)}}}",
-                entry_text,
-            )
+            lines: List[str] = []
+            lines.append(f"{base_indent}/* Path \"{path_desc}\" */")
+            lines.append("")
+            lines.extend([
+                f"{base_indent}{{ .path = {path_array}, .path_len = {path_len},",
+                f'{field_indent}/* Public key (hex): "{derived_pk.hex()}" */',
+                f"{field_indent}.public_key = {{",
+                *format_c_array_block(derived_pk, inner_indent=array_indent),
+                f"{field_indent}}},",
+                f'{field_indent}/* Chain code (hex): "{derived_cc.hex()}" */',
+                f"{field_indent}.chain_code = {{",
+                *format_c_array_block(derived_cc, inner_indent=array_indent),
+                f"{field_indent}}},",
+                f'{field_indent}/* Blake2b-224 key hash: {derived_kh.hex()} */',
+                f"{field_indent}.key_hash = {{",
+                *format_c_array_block(derived_kh, inner_indent=array_indent),
+                f"{field_indent}}},",
+                f"{base_indent}}},",
+                "",
+            ])
+            return "\n".join(lines)
+        except Exception as exc:
+            print(f"✗ {path_desc}: {exc}")
             return entry_text
 
-        except Exception as exc:
-            print(f"✗ {path_desc} ({bip32_path}): {exc}")
-            return match.group(0)
-
-    pattern = r'(/\* Path "([^"]+)"[^{]+\{ \.path = (\{[^}]+\}).*?\.key_hash = \{[^}]+\},\n    \},)'
-    new_content = re.sub(pattern, regenerate_entry, content, flags=re.DOTALL)
-
-    if entry_match_count == 0:
-        raise ValueError("No mock path entries were regenerated")
+    path_entries = _extract_entries(mock_paths_body)
+    if not path_entries:
+        raise ValueError("No mock path entries were found")
+    print(f"Regenerating {len(path_entries)} mock path entries...")
+    regenerated_paths = [_build_path_entry(entry) for entry in path_entries]
+    new_mock_body = "\n".join(regenerated_paths).strip()
+    content = (
+        content[: mock_paths_match.start(2)]
+        + "\n"
+        + new_mock_body
+        + "\n"
+        + content[mock_paths_match.end(2) :]
+    )
+    print(f"Regenerated {len(regenerated_paths)} mock path entries.")
 
     message_pattern = r"static const uint8_t (\w+)\[\] = \{([^}]+)\};"
     messages: Dict[str, bytes] = {}
-    for match in re.finditer(message_pattern, new_content, flags=re.DOTALL):
+    for match in re.finditer(message_pattern, content, flags=re.DOTALL):
         name = match.group(1)
         hex_values = re.findall(r"0x[0-9a-fA-F]{2}", match.group(2))
         if not hex_values:
@@ -209,52 +269,77 @@ def regenerate_mock_data() -> None:
         extended_key = child.PrivateKey().Raw().ToBytes()
         return sign_with_extended_key(extended_key, messages[message_name])
 
-    signature_pattern = (
-        r'(/\* Path "([^"]+)" message ([^*]+?) \*/\s*'
-        r"\{ \.path = (\{[^}]+\}), \.path_len = [^,]+,\s*"
-        r"\.message = ([^,]+),\s*\.message_len = [^,]+,\s*"
-        r'/\* Signature \(hex\): "([^"]*)" \*/\s*'
-        r"\.signature = \{([^}]+)\},\s*"
-        r"\},)"
+    signature_pattern = re.compile(
+        r'(static\s+const\s+mock_signature_data_t\s+MOCK_SIGNATURES\[\]\s*=\s*\{)(.*?)(\};)',
+        flags=re.DOTALL,
     )
+    signature_match = signature_pattern.search(content)
+    if not signature_match:
+        raise ValueError(
+            "MOCK_SIGNATURES definition not found in mock_crypto/crypto_mock_data.h"
+        )
 
-    signature_match_count = 0
+    signature_body = signature_match.group(2)
+    signature_entries = _extract_entries(signature_body)
+    if not signature_entries:
+        raise ValueError("No mock signature entries were found")
+    print(f"\nRegenerating {len(signature_entries)} mock signature entries...")
 
-    def regenerate_signature_entry(match: re.Match[str]) -> str:
-        nonlocal signature_match_count
-        signature_match_count += 1
-        message_desc = match.group(3)
-        message_name = message_desc.split()[0]
-        path_array = match.group(4)
-        bip32_path = parse_bip32_path_from_c_array(path_array)
+    def _build_signature_entry(entry_text: str) -> str:
+        path_match = re.search(r'\.path\s*=\s*(\{[^}]+\})', entry_text)
+        path_len_match = re.search(r'\.path_len\s*=\s*(\d+)', entry_text)
+        message_match = re.search(r'\.message\s*=\s*([A-Z0-9_]+)', entry_text)
+        if not path_match or not path_len_match or not message_match:
+            raise ValueError("Failed to parse information from mock signature entry")
+        path_array = path_match.group(1)
+        path_len = int(path_len_match.group(1))
+        message_name = message_match.group(1)
+        path_desc = parse_bip32_path_from_c_array(path_array, path_len)
+        base_indent = "    "
+        field_indent = base_indent + "      "
+        array_indent = field_indent + "    "
+        base_indent = "    "
+        field_indent = base_indent + "      "
+        array_indent = field_indent + "    "
 
-        message_bytes = messages.get(message_name, b"")
+        message_bytes = messages.get(message_name)
+        if message_bytes is None:
+            raise ValueError(f"Missing message buffer {message_name}")
         message_hex = message_bytes.hex()
-        print(f"✓ Signature {message_name} ({bip32_path})")
-        print(f"  message={message_hex}")
+        bip32_path = parse_bip32_path_from_c_array(path_array, path_len)
 
         signature = derive_signature(path_array, message_name)
         signature_hex = signature.hex()
 
-        entry_text = match.group(0)
-        entry_text = re.sub(
-            r'/\* Signature \(hex\): "[^"]*" \*/',
-            f'/* Signature (hex): "{signature_hex}" */',
-            entry_text,
-        )
-        entry_text = re.sub(
-            r"\.signature = \{[^}]+\}",
-            f".signature = {{{format_c_array(signature)}}}",
-            entry_text,
-        )
-        return entry_text
+        print(f"✓ Signature {message_name} ({bip32_path})")
+        print(f"  message={message_hex}")
 
-    new_content = re.sub(
-        signature_pattern, regenerate_signature_entry, new_content, flags=re.DOTALL
+        lines: List[str] = []
+        lines.append(
+            f'{base_indent}/* Path "{path_desc}" message {message_name} (hex "{message_hex}") */'
+        )
+        lines.append("")
+        lines.extend([
+            f"{base_indent}{{ .path = {path_array}, .path_len = {path_len},",
+            f"{field_indent}.message = {message_name}, .message_len = sizeof({message_name}),",
+            f'{field_indent}/* Signature (hex): "{signature_hex}" */',
+            f"{field_indent}.signature = {{",
+            *format_c_array_block(signature, inner_indent=array_indent),
+            f"{field_indent}}},",
+            f"{base_indent}}},",
+            "",
+        ])
+        return "\n".join(lines)
+
+    regenerated_signatures = [_build_signature_entry(entry) for entry in signature_entries]
+    new_signature_body = "\n".join(regenerated_signatures).strip()
+    new_content = (
+        content[: signature_match.start(2)]
+        + "\n"
+        + new_signature_body
+        + "\n"
+        + content[signature_match.end(2) :]
     )
-
-    if signature_match_count == 0:
-        raise ValueError("No signature entries were regenerated")
 
     temp_output_file.write_text(new_content)
     temp_output_file.replace(input_file)
@@ -263,20 +348,20 @@ def regenerate_mock_data() -> None:
 
 
 def run_all() -> None:
-    # Generate fixtures
+    _log_stage("Generating fixtures")
     generate_tx_fixtures()
     generate_address_derivation_fixtures()
     generate_derive_native_script_fixtures()
-    # Generate test runners
+    _log_stage("Generating test runners")
     generate_tx_test_runners()
     generate_address_derivation_test_runners()
     generate_native_script_test_runners()
     generate_address_derivation_reject_test_runners()
-    # Generate reject fixtures
+    _log_stage("Generating reject fixtures")
     generate_tx_reject_fixtures()
     generate_address_derivation_reject_fixtures()
     generate_derive_native_script_reject_fixtures()
-    # Regenerate mock data
+    _log_stage("Regenerating mock data")
     regenerate_mock_data()
 
 
@@ -300,20 +385,23 @@ def main() -> None:
     if args.command in (None, "all"):
         run_all()
     elif args.command == "fixtures":
+        _log_stage("Generating fixtures")
         generate_tx_fixtures()
         generate_address_derivation_fixtures()
         generate_derive_native_script_fixtures()
     elif args.command == "generate-test-runners":
+        _log_stage("Generating test runners")
         generate_tx_test_runners()
         generate_address_derivation_test_runners()
         generate_native_script_test_runners()
         generate_address_derivation_reject_test_runners()
     elif args.command == "rejects":
+        _log_stage("Generating reject fixtures")
         generate_tx_reject_fixtures()
         generate_address_derivation_reject_fixtures()
         generate_derive_native_script_reject_fixtures()
-
     elif args.command == "mock-data":
+        _log_stage("Regenerating mock data")
         regenerate_mock_data()
     else:
         parser.print_help()

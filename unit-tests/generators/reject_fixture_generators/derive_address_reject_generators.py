@@ -108,6 +108,30 @@ def _sanitize_test_name_for_c_identifier(test_name: str) -> str:
     return safe_name.strip("_").upper()
 
 
+def _format_hex_comment(data: bytes, line_width: int | None = None) -> List[str]:
+    """
+    Produce comment lines containing a compact hex representation of the data.
+
+    Args:
+        data: Raw bytes to describe
+        line_width: Maximum number of hex characters per comment line; if None use entire string
+
+    Returns:
+        List of comment lines with uppercase hex strings
+    """
+    if not data:
+        return []
+
+    hex_string = data.hex().upper()
+    width = len(hex_string) if line_width is None else max(1, line_width)
+    lines = []
+    for start in range(0, len(hex_string), width):
+        chunk = hex_string[start : start + width]
+        lines.append(f"// {chunk}")
+
+    return lines
+
+
 def _generate_c_byte_array_for_apdu(
     apdu_bytes: bytes,
     array_name: str,
@@ -134,6 +158,9 @@ def _generate_c_byte_array_for_apdu(
         code_lines.append(f"    {hex_values},")
 
     code_lines.append("};")
+
+    hex_comment_lines = _format_hex_comment(apdu_bytes)
+    code_lines.extend(hex_comment_lines)
 
     return code_lines
 
