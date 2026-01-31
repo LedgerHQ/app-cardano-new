@@ -145,8 +145,10 @@ def derive_address(testCase: DeriveAddressTestCase) -> Union[bytes, str]:
 
 def _deriveAddressByron(testCase: DeriveAddressTestCase) -> str:
     """Derive the Byron address from the path"""
-   # Generate seed from mnemonic
-   # seed_bytes = Bip39SeedGenerator(OPTIONAL.CUSTOM_SEED).Generate()
+    if testCase.result:
+        return testCase.result
+    # Generate seed from mnemonic
+    # seed_bytes = Bip39SeedGenerator(OPTIONAL.CUSTOM_SEED).Generate()
     seed_bytes = Bip39SeedGenerator(SPECULOS_MNEMONIC).Generate()
 
     # Construct from seed

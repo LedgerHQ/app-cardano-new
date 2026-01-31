@@ -76,12 +76,8 @@ def test_derive_address(
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS
 
-    if testCase.netDesc == Testnet and testCase.result and mode == "return":
+    if testCase in byronTestCases and mode == "return":
         encoded = base58.b58encode(response.data).decode()
-        assert encoded == testCase.result
-    else:
-        if testCase in byronTestCases and mode == "return":
-            encoded = base58.b58encode(response.data).decode()
-            assert encoded == derive_address(testCase)
-        elif mode == "return":
-            assert response.data == derive_address(testCase)
+        assert encoded == derive_address(testCase)
+    elif mode == "return":
+        assert response.data == derive_address(testCase)

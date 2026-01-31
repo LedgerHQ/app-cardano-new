@@ -115,7 +115,8 @@ static inline bool warning_bits_is_empty(const warning_bits_t* warnings) {
 
 // Mask for all CVote-specific warnings
 #define CVOTE_WARNING_BITS_MASK \
-    (((warning_bits_t)1 << WARNING_BIT_CVOTE_PAYMENT_THIRD_PARTY) | \
+    (((warning_bits_t)1 << WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH) | \
+     ((warning_bits_t)1 << WARNING_BIT_CVOTE_PAYMENT_THIRD_PARTY) | \
      ((warning_bits_t)1 << WARNING_BIT_CVOTE_PAYMENT_NONSTANDARD_OWNED))
 
 // Check if warning_bits contains any CVote-specific warnings

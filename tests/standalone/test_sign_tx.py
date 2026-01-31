@@ -148,7 +148,11 @@ def _run_sign_tx_test(device: Device,
                 pass
 
         # Expert mode shows ordinary witness paths that are hidden otherwise.
-        should_confirm_witness = len(moves) > 0 or (expert_mode and _is_ordinary_witness_path(path))
+        should_confirm_witness = (
+            len(moves) > 0 or
+            (expert_mode and _is_ordinary_witness_path(path)) or
+            (testCase.signingMode == TransactionSigningMode.PLUTUS_TRANSACTION)
+        )
         if should_confirm_witness and device.is_nano and len(moves) == 0:
             moves = [NavInsID.BOTH_CLICK]
 
