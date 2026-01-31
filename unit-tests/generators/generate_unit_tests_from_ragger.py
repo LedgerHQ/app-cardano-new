@@ -10,13 +10,10 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, List
 
-from common import (
-    UNIT_TESTS_DIR,
-)
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+from common import UNIT_TESTS_DIR
+from paths import REPO_ROOT
 
 
 # ======================================================================
@@ -133,14 +130,6 @@ def regenerate_mock_data() -> None:
                 path_parts.append(str(val))
         return "/".join(path_parts)
 
-    def format_c_array(data: bytes, indent: str = "      ") -> str:
-        chunks = [data[i : i + 8] for i in range(0, len(data), 8)]
-        lines = []
-        for i, chunk in enumerate(chunks):
-            prefix = "" if i == 0 else indent + " "
-            lines.append(prefix + "0x" + ", 0x".join(f"{b:02x}" for b in chunk))
-        return (",\n" + indent).join(lines)
-
     def format_c_array_block(
         data: bytes,
         inner_indent: str = "          ",
@@ -179,8 +168,8 @@ def regenerate_mock_data() -> None:
 
     mock_paths_body = mock_paths_match.group(2)
 
-    def _extract_entries(body: str) -> List[str]:
-        entries: List[str] = []
+    def _extract_entries(body: str) -> list[str]:
+        entries: list[str] = []
         search_pos = 0
         while True:
             match = _ENTRY_START_PATTERN.search(body, search_pos)
@@ -229,7 +218,7 @@ def regenerate_mock_data() -> None:
 
             print(f"OK {path_desc}")
 
-            lines: List[str] = []
+            lines: list[str] = []
             lines.append(f"{base_indent}/* Path \"{path_desc}\" */")
             lines.append("")
             lines.extend([
@@ -270,7 +259,7 @@ def regenerate_mock_data() -> None:
     print(f"Regenerated {len(regenerated_paths)} mock path entries.")
 
     message_pattern = r"static const uint8_t (\w+)\[\] = \{([^}]+)\};"
-    messages: Dict[str, bytes] = {}
+    messages: dict[str, bytes] = {}
     for match in re.finditer(message_pattern, content, flags=re.DOTALL):
         name = match.group(1)
         hex_values = re.findall(r"0x[0-9a-fA-F]{2}", match.group(2))
@@ -348,7 +337,7 @@ def regenerate_mock_data() -> None:
         print(f"OK Signature {message_name} ({bip32_path})")
         print(f"  message={message_hex}")
 
-        lines: List[str] = []
+        lines: list[str] = []
         lines.append(
             f'{base_indent}/* Path "{path_desc}" message {message_name} (hex "{message_hex}") */'
         )

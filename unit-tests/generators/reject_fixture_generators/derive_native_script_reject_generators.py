@@ -1,22 +1,19 @@
 from __future__ import annotations
 
-from typing import Any, List
-from pathlib import Path
+from typing import Any
 
 from common import (
     write_file_safe,
     _ensure_base58_module,
     _add_tests_to_sys_path,
-    REPO_ROOT,
     extract_apdu_payload,
 )
+from paths import UNIT_TESTS_DIR
 from native_script_codegen import generate_native_script_tree_recursive
     
-FIXTURES_FILE = (
-    REPO_ROOT / "unit-tests" / "test_derive_native_script_reject_fixtures.h"
-)
+FIXTURES_FILE = UNIT_TESTS_DIR / "test_derive_native_script_reject_fixtures.h"
 
-def _load_native_script_test_cases() -> List[Any]:
+def _load_native_script_test_cases() -> list[Any]:
     """
     Load native script test cases from ragger standalone tests.
 
@@ -40,7 +37,7 @@ def _load_native_script_test_cases() -> List[Any]:
 def _generate_simple_script_apdu_array(
     script_identifier: str,
     script: NativeScript,
-) -> tuple[List[str], str]:
+) -> tuple[list[str], str]:
     """
     Generate APDU payload array for a simple script.
     
@@ -51,7 +48,7 @@ def _generate_simple_script_apdu_array(
     Returns:
         Tuple of (C code lines, array name)
     """
-    from application_client.command_builder import CommandBuilder, P1Type  # type: ignore
+    from application_client.command_builder import CommandBuilder  # type: ignore
 
     command_builder = CommandBuilder()
     full_apdu = command_builder.derive_script_add_simple(script)
@@ -79,7 +76,7 @@ def _generate_simple_script_apdu_array(
 def _generate_simple_script_fixture(
     script_identifier: str,
     script: NativeScript,
-) -> List[str]:
+) -> list[str]:
     """
     Generate complete simple script fixture.
     
@@ -239,7 +236,7 @@ def _build_fixtures() -> str:
 def _generate_finish_apdu_payload(
     test_case_id: str,
     display_format,
-) -> tuple[List[str], str]:
+) -> tuple[list[str], str]:
     """
     Generate APDU payload for derive_script_finish.
     

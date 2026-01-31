@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+
 
 from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe, sanitize_c_identifier
 
@@ -21,14 +21,14 @@ class FixtureDetails:
 @dataclass(frozen=True)
 class FixtureArrayDetails:
     array_name: str
-    fixtures: List[FixtureDetails]
+    fixtures: list[FixtureDetails]
 
 
-def _extract_fixture_array_names(header_content: str) -> List[str]:
+def _extract_fixture_array_names(header_content: str) -> list[str]:
     return [match.group(1) for match in _FIXTURE_ARRAY_PATTERN.finditer(header_content)]
 
 
-def _extract_fixtures_for_array(header_content: str, array_name: str) -> List[FixtureDetails]:
+def _extract_fixtures_for_array(header_content: str, array_name: str) -> list[FixtureDetails]:
     array_pattern = re.compile(
         rf"static\s+const\s+pubkey_fixture_t\s+{re.escape(array_name)}\s*\[\]\s*=\s*\{{(.*?)\}};",
         re.DOTALL,
@@ -45,14 +45,14 @@ def _extract_fixtures_for_array(header_content: str, array_name: str) -> List[Fi
     return [FixtureDetails(name=name, index=i) for i, name in enumerate(name_matches)]
 
 
-def _extract_all_fixture_arrays(fixture_header_path: Path) -> List[FixtureArrayDetails]:
+def _extract_all_fixture_arrays(fixture_header_path: Path) -> list[FixtureArrayDetails]:
     header_content = read_file_safe(fixture_header_path)
     array_names = _extract_fixture_array_names(header_content)
 
     if not array_names:
         raise ValueError(f"No fixture arrays found in {fixture_header_path}")
 
-    arrays: List[FixtureArrayDetails] = []
+    arrays: list[FixtureArrayDetails] = []
     for array_name in array_names:
         fixtures = _extract_fixtures_for_array(header_content, array_name)
         arrays.append(FixtureArrayDetails(array_name=array_name, fixtures=fixtures))
@@ -82,9 +82,9 @@ def _build_test_file_header() -> str:
 """
 
 
-def _build_test_functions(arrays: List[FixtureArrayDetails]) -> tuple[str, List[str]]:
-    test_functions: List[str] = []
-    test_function_names: List[str] = []
+def _build_test_functions(arrays: list[FixtureArrayDetails]) -> tuple[str, list[str]]:
+    test_functions: list[str] = []
+    test_function_names: list[str] = []
 
     for array in arrays:
         array_suffix = array.array_name.replace("PUBKEY_FIXTURES_TEST_PUBKEY_", "").lower()
@@ -106,7 +106,7 @@ def _build_test_functions(arrays: List[FixtureArrayDetails]) -> tuple[str, List[
     return "\n".join(test_functions), test_function_names
 
 
-def _build_main_function(test_function_names: List[str]) -> str:
+def _build_main_function(test_function_names: list[str]) -> str:
     registrations = ",\n        ".join(
         f"cmocka_unit_test({name})" for name in test_function_names
     )

@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
-from typing import Any, List
+from typing import Any
 from enum import Enum
 
 from common import (
@@ -9,14 +7,12 @@ from common import (
     sanitize_c_identifier,
     _ensure_base58_module,
     _add_tests_to_sys_path,
-    REPO_ROOT,
     extract_apdu_payload,
     format_bytes_as_c_array,
 )
+from paths import UNIT_TESTS_DIR
 
-FIXTURES_FILE = (
-    REPO_ROOT / "unit-tests" / "test_derive_address_fixtures.h"
-)
+FIXTURES_FILE = UNIT_TESTS_DIR / "test_derive_address_fixtures.h"
 
 # ==============================================================================
 # Step 1: Load Test Cases from Ragger Tests
@@ -30,10 +26,10 @@ class P1DisplayType(Enum):
 class TestCaseCategory:
     p1_value: str
     type: str
-    test_cases: List[Any]
+    test_cases: list[Any]
 
 
-def _load_address_derivation_test_cases() -> List[Any]:
+def _load_address_derivation_test_cases() -> list[Any]:
     """
     Load address derivation test cases from ragger standalone tests.
 
@@ -134,7 +130,7 @@ def _generate_fixture_code_for_test_case(
     type_test: str,
     test_case: Any,
     test_number: int,
-) -> List[str]:
+) -> list[str]:
     """
     Generate C code for a single address derivation test fixture.
 

@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Dict, Sequence
+from typing import Sequence
 
 from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe, sanitize_c_identifier
 
@@ -44,14 +44,14 @@ class FixtureArrayDetails:
     """
     array_name: str                     # C array identifier
     fixture_count: int                  # Total number of fixtures
-    fixtures: List[FixtureDetails]      # Individual fixture details
+    fixtures: list[FixtureDetails]      # Individual fixture details
 
 
 # ======================================================================
 # Extraction Functions
 # ======================================================================
 
-def extract_fixture_array_names_from_header(fixture_header_path: Path) -> List[str]:
+def extract_fixture_array_names_from_header(fixture_header_path: Path) -> list[str]:
     """
     Extract all fixture array names from test_address_derivation_fixtures.h.
     
@@ -86,7 +86,7 @@ def extract_fixture_array_names_from_header(fixture_header_path: Path) -> List[s
 def extract_complete_fixture_details_from_array(
     header_content: str,
     array_name: str
-) -> List[FixtureDetails]:
+) -> list[FixtureDetails]:
     """
     Extract complete fixture details from a specific array.
     
@@ -187,7 +187,7 @@ def extract_complete_fixture_details_from_array(
 
 def extract_all_fixture_array_details(
     fixture_header_path: Path
-) -> List[FixtureArrayDetails]:
+) -> list[FixtureArrayDetails]:
     """
     Extract complete information about all fixture arrays.
     

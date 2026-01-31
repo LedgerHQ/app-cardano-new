@@ -1,12 +1,12 @@
 import re
 from pathlib import Path
-from typing import List
+
 
 from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe, sanitize_c_identifier
 
 
 
-def _extract_reject_fixture_names(header_path: Path) -> List[str]:
+def _extract_reject_fixture_names(header_path: Path) -> list[str]:
     if not header_path.exists():
         raise FileNotFoundError(f"Fixture header not found: {header_path}")
 
@@ -98,9 +98,9 @@ static void run_reject_fixture(const derive_address_fixture_t *fixture) {
 """
 
 
-def _build_test_functions(fixture_names: List[str]) -> tuple[str, List[str]]:
-    test_functions: List[str] = []
-    test_function_names: List[str] = []
+def _build_test_functions(fixture_names: list[str]) -> tuple[str, list[str]]:
+    test_functions: list[str] = []
+    test_function_names: list[str] = []
 
     for idx, fixture_name in enumerate(fixture_names):
         sanitized = sanitize_c_identifier(fixture_name, uppercase=False, handle_leading_digit=True)
@@ -117,7 +117,7 @@ def _build_test_functions(fixture_names: List[str]) -> tuple[str, List[str]]:
     return "\n".join(test_functions), test_function_names
 
 
-def _build_main_function(test_function_names: List[str]) -> str:
+def _build_main_function(test_function_names: list[str]) -> str:
     registrations = ",\n        ".join(
         f"cmocka_unit_test({name})" for name in test_function_names
     )

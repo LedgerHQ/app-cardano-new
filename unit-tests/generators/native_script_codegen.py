@@ -6,7 +6,7 @@ fixture generators (valid and reject test cases).
 """
 
 from __future__ import annotations
-from typing import List, Any
+from typing import Any
 
 
 def _is_simple_native_script(native_script: Any) -> bool:
@@ -35,7 +35,7 @@ def generate_native_script_tree_recursive(
     base_unique_id: str,
     child_index: int = 0,
     simple_script_generator_func: Any = None,
-) -> tuple[List[str], str]:
+) -> tuple[list[str], str]:
     """
     Recursively generate C structs for a native script tree.
 

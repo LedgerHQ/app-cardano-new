@@ -1,18 +1,14 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Sequence, Type
 import json
 import subprocess
-from dataclasses import dataclass
 
 from common import (
     write_file_safe,
-    _ensure_base58_module,
     _add_tests_to_sys_path,
-    REPO_ROOT,
     NODE_VERSION
 )
+from paths import EXPORT_SCRIPT, MOCK_LOADER, LEDGERJS_CARDANO_SHELLEY_DIR, UNIT_TESTS_DIR
 
 SET_ORDER = [
     "transactionInitRejectTestCases",
@@ -56,7 +52,7 @@ SET_PREFIX = {
     "invalidRelayTestCases": "REJECT_RELAY",
 }
 
-REJECT_REASON_SW: Dict[str, str] = {
+REJECT_REASON_SW: dict[str, str] = {
     "InvalidDataReason.NETWORK_INVALID_NETWORK_ID": "SWO_INVALID_NETWORK_ID",
     "InvalidDataReason.NETWORK_INVALID_PROTOCOL_MAGIC": "SWO_INVALID_PROTOCOL_MAGIC",
     "InvalidDataReason.MULTIASSET_INVALID_TOKEN_BUNDLE_ORDERING": "SWO_TX_PARSING_FAIL_CANONICAL_ORDER",
@@ -94,7 +90,7 @@ def _parse_enum(enum_cls: Type[Any], value: Any) -> Any:
 def _parse_credential_params_type(
     value: Any,
     credential_params_type_enum: Type[Any],
-    credential_params_type_map: Dict[int, Any],
+    credential_params_type_map: dict[int, Any],
 ) -> Any:
     if isinstance(value, credential_params_type_enum):
         return value
@@ -106,23 +102,23 @@ def _parse_credential_params_type(
             return mapped
     raise ValueError(f"Unknown CredentialParamsType value: {value}")
 
-NODE_SCRIPT = REPO_ROOT / "unit-tests" / "export_sign_tx_rejects.js"
-MOCK_USB_LOADER = REPO_ROOT / "unit-tests" / "mock_usb_loader.js"
-GENERATED_REJECT_HEADER = REPO_ROOT / "unit-tests" / "test_sign_tx_fixtures_rejects.h"
+NODE_SCRIPT = EXPORT_SCRIPT
+MOCK_USB_LOADER = MOCK_LOADER
+GENERATED_REJECT_HEADER = UNIT_TESTS_DIR / "test_sign_tx_fixtures_rejects.h"
 
 
-def _build_node_command() -> Tuple[str, ...]:
+def _build_node_command() -> tuple[str, ...]:
     return (
         "bash",
         "-lc",
         f"source ~/.nvm/nvm.sh && nvm use {NODE_VERSION} >/dev/null && "
-        f"cd {REPO_ROOT / '..' / 'ledgerjs-cardano-shelley'} && "
+        f"cd {LEDGERJS_CARDANO_SHELLEY_DIR} && "
         f"NODE_OPTIONS=--require={MOCK_USB_LOADER} NODE_PATH=./node_modules "
         f"node {NODE_SCRIPT}",
     )
 
 
-def _run_node_export() -> Dict[str, Any]:
+def _run_node_export() -> dict[str, Any]:
     try:
         proc = subprocess.run(_build_node_command(), capture_output=True, text=True, check=True)
         return json.loads(proc.stdout)
@@ -189,7 +185,7 @@ def _build_reject_fixtures() -> str:
     if unexpected_sets:
         raise ValueError(f"Unknown reject fixture sets: {', '.join(unexpected_sets)}")
 
-    credential_params_type_map: Dict[int, CredentialParamsType] = {
+    credential_params_type_map: dict[int, CredentialParamsType] = {
         0: CredentialParamsType.KEY_PATH,
         1: CredentialParamsType.KEY_HASH,
         2: CredentialParamsType.SCRIPT_HASH,
@@ -205,7 +201,7 @@ def _build_reject_fixtures() -> str:
 
     def to_bip32_path(path: Sequence[int]) -> str:
         hardened = 0x80000000
-        components: List[str] = []
+        components: list[str] = []
         for segment in path:
             if segment >= hardened:
                 components.append(f"{segment - hardened}'")
@@ -213,10 +209,10 @@ def _build_reject_fixtures() -> str:
                 components.append(str(segment))
         return "m/" + "/".join(components)
 
-    def convert_network(network_json: Dict[str, Any]) -> NetworkDesc:
+    def convert_network(network_json: dict[str, Any]) -> NetworkDesc:
         return NetworkDesc(networkId=network_json["networkId"], protocol=network_json["protocolMagic"])
 
-    def convert_input(input_json: Dict[str, Any]) -> TxInput:
+    def convert_input(input_json: dict[str, Any]) -> TxInput:
         path = input_json.get("path")
         return TxInput(
             txHashHex=input_json["txHashHex"],
@@ -224,7 +220,7 @@ def _build_reject_fixtures() -> str:
             outputIndex=int(input_json.get("outputIndex", 0)),
         )
 
-    def convert_credential(credential: Dict[str, Any]) -> CredentialParams:
+    def convert_credential(credential: dict[str, Any]) -> CredentialParams:
         ctype = _parse_credential_params_type(
             credential["type"],
             CredentialParamsType,
@@ -247,20 +243,20 @@ def _build_reject_fixtures() -> str:
             return CredentialParams(type=ctype, keyValue=script_hash.lower())
         raise ValueError(f"Unsupported credential type: {credential}")
 
-    def convert_asset_group(group: Dict[str, Any]) -> AssetGroup:
+    def convert_asset_group(group: dict[str, Any]) -> AssetGroup:
         tokens = [
             Token(assetNameHex=token["assetNameHex"].lower(), amount=int(token["amount"]))
             for token in group["tokens"]
         ]
         return AssetGroup(policyIdHex=group["policyIdHex"].lower(), tokens=tokens)
 
-    def convert_datum(datum_json: Dict[str, Any]) -> Datum:
+    def convert_datum(datum_json: dict[str, Any]) -> Datum:
         datum_type = _parse_enum(DatumType, datum_json["type"])
         if datum_type == DatumType.HASH:
             return Datum(type=datum_type, datumHex=datum_json["datumHashHex"].lower())
         return Datum(type=datum_type, datumHex=datum_json["datumHex"].lower())
 
-    def convert_pool_key(pool_key_json: Dict[str, Any]) -> PoolKey:
+    def convert_pool_key(pool_key_json: dict[str, Any]) -> PoolKey:
         key_type = _parse_enum(PoolKeyType, pool_key_json["type"])
         params = pool_key_json["params"]
         if key_type == PoolKeyType.DEVICE_OWNED:
@@ -278,7 +274,7 @@ def _build_reject_fixtures() -> str:
             raise ValueError(f"Missing hash for third-party pool key: {pool_key_json}")
         return PoolKey(type=key_type, key=hash_value.lower())
 
-    def convert_relay(relay_json: Dict[str, Any]) -> Relay:
+    def convert_relay(relay_json: dict[str, Any]) -> Relay:
         relay_type = _parse_enum(RelayType, relay_json["type"])
         params = relay_json["params"]
         if relay_type == RelayType.SINGLE_HOST_IP_ADDR:
@@ -297,7 +293,7 @@ def _build_reject_fixtures() -> str:
             )
         return Relay(type=relay_type, params=MultiHostRelayParams(dnsName=params["dnsName"]))
 
-    def convert_pool_registration_params(params_json: Dict[str, Any]) -> PoolRegistrationParams:
+    def convert_pool_registration_params(params_json: dict[str, Any]) -> PoolRegistrationParams:
         margin_json = params_json["margin"]
         metadata_json = params_json.get("metadata")
         metadata_url = ""
@@ -321,7 +317,7 @@ def _build_reject_fixtures() -> str:
             else None,
         )
 
-    def convert_certificate(cert_json: Dict[str, Any]) -> Certificate:
+    def convert_certificate(cert_json: dict[str, Any]) -> Certificate:
         cert_type = _parse_enum(CertificateType, cert_json["type"])
         params = cert_json["params"]
         if cert_type == CertificateType.STAKE_REGISTRATION:
@@ -357,14 +353,14 @@ def _build_reject_fixtures() -> str:
             )
         raise ValueError(f"Unsupported certificate type: {cert_type}")
 
-    def convert_withdrawal(withdraw_json: Dict[str, Any]) -> Withdrawal:
+    def convert_withdrawal(withdraw_json: dict[str, Any]) -> Withdrawal:
         return Withdrawal(
             stakeCredential=convert_credential(withdraw_json["stakeCredential"]),
             amount=int(withdraw_json["amount"]),
         )
 
-    def convert_required_signers(signers_json: Sequence[Dict[str, Any]]) -> List[RequiredSigner]:
-        result: List[RequiredSigner] = []
+    def convert_required_signers(signers_json: Sequence[dict[str, Any]]) -> list[RequiredSigner]:
+        result: list[RequiredSigner] = []
         for signer in signers_json:
             signer_type = _parse_enum(TxRequiredSignerType, signer["type"])
             if signer_type == TxRequiredSignerType.PATH:
@@ -373,7 +369,7 @@ def _build_reject_fixtures() -> str:
                 result.append(RequiredSigner(type=signer_type, pathOrHashHex=signer["hashHex"].lower()))
         return result
 
-    def convert_vote(vote_json: Dict[str, Any]) -> Vote:
+    def convert_vote(vote_json: dict[str, Any]) -> Vote:
         gov_action = vote_json["govActionId"]
         return Vote(
             govActionId=GovActionId(txHashHex=gov_action["txHashHex"], govActionIndex=int(gov_action["govActionIndex"])),
@@ -388,11 +384,11 @@ def _build_reject_fixtures() -> str:
             ),
         )
 
-    def convert_voter(voter_json: Dict[str, Any]) -> Voter:
+    def convert_voter(voter_json: dict[str, Any]) -> Voter:
         return Voter(type=_parse_enum(VoterType, voter_json["type"]), keyValue=voter_json["keyValue"])
 
-    def convert_voting_procedures(procedures_json: Sequence[Dict[str, Any]]) -> List[VoterVotes]:
-        result: List[VoterVotes] = []
+    def convert_voting_procedures(procedures_json: Sequence[dict[str, Any]]) -> list[VoterVotes]:
+        result: list[VoterVotes] = []
         for entry in procedures_json:
             result.append(
                 VoterVotes(
@@ -402,7 +398,7 @@ def _build_reject_fixtures() -> str:
             )
         return result
 
-    def convert_device_owned_destination(network: NetworkDesc, dest_json: Dict[str, Any]) -> TxOutputDestination:
+    def convert_device_owned_destination(network: NetworkDesc, dest_json: dict[str, Any]) -> TxOutputDestination:
         params = dest_json["params"]["params"]
         addr_type = _parse_enum(AddressType, dest_json["params"]["type"])
         spending_value = ""
@@ -427,7 +423,7 @@ def _build_reject_fixtures() -> str:
             DeriveAddressTestCase("", network, addr_type, spending_value, staking_value),
         )
 
-    def convert_destination(network: NetworkDesc, dest_json: Dict[str, Any]) -> TxOutputDestination:
+    def convert_destination(network: NetworkDesc, dest_json: dict[str, Any]) -> TxOutputDestination:
         if dest_json["type"] == "third_party":
             return TxOutputDestination(
                 TxOutputDestinationType.THIRD_PARTY,
@@ -435,7 +431,7 @@ def _build_reject_fixtures() -> str:
             )
         return convert_device_owned_destination(network, dest_json)
 
-    def convert_output(network: NetworkDesc, output_json: Dict[str, Any]) -> Any:
+    def convert_output(network: NetworkDesc, output_json: dict[str, Any]) -> Any:
         destination = convert_destination(network, output_json["destination"])
         amount = int(output_json["amount"])
         token_bundle = [convert_asset_group(group) for group in output_json.get("tokenBundle", [])]
@@ -469,7 +465,7 @@ def _build_reject_fixtures() -> str:
             datum=datum,
         )
 
-    def convert_auxiliary_data(data: Optional[Dict[str, Any]]) -> Optional[TxAuxiliaryData]:
+    def convert_auxiliary_data(data: dict[str, Any] | None) -> TxAuxiliaryData | None:
         if data is None:
             return None
         aux_type = _parse_enum(TxAuxiliaryDataType, data["type"])
@@ -480,7 +476,7 @@ def _build_reject_fixtures() -> str:
             )
         raise ValueError("Unsupported auxiliary data type")
 
-    def convert_transaction(tx_json: Dict[str, Any]) -> Transaction:
+    def convert_transaction(tx_json: dict[str, Any]) -> Transaction:
         network = convert_network(tx_json["network"])
         return Transaction(
             network=network,
@@ -517,7 +513,7 @@ def _build_reject_fixtures() -> str:
         cleaned = "_".join(part for part in "".join(result).split("_") if part)
         return cleaned
 
-    def format_display_name(prefix: str, test_name: str, reason: Optional[str] = None) -> str:
+    def format_display_name(prefix: str, test_name: str, reason: str | None = None) -> str:
         cleaned = test_name.replace("-", "_").replace(" ", "_")
         cleaned = "_".join(part for part in cleaned.split("_") if part)
         if reason:
@@ -527,7 +523,7 @@ def _build_reject_fixtures() -> str:
                 cleaned = f"{cleaned}_{reason_label}"
         return f"[{prefix}] {cleaned}"
 
-    def to_hex_lines(hex_str: str, indent: int = 4, append_comma: bool = False) -> List[str]:
+    def to_hex_lines(hex_str: str, indent: int = 4, append_comma: bool = False) -> list[str]:
         chunk_size = 64
         lines = []
         for i in range(0, len(hex_str), chunk_size):
@@ -538,7 +534,7 @@ def _build_reject_fixtures() -> str:
         return lines
 
     def reject_reason_to_status_word(prefix: str,
-                                     reason: Optional[str],
+                                     reason: str | None,
                                      fixture_name: str,
                                      tx: Transaction) -> str:
         if fixture_name == "Non-mainnet protocol magic":
@@ -584,14 +580,14 @@ def _build_reject_fixtures() -> str:
         prefix: str
         sanitized_name: str
         init_hex: str
-        chunks: List[ChunkInfo]
+        chunks: list[ChunkInfo]
         expected_sw: str
         expect_init_failure: bool
-        reject_reason: Optional[str]
+        reject_reason: str | None
         source_set: str  # Name of the test set (e.g., "invalidRelayTestCases")
         source_file: str  # Source file path
 
-    def build_fixture(fixture_json: Dict[str, Any], prefix: str, source_set: str) -> FixtureInfo:
+    def build_fixture(fixture_json: dict[str, Any], prefix: str, source_set: str) -> FixtureInfo:
         tx = convert_transaction(fixture_json["tx"])
         builder = CommandBuilder()
         signing_mode = tsigning_mode_map[fixture_json["signingMode"]]
@@ -658,7 +654,7 @@ def _build_reject_fixtures() -> str:
         0x1F: "P1_TX_SIGN_WITNESS",
     }
 
-    def generate_header(fixtures: Dict[str, List[FixtureInfo]]) -> str:
+    def generate_header(fixtures: dict[str, list[FixtureInfo]]) -> str:
         lines = [
             "// Auto-generated file - DO NOT EDIT",
             "//",
@@ -734,7 +730,7 @@ def _build_reject_fixtures() -> str:
         lines.append("")
         return "\n".join(lines)
 
-    fixtures: Dict[str, List[FixtureInfo]] = {}
+    fixtures: dict[str, list[FixtureInfo]] = {}
     for set_name, entries in exported.items():
         prefix = SET_PREFIX.get(set_name)
         if not prefix:

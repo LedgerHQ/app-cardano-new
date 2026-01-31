@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 import hashlib
 import re
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Sequence
 
 from common import (
     _ensure_base58_module,
@@ -23,7 +21,7 @@ from common import (
 _TX_FIXTURE_PATTERN = re.compile(r"static const tx_fixture_t [A-Z0-9_]+\s*=\s*\{")
 
 
-def _split_hex_string(hex_str: str, chunk_size: int = 1024) -> List[str]:
+def _split_hex_string(hex_str: str, chunk_size: int = 1024) -> list[str]:
     return [hex_str[i : i + chunk_size] for i in range(0, len(hex_str), chunk_size)]
 
 
@@ -40,7 +38,7 @@ def _cbor_hex_to_bytes(hex_str: str) -> bytes:
     return bytes.fromhex(hex_str.replace(" ", "").replace("\n", ""))
 
 
-def _extract_aux_data_hash_from_tx_body(hex_str: str) -> Optional[str]:
+def _extract_aux_data_hash_from_tx_body(hex_str: str) -> str | None:
     import cbor2  # type: ignore
 
     try:
@@ -64,7 +62,7 @@ def _count_fixture_structs(header_text: str) -> int:
 def _generate_fixtures_for_era(
     era_key: str,
     tests: Sequence[Any],
-    aux_data_classes: Dict[str, Any],
+    aux_data_classes: dict[str, Any],
 ) -> None:
     from application_client.command_builder import CommandBuilder, gather_witness_paths  # type: ignore
 
@@ -131,7 +129,7 @@ def _generate_fixtures_for_era(
         aux_data_type = 0
         aux_data_hash_hex = body_aux_data_hash
         aux_data_init_payload = b""
-        aux_data_delegation_payloads: List[bytes] = []
+        aux_data_delegation_payloads: list[bytes] = []
         if include_aux_data_hash:
             if tx.auxiliaryData.type == TxAuxiliaryDataType.ARBITRARY_HASH:
                 aux_data_type = int(TxAuxiliaryDataType.ARBITRARY_HASH)
@@ -154,6 +152,11 @@ def _generate_fixtures_for_era(
                 else:
                     include_aux_data_hash = False
 
+        if not hasattr(tx, "scriptDataHash"):
+            print(
+                f"WARNING: tx {test_case.name} missing scriptDataHash; "
+                "defaulting include_script_data_hash=False"
+            )
         include_script_data_hash = getattr(tx, "scriptDataHash", None) is not None
 
         options_value = (
@@ -340,7 +343,7 @@ def _generate_fixtures_for_era(
     print(f"Total fixtures: {len(tests)}")
 
 
-def _load_sign_tx_tests() -> Dict[str, Any]:
+def _load_sign_tx_tests() -> dict[str, Any]:
     _ensure_base58_module()
     _add_tests_to_sys_path()
     from standalone.input_files.signTx import (  # type: ignore

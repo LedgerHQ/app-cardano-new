@@ -1,27 +1,23 @@
-from __future__ import annotations
-
-from typing import Any, List
+from typing import Any
 
 from common import (
     write_file_safe,
     sanitize_c_identifier,
     _ensure_base58_module,
     _add_tests_to_sys_path,
-    REPO_ROOT,
     extract_apdu_payload,
     format_bytes_as_c_array,
 )
+from paths import UNIT_TESTS_DIR
 
-GENERATED_REJECT_HEADER = (
-    REPO_ROOT / "unit-tests" / "test_address_derivation_fixtures_rejects.h"
-)
+GENERATED_REJECT_HEADER = UNIT_TESTS_DIR / "test_address_derivation_fixtures_rejects.h"
 
 # ==============================================================================
 # Step 1: Load Rejection Test Cases from Ragger Tests
 # ==============================================================================
 
 
-def _load_address_derivation_reject_test_cases() -> List[Any]:
+def _load_address_derivation_reject_test_cases() -> list[Any]:
     """
     Load address derivation rejection test cases from ragger standalone tests.
 
@@ -85,7 +81,7 @@ def _serialize_reject_test_case_to_apdu(test_case: Any) -> bytes:
 
 
 
-def _format_hex_comment(data: bytes, line_width: int | None = None) -> List[str]:
+def _format_hex_comment(data: bytes, line_width: int | None = None) -> list[str]:
     """
     Produce comment lines containing a compact hex representation of the data.
 
@@ -113,7 +109,7 @@ def _generate_c_byte_array_for_apdu(
     apdu_bytes: bytes,
     array_name: str,
     bytes_per_line: int = 16,
-) -> List[str]:
+) -> list[str]:
     """
     Generate C code lines for a byte array containing APDU command.
 
@@ -178,7 +174,7 @@ def _get_expected_rejection_reason(test_case: Any) -> str:
 def _generate_fixture_code_for_reject_test_case(
     test_case: Any,
     test_number: int,
-) -> List[str]:
+) -> list[str]:
     """
     Generate C code for a single address derivation rejection test fixture.
 

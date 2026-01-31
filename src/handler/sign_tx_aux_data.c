@@ -236,7 +236,6 @@ static void handler_tx_aux_data_delegation(buffer_t *cdata) {
     TRACE("CVote AUX_DATA delegation received, payload_len=%u",
           cdata->size);
     cvote_credential_t delegation_credential = {0};
-    // Parse CVote credential (inline parsing for delegation APDU)
     if (!buffer_read_cvote_credential(cdata, &delegation_credential)) {
         TRACE("CVote AUX_DATA delegation: parsing failed");
         send_swo_and_reset(SWO_CVOTE_AUX_DATA_PARSING_FAIL);

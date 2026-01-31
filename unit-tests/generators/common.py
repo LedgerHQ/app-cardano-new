@@ -3,8 +3,7 @@ import sys
 import types
 from pathlib import Path
 
-UNIT_TESTS_DIR = Path(__file__).resolve().parent.parent
-REPO_ROOT = UNIT_TESTS_DIR.parent
+from paths import REPO_ROOT, UNIT_TESTS_DIR
 NODE_VERSION = "16.20.2"
 
 
@@ -233,4 +232,3 @@ def _ensure_base58_module() -> None:
     module.b58encode = b58encode
     module.b58decode = b58decode
     sys.modules["base58"] = module
-

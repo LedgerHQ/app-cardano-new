@@ -1,6 +1,6 @@
 import re
 from pathlib import Path
-from typing import List
+
 
 from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe, sanitize_c_identifier
 
@@ -13,7 +13,7 @@ from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe, sanitize_c_i
 _NAME_PATTERN = re.compile(r'\.name\s*=\s*"([^"]+)"')
 
 
-def extract_native_script_fixture_names(header_file_path: Path) -> List[str]:
+def extract_native_script_fixture_names(header_file_path: Path) -> list[str]:
     """
     Extract test case names from native script fixtures header.
 
@@ -66,7 +66,7 @@ def _build_test_file_header() -> str:
 """
 
 
-def _build_test_functions(fixture_names: List[str]) -> tuple[str, List[str]]:
+def _build_test_functions(fixture_names: list[str]) -> tuple[str, list[str]]:
     """
     Build individual test functions for each fixture.
     
@@ -98,7 +98,7 @@ def _build_test_functions(fixture_names: List[str]) -> tuple[str, List[str]]:
     return "\n".join(test_functions_lines), test_function_names
 
 
-def _build_main_function(test_function_names: List[str]) -> str:
+def _build_main_function(test_function_names: list[str]) -> str:
     """
     Build main() function with CMocka test array.
     

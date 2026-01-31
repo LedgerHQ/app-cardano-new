@@ -1,15 +1,6 @@
-from __future__ import annotations
-
-import argparse
-import hashlib
-import json
 import re
-import subprocess
-import sys
-import types
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Type
+from typing import Sequence
 
 from common import (
     read_file_safe,
@@ -38,7 +29,7 @@ ERA_COMMENT_OVERRIDES = {
     "alonzo_cip36": "ALONZO_CIP36 Era Tests",
 }
 
-ERA_TEST_FILE_MAP: Dict[str, Tuple[str, str, str]] = {
+ERA_TEST_FILE_MAP: dict[str, tuple[str, str, str]] = {
     "byron": ("test_sign_tx_fixtures_byron.h", "test_sign_tx_byron.c", "BYRON"),
     "shelley": ("test_sign_tx_fixtures_shelley.h", "test_sign_tx_shelley.c", "SHELLEY"),
     "mary": ("test_sign_tx_fixtures_mary.h", "test_sign_tx_mary.c", "MARY"),
@@ -86,10 +77,10 @@ ERA_TEST_FILE_MAP: Dict[str, Tuple[str, str, str]] = {
 
 
 def _build_test_functions(
-    fixtures: Sequence[Tuple[str, str]],
-) -> Tuple[List[str], List[str]]:
-    functions: List[str] = []
-    names: List[str] = []
+    fixtures: Sequence[tuple[str, str]],
+) -> tuple[list[str], list[str]]:
+    functions: list[str] = []
+    names: list[str] = []
     for fixture_name, display_name in fixtures:
         func_suffix = sanitize_c_identifier(display_name, uppercase=False)
         if not func_suffix:
@@ -129,9 +120,9 @@ def _build_main_function(test_names: Sequence[str], test_c_file: str) -> str:
     )
 
 
-def _extract_fixtures_from_header(fixture_path: Path) -> List[Tuple[str, str]]:
+def _extract_fixtures_from_header(fixture_path: Path) -> list[tuple[str, str]]:
     content = read_file_safe(fixture_path)
-    fixtures: List[Tuple[str, str]] = []
+    fixtures: list[tuple[str, str]] = []
     for match in _FIXTURE_PATTERN.finditer(content):
         fixture_name = match.group(1)
         body = match.group(2)
