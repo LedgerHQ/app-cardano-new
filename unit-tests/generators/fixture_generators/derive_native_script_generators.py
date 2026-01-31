@@ -8,6 +8,7 @@ from common import (
     _ensure_base58_module,
     _add_tests_to_sys_path,
     REPO_ROOT,
+    extract_apdu_payload,
 )
     
 FIXTURES_FILE = (
@@ -70,22 +71,6 @@ def _is_simple_native_script(native_script) -> bool:
     }
     
     return native_script.type in simple_script_types
-    
-def _extract_apdu_payload(full_apdu: bytes) -> bytes:
-    """
-    Extract payload from APDU command.
-    
-    APDU format: [CLA: 1][INS: 1][P1: 1][P2: 1][LC: 1][DATA: LC bytes]
-    
-    Args:
-        full_apdu: Complete APDU command
-    
-    Returns:
-        APDU payload (DATA portion only)
-    """
-    if len(full_apdu) < 5:
-        raise ValueError("APDU too short")
-    return full_apdu[5:]
 
 def _generate_simple_script_apdu_array(
     script_identifier: str,
@@ -105,7 +90,7 @@ def _generate_simple_script_apdu_array(
 
     command_builder = CommandBuilder()
     full_apdu = command_builder.derive_script_add_simple(script)
-    apdu_payload = _extract_apdu_payload(full_apdu)
+    apdu_payload = extract_apdu_payload(full_apdu)
     
     lines = []
     array_name = f"APDU_PAYLOAD_{script_identifier}"
@@ -494,7 +479,7 @@ def _generate_finish_apdu_payload(
     
     command_builder = CommandBuilder()
     full_apdu = command_builder.derive_script_finish(display_format)
-    apdu_payload = _extract_apdu_payload(full_apdu)
+    apdu_payload = extract_apdu_payload(full_apdu)
     
     lines = []
     array_name = f"FINISH_APDU_PAYLOAD_{test_case_id}"

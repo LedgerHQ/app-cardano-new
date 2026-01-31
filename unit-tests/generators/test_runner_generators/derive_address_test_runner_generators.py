@@ -2,7 +2,7 @@ import re
 from pathlib import Path
 from typing import List, NamedTuple, Dict, Sequence
 
-from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe
+from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe, sanitize_c_identifier
 
 
 # ======================================================================
@@ -225,25 +225,6 @@ def extract_all_fixture_array_details(
     
     return all_array_details
 
-def _sanitize_fixture_name_for_c_function(fixture_name: str) -> str:
-    """
-    Convert fixture display name to valid C function name suffix.
-    
-    Examples:
-        "Mainnet 1" -> "mainnet_1"
-        "Base address with script payment" -> "base_address_with_script_payment"
-    
-    """
-    sanitized = fixture_name.lower()
-    sanitized = re.sub(r'[^a-z0-9_]+', '_', sanitized)
-    sanitized = re.sub(r'_+', '_', sanitized)
-    sanitized = sanitized.strip('_')
-    
-    if sanitized and sanitized[0].isdigit():
-        sanitized = f"num_{sanitized}"
-    
-    return sanitized
-
 def _build_test_file_header() -> str:
     """
     Generate C file header with includes and helper functions.
@@ -279,7 +260,7 @@ def _build_main_function(all_fixture_array_details: Sequence[str], test_c_file: 
         
         for fixture in fixture_array_details.fixtures:
             # Build unique test name for THIS fixture
-            sanitized_fixture_name = _sanitize_fixture_name_for_c_function(fixture.name)
+            sanitized_fixture_name = sanitize_c_identifier(fixture.name, uppercase=False, handle_leading_digit=True)
             test_function_name = f"test_derive_address_{array_suffix}_{sanitized_fixture_name}"
             
             # Add to list of all test names

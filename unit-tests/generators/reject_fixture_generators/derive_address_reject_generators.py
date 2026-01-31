@@ -8,6 +8,8 @@ from common import (
     _ensure_base58_module,
     _add_tests_to_sys_path,
     REPO_ROOT,
+    extract_apdu_payload,
+    format_bytes_as_c_array,
 )
 
 GENERATED_REJECT_HEADER = (
@@ -123,16 +125,12 @@ def _generate_c_byte_array_for_apdu(
     Returns:
         List of C code lines defining the byte array
     """
-    code_lines = []
-
-    code_lines.append(f"static const uint8_t {array_name}[] = {{")
-
-    for byte_index in range(0, len(apdu_bytes), bytes_per_line):
-        byte_chunk = apdu_bytes[byte_index : byte_index + bytes_per_line]
-        hex_values = ", ".join(f"0x{byte:02X}" for byte in byte_chunk)
-        code_lines.append(f"    {hex_values},")
-
-    code_lines.append("};")
+    code_lines = format_bytes_as_c_array(
+        apdu_bytes,
+        array_name,
+        bytes_per_line=bytes_per_line,
+        return_as_list=True,
+    )
 
     hex_comment_lines = _format_hex_comment(apdu_bytes)
     code_lines.extend(hex_comment_lines)
@@ -177,45 +175,6 @@ def _get_expected_rejection_reason(test_case: Any) -> str:
         return "SWO_SECURITY_CONDITION_NOT_SATISFIED"
 
 
-def _extract_apdu_payload_bytes(complete_apdu_command: bytes) -> bytes:
-    """
-    Extract payload data from a complete APDU command.
-
-    APDU command structure:
-        [CLA: 1 byte][INS: 1 byte][P1: 1 byte][P2: 1 byte][Lc: 1 byte][Payload: Lc bytes]
-
-    Args:
-        complete_apdu_command: Full APDU command from CommandBuilder
-
-    Returns:
-        Just the payload bytes (after the 5-byte header)
-
-    Raises:
-        ValueError: If APDU structure is invalid
-    """
-    APDU_HEADER_LENGTH = 5
-
-    if len(complete_apdu_command) < APDU_HEADER_LENGTH:
-        raise ValueError(
-            f"APDU command too short: {len(complete_apdu_command)} bytes "
-            f"(expected at least {APDU_HEADER_LENGTH})"
-        )
-
-    # Byte 4 (index 4) contains the payload length (Lc field)
-    payload_length = complete_apdu_command[4]
-
-    # Extract payload starting at byte 5 (index 5)
-    payload_bytes = complete_apdu_command[5 : 5 + payload_length]
-
-    if len(payload_bytes) != payload_length:
-        raise ValueError(
-            f"Payload length mismatch: Lc field says {payload_length} bytes, "
-            f"but got {len(payload_bytes)} bytes"
-        )
-
-    return payload_bytes
-
-
 def _generate_fixture_code_for_reject_test_case(
     test_case: Any,
     test_number: int,
@@ -255,7 +214,7 @@ def _generate_fixture_code_for_reject_test_case(
     apdu_command_bytes = _serialize_reject_test_case_to_apdu(test_case)
 
     # Extract just the payload (skip the 5-byte APDU header: CLA, INS, P1, P2, Lc)
-    payload_bytes = _extract_apdu_payload_bytes(apdu_command_bytes)
+    payload_bytes = extract_apdu_payload(apdu_command_bytes)
 
     # Generate safe C identifier from test name
     safe_test_name = sanitize_c_identifier(test_case.name)

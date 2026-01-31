@@ -99,6 +99,89 @@ def sanitize_c_identifier(name: str, uppercase: bool = True, handle_leading_digi
     return sanitized.upper() if uppercase else sanitized.lower()
 
 
+def extract_apdu_payload(apdu: bytes) -> bytes:
+    """
+    Extract payload from APDU command.
+
+    APDU format: [CLA: 1][INS: 1][P1: 1][P2: 1][LC: 1][DATA: LC bytes]
+
+    Args:
+        apdu: Complete APDU command with 5-byte header
+
+    Returns:
+        Payload bytes (DATA portion only, starting at offset 5)
+
+    Raises:
+        ValueError: If APDU is too short or payload length mismatch
+
+    Examples:
+        >>> apdu = b'\\x00\\x01\\x02\\x03\\x05\\xAA\\xBB\\xCC\\xDD\\xEE'
+        >>> extract_apdu_payload(apdu)
+        b'\\xAA\\xBB\\xCC\\xDD\\xEE'
+    """
+    APDU_HEADER_LENGTH = 5
+
+    if len(apdu) < APDU_HEADER_LENGTH:
+        raise ValueError(
+            f"APDU command too short: {len(apdu)} bytes "
+            f"(expected at least {APDU_HEADER_LENGTH})"
+        )
+
+    # Byte 4 (index 4) contains the payload length (Lc field)
+    payload_length = apdu[4]
+
+    # Extract payload starting at byte 5 (index 5)
+    payload_bytes = apdu[5 : 5 + payload_length]
+
+    if len(payload_bytes) != payload_length:
+        raise ValueError(
+            f"Payload length mismatch: Lc field says {payload_length} bytes, "
+            f"but got {len(payload_bytes)} bytes"
+        )
+
+    return payload_bytes
+
+
+def format_bytes_as_c_array(
+    data: bytes,
+    name: str,
+    bytes_per_line: int = 16,
+    return_as_list: bool = False
+) -> str | list[str]:
+    """
+    Generate C code for a byte array declaration.
+
+    Args:
+        data: Byte data to format
+        name: C identifier for the array
+        bytes_per_line: Number of bytes per line for readability (default: 16)
+        return_as_list: If True, return list of lines; if False, return single string
+
+    Returns:
+        C code as string or list of strings
+
+    Examples:
+        >>> format_bytes_as_c_array(b'\\xAA\\xBB\\xCC', "TEST_DATA")
+        'static const uint8_t TEST_DATA[] = {\\n    0xAA, 0xBB, 0xCC,\\n};'
+        >>> format_bytes_as_c_array(b'\\xAA\\xBB\\xCC', "TEST_DATA", return_as_list=True)
+        ['static const uint8_t TEST_DATA[] = {', '    0xAA, 0xBB, 0xCC,', '};']
+    """
+    lines = []
+    lines.append(f"static const uint8_t {name}[] = {{")
+
+    for i in range(0, len(data), bytes_per_line):
+        chunk = data[i : i + bytes_per_line]
+        hex_bytes = ", ".join(f"0x{b:02X}" for b in chunk)
+        lines.append(f"    {hex_bytes},")
+
+    lines.append("};")
+
+    if return_as_list:
+        return lines
+    else:
+        return "\n".join(lines)
+
+
 def _add_tests_to_sys_path() -> None:
     sys.path.insert(0, str(REPO_ROOT / "tests"))
     sys.path.insert(0, str(REPO_ROOT / "tests" / "application_client"))

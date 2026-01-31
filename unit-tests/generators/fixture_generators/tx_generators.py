@@ -10,30 +10,9 @@ from common import (
     UNIT_TESTS_DIR,
     write_file_safe,
     sanitize_c_identifier,
+    extract_apdu_payload,
+    format_bytes_as_c_array,
 )
-
-def _format_bytes_as_c_array(data: bytes, name: str, bytes_per_line: int = 16) -> str:
-    lines = []
-    for i in range(0, len(data), bytes_per_line):
-        chunk = data[i : i + bytes_per_line]
-        hex_bytes = ", ".join(f"0x{b:02X}" for b in chunk)
-        lines.append(f"    {hex_bytes},")
-
-    result = f"static const uint8_t {name}[] = {{\n"
-    result += "\n".join(lines)
-    result += "\n};"
-    return result
-
-
-def _extract_apdu_payload(apdu: bytes) -> bytes:
-    if len(apdu) < 5:
-        raise ValueError("APDU too short")
-    lc = apdu[4]
-    payload = apdu[5 : 5 + lc]
-    if len(payload) != lc:
-        raise ValueError("APDU payload length mismatch")
-    return payload
-
 
 def _split_hex_string(hex_str: str, chunk_size: int = 1024) -> List[str]:
     return [hex_str[i : i + chunk_size] for i in range(0, len(hex_str), chunk_size)]
@@ -158,11 +137,11 @@ def _generate_fixtures_for_era(
                 aux_params = tx.auxiliaryData.params
                 if isinstance(aux_params, TxAuxiliaryDataCIP36):
                     aux_data_init_apdu = builder.sign_tx_aux_data_init(tx, aux_params)
-                    aux_data_init_payload = _extract_apdu_payload(aux_data_init_apdu)
+                    aux_data_init_payload = extract_apdu_payload(aux_data_init_apdu)
                     for delegation in aux_params.delegations:
                         reg_apdu = builder.sign_tx_aux_data_delegation(delegation)
                         aux_data_delegation_payloads.append(
-                            _extract_apdu_payload(reg_apdu)
+                            extract_apdu_payload(reg_apdu)
                         )
                 else:
                     include_aux_data_hash = False
@@ -179,7 +158,7 @@ def _generate_fixtures_for_era(
         header_lines.append(f"// Source: tests/standalone/input_files/signTx.py > {era_key} era tests")
         header_lines.append("//")
 
-        array_lines = _format_bytes_as_c_array(
+        array_lines = format_bytes_as_c_array(
             raw_tx_bytes,
             f"{fixture_prefix}_RAW_TX",
         ).split("\n")
@@ -189,7 +168,7 @@ def _generate_fixtures_for_era(
             TxAuxiliaryDataType.CIP36_REGISTRATION
         ):
             init_payload_name = f"{fixture_prefix}_AUX_DATA_INIT_PAYLOAD"
-            init_payload_lines = _format_bytes_as_c_array(
+            init_payload_lines = format_bytes_as_c_array(
                 aux_data_init_payload,
                 init_payload_name,
             ).split("\n")
@@ -201,7 +180,7 @@ def _generate_fixtures_for_era(
                 delegation_entries = []
                 for reg_index, payload in enumerate(aux_data_delegation_payloads):
                     entry_name = f"{fixture_prefix}_AUX_DATA_DELEGATION_{reg_index}"
-                    reg_lines = _format_bytes_as_c_array(payload, entry_name).split(
+                    reg_lines = format_bytes_as_c_array(payload, entry_name).split(
                         "\n"
                     )
                     header_lines.extend(reg_lines)
