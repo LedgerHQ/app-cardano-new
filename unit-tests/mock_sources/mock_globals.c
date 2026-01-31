@@ -8,3 +8,4 @@ const internal_storage_t N_storage_real = {
     .initialized = 0,
 };
 bool unit_test_expert_mode_enabled = false;
+bool unit_test_silent_pubkey_export_enabled = false;

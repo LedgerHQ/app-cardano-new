@@ -76,7 +76,7 @@ python3 generators/generate_unit_tests_from_ragger.py generate-test-runners
 popd
 ```
 
-The default command runs all generators in order (fixtures, complete-tests, rejects, mock-data).
+The default command runs all generators in order (fixtures, generate-test-runners, rejects, mock-data).
 
 Notes:
 -- `unit-tests/generators/generate_unit_tests_from_ragger.py` produces `unit-tests/test_sign_tx_fixtures_*.h` from
@@ -128,7 +128,7 @@ This is the standard test mnemonic used across all Cardano Ledger application te
 ### 1. Key Derivation Verification (`unit-tests/test_mock_key_derivation.c`)
 
 **What it does:**
-- Parses `crypto_mock_data.h` to extract all 21 mock path entries
+- Parses `crypto_mock_data.h` to extract all mock path entries (currently 49)
 - For each entry, derives keys from the standard mnemonic using ragger
 - Verifies that public key, chain code, and key hash match
 
@@ -140,7 +140,7 @@ cmake -Bbuild -H. && make -C build test
 CTEST_OUTPUT_ON_FAILURE=1 make -C build test 2>&1 | grep test_mock_key_derivation
 ```
 
-**Expected result:** ✓ All 21 entries verified successfully
+**Expected result:** ✓ All entries verified successfully
 
 ### 2. Ragger Test for Mock Key Derivation (`tests/standalone/test_mock_key_derivation.py`)
 
@@ -202,9 +202,7 @@ If mock data (public keys, chain codes, key hashes) becomes outdated or incorrec
 cd unit-tests
 # Activate the ragger venv (required!)
 source ../tests/standalone/venv/bin/activate
-python3 generate_unit_tests_from_ragger.py mock-data
-# Review the changes in crypto_mock_data_regenerated.h
-mv mock_crypto/crypto_mock_data_regenerated.h mock_crypto/crypto_mock_data.h
+python3 generators/generate_unit_tests_from_ragger.py mock-data
 ```
 
 This script:
@@ -229,7 +227,7 @@ All these paths are verified in the mock data tests.
 To add a new mock path entry:
 
 1. Add the path to `mock_crypto/crypto_mock_data.h` MOCK_PATHS array
-2. Run `python3 generate_unit_tests_from_ragger.py mock-data` to compute key material
+2. Run `python3 generators/generate_unit_tests_from_ragger.py mock-data` to compute key material
 3. The key derivation test will automatically verify the new entry
 4. If the test fails, check that the path is correct
 

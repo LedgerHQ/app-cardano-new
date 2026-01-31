@@ -58,6 +58,17 @@ typedef struct {
     size_t expected_address_len;
 } derive_address_fixture_t;
 
+typedef struct {
+    const char *name;
+    const uint8_t *data;
+    size_t data_len;
+    uint16_t check_expected;
+    const uint8_t *expected_response;
+    size_t expected_response_len;
+    bool silent_export_enabled;
+    uint8_t expected_policy;
+} pubkey_fixture_t;
+
 
 
 // Native script types (matching CBOR encoding)

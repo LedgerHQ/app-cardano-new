@@ -50,6 +50,9 @@ from fixture_generators.derive_address_generators import (
 from fixture_generators.derive_native_script_generators import (
     generate_derive_native_script_fixtures,
 )
+from fixture_generators.pubkey_generators import (
+    generate_pubkey_fixtures,
+)
 
 # Import reject generators
 from reject_fixture_generators.tx_reject_generators import (
@@ -62,6 +65,9 @@ from reject_fixture_generators.derive_address_reject_generators import (
 
 from reject_fixture_generators.derive_native_script_reject_generators import (
     generate_derive_native_script_reject_fixtures,
+)
+from reject_fixture_generators.pubkey_reject_generators import (
+    generate_pubkey_reject_fixtures,
 )
 
 # Import test runners
@@ -78,6 +84,12 @@ from test_runner_generators.derive_native_script_runner_generators import (
 )
 from test_runner_generators.derive_address_reject_runner_generators import (
     generate_address_derivation_reject_test_runners,
+)
+from test_runner_generators.pubkey_test_runner_generators import (
+    generate_pubkey_test_runners,
+)
+from test_runner_generators.pubkey_reject_runner_generators import (
+    generate_pubkey_reject_test_runners,
 )
 
 def _log_stage(message: str) -> None:
@@ -247,7 +259,7 @@ def regenerate_mock_data() -> None:
         raise ValueError("No mock path entries were found")
     print(f"Regenerating {len(path_entries)} mock path entries...")
     regenerated_paths = [_build_path_entry(entry) for entry in path_entries]
-    new_mock_body = "\n".join(regenerated_paths).strip()
+    new_mock_body = "\n".join(regenerated_paths).rstrip()
     content = (
         content[: mock_paths_match.start(2)]
         + "\n"
@@ -358,7 +370,7 @@ def regenerate_mock_data() -> None:
     except Exception as exc:
         print(f"ERROR: Failed to regenerate mock signatures: {exc}")
         sys.exit(1)
-    new_signature_body = "\n".join(regenerated_signatures).strip()
+    new_signature_body = "\n".join(regenerated_signatures).rstrip()
     new_content = (
         content[: signature_match.start(2)]
         + "\n"
@@ -457,6 +469,8 @@ def _verify_ragger_test_coverage() -> None:
         "test_native_script.c",
         "test_derive_address_rejects.c",
         "test_native_script_rejects.c",
+        "test_pubkey.c",
+        "test_pubkey_rejects.c",
         "test_opcert_message.c",
         "test_message_signing.c",
     ]
@@ -578,15 +592,19 @@ def run_all() -> None:
     generate_tx_fixtures()
     generate_address_derivation_fixtures()
     generate_derive_native_script_fixtures()
+    generate_pubkey_fixtures()
     _log_stage("Generating test runners")
     generate_tx_test_runners()
     generate_address_derivation_test_runners()
     generate_native_script_test_runners()
     generate_address_derivation_reject_test_runners()
+    generate_pubkey_test_runners()
     _log_stage("Generating reject fixtures")
     generate_tx_reject_fixtures()
     generate_address_derivation_reject_fixtures()
     generate_derive_native_script_reject_fixtures()
+    generate_pubkey_reject_fixtures()
+    generate_pubkey_reject_test_runners()
     _log_stage("Regenerating mock data")
     regenerate_mock_data()
     _log_stage("Verifying Ragger coverage")
@@ -617,17 +635,22 @@ def main() -> None:
         generate_tx_fixtures()
         generate_address_derivation_fixtures()
         generate_derive_native_script_fixtures()
+        generate_pubkey_fixtures()
     elif args.command == "generate-test-runners":
         _log_stage("Generating test runners")
         generate_tx_test_runners()
         generate_address_derivation_test_runners()
         generate_native_script_test_runners()
         generate_address_derivation_reject_test_runners()
+        generate_pubkey_test_runners()
+        generate_pubkey_reject_fixtures()
+        generate_pubkey_reject_test_runners()
     elif args.command == "rejects":
         _log_stage("Generating reject fixtures")
         generate_tx_reject_fixtures()
         generate_address_derivation_reject_fixtures()
         generate_derive_native_script_reject_fixtures()
+        generate_pubkey_reject_fixtures()
     elif args.command == "mock-data":
         _log_stage("Regenerating mock data")
         regenerate_mock_data()

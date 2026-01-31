@@ -1,0 +1,98 @@
+import re
+from pathlib import Path
+from typing import List
+
+from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe, sanitize_c_identifier
+
+
+def _extract_reject_fixture_names(header_path: Path) -> List[str]:
+    if not header_path.exists():
+        raise FileNotFoundError(f"Fixture header not found: {header_path}")
+
+    header_content = read_file_safe(header_path)
+    fixture_names = re.findall(r'\.name\s*=\s*"([^"]+)"', header_content)
+
+    if not fixture_names:
+        raise ValueError("No reject fixtures found in header")
+
+    return fixture_names
+
+
+def _build_test_file_header() -> str:
+    return """// Unit tests for public key export rejects (auto-generated)
+
+#include <stdarg.h>
+#include <stddef.h>
+#include <setjmp.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+
+#include <cmocka.h>
+
+#include \"test_pubkey_fixtures_rejects.h\"
+#include \"test_pubkey_common.h\"
+
+// ======================================================================
+// Public Key Export Reject Tests (Auto-Generated)
+// ======================================================================
+
+"""
+
+
+def _build_test_functions(fixture_names: List[str]) -> tuple[str, List[str]]:
+    test_functions: List[str] = []
+    test_function_names: List[str] = []
+
+    for idx, fixture_name in enumerate(fixture_names):
+        sanitized = sanitize_c_identifier(fixture_name, uppercase=False, handle_leading_digit=True)
+        test_function_name = f"test_pubkey_reject_{idx}_{sanitized}"
+
+        test_functions.append(
+            f"static void {test_function_name}(void **state) {{\n"
+            f"    (void) state;\n"
+            f"    run_fixture(&PUBKEY_REJECT_FIXTURES[{idx}]);\n"
+            f"}}\n"
+        )
+        test_function_names.append(test_function_name)
+
+    return "\n".join(test_functions), test_function_names
+
+
+def _build_main_function(test_function_names: List[str]) -> str:
+    registrations = ",\n        ".join(
+        f"cmocka_unit_test({name})" for name in test_function_names
+    )
+
+    return (
+        "int main(void) {\n"
+        "    const struct CMUnitTest tests[] = {\n"
+        f"        {registrations},\n"
+        "    };\n\n"
+        "    return cmocka_run_group_tests(tests, NULL, NULL);\n"
+        "}\n"
+    )
+
+
+def generate_pubkey_reject_test_runners() -> None:
+    fixture_header_path = UNIT_TESTS_DIR / "test_pubkey_fixtures_rejects.h"
+    test_c_file = UNIT_TESTS_DIR / "test_pubkey_rejects.c"
+
+    fixture_names = _extract_reject_fixture_names(fixture_header_path)
+    test_functions_section, test_function_names = _build_test_functions(fixture_names)
+    main_section = _build_main_function(test_function_names)
+
+    complete_file = (
+        _build_test_file_header()
+        + test_functions_section
+        + "\n"
+        + "// ======================================================================\n"
+        + "// Main\n"
+        + "// ======================================================================\n"
+        + "\n"
+        + main_section
+    )
+
+    write_file_safe(test_c_file, complete_file)
+    print(f"Generated {test_c_file}")
+

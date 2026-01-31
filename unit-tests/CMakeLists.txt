@@ -664,6 +664,61 @@ target_link_libraries(test_derive_address PUBLIC cmocka gcov cardano_derive_addr
 target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
 add_test(test_derive_address test_derive_address)
 
+set(PUBKEY_COMMON_SOURCES
+    mock_sources/mock_globals.c
+    ../src/handler/get_public_key.c
+    ../src/keyDerivation/keyDerivation.c
+    ../src/addressUtils/addressUtilsShelley.c
+    ../src/addressUtils/addressUtilsByron.c
+    ../src/addressUtils/bip44.c
+    ../src/transaction/tx_utils.c
+    ../src/securityPolicy/securityPolicy.c
+    ../src/securityPolicy/securityPolicy_privkey.c
+    ../src/app_context.c
+    ../src/memory/mem.c
+    ../src/ui/ui_utils.c
+    ../src/ui/ui_warnings.c
+    ${UNIT_TEST_MEM_UTILS_STUB}
+    mock_sources/glyphs_mock.c
+    mock_sources/ui_display_tx_stub.c
+    mock_sources/hex_stub.c
+    mock_sources/io_stub.c
+)
+set(PUBKEY_COMMON_LIBS
+    hex_utils
+    base58
+    bech32_lib
+    bip44_real
+    buffer_write_lib
+    cbor_lib
+    blake2b_lib
+    sha3_lib
+    hash_mocks_lib
+    crypto_mocks_lib
+    buffer
+    write
+    read
+    varint
+    bip32
+    cx_crc_support
+    mock_printf
+    parsers_lib
+)
+add_library(cardano_pubkey_core STATIC ${PUBKEY_COMMON_SOURCES})
+target_link_libraries(cardano_pubkey_core PUBLIC ${PUBKEY_COMMON_LIBS})
+
+add_executable(test_pubkey
+    test_pubkey.c
+)
+target_link_libraries(test_pubkey PUBLIC cmocka gcov cardano_pubkey_core)
+add_test(test_pubkey test_pubkey)
+
+add_executable(test_pubkey_rejects
+    test_pubkey_rejects.c
+)
+target_link_libraries(test_pubkey_rejects PUBLIC cmocka gcov cardano_pubkey_core)
+add_test(test_pubkey_rejects test_pubkey_rejects)
+
 set(DERIVE_NATIVE_SCRIPT_COMMON_SOURCES
    mock_sources/mock_globals.c
     ../src/deriveNativeScriptHash/derive_native_script_hash_builder.c
