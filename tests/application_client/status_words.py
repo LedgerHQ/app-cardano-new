@@ -15,7 +15,6 @@ class StatusWord(IntEnum):
     SWO_WRONG_DATA_LENGTH = 0x6A87
     SWO_INVALID_INS = 0x6D00
     SWO_INVALID_CLA = 0x6E00
-    SWO_INVALID_DATA = 0x6E07
     SWO_SUCCESS = 0x9000
 
     # Cardano-specific status words (0x6BXX range - ISO 7816-4 compliant)

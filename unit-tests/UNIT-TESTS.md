@@ -62,7 +62,7 @@ Some unit tests consume generated C headers. Do not hand-edit these generated fi
 
 ### Transaction Signing Fixtures
 
-Fixtures for sign-tx tests are generated from LedgerJS fixtures and serialized through the shared Python command builder.
+Fixtures for sign-tx tests are generated from ragger fixtures and serialized through the shared Python command builder.
 
 Generators (run from repo root with the standalone venv):
 
@@ -82,10 +82,8 @@ Notes:
 -- `unit-tests/generators/generate_unit_tests_from_ragger.py` produces `unit-tests/test_sign_tx_fixtures_*.h` from
   `tests/standalone/input_files/signTx.py`, rewrites each `unit-tests/test_sign_tx_*.c`
   with `tx_fixture_t` + `run_fixture_with_expert_mode`, and emits `unit-tests/test_sign_tx_fixtures_rejects.h`.
-- `unit-tests/export_sign_tx_rejects.js` runs inside `../ledgerjs-cardano-shelley` (via Node)
-  to export reject fixtures that are then serialized with `tests/application_client/command_builder.py`.
 - APDU fixtures use the app's binary schema (presence flags + length-prefixed ASCII for relays/metadata);
-  they are not CBOR byte dumps from LedgerJS. CBOR fixtures remain the source of truth for tx body/hash validation.
+  they are not CBOR byte dumps. CBOR fixtures remain the source of truth for tx body/hash validation.
 
 ### Mock Crypto Fixtures
 

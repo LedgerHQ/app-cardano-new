@@ -4,7 +4,6 @@ import types
 from pathlib import Path
 
 from paths import REPO_ROOT, UNIT_TESTS_DIR
-NODE_VERSION = "16.20.2"
 
 
 def read_file_safe(file_path: Path) -> str:

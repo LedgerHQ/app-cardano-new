@@ -1,14 +1,11 @@
 from dataclasses import dataclass
-from typing import Any, Sequence, Type
-import json
-import subprocess
+from typing import Any
 
 from common import (
     write_file_safe,
     _add_tests_to_sys_path,
-    NODE_VERSION
 )
-from paths import EXPORT_SCRIPT, MOCK_LOADER, LEDGERJS_CARDANO_SHELLEY_DIR, UNIT_TESTS_DIR
+from paths import UNIT_TESTS_DIR
 
 SET_ORDER = [
     "transactionInitRejectTestCases",
@@ -52,456 +49,54 @@ SET_PREFIX = {
     "invalidRelayTestCases": "REJECT_RELAY",
 }
 
-REJECT_REASON_SW: dict[str, str] = {
-    "InvalidDataReason.NETWORK_INVALID_NETWORK_ID": "SWO_INVALID_NETWORK_ID",
-    "InvalidDataReason.NETWORK_INVALID_PROTOCOL_MAGIC": "SWO_INVALID_PROTOCOL_MAGIC",
-    "InvalidDataReason.MULTIASSET_INVALID_TOKEN_BUNDLE_ORDERING": "SWO_TX_PARSING_FAIL_CANONICAL_ORDER",
-    "InvalidDataReason.MULTIASSET_INVALID_TOKEN_BUNDLE_NOT_UNIQUE": "SWO_TX_PARSING_FAIL_CANONICAL_ORDER",
-    "InvalidDataReason.MULTIASSET_INVALID_ASSET_GROUP_ORDERING": "SWO_TX_PARSING_FAIL_CANONICAL_ORDER",
-    "InvalidDataReason.MULTIASSET_INVALID_ASSET_GROUP_NOT_UNIQUE": "SWO_TX_PARSING_FAIL_CANONICAL_ORDER",
-    "InvalidDataReason.SIGN_MODE_ORDINARY__POOL_REGISTRATION_NOT_ALLOWED": "SWO_SECURITY_CONDITION_NOT_SATISFIED",
-    "InvalidDataReason.SIGN_MODE_MULTISIG__POOL_REGISTRATION_NOT_ALLOWED": "SWO_SECURITY_CONDITION_NOT_SATISFIED",
-    "InvalidDataReason.SIGN_MODE_PLUTUS__POOL_REGISTRATION_NOT_ALLOWED": "SWO_SECURITY_CONDITION_NOT_SATISFIED",
-    "InvalidDataReason.SIGN_MODE_POOL_OPERATOR__SINGLE_POOL_REG_CERTIFICATE_REQUIRED": "SWO_TX_PARSING_FAIL_CERTIFICATES",
-    "InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_POOL_REG_CERTIFICATE_REQUIRED": "SWO_TX_PARSING_FAIL_CERTIFICATES",
-    "InvalidDataReason.CERTIFICATE_INVALID_POOL_KEY_HASH": "SWO_TX_PARSING_FAIL_CERTIFICATES",
-    "InvalidDataReason.WITHDRAWAL_INVALID_ORDERING": "SWO_TX_PARSING_FAIL_WITHDRAWALS",
-    "InvalidDataReason.RELAY_INVALID_DNS": "SWO_TX_PARSING_FAIL_CERTIFICATES",
-    "InvalidDataReason.POOL_REGISTRATION_METADATA_INVALID_URL": "SWO_TX_PARSING_FAIL_CERTIFICATES",
-    "InvalidDataReason.POOL_REGISTRATION_METADATA_INVALID_HASH": "SWO_TX_PARSING_FAIL_CERTIFICATES",
-    "InvalidDataReason.POOL_REGISTRATION_INVALID_MARGIN": "SWO_TX_PARSING_FAIL_CERTIFICATES",
-}
-
-def _parse_enum(enum_cls: Type[Any], value: Any) -> Any:
-    if isinstance(value, enum_cls):
-        return value
-    if isinstance(value, str):
-        normalized = value.replace("-", "_").replace(" ", "_").upper()
-        members = enum_cls.__members__
-        if normalized in members:
-            return enum_cls[normalized]
-        suffix = normalized.split("_")[-1]
-        if suffix in members:
-            return enum_cls[suffix]
-        raise KeyError(f"{normalized} not found in {enum_cls.__name__}")
-    return enum_cls(value)
-
-
-def _parse_credential_params_type(
-    value: Any,
-    credential_params_type_enum: Type[Any],
-    credential_params_type_map: dict[int, Any],
-) -> Any:
-    if isinstance(value, credential_params_type_enum):
-        return value
-    if isinstance(value, str):
-        return _parse_enum(credential_params_type_enum, value)
-    if isinstance(value, int):
-        mapped = credential_params_type_map.get(value)
-        if mapped is not None:
-            return mapped
-    raise ValueError(f"Unknown CredentialParamsType value: {value}")
-
-NODE_SCRIPT = EXPORT_SCRIPT
-MOCK_USB_LOADER = MOCK_LOADER
 GENERATED_REJECT_HEADER = UNIT_TESTS_DIR / "test_sign_tx_fixtures_rejects.h"
-
-
-def _build_node_command() -> tuple[str, ...]:
-    return (
-        "bash",
-        "-lc",
-        f"source ~/.nvm/nvm.sh && nvm use {NODE_VERSION} >/dev/null && "
-        f"cd {LEDGERJS_CARDANO_SHELLEY_DIR} && "
-        f"NODE_OPTIONS=--require={MOCK_USB_LOADER} NODE_PATH=./node_modules "
-        f"node {NODE_SCRIPT}",
-    )
-
-
-def _run_node_export() -> dict[str, Any]:
-    try:
-        proc = subprocess.run(_build_node_command(), capture_output=True, text=True, check=True)
-        return json.loads(proc.stdout)
-    except subprocess.CalledProcessError as exc:
-        print("STDOUT:", exc.stdout)
-        print("STDERR:", exc.stderr)
-        raise
 
 
 def _build_reject_fixtures() -> str:
     _add_tests_to_sys_path()
-    from application_client.app_def import AddressType, NetworkDesc  # type: ignore
     from application_client.command_builder import CommandBuilder, P1Type, gather_witness_paths  # type: ignore
-    from standalone.input_files.derive_address import DeriveAddressTestCase, pointer_to_str  # type: ignore
+    from application_client.status_words import StatusWord  # type: ignore
     from standalone.input_files.signTx import (  # type: ignore
-        AnchorParams,
-        AssetGroup,
-        Certificate,
-        CertificateType,
-        CredentialParams,
-        CredentialParamsType,
-        Datum,
-        DatumType,
-        Margin,
-        MultiHostRelayParams,
-        PoolKey,
-        PoolKeyType,
-        PoolMetadataParams,
-        PoolRegistrationParams,
-        PoolRetirementParams,
-        Relay,
-        RelayType,
-        SingleHostHostnameRelayParams,
-        SingleHostIpAddrRelayParams,
-        StakeDelegationParams,
-        StakeRegistrationParams,
-        Token,
-        Transaction,
-        TransactionSigningMode,
-        TxAuxiliaryData,
-        TxAuxiliaryDataHash,
-        TxAuxiliaryDataType,
-        TxInput,
-        TxOutputAlonzo,
-        TxOutputBabbage,
-        TxOutputDestination,
-        TxOutputDestinationType,
-        TxOutputFormat,
-        TxRequiredSignerType,
-        RequiredSigner,
-        Withdrawal,
-        Voter,
-        VoterType,
-        Vote,
-        VoteOption,
-        VoterVotes,
-        VotingProcedure,
-        GovActionId,
-        ThirdPartyAddressParams,
+        transactionInitRejectTestCases,
+        addressParamsRejectTestCases,
+        certificateRejectTestCases,
+        certificateStakingRejectTestCases,
+        certificateStakePoolRetirementRejectTestCases,
+        withdrawalRejectTestCases,
+        witnessRejectTestCases,
+        singleAccountRejectTestCases,
+        collateralOutputRejectTestCases,
+        testsInvalidTokenBundleOrdering,
+        poolRegistrationOwnerRejectTestCases,
+        stakePoolRegistrationPoolIdRejectTestCases,
+        stakePoolRegistrationOwnerRejectTestCases,
+        outputRejectTestCases,
+        testsCVoteRegistrationRejects,
+        invalidCertificates,
+        invalidPoolMetadataTestCases,
+        invalidRelayTestCases,
     )
 
-    exported = _run_node_export()
-    unexpected_sets = sorted(set(exported.keys()) - set(SET_PREFIX.keys()))
-    if unexpected_sets:
-        raise ValueError(f"Unknown reject fixture sets: {', '.join(unexpected_sets)}")
-
-    credential_params_type_map: dict[int, CredentialParamsType] = {
-        0: CredentialParamsType.KEY_PATH,
-        1: CredentialParamsType.KEY_HASH,
-        2: CredentialParamsType.SCRIPT_HASH,
+    fixtures_by_set: dict[str, list[Any]] = {
+        "transactionInitRejectTestCases": transactionInitRejectTestCases,
+        "addressParamsRejectTestCases": addressParamsRejectTestCases,
+        "certificateRejectTestCases": certificateRejectTestCases,
+        "certificateStakingRejectTestCases": certificateStakingRejectTestCases,
+        "certificateStakePoolRetirementRejectTestCases": certificateStakePoolRetirementRejectTestCases,
+        "withdrawalRejectTestCases": withdrawalRejectTestCases,
+        "witnessRejectTestCases": witnessRejectTestCases,
+        "singleAccountRejectTestCases": singleAccountRejectTestCases,
+        "collateralOutputRejectTestCases": collateralOutputRejectTestCases,
+        "testsInvalidTokenBundleOrdering": testsInvalidTokenBundleOrdering,
+        "poolRegistrationOwnerRejectTestCases": poolRegistrationOwnerRejectTestCases,
+        "stakePoolRegistrationPoolIdRejectTestCases": stakePoolRegistrationPoolIdRejectTestCases,
+        "stakePoolRegistrationOwnerRejectTestCases": stakePoolRegistrationOwnerRejectTestCases,
+        "outputRejectTestCases": outputRejectTestCases,
+        "testsCVoteRegistrationRejects": testsCVoteRegistrationRejects,
+        "invalidCertificates": invalidCertificates,
+        "invalidPoolMetadataTestCases": invalidPoolMetadataTestCases,
+        "invalidRelayTestCases": invalidRelayTestCases,
     }
-
-    tsigning_mode_map = {
-        "ordinary_transaction": TransactionSigningMode.ORDINARY_TRANSACTION,
-        "pool_registration_as_owner": TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        "pool_registration_as_operator": TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
-        "multisig_transaction": TransactionSigningMode.MULTISIG_TRANSACTION,
-        "plutus_transaction": TransactionSigningMode.PLUTUS_TRANSACTION,
-    }
-
-    def to_bip32_path(path: Sequence[int]) -> str:
-        hardened = 0x80000000
-        components: list[str] = []
-        for segment in path:
-            if segment >= hardened:
-                components.append(f"{segment - hardened}'")
-            else:
-                components.append(str(segment))
-        return "m/" + "/".join(components)
-
-    def convert_network(network_json: dict[str, Any]) -> NetworkDesc:
-        return NetworkDesc(networkId=network_json["networkId"], protocol=network_json["protocolMagic"])
-
-    def convert_input(input_json: dict[str, Any]) -> TxInput:
-        path = input_json.get("path")
-        return TxInput(
-            txHashHex=input_json["txHashHex"],
-            path=to_bip32_path(path) if path else None,
-            outputIndex=int(input_json.get("outputIndex", 0)),
-        )
-
-    def convert_credential(credential: dict[str, Any]) -> CredentialParams:
-        ctype = _parse_credential_params_type(
-            credential["type"],
-            CredentialParamsType,
-            credential_params_type_map,
-        )
-        if ctype == CredentialParamsType.KEY_PATH:
-            path_value = credential.get("keyPath") or credential.get("path")
-            if path_value is None:
-                raise ValueError("Missing keyPath for KEY_PATH credential")
-            return CredentialParams(type=ctype, keyValue=to_bip32_path(path_value))
-        if ctype == CredentialParamsType.KEY_HASH:
-            hash_value = credential.get("keyHashHex") or credential.get("hashHex")
-            if hash_value is None:
-                raise ValueError("Missing keyHashHex for KEY_HASH credential")
-            return CredentialParams(type=ctype, keyValue=hash_value.lower())
-        if ctype == CredentialParamsType.SCRIPT_HASH:
-            script_hash = credential.get("scriptHashHex")
-            if script_hash is None:
-                raise ValueError("Missing scriptHashHex for SCRIPT_HASH credential")
-            return CredentialParams(type=ctype, keyValue=script_hash.lower())
-        raise ValueError(f"Unsupported credential type: {credential}")
-
-    def convert_asset_group(group: dict[str, Any]) -> AssetGroup:
-        tokens = [
-            Token(assetNameHex=token["assetNameHex"].lower(), amount=int(token["amount"]))
-            for token in group["tokens"]
-        ]
-        return AssetGroup(policyIdHex=group["policyIdHex"].lower(), tokens=tokens)
-
-    def convert_datum(datum_json: dict[str, Any]) -> Datum:
-        datum_type = _parse_enum(DatumType, datum_json["type"])
-        if datum_type == DatumType.HASH:
-            return Datum(type=datum_type, datumHex=datum_json["datumHashHex"].lower())
-        return Datum(type=datum_type, datumHex=datum_json["datumHex"].lower())
-
-    def convert_pool_key(pool_key_json: dict[str, Any]) -> PoolKey:
-        key_type = _parse_enum(PoolKeyType, pool_key_json["type"])
-        params = pool_key_json["params"]
-        if key_type == PoolKeyType.DEVICE_OWNED:
-            path_value = params.get("path") or params.get("spendingPath") or params.get("stakingPath")
-            if path_value is None:
-                raise ValueError(f"Missing path for device owned pool key: {pool_key_json}")
-            return PoolKey(type=key_type, key=to_bip32_path(path_value))
-        hash_value = (
-            params.get("keyHashHex")
-            or params.get("rewardAccountHex")
-            or params.get("stakingKeyHashHex")
-            or params.get("stakingScriptHashHex")
-        )
-        if not hash_value:
-            raise ValueError(f"Missing hash for third-party pool key: {pool_key_json}")
-        return PoolKey(type=key_type, key=hash_value.lower())
-
-    def convert_relay(relay_json: dict[str, Any]) -> Relay:
-        relay_type = _parse_enum(RelayType, relay_json["type"])
-        params = relay_json["params"]
-        if relay_type == RelayType.SINGLE_HOST_IP_ADDR:
-            return Relay(
-                type=relay_type,
-                params=SingleHostIpAddrRelayParams(
-                    portNumber=params.get("portNumber"),
-                    ipv4=params.get("ipv4"),
-                    ipv6=params.get("ipv6"),
-                ),
-            )
-        if relay_type == RelayType.SINGLE_HOST_HOSTNAME:
-            return Relay(
-                type=relay_type,
-                params=SingleHostHostnameRelayParams(portNumber=params["portNumber"], dnsName=params["dnsName"]),
-            )
-        return Relay(type=relay_type, params=MultiHostRelayParams(dnsName=params["dnsName"]))
-
-    def convert_pool_registration_params(params_json: dict[str, Any]) -> PoolRegistrationParams:
-        margin_json = params_json["margin"]
-        metadata_json = params_json.get("metadata")
-        metadata_url = ""
-        metadata_hash = ""
-        if metadata_json is not None:
-            metadata_url = metadata_json.get("metadataUrl", "")
-            metadata_hash = metadata_json.get("metadataHashHex", "")
-        return PoolRegistrationParams(
-            poolKey=convert_pool_key(params_json["poolKey"]),
-            vrfKeyHashHex=params_json["vrfKeyHashHex"].lower(),
-            pledge=int(params_json["pledge"]),
-            cost=int(params_json["cost"]),
-            margin=Margin(numerator=int(margin_json["numerator"]), denominator=int(margin_json["denominator"])),
-            rewardAccount=convert_pool_key(params_json["rewardAccount"]),
-            poolOwners=[convert_pool_key(owner) for owner in params_json["poolOwners"]],
-            relays=[convert_relay(relay) for relay in params_json["relays"]],
-            metadata=PoolMetadataParams(
-                metadata_url, metadata_hash.lower()
-            )
-            if metadata_json
-            else None,
-        )
-
-    def convert_certificate(cert_json: dict[str, Any]) -> Certificate:
-        cert_type = _parse_enum(CertificateType, cert_json["type"])
-        params = cert_json["params"]
-        if cert_type == CertificateType.STAKE_REGISTRATION:
-            return Certificate(type=cert_type, params=StakeRegistrationParams(stakeCredential=convert_credential(params["stakeCredential"])))
-        if cert_type == CertificateType.STAKE_DEREGISTRATION:
-            return Certificate(type=cert_type, params=StakeRegistrationParams(stakeCredential=convert_credential(params["stakeCredential"])))
-        if cert_type == CertificateType.STAKE_DELEGATION:
-            return Certificate(
-                type=cert_type,
-                params=StakeDelegationParams(
-                    stakeCredential=convert_credential(params["stakeCredential"]),
-                    poolKeyHash=params["poolKeyHashHex"].lower(),
-                ),
-            )
-        if cert_type == CertificateType.STAKE_POOL_REGISTRATION:
-            return Certificate(type=cert_type, params=convert_pool_registration_params(params))
-        if cert_type == CertificateType.STAKE_POOL_RETIREMENT:
-            pool_key_path = params.get("poolKeyPath")
-            if pool_key_path is None:
-                pool_key_path = params.get("poolCredentialPath")
-            if pool_key_path is None:
-                raise ValueError("Missing poolKeyPath for pool retirement certificate")
-            pool_credential = CredentialParams(
-                type=CredentialParamsType.KEY_PATH,
-                keyValue=to_bip32_path(pool_key_path),
-            )
-            return Certificate(
-                type=cert_type,
-                params=PoolRetirementParams(
-                    poolCredential=pool_credential,
-                    retirementEpoch=int(params["retirementEpoch"]),
-                ),
-            )
-        raise ValueError(f"Unsupported certificate type: {cert_type}")
-
-    def convert_withdrawal(withdraw_json: dict[str, Any]) -> Withdrawal:
-        return Withdrawal(
-            stakeCredential=convert_credential(withdraw_json["stakeCredential"]),
-            amount=int(withdraw_json["amount"]),
-        )
-
-    def convert_required_signers(signers_json: Sequence[dict[str, Any]]) -> list[RequiredSigner]:
-        result: list[RequiredSigner] = []
-        for signer in signers_json:
-            signer_type = _parse_enum(TxRequiredSignerType, signer["type"])
-            if signer_type == TxRequiredSignerType.PATH:
-                result.append(RequiredSigner(type=signer_type, pathOrHashHex=to_bip32_path(signer["path"])))
-            else:
-                result.append(RequiredSigner(type=signer_type, pathOrHashHex=signer["hashHex"].lower()))
-        return result
-
-    def convert_vote(vote_json: dict[str, Any]) -> Vote:
-        gov_action = vote_json["govActionId"]
-        return Vote(
-            govActionId=GovActionId(txHashHex=gov_action["txHashHex"], govActionIndex=int(gov_action["govActionIndex"])),
-            votingProcedure=VotingProcedure(
-                vote=_parse_enum(VoteOption, vote_json["votingProcedure"]["vote"]),
-                anchor=AnchorParams(
-                    url=vote_json["votingProcedure"]["anchor"]["url"],
-                    hashHex=vote_json["votingProcedure"]["anchor"]["hashHex"].lower(),
-                )
-                if vote_json["votingProcedure"].get("anchor")
-                else None,
-            ),
-        )
-
-    def convert_voter(voter_json: dict[str, Any]) -> Voter:
-        return Voter(type=_parse_enum(VoterType, voter_json["type"]), keyValue=voter_json["keyValue"])
-
-    def convert_voting_procedures(procedures_json: Sequence[dict[str, Any]]) -> list[VoterVotes]:
-        result: list[VoterVotes] = []
-        for entry in procedures_json:
-            result.append(
-                VoterVotes(
-                    voter=convert_voter(entry["voter"]),
-                    votes=[convert_vote(v) for v in entry.get("votes", [])],
-                )
-            )
-        return result
-
-    def convert_device_owned_destination(network: NetworkDesc, dest_json: dict[str, Any]) -> TxOutputDestination:
-        params = dest_json["params"]["params"]
-        addr_type = _parse_enum(AddressType, dest_json["params"]["type"])
-        spending_value = ""
-        if "spendingPath" in params:
-            spending_value = to_bip32_path(params["spendingPath"])
-        elif "spendingScriptHashHex" in params:
-            spending_value = params["spendingScriptHashHex"].lower()
-
-        staking_value = ""
-        if "stakingPath" in params:
-            staking_value = to_bip32_path(params["stakingPath"])
-        elif "stakingKeyHashHex" in params:
-            staking_value = params["stakingKeyHashHex"].lower()
-        elif "stakingScriptHashHex" in params:
-            staking_value = params["stakingScriptHashHex"].lower()
-        elif "stakingBlockchainPointer" in params:
-            pointer = params["stakingBlockchainPointer"]
-            staking_value = pointer_to_str(pointer["blockIndex"], pointer["txIndex"], pointer["certificateIndex"])
-
-        return TxOutputDestination(
-            TxOutputDestinationType.DEVICE_OWNED,
-            DeriveAddressTestCase("", network, addr_type, spending_value, staking_value),
-        )
-
-    def convert_destination(network: NetworkDesc, dest_json: dict[str, Any]) -> TxOutputDestination:
-        if dest_json["type"] == "third_party":
-            return TxOutputDestination(
-                TxOutputDestinationType.THIRD_PARTY,
-                ThirdPartyAddressParams(dest_json["params"]["addressHex"].lower()),
-            )
-        return convert_device_owned_destination(network, dest_json)
-
-    def convert_output(network: NetworkDesc, output_json: dict[str, Any]) -> Any:
-        destination = convert_destination(network, output_json["destination"])
-        amount = int(output_json["amount"])
-        token_bundle = [convert_asset_group(group) for group in output_json.get("tokenBundle", [])]
-        datum = None
-        if output_json.get("datum"):
-            datum = convert_datum(output_json["datum"])
-        elif output_json.get("datumHashHex"):
-            datum = Datum(type=DatumType.HASH, datumHex=output_json["datumHashHex"].lower())
-
-        reference_script = output_json.get("referenceScriptHex")
-        if reference_script:
-            reference_script = reference_script.lower()
-
-        format_raw = output_json.get("format")
-        format_value = _parse_enum(TxOutputFormat, format_raw) if format_raw is not None else TxOutputFormat.ARRAY_LEGACY
-
-        if format_value == TxOutputFormat.MAP_BABBAGE:
-            return TxOutputBabbage(
-                destination,
-                amount,
-                format=format_value,
-                tokenBundle=token_bundle,
-                datum=datum,
-                referenceScriptHex=reference_script,
-            )
-        return TxOutputAlonzo(
-            destination,
-            amount,
-            format=format_value,
-            tokenBundle=token_bundle,
-            datum=datum,
-        )
-
-    def convert_auxiliary_data(data: dict[str, Any] | None) -> TxAuxiliaryData | None:
-        if data is None:
-            return None
-        aux_type = _parse_enum(TxAuxiliaryDataType, data["type"])
-        if aux_type == TxAuxiliaryDataType.ARBITRARY_HASH:
-            return TxAuxiliaryData(
-                type=TxAuxiliaryDataType.ARBITRARY_HASH,
-                params=TxAuxiliaryDataHash(data["params"]["hashHex"].lower()),
-            )
-        raise ValueError("Unsupported auxiliary data type")
-
-    def convert_transaction(tx_json: dict[str, Any]) -> Transaction:
-        network = convert_network(tx_json["network"])
-        return Transaction(
-            network=network,
-            inputs=[convert_input(inp) for inp in tx_json.get("inputs", [])],
-            outputs=[convert_output(network, out) for out in tx_json.get("outputs", [])],
-            fee=int(tx_json.get("fee", 0)),
-            ttl=tx_json.get("ttl"),
-            certificates=[convert_certificate(cert) for cert in tx_json.get("certificates", [])],
-            withdrawals=[convert_withdrawal(w) for w in tx_json.get("withdrawals", [])],
-            mint=[convert_asset_group(group) for group in tx_json.get("mint", [])],
-            collateralInputs=[convert_input(inp) for inp in tx_json.get("collateralInputs", [])],
-            requiredSigners=convert_required_signers(tx_json.get("requiredSigners", [])),
-            referenceInputs=[convert_input(inp) for inp in tx_json.get("referenceInputs", [])],
-            votingProcedures=convert_voting_procedures(tx_json.get("votingProcedures", [])),
-            auxiliaryData=convert_auxiliary_data(tx_json.get("auxiliaryData")),
-            validityIntervalStart=tx_json.get("validityIntervalStart"),
-            scriptDataHash=tx_json.get("scriptDataHashHex"),
-            includeNetworkId=tx_json.get("includeNetworkId"),
-            collateralOutput=convert_output(network, tx_json["collateralOutput"])
-            if tx_json.get("collateralOutput")
-            else None,
-            totalCollateral=tx_json.get("totalCollateral"),
-            treasury=tx_json.get("treasury"),
-            donation=tx_json.get("donation"),
-        )
 
     def sanitize_name(name: str) -> str:
         result = []
@@ -513,14 +108,9 @@ def _build_reject_fixtures() -> str:
         cleaned = "_".join(part for part in "".join(result).split("_") if part)
         return cleaned
 
-    def format_display_name(prefix: str, test_name: str, reason: str | None = None) -> str:
+    def format_display_name(prefix: str, test_name: str) -> str:
         cleaned = test_name.replace("-", "_").replace(" ", "_")
         cleaned = "_".join(part for part in cleaned.split("_") if part)
-        if reason:
-            reason_label = reason.split(".")[-1]
-            reason_label = sanitize_name(reason_label)
-            if reason_label:
-                cleaned = f"{cleaned}_{reason_label}"
         return f"[{prefix}] {cleaned}"
 
     def to_hex_lines(hex_str: str, indent: int = 4, append_comma: bool = False) -> list[str]:
@@ -532,40 +122,6 @@ def _build_reject_fixtures() -> str:
         if append_comma and lines:
             lines[-1] = lines[-1] + ","
         return lines
-
-    def reject_reason_to_status_word(prefix: str,
-                                     reason: str | None,
-                                     fixture_name: str,
-                                     tx: Transaction) -> str:
-        if fixture_name == "Non-mainnet protocol magic":
-            return "SWO_INVALID_PROTOCOL_MAGIC"
-        if fixture_name == "Invalid network id":
-            return "SWO_INVALID_NETWORK_ID"
-
-        if prefix == "REJECT_ADDRESS":
-            if "Pool operator - spending choice not path" in fixture_name or "Pool owner - unconditionally" in fixture_name:
-                return "SWO_SECURITY_CONDITION_NOT_SATISFIED"
-
-        if prefix == "REJECT_INIT":
-            return "SWO_SECURITY_CONDITION_NOT_SATISFIED"
-
-        if prefix == "REJECT_SINGLE_ACCOUNT":
-            return "SWO_SECURITY_CONDITION_NOT_SATISFIED"
-
-        if prefix == "REJECT_COLLATERAL_OUTPUT" and "inline datum" in fixture_name.lower():
-            return "SWO_SECURITY_CONDITION_NOT_SATISFIED"
-
-        if fixture_name == "Reject tx with invalid canonical ordering of withdrawals":
-            return "SWO_TX_PARSING_FAIL_WITHDRAWALS"
-
-        if reason and reason in REJECT_REASON_SW:
-            sw = REJECT_REASON_SW[reason]
-            if prefix == "REJECT_CERT" and sw == "SWO_TX_PARSING_FAIL_CERTIFICATES":
-                if "Pool registration" in fixture_name or "Stake delegation" in fixture_name:
-                    return "SWO_TX_PARSING_FAIL_CERTIFICATES"
-                return "SWO_SECURITY_CONDITION_NOT_SATISFIED"
-            return sw
-        return "SWO_SECURITY_CONDITION_NOT_SATISFIED"
 
     @dataclass(frozen=True)
     class ChunkInfo:
@@ -583,18 +139,14 @@ def _build_reject_fixtures() -> str:
         chunks: list[ChunkInfo]
         expected_sw: str
         expect_init_failure: bool
-        reject_reason: str | None
-        source_set: str  # Name of the test set (e.g., "invalidRelayTestCases")
-        source_file: str  # Source file path
+        source_set: str
+        source_file: str
 
-    def build_fixture(fixture_json: dict[str, Any], prefix: str, source_set: str) -> FixtureInfo:
-        tx = convert_transaction(fixture_json["tx"])
+    def build_fixture(test_case: Any, prefix: str, source_set: str) -> FixtureInfo:
+        tx = test_case.tx
+        signing_mode = test_case.signingMode
+        additional_paths = list(test_case.additionalWitnessPaths or [])
         builder = CommandBuilder()
-        signing_mode = tsigning_mode_map[fixture_json["signingMode"]]
-        additional_paths = [
-            to_bip32_path(path) if isinstance(path, list) else path
-            for path in fixture_json.get("additionalWitnessPaths", [])
-        ]
         if prefix == "REJECT_WITNESS":
             witness_paths = list(additional_paths)
         else:
@@ -608,9 +160,7 @@ def _build_reject_fixtures() -> str:
         chunks = [
             ChunkInfo(
                 p1=chunk[2],
-                
                 more=chunk[2] != P1Type.P1_TX_CHUNK_LAST,
-
                 hex_payload=chunk[5:].hex().upper(),
             )
             for chunk in builder.serialize_transaction_chunks(tx)
@@ -624,23 +174,24 @@ def _build_reject_fixtures() -> str:
                     hex_payload=witness_apdu[5:].hex().upper(),
                 )
             )
-        reason = fixture_json.get("rejectReason")
+        expected_sw = test_case.expected_sw or StatusWord.SWO_SUCCESS
+        expected_sw_name = expected_sw.name
         expect_init_failure = prefix == "REJECT_INIT"
         if prefix == "REJECT_ADDRESS":
-            if "Pool operator - spending choice not path" in fixture_json["testName"] or "Pool owner - unconditionally" in fixture_json["testName"]:
+            normalized_name = sanitize_name(test_case.name)
+            if "POOL_OPERATOR_SPENDING_CHOICE_NOT_PATH" in normalized_name or "POOL_OWNER_UNCONDITIONALLY" in normalized_name:
                 expect_init_failure = True
 
-        display_name = format_display_name(prefix, fixture_json["testName"], reason)
+        display_name = format_display_name(prefix, test_case.name)
         return FixtureInfo(
-            name=fixture_json["testName"],
+            name=test_case.name,
             display_name=display_name,
             prefix=prefix,
-            sanitized_name=sanitize_name(fixture_json["testName"]),
+            sanitized_name=sanitize_name(test_case.name),
             init_hex=init_payload.hex().upper(),
             chunks=chunks,
-            expected_sw=reject_reason_to_status_word(prefix, reason, fixture_json["testName"], tx),
+            expected_sw=expected_sw_name,
             expect_init_failure=expect_init_failure,
-            reject_reason=reason,
             source_set=source_set,
             source_file="tests/standalone/input_files/signTx.py",
         )
@@ -669,7 +220,6 @@ def _build_reject_fixtures() -> str:
             "// Each fixture includes source traceability comments showing:",
             "//   - Source file and test set name",
             "//   - Original Ragger test name",
-            "//   - Rejection reason (if applicable)",
             "",
             "#pragma once",
             "",
@@ -685,10 +235,7 @@ def _build_reject_fixtures() -> str:
             for fixture in fixtures[set_name]:
                 if not fixture.chunks:
                     continue
-                # Add source traceability comment
                 lines.append(f"// Source: {fixture.source_file} > {fixture.source_set} > {fixture.name}")
-                if fixture.reject_reason:
-                    lines.append(f"// Reject reason: {fixture.reject_reason}")
                 lines.append(f"static const apdu_segment_t SIGN_TX_SEGMENTS_{prefix}_{fixture.sanitized_name}[] = {{")
                 for chunk in fixture.chunks:
                     lines.append("    {")
@@ -707,10 +254,7 @@ def _build_reject_fixtures() -> str:
             if not prefix or set_name not in fixtures:
                 continue
             for fixture in fixtures[set_name]:
-                # Add source traceability comment
                 lines.append(f"    // Source: {fixture.source_file} > {fixture.source_set} > {fixture.name}")
-                if fixture.reject_reason:
-                    lines.append(f"    // Reject reason: {fixture.reject_reason}")
                 lines.append("    {")
                 lines.append(f'        .name = "{fixture.display_name}",')
                 lines.append("        .init_hex =")
@@ -731,7 +275,7 @@ def _build_reject_fixtures() -> str:
         return "\n".join(lines)
 
     fixtures: dict[str, list[FixtureInfo]] = {}
-    for set_name, entries in exported.items():
+    for set_name, entries in fixtures_by_set.items():
         prefix = SET_PREFIX.get(set_name)
         if not prefix:
             continue
@@ -740,7 +284,6 @@ def _build_reject_fixtures() -> str:
             fixtures[set_name].append(build_fixture(entry, prefix, set_name))
 
     return generate_header(fixtures)
-
 
 
 def generate_tx_reject_fixtures() -> None:

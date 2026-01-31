@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Unified generator for unit-test fixtures derived from ragger/LedgerJS sources.
+Unified generator for unit-test fixtures derived from ragger sources.
 """
 from __future__ import annotations
 
@@ -602,7 +602,7 @@ def run_all() -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Generate unit-test fixtures from ragger/LedgerJS sources."
+        description="Generate unit-test fixtures from ragger sources."
     )
     subparsers = parser.add_subparsers(dest="command")
     subparsers.add_parser("all", help="Run all generators (default).")

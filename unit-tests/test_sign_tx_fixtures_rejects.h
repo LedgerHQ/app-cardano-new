@@ -11,7 +11,6 @@
 // Each fixture includes source traceability comments showing:
 //   - Source file and test set name
 //   - Original Ragger test name
-//   - Rejection reason (if applicable)
 
 #pragma once
 
@@ -20,7 +19,6 @@
 #include "dispatcher.h"  // For P1 constants
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Non-mainnet protocol magic
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_NON_MAINNET_PROTOCOL_MAGIC[] = {
     {
         .hex_payload =
@@ -40,7 +38,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_NON_MAINNET_PROTOCOL_MA
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Invalid network id
-// Reject reason: InvalidDataReason.NETWORK_INVALID_NETWORK_ID
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_INVALID_NETWORK_ID[] = {
     {
         .hex_payload =
@@ -60,7 +57,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_INVALID_NETWORK_ID[] = 
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - too few certificates
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOO_FEW_CERTIFICATES[] = {
     {
         .hex_payload =
@@ -80,7 +76,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - too few certificates
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOO_FEW_CERTIFICATES[] = {
     {
         .hex_payload =
@@ -94,7 +89,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - too many certificates
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOO_MANY_CERTIFICATES[] = {
     {
         .hex_payload =
@@ -127,7 +121,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - too many certificates
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOO_MANY_CERTIFICATES[] = {
     {
         .hex_payload =
@@ -162,7 +155,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - too many withdrawals
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__WITHDRAWALS_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOO_MANY_WITHDRAWALS[] = {
     {
         .hex_payload =
@@ -192,7 +184,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - too many withdrawals
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__WITHDRAWALS_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOO_MANY_WITHDRAWALS[] = {
     {
         .hex_payload =
@@ -223,7 +214,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - mint included
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__MINT_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_MINT_INCLUDED[] = {
     {
         .hex_payload =
@@ -254,7 +244,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - mint included
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__MINT_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_MINT_INCLUDED[] = {
     {
         .hex_payload =
@@ -286,7 +275,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary tx - collateral inputs included
-// Reject reason: InvalidDataReason.SIGN_MODE_ORDINARY__COLLATERAL_INPUTS_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_COLLATERAL_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
@@ -307,7 +295,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_COLLATERAL_
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig tx - collateral inputs included
-// Reject reason: InvalidDataReason.SIGN_MODE_MULTISIG__COLLATERAL_INPUTS_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_COLLATERAL_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
@@ -322,7 +309,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_COLLATERAL_
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - collateral inputs included
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__COLLATERAL_INPUTS_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_COLLATERAL_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
@@ -352,7 +338,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - collateral inputs included
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__COLLATERAL_INPUTS_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_COLLATERAL_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
@@ -389,7 +374,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - required signers included
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__REQUIRED_SIGNERS_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_REQUIRED_SIGNERS_INCLUDED[] = {
     {
         .hex_payload =
@@ -419,7 +403,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - required signers included
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__REQUIRED_SIGNERS_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_REQUIRED_SIGNERS_INCLUDED[] = {
     {
         .hex_payload =
@@ -456,7 +439,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary tx - collateral output included
-// Reject reason: InvalidDataReason.SIGN_MODE_ORDINARY__COLLATERAL_OUTPUT_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_COLLATERAL_OUTPUT_INCLUDED[] = {
     {
         .hex_payload =
@@ -478,7 +460,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_COLLATERAL_
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig tx - collateral output included
-// Reject reason: InvalidDataReason.SIGN_MODE_MULTISIG__COLLATERAL_OUTPUT_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_COLLATERAL_OUTPUT_INCLUDED[] = {
     {
         .hex_payload =
@@ -494,7 +475,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_COLLATERAL_
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - collateral output included
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__COLLATERAL_OUTPUT_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_COLLATERAL_OUTPUT_INCLUDED[] = {
     {
         .hex_payload =
@@ -526,7 +506,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - collateral output included
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__REFERENCE_INPUTS_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_COLLATERAL_OUTPUT_INCLUDED[] = {
     {
         .hex_payload =
@@ -559,7 +538,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary tx - total collateral included
-// Reject reason: InvalidDataReason.SIGN_MODE_ORDINARY__TOTAL_COLLATERAL_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_TOTAL_COLLATERAL_INCLUDED[] = {
     {
         .hex_payload =
@@ -579,7 +557,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_TOTAL_COLLA
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig tx - total collateral included
-// Reject reason: InvalidDataReason.SIGN_MODE_MULTISIG__TOTAL_COLLATERAL_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_TOTAL_COLLATERAL_INCLUDED[] = {
     {
         .hex_payload =
@@ -593,7 +570,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_TOTAL_COLLA
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - total collateral included
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__TOTAL_COLLATERAL_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOTAL_COLLATERAL_INCLUDED[] = {
     {
         .hex_payload =
@@ -623,7 +599,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - total collateral included
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__TOTAL_COLLATERAL_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOTAL_COLLATERAL_INCLUDED[] = {
     {
         .hex_payload =
@@ -653,7 +628,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary tx - reference inputs included
-// Reject reason: InvalidDataReason.SIGN_MODE_ORDINARY__REFERENCE_INPUTS_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_REFERENCE_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
@@ -674,7 +648,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_REFERENCE_I
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig tx - reference inputs included
-// Reject reason: InvalidDataReason.SIGN_MODE_MULTISIG__REFERENCE_INPUTS_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_REFERENCE_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
@@ -689,7 +662,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_REFERENCE_I
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - reference inputs included
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__REFERENCE_INPUTS_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_REFERENCE_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
@@ -719,7 +691,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
 };
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - reference inputs included
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__REFERENCE_INPUTS_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_REFERENCE_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
@@ -751,7 +722,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
 
 
 // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward address - key
-// Reject reason: InvalidDataReason.OUTPUT_INVALID_ADDRESS_PARAMS
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_KEY[] = {
     {
         .hex_payload =
@@ -770,7 +740,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_KEY[]
 };
 
 // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward address - script
-// Reject reason: InvalidDataReason.OUTPUT_INVALID_ADDRESS_PARAMS
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_SCRIPT[] = {
     {
         .hex_payload =
@@ -790,7 +759,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_SCRIP
 };
 
 // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No spending path - Ordinary Tx 1
-// Reject reason: InvalidDataReason.OUTPUT_INVALID_ADDRESS_PARAMS
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORDINARY_TX_1[] = {
     {
         .hex_payload =
@@ -810,7 +778,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORD
 };
 
 // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No spending path - Ordinary Tx 2
-// Reject reason: InvalidDataReason.OUTPUT_INVALID_ADDRESS_PARAMS
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORDINARY_TX_2[] = {
     {
         .hex_payload =
@@ -830,7 +797,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORD
 };
 
 // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool operator - spending choice not path
-// Reject reason: InvalidDataReason.OUTPUT_INVALID_ADDRESS_PARAMS
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OPERATOR_SPENDING_CHOICE_NOT_PATH[] = {
     {
         .hex_payload =
@@ -850,7 +816,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OPERATOR_SPENDI
 };
 
 // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Multisig - unconditionally
-// Reject reason: InvalidDataReason.SIGN_MODE_MULTISIG__DEVICE_OWNED_ADDRESS_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_MULTISIG_UNCONDITIONALLY[] = {
     {
         .hex_payload =
@@ -864,7 +829,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_MULTISIG_UNCONDITION
 };
 
 // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool owner - unconditionally
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__DEVICE_OWNED_ADDRESS_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OWNER_UNCONDITIONALLY[] = {
     {
         .hex_payload =
@@ -879,7 +843,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OWNER_UNCONDITI
 
 
 // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool registration in Ordinary Tx
-// Reject reason: InvalidDataReason.SIGN_MODE_ORDINARY__POOL_REGISTRATION_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -903,7 +866,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_OR
 };
 
 // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool registration in Multisig Tx
-// Reject reason: InvalidDataReason.SIGN_MODE_MULTISIG__POOL_REGISTRATION_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -921,7 +883,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_MU
 };
 
 // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool registration in Plutus Tx
-// Reject reason: InvalidDataReason.SIGN_MODE_PLUTUS__POOL_REGISTRATION_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_PLUTUS_TX[] = {
     {
         .hex_payload =
@@ -945,7 +906,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_PL
 };
 
 // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool retirement in Multisig Tx
-// Reject reason: InvalidDataReason.SIGN_MODE_MULTISIG__POOL_RETIREMENT_NOT_ALLOWED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -960,7 +920,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_MULT
 };
 
 // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake registration in Pool Registration Operator
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_REGISTRATION_IN_POOL_REGISTRATION_OPERATOR[] = {
     {
         .hex_payload =
@@ -981,7 +940,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_REGISTRATION_IN_P
 };
 
 // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake registration in Pool Registration Owner
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_REGISTRATION_IN_POOL_REGISTRATION_OWNER[] = {
     {
         .hex_payload =
@@ -995,7 +953,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_REGISTRATION_IN_P
 };
 
 // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake deregistration in Pool Registration Operator
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DEREGISTRATION_IN_POOL_REGISTRATION_OPERATOR[] = {
     {
         .hex_payload =
@@ -1022,7 +979,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DEREGISTRATION_IN
 };
 
 // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake deregistration in Pool Registration Owner
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DEREGISTRATION_IN_POOL_REGISTRATION_OWNER[] = {
     {
         .hex_payload =
@@ -1042,7 +998,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DEREGISTRATION_IN
 };
 
 // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake delegation in Pool Registration Operator
-// Reject reason: InvalidDataReason.CERTIFICATE_INVALID_POOL_KEY_HASH
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DELEGATION_IN_POOL_REGISTRATION_OPERATOR[] = {
     {
         .hex_payload =
@@ -1069,7 +1024,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DELEGATION_IN_POO
 };
 
 // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake delegation in Pool Registration Owner
-// Reject reason: InvalidDataReason.CERTIFICATE_INVALID_POOL_KEY_HASH
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DELEGATION_IN_POOL_REGISTRATION_OWNER[] = {
     {
         .hex_payload =
@@ -1089,7 +1043,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DELEGATION_IN_POO
 };
 
 // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool retirement in Pool Registration Operator
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL_REGISTRATION_OPERATOR[] = {
     {
         .hex_payload =
@@ -1116,7 +1069,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL
 };
 
 // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool retirement in Pool Registration Owner
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL_REGISTRATION_OWNER[] = {
     {
         .hex_payload =
@@ -1137,7 +1089,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL
 
 
 // Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Script hash in Ordinary Tx
-// Reject reason: InvalidDataReason.SIGN_MODE_ORDINARY__CERTIFICATE_STAKE_CREDENTIAL_ONLY_AS_PATH
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_SCRIPT_HASH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1158,7 +1109,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_SCRIPT_HASH_IN_
 };
 
 // Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Non-staking path in Ordinary Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_NON_STAKING_PATH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1179,7 +1129,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_NON_STAKING_PAT
 };
 
 // Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Path in Multisig Tx
-// Reject reason: InvalidDataReason.SIGN_MODE_MULTISIG__CERTIFICATE_CREDENTIAL_ONLY_AS_SCRIPT
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -1195,7 +1144,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_PATH_IN_MULTISI
 
 
 // Source: tests/standalone/input_files/signTx.py > certificateStakePoolRetirementRejectTestCases > Non-pool cold key in Ordinary Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIRE_NON_POOL_COLD_KEY_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1223,7 +1171,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIRE_NON_POOL_CO
 
 
 // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Reject tx with invalid canonical ordering of withdrawals
-// Reject reason: InvalidDataReason.INVALID_DATA_SUPPLIED_TO_LEDGER
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_REJECT_TX_WITH_INVALID_CANONICAL_ORDERING_OF_WITHDRAWALS[] = {
     {
         .hex_payload =
@@ -1255,7 +1202,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_REJECT_TX_WITH_IN
 };
 
 // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Script hash as stake credential in Ordinary Tx
-// Reject reason: InvalidDataReason.SIGN_MODE_ORDINARY__WITHDRAWAL_ONLY_AS_PATH
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_SCRIPT_HASH_AS_STAKE_CREDENTIAL_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1276,7 +1222,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_SCRIPT_HASH_AS_ST
 };
 
 // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Non-staking path as stake credential in Ordinary Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_NON_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1297,7 +1242,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_NON_STAKING_PATH_
 };
 
 // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Staking path as stake credential in Multisig Tx
-// Reject reason: InvalidDataReason.SIGN_MODE_MULTISIG__WITHDRAWAL_ONLY_AS_SCRIPT
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -1312,7 +1256,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_STAKING_PATH_AS_S
 };
 
 // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Non-staking path as stake credential in Plutus Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_NON_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_PLUTUS_TX[] = {
     {
         .hex_payload =
@@ -1334,7 +1277,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_NON_STAKING_PATH_
 
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary account path in Ordinary Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PATH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1354,7 +1296,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PAT
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Ordinary Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1374,7 +1315,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PAT
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig spending path in Ordinary Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PATH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1394,7 +1334,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PA
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig staking path in Ordinary Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PATH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1414,7 +1353,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PAT
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint path in Ordinary Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1434,7 +1372,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_ORDINAR
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary account path in Multisig Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -1454,7 +1391,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PAT
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Multisig Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -1474,7 +1410,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PAT
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary spending path in Multisig Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_SPENDING_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -1494,7 +1429,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_SPENDING_PA
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary staking path in Multisig Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_STAKING_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -1514,7 +1448,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_STAKING_PAT
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint path in Multisig Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -1534,7 +1467,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_MULTISI
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Pool cold path in Multisig Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_POOL_COLD_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -1554,7 +1486,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_POOL_COLD_PATH_IN_MU
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary account path in Plutus Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PATH_IN_PLUTUS_TX[] = {
     {
         .hex_payload =
@@ -1574,7 +1505,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PAT
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Plutus Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_PLUTUS_TX[] = {
     {
         .hex_payload =
@@ -1594,7 +1524,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PAT
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Pool Registration (Owner) Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
@@ -1624,7 +1553,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PAT
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary spending path in Pool Registration (Owner) Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_SPENDING_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
@@ -1654,7 +1582,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_SPENDING_PA
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig spending path in Pool Registration (Owner) Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
@@ -1684,7 +1611,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PA
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig staking path in Pool Registration (Owner) Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
@@ -1714,7 +1640,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PAT
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint path in Pool Registration (Owner) Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
@@ -1744,7 +1669,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_POOL_RE
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Pool cold path in Pool Registration (Owner) Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_POOL_COLD_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
@@ -1774,7 +1698,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_POOL_COLD_PATH_IN_PO
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Pool Registration (Operator) Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
     {
         .hex_payload =
@@ -1798,7 +1721,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PAT
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig spending path in Pool Registration (Operator) Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
     {
         .hex_payload =
@@ -1822,7 +1744,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PA
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary staking path in Pool Registration (Operator) Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_STAKING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
     {
         .hex_payload =
@@ -1846,7 +1767,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_STAKING_PAT
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig staking path in Pool Registration (Operator) Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
     {
         .hex_payload =
@@ -1870,7 +1790,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PAT
 };
 
 // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint path in Pool Registration (Operator) Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
     {
         .hex_payload =
@@ -1895,7 +1814,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_POOL_RE
 
 
 // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input and change output account mismatch
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_CHANGE_OUTPUT_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
@@ -1917,7 +1835,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_CHA
 };
 
 // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input and stake deregistration certificate account mismatch
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_STAKE_DEREGISTRATION_CERTIFICATE_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
@@ -1944,7 +1861,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_STA
 };
 
 // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input and withdrawal account mismatch
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_WITHDRAWAL_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
@@ -1971,7 +1887,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_WIT
 };
 
 // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Change output and stake deregistration account mismatch
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_CHANGE_OUTPUT_AND_STAKE_DEREGISTRATION_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
@@ -2000,7 +1915,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_CHANGE_OUTPUT
 };
 
 // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Change output and withdrawal account mismatch
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_CHANGE_OUTPUT_AND_WITHDRAWAL_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
@@ -2029,7 +1943,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_CHANGE_OUTPUT
 };
 
 // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Stake deregistration certificate and withdrawal account mismatch
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_STAKE_DEREGISTRATION_CERTIFICATE_AND_WITHDRAWAL_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
@@ -2063,7 +1976,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_STAKE_DEREGIS
 };
 
 // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Byron to Shelley transfer input account mismatch
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_BYRON_TO_SHELLEY_TRANSFER_INPUT_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
@@ -2091,7 +2003,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_BYRON_TO_SHEL
 };
 
 // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Byron to Shelley transfer output account mismatch
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_BYRON_TO_SHELLEY_TRANSFER_OUTPUT_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
@@ -2112,7 +2023,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_BYRON_TO_SHEL
 
 
 // Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral output with datum hash
-// Reject reason: InvalidDataReason.COLLATERAL_INPUT_CONTAINS_DATUM
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_DATUM_HASH[] = {
     {
         .hex_payload =
@@ -2135,7 +2045,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL
 };
 
 // Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral output with inline datum
-// Reject reason: InvalidDataReason.COLLATERAL_INPUT_CONTAINS_DATUM
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_INLINE_DATUM[] = {
     {
         .hex_payload =
@@ -2183,7 +2092,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL
 };
 
 // Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral output with reference script
-// Reject reason: InvalidDataReason.COLLATERAL_INPUT_CONTAINS_REFERENCE_SCRIPT
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_REFERENCE_SCRIPT[] = {
     {
         .hex_payload =
@@ -2207,7 +2115,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL
 
 
 // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where asset groups are not ordered
-// Reject reason: InvalidDataReason.MULTIASSET_INVALID_TOKEN_BUNDLE_ORDERING
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_ASSET_GROUPS_ARE_NOT_ORDERED[] = {
     {
         .hex_payload =
@@ -2230,7 +2137,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_A
 };
 
 // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where asset groups are not unique
-// Reject reason: InvalidDataReason.MULTIASSET_INVALID_TOKEN_BUNDLE_NOT_UNIQUE
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_ASSET_GROUPS_ARE_NOT_UNIQUE[] = {
     {
         .hex_payload =
@@ -2253,7 +2159,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_A
 };
 
 // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where tokens within an asset group are not ordered - alphabetical
-// Reject reason: InvalidDataReason.MULTIASSET_INVALID_ASSET_GROUP_ORDERING
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_ORDERED_ALPHABETICAL[] = {
     {
         .hex_payload =
@@ -2275,7 +2180,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_T
 };
 
 // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where tokens within an asset group are not ordered - length
-// Reject reason: InvalidDataReason.MULTIASSET_INVALID_ASSET_GROUP_ORDERING
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_ORDERED_LENGTH[] = {
     {
         .hex_payload =
@@ -2297,7 +2201,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_T
 };
 
 // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where tokens within an asset group are not unique
-// Reject reason: InvalidDataReason.MULTIASSET_INVALID_ASSET_GROUP_NOT_UNIQUE
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_UNIQUE[] = {
     {
         .hex_payload =
@@ -2319,7 +2222,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_T
 };
 
 // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx with mint fields with invalid canonical ordering of policies
-// Reject reason: InvalidDataReason.MULTIASSET_INVALID_TOKEN_BUNDLE_ORDERING
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WITH_MINT_FIELDS_WITH_INVALID_CANONICAL_ORDERING_OF_POLICIES[] = {
     {
         .hex_payload =
@@ -2341,7 +2243,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WITH_MI
 };
 
 // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx with mint fields with invalid canonical ordering of asset names
-// Reject reason: InvalidDataReason.MULTIASSET_INVALID_ASSET_GROUP_ORDERING
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WITH_MINT_FIELDS_WITH_INVALID_CANONICAL_ORDERING_OF_ASSET_NAMES[] = {
     {
         .hex_payload =
@@ -2362,7 +2263,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WITH_MI
 
 
 // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Different index
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_DIFFERENT_INDEX[] = {
     {
         .hex_payload =
@@ -2404,7 +2304,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_DIFFERENT_INDEX[]
 };
 
 // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Different prefix
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_DIFFERENT_PREFIX[] = {
     {
         .hex_payload =
@@ -2446,7 +2345,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_DIFFERENT_PREFIX[
 };
 
 // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > No path given
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_DEVICE_OWNER_REQUIRED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NO_PATH_GIVEN[] = {
     {
         .hex_payload =
@@ -2487,7 +2385,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NO_PATH_GIVEN[] =
 };
 
 // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Invalid_numerator_denominator_relationship
-// Reject reason: InvalidDataReason.POOL_REGISTRATION_INVALID_MARGIN
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_INVALID_NUMERATOR_DENOMINATOR_RELATIONSHIP[] = {
     {
         .hex_payload =
@@ -2527,7 +2424,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_INVALID_NUMERATOR
 
 
 // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdRejectTestCases > Path sent in for Pool Registration Owner Tx
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__THIRD_PARTY_POOL_KEY_REQUIRED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_ID_PATH_SENT_IN_FOR_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
@@ -2566,7 +2462,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_ID_PATH_SENT_IN_FOR_POO
 };
 
 // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdRejectTestCases > Hash sent in for Pool Registration Operator Tx
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__DEVICE_OWNED_POOL_KEY_REQUIRED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_ID_HASH_SENT_IN_FOR_POOL_REGISTRATION_OPERATOR_TX[] = {
     {
         .hex_payload =
@@ -2600,7 +2495,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_ID_HASH_SENT_IN_FOR_POO
 
 
 // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerRejectTestCases > Non_staking_path_for_Pool_Registration_Owner_Tx
-// Reject reason: InvalidDataReason.LEDGER_POLICY
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NON_STAKING_PATH_FOR_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
@@ -2633,8 +2527,9 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NON_STAKING_PATH_
 };
 
 
+
+
 // Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool registration with multiple path owners
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_DEVICE_OWNER_REQUIRED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_INVALID_POOL_REGISTRATION_WITH_MULTIPLE_PATH_OWNERS[] = {
     {
         .hex_payload =
@@ -2674,7 +2569,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_INVALID_POOL_REGISTRATI
 };
 
 // Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool registration with no owners
-// Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_DEVICE_OWNER_REQUIRED
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_INVALID_POOL_REGISTRATION_WITH_NO_OWNERS[] = {
     {
         .hex_payload =
@@ -2702,7 +2596,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_INVALID_POOL_REGISTRATI
 
 
 // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool metadata url too long
-// Reject reason: InvalidDataReason.POOL_REGISTRATION_METADATA_INVALID_URL
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_URL_TOO_LONG[] = {
     {
         .hex_payload =
@@ -2738,7 +2631,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_
 };
 
 // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool metadata invalid url
-// Reject reason: InvalidDataReason.POOL_REGISTRATION_METADATA_INVALID_URL
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_INVALID_URL[] = {
     {
         .hex_payload =
@@ -2770,7 +2662,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_
 };
 
 // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool metadata invalid hash length
-// Reject reason: InvalidDataReason.POOL_REGISTRATION_METADATA_INVALID_HASH
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_INVALID_HASH_LENGTH[] = {
     {
         .hex_payload =
@@ -2803,7 +2694,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_
 };
 
 // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool metadata missing hash
-// Reject reason: InvalidDataReason.POOL_REGISTRATION_METADATA_INVALID_HASH
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_MISSING_HASH[] = {
     {
         .hex_payload =
@@ -2836,7 +2726,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_
 
 
 // Source: tests/standalone/input_files/signTx.py > invalidRelayTestCases > SingleHostHostname missing dns
-// Reject reason: InvalidDataReason.RELAY_INVALID_DNS
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_RELAY_SINGLEHOSTHOSTNAME_MISSING_DNS[] = {
     {
         .hex_payload =
@@ -2869,7 +2758,6 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_RELAY_SINGLEHOSTHOSTNAME_MIS
 };
 
 // Source: tests/standalone/input_files/signTx.py > invalidRelayTestCases > MultiHost missing dns
-// Reject reason: InvalidDataReason.RELAY_INVALID_DNS
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_RELAY_MULTIHOST_MISSING_DNS[] = {
     {
         .hex_payload =
@@ -2904,9 +2792,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_RELAY_MULTIHOST_MISSING_DNS[
 
 static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Non-mainnet protocol magic
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_INIT] Non_mainnet_protocol_magic_LEDGER_POLICY",
+        .name = "[REJECT_INIT] Non_mainnet_protocol_magic",
         .init_hex =
         "0000000000000000012D964A0803000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -2917,9 +2804,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Invalid network id
-    // Reject reason: InvalidDataReason.NETWORK_INVALID_NETWORK_ID
     {
-        .name = "[REJECT_INIT] Invalid_network_id_NETWORK_INVALID_NETWORK_ID",
+        .name = "[REJECT_INIT] Invalid_network_id",
         .init_hex =
         "0000000000000000102D964A0903000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -2930,9 +2816,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - too few certificates
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
     {
-        .name = "[REJECT_INIT] Pool_registration_(operator)_too_few_certificates_SIGN_MODE_POOL_OPERATOR_SINGLE_POOL_REG_CERTIFICATE_REQUIRED",
+        .name = "[REJECT_INIT] Pool_registration_(operator)_too_few_certificates",
         .init_hex =
         "0000000000000000012D964A0905000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -2943,9 +2828,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - too few certificates
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
     {
-        .name = "[REJECT_INIT] Pool_registration_(owner)_too_few_certificates_SIGN_MODE_POOL_OWNER_SINGLE_POOL_REG_CERTIFICATE_REQUIRED",
+        .name = "[REJECT_INIT] Pool_registration_(owner)_too_few_certificates",
         .init_hex =
         "0000000000000000012D964A0904000100010200000000010100000100000000"
         "0101010000000001010000",
@@ -2956,9 +2840,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - too many certificates
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
     {
-        .name = "[REJECT_INIT] Pool_registration_(operator)_too_many_certificates_SIGN_MODE_POOL_OPERATOR_SINGLE_POOL_REG_CERTIFICATE_REQUIRED",
+        .name = "[REJECT_INIT] Pool_registration_(operator)_too_many_certificates",
         .init_hex =
         "0000000000000000012D964A0905000100010200020000010100000100000000"
         "0101010000000001010001",
@@ -2969,9 +2852,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - too many certificates
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
     {
-        .name = "[REJECT_INIT] Pool_registration_(owner)_too_many_certificates_SIGN_MODE_POOL_OWNER_SINGLE_POOL_REG_CERTIFICATE_REQUIRED",
+        .name = "[REJECT_INIT] Pool_registration_(owner)_too_many_certificates",
         .init_hex =
         "0000000000000000012D964A0904000100010200020000010100000100000000"
         "0101010000000001010001",
@@ -2982,9 +2864,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - too many withdrawals
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__WITHDRAWALS_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Pool_registration_(operator)_too_many_withdrawals_SIGN_MODE_POOL_OPERATOR_WITHDRAWALS_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Pool_registration_(operator)_too_many_withdrawals",
         .init_hex =
         "0000000000000000012D964A0905000100010200010001010100000100000000"
         "0101010000000001010001",
@@ -2995,9 +2876,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - too many withdrawals
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__WITHDRAWALS_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Pool_registration_(owner)_too_many_withdrawals_SIGN_MODE_POOL_OWNER_WITHDRAWALS_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Pool_registration_(owner)_too_many_withdrawals",
         .init_hex =
         "0000000000000000012D964A0904000100010200010001010100000100000000"
         "0101010000000001010001",
@@ -3008,9 +2888,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - mint included
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__MINT_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Pool_registration_(operator)_mint_included_SIGN_MODE_POOL_OPERATOR_MINT_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Pool_registration_(operator)_mint_included",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100010100000000"
         "0101010000000001010001",
@@ -3021,9 +2900,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - mint included
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__MINT_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Pool_registration_(owner)_mint_included_SIGN_MODE_POOL_OWNER_MINT_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Pool_registration_(owner)_mint_included",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100010100000000"
         "0101010000000001010001",
@@ -3034,9 +2912,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary tx - collateral inputs included
-    // Reject reason: InvalidDataReason.SIGN_MODE_ORDINARY__COLLATERAL_INPUTS_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Ordinary_tx_collateral_inputs_included_SIGN_MODE_ORDINARY_COLLATERAL_INPUTS_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Ordinary_tx_collateral_inputs_included",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100010000"
         "0101010000000001010001",
@@ -3047,9 +2924,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig tx - collateral inputs included
-    // Reject reason: InvalidDataReason.SIGN_MODE_MULTISIG__COLLATERAL_INPUTS_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Multisig_tx_collateral_inputs_included_SIGN_MODE_MULTISIG_COLLATERAL_INPUTS_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Multisig_tx_collateral_inputs_included",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100010000"
         "0101010000000001010000",
@@ -3060,9 +2936,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - collateral inputs included
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__COLLATERAL_INPUTS_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Pool_registration_(operator)_collateral_inputs_included_SIGN_MODE_POOL_OPERATOR_COLLATERAL_INPUTS_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Pool_registration_(operator)_collateral_inputs_included",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100010000"
         "0101010000000001010001",
@@ -3073,9 +2948,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - collateral inputs included
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__COLLATERAL_INPUTS_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Pool_registration_(owner)_collateral_inputs_included_SIGN_MODE_POOL_OWNER_COLLATERAL_INPUTS_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Pool_registration_(owner)_collateral_inputs_included",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100010000"
         "0101010000000001010002",
@@ -3086,9 +2960,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - required signers included
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__REQUIRED_SIGNERS_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Pool_registration_(operator)_required_signers_included_SIGN_MODE_POOL_OPERATOR_REQUIRED_SIGNERS_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Pool_registration_(operator)_required_signers_included",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000001"
         "0101010000000001010001",
@@ -3099,9 +2972,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - required signers included
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__REQUIRED_SIGNERS_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Pool_registration_(owner)_required_signers_included_SIGN_MODE_POOL_OWNER_REQUIRED_SIGNERS_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Pool_registration_(owner)_required_signers_included",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000001"
         "0101010000000001010002",
@@ -3112,9 +2984,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary tx - collateral output included
-    // Reject reason: InvalidDataReason.SIGN_MODE_ORDINARY__COLLATERAL_OUTPUT_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Ordinary_tx_collateral_output_included_SIGN_MODE_ORDINARY_COLLATERAL_OUTPUT_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Ordinary_tx_collateral_output_included",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0102010000000001010001",
@@ -3125,9 +2996,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig tx - collateral output included
-    // Reject reason: InvalidDataReason.SIGN_MODE_MULTISIG__COLLATERAL_OUTPUT_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Multisig_tx_collateral_output_included_SIGN_MODE_MULTISIG_COLLATERAL_OUTPUT_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Multisig_tx_collateral_output_included",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "0102010000000001010000",
@@ -3138,9 +3008,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - collateral output included
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__COLLATERAL_OUTPUT_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Pool_registration_(operator)_collateral_output_included_SIGN_MODE_POOL_OPERATOR_COLLATERAL_OUTPUT_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Pool_registration_(operator)_collateral_output_included",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0102010000000001010001",
@@ -3151,9 +3020,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - collateral output included
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__REFERENCE_INPUTS_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Pool_registration_(owner)_collateral_output_included_SIGN_MODE_POOL_OWNER_REFERENCE_INPUTS_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Pool_registration_(owner)_collateral_output_included",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0102010000000001010001",
@@ -3164,9 +3032,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary tx - total collateral included
-    // Reject reason: InvalidDataReason.SIGN_MODE_ORDINARY__TOTAL_COLLATERAL_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Ordinary_tx_total_collateral_included_SIGN_MODE_ORDINARY_TOTAL_COLLATERAL_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Ordinary_tx_total_collateral_included",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101020000000001010001",
@@ -3177,9 +3044,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig tx - total collateral included
-    // Reject reason: InvalidDataReason.SIGN_MODE_MULTISIG__TOTAL_COLLATERAL_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Multisig_tx_total_collateral_included_SIGN_MODE_MULTISIG_TOTAL_COLLATERAL_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Multisig_tx_total_collateral_included",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "0101020000000001010000",
@@ -3190,9 +3056,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - total collateral included
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__TOTAL_COLLATERAL_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Pool_registration_(operator)_total_collateral_included_SIGN_MODE_POOL_OPERATOR_TOTAL_COLLATERAL_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Pool_registration_(operator)_total_collateral_included",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101020000000001010001",
@@ -3203,9 +3068,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - total collateral included
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__TOTAL_COLLATERAL_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Pool_registration_(owner)_total_collateral_included_SIGN_MODE_POOL_OWNER_TOTAL_COLLATERAL_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Pool_registration_(owner)_total_collateral_included",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101020000000001010001",
@@ -3216,9 +3080,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary tx - reference inputs included
-    // Reject reason: InvalidDataReason.SIGN_MODE_ORDINARY__REFERENCE_INPUTS_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Ordinary_tx_reference_inputs_included_SIGN_MODE_ORDINARY_REFERENCE_INPUTS_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Ordinary_tx_reference_inputs_included",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010001000001010001",
@@ -3229,9 +3092,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig tx - reference inputs included
-    // Reject reason: InvalidDataReason.SIGN_MODE_MULTISIG__REFERENCE_INPUTS_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Multisig_tx_reference_inputs_included_SIGN_MODE_MULTISIG_REFERENCE_INPUTS_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Multisig_tx_reference_inputs_included",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "0101010001000001010000",
@@ -3242,9 +3104,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - reference inputs included
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__REFERENCE_INPUTS_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Pool_registration_(operator)_reference_inputs_included_SIGN_MODE_POOL_OPERATOR_REFERENCE_INPUTS_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Pool_registration_(operator)_reference_inputs_included",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010001000001010001",
@@ -3255,9 +3116,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - reference inputs included
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__REFERENCE_INPUTS_NOT_ALLOWED
     {
-        .name = "[REJECT_INIT] Pool_registration_(owner)_reference_inputs_included_SIGN_MODE_POOL_OWNER_REFERENCE_INPUTS_NOT_ALLOWED",
+        .name = "[REJECT_INIT] Pool_registration_(owner)_reference_inputs_included",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010001000001010001",
@@ -3268,9 +3128,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward address - key
-    // Reject reason: InvalidDataReason.OUTPUT_INVALID_ADDRESS_PARAMS
     {
-        .name = "[REJECT_ADDRESS] Reward_address_key_OUTPUT_INVALID_ADDRESS_PARAMS",
+        .name = "[REJECT_ADDRESS] Reward_address_key",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3281,9 +3140,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward address - script
-    // Reject reason: InvalidDataReason.OUTPUT_INVALID_ADDRESS_PARAMS
     {
-        .name = "[REJECT_ADDRESS] Reward_address_script_OUTPUT_INVALID_ADDRESS_PARAMS",
+        .name = "[REJECT_ADDRESS] Reward_address_script",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3294,9 +3152,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No spending path - Ordinary Tx 1
-    // Reject reason: InvalidDataReason.OUTPUT_INVALID_ADDRESS_PARAMS
     {
-        .name = "[REJECT_ADDRESS] No_spending_path_Ordinary_Tx_1_OUTPUT_INVALID_ADDRESS_PARAMS",
+        .name = "[REJECT_ADDRESS] No_spending_path_Ordinary_Tx_1",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3307,9 +3164,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No spending path - Ordinary Tx 2
-    // Reject reason: InvalidDataReason.OUTPUT_INVALID_ADDRESS_PARAMS
     {
-        .name = "[REJECT_ADDRESS] No_spending_path_Ordinary_Tx_2_OUTPUT_INVALID_ADDRESS_PARAMS",
+        .name = "[REJECT_ADDRESS] No_spending_path_Ordinary_Tx_2",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3320,9 +3176,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool operator - spending choice not path
-    // Reject reason: InvalidDataReason.OUTPUT_INVALID_ADDRESS_PARAMS
     {
-        .name = "[REJECT_ADDRESS] Pool_operator_spending_choice_not_path_OUTPUT_INVALID_ADDRESS_PARAMS",
+        .name = "[REJECT_ADDRESS] Pool_operator_spending_choice_not_path",
         .init_hex =
         "0000000000000000012D964A0905000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3333,9 +3188,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Multisig - unconditionally
-    // Reject reason: InvalidDataReason.SIGN_MODE_MULTISIG__DEVICE_OWNED_ADDRESS_NOT_ALLOWED
     {
-        .name = "[REJECT_ADDRESS] Multisig_unconditionally_SIGN_MODE_MULTISIG_DEVICE_OWNED_ADDRESS_NOT_ALLOWED",
+        .name = "[REJECT_ADDRESS] Multisig_unconditionally",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "0101010000000001010000",
@@ -3346,9 +3200,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool owner - unconditionally
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__DEVICE_OWNED_ADDRESS_NOT_ALLOWED
     {
-        .name = "[REJECT_ADDRESS] Pool_owner_unconditionally_SIGN_MODE_POOL_OWNER_DEVICE_OWNED_ADDRESS_NOT_ALLOWED",
+        .name = "[REJECT_ADDRESS] Pool_owner_unconditionally",
         .init_hex =
         "0000000000000000012D964A0904000100010200000000010100000100000000"
         "0101010000000001010000",
@@ -3359,9 +3212,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool registration in Ordinary Tx
-    // Reject reason: InvalidDataReason.SIGN_MODE_ORDINARY__POOL_REGISTRATION_NOT_ALLOWED
     {
-        .name = "[REJECT_CERT] Pool_registration_in_Ordinary_Tx_SIGN_MODE_ORDINARY_POOL_REGISTRATION_NOT_ALLOWED",
+        .name = "[REJECT_CERT] Pool_registration_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3372,9 +3224,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool registration in Multisig Tx
-    // Reject reason: InvalidDataReason.SIGN_MODE_MULTISIG__POOL_REGISTRATION_NOT_ALLOWED
     {
-        .name = "[REJECT_CERT] Pool_registration_in_Multisig_Tx_SIGN_MODE_MULTISIG_POOL_REGISTRATION_NOT_ALLOWED",
+        .name = "[REJECT_CERT] Pool_registration_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200010000010100000100000000"
         "0101010000000001010000",
@@ -3385,9 +3236,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool registration in Plutus Tx
-    // Reject reason: InvalidDataReason.SIGN_MODE_PLUTUS__POOL_REGISTRATION_NOT_ALLOWED
     {
-        .name = "[REJECT_CERT] Pool_registration_in_Plutus_Tx_SIGN_MODE_PLUTUS_POOL_REGISTRATION_NOT_ALLOWED",
+        .name = "[REJECT_CERT] Pool_registration_in_Plutus_Tx",
         .init_hex =
         "0000000000000000012D964A0907000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3398,9 +3248,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool retirement in Multisig Tx
-    // Reject reason: InvalidDataReason.SIGN_MODE_MULTISIG__POOL_RETIREMENT_NOT_ALLOWED
     {
-        .name = "[REJECT_CERT] Pool_retirement_in_Multisig_Tx_SIGN_MODE_MULTISIG_POOL_RETIREMENT_NOT_ALLOWED",
+        .name = "[REJECT_CERT] Pool_retirement_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200010000010100000100000000"
         "0101010000000001010000",
@@ -3411,9 +3260,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake registration in Pool Registration Operator
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
     {
-        .name = "[REJECT_CERT] Stake_registration_in_Pool_Registration_Operator_SIGN_MODE_POOL_OPERATOR_SINGLE_POOL_REG_CERTIFICATE_REQUIRED",
+        .name = "[REJECT_CERT] Stake_registration_in_Pool_Registration_Operator",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3424,9 +3272,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake registration in Pool Registration Owner
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
     {
-        .name = "[REJECT_CERT] Stake_registration_in_Pool_Registration_Owner_SIGN_MODE_POOL_OWNER_SINGLE_POOL_REG_CERTIFICATE_REQUIRED",
+        .name = "[REJECT_CERT] Stake_registration_in_Pool_Registration_Owner",
         .init_hex =
         "0000000000000000012D964A0904000000010200010000010100000100000000"
         "0101010000000001010000",
@@ -3437,9 +3284,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake deregistration in Pool Registration Operator
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
     {
-        .name = "[REJECT_CERT] Stake_deregistration_in_Pool_Registration_Operator_SIGN_MODE_POOL_OPERATOR_SINGLE_POOL_REG_CERTIFICATE_REQUIRED",
+        .name = "[REJECT_CERT] Stake_deregistration_in_Pool_Registration_Operator",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010000000001010002",
@@ -3450,9 +3296,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake deregistration in Pool Registration Owner
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
     {
-        .name = "[REJECT_CERT] Stake_deregistration_in_Pool_Registration_Owner_SIGN_MODE_POOL_OWNER_SINGLE_POOL_REG_CERTIFICATE_REQUIRED",
+        .name = "[REJECT_CERT] Stake_deregistration_in_Pool_Registration_Owner",
         .init_hex =
         "0000000000000000012D964A0904000000010200010000010100000100000000"
         "0101010000000001010001",
@@ -3463,9 +3308,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake delegation in Pool Registration Operator
-    // Reject reason: InvalidDataReason.CERTIFICATE_INVALID_POOL_KEY_HASH
     {
-        .name = "[REJECT_CERT] Stake_delegation_in_Pool_Registration_Operator_CERTIFICATE_INVALID_POOL_KEY_HASH",
+        .name = "[REJECT_CERT] Stake_delegation_in_Pool_Registration_Operator",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010000000001010002",
@@ -3476,9 +3320,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake delegation in Pool Registration Owner
-    // Reject reason: InvalidDataReason.CERTIFICATE_INVALID_POOL_KEY_HASH
     {
-        .name = "[REJECT_CERT] Stake_delegation_in_Pool_Registration_Owner_CERTIFICATE_INVALID_POOL_KEY_HASH",
+        .name = "[REJECT_CERT] Stake_delegation_in_Pool_Registration_Owner",
         .init_hex =
         "0000000000000000012D964A0904000000010200010000010100000100000000"
         "0101010000000001010001",
@@ -3489,9 +3332,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool retirement in Pool Registration Operator
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
     {
-        .name = "[REJECT_CERT] Pool_retirement_in_Pool_Registration_Operator_SIGN_MODE_POOL_OPERATOR_SINGLE_POOL_REG_CERTIFICATE_REQUIRED",
+        .name = "[REJECT_CERT] Pool_retirement_in_Pool_Registration_Operator",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010000000001010002",
@@ -3502,9 +3344,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool retirement in Pool Registration Owner
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_POOL_REG_CERTIFICATE_REQUIRED
     {
-        .name = "[REJECT_CERT] Pool_retirement_in_Pool_Registration_Owner_SIGN_MODE_POOL_OWNER_SINGLE_POOL_REG_CERTIFICATE_REQUIRED",
+        .name = "[REJECT_CERT] Pool_retirement_in_Pool_Registration_Owner",
         .init_hex =
         "0000000000000000012D964A0904000000010200010000010100000100000000"
         "0101010000000001010001",
@@ -3515,9 +3356,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Script hash in Ordinary Tx
-    // Reject reason: InvalidDataReason.SIGN_MODE_ORDINARY__CERTIFICATE_STAKE_CREDENTIAL_ONLY_AS_PATH
     {
-        .name = "[REJECT_CERT_STAKING] Script_hash_in_Ordinary_Tx_SIGN_MODE_ORDINARY_CERTIFICATE_STAKE_CREDENTIAL_ONLY_AS_PATH",
+        .name = "[REJECT_CERT_STAKING] Script_hash_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3528,9 +3368,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Non-staking path in Ordinary Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_CERT_STAKING] Non_staking_path_in_Ordinary_Tx_LEDGER_POLICY",
+        .name = "[REJECT_CERT_STAKING] Non_staking_path_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3541,9 +3380,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Path in Multisig Tx
-    // Reject reason: InvalidDataReason.SIGN_MODE_MULTISIG__CERTIFICATE_CREDENTIAL_ONLY_AS_SCRIPT
     {
-        .name = "[REJECT_CERT_STAKING] Path_in_Multisig_Tx_SIGN_MODE_MULTISIG_CERTIFICATE_CREDENTIAL_ONLY_AS_SCRIPT",
+        .name = "[REJECT_CERT_STAKING] Path_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200010000010100000100000000"
         "0101010000000001010000",
@@ -3554,9 +3392,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > certificateStakePoolRetirementRejectTestCases > Non-pool cold key in Ordinary Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_CERT_POOL_RETIRE] Non_pool_cold_key_in_Ordinary_Tx_LEDGER_POLICY",
+        .name = "[REJECT_CERT_POOL_RETIRE] Non_pool_cold_key_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200010000010100000100000000"
         "0101010000000001010002",
@@ -3567,9 +3404,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Reject tx with invalid canonical ordering of withdrawals
-    // Reject reason: InvalidDataReason.INVALID_DATA_SUPPLIED_TO_LEDGER
     {
-        .name = "[REJECT_WITHDRAWAL] Reject_tx_with_invalid_canonical_ordering_of_withdrawals_INVALID_DATA_SUPPLIED_TO_LEDGER",
+        .name = "[REJECT_WITHDRAWAL] Reject_tx_with_invalid_canonical_ordering_of_withdrawals",
         .init_hex =
         "0000000000000000012D964A0903000100000200000002010100000100000000"
         "0101010000000001010003",
@@ -3580,9 +3416,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Script hash as stake credential in Ordinary Tx
-    // Reject reason: InvalidDataReason.SIGN_MODE_ORDINARY__WITHDRAWAL_ONLY_AS_PATH
     {
-        .name = "[REJECT_WITHDRAWAL] Script_hash_as_stake_credential_in_Ordinary_Tx_SIGN_MODE_ORDINARY_WITHDRAWAL_ONLY_AS_PATH",
+        .name = "[REJECT_WITHDRAWAL] Script_hash_as_stake_credential_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200000001010100000100000000"
         "0101010000000001010001",
@@ -3593,9 +3428,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Non-staking path as stake credential in Ordinary Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITHDRAWAL] Non_staking_path_as_stake_credential_in_Ordinary_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITHDRAWAL] Non_staking_path_as_stake_credential_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200000001010100000100000000"
         "0101010000000001010001",
@@ -3606,9 +3440,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Staking path as stake credential in Multisig Tx
-    // Reject reason: InvalidDataReason.SIGN_MODE_MULTISIG__WITHDRAWAL_ONLY_AS_SCRIPT
     {
-        .name = "[REJECT_WITHDRAWAL] Staking_path_as_stake_credential_in_Multisig_Tx_SIGN_MODE_MULTISIG_WITHDRAWAL_ONLY_AS_SCRIPT",
+        .name = "[REJECT_WITHDRAWAL] Staking_path_as_stake_credential_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200000001010100000100000000"
         "0101010000000001010000",
@@ -3619,9 +3452,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Non-staking path as stake credential in Plutus Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITHDRAWAL] Non_staking_path_as_stake_credential_in_Plutus_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITHDRAWAL] Non_staking_path_as_stake_credential_in_Plutus_Tx",
         .init_hex =
         "0000000000000000012D964A0907000100010200000001010100000100000000"
         "0101010000000001010001",
@@ -3632,9 +3464,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary account path in Ordinary Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Ordinary_account_path_in_Ordinary_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Ordinary_account_path_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3645,9 +3476,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Ordinary Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Multisig_account_path_in_Ordinary_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Multisig_account_path_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3658,9 +3488,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig spending path in Ordinary Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Multisig_spending_path_in_Ordinary_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Multisig_spending_path_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3671,9 +3500,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig staking path in Ordinary Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Multisig_staking_path_in_Ordinary_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Multisig_staking_path_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3684,9 +3512,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint path in Ordinary Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Mint_path_in_Ordinary_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Mint_path_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3697,9 +3524,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary account path in Multisig Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Ordinary_account_path_in_Multisig_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Ordinary_account_path_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3710,9 +3536,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Multisig Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Multisig_account_path_in_Multisig_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Multisig_account_path_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3723,9 +3548,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary spending path in Multisig Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Ordinary_spending_path_in_Multisig_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Ordinary_spending_path_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3736,9 +3560,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary staking path in Multisig Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Ordinary_staking_path_in_Multisig_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Ordinary_staking_path_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3749,9 +3572,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint path in Multisig Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Mint_path_in_Multisig_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Mint_path_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3762,9 +3584,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Pool cold path in Multisig Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Pool_cold_path_in_Multisig_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Pool_cold_path_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3775,9 +3596,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary account path in Plutus Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Ordinary_account_path_in_Plutus_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Ordinary_account_path_in_Plutus_Tx",
         .init_hex =
         "0000000000000000012D964A0907000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3788,9 +3608,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Plutus Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Multisig_account_path_in_Plutus_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Multisig_account_path_in_Plutus_Tx",
         .init_hex =
         "0000000000000000012D964A0907000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -3801,9 +3620,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Pool Registration (Owner) Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Multisig_account_path_in_Pool_Registration_(Owner)_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Multisig_account_path_in_Pool_Registration_(Owner)_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3814,9 +3632,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary spending path in Pool Registration (Owner) Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Ordinary_spending_path_in_Pool_Registration_(Owner)_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Ordinary_spending_path_in_Pool_Registration_(Owner)_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3827,9 +3644,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig spending path in Pool Registration (Owner) Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Multisig_spending_path_in_Pool_Registration_(Owner)_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Multisig_spending_path_in_Pool_Registration_(Owner)_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3840,9 +3656,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig staking path in Pool Registration (Owner) Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Multisig_staking_path_in_Pool_Registration_(Owner)_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Multisig_staking_path_in_Pool_Registration_(Owner)_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3853,9 +3668,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint path in Pool Registration (Owner) Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Mint_path_in_Pool_Registration_(Owner)_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Mint_path_in_Pool_Registration_(Owner)_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3866,9 +3680,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Pool cold path in Pool Registration (Owner) Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Pool_cold_path_in_Pool_Registration_(Owner)_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Pool_cold_path_in_Pool_Registration_(Owner)_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3879,9 +3692,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Pool Registration (Operator) Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Multisig_account_path_in_Pool_Registration_(Operator)_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Multisig_account_path_in_Pool_Registration_(Operator)_Tx",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3892,9 +3704,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig spending path in Pool Registration (Operator) Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Multisig_spending_path_in_Pool_Registration_(Operator)_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Multisig_spending_path_in_Pool_Registration_(Operator)_Tx",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3905,9 +3716,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary staking path in Pool Registration (Operator) Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Ordinary_staking_path_in_Pool_Registration_(Operator)_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Ordinary_staking_path_in_Pool_Registration_(Operator)_Tx",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3918,9 +3728,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig staking path in Pool Registration (Operator) Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Multisig_staking_path_in_Pool_Registration_(Operator)_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Multisig_staking_path_in_Pool_Registration_(Operator)_Tx",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3931,9 +3740,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint path in Pool Registration (Operator) Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_WITNESS] Mint_path_in_Pool_Registration_(Operator)_Tx_LEDGER_POLICY",
+        .name = "[REJECT_WITNESS] Mint_path_in_Pool_Registration_(Operator)_Tx",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3944,9 +3752,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input and change output account mismatch
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_SINGLE_ACCOUNT] Input_and_change_output_account_mismatch_LEDGER_POLICY",
+        .name = "[REJECT_SINGLE_ACCOUNT] Input_and_change_output_account_mismatch",
         .init_hex =
         "0000000000000000012D964A0903000100020200000000010100000100000000"
         "0101010000000001010001",
@@ -3957,9 +3764,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input and stake deregistration certificate account mismatch
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_SINGLE_ACCOUNT] Input_and_stake_deregistration_certificate_account_mismatch_LEDGER_POLICY",
+        .name = "[REJECT_SINGLE_ACCOUNT] Input_and_stake_deregistration_certificate_account_mismatch",
         .init_hex =
         "0000000000000000012D964A0903000100010200010000010100000100000000"
         "0101010000000001010002",
@@ -3970,9 +3776,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input and withdrawal account mismatch
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_SINGLE_ACCOUNT] Input_and_withdrawal_account_mismatch_LEDGER_POLICY",
+        .name = "[REJECT_SINGLE_ACCOUNT] Input_and_withdrawal_account_mismatch",
         .init_hex =
         "0000000000000000012D964A0903000100010200000001010100000100000000"
         "0101010000000001010002",
@@ -3983,9 +3788,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Change output and stake deregistration account mismatch
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_SINGLE_ACCOUNT] Change_output_and_stake_deregistration_account_mismatch_LEDGER_POLICY",
+        .name = "[REJECT_SINGLE_ACCOUNT] Change_output_and_stake_deregistration_account_mismatch",
         .init_hex =
         "0000000000000000012D964A0903000100020200010000010100000100000000"
         "0101010000000001010002",
@@ -3996,9 +3800,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Change output and withdrawal account mismatch
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_SINGLE_ACCOUNT] Change_output_and_withdrawal_account_mismatch_LEDGER_POLICY",
+        .name = "[REJECT_SINGLE_ACCOUNT] Change_output_and_withdrawal_account_mismatch",
         .init_hex =
         "0000000000000000012D964A0903000100020200000001010100000100000000"
         "0101010000000001010002",
@@ -4009,9 +3812,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Stake deregistration certificate and withdrawal account mismatch
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_SINGLE_ACCOUNT] Stake_deregistration_certificate_and_withdrawal_account_mismatch_LEDGER_POLICY",
+        .name = "[REJECT_SINGLE_ACCOUNT] Stake_deregistration_certificate_and_withdrawal_account_mismatch",
         .init_hex =
         "0000000000000000012D964A0903000100010200010001010100000100000000"
         "0101010000000001010003",
@@ -4022,9 +3824,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Byron to Shelley transfer input account mismatch
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_SINGLE_ACCOUNT] Byron_to_Shelley_transfer_input_account_mismatch_LEDGER_POLICY",
+        .name = "[REJECT_SINGLE_ACCOUNT] Byron_to_Shelley_transfer_input_account_mismatch",
         .init_hex =
         "0000000000000000012D964A0903000200010200000000010100000100000000"
         "0101010000000001010002",
@@ -4035,9 +3836,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Byron to Shelley transfer output account mismatch
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_SINGLE_ACCOUNT] Byron_to_Shelley_transfer_output_account_mismatch_LEDGER_POLICY",
+        .name = "[REJECT_SINGLE_ACCOUNT] Byron_to_Shelley_transfer_output_account_mismatch",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -4048,9 +3848,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral output with datum hash
-    // Reject reason: InvalidDataReason.COLLATERAL_INPUT_CONTAINS_DATUM
     {
-        .name = "[REJECT_COLLATERAL_OUTPUT] Collateral_output_with_datum_hash_COLLATERAL_INPUT_CONTAINS_DATUM",
+        .name = "[REJECT_COLLATERAL_OUTPUT] Collateral_output_with_datum_hash",
         .init_hex =
         "0000000000000000012D964A0907000100010200000000010100000100000000"
         "0102010000000001010001",
@@ -4061,9 +3860,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral output with inline datum
-    // Reject reason: InvalidDataReason.COLLATERAL_INPUT_CONTAINS_DATUM
     {
-        .name = "[REJECT_COLLATERAL_OUTPUT] Collateral_output_with_inline_datum_COLLATERAL_INPUT_CONTAINS_DATUM",
+        .name = "[REJECT_COLLATERAL_OUTPUT] Collateral_output_with_inline_datum",
         .init_hex =
         "0000000000000000012D964A0907000100010200000000010100000100000000"
         "0102010000000001010001",
@@ -4074,9 +3872,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral output with reference script
-    // Reject reason: InvalidDataReason.COLLATERAL_INPUT_CONTAINS_REFERENCE_SCRIPT
     {
-        .name = "[REJECT_COLLATERAL_OUTPUT] Collateral_output_with_reference_script_COLLATERAL_INPUT_CONTAINS_REFERENCE_SCRIPT",
+        .name = "[REJECT_COLLATERAL_OUTPUT] Collateral_output_with_reference_script",
         .init_hex =
         "0000000000000000012D964A0907000100010200000000010100000100000000"
         "0102010000000001010001",
@@ -4087,9 +3884,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where asset groups are not ordered
-    // Reject reason: InvalidDataReason.MULTIASSET_INVALID_TOKEN_BUNDLE_ORDERING
     {
-        .name = "[REJECT_MULTIASSET] Reject_tx_where_asset_groups_are_not_ordered_MULTIASSET_INVALID_TOKEN_BUNDLE_ORDERING",
+        .name = "[REJECT_MULTIASSET] Reject_tx_where_asset_groups_are_not_ordered",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -4100,9 +3896,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where asset groups are not unique
-    // Reject reason: InvalidDataReason.MULTIASSET_INVALID_TOKEN_BUNDLE_NOT_UNIQUE
     {
-        .name = "[REJECT_MULTIASSET] Reject_tx_where_asset_groups_are_not_unique_MULTIASSET_INVALID_TOKEN_BUNDLE_NOT_UNIQUE",
+        .name = "[REJECT_MULTIASSET] Reject_tx_where_asset_groups_are_not_unique",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -4113,9 +3908,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where tokens within an asset group are not ordered - alphabetical
-    // Reject reason: InvalidDataReason.MULTIASSET_INVALID_ASSET_GROUP_ORDERING
     {
-        .name = "[REJECT_MULTIASSET] Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_alphabetical_MULTIASSET_INVALID_ASSET_GROUP_ORDERING",
+        .name = "[REJECT_MULTIASSET] Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_alphabetical",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -4126,9 +3920,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where tokens within an asset group are not ordered - length
-    // Reject reason: InvalidDataReason.MULTIASSET_INVALID_ASSET_GROUP_ORDERING
     {
-        .name = "[REJECT_MULTIASSET] Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_length_MULTIASSET_INVALID_ASSET_GROUP_ORDERING",
+        .name = "[REJECT_MULTIASSET] Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_length",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -4139,9 +3932,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where tokens within an asset group are not unique
-    // Reject reason: InvalidDataReason.MULTIASSET_INVALID_ASSET_GROUP_NOT_UNIQUE
     {
-        .name = "[REJECT_MULTIASSET] Reject_tx_where_tokens_within_an_asset_group_are_not_unique_MULTIASSET_INVALID_ASSET_GROUP_NOT_UNIQUE",
+        .name = "[REJECT_MULTIASSET] Reject_tx_where_tokens_within_an_asset_group_are_not_unique",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -4152,9 +3944,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx with mint fields with invalid canonical ordering of policies
-    // Reject reason: InvalidDataReason.MULTIASSET_INVALID_TOKEN_BUNDLE_ORDERING
     {
-        .name = "[REJECT_MULTIASSET] Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_policies_MULTIASSET_INVALID_TOKEN_BUNDLE_ORDERING",
+        .name = "[REJECT_MULTIASSET] Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_policies",
         .init_hex =
         "0000000000000000012D964A0903000100000200000000010100020100000000"
         "0101010000000001010001",
@@ -4165,9 +3956,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx with mint fields with invalid canonical ordering of asset names
-    // Reject reason: InvalidDataReason.MULTIASSET_INVALID_ASSET_GROUP_ORDERING
     {
-        .name = "[REJECT_MULTIASSET] Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_asset_names_MULTIASSET_INVALID_ASSET_GROUP_ORDERING",
+        .name = "[REJECT_MULTIASSET] Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_asset_names",
         .init_hex =
         "0000000000000000012D964A0903000100000200000000010100010100000000"
         "0101010000000001010001",
@@ -4178,9 +3968,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Different index
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_POOL_OWNER] Different_index_LEDGER_POLICY",
+        .name = "[REJECT_POOL_OWNER] Different_index",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010002",
@@ -4191,9 +3980,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Different prefix
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_POOL_OWNER] Different_prefix_LEDGER_POLICY",
+        .name = "[REJECT_POOL_OWNER] Different_prefix",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010002",
@@ -4204,9 +3992,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > No path given
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_DEVICE_OWNER_REQUIRED
     {
-        .name = "[REJECT_POOL_OWNER] No_path_given_SIGN_MODE_POOL_OWNER_SINGLE_DEVICE_OWNER_REQUIRED",
+        .name = "[REJECT_POOL_OWNER] No_path_given",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010002",
@@ -4217,9 +4004,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Invalid_numerator_denominator_relationship
-    // Reject reason: InvalidDataReason.POOL_REGISTRATION_INVALID_MARGIN
     {
-        .name = "[REJECT_POOL_OWNER] Invalid_numerator_denominator_relationship_POOL_REGISTRATION_INVALID_MARGIN",
+        .name = "[REJECT_POOL_OWNER] Invalid_numerator_denominator_relationship",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010002",
@@ -4230,9 +4016,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdRejectTestCases > Path sent in for Pool Registration Owner Tx
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__THIRD_PARTY_POOL_KEY_REQUIRED
     {
-        .name = "[REJECT_POOL_ID] Path_sent_in_for_Pool_Registration_Owner_Tx_SIGN_MODE_POOL_OWNER_THIRD_PARTY_POOL_KEY_REQUIRED",
+        .name = "[REJECT_POOL_ID] Path_sent_in_for_Pool_Registration_Owner_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010002",
@@ -4243,9 +4028,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdRejectTestCases > Hash sent in for Pool Registration Operator Tx
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OPERATOR__DEVICE_OWNED_POOL_KEY_REQUIRED
     {
-        .name = "[REJECT_POOL_ID] Hash_sent_in_for_Pool_Registration_Operator_Tx_SIGN_MODE_POOL_OPERATOR_DEVICE_OWNED_POOL_KEY_REQUIRED",
+        .name = "[REJECT_POOL_ID] Hash_sent_in_for_Pool_Registration_Operator_Tx",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -4256,9 +4040,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerRejectTestCases > Non_staking_path_for_Pool_Registration_Owner_Tx
-    // Reject reason: InvalidDataReason.LEDGER_POLICY
     {
-        .name = "[REJECT_POOL_OWNER] Non_staking_path_for_Pool_Registration_Owner_Tx_LEDGER_POLICY",
+        .name = "[REJECT_POOL_OWNER] Non_staking_path_for_Pool_Registration_Owner_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -4269,9 +4052,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool registration with multiple path owners
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_DEVICE_OWNER_REQUIRED
     {
-        .name = "[REJECT_CERT_INVALID] pool_registration_with_multiple_path_owners_SIGN_MODE_POOL_OWNER_SINGLE_DEVICE_OWNER_REQUIRED",
+        .name = "[REJECT_CERT_INVALID] pool_registration_with_multiple_path_owners",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010002",
@@ -4282,9 +4064,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool registration with no owners
-    // Reject reason: InvalidDataReason.SIGN_MODE_POOL_OWNER__SINGLE_DEVICE_OWNER_REQUIRED
     {
-        .name = "[REJECT_CERT_INVALID] pool_registration_with_no_owners_SIGN_MODE_POOL_OWNER_SINGLE_DEVICE_OWNER_REQUIRED",
+        .name = "[REJECT_CERT_INVALID] pool_registration_with_no_owners",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010000",
@@ -4295,9 +4076,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool metadata url too long
-    // Reject reason: InvalidDataReason.POOL_REGISTRATION_METADATA_INVALID_URL
     {
-        .name = "[REJECT_POOL_METADATA] pool_metadata_url_too_long_POOL_REGISTRATION_METADATA_INVALID_URL",
+        .name = "[REJECT_POOL_METADATA] pool_metadata_url_too_long",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -4308,9 +4088,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool metadata invalid url
-    // Reject reason: InvalidDataReason.POOL_REGISTRATION_METADATA_INVALID_URL
     {
-        .name = "[REJECT_POOL_METADATA] pool_metadata_invalid_url_POOL_REGISTRATION_METADATA_INVALID_URL",
+        .name = "[REJECT_POOL_METADATA] pool_metadata_invalid_url",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -4321,9 +4100,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool metadata invalid hash length
-    // Reject reason: InvalidDataReason.POOL_REGISTRATION_METADATA_INVALID_HASH
     {
-        .name = "[REJECT_POOL_METADATA] pool_metadata_invalid_hash_length_POOL_REGISTRATION_METADATA_INVALID_HASH",
+        .name = "[REJECT_POOL_METADATA] pool_metadata_invalid_hash_length",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -4334,9 +4112,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool metadata missing hash
-    // Reject reason: InvalidDataReason.POOL_REGISTRATION_METADATA_INVALID_HASH
     {
-        .name = "[REJECT_POOL_METADATA] pool_metadata_missing_hash_POOL_REGISTRATION_METADATA_INVALID_HASH",
+        .name = "[REJECT_POOL_METADATA] pool_metadata_missing_hash",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -4347,9 +4124,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > invalidRelayTestCases > SingleHostHostname missing dns
-    // Reject reason: InvalidDataReason.RELAY_INVALID_DNS
     {
-        .name = "[REJECT_RELAY] SingleHostHostname_missing_dns_RELAY_INVALID_DNS",
+        .name = "[REJECT_RELAY] SingleHostHostname_missing_dns",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -4360,9 +4136,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > invalidRelayTestCases > MultiHost missing dns
-    // Reject reason: InvalidDataReason.RELAY_INVALID_DNS
     {
-        .name = "[REJECT_RELAY] MultiHost_missing_dns_RELAY_INVALID_DNS",
+        .name = "[REJECT_RELAY] MultiHost_missing_dns",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
