@@ -571,13 +571,13 @@ def _build_reject_fixtures() -> str:
             return sw
         return "SWO_SECURITY_CONDITION_NOT_SATISFIED"
 
-    @dataclass
+    @dataclass(frozen=True)
     class ChunkInfo:
         p1: int
         more: bool
         hex_payload: str
 
-    @dataclass
+    @dataclass(frozen=True)
     class FixtureInfo:
         name: str
         display_name: str

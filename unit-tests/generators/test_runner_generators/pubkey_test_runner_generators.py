@@ -1,6 +1,7 @@
 import re
+from dataclasses import dataclass
 from pathlib import Path
-from typing import List, NamedTuple
+from typing import List
 
 from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe, sanitize_c_identifier
 
@@ -11,12 +12,14 @@ _FIXTURE_ARRAY_PATTERN = re.compile(
 )
 
 
-class FixtureDetails(NamedTuple):
+@dataclass(frozen=True)
+class FixtureDetails:
     name: str
     index: int
 
 
-class FixtureArrayDetails(NamedTuple):
+@dataclass(frozen=True)
+class FixtureArrayDetails:
     array_name: str
     fixtures: List[FixtureDetails]
 
@@ -139,4 +142,3 @@ def generate_pubkey_test_runners() -> None:
 
     write_file_safe(test_c_file, complete_file)
     print(f"Generated {test_c_file}")
-

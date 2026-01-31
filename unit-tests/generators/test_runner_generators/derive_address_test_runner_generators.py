@@ -1,6 +1,7 @@
 import re
+from dataclasses import dataclass
 from pathlib import Path
-from typing import List, NamedTuple, Dict, Sequence
+from typing import List, Dict, Sequence
 
 from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe, sanitize_c_identifier
 
@@ -23,7 +24,8 @@ _FIXTURE_STRUCT_PATTERN = re.compile(r'\{(.*?)\}', re.DOTALL)
 # Data Structures
 # ======================================================================
 
-class FixtureDetails(NamedTuple):
+@dataclass(frozen=True)
+class FixtureDetails:
     """
     Complete details of a single fixture within an array.
 
@@ -34,7 +36,8 @@ class FixtureDetails(NamedTuple):
     index: int                 # Position in array (0-based)
 
 
-class FixtureArrayDetails(NamedTuple):
+@dataclass(frozen=True)
+class FixtureArrayDetails:
     """
     Complete information about a fixture array.
     

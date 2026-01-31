@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, List, NamedTuple
+from dataclasses import dataclass
+from typing import Any, List
 from enum import Enum
 
 from common import (
@@ -25,7 +26,8 @@ class P1DisplayType(Enum):
     P1_ADDRESS_RETURN = "P1_ADDRESS_RETURN"
     P1_ADDRESS_DISPLAY = "P1_ADDRESS_DISPLAY"
 
-class TestCaseCategory(NamedTuple):
+@dataclass(frozen=True)
+class TestCaseCategory:
     p1_value: str
     type: str
     test_cases: List[Any]

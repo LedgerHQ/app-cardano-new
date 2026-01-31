@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, List, NamedTuple, Dict
+from dataclasses import dataclass
+from typing import Any, List, Dict
 import re
 
 from common import (
@@ -19,7 +20,8 @@ MOCK_DATA_FILE = (
 )
 
 
-class PubKeyTestGroup(NamedTuple):
+@dataclass(frozen=True)
+class PubKeyTestGroup:
     test_cases: List[Any]
     silent_export_enabled: bool
     expected_policy: str
