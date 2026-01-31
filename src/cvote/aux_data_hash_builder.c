@@ -17,8 +17,8 @@ enum {
  */
 #ifdef TRACE_AUX_DATA_HASH_BUILDER
 enum {
-    AUX_DATA_TRACE_BUFFER_SIZE = 2 * 1024,
-    CVOTE_PAYLOAD_TRACE_BUFFER_SIZE = 3 * 1024,
+    AUX_DATA_TRACE_BUFFER_SIZE = 8 * 1024,
+    CVOTE_PAYLOAD_TRACE_BUFFER_SIZE = 8 * 1024,
 };
 static uint8_t aux_data_hash_trace_buffer[AUX_DATA_TRACE_BUFFER_SIZE];
 static size_t aux_data_hash_trace_size = 0;
