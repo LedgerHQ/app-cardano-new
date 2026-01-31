@@ -2,7 +2,7 @@ import re
 from pathlib import Path
 from typing import List
 
-from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe
+from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe, sanitize_c_identifier
 
 
 def extract_native_script_fixture_names(header_file_path: Path) -> List[str]:
@@ -32,28 +32,6 @@ def extract_native_script_fixture_names(header_file_path: Path) -> List[str]:
     return fixture_names
 
 
-def _sanitize_test_function_name(test_case_name: str) -> str:
-    """
-    Sanitize test case name for C function identifier.
-
-    
-    Args:
-        test_case_name: Original test case name from fixtures
-        
-    Returns:
-        Sanitized name suitable for C function identifier
-    """
-    # Replace problematic characters for C identifiers
-    sanitized_name = test_case_name.lower()
-    sanitized_name = sanitized_name.replace(" ", "_")
-    sanitized_name = sanitized_name.replace("#", "num")
-    sanitized_name = sanitized_name.replace("-", "_")
-    sanitized_name = sanitized_name.replace("'", "")
-    sanitized_name = sanitized_name.replace("(", "")
-    sanitized_name = sanitized_name.replace(")", "")
-    sanitized_name = sanitized_name.replace("/", "_")
-    
-    return sanitized_name
 
 
 def _build_test_file_header() -> str:
@@ -100,7 +78,7 @@ def _build_test_functions(fixture_names: List[str]) -> tuple[str, List[str]]:
     test_function_names = []
     
     for test_case_index, test_case_name in enumerate(fixture_names):
-        test_case_name_sanitized = _sanitize_test_function_name(test_case_name)
+        test_case_name_sanitized = sanitize_c_identifier(test_case_name, uppercase=False)
         test_function_name = f"test_derive_native_script_{test_case_name_sanitized}"
         
         test_functions_lines.extend([

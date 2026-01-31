@@ -9,6 +9,7 @@ from common import (
     _add_tests_to_sys_path,
     UNIT_TESTS_DIR,
     write_file_safe,
+    sanitize_c_identifier,
 )
 
 def _format_bytes_as_c_array(data: bytes, name: str, bytes_per_line: int = 16) -> str:
@@ -41,12 +42,6 @@ def _split_hex_string(hex_str: str, chunk_size: int = 1024) -> List[str]:
 def _compute_blake2b_256(data: bytes) -> str:
     return hashlib.blake2b(data, digest_size=32).hexdigest()
 
-
-def _sanitize_name_for_c(name: str) -> str:
-    safe = "".join(c if c.isalnum() else "_" for c in name)
-    while "__" in safe:
-        safe = safe.replace("__", "_")
-    return safe.upper()
 
 
 def _bool_to_c(value: bool) -> str:
@@ -131,7 +126,7 @@ def _generate_fixtures_for_era(
         expected_hash_hex = _compute_blake2b_256(cbor_bytes)
         body_aux_data_hash = _extract_aux_data_hash_from_tx_body(expected_cbor_hex)
 
-        safe_name = _sanitize_name_for_c(test_case.name)
+        safe_name = sanitize_c_identifier(test_case.name)
         fixture_prefix = f"FIXTURE_{era_key.upper()}_{safe_name}"
 
         include_aux_data_hash = tx.auxiliaryData is not None

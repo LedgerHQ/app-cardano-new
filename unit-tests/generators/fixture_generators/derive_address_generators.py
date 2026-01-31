@@ -5,6 +5,7 @@ from enum import Enum
 
 from common import (
     write_file_safe,
+    sanitize_c_identifier,
     _ensure_base58_module,
     _add_tests_to_sys_path,
     REPO_ROOT,
@@ -123,33 +124,6 @@ def _serialize_test_case_to_apdu(test_case: Any) -> bytes:
 # Step 3: Generate C Code for Fixtures
 # ==============================================================================
 
-
-def _sanitize_test_name_for_c_identifier(test_name: str) -> str:
-    """
-    Convert test name to valid C identifier.
-
-    Args:
-        test_name: Human-readable test name from DeriveAddressTestCase
-
-    Returns:
-        Valid C identifier in UPPER_SNAKE_CASE
-
-    Example:
-        >>> _sanitize_test_name_for_c_identifier("path too short")
-        'PATH_TOO_SHORT'
-        >>> _sanitize_test_name_for_c_identifier("base key/key with wrong path")
-        'BASE_KEY_KEY_WITH_WRONG_PATH'
-    """
-    # Replace non-alphanumeric characters with underscores
-    safe_name = "".join(
-        character if character.isalnum() else "_" for character in test_name
-    )
-
-    # Collapse multiple consecutive underscores
-    while "__" in safe_name:
-        safe_name = safe_name.replace("__", "_")
-
-    return safe_name.strip("_").upper()
 
 
 def _generate_c_byte_array_for_apdu(
@@ -275,7 +249,7 @@ def _generate_fixture_code_for_test_case(
     payload_bytes = _extract_apdu_payload_bytes(apdu_command_bytes)
 
     # Generate safe C identifier from test name
-    safe_test_name = _sanitize_test_name_for_c_identifier(test_case.name)
+    safe_test_name = sanitize_c_identifier(test_case.name)
 
     # Generate C array for complete APDU command
     payload_array_name = (
@@ -372,7 +346,7 @@ def _build_fixtures() -> str:
 
             # Generate fixture struct
             # Extract just the payload (skip the 5-byte APDU header: CLA, INS, P1, P2, Lc)
-            safe_test_name = _sanitize_test_name_for_c_identifier(test_case.name)
+            safe_test_name = sanitize_c_identifier(test_case.name)
             
             payload_array_name = (
                 f"DERIVE_ADDRESS_{category.type}_{test_number:03d}_{safe_test_name}_APDU"

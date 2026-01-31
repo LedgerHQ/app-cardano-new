@@ -81,12 +81,12 @@ static void test_derive_native_script_nested_native_scripts(void **state) {
     run_fixture(&NATIVE_SCRIPT_FIXTURES[12]);
 }
 
-static void test_derive_native_script_nested_native_scripts_num2(void **state) {
+static void test_derive_native_script_nested_native_scripts_2(void **state) {
     (void) state;
     run_fixture(&NATIVE_SCRIPT_FIXTURES[13]);
 }
 
-static void test_derive_native_script_nested_native_scripts_num3(void **state) {
+static void test_derive_native_script_nested_native_scripts_3(void **state) {
     (void) state;
     run_fixture(&NATIVE_SCRIPT_FIXTURES[14]);
 }
@@ -109,8 +109,8 @@ int main(void) {
         cmocka_unit_test(test_derive_native_script_invalid_hereafter_script),
         cmocka_unit_test(test_derive_native_script_invalid_hereafter_script_slot_is_a_big_number),
         cmocka_unit_test(test_derive_native_script_nested_native_scripts),
-        cmocka_unit_test(test_derive_native_script_nested_native_scripts_num2),
-        cmocka_unit_test(test_derive_native_script_nested_native_scripts_num3),
+        cmocka_unit_test(test_derive_native_script_nested_native_scripts_2),
+        cmocka_unit_test(test_derive_native_script_nested_native_scripts_3),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

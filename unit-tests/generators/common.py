@@ -52,6 +52,53 @@ def write_file_safe(file_path: Path, content: str) -> None:
         sys.exit(1)
 
 
+def sanitize_c_identifier(name: str, uppercase: bool = True, handle_leading_digit: bool = False) -> str:
+    """
+    Convert arbitrary string to valid C identifier.
+
+    Replaces non-alphanumeric characters with underscores, collapses consecutive
+    underscores, and optionally converts to uppercase.
+
+    Args:
+        name: Input string to sanitize
+        uppercase: If True, convert to UPPER_SNAKE_CASE; if False, use lower_snake_case
+        handle_leading_digit: If True, prefix with "num_" if name starts with digit
+
+    Returns:
+        Valid C identifier string
+
+    Examples:
+        >>> sanitize_c_identifier("path too short")
+        'PATH_TOO_SHORT'
+        >>> sanitize_c_identifier("base key/key with wrong path")
+        'BASE_KEY_KEY_WITH_WRONG_PATH'
+        >>> sanitize_c_identifier("test-case #1", uppercase=False)
+        'test_case_1'
+        >>> sanitize_c_identifier("123_test", handle_leading_digit=True)
+        'NUM_123_TEST'
+    """
+    # Replace non-alphanumeric characters with underscores
+    sanitized = "".join(c if c.isalnum() else "_" for c in name)
+
+    # Collapse multiple consecutive underscores
+    while "__" in sanitized:
+        sanitized = sanitized.replace("__", "_")
+
+    # Strip leading/trailing underscores
+    sanitized = sanitized.strip("_")
+
+    # Handle leading digit if requested
+    if handle_leading_digit and sanitized and sanitized[0].isdigit():
+        sanitized = f"num_{sanitized}"
+
+    # Handle empty string case
+    if not sanitized:
+        sanitized = "unnamed"
+
+    # Convert case
+    return sanitized.upper() if uppercase else sanitized.lower()
+
+
 def _add_tests_to_sys_path() -> None:
     sys.path.insert(0, str(REPO_ROOT / "tests"))
     sys.path.insert(0, str(REPO_ROOT / "tests" / "application_client"))

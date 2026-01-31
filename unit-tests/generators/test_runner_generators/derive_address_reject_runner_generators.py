@@ -2,20 +2,8 @@ import re
 from pathlib import Path
 from typing import List
 
-from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe
+from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe, sanitize_c_identifier
 
-
-def _sanitize_fixture_name_for_c_function(fixture_name: str) -> str:
-    sanitized = fixture_name.lower()
-    sanitized = re.sub(r'[^a-z0-9_]+', '_', sanitized)
-    sanitized = re.sub(r'_+', '_', sanitized).strip('_')
-
-    if sanitized and sanitized[0].isdigit():
-        sanitized = f"num_{sanitized}"
-    if not sanitized:
-        sanitized = "fixture"
-
-    return sanitized
 
 
 def _extract_reject_fixture_names(header_path: Path) -> List[str]:
@@ -115,7 +103,7 @@ def _build_test_functions(fixture_names: List[str]) -> tuple[str, List[str]]:
     test_function_names: List[str] = []
 
     for idx, fixture_name in enumerate(fixture_names):
-        sanitized = _sanitize_fixture_name_for_c_function(fixture_name)
+        sanitized = sanitize_c_identifier(fixture_name, uppercase=False, handle_leading_digit=True)
         test_function_name = f"test_derive_address_reject_{idx}_{sanitized}"
 
         test_functions.append(

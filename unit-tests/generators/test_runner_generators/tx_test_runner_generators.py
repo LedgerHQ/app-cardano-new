@@ -14,6 +14,7 @@ from typing import Any, Dict, List, Optional, Sequence, Tuple, Type
 from common import (
     read_file_safe,
     write_file_safe,
+    sanitize_c_identifier,
     UNIT_TESTS_DIR,
 )
 
@@ -69,12 +70,6 @@ ERA_TEST_FILE_MAP: Dict[str, Tuple[str, str, str]] = {
 }
 
 
-def _sanitize_test_name(name: str) -> str:
-    lower = name.lower()
-    cleaned = re.sub(r"[^a-z0-9_]+", "_", lower)
-    cleaned = re.sub(r"_+", "_", cleaned).strip("_")
-    return cleaned
-
 
 def _build_test_functions(
     fixtures: Sequence[Tuple[str, str]],
@@ -82,7 +77,7 @@ def _build_test_functions(
     functions: List[str] = []
     names: List[str] = []
     for fixture_name, display_name in fixtures:
-        func_suffix = _sanitize_test_name(display_name)
+        func_suffix = sanitize_c_identifier(display_name, uppercase=False)
         if not func_suffix:
             raise ValueError(f"Unable to sanitize fixture name {display_name}")
         test_name = f"test_{func_suffix}"
