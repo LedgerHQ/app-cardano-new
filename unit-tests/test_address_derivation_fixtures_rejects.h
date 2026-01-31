@@ -5,7 +5,7 @@
 // derivation requests according to the security policy defined in
 // src/securityPolicy.c
 //
-// Total rejection tests: 11
+// Total rejection tests: 12
 
 #pragma once
 
@@ -114,53 +114,68 @@ static const uint8_t DERIVE_ADDRESS_REJECT_007_BASE_KEY_SCRIPT_WITH_BYRON_SPENDI
 };
 
 // ----------------------------------------------------------------------
-// Reject Test 8: pointer with Byron spending path
+// Reject Test 8: base address scripthash/keyhash not allowed
+// Expected rejection: SWO_SECURITY_CONDITION_NOT_SATISFIED
+// Address Type: BASE_PAYMENT_SCRIPT_STAKE_KEY
+// Spending: 122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277
+// Staking: 222a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277
+// ----------------------------------------------------------------------
+
+static const uint8_t DERIVE_ADDRESS_REJECT_008_BASE_ADDRESS_SCRIPTHASH_KEYHASH_NOT_ALLOWED_APDU[] = {
+    0x01, 0x01, 0x12, 0x2A, 0x94, 0x6B, 0x9A, 0xD3, 0xD2, 0xDD, 0xF0, 0x29, 0xD3, 0xA8, 0x28, 0xF0,
+    0x46, 0x8A, 0xEC, 0xE7, 0x68, 0x95, 0xF1, 0x5C, 0x9E, 0xFB, 0xD6, 0x9B, 0x42, 0x77, 0x33, 0x22,
+    0x2A, 0x94, 0x6B, 0x9A, 0xD3, 0xD2, 0xDD, 0xF0, 0x29, 0xD3, 0xA8, 0x28, 0xF0, 0x46, 0x8A, 0xEC,
+    0xE7, 0x68, 0x95, 0xF1, 0x5C, 0x9E, 0xFB, 0xD6, 0x9B, 0x42, 0x77,
+};
+
+// ----------------------------------------------------------------------
+// Reject Test 9: pointer with Byron spending path
 // Expected rejection: SWO_SECURITY_CONDITION_NOT_SATISFIED
 // Address Type: POINTER_KEY
 // Spending: m/44'/1815'/1'/0/0
 // Staking: 000000010000000200000003
 // ----------------------------------------------------------------------
 
-static const uint8_t DERIVE_ADDRESS_REJECT_008_POINTER_WITH_BYRON_SPENDING_PATH_APDU[] = {
+static const uint8_t DERIVE_ADDRESS_REJECT_009_POINTER_WITH_BYRON_SPENDING_PATH_APDU[] = {
     0x04, 0x01, 0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x01, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x44, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02,
     0x00, 0x00, 0x00, 0x03,
 };
 
 // ----------------------------------------------------------------------
-// Reject Test 9: pointer with wrong spending path
+// Reject Test 10: pointer with wrong spending path
 // Expected rejection: SWO_SECURITY_CONDITION_NOT_SATISFIED
 // Address Type: POINTER_KEY
 // Spending: m/1852'/1815'/1'/2/0
 // Staking: 000000010000000200000003
 // ----------------------------------------------------------------------
 
-static const uint8_t DERIVE_ADDRESS_REJECT_009_POINTER_WITH_WRONG_SPENDING_PATH_APDU[] = {
+static const uint8_t DERIVE_ADDRESS_REJECT_010_POINTER_WITH_WRONG_SPENDING_PATH_APDU[] = {
     0x04, 0x01, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x01, 0x00,
     0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x44, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02,
     0x00, 0x00, 0x00, 0x03,
 };
 
 // ----------------------------------------------------------------------
-// Reject Test 10: enterprise with Byron spending path
+// Reject Test 11: enterprise with Byron spending path
 // Expected rejection: SWO_SECURITY_CONDITION_NOT_SATISFIED
 // Address Type: ENTERPRISE_KEY
 // Spending: m/44'/1815'/1'/0/0
 // ----------------------------------------------------------------------
 
-static const uint8_t DERIVE_ADDRESS_REJECT_010_ENTERPRISE_WITH_BYRON_SPENDING_PATH_APDU[] = {
+static const uint8_t DERIVE_ADDRESS_REJECT_011_ENTERPRISE_WITH_BYRON_SPENDING_PATH_APDU[] = {
     0x06, 0x01, 0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x01, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x11,
 };
 
 // ----------------------------------------------------------------------
-// Reject Test 11: enterprise with wrong spending path
+// Reject Test 12: enterprise with wrong spending path
 // Expected rejection: SWO_SECURITY_CONDITION_NOT_SATISFIED
 // Address Type: ENTERPRISE_KEY
 // Spending: m/1852'/1815'/1'/2/0
 // ----------------------------------------------------------------------
 
-static const uint8_t DERIVE_ADDRESS_REJECT_011_ENTERPRISE_WITH_WRONG_SPENDING_PATH_APDU[] = {
+static const uint8_t DERIVE_ADDRESS_REJECT_012_ENTERPRISE_WITH_WRONG_SPENDING_PATH_APDU[] = {
     0x06, 0x01, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x01, 0x00,
     0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x11,
 };
@@ -216,33 +231,40 @@ static const derive_address_fixture_t DERIVE_ADDRESS_REJECT_FIXTURES[] = {
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 {
+    .name = "base address scripthash/keyhash not allowed",
+    .p1 = P1_ADDRESS_RETURN,
+    .data = DERIVE_ADDRESS_REJECT_008_BASE_ADDRESS_SCRIPTHASH_KEYHASH_NOT_ALLOWED_APDU,
+    .data_len = sizeof(DERIVE_ADDRESS_REJECT_008_BASE_ADDRESS_SCRIPTHASH_KEYHASH_NOT_ALLOWED_APDU),
+    .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+},
+{
     .name = "pointer with Byron spending path",
     .p1 = P1_ADDRESS_RETURN,
-    .data = DERIVE_ADDRESS_REJECT_008_POINTER_WITH_BYRON_SPENDING_PATH_APDU,
-    .data_len = sizeof(DERIVE_ADDRESS_REJECT_008_POINTER_WITH_BYRON_SPENDING_PATH_APDU),
+    .data = DERIVE_ADDRESS_REJECT_009_POINTER_WITH_BYRON_SPENDING_PATH_APDU,
+    .data_len = sizeof(DERIVE_ADDRESS_REJECT_009_POINTER_WITH_BYRON_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 {
     .name = "pointer with wrong spending path",
     .p1 = P1_ADDRESS_RETURN,
-    .data = DERIVE_ADDRESS_REJECT_009_POINTER_WITH_WRONG_SPENDING_PATH_APDU,
-    .data_len = sizeof(DERIVE_ADDRESS_REJECT_009_POINTER_WITH_WRONG_SPENDING_PATH_APDU),
+    .data = DERIVE_ADDRESS_REJECT_010_POINTER_WITH_WRONG_SPENDING_PATH_APDU,
+    .data_len = sizeof(DERIVE_ADDRESS_REJECT_010_POINTER_WITH_WRONG_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 {
     .name = "enterprise with Byron spending path",
     .p1 = P1_ADDRESS_RETURN,
-    .data = DERIVE_ADDRESS_REJECT_010_ENTERPRISE_WITH_BYRON_SPENDING_PATH_APDU,
-    .data_len = sizeof(DERIVE_ADDRESS_REJECT_010_ENTERPRISE_WITH_BYRON_SPENDING_PATH_APDU),
+    .data = DERIVE_ADDRESS_REJECT_011_ENTERPRISE_WITH_BYRON_SPENDING_PATH_APDU,
+    .data_len = sizeof(DERIVE_ADDRESS_REJECT_011_ENTERPRISE_WITH_BYRON_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 {
     .name = "enterprise with wrong spending path",
     .p1 = P1_ADDRESS_RETURN,
-    .data = DERIVE_ADDRESS_REJECT_011_ENTERPRISE_WITH_WRONG_SPENDING_PATH_APDU,
-    .data_len = sizeof(DERIVE_ADDRESS_REJECT_011_ENTERPRISE_WITH_WRONG_SPENDING_PATH_APDU),
+    .data = DERIVE_ADDRESS_REJECT_012_ENTERPRISE_WITH_WRONG_SPENDING_PATH_APDU,
+    .data_len = sizeof(DERIVE_ADDRESS_REJECT_012_ENTERPRISE_WITH_WRONG_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 };
 
-#define DERIVE_ADDRESS_REJECT_FIXTURE_COUNT 11
+#define DERIVE_ADDRESS_REJECT_FIXTURE_COUNT 12

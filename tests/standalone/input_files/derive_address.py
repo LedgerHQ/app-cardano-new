@@ -107,13 +107,13 @@ rejectTestCases = [
         "m/44'/1815'/1'/0/1",
         "222a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
     ),
-    # DeriveAddressTestCase(
-    #     "base address scripthash/keyhash not allowed",
-    #     Mainnet,
-    #     AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,
-    #     "122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
-    #     "222a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
-    # ),
+    DeriveAddressTestCase(
+        "base address scripthash/keyhash not allowed",
+        Mainnet,
+        AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,
+        "122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
+        "222a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
+    ),
     DeriveAddressTestCase(
         "pointer with Byron spending path",
         Mainnet,

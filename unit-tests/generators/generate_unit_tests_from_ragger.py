@@ -52,6 +52,9 @@ from test_runner_generators.derive_address_test_runner_generators import (
 from test_runner_generators.derive_native_script_runner_generators import (
     generate_native_script_test_runners,
 )
+from test_runner_generators.derive_address_reject_runner_generators import (
+    generate_address_derivation_reject_test_runners,
+)
 
 
 def regenerate_mock_data() -> None:
@@ -268,6 +271,7 @@ def run_all() -> None:
     generate_tx_test_runners()
     generate_address_derivation_test_runners()
     generate_native_script_test_runners()
+    generate_address_derivation_reject_test_runners()
     # Generate reject fixtures
     generate_tx_reject_fixtures()
     generate_address_derivation_reject_fixtures()
@@ -303,6 +307,7 @@ def main() -> None:
         generate_tx_test_runners()
         generate_address_derivation_test_runners()
         generate_native_script_test_runners()
+        generate_address_derivation_reject_test_runners()
     elif args.command == "rejects":
         generate_tx_reject_fixtures()
         generate_address_derivation_reject_fixtures()

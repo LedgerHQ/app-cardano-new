@@ -177,6 +177,7 @@ static security_policy_t _policyForDeriveAddress(const addressParams_t *addressP
                 mark_unusual_key_derivation(warnings, &addressParams->paymentKeyPath);
             }
             SHOW_UNLESS(bip44_isPathReasonable(&addressParams->paymentKeyPath));
+
             if (addressParams->stakingDataSource == STAKING_KEY_PATH &&
                 !bip44_isPathReasonable(&addressParams->stakingKeyPath)) {
                 mark_unusual_key_derivation(warnings, &addressParams->stakingKeyPath);
@@ -197,10 +198,10 @@ static security_policy_t _policyForDeriveAddress(const addressParams_t *addressP
 
         case BASE_PAYMENT_SCRIPT_STAKE_KEY:
         case REWARD_KEY:
+            DENY_IF(addressParams->stakingDataSource != STAKING_KEY_PATH);
             if (!bip44_isPathReasonable(&addressParams->stakingKeyPath)) {
                 mark_unusual_key_derivation(warnings, &addressParams->stakingKeyPath);
             }
-            DENY_IF(addressParams->stakingDataSource != STAKING_KEY_PATH);
             SHOW_UNLESS(bip44_isPathReasonable(&addressParams->stakingKeyPath));
             break;
 
