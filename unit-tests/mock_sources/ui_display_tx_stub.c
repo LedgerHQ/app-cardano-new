@@ -3,6 +3,6 @@
 #include "ui_warnings.h"
 
 void tx_review_cleanup(void) {
-    ui_pairs_cleanup();
+    ui_free_pairs();
     ui_free_warnings();
 }

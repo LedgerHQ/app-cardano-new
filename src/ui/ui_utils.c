@@ -52,7 +52,7 @@ void ui_set_error_status(ui_status_t status) {
 /**
  * Cleanup pairs array (g_pairs and g_pairsList)
  */
-void ui_pairs_cleanup(void) {
+void ui_free_pairs(void) {
     if (g_pairs != NULL) {
         for (uint16_t i = 0; i < g_next_pair_index; i++) {
             if (g_pairs[i].value != NULL) {
@@ -162,6 +162,6 @@ bool ui_pairs_init(uint8_t nbPairs) {
     g_next_pair_index = 0;
     return true;
 error:
-    ui_pairs_cleanup();
+    ui_free_pairs();
     return false;
 }

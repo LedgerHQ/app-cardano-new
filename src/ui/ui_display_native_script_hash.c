@@ -118,7 +118,7 @@ bool format_required_signatures(uint32_t requiredScripts,
 }
 
 static void derive_native_script_hash_buffer_cleanup(void) {
-    ui_pairs_cleanup();
+    ui_free_pairs();
 }
 
 static void derive_native_script_hash_review_continue(bool confirm) {

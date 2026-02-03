@@ -37,7 +37,7 @@
  * Cleanup dynamically allocated buffers and UI pairs
  */
 static void cvote_buffer_cleanup(void) {
-    ui_pairs_cleanup();
+    ui_free_pairs();
     ui_free_warnings();
 }
 

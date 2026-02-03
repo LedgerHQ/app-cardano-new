@@ -1214,7 +1214,7 @@ int ui_prepare_transaction_review(void) {
 
     int status = ui_build_pairs();
     if (status != SWO_SUCCESS) {
-        ui_pairs_cleanup();
+        ui_free_pairs();
         ui_free_warnings();
         if (status_requires_streaming(status)) {
             // TODO we can add range to ui_build_pairs, but then maybe deallocation should be done more carefully
@@ -1234,13 +1234,13 @@ int ui_prepare_transaction_review(void) {
         case UI_STATUS_SUCCESS:
             break;
         case UI_STATUS_OUT_OF_MEMORY:
-            ui_pairs_cleanup();
+            ui_free_pairs();
             ui_free_warnings();
             return SWO_INSUFFICIENT_MEMORY;
         case UI_STATUS_UNINITIALIZED:
         default:
             LEDGER_ASSERT(false, "Unexpected UI warning status");
-            ui_pairs_cleanup();
+            ui_free_pairs();
             ui_free_warnings();
             return SWO_BAD_STATE;
     }

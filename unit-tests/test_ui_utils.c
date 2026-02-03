@@ -25,7 +25,7 @@ static void test_ui_pairs_add_static_label_stores_value(void **state) {
     assert_string_equal(g_pairs[0].item, "Label");
     assert_string_equal(g_pairs[0].value, "hello");
 
-    ui_pairs_cleanup();
+    ui_free_pairs();
 }
 
 int main(void) {

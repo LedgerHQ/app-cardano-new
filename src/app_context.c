@@ -10,8 +10,8 @@
 
 void reset_app_context(void) {
     TRACE("reset_app_context");
-    // Clean up UI allocations and review state
-    ui_pairs_cleanup();
+
+    ui_free_pairs();
     ui_free_warnings();
 
     // Reset the SDK allocator to wipe all transient memory

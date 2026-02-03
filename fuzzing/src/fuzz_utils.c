@@ -15,7 +15,7 @@ fuzz_exit_jump_ctx_t fuzz_exit_jump_ctx;
 
 void fuzzing_reset_state(void) {
     // Clean up UI allocations left over from the previous iteration
-    ui_pairs_cleanup();
+    ui_free_pairs();
 
     // Reset the dispatcher state to avoid cross-iteration contamination
     explicit_bzero(&G_context, sizeof(G_context));
