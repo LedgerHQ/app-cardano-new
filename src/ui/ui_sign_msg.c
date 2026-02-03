@@ -37,7 +37,19 @@
 #include "app_context.h"
 #include "sign_msg.h"
 #include "addressUtilsShelley.h"
-#include "mem.h"
+// no local mem allocations needed
+
+static bool format_ascii_chunk(const uint8_t *bytes, size_t size, char *out, size_t outSize) {
+    LEDGER_ASSERT(bytes != NULL, "NULL input buffer");
+    LEDGER_ASSERT(out != NULL, "NULL output buffer");
+    LEDGER_ASSERT(outSize > 0, "Zero output buffer size");
+    if (size + 1 > outSize) {
+        return false;
+    }
+    memcpy(out, bytes, size);
+    out[size] = '\0';
+    return true;
+}
 
 /**
  * Cleanup dynamically allocated buffers and UI pairs
@@ -107,16 +119,11 @@ void ui_display_sign_msg(security_policy_t securityPolicy) {
     switch (ctx->addressFieldType) {
         case CIP8_ADDRESS_FIELD_ADDRESS: {
             // Display human-readable address
-            char *addr_str = (char *) ui_mem_alloc(MAX_HUMAN_ADDRESS_LENGTH);
-            if (addr_str == NULL) {
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-                return;
-            }
-            format_address_human_readable(ctx->addressField,
-                                          ctx->addressFieldSize,
-                                          addr_str,
-                                          MAX_HUMAN_ADDRESS_LENGTH);
-            UI_ADD_STATIC(UI_STATIC_LABEL("Address field"), addr_str);
+            UI_ADD_FORMAT2(UI_STATIC_LABEL("Address field"),
+                           MAX_HUMAN_ADDRESS_LENGTH,
+                           format_address_human_readable,
+                           ctx->addressField,
+                           ctx->addressFieldSize);
             break;
         }
         case CIP8_ADDRESS_FIELD_KEYHASH: {
@@ -134,21 +141,10 @@ void ui_display_sign_msg(security_policy_t securityPolicy) {
     }
 
     // Field 4: Message length
-    char *msg_len_str = (char *) ui_mem_alloc(MAX_UINT64_STRING_LENGTH + 10);
-    if (msg_len_str == NULL) {
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return;
-    }
-    if (!format_uint64(ctx->msgLength, msg_len_str, MAX_UINT64_STRING_LENGTH)) {
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return;
-    }
-    // Append " bytes" suffix
-    size_t len = strlen(msg_len_str);
-    if (len + 7 < MAX_UINT64_STRING_LENGTH + 10) {
-        strcat(msg_len_str, " bytes");
-    }
-    UI_ADD_STATIC(UI_STATIC_LABEL("Message length"), msg_len_str);
+    UI_ADD_FORMAT1(UI_STATIC_LABEL("Message length"),
+                   MAX_UINT64_STRING_LENGTH,
+                   format_uint64,
+                   ctx->msgLength);
 
     // Field 5: Message preview (ASCII or hex)
     // Show first chunk (full if short message, prefix if long)
@@ -164,14 +160,11 @@ void ui_display_sign_msg(security_policy_t securityPolicy) {
         if (ctx->isAscii) {
             // Display as ASCII text (chunk is already validated as unambiguous ASCII)
             // Format as string by null-terminating
-            char *msg_str = (char *) ui_mem_alloc(ctx->chunkSize + 1);
-            if (msg_str == NULL) {
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-                return;
-            }
-            memmove(msg_str, ctx->chunk, ctx->chunkSize);
-            msg_str[ctx->chunkSize] = '\0';
-            UI_ADD_STATIC(UI_STATIC_LABEL("Message (ASCII)"), msg_str);
+            UI_ADD_FORMAT2(UI_STATIC_LABEL("Message (ASCII)"),
+                           ctx->chunkSize,
+                           format_ascii_chunk,
+                           ctx->chunk,
+                           ctx->chunkSize);
         } else {
             // Display as hex
             UI_ADD_FORMAT2(UI_STATIC_LABEL("Message (hex)"),
@@ -184,14 +177,11 @@ void ui_display_sign_msg(security_policy_t securityPolicy) {
         // Partial message (long message with multiple chunks)
         // Show "starts with..." prefix
         if (ctx->isAscii) {
-            char *msg_str = (char *) ui_mem_alloc(ctx->chunkSize + 1);
-            if (msg_str == NULL) {
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-                return;
-            }
-            memmove(msg_str, ctx->chunk, ctx->chunkSize);
-            msg_str[ctx->chunkSize] = '\0';
-            UI_ADD_STATIC(UI_STATIC_LABEL("Message starts with"), msg_str);
+            UI_ADD_FORMAT2(UI_STATIC_LABEL("Message starts with"),
+                           ctx->chunkSize,
+                           format_ascii_chunk,
+                           ctx->chunk,
+                           ctx->chunkSize);
         } else {
             UI_ADD_FORMAT2(UI_STATIC_LABEL("Message starts with"),
                            2 * ctx->chunkSize + 1,
