@@ -41,6 +41,8 @@ static void cvote_buffer_cleanup(void) {
     ui_cleanup_tracked_allocations();
     // Cleanup the pairs array
     ui_pairs_cleanup();
+    // Cleanup warning structures
+    ui_free_warnings();
 }
 
 static void cvote_review_choice(bool confirm) {
@@ -82,12 +84,11 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy) {
 
     // Build warnings - only use SDK's blind signing warning
     // TODO it says "drain your wallet" --- but maybe this does not apply to votecast signing?...
-    nbgl_warning_t *warningPtr = (nbgl_warning_t *)ui_mem_alloc(sizeof(nbgl_warning_t));
-    if (warningPtr == NULL) {
+    ui_status_t warning_status = ui_build_predefined_warning(1u << BLIND_SIGNING_WARN);
+    if (warning_status != UI_STATUS_SUCCESS) {
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return;
     }
-    explicit_bzero(warningPtr, sizeof(nbgl_warning_t));
-    warningPtr->predefinedSet |= (1 << BLIND_SIGNING_WARN);
 
     // Format all fields and check for errors
     if (!ui_pairs_init(4)) {
@@ -123,7 +124,6 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy) {
                                NULL,
                                "Sign vote",
                                NULL,
-                               warningPtr,
+                               ui_get_warnings(),
                                cvote_review_choice);
 }
-

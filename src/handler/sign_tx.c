@@ -497,6 +497,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 
             G_context.state.tx_state = TX_STATE_UI_PREPARED;
             ui_display_transaction();
+            // waiting for NBGL callback tx_review_choice, so no APDU sent
             return;
 
         default:
@@ -641,6 +642,7 @@ void handler_sign_tx_witness(buffer_t *cdata) {
 
         case POLICY_SHOW:
             ui_display_witness(&G_context.tx_info.witness_path, policy, witness_warnings);
+            // waiting for NBGL callback witness_review_choice, so no APDU sent
             return;
 
         case POLICY_DENY:

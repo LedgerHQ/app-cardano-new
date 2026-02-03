@@ -206,14 +206,22 @@ void *ui_mem_alloc(size_t size);
 /**
  * Add a static string value directly to UI pairs without formatting.
  *
- * Directly adds a static constant string to the UI pairs list via ui_pairs_add_static_label_impl.
- * Use this when you have a simple constant string that doesn't need formatting.
+ * Directly adds a static constant string to the UI pairs list.
+ * This allocates and copies the string so cleanup can always free all values.
  *
  * @param label Static label for UI pair (use UI_STATIC_LABEL macro)
- * @param value Static string value (use UI_STATIC_LABEL macro for compile-time validation)
+ * @param value NUL-terminated static string value
  */
 #define UI_ADD_STATIC(label, value) do { \
-    if (!ui_pairs_add_static_label_impl((label), (char *)(value), false)) { \
+    const char *_static_value = (value); \
+    size_t _static_value_len = strlen(_static_value); \
+    char *_static_value_copy = (char *) APP_MEM_ALLOC_ZEROED(_static_value_len + 1); \
+    if (_static_value_copy == NULL) { \
+        ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
+        break; \
+    } \
+    memcpy(_static_value_copy, _static_value, _static_value_len + 1); \
+    if (!ui_pairs_add_static_label_impl((label), _static_value_copy, false)) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \

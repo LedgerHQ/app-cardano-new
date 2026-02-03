@@ -25,6 +25,7 @@ static void deriveNativeScriptHash_handleAll() {
     ctx->ui_scriptType = UI_SCRIPT_ALL;
     security_policy_t policy = POLICY_SHOW;
     ui_display_native_script_hash(policy);
+    // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
     return;
 }
 
@@ -36,6 +37,7 @@ static void deriveNativeScriptHash_handleAny() {
     ctx->ui_scriptType = UI_SCRIPT_ANY;
     security_policy_t policy = POLICY_SHOW;
     ui_display_native_script_hash(policy);
+    // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
     return;
 }
 
@@ -65,6 +67,7 @@ static void deriveNativeScriptHash_handleNofK(buffer_t *cdata) {
     ctx->ui_scriptType = UI_SCRIPT_N_OF_K;
     security_policy_t policy = POLICY_SHOW;
     ui_display_native_script_hash(policy);
+    // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
     return;
 }
 
@@ -180,6 +183,7 @@ static void deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
 
     // Display to user
     ui_display_native_script_hash(policy);
+    // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
     return;
 }
 
@@ -200,6 +204,7 @@ static void deriveNativeScriptHash_handleInvalidBefore(buffer_t *cdata) {
     ctx->ui_scriptType = UI_SCRIPT_INVALID_BEFORE;
     security_policy_t policy = POLICY_SHOW;
     ui_display_native_script_hash(policy);
+    // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
     return;
 }
 
@@ -221,6 +226,7 @@ static void deriveNativeScriptHash_handleInvalidHereafter(buffer_t *cdata) {
     ctx->ui_scriptType = UI_SCRIPT_INVALID_HEREAFTER;
     security_policy_t policy = POLICY_SHOW;
     ui_display_native_script_hash(policy);
+    // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
     return;
 }
 
@@ -230,6 +236,7 @@ int deriveNativeScriptHash_displayNativeScriptHash_bech32() {
     ctx->ui_scriptType = UI_SCRIPT_DISPLAY_BECH32;
     security_policy_t policy = POLICY_SHOW;
     ui_display_native_script_hash(policy);
+    // waiting for NBGL callback derive_native_script_hash_review_ask_confirmation, so no APDU sent
     return 0;
 }
 
@@ -238,6 +245,7 @@ int deriveNativeScriptHash_displayNativeScriptHash_policyId() {
     ctx->ui_scriptType = UI_SCRIPT_DISPLAY_POLICY_ID;
     security_policy_t policy = POLICY_SHOW;
     ui_display_native_script_hash(policy);
+    // waiting for NBGL callback derive_native_script_hash_review_ask_confirmation, so no APDU sent
     return 0;
 }
 
@@ -411,6 +419,7 @@ void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
         ctx->ui_scriptType = UI_SCRIPT_INIT;
         security_policy_t policy = POLICY_SHOW;
         ui_display_native_script_hash(policy);
+        // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
     }
 
     G_context.req_type = REQUEST_DERIVE_NATIVE_SCRIPT_HASH;

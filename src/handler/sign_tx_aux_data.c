@@ -208,6 +208,7 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
                       "Streaming enabled with zero delegations");
         aux_data->state = CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE;
         ui_cvote_aux_data_streaming_show_initial_page(aux_data);
+        // waiting for NBGL callback cvote_aux_data_review_streaming_continue, so no APDU sent
         return;
     }
 
@@ -226,6 +227,7 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
         aux_data->state = CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED;
         TRACE("CVote AUX_DATA ready for UI confirmation");
         ui_cvote_aux_data_show_non_streaming_final_review(aux_data);
+        // waiting for NBGL callback cvote_aux_data_review_choice, so no APDU sent
         return;
     }
 
@@ -314,6 +316,7 @@ static void handler_tx_aux_data_delegation(buffer_t *cdata) {
             G_context.state.tx_state = TX_STATE_CHUNKS;
 
             ui_cvote_aux_data_show_non_streaming_final_review(aux_data);
+            // waiting for NBGL callback cvote_aux_data_review_choice, so no APDU sent
             return;
         }
 

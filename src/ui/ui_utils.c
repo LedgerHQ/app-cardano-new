@@ -107,6 +107,11 @@ void *ui_mem_alloc(size_t size) {
  */
 void ui_pairs_cleanup(void) {
     if (g_pairs != NULL) {
+        for (uint16_t i = 0; i < g_next_pair_index; i++) {
+            if (g_pairs[i].value != NULL) {
+                APP_MEM_FREE((void *) g_pairs[i].value);
+            }
+        }
         APP_MEM_FREE(g_pairs);
         g_pairs = NULL;
     }
@@ -159,7 +164,7 @@ bool ui_pairs_add_static_label_impl(const char* label, char* tmp_buf, bool shrin
 
     if (shrink) {
         size_t len = strlen(tmp_buf);
-        char *shrinked = (char *) ui_mem_alloc(len + 1);
+        char *shrinked = (char *) APP_MEM_ALLOC_ZEROED(len + 1);
         if (shrinked == NULL) {
             TRACE("Failed to allocate shrunk string");
             APP_MEM_FREE(tmp_buf);

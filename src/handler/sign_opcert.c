@@ -93,6 +93,7 @@ void handler_sign_opcert(buffer_t *cdata) {
 
     G_context.state.opcert_state = OPCERT_STATE_VALIDATED;
     ui_display_opcert(policy, warnings);
+    // waiting for NBGL callback opcert_review_choice, so no APDU sent
 }
 
 void finalize_sign_opcert(bool confirmed) {

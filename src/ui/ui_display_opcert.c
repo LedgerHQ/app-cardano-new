@@ -51,6 +51,8 @@ static void opcert_buffer_cleanup(void) {
     ui_cleanup_tracked_allocations();
     // Cleanup the pairs array
     ui_pairs_cleanup();
+    // Cleanup warning structures
+    ui_free_warnings();
 }
 
 /**

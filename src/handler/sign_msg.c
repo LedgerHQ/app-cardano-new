@@ -477,6 +477,7 @@ __noinline_due_to_stack__ void signMsg_handle_confirm(buffer_t *cdata) {
 
     // Display UI for user confirmation
     ui_display_sign_msg(POLICY_SHOW);
+    // waiting for NBGL callback sign_msg_review_choice, so no APDU sent
 }
 
 void finalize_sign_msg(bool confirmed) {

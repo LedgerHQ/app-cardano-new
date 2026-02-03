@@ -82,6 +82,7 @@ void handler_get_public_key(buffer_t *cdata) {
     deriveExtendedPublicKey(&G_context.pk_info.path, &G_context.pk_info.extPubKey);
 
     ui_display_pubkey(policy, warnings);
+    // waiting for NBGL callback pubkey_review_choice, so no APDU sent
 }
 
 void finalize_pubkey_export(bool confirmed) {

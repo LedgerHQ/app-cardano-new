@@ -50,6 +50,7 @@ typedef struct {
 } nbgl_contentCenter_t;
 
 typedef struct {
+    uint32_t predefinedSet;
     nbgl_warningDetails_t *introDetails;
     nbgl_warningDetails_t *reviewDetails;
     nbgl_contentCenter_t *info;

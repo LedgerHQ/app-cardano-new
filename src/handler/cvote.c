@@ -176,6 +176,7 @@ __noinline_due_to_stack__ void signCVote_handle_confirm(buffer_t *cdata) {
 
     // Display UI (signature will be computed after user confirms)
     ui_display_cvote_confirm(policy);
+    // waiting for NBGL callback cvote_review_choice, so no APDU sent
 }
 
 void finalize_sign_cvote(bool confirmed) {

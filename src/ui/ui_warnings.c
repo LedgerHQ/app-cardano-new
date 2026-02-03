@@ -27,6 +27,7 @@
 static nbgl_warning_t *g_warning = NULL;
 
 ui_status_t ui_build_warnings(warning_bits_t warnings) {
+    LEDGER_ASSERT(g_warning == NULL, "Warnings already built");
     const warning_definition_t *warning_defs[WARNING_BIT_COUNT];
     size_t warning_count =
         warning_bits_to_definitions(warnings, warning_defs, WARNING_BIT_COUNT);
@@ -37,18 +38,42 @@ ui_status_t ui_build_warnings(warning_bits_t warnings) {
     }
 
     const nbgl_icon_details_t **icons =
-        (const nbgl_icon_details_t **) ui_mem_alloc(sizeof(nbgl_icon_details_t *) * warning_count);
-    const char **titles = (const char **) ui_mem_alloc(sizeof(const char *) * warning_count);
-    const char **subtexts = (const char **) ui_mem_alloc(sizeof(const char *) * warning_count);
+        (const nbgl_icon_details_t **) APP_MEM_ALLOC_ZEROED(sizeof(nbgl_icon_details_t *) * warning_count);
+    const char **titles = (const char **) APP_MEM_ALLOC_ZEROED(sizeof(const char *) * warning_count);
+    const char **subtexts = (const char **) APP_MEM_ALLOC_ZEROED(sizeof(const char *) * warning_count);
     nbgl_warningDetails_t *details =
-        (nbgl_warningDetails_t *) ui_mem_alloc(sizeof(nbgl_warningDetails_t) * warning_count);
-    nbgl_warningDetails_t *intro = (nbgl_warningDetails_t *) ui_mem_alloc(sizeof(nbgl_warningDetails_t));
-    nbgl_warningDetails_t *review = (nbgl_warningDetails_t *) ui_mem_alloc(sizeof(nbgl_warningDetails_t));
-    nbgl_contentCenter_t *info = (nbgl_contentCenter_t *) ui_mem_alloc(sizeof(nbgl_contentCenter_t));
-    g_warning = (nbgl_warning_t *) ui_mem_alloc(sizeof(nbgl_warning_t));
+        (nbgl_warningDetails_t *) APP_MEM_ALLOC_ZEROED(sizeof(nbgl_warningDetails_t) * warning_count);
+    nbgl_warningDetails_t *intro = (nbgl_warningDetails_t *) APP_MEM_ALLOC_ZEROED(sizeof(nbgl_warningDetails_t));
+    nbgl_warningDetails_t *review = (nbgl_warningDetails_t *) APP_MEM_ALLOC_ZEROED(sizeof(nbgl_warningDetails_t));
+    nbgl_contentCenter_t *info = (nbgl_contentCenter_t *) APP_MEM_ALLOC_ZEROED(sizeof(nbgl_contentCenter_t));
+    g_warning = (nbgl_warning_t *) APP_MEM_ALLOC_ZEROED(sizeof(nbgl_warning_t));
 
     if (icons == NULL || titles == NULL || subtexts == NULL || details == NULL || intro == NULL ||
         review == NULL || info == NULL || g_warning == NULL) {
+        if (icons != NULL) {
+            APP_MEM_FREE((void *) icons);
+        }
+        if (titles != NULL) {
+            APP_MEM_FREE((void *) titles);
+        }
+        if (subtexts != NULL) {
+            APP_MEM_FREE((void *) subtexts);
+        }
+        if (details != NULL) {
+            APP_MEM_FREE(details);
+        }
+        if (intro != NULL) {
+            APP_MEM_FREE(intro);
+        }
+        if (review != NULL) {
+            APP_MEM_FREE(review);
+        }
+        if (info != NULL) {
+            APP_MEM_FREE(info);
+        }
+        if (g_warning != NULL) {
+            APP_MEM_FREE(g_warning);
+        }
         g_warning = NULL;
         return UI_STATUS_OUT_OF_MEMORY;
     }
@@ -107,6 +132,51 @@ const nbgl_warning_t* ui_get_warnings(void) {
     return g_warning;
 }
 
-void ui_clear_warnings(void) {
+ui_status_t ui_build_predefined_warning(uint32_t predefinedSet) {
+    LEDGER_ASSERT(g_warning == NULL, "Warnings already built");
+    g_warning = (nbgl_warning_t *) APP_MEM_ALLOC_ZEROED(sizeof(nbgl_warning_t));
+    if (g_warning == NULL) {
+        return UI_STATUS_OUT_OF_MEMORY;
+    }
+
+    g_warning->predefinedSet = predefinedSet;
+    return UI_STATUS_SUCCESS;
+}
+
+void ui_free_warnings(void) {
+    if (g_warning == NULL) {
+        return;
+    }
+
+    const nbgl_warningDetails_t *intro = g_warning->introDetails;
+    const nbgl_warningDetails_t *review = g_warning->reviewDetails;
+    const nbgl_warningDetails_t *details_owner = (intro != NULL) ? intro : review;
+
+    if (details_owner != NULL) {
+        if (details_owner->barList.icons != NULL) {
+            APP_MEM_FREE((void *) details_owner->barList.icons);
+        }
+        if (details_owner->barList.texts != NULL) {
+            APP_MEM_FREE((void *) details_owner->barList.texts);
+        }
+        if (details_owner->barList.subTexts != NULL) {
+            APP_MEM_FREE((void *) details_owner->barList.subTexts);
+        }
+        if (details_owner->barList.details != NULL) {
+            APP_MEM_FREE((void *) details_owner->barList.details);
+        }
+    }
+
+    if (g_warning->introDetails != NULL) {
+        APP_MEM_FREE((void *) g_warning->introDetails);
+    }
+    if (g_warning->reviewDetails != NULL) {
+        APP_MEM_FREE((void *) g_warning->reviewDetails);
+    }
+    if (g_warning->info != NULL) {
+        APP_MEM_FREE((void *) g_warning->info);
+    }
+
+    APP_MEM_FREE(g_warning);
     g_warning = NULL;
 }

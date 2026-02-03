@@ -13,7 +13,7 @@ void reset_app_context(void) {
     // Clean up UI allocations and review state
     ui_cleanup_tracked_allocations();
     ui_pairs_cleanup();
-    ui_clear_warnings();
+    ui_free_warnings();
 
     // Reset the SDK allocator to wipe all transient memory
     LEDGER_ASSERT(mem_utils_reset_app_heap(), "Failed to reset memory allocator");

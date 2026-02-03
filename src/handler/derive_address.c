@@ -69,6 +69,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
             G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_VALIDATED;
             prepareResponse();
             ui_deriveAddress_handleReturn(policy, warnings);
+            // waiting for NBGL callback derive_address_return_review_choice, so no APDU sent
             break;
         }
         case P1_ADDRESS_DISPLAY: {
@@ -87,6 +88,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
             G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_VALIDATED;
             prepareResponse();
             ui_deriveAddress_handleDisplay(policy, warnings);
+            // waiting for NBGL callback derive_address_display_review_choice, so no APDU sent
             break;
         }
         default:

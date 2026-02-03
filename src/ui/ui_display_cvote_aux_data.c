@@ -61,6 +61,7 @@ static inline bool cvote_is_last_chunk(const cvote_aux_data_t *aux_data) {
 static void cvote_aux_data_review_cleanup(void) {
     ui_cleanup_tracked_allocations();
     ui_pairs_cleanup();
+    ui_free_warnings();
 }
 
 static void cvote_aux_data_send_hash_response(void) {
