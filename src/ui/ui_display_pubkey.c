@@ -40,7 +40,10 @@
 
 static void pubkey_review_choice(bool confirm) {
     // CLEANUP
-    ui_cleanup_tracked_allocations();
+    if (G_context.pk_info.path_str != NULL) {
+        APP_MEM_FREE(G_context.pk_info.path_str);
+        G_context.pk_info.path_str = NULL;
+    }
 
     // FINALIZE
     finalize_pubkey_export(confirm);
@@ -72,15 +75,18 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
     pubkey_ctx_t* pk = &G_context.pk_info;
 
     // Allocate display buffers
-    char *pubkeyPathStr = (char *) ui_mem_alloc(MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN);
-    if (pubkeyPathStr == NULL) {
-        ui_cleanup_tracked_allocations();
+    G_context.pk_info.path_str =
+        (char *) APP_MEM_ALLOC_ZEROED(MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN);
+    if (G_context.pk_info.path_str == NULL) {
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
     }
-    bool pathFormatted = format_bip44_path(&pk->path, pubkeyPathStr, MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN);
+    bool pathFormatted = format_bip44_path(&pk->path,
+                                           G_context.pk_info.path_str,
+                                           MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN);
     LEDGER_ASSERT(pathFormatted, "Unable to format public key path");
-    LEDGER_ASSERT(strlen(pubkeyPathStr) <= MAX_BIP44_PATH_STRING_LENGTH, "Public key path ui string buffer too short");
+    LEDGER_ASSERT(strlen(G_context.pk_info.path_str) <= MAX_BIP44_PATH_STRING_LENGTH,
+                  "Public key path ui string buffer too short");
 
     switch (securityPolicy) {
         case POLICY_SHOW:
@@ -91,7 +97,10 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
             LEDGER_ASSERT(is_silent_pubkey_export_allowed(), "Silent pubkey export not allowed");
             pk->silentExport = true;
             finalize_pubkey_export(true);
-            ui_cleanup_tracked_allocations();
+            if (G_context.pk_info.path_str != NULL) {
+                APP_MEM_FREE(G_context.pk_info.path_str);
+                G_context.pk_info.path_str = NULL;
+            }
             return;
 
         default:
@@ -119,7 +128,7 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
     nbgl_useCaseChoice(
                         icon,
                         title,
-                        pubkeyPathStr,
+                        G_context.pk_info.path_str,
                         "Export",
                         "Reject",
                         pubkey_review_choice

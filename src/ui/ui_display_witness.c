@@ -38,13 +38,12 @@
 #include "ui_utils.h"
 #include "sign_tx.h"
 
-/**
- * Callback when user confirms or rejects witness display
- * Cleans up allocated UI resources and processes the witness accordingly
- */
 static void witness_review_choice(bool confirm) {
     // CLEANUP
-    ui_cleanup_tracked_allocations();
+    if (G_context.tx_info.witness_path_str != NULL) {
+        APP_MEM_FREE(G_context.tx_info.witness_path_str);
+        G_context.tx_info.witness_path_str = NULL;
+    }
 
     // FINALIZE
     finalize_witness(confirm);
@@ -78,12 +77,11 @@ void ui_display_witness(const bip44_path_t* witnessPath,
         return;
     }
 
-    // Allocate display buffer for witness path using UI tracking system
-    // This ensures automatic cleanup when the user responds or on error
-    char *witnessPathStr = (char *) ui_mem_alloc(MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN);
-    if (witnessPathStr == NULL) {
+    // Allocate display buffer for witness path
+    G_context.tx_info.witness_path_str =
+        (char *) APP_MEM_ALLOC_ZEROED(MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN);
+    if (G_context.tx_info.witness_path_str == NULL) {
         TRACE("Failed to allocate witness path string");
-        ui_cleanup_tracked_allocations();
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
     }
@@ -98,9 +96,12 @@ void ui_display_witness(const bip44_path_t* witnessPath,
     TRACE("isUnusual: %d", isUnusual);
 
     // Format the witness path as a string
-    bool formatted = format_bip44_path(witnessPath, witnessPathStr, MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN);
+    bool formatted = format_bip44_path(witnessPath,
+                                       G_context.tx_info.witness_path_str,
+                                       MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN);
     LEDGER_ASSERT(formatted, "Unable to format witness path");
-    LEDGER_ASSERT(strlen(witnessPathStr) <= MAX_BIP44_PATH_STRING_LENGTH, "Witness path ui string buffer too short");
+    LEDGER_ASSERT(strlen(G_context.tx_info.witness_path_str) <= MAX_BIP44_PATH_STRING_LENGTH,
+                  "Witness path ui string buffer too short");
 
     if (isUnusual) {
         // A mild warning about unusual path
@@ -109,7 +110,7 @@ void ui_display_witness(const bip44_path_t* witnessPath,
         nbgl_useCaseChoice(
             &WARNING_ICON,
             "Sign with UNUSUAL key",
-            witnessPathStr,
+            G_context.tx_info.witness_path_str,
             "Confirm",
             "Reject",
             witness_review_choice
@@ -120,7 +121,7 @@ void ui_display_witness(const bip44_path_t* witnessPath,
         nbgl_useCaseChoice(
             &ICON_APP_CARDANO,
             "Witness",
-            witnessPathStr,
+            G_context.tx_info.witness_path_str,
             "Confirm",
             "Reject",
             witness_review_choice

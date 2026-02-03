@@ -102,6 +102,7 @@ typedef struct {
     uint16_t num_witnesses;
     uint16_t current_witness;
     bip44_path_t witness_path;
+    char *witness_path_str;
     uint8_t witness_signature[ED25519_SIGNATURE_LENGTH];
 
     // CVote auxiliary data buffers and parsed data
@@ -153,9 +154,10 @@ typedef struct {
  * Exposed context for public-key exports.
  */
 typedef struct {
-    bip44_path_t path;
-    extendedPublicKey_t extPubKey;
     bool silentExport;
+    bip44_path_t path;
+    char *path_str;
+    extendedPublicKey_t extPubKey;
 } pubkey_ctx_t;
 
 /**
