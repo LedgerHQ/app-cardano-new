@@ -34,9 +34,6 @@
  * Cleanup dynamically allocated buffers
  */
 static void derive_address_buffer_cleanup(void) {
-    // Cleanup all tracked allocations (all string buffers and warning structure)
-    ui_cleanup_tracked_allocations();
-    // Cleanup the pairs array
     ui_pairs_cleanup();
 }
 

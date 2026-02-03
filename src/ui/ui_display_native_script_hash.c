@@ -118,9 +118,6 @@ bool format_required_signatures(uint32_t requiredScripts,
 }
 
 static void derive_native_script_hash_buffer_cleanup(void) {
-    // Cleanup all tracked allocations (all string buffers and warning structure)
-    ui_cleanup_tracked_allocations();
-    // Cleanup the pairs array
     ui_pairs_cleanup();
 }
 

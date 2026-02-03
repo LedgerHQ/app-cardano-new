@@ -37,11 +37,7 @@
  * Cleanup dynamically allocated buffers and UI pairs
  */
 static void cvote_buffer_cleanup(void) {
-    // Cleanup all tracked allocations (warning structure and shrunk string buffers from pairs)
-    ui_cleanup_tracked_allocations();
-    // Cleanup the pairs array
     ui_pairs_cleanup();
-    // Cleanup warning structures
     ui_free_warnings();
 }
 

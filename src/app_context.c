@@ -11,7 +11,6 @@
 void reset_app_context(void) {
     TRACE("reset_app_context");
     // Clean up UI allocations and review state
-    ui_cleanup_tracked_allocations();
     ui_pairs_cleanup();
     ui_free_warnings();
 

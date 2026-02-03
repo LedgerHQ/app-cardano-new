@@ -15,16 +15,6 @@ ui_status_t g_ui_error_status = UI_STATUS_UNINITIALIZED;
 
 static uint16_t g_next_pair_index = 0;
 
-/**
- * Allocation tracker for UI buffers to prevent memory leaks
- * Tracks all dynamically allocated buffers for centralized cleanup
- */
-typedef struct {
-    void *ptrs[MAX_UI_PAIRS];  /// Array of allocated pointers
-    uint16_t count;             /// Number of tracked allocations
-} allocation_tracker_t;
-
-static allocation_tracker_t g_allocation_tracker = {0};
 
 /**
  * Initialize UI error status to SUCCESS before starting UI formatting
@@ -58,49 +48,6 @@ void ui_set_error_status(ui_status_t status) {
     g_ui_error_status = status;
 }
 
-/**
- * Track an allocated buffer for later cleanup
- *
- * @param ptr pointer to allocated buffer (can be NULL)
- */
-void ui_track_allocation(void *ptr) {
-    if (ptr == NULL) {
-        return;
-    }
-    LEDGER_ASSERT(g_allocation_tracker.count < MAX_UI_PAIRS,
-                  "UI allocation tracker overflow");
-    g_allocation_tracker.ptrs[g_allocation_tracker.count++] = ptr;
-}
-
-/**
- * Cleanup all tracked allocations and reset tracker
- */
-void ui_cleanup_tracked_allocations(void) {
-    // Idempotent: resetting count ensures multiple calls do nothing after the first.
-    for (uint16_t i = 0; i < g_allocation_tracker.count; i++) {
-        if (g_allocation_tracker.ptrs[i] != NULL) {
-            APP_MEM_FREE(g_allocation_tracker.ptrs[i]);
-            g_allocation_tracker.ptrs[i] = NULL;
-        }
-    }
-    g_allocation_tracker.count = 0;
-}
-
-/**
- * Allocate memory and automatically track it for cleanup
- * This ensures UI buffers are cleaned up even if allocated in loops
- * or on error paths where manual cleanup might be forgotten.
- *
- * @param size number of bytes to allocate
- * @return pointer to allocated memory, or NULL on failure
- */
-void *ui_mem_alloc(size_t size) {
-    void *ptr = APP_MEM_ALLOC_ZEROED(size);
-    if (ptr != NULL) {
-        ui_track_allocation(ptr);
-    }
-    return ptr;
-}
 
 /**
  * Cleanup pairs array (g_pairs and g_pairsList)
