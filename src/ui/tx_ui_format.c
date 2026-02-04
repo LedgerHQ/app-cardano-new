@@ -692,6 +692,29 @@ static bool should_show_certificate(
             );
             break;
 
+        case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL:
+            policy = policyForSignTxCertificateAccountRegistrationDelegationToStakePool(
+                txSigningMode,
+                &certificate->stakeCredential
+            );
+            break;
+
+        case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP:
+            policy = policyForSignTxCertificateAccountRegistrationDelegationToDRep(
+                txSigningMode,
+                &certificate->stakeCredential,
+                &certificate->drep
+            );
+            break;
+
+        case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP:
+            policy = policyForSignTxCertificateStakePoolAndDRepDelegation(
+                txSigningMode,
+                &certificate->stakeCredential,
+                &certificate->drep
+            );
+            break;
+
         case CERTIFICATE_AUTHORIZE_COMMITTEE_HOT:
             policy = policyForSignTxCertificateCommitteeAuth(
                 txSigningMode,
@@ -729,6 +752,7 @@ static bool should_show_certificate(
             return false;
 
         default:
+            TRACE("Unknown certificate type: %u", certificate_type);
             LEDGER_ASSERT(false, "Unknown certificate type");
             return false;
     }
@@ -1176,7 +1200,8 @@ static int add_ui_strings_and_free_parsed_data(void) {
     add_ui_and_free_donation(tx);
     add_ui_and_free_tx_hash();
 
-    TRACE("UI formatting complete");
+    TRACE("UI formatting complete: actual_pairs=%u planned_pairs=%u",
+          ui_pairs_get_count(), G_context.tx_info.planned_ui_pairs);
     ui_status_t status = ui_get_error_status();
     switch (status) {
         case UI_STATUS_SUCCESS:
@@ -1206,21 +1231,26 @@ int ui_prepare_transaction_review(void) {
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_HASHED, "UI prep called too early");
     uint32_t pair_count = G_context.tx_info.planned_ui_pairs;
 
+    TRACE("Preparing TX review: planned_ui_pairs=%u max_ui_pairs=%u", pair_count, MAX_UI_PAIRS);
     // pair_count should never be 0 - at minimum we display fee
     LEDGER_ASSERT(pair_count > 0, "UI pair count is zero - at minimum fee must be displayed");
 
     // If pair count exceeds UI capability, reject the transaction
     if (pair_count > MAX_UI_PAIRS) {
+        TRACE("UI pair count exceeds limit: %u > %u", pair_count, MAX_UI_PAIRS);
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return SWO_INSUFFICIENT_MEMORY;
     }
 
     if (!ui_pairs_init((uint8_t) pair_count)) {
+        TRACE("ui_pairs_init failed for %u pairs", pair_count);
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return SWO_INSUFFICIENT_MEMORY;
     }
 
     int status = ui_build_pairs();
+    TRACE("UI build status=0x%04x actual_pairs=%u planned_pairs=%u",
+          status, ui_pairs_get_count(), pair_count);
     if (status != SWO_SUCCESS) {
         ui_free_pairs();
         ui_free_warnings();

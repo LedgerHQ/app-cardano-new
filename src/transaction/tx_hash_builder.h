@@ -255,6 +255,26 @@ void txHashBuilder_addCertificate_stakePoolAndDRepDelegation(tx_hash_builder_t* 
                                                              size_t poolKeyHashSize,
                                                              const drep_t* drep);
 
+void txHashBuilder_addCertificate_accountRegistrationDelegationToStakePool(
+    tx_hash_builder_t* builder,
+    const credential_t* stakeCredential,
+    const uint8_t* poolKeyHash,
+    size_t poolKeyHashSize,
+    uint64_t deposit);
+
+void txHashBuilder_addCertificate_accountRegistrationDelegationToDRep(tx_hash_builder_t* builder,
+                                                                     const credential_t* stakeCredential,
+                                                                     const drep_t* drep,
+                                                                     uint64_t deposit);
+
+void txHashBuilder_addCertificate_accountRegistrationDelegationToStakePoolAndDRep(
+    tx_hash_builder_t* builder,
+    const credential_t* stakeCredential,
+    const uint8_t* poolKeyHash,
+    size_t poolKeyHashSize,
+    const drep_t* drep,
+    uint64_t deposit);
+
 void txHashBuilder_addCertificate_committeeAuthHot(tx_hash_builder_t* builder,
                                                    const credential_t* coldCredential,
                                                    const credential_t* hotCredential);

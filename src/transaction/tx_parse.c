@@ -746,6 +746,15 @@ static parser_status_e parse_tx_certificates(buffer_t *buf, transaction_t *tx) {
             case CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION:
                 status = parse_certificate_stake_pool_and_drep_delegation(buf, &item->certificate);
                 break;
+            case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL:
+                status = parse_certificate_account_registration_delegation_to_stake_pool(buf, &item->certificate);
+                break;
+            case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP:
+                status = parse_certificate_account_registration_delegation_to_drep(buf, &item->certificate);
+                break;
+            case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP:
+                status = parse_certificate_account_registration_delegation_to_stake_pool_and_drep(buf, &item->certificate);
+                break;
 
             case CERTIFICATE_AUTHORIZE_COMMITTEE_HOT:
                 status = parse_certificate_authorize_committee_hot(buf, &item->certificate);

@@ -412,6 +412,54 @@ void addCertificateUIPairs(const certificate_data_t* certificate_data) {
             break;
         }
 
+        case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL: {
+            addStakeCredentialUIPairs(&certificate_data->stakeCredential);
+            LEDGER_ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL,
+                          "Missing combined delegation pool hash");
+            UI_ADD_FORMAT3(UI_STATIC_LABEL("Pool"),
+                           MAX_BECH32_STRING_LENGTH,
+                           format_bech32,
+                           "pool",
+                           certificate_data->combinedDelegPoolKeyHash,
+                           POOL_KEY_HASH_LENGTH);
+            UI_ADD_FORMAT1(UI_STATIC_LABEL("Deposit"),
+                           MAX_ADA_AMOUNT_STRING_LENGTH,
+                           format_ada_amount,
+                           certificate_data->deposit);
+            CHECK_COUNT(UI_PAIRS_CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL);
+            break;
+        }
+
+        case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP: {
+            addStakeCredentialUIPairs(&certificate_data->stakeCredential);
+            addDRepUIPairs(&certificate_data->drep, UI_STATIC_LABEL("DRep"));
+            UI_ADD_FORMAT1(UI_STATIC_LABEL("Deposit"),
+                           MAX_ADA_AMOUNT_STRING_LENGTH,
+                           format_ada_amount,
+                           certificate_data->deposit);
+            CHECK_COUNT(UI_PAIRS_CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP);
+            break;
+        }
+
+        case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP: {
+            addStakeCredentialUIPairs(&certificate_data->stakeCredential);
+            LEDGER_ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL,
+                          "Missing combined delegation pool hash");
+            UI_ADD_FORMAT3(UI_STATIC_LABEL("Pool"),
+                           MAX_BECH32_STRING_LENGTH,
+                           format_bech32,
+                           "pool",
+                           certificate_data->combinedDelegPoolKeyHash,
+                           POOL_KEY_HASH_LENGTH);
+            addDRepUIPairs(&certificate_data->drep, UI_STATIC_LABEL("DRep"));
+            UI_ADD_FORMAT1(UI_STATIC_LABEL("Deposit"),
+                           MAX_ADA_AMOUNT_STRING_LENGTH,
+                           format_ada_amount,
+                           certificate_data->deposit);
+            CHECK_COUNT(UI_PAIRS_CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP);
+            break;
+        }
+
         case CERTIFICATE_AUTHORIZE_COMMITTEE_HOT: {
             addCommitteeColdCredentialUIPairs(&certificate_data->coldCredential);
             addCommitteeHotCredentialUIPairs(&certificate_data->hotCredential);
@@ -459,6 +507,7 @@ void addCertificateUIPairs(const certificate_data_t* certificate_data) {
             break;
 
         default:
+            TRACE("Unknown certificate type in UI helper: %u", certificate_data->type);
             LEDGER_ASSERT(false, "Unknown certificate type");
     }
 }

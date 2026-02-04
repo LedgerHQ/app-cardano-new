@@ -28,6 +28,12 @@ static const char *getCertificateTypeName(certificate_type_t type) {
             return "Vote Delegation";
         case CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION:
             return "Pool and DRep Delegation";
+        case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL:
+            return "Account Registration + Stake Pool Delegation";
+        case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP:
+            return "Account Registration + DRep Delegation";
+        case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP:
+            return "Account Registration + Pool and DRep Delegation";
         case CERTIFICATE_AUTHORIZE_COMMITTEE_HOT:
             return "Committee Authorization";
         case CERTIFICATE_RESIGN_COMMITTEE_COLD:

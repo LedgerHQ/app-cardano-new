@@ -120,6 +120,18 @@ parser_status_e parse_certificate_vote_delegation(buffer_t *buf,
 parser_status_e parse_certificate_stake_pool_and_drep_delegation(buffer_t *buf,
                                                                  certificate_data_t *cert_data);
 
+parser_status_e parse_certificate_account_registration_delegation_to_stake_pool(
+    buffer_t *buf,
+    certificate_data_t *cert_data);
+
+parser_status_e parse_certificate_account_registration_delegation_to_drep(
+    buffer_t *buf,
+    certificate_data_t *cert_data);
+
+parser_status_e parse_certificate_account_registration_delegation_to_stake_pool_and_drep(
+    buffer_t *buf,
+    certificate_data_t *cert_data);
+
 /**
  * Parse CERTIFICATE_AUTHORIZE_COMMITTEE_HOT
  *

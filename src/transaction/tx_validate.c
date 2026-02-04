@@ -527,6 +527,65 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 }
                 break;
             }
+            case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL: {
+                cert_policy = policyForSignTxCertificateAccountRegistrationDelegationToStakePool(
+                    G_context.tx_info.transaction.txSigningMode,
+                    &certificate->stakeCredential
+                );
+                switch (cert_policy) {
+                    case POLICY_DENY:
+                        return SWO_SECURITY_CONDITION_NOT_SATISFIED;
+                    case POLICY_SHOW:
+                        plan->pair_count += UI_PAIRS_CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL;
+                        break;
+                    case POLICY_HIDE:
+                        break;
+                    default:
+                        LEDGER_ASSERT(false, "Unknown account registration + stake pool delegation policy");
+                        break;
+                }
+                break;
+            }
+            case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP: {
+                cert_policy = policyForSignTxCertificateAccountRegistrationDelegationToDRep(
+                    G_context.tx_info.transaction.txSigningMode,
+                    &certificate->stakeCredential,
+                    &certificate->drep
+                );
+                switch (cert_policy) {
+                    case POLICY_DENY:
+                        return SWO_SECURITY_CONDITION_NOT_SATISFIED;
+                    case POLICY_SHOW:
+                        plan->pair_count += UI_PAIRS_CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP;
+                        break;
+                    case POLICY_HIDE:
+                        break;
+                    default:
+                        LEDGER_ASSERT(false, "Unknown account registration + DRep delegation policy");
+                        break;
+                }
+                break;
+            }
+            case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP: {
+                cert_policy = policyForSignTxCertificateStakePoolAndDRepDelegation(
+                    G_context.tx_info.transaction.txSigningMode,
+                    &certificate->stakeCredential,
+                    &certificate->drep
+                );
+                switch (cert_policy) {
+                    case POLICY_DENY:
+                        return SWO_SECURITY_CONDITION_NOT_SATISFIED;
+                    case POLICY_SHOW:
+                        plan->pair_count += UI_PAIRS_CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP;
+                        break;
+                    case POLICY_HIDE:
+                        break;
+                    default:
+                        LEDGER_ASSERT(false, "Unknown account registration + pool and DRep delegation policy");
+                        break;
+                }
+                break;
+            }
             case CERTIFICATE_AUTHORIZE_COMMITTEE_HOT: {
                 cert_policy = policyForSignTxCertificateCommitteeAuth(
                     G_context.tx_info.transaction.txSigningMode,
@@ -1083,6 +1142,41 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                     certificate->combinedDelegPoolKeyHash,
                     POOL_KEY_HASH_LENGTH,
                     &drep
+                );
+                break;
+            }
+            case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL: {
+                credential_t stakeCred = _credentialForTxHash(&certificate->stakeCredential);
+                txHashBuilder_addCertificate_accountRegistrationDelegationToStakePool(
+                    txHashBuilder,
+                    &stakeCred,
+                    certificate->combinedDelegPoolKeyHash,
+                    POOL_KEY_HASH_LENGTH,
+                    certificate->deposit
+                );
+                break;
+            }
+            case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP: {
+                credential_t stakeCred = _credentialForTxHash(&certificate->stakeCredential);
+                drep_t drep = _drepForTxHash(&certificate->drep);
+                txHashBuilder_addCertificate_accountRegistrationDelegationToDRep(
+                    txHashBuilder,
+                    &stakeCred,
+                    &drep,
+                    certificate->deposit
+                );
+                break;
+            }
+            case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP: {
+                credential_t stakeCred = _credentialForTxHash(&certificate->stakeCredential);
+                drep_t drep = _drepForTxHash(&certificate->drep);
+                txHashBuilder_addCertificate_accountRegistrationDelegationToStakePoolAndDRep(
+                    txHashBuilder,
+                    &stakeCred,
+                    certificate->combinedDelegPoolKeyHash,
+                    POOL_KEY_HASH_LENGTH,
+                    &drep,
+                    certificate->deposit
                 );
                 break;
             }

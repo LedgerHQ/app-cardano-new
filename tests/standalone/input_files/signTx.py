@@ -83,6 +83,9 @@ class CertificateType(IntEnum):
     STAKE_DEREGISTRATION_CONWAY = 8
     VOTE_DELEGATION = 9
     STAKE_POOL_AND_DREP_DELEGATION = 10
+    ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL = 11
+    ACCOUNT_REGISTRATION_DELEGATION_TO_DREP = 12
+    ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP = 13
     AUTHORIZE_COMMITTEE_HOT = 14
     RESIGN_COMMITTEE_COLD = 15
     DREP_REGISTRATION = 16
@@ -296,6 +299,27 @@ class VoteDelegationParams:
     dRep: DRepParams
 
 @dataclass
+class AccountRegistrationDelegationToStakePoolParams:
+    stakeCredential: CredentialParams
+    poolKeyHash: str
+    coin: int
+
+
+@dataclass
+class AccountRegistrationDelegationToDRepParams:
+    stakeCredential: CredentialParams
+    dRep: DRepParams
+    coin: int
+
+
+@dataclass
+class AccountRegistrationDelegationToStakePoolAndDRepParams:
+    stakeCredential: CredentialParams
+    poolKeyHash: str
+    dRep: DRepParams
+    coin: int
+
+@dataclass
 class StakePoolAndDRepDelegationParams:
     stakeCredential: CredentialParams
     poolKeyHash: str
@@ -399,6 +423,9 @@ class Certificate:
         StakeDelegationParams,
         VoteDelegationParams,
         StakePoolAndDRepDelegationParams,
+        AccountRegistrationDelegationToStakePoolParams,
+        AccountRegistrationDelegationToDRepParams,
+        AccountRegistrationDelegationToStakePoolAndDRepParams,
         AuthorizeCommitteeParams,
         ResignCommitteeParams,
         DRepRegistrationParams,
@@ -1446,12 +1473,6 @@ certificates: dict[str, Certificate] = {
             CredentialParams(CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0")
         ),
     ),
-    "stakeDelegationParam": Certificate(
-        CertificateType.STAKE_DELEGATION,
-        StakeDelegationParams(
-            CredentialParams(CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0"), ""
-        ),
-    ),
     "poolRegistrationWrongMargin": Certificate(
         CertificateType.STAKE_POOL_REGISTRATION,
         PoolRegistrationParams(
@@ -2216,6 +2237,230 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0485840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738200581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738102840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738103",
+        has_warning=False,
+    ),
+    SignTxTestCase(
+        name="Sign_tx_with_account_registration_delegation_to_stake_pool_certificate",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
+            certificates=[
+                Certificate(
+                    CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL,
+                    AccountRegistrationDelegationToStakePoolParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0"
+                        ),
+                        "f61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb4973",
+                        1000000,
+                    ),
+                ),
+            ],
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0481840b8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49731a000f4240",
+        has_warning=False,
+    ),
+    SignTxTestCase(
+        name="Sign_tx_with_account_registration_delegation_to_drep_certificate",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
+            certificates=[
+                Certificate(
+                    CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_DREP,
+                    AccountRegistrationDelegationToDRepParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0"
+                        ),
+                        DRepParams(DRepParamsType.KEY_PATH, "m/1852'/1815'/0'/3/0"),
+                        1000000,
+                    ),
+                ),
+            ],
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0481840c8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11a000f4240",
+        has_warning=False,
+    ),
+    SignTxTestCase(
+        name="Sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
+            certificates=[
+                Certificate(
+                    CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP,
+                    AccountRegistrationDelegationToStakePoolAndDRepParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0"
+                        ),
+                        "f61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb4973",
+                        DRepParams(DRepParamsType.KEY_PATH, "m/1852'/1815'/0'/3/0"),
+                        1000000,
+                    ),
+                ),
+            ],
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0481850d8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11a000f4240",
+        has_warning=False,
+    ),
+    SignTxTestCase(
+        name="Sign_tx_with_all_certificates_except_pool_registration",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
+            certificates=[
+                certificates["stakeRegistrationPathParam"],
+                certificates["stakeDeregistrationParam"],
+                Certificate(
+                    CertificateType.STAKE_REGISTRATION_CONWAY,
+                    StakeRegistrationConwayParams(
+                        CredentialParams(CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0"),
+                        17,
+                    ),
+                ),
+                Certificate(
+                    CertificateType.STAKE_DEREGISTRATION_CONWAY,
+                    StakeRegistrationConwayParams(
+                        CredentialParams(CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0"),
+                        17,
+                    ),
+                ),
+                Certificate(
+                    CertificateType.STAKE_DELEGATION,
+                    StakeDelegationParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0"
+                        ),
+                        "f61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb4973",
+                    ),
+                ),
+                certificates["poolRetirementParam"],
+                Certificate(
+                    CertificateType.VOTE_DELEGATION,
+                    VoteDelegationParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0"
+                        ),
+                        DRepParams(DRepParamsType.KEY_PATH, "m/1852'/1815'/0'/3/0"),
+                    ),
+                ),
+                Certificate(
+                    CertificateType.AUTHORIZE_COMMITTEE_HOT,
+                    AuthorizeCommitteeParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/4/0"
+                        ),
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/5/0"
+                        ),
+                    ),
+                ),
+                Certificate(
+                    CertificateType.RESIGN_COMMITTEE_COLD,
+                    ResignCommitteeParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/4/0"
+                        ),
+                        AnchorParams(
+                            "https://www.vacuumlabs.com/sampleAnchor",
+                            "1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef",
+                        ),
+                    ),
+                ),
+                Certificate(
+                    CertificateType.DREP_REGISTRATION,
+                    DRepRegistrationParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/3/0"
+                        ),
+                        19,
+                        AnchorParams(
+                            "https://www.vacuumlabs.com/sampleAnchor",
+                            "1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef",
+                        ),
+                    ),
+                ),
+                Certificate(
+                    CertificateType.DREP_DEREGISTRATION,
+                    DRepRegistrationParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/3/0"
+                        ),
+                        19,
+                    ),
+                ),
+                Certificate(
+                    CertificateType.DREP_UPDATE,
+                    DRepUpdateParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/3/0"
+                        ),
+                        AnchorParams(
+                            "https://www.vacuumlabs.com/sampleAnchor",
+                            "1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef",
+                        ),
+                    ),
+                ),
+                Certificate(
+                    CertificateType.STAKE_POOL_AND_DREP_DELEGATION,
+                    StakePoolAndDRepDelegationParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0"
+                        ),
+                        "f61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb4973",
+                        DRepParams(DRepParamsType.KEY_PATH, "m/1852'/1815'/0'/3/0"),
+                    ),
+                ),
+                Certificate(
+                    CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL,
+                    AccountRegistrationDelegationToStakePoolParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0"
+                        ),
+                        "f61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb4973",
+                        1000000,
+                    ),
+                ),
+                Certificate(
+                    CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_DREP,
+                    AccountRegistrationDelegationToDRepParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0"
+                        ),
+                        DRepParams(DRepParamsType.KEY_PATH, "m/1852'/1815'/0'/3/0"),
+                        1000000,
+                    ),
+                ),
+                Certificate(
+                    CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP,
+                    AccountRegistrationDelegationToStakePoolAndDRepParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0"
+                        ),
+                        "f61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb4973",
+                        DRepParams(DRepParamsType.KEY_PATH, "m/1852'/1815'/0'/3/0"),
+                        1000000,
+                    ),
+                ),
+            ],
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a049082008200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c82018200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c83078200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1183088200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1183028200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738304581c8e00cd50efb2c15b548abeced2bce0ec4ee445a6954d762aa301d13f182a83098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1830e8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba68200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c48839092830f8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba682782768747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c65416e63686f7258201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef84108200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11382782768747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c65416e63686f7258201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef83118200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11383128200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a182782768747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c65416e63686f7258201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1840b8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49731a000f4240840c8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11a000f4240850d8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11a000f4240",
         has_warning=False,
     ),
     SignTxTestCase(

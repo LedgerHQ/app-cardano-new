@@ -50,6 +50,9 @@ from standalone.input_files.signTx import (
     SingleHostIpAddrRelayParams,
     StakeDelegationParams,
     StakePoolAndDRepDelegationParams,
+    AccountRegistrationDelegationToStakePoolParams,
+    AccountRegistrationDelegationToDRepParams,
+    AccountRegistrationDelegationToStakePoolAndDRepParams,
     StakeRegistrationConwayParams,
     StakeRegistrationParams,
     Transaction,
@@ -155,6 +158,9 @@ def _credential_paths_from_certificate(certificate: Certificate) -> List[str]:
         CertificateType.STAKE_DELEGATION,
         CertificateType.VOTE_DELEGATION,
         CertificateType.STAKE_POOL_AND_DREP_DELEGATION,
+        CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL,
+        CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_DREP,
+        CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP,
     ):
         path = _credential_path_from_credential(params.stakeCredential)
         if path:
@@ -977,6 +983,22 @@ class CommandBuilder:
             assert isinstance(params, VoteDelegationParams)
             result.extend(self._serialize_credential_inline(params.stakeCredential))
             result.extend(self._serialize_drep(params.dRep))
+        elif cert_type == CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL:
+            assert isinstance(params, AccountRegistrationDelegationToStakePoolParams)
+            result.extend(self._serialize_credential_inline(params.stakeCredential))
+            result.extend(bytes.fromhex(params.poolKeyHash))
+            result.extend(params.coin.to_bytes(8, "big"))
+        elif cert_type == CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_DREP:
+            assert isinstance(params, AccountRegistrationDelegationToDRepParams)
+            result.extend(self._serialize_credential_inline(params.stakeCredential))
+            result.extend(self._serialize_drep(params.dRep))
+            result.extend(params.coin.to_bytes(8, "big"))
+        elif cert_type == CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP:
+            assert isinstance(params, AccountRegistrationDelegationToStakePoolAndDRepParams)
+            result.extend(self._serialize_credential_inline(params.stakeCredential))
+            result.extend(bytes.fromhex(params.poolKeyHash))
+            result.extend(self._serialize_drep(params.dRep))
+            result.extend(params.coin.to_bytes(8, "big"))
         elif cert_type == CertificateType.STAKE_POOL_AND_DREP_DELEGATION:
             assert isinstance(params, StakePoolAndDRepDelegationParams)
             result.extend(self._serialize_credential_inline(params.stakeCredential))

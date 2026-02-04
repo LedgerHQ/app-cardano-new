@@ -181,6 +181,97 @@ parser_status_e parse_certificate_stake_pool_and_drep_delegation(buffer_t *buf,
     return PARSING_OK;
 }
 
+/// Parse CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL
+parser_status_e parse_certificate_account_registration_delegation_to_stake_pool(
+    buffer_t *buf,
+    certificate_data_t *cert_data) {
+    LEDGER_ASSERT(cert_data != NULL, "NULL certificate data");
+    TRACE("Parsing ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL certificate");
+    cert_data->type = CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL;
+
+    parser_status_e status = parse_stake_credential(buf, &cert_data->stakeCredential);
+    if (status != PARSING_OK) {
+        TRACE("Failed to parse stake credential");
+        return status;
+    }
+
+    if (!buffer_read_bytes_ptr(buf, &cert_data->combinedDelegPoolKeyHash, POOL_KEY_HASH_LENGTH)) {
+        TRACE("Failed to read pool key hash");
+        return CERTIFICATES_PARSING_ERROR;
+    }
+    ASSERT(cert_data->combinedDelegPoolKeyHash != NULL);
+
+    ASSERT_TYPE(cert_data->deposit, uint64_t);
+    if (!buffer_read_u64(buf, &cert_data->deposit, BE)) {
+        TRACE("Failed to parse deposit");
+        return CERTIFICATES_PARSING_ERROR;
+    }
+    TRACE("Successfully parsed ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL");
+    return PARSING_OK;
+}
+
+/// Parse CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP
+parser_status_e parse_certificate_account_registration_delegation_to_drep(
+    buffer_t *buf,
+    certificate_data_t *cert_data) {
+    LEDGER_ASSERT(cert_data != NULL, "NULL certificate data");
+    TRACE("Parsing ACCOUNT_REGISTRATION_DELEGATION_TO_DREP certificate");
+    cert_data->type = CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP;
+
+    parser_status_e status = parse_stake_credential(buf, &cert_data->stakeCredential);
+    if (status != PARSING_OK) {
+        TRACE("Failed to parse stake credential");
+        return status;
+    }
+
+    if (!buffer_read_drep(buf, &cert_data->drep)) {
+        TRACE("Failed to parse DRep");
+        return CERTIFICATES_PARSING_ERROR;
+    }
+
+    ASSERT_TYPE(cert_data->deposit, uint64_t);
+    if (!buffer_read_u64(buf, &cert_data->deposit, BE)) {
+        TRACE("Failed to parse deposit");
+        return CERTIFICATES_PARSING_ERROR;
+    }
+    TRACE("Successfully parsed ACCOUNT_REGISTRATION_DELEGATION_TO_DREP");
+    return PARSING_OK;
+}
+
+/// Parse CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP
+parser_status_e parse_certificate_account_registration_delegation_to_stake_pool_and_drep(
+    buffer_t *buf,
+    certificate_data_t *cert_data) {
+    LEDGER_ASSERT(cert_data != NULL, "NULL certificate data");
+    TRACE("Parsing ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP certificate");
+    cert_data->type = CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP;
+
+    parser_status_e status = parse_stake_credential(buf, &cert_data->stakeCredential);
+    if (status != PARSING_OK) {
+        TRACE("Failed to parse stake credential");
+        return status;
+    }
+
+    if (!buffer_read_bytes_ptr(buf, &cert_data->combinedDelegPoolKeyHash, POOL_KEY_HASH_LENGTH)) {
+        TRACE("Failed to read pool key hash");
+        return CERTIFICATES_PARSING_ERROR;
+    }
+    ASSERT(cert_data->combinedDelegPoolKeyHash != NULL);
+
+    if (!buffer_read_drep(buf, &cert_data->drep)) {
+        TRACE("Failed to parse DRep");
+        return CERTIFICATES_PARSING_ERROR;
+    }
+
+    ASSERT_TYPE(cert_data->deposit, uint64_t);
+    if (!buffer_read_u64(buf, &cert_data->deposit, BE)) {
+        TRACE("Failed to parse deposit");
+        return CERTIFICATES_PARSING_ERROR;
+    }
+    TRACE("Successfully parsed ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP");
+    return PARSING_OK;
+}
+
 /// Parse CERTIFICATE_AUTHORIZE_COMMITTEE_HOT
 parser_status_e parse_certificate_authorize_committee_hot(buffer_t *buf,
                                                          certificate_data_t *cert_data) {

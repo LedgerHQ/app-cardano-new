@@ -37,5 +37,5 @@
 #define MAX_PROFIT_MARGIN_STRING_LENGTH 50   // For pool margin percentage "100.99 %"
 #define MAX_VOTE_OPTION_LENGTH 16            // For vote option strings ("Abstain", "Yes", "No")
 #define MAX_DREP_OPTION_LENGTH 32            // For DRep option strings ("No Confidence")
-#define MAX_CERTIFICATE_TYPE_LENGTH 32       // For certificate type strings (longest: "DRep Deregistration")
+#define MAX_CERTIFICATE_TYPE_LENGTH 64       // For certificate type strings
 #define MAX_DELEGATION_INDEX_STRING_LENGTH 6 // "#65535"

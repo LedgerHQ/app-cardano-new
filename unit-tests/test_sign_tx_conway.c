@@ -145,6 +145,46 @@ static void test_sign_tx_with_stake_pool_and_drep_delegation_certificates_expert
     run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_STAKE_POOL_AND_DREP_DELEGATION_CERTIFICATES, true);
 }
 
+static void test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_CERTIFICATE, false);
+}
+
+static void test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_CERTIFICATE, true);
+}
+
+static void test_sign_tx_with_account_registration_delegation_to_drep_certificate_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP_CERTIFICATE, false);
+}
+
+static void test_sign_tx_with_account_registration_delegation_to_drep_certificate_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP_CERTIFICATE, true);
+}
+
+static void test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP_CERTIFICATE, false);
+}
+
+static void test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP_CERTIFICATE, true);
+}
+
+static void test_sign_tx_with_all_certificates_except_pool_registration_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ALL_CERTIFICATES_EXCEPT_POOL_REGISTRATION, false);
+}
+
+static void test_sign_tx_with_all_certificates_except_pool_registration_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ALL_CERTIFICATES_EXCEPT_POOL_REGISTRATION, true);
+}
+
 static void test_sign_tx_with_authorize_committee_hot_certificates_expert_off(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_AUTHORIZE_COMMITTEE_HOT_CERTIFICATES, false);
@@ -209,6 +249,14 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_vote_delegation_certificates_expert_on),
         cmocka_unit_test(test_sign_tx_with_stake_pool_and_drep_delegation_certificates_expert_off),
         cmocka_unit_test(test_sign_tx_with_stake_pool_and_drep_delegation_certificates_expert_on),
+        cmocka_unit_test(test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_expert_off),
+        cmocka_unit_test(test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_expert_on),
+        cmocka_unit_test(test_sign_tx_with_account_registration_delegation_to_drep_certificate_expert_off),
+        cmocka_unit_test(test_sign_tx_with_account_registration_delegation_to_drep_certificate_expert_on),
+        cmocka_unit_test(test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_expert_off),
+        cmocka_unit_test(test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_expert_on),
+        cmocka_unit_test(test_sign_tx_with_all_certificates_except_pool_registration_expert_off),
+        cmocka_unit_test(test_sign_tx_with_all_certificates_except_pool_registration_expert_on),
         cmocka_unit_test(test_sign_tx_with_authorize_committee_hot_certificates_expert_off),
         cmocka_unit_test(test_sign_tx_with_authorize_committee_hot_certificates_expert_on),
         cmocka_unit_test(test_sign_tx_with_resign_committee_cold_certificates_expert_off),

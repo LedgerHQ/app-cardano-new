@@ -1015,6 +1015,85 @@ void txHashBuilder_addCertificate_stakePoolAndDRepDelegation(tx_hash_builder_t* 
     }
 }
 
+void txHashBuilder_addCertificate_accountRegistrationDelegationToStakePool(
+    tx_hash_builder_t* builder,
+    const credential_t* stakeCredential,
+    const uint8_t* poolKeyHash,
+    size_t poolKeyHashSize,
+    uint64_t deposit) {
+    _initNewCertificate(builder);
+    ASSERT(poolKeyHashSize == POOL_KEY_HASH_LENGTH);
+
+    // Array(4)[
+    //   Unsigned[11]
+    //   Array(2)[ credential ]
+    //   Bytes[poolKeyHash]
+    //   Unsigned[deposit]
+    // ]
+    {
+        BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 4);
+        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL); }
+        { _appendCredential(builder, stakeCredential); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, poolKeyHashSize);
+            BUILDER_APPEND_DATA(poolKeyHash, poolKeyHashSize);
+        }
+        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, deposit); }
+    }
+}
+
+void txHashBuilder_addCertificate_accountRegistrationDelegationToDRep(
+    tx_hash_builder_t* builder,
+    const credential_t* stakeCredential,
+    const drep_t* drep,
+    uint64_t deposit) {
+    _initNewCertificate(builder);
+
+    // Array(4)[
+    //   Unsigned[12]
+    //   Array(2)[ credential ]
+    //   Array(1 or 2)[ drep ]
+    //   Unsigned[deposit]
+    // ]
+    {
+        BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 4);
+        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP); }
+        { _appendCredential(builder, stakeCredential); }
+        { _appendDRep(builder, drep); }
+        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, deposit); }
+    }
+}
+
+void txHashBuilder_addCertificate_accountRegistrationDelegationToStakePoolAndDRep(
+    tx_hash_builder_t* builder,
+    const credential_t* stakeCredential,
+    const uint8_t* poolKeyHash,
+    size_t poolKeyHashSize,
+    const drep_t* drep,
+    uint64_t deposit) {
+    _initNewCertificate(builder);
+    ASSERT(poolKeyHashSize == POOL_KEY_HASH_LENGTH);
+
+    // Array(5)[
+    //   Unsigned[13]
+    //   Array(2)[ credential ]
+    //   Bytes[poolKeyHash]
+    //   Array(1 or 2)[ drep ]
+    //   Unsigned[deposit]
+    // ]
+    {
+        BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 5);
+        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP); }
+        { _appendCredential(builder, stakeCredential); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, poolKeyHashSize);
+            BUILDER_APPEND_DATA(poolKeyHash, poolKeyHashSize);
+        }
+        { _appendDRep(builder, drep); }
+        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, deposit); }
+    }
+}
+
 void txHashBuilder_addCertificate_committeeAuthHot(tx_hash_builder_t* builder,
                                                    const credential_t* coldCredential,
                                                    const credential_t* hotCredential) {
