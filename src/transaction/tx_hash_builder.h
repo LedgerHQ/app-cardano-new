@@ -249,6 +249,12 @@ void txHashBuilder_addCertificate_voteDelegation(tx_hash_builder_t* builder,
                                                  const credential_t* stakeCredential,
                                                  const drep_t* drep);
 
+void txHashBuilder_addCertificate_stakePoolAndDRepDelegation(tx_hash_builder_t* builder,
+                                                             const credential_t* stakeCredential,
+                                                             const uint8_t* poolKeyHash,
+                                                             size_t poolKeyHashSize,
+                                                             const drep_t* drep);
+
 void txHashBuilder_addCertificate_committeeAuthHot(tx_hash_builder_t* builder,
                                                    const credential_t* coldCredential,
                                                    const credential_t* hotCredential);

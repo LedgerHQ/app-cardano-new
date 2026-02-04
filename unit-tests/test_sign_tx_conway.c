@@ -135,6 +135,16 @@ static void test_sign_tx_with_vote_delegation_certificates_expert_on(void **stat
     run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_VOTE_DELEGATION_CERTIFICATES, true);
 }
 
+static void test_sign_tx_with_stake_pool_and_drep_delegation_certificates_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_STAKE_POOL_AND_DREP_DELEGATION_CERTIFICATES, false);
+}
+
+static void test_sign_tx_with_stake_pool_and_drep_delegation_certificates_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_STAKE_POOL_AND_DREP_DELEGATION_CERTIFICATES, true);
+}
+
 static void test_sign_tx_with_authorize_committee_hot_certificates_expert_off(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_AUTHORIZE_COMMITTEE_HOT_CERTIFICATES, false);
@@ -197,6 +207,8 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_a_stake_deregistration_path_certificate_conway_expert_on),
         cmocka_unit_test(test_sign_tx_with_vote_delegation_certificates_expert_off),
         cmocka_unit_test(test_sign_tx_with_vote_delegation_certificates_expert_on),
+        cmocka_unit_test(test_sign_tx_with_stake_pool_and_drep_delegation_certificates_expert_off),
+        cmocka_unit_test(test_sign_tx_with_stake_pool_and_drep_delegation_certificates_expert_on),
         cmocka_unit_test(test_sign_tx_with_authorize_committee_hot_certificates_expert_off),
         cmocka_unit_test(test_sign_tx_with_authorize_committee_hot_certificates_expert_on),
         cmocka_unit_test(test_sign_tx_with_resign_committee_cold_certificates_expert_off),

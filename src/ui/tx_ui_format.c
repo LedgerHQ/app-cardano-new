@@ -684,6 +684,14 @@ static bool should_show_certificate(
             );
             break;
 
+        case CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION:
+            policy = policyForSignTxCertificateStakePoolAndDRepDelegation(
+                txSigningMode,
+                &certificate->stakeCredential,
+                &certificate->drep
+            );
+            break;
+
         case CERTIFICATE_AUTHORIZE_COMMITTEE_HOT:
             policy = policyForSignTxCertificateCommitteeAuth(
                 txSigningMode,

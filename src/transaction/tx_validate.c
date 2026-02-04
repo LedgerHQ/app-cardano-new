@@ -507,6 +507,26 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 }
                 break;
             }
+            case CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION: {
+                cert_policy = policyForSignTxCertificateStakePoolAndDRepDelegation(
+                    G_context.tx_info.transaction.txSigningMode,
+                    &certificate->stakeCredential,
+                    &certificate->drep
+                );
+                switch (cert_policy) {
+                    case POLICY_DENY:
+                        return SWO_SECURITY_CONDITION_NOT_SATISFIED;
+                    case POLICY_SHOW:
+                        plan->pair_count += UI_PAIRS_CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION;
+                        break;
+                    case POLICY_HIDE:
+                        break;
+                    default:
+                        LEDGER_ASSERT(false, "Unknown stake pool and drep delegation policy");
+                        break;
+                }
+                break;
+            }
             case CERTIFICATE_AUTHORIZE_COMMITTEE_HOT: {
                 cert_policy = policyForSignTxCertificateCommitteeAuth(
                     G_context.tx_info.transaction.txSigningMode,
@@ -1050,6 +1070,18 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 txHashBuilder_addCertificate_voteDelegation(
                     txHashBuilder,
                     &stakeCred,
+                    &drep
+                );
+                break;
+            }
+            case CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION: {
+                credential_t stakeCred = _credentialForTxHash(&certificate->stakeCredential);
+                drep_t drep = _drepForTxHash(&certificate->drep);
+                txHashBuilder_addCertificate_stakePoolAndDRepDelegation(
+                    txHashBuilder,
+                    &stakeCred,
+                    certificate->combinedDelegPoolKeyHash,
+                    POOL_KEY_HASH_LENGTH,
                     &drep
                 );
                 break;

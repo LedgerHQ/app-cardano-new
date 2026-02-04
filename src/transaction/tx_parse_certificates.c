@@ -154,6 +154,33 @@ parser_status_e parse_certificate_vote_delegation(buffer_t *buf,
     return PARSING_OK;
 }
 
+/// Parse CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION
+parser_status_e parse_certificate_stake_pool_and_drep_delegation(buffer_t *buf,
+                                                                 certificate_data_t *cert_data) {
+    LEDGER_ASSERT(cert_data != NULL, "NULL certificate data");
+    TRACE("Parsing STAKE_POOL_AND_DREP_DELEGATION certificate");
+    cert_data->type = CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION;
+
+    parser_status_e status = parse_stake_credential(buf, &cert_data->stakeCredential);
+    if (status != PARSING_OK) {
+        TRACE("Failed to parse stake credential");
+        return status;
+    }
+
+    if (!buffer_read_bytes_ptr(buf, &cert_data->combinedDelegPoolKeyHash, POOL_KEY_HASH_LENGTH)) {
+        TRACE("Failed to read pool key hash");
+        return CERTIFICATES_PARSING_ERROR;
+    }
+    ASSERT(cert_data->combinedDelegPoolKeyHash != NULL);
+
+    if (!buffer_read_drep(buf, &cert_data->drep)) {
+        TRACE("Failed to parse DRep");
+        return CERTIFICATES_PARSING_ERROR;
+    }
+    TRACE("Successfully parsed STAKE_POOL_AND_DREP_DELEGATION");
+    return PARSING_OK;
+}
+
 /// Parse CERTIFICATE_AUTHORIZE_COMMITTEE_HOT
 parser_status_e parse_certificate_authorize_committee_hot(buffer_t *buf,
                                                          certificate_data_t *cert_data) {

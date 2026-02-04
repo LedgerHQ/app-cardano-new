@@ -944,6 +944,7 @@ security_policy_t policyForSignTxCertificateVoteDelegation(sign_tx_signingmode_t
         case EXT_DREP_KEY_PATH:
             // DRep can be anything, but if given by key path, it should be a valid path
             DENY_UNLESS(bip44_isDRepKeyPath(&drep->keyPath));
+            DENY_IF(violatesSingleAccountOrStoreIt(&drep->keyPath));
             break;
 
         case EXT_DREP_KEY_HASH:
@@ -957,6 +958,30 @@ security_policy_t policyForSignTxCertificateVoteDelegation(sign_tx_signingmode_t
             ASSERT(false);
     }
 
+    return _policyForSignTxCertificateStakeCredential(txSigningMode, stakeCredential);
+}
+
+security_policy_t policyForSignTxCertificateStakePoolAndDRepDelegation(
+    sign_tx_signingmode_t txSigningMode,
+    const ext_credential_t* stakeCredential,
+    const ext_drep_t* drep) {
+    DENY_IF(txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER ||
+            txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR);
+    switch (drep->type) {
+        case EXT_DREP_KEY_PATH:
+            DENY_UNLESS(bip44_isDRepKeyPath(&drep->keyPath));
+            DENY_IF(violatesSingleAccountOrStoreIt(&drep->keyPath));
+            break;
+
+        case EXT_DREP_KEY_HASH:
+        case EXT_DREP_SCRIPT_HASH:
+        case EXT_DREP_ABSTAIN:
+        case EXT_DREP_NO_CONFIDENCE:
+            break;
+
+        default:
+            ASSERT(false);
+    }
     return _policyForSignTxCertificateStakeCredential(txSigningMode, stakeCredential);
 }
 

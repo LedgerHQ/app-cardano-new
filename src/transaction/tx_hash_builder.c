@@ -852,6 +852,36 @@ static void _appendCredential(tx_hash_builder_t* builder, const credential_t* cr
     }
 }
 
+static void _appendDRep(tx_hash_builder_t* builder, const drep_t* drep) {
+    LEDGER_ASSERT(drep != NULL, "NULL drep");
+    {
+        switch (drep->type) {
+            case DREP_KEY_HASH: {
+                BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 2);
+                BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, DREP_KEY_HASH);
+                BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, SIZEOF(drep->keyHash));
+                BUILDER_APPEND_DATA(drep->keyHash, SIZEOF(drep->keyHash));
+                break;
+            }
+            case DREP_SCRIPT_HASH: {
+                BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 2);
+                BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, DREP_SCRIPT_HASH);
+                BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, SIZEOF(drep->scriptHash));
+                BUILDER_APPEND_DATA(drep->scriptHash, SIZEOF(drep->scriptHash));
+                break;
+            }
+            case DREP_ABSTAIN:
+            case DREP_NO_CONFIDENCE: {
+                BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 1);
+                BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, drep->type);
+                break;
+            }
+            default:
+                ASSERT(false);
+        }
+    }
+}
+
 // stake key certificate registration or deregistration
 // will be deprecated after Conway
 void txHashBuilder_addCertificate_stakingOld(tx_hash_builder_t* builder,
@@ -950,32 +980,37 @@ void txHashBuilder_addCertificate_voteDelegation(tx_hash_builder_t* builder,
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 3);
         { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_VOTE_DELEGATION); }
         { _appendCredential(builder, stakeCredential); }
+        { _appendDRep(builder, drep); }
+    }
+}
+
+void txHashBuilder_addCertificate_stakePoolAndDRepDelegation(tx_hash_builder_t* builder,
+                                                             const credential_t* stakeCredential,
+                                                             const uint8_t* poolKeyHash,
+                                                             size_t poolKeyHashSize,
+                                                             const drep_t* drep) {
+    _initNewCertificate(builder);
+    ASSERT(poolKeyHashSize == POOL_KEY_HASH_LENGTH);
+
+    // Array(4)[
+    //   Unsigned[10]
+    //   Array(2)[
+    //     Unsigned[0]
+    //     Bytes[stakingKeyHash]
+    //   ]
+    //   Bytes[poolKeyHash]
+    //   Array(1 or 2)[ Unsigned[drep_type], ?Bytes[hash] ]
+    // ]
+    {
+        BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 4);
+        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION); }
+        { _appendCredential(builder, stakeCredential); }
         {
-            // DRep
-            switch (drep->type) {
-                case DREP_KEY_HASH: {
-                    BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 2);
-                    BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, DREP_KEY_HASH);
-                    BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, SIZEOF(drep->keyHash));
-                    BUILDER_APPEND_DATA(drep->keyHash, SIZEOF(drep->keyHash));
-                    break;
-                }
-                case DREP_SCRIPT_HASH: {
-                    BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 2);
-                    BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, DREP_SCRIPT_HASH);
-                    BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, SIZEOF(drep->scriptHash));
-                    BUILDER_APPEND_DATA(drep->scriptHash, SIZEOF(drep->scriptHash));
-                    break;
-                }
-                case DREP_ABSTAIN:
-                case DREP_NO_CONFIDENCE: {
-                    BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 1);
-                    BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, drep->type);
-                    break;
-                }
-                default:
-                    ASSERT(false);
-            }
+            BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, poolKeyHashSize);
+            BUILDER_APPEND_DATA(poolKeyHash, poolKeyHashSize);
+        }
+        {
+            _appendDRep(builder, drep);
         }
     }
 }

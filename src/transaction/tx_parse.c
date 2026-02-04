@@ -699,21 +699,19 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx) {
 
 /// Parse certificate data structure supporting multiple certificate types
 static parser_status_e parse_tx_certificates(buffer_t *buf, transaction_t *tx) {
-    TRACE(">>>>> parse_tx_certificates: num_certificates=%u buf->offset=%u buf->size=%u",
+    TRACE("parse_tx_certificates: num_certificates=%u buf->offset=%u buf->size=%u",
           tx->num_certificates, buf->offset, buf->size);
     for (uint16_t i = 0; i < tx->num_certificates; i++) {
-        TRACE(">>>>> Allocating memory for certificate %u", i);
         tx_certificate_node_t *item = (tx_certificate_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(tx_certificate_node_t));
         if (item == NULL) {
-            TRACE(">>>>> OUT OF MEMORY");
+            TRACE("OUT OF MEMORY");
             return OUT_OF_MEMORY_ERROR;
         }
 
         // Read certificate type
         uint8_t cert_type_wire;
-        TRACE(">>>>> About to read certificate type byte at offset %u", buf->offset);
         if (!buffer_read_u8(buf, &cert_type_wire)) {
-            TRACE(">>>>> FAILED TO READ CERTIFICATE TYPE BYTE");
+            TRACE("FAILED TO READ CERTIFICATE TYPE BYTE");
             APP_MEM_FREE(item);
             return CERTIFICATES_PARSING_ERROR;
         }
@@ -743,6 +741,10 @@ static parser_status_e parse_tx_certificates(buffer_t *buf, transaction_t *tx) {
 
             case CERTIFICATE_VOTE_DELEGATION:
                 status = parse_certificate_vote_delegation(buf, &item->certificate);
+                break;
+
+            case CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION:
+                status = parse_certificate_stake_pool_and_drep_delegation(buf, &item->certificate);
                 break;
 
             case CERTIFICATE_AUTHORIZE_COMMITTEE_HOT:

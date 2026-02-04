@@ -54,6 +54,7 @@
 #define UI_PAIRS_POOL_METADATA 2                               // key 4: "Pool metadata url", "Pool metadata hash"
 #define UI_PAIRS_POOL_NO_METADATA 1                            // key 4: "Metadata: none (anonymous pool)"
 #define UI_PAIRS_CERTIFICATE_VOTE_DELEGATION 3                 // key 4: "Certificate", voter credential, DRep
+#define UI_PAIRS_CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION 4  // key 4: "Certificate", credential, "Pool", DRep
 #define UI_PAIRS_CERTIFICATE_AUTHORIZE_COMMITTEE_HOT 3         // key 4: "Certificate", cold credential, hot credential
 #define UI_PAIRS_CERTIFICATE_RESIGN_COMMITTEE_COLD 2           // key 4: "Certificate", cold credential (+ anchor if included)
 #define UI_PAIRS_CERTIFICATE_DREP_REGISTRATION 3               // key 4: "Certificate", DRep credential, "Deposit" (+ anchor if included)

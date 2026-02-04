@@ -111,6 +111,10 @@ security_policy_t policyForSignTxCertificateStaking(sign_tx_signingmode_t txSign
 security_policy_t policyForSignTxCertificateVoteDelegation(sign_tx_signingmode_t txSigningMode,
                                                            const ext_credential_t* stakeCredential,
                                                            const ext_drep_t* drep);
+security_policy_t policyForSignTxCertificateStakePoolAndDRepDelegation(
+    sign_tx_signingmode_t txSigningMode,
+    const ext_credential_t* stakeCredential,
+    const ext_drep_t* drep);
 security_policy_t policyForSignTxCertificateCommitteeAuth(sign_tx_signingmode_t txSigningMode,
                                                           const ext_credential_t* coldCredential,
                                                           const ext_credential_t* hotCredential);

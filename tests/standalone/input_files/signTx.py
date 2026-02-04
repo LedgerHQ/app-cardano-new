@@ -82,6 +82,7 @@ class CertificateType(IntEnum):
     STAKE_REGISTRATION_CONWAY = 7
     STAKE_DEREGISTRATION_CONWAY = 8
     VOTE_DELEGATION = 9
+    STAKE_POOL_AND_DREP_DELEGATION = 10
     AUTHORIZE_COMMITTEE_HOT = 14
     RESIGN_COMMITTEE_COLD = 15
     DREP_REGISTRATION = 16
@@ -294,6 +295,12 @@ class VoteDelegationParams:
     stakeCredential: CredentialParams
     dRep: DRepParams
 
+@dataclass
+class StakePoolAndDRepDelegationParams:
+    stakeCredential: CredentialParams
+    poolKeyHash: str
+    dRep: DRepParams
+
 
 @dataclass
 class AuthorizeCommitteeParams:
@@ -391,6 +398,7 @@ class Certificate:
         StakeRegistrationConwayParams,
         StakeDelegationParams,
         VoteDelegationParams,
+        StakePoolAndDRepDelegationParams,
         AuthorizeCommitteeParams,
         ResignCommitteeParams,
         DRepRegistrationParams,
@@ -2137,6 +2145,77 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048583098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a183098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c883098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c883098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c810283098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8103",
+        has_warning=False,
+    ),
+    SignTxTestCase(
+        name="Sign_tx_with_stake_pool_and_drep_delegation_certificates",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
+            certificates=[
+                Certificate(
+                    CertificateType.STAKE_POOL_AND_DREP_DELEGATION,
+                    StakePoolAndDRepDelegationParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0"
+                        ),
+                        "f61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb4973",
+                        DRepParams(DRepParamsType.KEY_PATH, "m/1852'/1815'/0'/3/0"),
+                    ),
+                ),
+                Certificate(
+                    CertificateType.STAKE_POOL_AND_DREP_DELEGATION,
+                    StakePoolAndDRepDelegationParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0"
+                        ),
+                        "f61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb4973",
+                        DRepParams(
+                            DRepParamsType.KEY_HASH,
+                            "7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8",
+                        ),
+                    ),
+                ),
+                Certificate(
+                    CertificateType.STAKE_POOL_AND_DREP_DELEGATION,
+                    StakePoolAndDRepDelegationParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0"
+                        ),
+                        "f61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb4973",
+                        DRepParams(
+                            DRepParamsType.SCRIPT_HASH,
+                            "1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8",
+                        ),
+                    ),
+                ),
+                Certificate(
+                    CertificateType.STAKE_POOL_AND_DREP_DELEGATION,
+                    StakePoolAndDRepDelegationParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0"
+                        ),
+                        "f61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb4973",
+                        DRepParams(DRepParamsType.ABSTAIN),
+                    ),
+                ),
+                Certificate(
+                    CertificateType.STAKE_POOL_AND_DREP_DELEGATION,
+                    StakePoolAndDRepDelegationParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0"
+                        ),
+                        "f61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb4973",
+                        DRepParams(DRepParamsType.NO_CONFIDENCE),
+                    ),
+                ),
+            ],
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0485840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738200581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738102840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738103",
         has_warning=False,
     ),
     SignTxTestCase(

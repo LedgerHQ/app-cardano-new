@@ -109,6 +109,18 @@ parser_status_e parse_certificate_vote_delegation(buffer_t *buf,
                                                  certificate_data_t *cert_data);
 
 /**
+ * Parse CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION
+ *
+ * Format:
+ * - certificate_type (1 byte): 10
+ * - stake_credential (variable): type + data
+ * - pool_key_hash (28 bytes)
+ * - drep (variable): DRep specification
+ */
+parser_status_e parse_certificate_stake_pool_and_drep_delegation(buffer_t *buf,
+                                                                 certificate_data_t *cert_data);
+
+/**
  * Parse CERTIFICATE_AUTHORIZE_COMMITTEE_HOT
  *
  * Format:

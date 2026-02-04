@@ -397,6 +397,21 @@ void addCertificateUIPairs(const certificate_data_t* certificate_data) {
             break;
         }
 
+        case CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION: {
+            addStakeCredentialUIPairs(&certificate_data->stakeCredential);
+            LEDGER_ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL,
+                          "Missing combined delegation pool hash");
+            UI_ADD_FORMAT3(UI_STATIC_LABEL("Pool"),
+                           MAX_BECH32_STRING_LENGTH,
+                           format_bech32,
+                           "pool",
+                           certificate_data->combinedDelegPoolKeyHash,
+                           POOL_KEY_HASH_LENGTH);
+            addDRepUIPairs(&certificate_data->drep, UI_STATIC_LABEL("DRep"));
+            CHECK_COUNT(UI_PAIRS_CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION);
+            break;
+        }
+
         case CERTIFICATE_AUTHORIZE_COMMITTEE_HOT: {
             addCommitteeColdCredentialUIPairs(&certificate_data->coldCredential);
             addCommitteeHotCredentialUIPairs(&certificate_data->hotCredential);

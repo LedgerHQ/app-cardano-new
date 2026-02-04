@@ -49,6 +49,7 @@ from standalone.input_files.signTx import (
     SingleHostHostnameRelayParams,
     SingleHostIpAddrRelayParams,
     StakeDelegationParams,
+    StakePoolAndDRepDelegationParams,
     StakeRegistrationConwayParams,
     StakeRegistrationParams,
     Transaction,
@@ -153,6 +154,7 @@ def _credential_paths_from_certificate(certificate: Certificate) -> List[str]:
         CertificateType.STAKE_DEREGISTRATION_CONWAY,
         CertificateType.STAKE_DELEGATION,
         CertificateType.VOTE_DELEGATION,
+        CertificateType.STAKE_POOL_AND_DREP_DELEGATION,
     ):
         path = _credential_path_from_credential(params.stakeCredential)
         if path:
@@ -974,6 +976,11 @@ class CommandBuilder:
         elif cert_type == CertificateType.VOTE_DELEGATION:
             assert isinstance(params, VoteDelegationParams)
             result.extend(self._serialize_credential_inline(params.stakeCredential))
+            result.extend(self._serialize_drep(params.dRep))
+        elif cert_type == CertificateType.STAKE_POOL_AND_DREP_DELEGATION:
+            assert isinstance(params, StakePoolAndDRepDelegationParams)
+            result.extend(self._serialize_credential_inline(params.stakeCredential))
+            result.extend(bytes.fromhex(params.poolKeyHash))
             result.extend(self._serialize_drep(params.dRep))
         elif cert_type == CertificateType.AUTHORIZE_COMMITTEE_HOT:
             assert isinstance(params, AuthorizeCommitteeParams)

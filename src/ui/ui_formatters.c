@@ -26,6 +26,8 @@ static const char *getCertificateTypeName(certificate_type_t type) {
             return "Stake Deregistration (Conway)";
         case CERTIFICATE_VOTE_DELEGATION:
             return "Vote Delegation";
+        case CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION:
+            return "Pool and DRep Delegation";
         case CERTIFICATE_AUTHORIZE_COMMITTEE_HOT:
             return "Committee Authorization";
         case CERTIFICATE_RESIGN_COMMITTEE_COLD:
