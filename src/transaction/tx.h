@@ -94,40 +94,35 @@ typedef struct {
 // Collateral inputs use the same structure as regular inputs
 typedef tx_input_node_t tx_collateral_input_node_t;
 
-// Certificate data structure supporting multiple certificate types
+// Certificate data structure supporting multiple certificate types.
 // Fields are used selectively depending on certificate type:
 // - STAKE_REGISTRATION/DEREGISTRATION: stakeCredential
 // - STAKE_REGISTRATION_CONWAY/DEREGISTRATION_CONWAY: stakeCredential, deposit
 // - STAKE_DELEGATION: stakeCredential, poolKeyHash
 // - STAKE_POOL_RETIREMENT: poolCredential, retirementEpoch
-// - STAKE_POOL_REGISTRATION: poolId, vrfKeyHash, pledge, cost, margin, rewardAccount, poolOwners[], relays[], poolMetadata
+// - STAKE_POOL_REGISTRATION: poolId, vrfKeyHash, poolRegistration
 // - VOTE_DELEGATION: stakeCredential, drep
 // - AUTHORIZE_COMMITTEE_HOT: coldCredential, hotCredential
 // - RESIGN_COMMITTEE_COLD: coldCredential, anchor
 // - DREP_REGISTRATION/UPDATE: dRepCredential, deposit (reg only), anchor
 // - DREP_DEREGISTRATION: dRepCredential, deposit
+// - (Future) STAKE_POOL_AND_DREP_DELEGATION: stakeCredential, drep, combinedDelegPoolKeyHash
 typedef struct {
     certificate_type_t type;
-    union {
-        ext_credential_t stakeCredential;
-        ext_credential_t coldCredential;
-        ext_credential_t dRepCredential;
-        ext_credential_t poolCredential;
-        pool_id_t poolId;
-    };
-    union {
-        ext_credential_t hotCredential;
-        const uint8_t* poolKeyHash;
-        uint64_t deposit;
-        uint64_t retirementEpoch;
-        ext_drep_t drep;
-        const uint8_t* vrfKeyHash;
-    };
-    // Extended data for pool registration
-    union {
-        anchor_t anchor;  // For committee resign, DRep registration/update
-        pool_registration_data_t poolRegistration;
-    };
+    ext_credential_t stakeCredential;
+    ext_credential_t coldCredential;
+    ext_credential_t dRepCredential;
+    ext_credential_t poolCredential;
+    pool_id_t poolId;
+    ext_credential_t hotCredential;
+    const uint8_t* poolKeyHash;
+    const uint8_t* combinedDelegPoolKeyHash;
+    ext_drep_t drep;
+    uint64_t deposit;
+    uint64_t retirementEpoch;
+    const uint8_t* vrfKeyHash;
+    anchor_t anchor;  // For committee resign, DRep registration/update
+    pool_registration_data_t poolRegistration;
 } certificate_data_t;
 
 typedef struct {
