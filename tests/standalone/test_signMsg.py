@@ -78,10 +78,15 @@ def _check_result(testCase: SignMsgTestCase, signature: bytes, public_key: bytes
     if testCase.msgData.addressFieldType == MessageAddressFieldType.ADDRESS:
         assert address_field == derive_address(testCase.msgData.addressDesc)
     else:
-        address = derive_address(DeriveAddressTestCase("",
-                                                       Mainnet,
-                                                       AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
-                                                       testCase.msgData.signingPath))
+        address = derive_address(
+            DeriveAddressTestCase(
+                name="sign_message_keyhash",
+                ledgerjs_name=None,
+                netDesc=Mainnet,
+                addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
+                spendingValue=testCase.msgData.signingPath,
+            )
+        )
         assert address_field == address[1:]
 
     # Check the signature

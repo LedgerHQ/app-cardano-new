@@ -5,35 +5,25 @@ Unified generator for unit-test fixtures derived from ragger sources.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import re
 import subprocess
 import sys
+from collections import defaultdict
 from pathlib import Path
-
 
 from common import UNIT_TESTS_DIR
 from paths import REPO_ROOT
+from mock_data_utils import regenerate_mock_data
 
 
-# ======================================================================
-# Compiled Regex Patterns (module level for performance)
-# ======================================================================
-
-# Match MOCK_PATHS array definition
-_MOCK_PATHS_PATTERN = re.compile(
-    r'(static\s+const\s+mock_path_data_t\s+MOCK_PATHS\[\]\s*=\s*\{)(.*?)(\};)',
+# Match reject fixtures array for counting individual reject cases
+_SIGN_TX_REJECT_FIXTURES_PATTERN = re.compile(
+    r"static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES\[\]\s*=\s*\{(.*?)\n\};",
     flags=re.DOTALL,
 )
 
-# Match MOCK_SIGNATURES array definition
-_MOCK_SIGNATURES_PATTERN = re.compile(
-    r'(static\s+const\s+mock_signature_data_t\s+MOCK_SIGNATURES\[\]\s*=\s*\{)(.*?)(\};)',
-    flags=re.DOTALL,
-)
-
-# Match entry start pattern like: { .path =
-_ENTRY_START_PATTERN = re.compile(r"\{\s*\.path\s*=")
+# Match individual reject fixture entries inside the array
+_SIGN_TX_REJECT_ENTRY_PATTERN = re.compile(r"\.name\s*=")
 
 # Import fixture generators
 from fixture_generators.tx_generators import (
@@ -52,6 +42,9 @@ from fixture_generators.pubkey_generators import (
 )
 from fixture_generators.sign_msg_generators import (
     generate_sign_msg_fixtures,
+)
+from fixture_generators.opcert_generators import (
+    generate_opcert_fixtures,
 )
 
 # Import reject generators
@@ -94,299 +87,117 @@ from test_runner_generators.pubkey_reject_runner_generators import (
 from test_runner_generators.sign_msg_test_runner_generators import (
     generate_sign_msg_test_runners,
 )
+from test_runner_generators.opcert_test_runner_generators import (
+    generate_opcert_test_runners,
+)
 
 def _log_stage(message: str) -> None:
     print(f"\n--- {message} ---")
 
 
-def regenerate_mock_data() -> None:
-    try:
-        from ragger.bip import calculate_public_key_and_chaincode, CurveChoice  # type: ignore
-        from ragger.conftest import configuration as ragger_configuration  # type: ignore
-        from bip_utils import Bip39SeedGenerator, Bip32Ed25519Kholaw  # type: ignore
-        from nacl import bindings  # type: ignore
-    except ImportError as exc:
-        print(f"ERROR: missing dependency: {exc}")
-        print("Please activate the venv: source ../tests/standalone/venv/bin/activate")
-        sys.exit(1)
-
-    default_mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
-
-    def resolve_mnemonic() -> str:
-        if ragger_configuration is not None:
-            optional_seed = getattr(ragger_configuration.OPTIONAL, "CUSTOM_SEED", "")
-            if optional_seed:
-                return optional_seed
-        return default_mnemonic
-
-    mnemonic = resolve_mnemonic()
-
-    def parse_bip32_path_from_c_array(
-        path_array_str: str, path_len: int | None = None
-    ) -> str:
-        hex_values = re.findall(r"0x[0-9a-fA-F]+", path_array_str)
-        if path_len is not None:
-            hex_values = hex_values[:path_len]
-        path_parts = ["m"]
-        for hex_val in hex_values:
-            val = int(hex_val, 16)
-            if val & 0x80000000:
-                path_parts.append(f"{val & 0x7FFFFFFF}'")
-            else:
-                path_parts.append(str(val))
-        return "/".join(path_parts)
-
-    def format_c_array_block(
-        data: bytes,
-        inner_indent: str = "          ",
-    ) -> list[str]:
-        """Return multi-line lines for a C array, one chunk per line."""
-        if not data:
-            return [f"{inner_indent}0x00,"]
-
-        chunks = [data[i : i + 8] for i in range(0, len(data), 8)]
-        lines = []
-        for chunk in chunks:
-            hex_values = ", ".join(f"0x{b:02x}" for b in chunk)
-            lines.append(f"{inner_indent}{hex_values},")
-        return lines
-
-    input_file = UNIT_TESTS_DIR / "mock_crypto" / "crypto_mock_data.h"
-    temp_output_file = UNIT_TESTS_DIR / "mock_crypto" / "crypto_mock_data_regenerated.h"
-
-    if not input_file.exists():
-        print(f"ERROR: Mock data input file not found: {input_file}")
-        sys.exit(1)
+def _count_sign_tx_reject_fixtures() -> int:
+    """Return the number of fixtures in sign_tx reject suite to account for per-test coverage."""
+    fixtures_file = UNIT_TESTS_DIR / "test_sign_tx_fixtures_rejects.h"
+    if not fixtures_file.exists():
+        return 0
 
     try:
-        content = input_file.read_text()
-    except Exception as exc:
-        print(f"ERROR: Failed to read mock data input file {input_file}: {exc}")
-        sys.exit(1)
+        content = fixtures_file.read_text(encoding="utf-8")
+    except OSError:
+        return 0
 
-    print("Regenerating mock data from standard test mnemonic...")
-    print(f"Input:  {input_file}")
-    print(f"Output: {temp_output_file}\n")
+    match = _SIGN_TX_REJECT_FIXTURES_PATTERN.search(content)
+    if not match:
+        return 0
 
-    mock_paths_match = _MOCK_PATHS_PATTERN.search(content)
-    if not mock_paths_match:
-        raise ValueError("MOCK_PATHS definition not found in mock_crypto/crypto_mock_data.h")
+    fixture_body = match.group(1)
+    return len(_SIGN_TX_REJECT_ENTRY_PATTERN.findall(fixture_body))
 
-    mock_paths_body = mock_paths_match.group(2)
 
-    def _extract_entries(body: str) -> list[str]:
-        entries: list[str] = []
-        search_pos = 0
-        while True:
-            match = _ENTRY_START_PATTERN.search(body, search_pos)
-            if not match:
-                break
-            start = match.start()
-            depth = 0
-            idx = start
-            while idx < len(body):
-                char = body[idx]
-                if char == "{":
-                    depth += 1
-                elif char == "}":
-                    depth -= 1
-                    if depth == 0:
-                        end_idx = idx + 1
-                        break
-                idx += 1
-            else:
-                raise ValueError("Unbalanced braces while parsing mock entries")
-            while end_idx < len(body) and body[end_idx] in " \t\r\n,":
-                end_idx += 1
-            entries.append(body[start:end_idx])
-            search_pos = end_idx
-        return entries
+_COMMAND_ORDER = [
+    "sign_tx",
+    "sign_msg",
+    "sign_cvote",
+    "sign_opcert",
+    "pubkey_export",
+    "derive_address",
+    "derive_native_script",
+]
 
-    def _build_path_entry(entry_text: str) -> str:
-        path_match = re.search(r'\.path\s*=\s*(\{[^}]+\})', entry_text)
-        path_len_match = re.search(r'\.path_len\s*=\s*(\d+)', entry_text)
-        if not path_match or not path_len_match:
-            raise ValueError("Failed to parse path information in mock entry")
-        path_array = path_match.group(1)
-        path_len = int(path_len_match.group(1))
-        path_desc = parse_bip32_path_from_c_array(path_array, path_len)
-        base_indent = "    "
-        field_indent = base_indent + "      "
-        array_indent = field_indent + "    "
+_COMMAND_DISPLAY_NAMES = {
+    "sign_tx": "Sign Transaction",
+    "sign_msg": "Sign Message",
+    "sign_cvote": "Sign CVote",
+    "sign_opcert": "Sign Opcert",
+    "pubkey_export": "Pubkey Export",
+    "derive_address": "Derive Address",
+    "derive_native_script": "Derive Native Script",
+}
 
-        try:
-            derived_pk_hex, derived_cc_hex = calculate_public_key_and_chaincode(
-                CurveChoice.Ed25519Kholaw, path_desc, mnemonic=mnemonic
-            )
-            derived_pk = bytes.fromhex(derived_pk_hex[2:])
-            derived_cc = bytes.fromhex(derived_cc_hex)
-            derived_kh = hashlib.blake2b(derived_pk, digest_size=28).digest()
+_RAGGER_FILE_TO_COMMAND = {
+    "test_sign_tx.py": "sign_tx",
+    "test_signMsg.py": "sign_msg",
+    "test_cvote.py": "sign_cvote",
+    "test_opcert.py": "sign_opcert",
+    "test_pubkey.py": "pubkey_export",
+    "test_derive_address.py": "derive_address",
+    "test_derive_native_script.py": "derive_native_script",
+}
 
-            print(f"OK {path_desc}")
+_CMOCKA_TEST_PATTERN = re.compile(r"cmocka_unit_test\(\s*([^)]+?)\s*\)")
 
-            lines: list[str] = []
-            lines.append(f"{base_indent}/* Path \"{path_desc}\" */")
-            lines.append("")
-            lines.extend([
-                f"{base_indent}{{ .path = {path_array}, .path_len = {path_len},",
-                f'{field_indent}/* Public key (hex): "{derived_pk.hex()}" */',
-                f"{field_indent}.public_key = {{",
-                *format_c_array_block(derived_pk, inner_indent=array_indent),
-                f"{field_indent}}},",
-                f'{field_indent}/* Chain code (hex): "{derived_cc.hex()}" */',
-                f"{field_indent}.chain_code = {{",
-                *format_c_array_block(derived_cc, inner_indent=array_indent),
-                f"{field_indent}}},",
-                f'{field_indent}/* Blake2b-224 key hash: {derived_kh.hex()} */',
-                f"{field_indent}.key_hash = {{",
-                *format_c_array_block(derived_kh, inner_indent=array_indent),
-                f"{field_indent}}},",
-                f"{base_indent}}},",
-                "",
-            ])
-            return "\n".join(lines)
-        except Exception as exc:
-            print(f"ERROR: Failed to derive key for {path_desc}: {exc}")
-            sys.exit(1)
 
-    path_entries = _extract_entries(mock_paths_body)
-    if not path_entries:
-        raise ValueError("No mock path entries were found")
-    print(f"Regenerating {len(path_entries)} mock path entries...")
-    regenerated_paths = [_build_path_entry(entry) for entry in path_entries]
-    new_mock_body = "\n".join(regenerated_paths).rstrip()
-    content = (
-        content[: mock_paths_match.start(2)]
-        + "\n"
-        + new_mock_body
-        + "\n"
-        + content[mock_paths_match.end(2) :]
+def _extract_cmocka_test_names(file_path: Path) -> tuple[list[str], str]:
+    """Return cmocka-registered test names plus the raw file content for coverage checks."""
+    try:
+        content = file_path.read_text(encoding="utf-8")
+    except OSError:
+        print(f"WARNING: Could not read {file_path} for counting cmocka tests")
+        return [], ""
+    names = [match.group(1).strip() for match in _CMOCKA_TEST_PATTERN.finditer(content)]
+    return names, content
+
+
+def _count_unit_tests_by_command() -> tuple[dict[str, int], int, str]:
+    """
+    Count unit-test entries per command and return the data along with total generated functions.
+
+    The count is based on cmocka_unit_test() registrations so the reporting stays
+    independent of the generator output formatting.
+    """
+    command_counts: dict[str, int] = {command: 0 for command in _COMMAND_ORDER}
+    total_funcs = 0
+    command_file_contents: list[str] = []
+
+    def _add_file_counts(path: Path, command: str) -> None:
+        nonlocal total_funcs
+        if not path.exists():
+            raise FileNotFoundError(f"Unit test source missing: {path}")
+        names, content = _extract_cmocka_test_names(path)
+        command_counts[command] += len(names)
+        total_funcs += len(names)
+        command_file_contents.append(content)
+
+    tx_test_files = sorted(
+        p for p in UNIT_TESTS_DIR.glob("test_sign_tx_*.c") if p.name != "test_sign_tx_rejects.c"
     )
-    print(f"Regenerated {len(regenerated_paths)} mock path entries.")
+    for path in tx_test_files:
+        _add_file_counts(path, "sign_tx")
 
-    message_pattern = r"static const uint8_t (\w+)\[\] = \{([^}]+)\};"
-    messages: dict[str, bytes] = {}
-    for match in re.finditer(message_pattern, content, flags=re.DOTALL):
-        name = match.group(1)
-        hex_values = re.findall(r"0x[0-9a-fA-F]{2}", match.group(2))
-        if not hex_values:
-            continue
-        messages[name] = bytes(int(value, 16) for value in hex_values)
+    unit_file_map = {
+        "sign_msg": ["test_sign_msg.c"],
+        "sign_cvote": ["test_cvote.c"],
+        "sign_opcert": ["test_opcert.c"],
+        "pubkey_export": ["test_pubkey.c", "test_pubkey_rejects.c"],
+        "derive_address": ["test_derive_address.c", "test_derive_address_rejects.c"],
+        "derive_native_script": ["test_native_script.c", "test_native_script_rejects.c"],
+    }
+    for command, filenames in unit_file_map.items():
+        for filename in filenames:
+            _add_file_counts(UNIT_TESTS_DIR / filename, command)
 
-    seed = Bip39SeedGenerator(mnemonic).Generate()
-
-    def sign_with_extended_key(extended_key: bytes, message: bytes) -> bytes:
-        if len(extended_key) != 64:
-            raise ValueError(f"Unexpected extended key length {len(extended_key)}")
-        secret_scalar = extended_key[:32]
-        prefix = extended_key[32:64]
-
-        r_hash = hashlib.sha512(prefix + message).digest()
-        r_scalar = bindings.crypto_core_ed25519_scalar_reduce(r_hash)
-        r_point = bindings.crypto_scalarmult_ed25519_base_noclamp(r_scalar)
-
-        public_key = bindings.crypto_scalarmult_ed25519_base_noclamp(secret_scalar)
-        k_hash = hashlib.sha512(r_point + public_key + message).digest()
-        k_scalar = bindings.crypto_core_ed25519_scalar_reduce(k_hash)
-
-        k_times_a = bindings.crypto_core_ed25519_scalar_mul(k_scalar, secret_scalar)
-        s_scalar = bindings.crypto_core_ed25519_scalar_add(r_scalar, k_times_a)
-
-        return r_point + s_scalar
-
-    def derive_signature(path_array: str, message_name: str) -> bytes:
-        if message_name not in messages:
-            raise ValueError(f"Missing message buffer {message_name}")
-        bip32_path = parse_bip32_path_from_c_array(path_array)
-        child = Bip32Ed25519Kholaw.FromSeed(seed).DerivePath(bip32_path)
-        extended_key = child.PrivateKey().Raw().ToBytes()
-        return sign_with_extended_key(extended_key, messages[message_name])
-
-    signature_match = _MOCK_SIGNATURES_PATTERN.search(content)
-    if not signature_match:
-        raise ValueError(
-            "MOCK_SIGNATURES definition not found in mock_crypto/crypto_mock_data.h"
-        )
-
-    signature_body = signature_match.group(2)
-    signature_entries = _extract_entries(signature_body)
-    if not signature_entries:
-        raise ValueError("No mock signature entries were found")
-    print(f"\nRegenerating {len(signature_entries)} mock signature entries...")
-
-    def _build_signature_entry(entry_text: str) -> str:
-        path_match = re.search(r'\.path\s*=\s*(\{[^}]+\})', entry_text)
-        path_len_match = re.search(r'\.path_len\s*=\s*(\d+)', entry_text)
-        message_match = re.search(r'\.message\s*=\s*([A-Z0-9_]+)', entry_text)
-        if not path_match or not path_len_match or not message_match:
-            raise ValueError("Failed to parse information from mock signature entry")
-        path_array = path_match.group(1)
-        path_len = int(path_len_match.group(1))
-        message_name = message_match.group(1)
-        path_desc = parse_bip32_path_from_c_array(path_array, path_len)
-        base_indent = "    "
-        field_indent = base_indent + "      "
-        array_indent = field_indent + "    "
-        base_indent = "    "
-        field_indent = base_indent + "      "
-        array_indent = field_indent + "    "
-
-        message_bytes = messages.get(message_name)
-        if message_bytes is None:
-            raise ValueError(f"Missing message buffer {message_name}")
-        message_hex = message_bytes.hex()
-        bip32_path = parse_bip32_path_from_c_array(path_array, path_len)
-
-        signature = derive_signature(path_array, message_name)
-        signature_hex = signature.hex()
-
-        print(f"OK Signature {message_name} ({bip32_path})")
-        print(f"  message={message_hex}")
-
-        lines: list[str] = []
-        lines.append(
-            f'{base_indent}/* Path "{path_desc}" message {message_name} (hex "{message_hex}") */'
-        )
-        lines.append("")
-        lines.extend([
-            f"{base_indent}{{ .path = {path_array}, .path_len = {path_len},",
-            f"{field_indent}.message = {message_name}, .message_len = sizeof({message_name}),",
-            f'{field_indent}/* Signature (hex): "{signature_hex}" */',
-            f"{field_indent}.signature = {{",
-            *format_c_array_block(signature, inner_indent=array_indent),
-            f"{field_indent}}},",
-            f"{base_indent}}},",
-            "",
-        ])
-        return "\n".join(lines)
-
-    try:
-        regenerated_signatures = [_build_signature_entry(entry) for entry in signature_entries]
-    except Exception as exc:
-        print(f"ERROR: Failed to regenerate mock signatures: {exc}")
-        sys.exit(1)
-    new_signature_body = "\n".join(regenerated_signatures).rstrip()
-    new_content = (
-        content[: signature_match.start(2)]
-        + "\n"
-        + new_signature_body
-        + "\n"
-        + content[signature_match.end(2) :]
-    )
-
-    try:
-        temp_output_file.write_text(new_content)
-    except Exception as exc:
-        print(f"ERROR: Failed to write temporary mock data file {temp_output_file}: {exc}")
-        sys.exit(1)
-
-    try:
-        temp_output_file.replace(input_file)
-    except Exception as exc:
-        print(f"ERROR: Failed to replace {input_file} with regenerated content: {exc}")
-        sys.exit(1)
-
-    print(f"\nOK Regenerated mock data written to: {input_file}")
+    combined_content = "\n".join(command_file_contents)
+    return command_counts, total_funcs, combined_content
 
 
 def _verify_ragger_test_coverage() -> None:
@@ -431,107 +242,49 @@ def _verify_ragger_test_coverage() -> None:
     # Count total test cases (including parameterized variants)
     total_ragger_test_cases = len(ragger_tests)
 
-    # Check unit tests for coverage (C test files in UNIT_TESTS_DIR)
     if not UNIT_TESTS_DIR.exists():
         print(f"ERROR: Unit test directory not found at {UNIT_TESTS_DIR}")
         sys.exit(1)
 
-    try:
-        result = subprocess.run(
-            ["grep", "-r", "test_", str(UNIT_TESTS_DIR)],
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
-        if result.returncode not in (0, 1):  # 0 = found, 1 = not found, anything else is error
-            print(f"ERROR: grep command failed with return code {result.returncode}")
-            if result.stderr:
-                print(f"STDERR: {result.stderr}")
-            sys.exit(1)
-        unit_tests_content = result.stdout
-    except subprocess.TimeoutExpired:
-        print("ERROR: grep timeout while checking unit tests (exceeded 10 seconds)")
-        sys.exit(1)
-    except Exception as exc:
-        print(f"ERROR: Failed to search unit test files: {exc}")
-        sys.exit(1)
+    ragger_command_counts = {command: 0 for command in _COMMAND_ORDER}
+    skip_counts: dict[str, int] = defaultdict(int)
+    unmapped_counts: dict[str, int] = defaultdict(int)
 
-    # Count unit test cases from generated test files only
-    # Generated files: test_sign_tx_*.c, test_derive_address.c, test_native_script.c, etc.
-    generated_test_patterns = [
-        "test_sign_tx_",
-        "test_derive_address.c",
-        "test_native_script.c",
-        "test_derive_address_rejects.c",
-        "test_native_script_rejects.c",
-        "test_pubkey.c",
-        "test_pubkey_rejects.c",
-        "test_opcert_message.c",
-        "test_message_signing.c",
-        "test_sign_msg.c",
-    ]
+    skip_test_files = {
+        "test_client_constants.py",
+        "test_app_mainmenu.py",
+        "test_error_cmd.py",
+        "test_mock_key_derivation.py",
+        "test_get_app_info.py",
+    }
+    skip_test_funcs = {"test_wrong_data_length"}
+    ragger_test_funcs = set()
 
-    total_unit_test_funcs = 0
-    try:
-        result = subprocess.run(
-            ["find", str(UNIT_TESTS_DIR), "-maxdepth", "1", "-name", "*.c", "-type", "f"],
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
-        if result.returncode != 0:
-            print(f"ERROR: find command failed with return code {result.returncode}")
-            if result.stderr:
-                print(f"STDERR: {result.stderr}")
-            sys.exit(1)
+    for test_line in ragger_tests:
+        if "::" not in test_line:
+            continue
+        module_part, func_part = test_line.split("::", 1)
+        module_name = Path(module_part).name
+        if module_name in skip_test_files:
+            skip_counts[module_name] += 1
+            continue
+        command = _RAGGER_FILE_TO_COMMAND.get(module_name)
+        if command:
+            ragger_command_counts[command] += 1
+        else:
+            unmapped_counts[module_name] += 1
+        func_name = func_part.split("[", 1)[0]
+        if func_name and func_name not in skip_test_funcs:
+            ragger_test_funcs.add(func_name)
 
-        generated_files = []
-        for file_path in result.stdout.split("\n"):
-            if file_path.strip():
-                file_name = Path(file_path).name
-                if any(pattern in file_name for pattern in generated_test_patterns):
-                    generated_files.append(file_path.strip())
-
-        if generated_files:
-            result = subprocess.run(
-                ["grep", "-h", "static void test_"] + generated_files,
-                capture_output=True,
-                text=True,
-                timeout=10,
-            )
-            # grep returns 1 if no matches found, which is OK
-            if result.returncode not in (0, 1):
-                print(f"ERROR: grep command failed with return code {result.returncode}")
-                if result.stderr:
-                    print(f"STDERR: {result.stderr}")
-                sys.exit(1)
-            total_unit_test_funcs = len([line for line in result.stdout.split("\n") if line.strip()])
-    except subprocess.TimeoutExpired as exc:
-        print(f"ERROR: Command timed out while scanning unit tests: {exc}")
-        sys.exit(1)
-    except Exception as exc:
-        print(f"ERROR: Failed to scan unit test files: {exc}")
-        sys.exit(1)
+    unit_command_counts, total_unit_test_funcs, unit_tests_content = _count_unit_tests_by_command()
+    reject_fixture_count = _count_sign_tx_reject_fixtures()
+    if reject_fixture_count:
+        unit_command_counts["sign_tx"] += reject_fixture_count
+    expanded_unit_test_count = total_unit_test_funcs + reject_fixture_count
 
     # Extract unique test function names from ragger tests
     # Format: test_file.py::test_func_name[param] -> extract test_func_name
-    # Skip tests that don't need C unit test fixtures
-    skip_test_files = {"test_client_constants.py", "test_app_mainmenu.py", "test_error_cmd.py", "test_mock_key_derivation.py"}
-    skip_test_funcs = {"test_wrong_data_length"}
-    ragger_test_funcs = set()
-    for test_line in ragger_tests:
-        if "::" in test_line:
-            # Skip tests from certain files that don't need C fixtures
-            if any(skip_file in test_line for skip_file in skip_test_files):
-                continue
-            # Extract test function name (between :: and [ or end of line)
-            parts = test_line.split("::")
-            if len(parts) >= 2:
-                func_with_params = parts[1]
-                func_name = func_with_params.split("[")[0]
-                if func_name and func_name not in skip_test_funcs:
-                    ragger_test_funcs.add(func_name)
-
     missing_coverage = []
     covered_coverage = []
     for func_name in sorted(ragger_test_funcs):
@@ -547,9 +300,39 @@ def _verify_ragger_test_coverage() -> None:
         else:
             missing_coverage.append(func_name)
 
+    reject_note = ""
+    if reject_fixture_count:
+        reject_note = (f", includes {reject_fixture_count} fixtures sampled through "
+                       f"`SIGN_TX_REJECT_FIXTURES`")
     print(f"\nRagger test coverage check:")
     print(f"  Ragger: {total_ragger_test_cases} total test cases from {len(ragger_tests)} parameterized variants")
-    print(f"  Unit tests: {total_unit_test_funcs} test functions generated")
+    print(f"  Unit tests: {expanded_unit_test_count} total test entries "
+          f"({total_unit_test_funcs} generated functions{reject_note})")
+    print(f"  Command breakdown:")
+    for command in _COMMAND_ORDER:
+        ragger_count = ragger_command_counts.get(command, 0)
+        unit_count = unit_command_counts.get(command, 0)
+        delta = unit_count - ragger_count
+        delta_note = f" (Δ {delta:+d})" if delta else ""
+        print(f"    - {_COMMAND_DISPLAY_NAMES[command]}: {ragger_count} Ragger -> {unit_count} unit entries{delta_note}")
+    if skip_counts:
+        skip_total = sum(skip_counts.values())
+        skip_details = ", ".join(f"{name}({count})" for name, count in sorted(skip_counts.items()))
+        print(f"  Ignored {skip_total} pytest cases from auxiliary modules ({skip_details})")
+    if unmapped_counts:
+        unmapped_total = sum(unmapped_counts.values())
+        unmapped_details = ", ".join(f"{name}({count})" for name, count in sorted(unmapped_counts.items()))
+        print(f"  Unmapped pytest modules ({unmapped_total} cases): {unmapped_details}")
+    mismatched_commands = []
+    for command in _COMMAND_ORDER:
+        ragger_count = ragger_command_counts.get(command, 0)
+        unit_count = unit_command_counts.get(command, 0)
+        if ragger_count != unit_count:
+            mismatched_commands.append(
+                f"{_COMMAND_DISPLAY_NAMES[command]} (Ragger {ragger_count}, Unit {unit_count})"
+            )
+    if mismatched_commands:
+        print(f"  ERROR: per-command mismatches detected: {', '.join(mismatched_commands)}")
     print(f"  Found {len(ragger_test_funcs)} unique ragger test functions to cover")
     print(f"  Coverage: {len(covered_coverage)} functions covered, {len(missing_coverage)} missing")
 
@@ -590,6 +373,7 @@ def run_all() -> None:
     generate_derive_native_script_fixtures()
     generate_pubkey_fixtures()
     generate_sign_msg_fixtures()
+    generate_opcert_fixtures()
     _log_stage("Generating test runners")
     generate_tx_test_runners()
     generate_address_derivation_test_runners()
@@ -597,6 +381,7 @@ def run_all() -> None:
     generate_address_derivation_reject_test_runners()
     generate_pubkey_test_runners()
     generate_sign_msg_test_runners()
+    generate_opcert_test_runners()
     _log_stage("Generating reject fixtures")
     generate_tx_reject_fixtures()
     generate_address_derivation_reject_fixtures()
@@ -635,6 +420,7 @@ def main() -> None:
         generate_derive_native_script_fixtures()
         generate_pubkey_fixtures()
         generate_sign_msg_fixtures()
+        generate_opcert_fixtures()
     elif args.command == "generate-test-runners":
         _log_stage("Generating test runners")
         generate_tx_test_runners()
@@ -643,6 +429,7 @@ def main() -> None:
         generate_address_derivation_reject_test_runners()
         generate_pubkey_test_runners()
         generate_sign_msg_test_runners()
+        generate_opcert_test_runners()
         generate_pubkey_reject_fixtures()
         generate_pubkey_reject_test_runners()
     elif args.command == "rejects":

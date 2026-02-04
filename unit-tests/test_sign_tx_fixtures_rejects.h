@@ -18,7 +18,7 @@
 #include <stdbool.h>
 #include "dispatcher.h"  // For P1 constants
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Non-mainnet protocol magic
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Non_mainnet_protocol_magic
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_NON_MAINNET_PROTOCOL_MAGIC[] = {
     {
         .hex_payload =
@@ -37,7 +37,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_NON_MAINNET_PROTOCOL_MA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Invalid network id
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Invalid_network_id
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_INVALID_NETWORK_ID[] = {
     {
         .hex_payload =
@@ -56,7 +56,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_INVALID_NETWORK_ID[] = 
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - too few certificates
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_too_few_certificates
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOO_FEW_CERTIFICATES[] = {
     {
         .hex_payload =
@@ -75,7 +75,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - too few certificates
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_too_few_certificates
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOO_FEW_CERTIFICATES[] = {
     {
         .hex_payload =
@@ -88,7 +88,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - too many certificates
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_too_many_certificates
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOO_MANY_CERTIFICATES[] = {
     {
         .hex_payload =
@@ -120,7 +120,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - too many certificates
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_too_many_certificates
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOO_MANY_CERTIFICATES[] = {
     {
         .hex_payload =
@@ -154,7 +154,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - too many withdrawals
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_too_many_withdrawals
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOO_MANY_WITHDRAWALS[] = {
     {
         .hex_payload =
@@ -183,7 +183,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - too many withdrawals
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_too_many_withdrawals
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOO_MANY_WITHDRAWALS[] = {
     {
         .hex_payload =
@@ -213,7 +213,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - mint included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_mint_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_MINT_INCLUDED[] = {
     {
         .hex_payload =
@@ -243,7 +243,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - mint included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_mint_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_MINT_INCLUDED[] = {
     {
         .hex_payload =
@@ -274,7 +274,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary tx - collateral inputs included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary_tx_collateral_inputs_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_COLLATERAL_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
@@ -294,7 +294,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_COLLATERAL_
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig tx - collateral inputs included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig_tx_collateral_inputs_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_COLLATERAL_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
@@ -308,7 +308,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_COLLATERAL_
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - collateral inputs included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_collateral_inputs_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_COLLATERAL_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
@@ -337,7 +337,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - collateral inputs included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_collateral_inputs_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_COLLATERAL_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
@@ -373,7 +373,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - required signers included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_required_signers_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_REQUIRED_SIGNERS_INCLUDED[] = {
     {
         .hex_payload =
@@ -402,7 +402,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - required signers included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_required_signers_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_REQUIRED_SIGNERS_INCLUDED[] = {
     {
         .hex_payload =
@@ -438,7 +438,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary tx - collateral output included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary_tx_collateral_output_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_COLLATERAL_OUTPUT_INCLUDED[] = {
     {
         .hex_payload =
@@ -459,7 +459,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_COLLATERAL_
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig tx - collateral output included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig_tx_collateral_output_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_COLLATERAL_OUTPUT_INCLUDED[] = {
     {
         .hex_payload =
@@ -474,7 +474,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_COLLATERAL_
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - collateral output included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_collateral_output_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_COLLATERAL_OUTPUT_INCLUDED[] = {
     {
         .hex_payload =
@@ -505,7 +505,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - collateral output included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_collateral_output_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_COLLATERAL_OUTPUT_INCLUDED[] = {
     {
         .hex_payload =
@@ -537,7 +537,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary tx - total collateral included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary_tx_total_collateral_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_TOTAL_COLLATERAL_INCLUDED[] = {
     {
         .hex_payload =
@@ -556,7 +556,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_TOTAL_COLLA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig tx - total collateral included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig_tx_total_collateral_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_TOTAL_COLLATERAL_INCLUDED[] = {
     {
         .hex_payload =
@@ -569,7 +569,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_TOTAL_COLLA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - total collateral included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_total_collateral_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOTAL_COLLATERAL_INCLUDED[] = {
     {
         .hex_payload =
@@ -598,7 +598,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - total collateral included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_total_collateral_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOTAL_COLLATERAL_INCLUDED[] = {
     {
         .hex_payload =
@@ -627,7 +627,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary tx - reference inputs included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary_tx_reference_inputs_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_REFERENCE_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
@@ -647,7 +647,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_REFERENCE_I
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig tx - reference inputs included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig_tx_reference_inputs_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_REFERENCE_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
@@ -661,7 +661,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_REFERENCE_I
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - reference inputs included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_reference_inputs_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_REFERENCE_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
@@ -690,7 +690,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - reference inputs included
+// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_reference_inputs_included
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_REFERENCE_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
@@ -721,7 +721,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward address - key
+// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward_address_key
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_KEY[] = {
     {
         .hex_payload =
@@ -739,7 +739,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_KEY[]
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward address - script
+// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward_address_script
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_SCRIPT[] = {
     {
         .hex_payload =
@@ -758,7 +758,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_SCRIP
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No spending path - Ordinary Tx 1
+// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No_spending_path_Ordinary_Tx_1
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORDINARY_TX_1[] = {
     {
         .hex_payload =
@@ -777,7 +777,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORD
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No spending path - Ordinary Tx 2
+// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No_spending_path_Ordinary_Tx_2
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORDINARY_TX_2[] = {
     {
         .hex_payload =
@@ -796,7 +796,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORD
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool operator - spending choice not path
+// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool_operator_spending_choice_not_path
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OPERATOR_SPENDING_CHOICE_NOT_PATH[] = {
     {
         .hex_payload =
@@ -815,7 +815,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OPERATOR_SPENDI
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Multisig - unconditionally
+// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Multisig_unconditionally
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_MULTISIG_UNCONDITIONALLY[] = {
     {
         .hex_payload =
@@ -828,7 +828,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_MULTISIG_UNCONDITION
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool owner - unconditionally
+// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool_owner_unconditionally
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OWNER_UNCONDITIONALLY[] = {
     {
         .hex_payload =
@@ -842,7 +842,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OWNER_UNCONDITI
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool registration in Ordinary Tx
+// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_registration_in_Ordinary_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -865,7 +865,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_OR
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool registration in Multisig Tx
+// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_registration_in_Multisig_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -882,7 +882,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_MU
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool registration in Plutus Tx
+// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_registration_in_Plutus_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_PLUTUS_TX[] = {
     {
         .hex_payload =
@@ -905,7 +905,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_PL
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool retirement in Multisig Tx
+// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_retirement_in_Multisig_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -919,7 +919,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_MULT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake registration in Pool Registration Operator
+// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_registration_in_Pool_Registration_Operator
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_REGISTRATION_IN_POOL_REGISTRATION_OPERATOR[] = {
     {
         .hex_payload =
@@ -939,7 +939,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_REGISTRATION_IN_P
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake registration in Pool Registration Owner
+// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_registration_in_Pool_Registration_Owner
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_REGISTRATION_IN_POOL_REGISTRATION_OWNER[] = {
     {
         .hex_payload =
@@ -952,7 +952,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_REGISTRATION_IN_P
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake deregistration in Pool Registration Operator
+// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_deregistration_in_Pool_Registration_Operator
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DEREGISTRATION_IN_POOL_REGISTRATION_OPERATOR[] = {
     {
         .hex_payload =
@@ -978,7 +978,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DEREGISTRATION_IN
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake deregistration in Pool Registration Owner
+// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_deregistration_in_Pool_Registration_Owner
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DEREGISTRATION_IN_POOL_REGISTRATION_OWNER[] = {
     {
         .hex_payload =
@@ -997,7 +997,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DEREGISTRATION_IN
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake delegation in Pool Registration Operator
+// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_delegation_in_Pool_Registration_Operator
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DELEGATION_IN_POOL_REGISTRATION_OPERATOR[] = {
     {
         .hex_payload =
@@ -1023,7 +1023,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DELEGATION_IN_POO
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake delegation in Pool Registration Owner
+// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_delegation_in_Pool_Registration_Owner
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DELEGATION_IN_POOL_REGISTRATION_OWNER[] = {
     {
         .hex_payload =
@@ -1042,7 +1042,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DELEGATION_IN_POO
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool retirement in Pool Registration Operator
+// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_retirement_in_Pool_Registration_Operator
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL_REGISTRATION_OPERATOR[] = {
     {
         .hex_payload =
@@ -1068,7 +1068,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool retirement in Pool Registration Owner
+// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_retirement_in_Pool_Registration_Owner
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL_REGISTRATION_OWNER[] = {
     {
         .hex_payload =
@@ -1088,7 +1088,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Script hash in Ordinary Tx
+// Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Script_hash_in_Ordinary_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_SCRIPT_HASH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1108,7 +1108,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_SCRIPT_HASH_IN_
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Non-staking path in Ordinary Tx
+// Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Non_staking_path_in_Ordinary_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_NON_STAKING_PATH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1128,7 +1128,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_NON_STAKING_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Path in Multisig Tx
+// Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Path_in_Multisig_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -1143,7 +1143,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_PATH_IN_MULTISI
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > certificateStakePoolRetirementRejectTestCases > Non-pool cold key in Ordinary Tx
+// Source: tests/standalone/input_files/signTx.py > certificateStakePoolRetirementRejectTestCases > Non_pool_cold_key_in_Ordinary_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIRE_NON_POOL_COLD_KEY_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1170,7 +1170,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIRE_NON_POOL_CO
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Reject tx with invalid canonical ordering of withdrawals
+// Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Reject_tx_with_invalid_canonical_ordering_of_withdrawals
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_REJECT_TX_WITH_INVALID_CANONICAL_ORDERING_OF_WITHDRAWALS[] = {
     {
         .hex_payload =
@@ -1201,7 +1201,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_REJECT_TX_WITH_IN
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Script hash as stake credential in Ordinary Tx
+// Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Script_hash_as_stake_credential_in_Ordinary_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_SCRIPT_HASH_AS_STAKE_CREDENTIAL_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1221,7 +1221,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_SCRIPT_HASH_AS_ST
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Non-staking path as stake credential in Ordinary Tx
+// Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Non_staking_path_as_stake_credential_in_Ordinary_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_NON_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1241,7 +1241,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_NON_STAKING_PATH_
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Staking path as stake credential in Multisig Tx
+// Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Staking_path_as_stake_credential_in_Multisig_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -1255,7 +1255,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_STAKING_PATH_AS_S
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Non-staking path as stake credential in Plutus Tx
+// Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Non_staking_path_as_stake_credential_in_Plutus_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_NON_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_PLUTUS_TX[] = {
     {
         .hex_payload =
@@ -1276,7 +1276,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_NON_STAKING_PATH_
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary account path in Ordinary Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_account_path_in_Ordinary_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PATH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1295,7 +1295,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Ordinary Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Ordinary_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1314,7 +1314,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig spending path in Ordinary Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_spending_path_in_Ordinary_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PATH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1333,7 +1333,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig staking path in Ordinary Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_staking_path_in_Ordinary_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PATH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1352,7 +1352,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint path in Ordinary Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint_path_in_Ordinary_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
@@ -1371,7 +1371,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_ORDINAR
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary account path in Multisig Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_account_path_in_Multisig_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -1390,7 +1390,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Multisig Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Multisig_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -1409,7 +1409,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary spending path in Multisig Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_spending_path_in_Multisig_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_SPENDING_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -1428,7 +1428,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_SPENDING_PA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary staking path in Multisig Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_staking_path_in_Multisig_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_STAKING_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -1447,7 +1447,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_STAKING_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint path in Multisig Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint_path_in_Multisig_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -1466,7 +1466,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_MULTISI
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Pool cold path in Multisig Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Pool_cold_path_in_Multisig_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_POOL_COLD_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
@@ -1485,7 +1485,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_POOL_COLD_PATH_IN_MU
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary account path in Plutus Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_account_path_in_Plutus_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PATH_IN_PLUTUS_TX[] = {
     {
         .hex_payload =
@@ -1504,7 +1504,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Plutus Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Plutus_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_PLUTUS_TX[] = {
     {
         .hex_payload =
@@ -1523,7 +1523,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Pool Registration (Owner) Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Pool_Registration_Owner_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
@@ -1552,7 +1552,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary spending path in Pool Registration (Owner) Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_spending_path_in_Pool_Registration_Owner_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_SPENDING_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
@@ -1581,7 +1581,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_SPENDING_PA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig spending path in Pool Registration (Owner) Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_spending_path_in_Pool_Registration_Owner_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
@@ -1610,7 +1610,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig staking path in Pool Registration (Owner) Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_staking_path_in_Pool_Registration_Owner_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
@@ -1639,7 +1639,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint path in Pool Registration (Owner) Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint_path_in_Pool_Registration_Owner_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
@@ -1668,7 +1668,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_POOL_RE
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Pool cold path in Pool Registration (Owner) Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Pool_cold_path_in_Pool_Registration_Owner_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_POOL_COLD_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
@@ -1697,7 +1697,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_POOL_COLD_PATH_IN_PO
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Pool Registration (Operator) Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Pool_Registration_Operator_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
     {
         .hex_payload =
@@ -1720,7 +1720,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig spending path in Pool Registration (Operator) Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_spending_path_in_Pool_Registration_Operator_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
     {
         .hex_payload =
@@ -1743,7 +1743,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary staking path in Pool Registration (Operator) Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_staking_path_in_Pool_Registration_Operator_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_STAKING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
     {
         .hex_payload =
@@ -1766,7 +1766,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_STAKING_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig staking path in Pool Registration (Operator) Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_staking_path_in_Pool_Registration_Operator_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
     {
         .hex_payload =
@@ -1789,7 +1789,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint path in Pool Registration (Operator) Tx
+// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint_path_in_Pool_Registration_Operator_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
     {
         .hex_payload =
@@ -1813,7 +1813,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_POOL_RE
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input and change output account mismatch
+// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input_and_change_output_account_mismatch
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_CHANGE_OUTPUT_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
@@ -1834,7 +1834,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_CHA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input and stake deregistration certificate account mismatch
+// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input_and_stake_deregistration_certificate_account_mismatch
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_STAKE_DEREGISTRATION_CERTIFICATE_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
@@ -1860,7 +1860,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_STA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input and withdrawal account mismatch
+// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input_and_withdrawal_account_mismatch
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_WITHDRAWAL_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
@@ -1886,7 +1886,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_WIT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Change output and stake deregistration account mismatch
+// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Change_output_and_stake_deregistration_account_mismatch
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_CHANGE_OUTPUT_AND_STAKE_DEREGISTRATION_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
@@ -1914,7 +1914,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_CHANGE_OUTPUT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Change output and withdrawal account mismatch
+// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Change_output_and_withdrawal_account_mismatch
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_CHANGE_OUTPUT_AND_WITHDRAWAL_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
@@ -1942,7 +1942,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_CHANGE_OUTPUT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Stake deregistration certificate and withdrawal account mismatch
+// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Stake_deregistration_certificate_and_withdrawal_account_mismatch
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_STAKE_DEREGISTRATION_CERTIFICATE_AND_WITHDRAWAL_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
@@ -1975,7 +1975,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_STAKE_DEREGIS
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Byron to Shelley transfer input account mismatch
+// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Byron_to_Shelley_transfer_input_account_mismatch
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_BYRON_TO_SHELLEY_TRANSFER_INPUT_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
@@ -2002,7 +2002,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_BYRON_TO_SHEL
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Byron to Shelley transfer output account mismatch
+// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Byron_to_Shelley_transfer_output_account_mismatch
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_BYRON_TO_SHELLEY_TRANSFER_OUTPUT_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
@@ -2022,7 +2022,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_BYRON_TO_SHEL
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral output with datum hash
+// Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral_output_with_datum_hash
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_DATUM_HASH[] = {
     {
         .hex_payload =
@@ -2044,7 +2044,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral output with inline datum
+// Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral_output_with_inline_datum
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_INLINE_DATUM[] = {
     {
         .hex_payload =
@@ -2091,7 +2091,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral output with reference script
+// Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral_output_with_reference_script
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_REFERENCE_SCRIPT[] = {
     {
         .hex_payload =
@@ -2114,7 +2114,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where asset groups are not ordered
+// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_asset_groups_are_not_ordered
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_ASSET_GROUPS_ARE_NOT_ORDERED[] = {
     {
         .hex_payload =
@@ -2136,7 +2136,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_A
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where asset groups are not unique
+// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_asset_groups_are_not_unique
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_ASSET_GROUPS_ARE_NOT_UNIQUE[] = {
     {
         .hex_payload =
@@ -2158,7 +2158,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_A
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where tokens within an asset group are not ordered - alphabetical
+// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_alphabetical
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_ORDERED_ALPHABETICAL[] = {
     {
         .hex_payload =
@@ -2179,7 +2179,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_T
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where tokens within an asset group are not ordered - length
+// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_length
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_ORDERED_LENGTH[] = {
     {
         .hex_payload =
@@ -2200,7 +2200,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_T
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where tokens within an asset group are not unique
+// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_tokens_within_an_asset_group_are_not_unique
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_UNIQUE[] = {
     {
         .hex_payload =
@@ -2221,7 +2221,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_T
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx with mint fields with invalid canonical ordering of policies
+// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_policies
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WITH_MINT_FIELDS_WITH_INVALID_CANONICAL_ORDERING_OF_POLICIES[] = {
     {
         .hex_payload =
@@ -2242,7 +2242,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WITH_MI
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx with mint fields with invalid canonical ordering of asset names
+// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_asset_names
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WITH_MINT_FIELDS_WITH_INVALID_CANONICAL_ORDERING_OF_ASSET_NAMES[] = {
     {
         .hex_payload =
@@ -2262,7 +2262,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WITH_MI
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Different index
+// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Different_index
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_DIFFERENT_INDEX[] = {
     {
         .hex_payload =
@@ -2303,7 +2303,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_DIFFERENT_INDEX[]
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Different prefix
+// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Different_prefix
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_DIFFERENT_PREFIX[] = {
     {
         .hex_payload =
@@ -2344,7 +2344,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_DIFFERENT_PREFIX[
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > No path given
+// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > No_path_given
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NO_PATH_GIVEN[] = {
     {
         .hex_payload =
@@ -2423,7 +2423,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_INVALID_NUMERATOR
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdRejectTestCases > Path sent in for Pool Registration Owner Tx
+// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdRejectTestCases > Path_sent_in_for_Pool_Registration_Owner_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_ID_PATH_SENT_IN_FOR_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
@@ -2461,7 +2461,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_ID_PATH_SENT_IN_FOR_POO
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdRejectTestCases > Hash sent in for Pool Registration Operator Tx
+// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdRejectTestCases > Hash_sent_in_for_Pool_Registration_Operator_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_ID_HASH_SENT_IN_FOR_POOL_REGISTRATION_OPERATOR_TX[] = {
     {
         .hex_payload =
@@ -2529,7 +2529,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NON_STAKING_PATH_
 
 
 
-// Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool registration with multiple path owners
+// Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool_registration_with_multiple_path_owners
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_INVALID_POOL_REGISTRATION_WITH_MULTIPLE_PATH_OWNERS[] = {
     {
         .hex_payload =
@@ -2568,7 +2568,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_INVALID_POOL_REGISTRATI
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool registration with no owners
+// Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool_registration_with_no_owners
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_INVALID_POOL_REGISTRATION_WITH_NO_OWNERS[] = {
     {
         .hex_payload =
@@ -2595,7 +2595,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_INVALID_POOL_REGISTRATI
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool metadata url too long
+// Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool_metadata_url_too_long
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_URL_TOO_LONG[] = {
     {
         .hex_payload =
@@ -2630,7 +2630,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool metadata invalid url
+// Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool_metadata_invalid_url
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_INVALID_URL[] = {
     {
         .hex_payload =
@@ -2661,7 +2661,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool metadata invalid hash length
+// Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool_metadata_invalid_hash_length
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_INVALID_HASH_LENGTH[] = {
     {
         .hex_payload =
@@ -2693,7 +2693,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool metadata missing hash
+// Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool_metadata_missing_hash
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_MISSING_HASH[] = {
     {
         .hex_payload =
@@ -2725,7 +2725,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > invalidRelayTestCases > SingleHostHostname missing dns
+// Source: tests/standalone/input_files/signTx.py > invalidRelayTestCases > SingleHostHostname_missing_dns
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_RELAY_SINGLEHOSTHOSTNAME_MISSING_DNS[] = {
     {
         .hex_payload =
@@ -2757,7 +2757,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_RELAY_SINGLEHOSTHOSTNAME_MIS
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > invalidRelayTestCases > MultiHost missing dns
+// Source: tests/standalone/input_files/signTx.py > invalidRelayTestCases > MultiHost_missing_dns
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_RELAY_MULTIHOST_MISSING_DNS[] = {
     {
         .hex_payload =
@@ -2791,7 +2791,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_RELAY_MULTIHOST_MISSING_DNS[
 
 
 static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Non-mainnet protocol magic
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Non_mainnet_protocol_magic
     {
         .name = "[REJECT_INIT] Non_mainnet_protocol_magic",
         .init_hex =
@@ -2803,7 +2803,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Invalid network id
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Invalid_network_id
     {
         .name = "[REJECT_INIT] Invalid_network_id",
         .init_hex =
@@ -2815,9 +2815,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - too few certificates
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_too_few_certificates
     {
-        .name = "[REJECT_INIT] Pool_registration_(operator)_too_few_certificates",
+        .name = "[REJECT_INIT] Pool_registration_operator_too_few_certificates",
         .init_hex =
         "0000000000000000012D964A0905000100010200000000010100000100000000"
         "0101010000000001010001",
@@ -2827,9 +2827,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - too few certificates
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_too_few_certificates
     {
-        .name = "[REJECT_INIT] Pool_registration_(owner)_too_few_certificates",
+        .name = "[REJECT_INIT] Pool_registration_owner_too_few_certificates",
         .init_hex =
         "0000000000000000012D964A0904000100010200000000010100000100000000"
         "0101010000000001010000",
@@ -2839,9 +2839,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - too many certificates
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_too_many_certificates
     {
-        .name = "[REJECT_INIT] Pool_registration_(operator)_too_many_certificates",
+        .name = "[REJECT_INIT] Pool_registration_operator_too_many_certificates",
         .init_hex =
         "0000000000000000012D964A0905000100010200020000010100000100000000"
         "0101010000000001010001",
@@ -2851,9 +2851,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - too many certificates
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_too_many_certificates
     {
-        .name = "[REJECT_INIT] Pool_registration_(owner)_too_many_certificates",
+        .name = "[REJECT_INIT] Pool_registration_owner_too_many_certificates",
         .init_hex =
         "0000000000000000012D964A0904000100010200020000010100000100000000"
         "0101010000000001010001",
@@ -2863,9 +2863,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - too many withdrawals
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_too_many_withdrawals
     {
-        .name = "[REJECT_INIT] Pool_registration_(operator)_too_many_withdrawals",
+        .name = "[REJECT_INIT] Pool_registration_operator_too_many_withdrawals",
         .init_hex =
         "0000000000000000012D964A0905000100010200010001010100000100000000"
         "0101010000000001010001",
@@ -2875,9 +2875,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - too many withdrawals
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_too_many_withdrawals
     {
-        .name = "[REJECT_INIT] Pool_registration_(owner)_too_many_withdrawals",
+        .name = "[REJECT_INIT] Pool_registration_owner_too_many_withdrawals",
         .init_hex =
         "0000000000000000012D964A0904000100010200010001010100000100000000"
         "0101010000000001010001",
@@ -2887,9 +2887,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - mint included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_mint_included
     {
-        .name = "[REJECT_INIT] Pool_registration_(operator)_mint_included",
+        .name = "[REJECT_INIT] Pool_registration_operator_mint_included",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100010100000000"
         "0101010000000001010001",
@@ -2899,9 +2899,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - mint included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_mint_included
     {
-        .name = "[REJECT_INIT] Pool_registration_(owner)_mint_included",
+        .name = "[REJECT_INIT] Pool_registration_owner_mint_included",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100010100000000"
         "0101010000000001010001",
@@ -2911,7 +2911,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary tx - collateral inputs included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary_tx_collateral_inputs_included
     {
         .name = "[REJECT_INIT] Ordinary_tx_collateral_inputs_included",
         .init_hex =
@@ -2923,7 +2923,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig tx - collateral inputs included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig_tx_collateral_inputs_included
     {
         .name = "[REJECT_INIT] Multisig_tx_collateral_inputs_included",
         .init_hex =
@@ -2935,9 +2935,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - collateral inputs included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_collateral_inputs_included
     {
-        .name = "[REJECT_INIT] Pool_registration_(operator)_collateral_inputs_included",
+        .name = "[REJECT_INIT] Pool_registration_operator_collateral_inputs_included",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100010000"
         "0101010000000001010001",
@@ -2947,9 +2947,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - collateral inputs included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_collateral_inputs_included
     {
-        .name = "[REJECT_INIT] Pool_registration_(owner)_collateral_inputs_included",
+        .name = "[REJECT_INIT] Pool_registration_owner_collateral_inputs_included",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100010000"
         "0101010000000001010002",
@@ -2959,9 +2959,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - required signers included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_required_signers_included
     {
-        .name = "[REJECT_INIT] Pool_registration_(operator)_required_signers_included",
+        .name = "[REJECT_INIT] Pool_registration_operator_required_signers_included",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000001"
         "0101010000000001010001",
@@ -2971,9 +2971,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - required signers included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_required_signers_included
     {
-        .name = "[REJECT_INIT] Pool_registration_(owner)_required_signers_included",
+        .name = "[REJECT_INIT] Pool_registration_owner_required_signers_included",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000001"
         "0101010000000001010002",
@@ -2983,7 +2983,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary tx - collateral output included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary_tx_collateral_output_included
     {
         .name = "[REJECT_INIT] Ordinary_tx_collateral_output_included",
         .init_hex =
@@ -2995,7 +2995,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig tx - collateral output included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig_tx_collateral_output_included
     {
         .name = "[REJECT_INIT] Multisig_tx_collateral_output_included",
         .init_hex =
@@ -3007,9 +3007,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - collateral output included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_collateral_output_included
     {
-        .name = "[REJECT_INIT] Pool_registration_(operator)_collateral_output_included",
+        .name = "[REJECT_INIT] Pool_registration_operator_collateral_output_included",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0102010000000001010001",
@@ -3019,9 +3019,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - collateral output included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_collateral_output_included
     {
-        .name = "[REJECT_INIT] Pool_registration_(owner)_collateral_output_included",
+        .name = "[REJECT_INIT] Pool_registration_owner_collateral_output_included",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0102010000000001010001",
@@ -3031,7 +3031,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary tx - total collateral included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary_tx_total_collateral_included
     {
         .name = "[REJECT_INIT] Ordinary_tx_total_collateral_included",
         .init_hex =
@@ -3043,7 +3043,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig tx - total collateral included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig_tx_total_collateral_included
     {
         .name = "[REJECT_INIT] Multisig_tx_total_collateral_included",
         .init_hex =
@@ -3055,9 +3055,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - total collateral included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_total_collateral_included
     {
-        .name = "[REJECT_INIT] Pool_registration_(operator)_total_collateral_included",
+        .name = "[REJECT_INIT] Pool_registration_operator_total_collateral_included",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101020000000001010001",
@@ -3067,9 +3067,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - total collateral included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_total_collateral_included
     {
-        .name = "[REJECT_INIT] Pool_registration_(owner)_total_collateral_included",
+        .name = "[REJECT_INIT] Pool_registration_owner_total_collateral_included",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101020000000001010001",
@@ -3079,7 +3079,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary tx - reference inputs included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary_tx_reference_inputs_included
     {
         .name = "[REJECT_INIT] Ordinary_tx_reference_inputs_included",
         .init_hex =
@@ -3091,7 +3091,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig tx - reference inputs included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig_tx_reference_inputs_included
     {
         .name = "[REJECT_INIT] Multisig_tx_reference_inputs_included",
         .init_hex =
@@ -3103,9 +3103,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (operator) - reference inputs included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_reference_inputs_included
     {
-        .name = "[REJECT_INIT] Pool_registration_(operator)_reference_inputs_included",
+        .name = "[REJECT_INIT] Pool_registration_operator_reference_inputs_included",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010001000001010001",
@@ -3115,9 +3115,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool registration (owner) - reference inputs included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_reference_inputs_included
     {
-        .name = "[REJECT_INIT] Pool_registration_(owner)_reference_inputs_included",
+        .name = "[REJECT_INIT] Pool_registration_owner_reference_inputs_included",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010001000001010001",
@@ -3127,7 +3127,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward address - key
+    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward_address_key
     {
         .name = "[REJECT_ADDRESS] Reward_address_key",
         .init_hex =
@@ -3139,7 +3139,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward address - script
+    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward_address_script
     {
         .name = "[REJECT_ADDRESS] Reward_address_script",
         .init_hex =
@@ -3151,7 +3151,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No spending path - Ordinary Tx 1
+    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No_spending_path_Ordinary_Tx_1
     {
         .name = "[REJECT_ADDRESS] No_spending_path_Ordinary_Tx_1",
         .init_hex =
@@ -3163,7 +3163,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No spending path - Ordinary Tx 2
+    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No_spending_path_Ordinary_Tx_2
     {
         .name = "[REJECT_ADDRESS] No_spending_path_Ordinary_Tx_2",
         .init_hex =
@@ -3175,7 +3175,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool operator - spending choice not path
+    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool_operator_spending_choice_not_path
     {
         .name = "[REJECT_ADDRESS] Pool_operator_spending_choice_not_path",
         .init_hex =
@@ -3187,7 +3187,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Multisig - unconditionally
+    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Multisig_unconditionally
     {
         .name = "[REJECT_ADDRESS] Multisig_unconditionally",
         .init_hex =
@@ -3199,7 +3199,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool owner - unconditionally
+    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool_owner_unconditionally
     {
         .name = "[REJECT_ADDRESS] Pool_owner_unconditionally",
         .init_hex =
@@ -3211,7 +3211,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool registration in Ordinary Tx
+    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_registration_in_Ordinary_Tx
     {
         .name = "[REJECT_CERT] Pool_registration_in_Ordinary_Tx",
         .init_hex =
@@ -3223,7 +3223,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool registration in Multisig Tx
+    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_registration_in_Multisig_Tx
     {
         .name = "[REJECT_CERT] Pool_registration_in_Multisig_Tx",
         .init_hex =
@@ -3235,7 +3235,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool registration in Plutus Tx
+    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_registration_in_Plutus_Tx
     {
         .name = "[REJECT_CERT] Pool_registration_in_Plutus_Tx",
         .init_hex =
@@ -3247,7 +3247,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool retirement in Multisig Tx
+    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_retirement_in_Multisig_Tx
     {
         .name = "[REJECT_CERT] Pool_retirement_in_Multisig_Tx",
         .init_hex =
@@ -3259,7 +3259,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake registration in Pool Registration Operator
+    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_registration_in_Pool_Registration_Operator
     {
         .name = "[REJECT_CERT] Stake_registration_in_Pool_Registration_Operator",
         .init_hex =
@@ -3271,7 +3271,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake registration in Pool Registration Owner
+    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_registration_in_Pool_Registration_Owner
     {
         .name = "[REJECT_CERT] Stake_registration_in_Pool_Registration_Owner",
         .init_hex =
@@ -3283,7 +3283,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake deregistration in Pool Registration Operator
+    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_deregistration_in_Pool_Registration_Operator
     {
         .name = "[REJECT_CERT] Stake_deregistration_in_Pool_Registration_Operator",
         .init_hex =
@@ -3295,7 +3295,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake deregistration in Pool Registration Owner
+    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_deregistration_in_Pool_Registration_Owner
     {
         .name = "[REJECT_CERT] Stake_deregistration_in_Pool_Registration_Owner",
         .init_hex =
@@ -3307,7 +3307,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake delegation in Pool Registration Operator
+    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_delegation_in_Pool_Registration_Operator
     {
         .name = "[REJECT_CERT] Stake_delegation_in_Pool_Registration_Operator",
         .init_hex =
@@ -3319,7 +3319,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake delegation in Pool Registration Owner
+    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_delegation_in_Pool_Registration_Owner
     {
         .name = "[REJECT_CERT] Stake_delegation_in_Pool_Registration_Owner",
         .init_hex =
@@ -3331,7 +3331,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool retirement in Pool Registration Operator
+    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_retirement_in_Pool_Registration_Operator
     {
         .name = "[REJECT_CERT] Pool_retirement_in_Pool_Registration_Operator",
         .init_hex =
@@ -3343,7 +3343,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool retirement in Pool Registration Owner
+    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_retirement_in_Pool_Registration_Owner
     {
         .name = "[REJECT_CERT] Pool_retirement_in_Pool_Registration_Owner",
         .init_hex =
@@ -3355,7 +3355,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Script hash in Ordinary Tx
+    // Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Script_hash_in_Ordinary_Tx
     {
         .name = "[REJECT_CERT_STAKING] Script_hash_in_Ordinary_Tx",
         .init_hex =
@@ -3367,7 +3367,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Non-staking path in Ordinary Tx
+    // Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Non_staking_path_in_Ordinary_Tx
     {
         .name = "[REJECT_CERT_STAKING] Non_staking_path_in_Ordinary_Tx",
         .init_hex =
@@ -3379,7 +3379,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Path in Multisig Tx
+    // Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Path_in_Multisig_Tx
     {
         .name = "[REJECT_CERT_STAKING] Path_in_Multisig_Tx",
         .init_hex =
@@ -3391,7 +3391,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateStakePoolRetirementRejectTestCases > Non-pool cold key in Ordinary Tx
+    // Source: tests/standalone/input_files/signTx.py > certificateStakePoolRetirementRejectTestCases > Non_pool_cold_key_in_Ordinary_Tx
     {
         .name = "[REJECT_CERT_POOL_RETIRE] Non_pool_cold_key_in_Ordinary_Tx",
         .init_hex =
@@ -3403,7 +3403,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Reject tx with invalid canonical ordering of withdrawals
+    // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Reject_tx_with_invalid_canonical_ordering_of_withdrawals
     {
         .name = "[REJECT_WITHDRAWAL] Reject_tx_with_invalid_canonical_ordering_of_withdrawals",
         .init_hex =
@@ -3415,7 +3415,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Script hash as stake credential in Ordinary Tx
+    // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Script_hash_as_stake_credential_in_Ordinary_Tx
     {
         .name = "[REJECT_WITHDRAWAL] Script_hash_as_stake_credential_in_Ordinary_Tx",
         .init_hex =
@@ -3427,7 +3427,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Non-staking path as stake credential in Ordinary Tx
+    // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Non_staking_path_as_stake_credential_in_Ordinary_Tx
     {
         .name = "[REJECT_WITHDRAWAL] Non_staking_path_as_stake_credential_in_Ordinary_Tx",
         .init_hex =
@@ -3439,7 +3439,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Staking path as stake credential in Multisig Tx
+    // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Staking_path_as_stake_credential_in_Multisig_Tx
     {
         .name = "[REJECT_WITHDRAWAL] Staking_path_as_stake_credential_in_Multisig_Tx",
         .init_hex =
@@ -3451,7 +3451,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Non-staking path as stake credential in Plutus Tx
+    // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Non_staking_path_as_stake_credential_in_Plutus_Tx
     {
         .name = "[REJECT_WITHDRAWAL] Non_staking_path_as_stake_credential_in_Plutus_Tx",
         .init_hex =
@@ -3463,7 +3463,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary account path in Ordinary Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_account_path_in_Ordinary_Tx
     {
         .name = "[REJECT_WITNESS] Ordinary_account_path_in_Ordinary_Tx",
         .init_hex =
@@ -3475,7 +3475,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Ordinary Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Ordinary_Tx
     {
         .name = "[REJECT_WITNESS] Multisig_account_path_in_Ordinary_Tx",
         .init_hex =
@@ -3487,7 +3487,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig spending path in Ordinary Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_spending_path_in_Ordinary_Tx
     {
         .name = "[REJECT_WITNESS] Multisig_spending_path_in_Ordinary_Tx",
         .init_hex =
@@ -3499,7 +3499,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig staking path in Ordinary Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_staking_path_in_Ordinary_Tx
     {
         .name = "[REJECT_WITNESS] Multisig_staking_path_in_Ordinary_Tx",
         .init_hex =
@@ -3511,7 +3511,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint path in Ordinary Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint_path_in_Ordinary_Tx
     {
         .name = "[REJECT_WITNESS] Mint_path_in_Ordinary_Tx",
         .init_hex =
@@ -3523,7 +3523,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary account path in Multisig Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_account_path_in_Multisig_Tx
     {
         .name = "[REJECT_WITNESS] Ordinary_account_path_in_Multisig_Tx",
         .init_hex =
@@ -3535,7 +3535,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Multisig Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Multisig_Tx
     {
         .name = "[REJECT_WITNESS] Multisig_account_path_in_Multisig_Tx",
         .init_hex =
@@ -3547,7 +3547,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary spending path in Multisig Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_spending_path_in_Multisig_Tx
     {
         .name = "[REJECT_WITNESS] Ordinary_spending_path_in_Multisig_Tx",
         .init_hex =
@@ -3559,7 +3559,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary staking path in Multisig Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_staking_path_in_Multisig_Tx
     {
         .name = "[REJECT_WITNESS] Ordinary_staking_path_in_Multisig_Tx",
         .init_hex =
@@ -3571,7 +3571,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint path in Multisig Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint_path_in_Multisig_Tx
     {
         .name = "[REJECT_WITNESS] Mint_path_in_Multisig_Tx",
         .init_hex =
@@ -3583,7 +3583,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Pool cold path in Multisig Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Pool_cold_path_in_Multisig_Tx
     {
         .name = "[REJECT_WITNESS] Pool_cold_path_in_Multisig_Tx",
         .init_hex =
@@ -3595,7 +3595,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary account path in Plutus Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_account_path_in_Plutus_Tx
     {
         .name = "[REJECT_WITNESS] Ordinary_account_path_in_Plutus_Tx",
         .init_hex =
@@ -3607,7 +3607,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Plutus Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Plutus_Tx
     {
         .name = "[REJECT_WITNESS] Multisig_account_path_in_Plutus_Tx",
         .init_hex =
@@ -3619,9 +3619,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Pool Registration (Owner) Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Pool_Registration_Owner_Tx
     {
-        .name = "[REJECT_WITNESS] Multisig_account_path_in_Pool_Registration_(Owner)_Tx",
+        .name = "[REJECT_WITNESS] Multisig_account_path_in_Pool_Registration_Owner_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3631,9 +3631,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary spending path in Pool Registration (Owner) Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_spending_path_in_Pool_Registration_Owner_Tx
     {
-        .name = "[REJECT_WITNESS] Ordinary_spending_path_in_Pool_Registration_(Owner)_Tx",
+        .name = "[REJECT_WITNESS] Ordinary_spending_path_in_Pool_Registration_Owner_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3643,9 +3643,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig spending path in Pool Registration (Owner) Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_spending_path_in_Pool_Registration_Owner_Tx
     {
-        .name = "[REJECT_WITNESS] Multisig_spending_path_in_Pool_Registration_(Owner)_Tx",
+        .name = "[REJECT_WITNESS] Multisig_spending_path_in_Pool_Registration_Owner_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3655,9 +3655,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig staking path in Pool Registration (Owner) Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_staking_path_in_Pool_Registration_Owner_Tx
     {
-        .name = "[REJECT_WITNESS] Multisig_staking_path_in_Pool_Registration_(Owner)_Tx",
+        .name = "[REJECT_WITNESS] Multisig_staking_path_in_Pool_Registration_Owner_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3667,9 +3667,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint path in Pool Registration (Owner) Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint_path_in_Pool_Registration_Owner_Tx
     {
-        .name = "[REJECT_WITNESS] Mint_path_in_Pool_Registration_(Owner)_Tx",
+        .name = "[REJECT_WITNESS] Mint_path_in_Pool_Registration_Owner_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3679,9 +3679,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Pool cold path in Pool Registration (Owner) Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Pool_cold_path_in_Pool_Registration_Owner_Tx
     {
-        .name = "[REJECT_WITNESS] Pool_cold_path_in_Pool_Registration_(Owner)_Tx",
+        .name = "[REJECT_WITNESS] Pool_cold_path_in_Pool_Registration_Owner_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3691,9 +3691,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig account path in Pool Registration (Operator) Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Pool_Registration_Operator_Tx
     {
-        .name = "[REJECT_WITNESS] Multisig_account_path_in_Pool_Registration_(Operator)_Tx",
+        .name = "[REJECT_WITNESS] Multisig_account_path_in_Pool_Registration_Operator_Tx",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3703,9 +3703,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig spending path in Pool Registration (Operator) Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_spending_path_in_Pool_Registration_Operator_Tx
     {
-        .name = "[REJECT_WITNESS] Multisig_spending_path_in_Pool_Registration_(Operator)_Tx",
+        .name = "[REJECT_WITNESS] Multisig_spending_path_in_Pool_Registration_Operator_Tx",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3715,9 +3715,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary staking path in Pool Registration (Operator) Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_staking_path_in_Pool_Registration_Operator_Tx
     {
-        .name = "[REJECT_WITNESS] Ordinary_staking_path_in_Pool_Registration_(Operator)_Tx",
+        .name = "[REJECT_WITNESS] Ordinary_staking_path_in_Pool_Registration_Operator_Tx",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3727,9 +3727,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig staking path in Pool Registration (Operator) Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_staking_path_in_Pool_Registration_Operator_Tx
     {
-        .name = "[REJECT_WITNESS] Multisig_staking_path_in_Pool_Registration_(Operator)_Tx",
+        .name = "[REJECT_WITNESS] Multisig_staking_path_in_Pool_Registration_Operator_Tx",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3739,9 +3739,9 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint path in Pool Registration (Operator) Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint_path_in_Pool_Registration_Operator_Tx
     {
-        .name = "[REJECT_WITNESS] Mint_path_in_Pool_Registration_(Operator)_Tx",
+        .name = "[REJECT_WITNESS] Mint_path_in_Pool_Registration_Operator_Tx",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010000000001010001",
@@ -3751,7 +3751,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input and change output account mismatch
+    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input_and_change_output_account_mismatch
     {
         .name = "[REJECT_SINGLE_ACCOUNT] Input_and_change_output_account_mismatch",
         .init_hex =
@@ -3763,7 +3763,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input and stake deregistration certificate account mismatch
+    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input_and_stake_deregistration_certificate_account_mismatch
     {
         .name = "[REJECT_SINGLE_ACCOUNT] Input_and_stake_deregistration_certificate_account_mismatch",
         .init_hex =
@@ -3775,7 +3775,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input and withdrawal account mismatch
+    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input_and_withdrawal_account_mismatch
     {
         .name = "[REJECT_SINGLE_ACCOUNT] Input_and_withdrawal_account_mismatch",
         .init_hex =
@@ -3787,7 +3787,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Change output and stake deregistration account mismatch
+    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Change_output_and_stake_deregistration_account_mismatch
     {
         .name = "[REJECT_SINGLE_ACCOUNT] Change_output_and_stake_deregistration_account_mismatch",
         .init_hex =
@@ -3799,7 +3799,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Change output and withdrawal account mismatch
+    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Change_output_and_withdrawal_account_mismatch
     {
         .name = "[REJECT_SINGLE_ACCOUNT] Change_output_and_withdrawal_account_mismatch",
         .init_hex =
@@ -3811,7 +3811,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Stake deregistration certificate and withdrawal account mismatch
+    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Stake_deregistration_certificate_and_withdrawal_account_mismatch
     {
         .name = "[REJECT_SINGLE_ACCOUNT] Stake_deregistration_certificate_and_withdrawal_account_mismatch",
         .init_hex =
@@ -3823,7 +3823,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Byron to Shelley transfer input account mismatch
+    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Byron_to_Shelley_transfer_input_account_mismatch
     {
         .name = "[REJECT_SINGLE_ACCOUNT] Byron_to_Shelley_transfer_input_account_mismatch",
         .init_hex =
@@ -3835,7 +3835,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Byron to Shelley transfer output account mismatch
+    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Byron_to_Shelley_transfer_output_account_mismatch
     {
         .name = "[REJECT_SINGLE_ACCOUNT] Byron_to_Shelley_transfer_output_account_mismatch",
         .init_hex =
@@ -3847,7 +3847,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral output with datum hash
+    // Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral_output_with_datum_hash
     {
         .name = "[REJECT_COLLATERAL_OUTPUT] Collateral_output_with_datum_hash",
         .init_hex =
@@ -3859,7 +3859,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral output with inline datum
+    // Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral_output_with_inline_datum
     {
         .name = "[REJECT_COLLATERAL_OUTPUT] Collateral_output_with_inline_datum",
         .init_hex =
@@ -3871,7 +3871,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral output with reference script
+    // Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral_output_with_reference_script
     {
         .name = "[REJECT_COLLATERAL_OUTPUT] Collateral_output_with_reference_script",
         .init_hex =
@@ -3883,7 +3883,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where asset groups are not ordered
+    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_asset_groups_are_not_ordered
     {
         .name = "[REJECT_MULTIASSET] Reject_tx_where_asset_groups_are_not_ordered",
         .init_hex =
@@ -3895,7 +3895,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where asset groups are not unique
+    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_asset_groups_are_not_unique
     {
         .name = "[REJECT_MULTIASSET] Reject_tx_where_asset_groups_are_not_unique",
         .init_hex =
@@ -3907,7 +3907,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where tokens within an asset group are not ordered - alphabetical
+    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_alphabetical
     {
         .name = "[REJECT_MULTIASSET] Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_alphabetical",
         .init_hex =
@@ -3919,7 +3919,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where tokens within an asset group are not ordered - length
+    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_length
     {
         .name = "[REJECT_MULTIASSET] Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_length",
         .init_hex =
@@ -3931,7 +3931,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx where tokens within an asset group are not unique
+    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_tokens_within_an_asset_group_are_not_unique
     {
         .name = "[REJECT_MULTIASSET] Reject_tx_where_tokens_within_an_asset_group_are_not_unique",
         .init_hex =
@@ -3943,7 +3943,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx with mint fields with invalid canonical ordering of policies
+    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_policies
     {
         .name = "[REJECT_MULTIASSET] Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_policies",
         .init_hex =
@@ -3955,7 +3955,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject tx with mint fields with invalid canonical ordering of asset names
+    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_asset_names
     {
         .name = "[REJECT_MULTIASSET] Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_asset_names",
         .init_hex =
@@ -3967,7 +3967,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Different index
+    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Different_index
     {
         .name = "[REJECT_POOL_OWNER] Different_index",
         .init_hex =
@@ -3979,7 +3979,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Different prefix
+    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Different_prefix
     {
         .name = "[REJECT_POOL_OWNER] Different_prefix",
         .init_hex =
@@ -3991,7 +3991,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > No path given
+    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > No_path_given
     {
         .name = "[REJECT_POOL_OWNER] No_path_given",
         .init_hex =
@@ -4015,7 +4015,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdRejectTestCases > Path sent in for Pool Registration Owner Tx
+    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdRejectTestCases > Path_sent_in_for_Pool_Registration_Owner_Tx
     {
         .name = "[REJECT_POOL_ID] Path_sent_in_for_Pool_Registration_Owner_Tx",
         .init_hex =
@@ -4027,7 +4027,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdRejectTestCases > Hash sent in for Pool Registration Operator Tx
+    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdRejectTestCases > Hash_sent_in_for_Pool_Registration_Operator_Tx
     {
         .name = "[REJECT_POOL_ID] Hash_sent_in_for_Pool_Registration_Operator_Tx",
         .init_hex =
@@ -4051,7 +4051,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool registration with multiple path owners
+    // Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool_registration_with_multiple_path_owners
     {
         .name = "[REJECT_CERT_INVALID] pool_registration_with_multiple_path_owners",
         .init_hex =
@@ -4063,7 +4063,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool registration with no owners
+    // Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool_registration_with_no_owners
     {
         .name = "[REJECT_CERT_INVALID] pool_registration_with_no_owners",
         .init_hex =
@@ -4075,7 +4075,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool metadata url too long
+    // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool_metadata_url_too_long
     {
         .name = "[REJECT_POOL_METADATA] pool_metadata_url_too_long",
         .init_hex =
@@ -4087,7 +4087,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool metadata invalid url
+    // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool_metadata_invalid_url
     {
         .name = "[REJECT_POOL_METADATA] pool_metadata_invalid_url",
         .init_hex =
@@ -4099,7 +4099,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool metadata invalid hash length
+    // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool_metadata_invalid_hash_length
     {
         .name = "[REJECT_POOL_METADATA] pool_metadata_invalid_hash_length",
         .init_hex =
@@ -4111,7 +4111,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool metadata missing hash
+    // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool_metadata_missing_hash
     {
         .name = "[REJECT_POOL_METADATA] pool_metadata_missing_hash",
         .init_hex =
@@ -4123,7 +4123,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > invalidRelayTestCases > SingleHostHostname missing dns
+    // Source: tests/standalone/input_files/signTx.py > invalidRelayTestCases > SingleHostHostname_missing_dns
     {
         .name = "[REJECT_RELAY] SingleHostHostname_missing_dns",
         .init_hex =
@@ -4135,7 +4135,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > invalidRelayTestCases > MultiHost missing dns
+    // Source: tests/standalone/input_files/signTx.py > invalidRelayTestCases > MultiHost_missing_dns
     {
         .name = "[REJECT_RELAY] MultiHost_missing_dns",
         .init_hex =

@@ -95,6 +95,17 @@ __noinline_due_to_stack__ void signMsg_handle_init(buffer_t *cdata) {
     ctx->isAscii = (isAscii_byte != 0);
     TRACE("Is ASCII = %d", ctx->isAscii);
 
+    // Non-hashed payload must fit into a single displayable chunk
+    if (!ctx->hashPayload) {
+        const uint32_t max_first_chunk_size = ctx->isAscii ? MAX_CIP8_MSG_FIRST_CHUNK_ASCII_SIZE
+                                                           : MAX_CIP8_MSG_FIRST_CHUNK_HEX_SIZE;
+        if (ctx->msgLength > max_first_chunk_size) {
+            TRACE("Non-hashed payload too large: %u > %u", ctx->msgLength, max_first_chunk_size);
+            send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+            return;
+        }
+    }
+
     uint8_t addressFieldType_byte;
     if (!buffer_read_u8(cdata, &addressFieldType_byte)) {
         TRACE("Failed to read addressFieldType");
@@ -298,31 +309,20 @@ static void _prepareAddressField(sign_msg_ctx_t *ctx) {
 }
 
 // Helper: create CBOR-encoded protected header
-__noinline_due_to_stack__ static size_t _createProtectedHeader(sign_msg_ctx_t *ctx,
+static size_t _createProtectedHeader(sign_msg_ctx_t *ctx,
                                                                 uint8_t *protectedHeaderBuffer,
                                                                 size_t maxSize) {
     // protectedHeader = {
     //     1 : -8,                         // set algorithm to EdDSA
     //     "address" : address_bytes       // raw address or key hash
     // }
-    uint8_t *p = protectedHeaderBuffer;
-    uint8_t *end = protectedHeaderBuffer + maxSize;
-
-    size_t written;
+    write_buffer_t buffer = buffer_init_write(protectedHeaderBuffer, maxSize);
 
     // Map with 2 entries
-    if (!cbor_writeToken(CBOR_TYPE_MAP, 2, p, end - p, &written)) {
-        LEDGER_ASSERT(false, "CBOR write failed");
-    }
-    p += written;
-    LEDGER_ASSERT(p < end, "Buffer overflow");
+    LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_MAP, 2), "CBOR write failed");
 
     // Key: 1 (unsigned)
-    if (!cbor_writeToken(CBOR_TYPE_UNSIGNED, 1, p, end - p, &written)) {
-        LEDGER_ASSERT(false, "CBOR write failed");
-    }
-    p += written;
-    LEDGER_ASSERT(p < end, "Buffer overflow");
+    LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_UNSIGNED, 1), "CBOR write failed");
 
     // Value: -8 (algorithm EdDSA)
     // cbor_writeToken expects the actual negative value, not the CBOR-encoded form
@@ -330,43 +330,35 @@ __noinline_due_to_stack__ static size_t _createProtectedHeader(sign_msg_ctx_t *c
     uint64_t negValueAsU64;
     STATIC_ASSERT(SIZEOF(negValue) == SIZEOF(negValueAsU64), "size mismatch");
     memmove(&negValueAsU64, &negValue, SIZEOF(negValue));
-    if (!cbor_writeToken(CBOR_TYPE_NEGATIVE, negValueAsU64, p, end - p, &written)) {
-        LEDGER_ASSERT(false, "CBOR write failed");
-    }
-    p += written;
-    LEDGER_ASSERT(p < end, "Buffer overflow");
+    LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_NEGATIVE, negValueAsU64),
+                  "CBOR write failed");
 
     // Key: "address" (text string)
     const char *address_key = "address";
     const size_t address_key_len = strlen(address_key);
-    if (!cbor_writeToken(CBOR_TYPE_TEXT, address_key_len, p, end - p, &written)) {
-        LEDGER_ASSERT(false, "CBOR write failed");
-    }
-    p += written;
-    LEDGER_ASSERT(p + address_key_len < end, "Buffer overflow");
-    memmove(p, address_key, address_key_len);
-    p += address_key_len;
+    LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_TEXT, address_key_len),
+                  "CBOR write failed");
+    LEDGER_ASSERT(buffer_write_bytes(&buffer, (const uint8_t *) address_key, address_key_len),
+                  "Buffer overflow");
 
     // Value: address bytes
     _prepareAddressField(ctx);
     LEDGER_ASSERT(ctx->addressFieldSize > 0, "Address field not prepared");
 
-    if (!cbor_writeToken(CBOR_TYPE_BYTES, ctx->addressFieldSize, p, end - p, &written)) {
-        LEDGER_ASSERT(false, "CBOR write failed");
-    }
-    p += written;
-    LEDGER_ASSERT(p + ctx->addressFieldSize < end, "Buffer overflow");
-    memmove(p, ctx->addressField, ctx->addressFieldSize);
-    p += ctx->addressFieldSize;
+    LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_BYTES, ctx->addressFieldSize),
+                  "CBOR write failed");
+    LEDGER_ASSERT(buffer_write_bytes(&buffer, ctx->addressField, ctx->addressFieldSize),
+                  "Buffer overflow");
 
-    const size_t protectedHeaderSize = p - protectedHeaderBuffer;
-    LEDGER_ASSERT(protectedHeaderSize > 0 && protectedHeaderSize < maxSize, "Invalid header size");
+    const size_t protectedHeaderSize = buffer_written_size(&buffer);
+    LEDGER_ASSERT(protectedHeaderSize > 0 && protectedHeaderSize <= maxSize,
+                  "Invalid header size");
 
     return protectedHeaderSize;
 }
 
 // Helper: build Sig_structure and sign it
-__noinline_due_to_stack__ static void _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
+static void _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
     // Sig_structure = [
     //     context : "Signature1",
     //     body_protected : CBOR_encode(protectedHeader),
@@ -376,45 +368,33 @@ __noinline_due_to_stack__ static void _buildAndSignSigStructure(sign_msg_ctx_t *
 
     uint8_t sigStructure[400];
     explicit_bzero(sigStructure, SIZEOF(sigStructure));
-    uint8_t *p = sigStructure;
-    uint8_t *end = sigStructure + SIZEOF(sigStructure);
-    size_t written;
+    write_buffer_t buffer = buffer_init_write(sigStructure, SIZEOF(sigStructure));
 
     // Array with 4 elements
-    if (!cbor_writeToken(CBOR_TYPE_ARRAY, 4, p, end - p, &written)) {
-        LEDGER_ASSERT(false, "CBOR write failed");
-    }
-    p += written;
+    LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_ARRAY, 4), "CBOR write failed");
 
     // Element 1: "Signature1" (text string)
     const char *context = "Signature1";
     const size_t context_len = strlen(context);
-    if (!cbor_writeToken(CBOR_TYPE_TEXT, context_len, p, end - p, &written)) {
-        LEDGER_ASSERT(false, "CBOR write failed");
-    }
-    p += written;
-    LEDGER_ASSERT(p + context_len < end, "Buffer overflow");
-    memmove(p, context, context_len);
-    p += context_len;
+    LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_TEXT, context_len),
+                  "CBOR write failed");
+    LEDGER_ASSERT(buffer_write_bytes(&buffer, (const uint8_t *) context, context_len),
+                  "Buffer overflow");
 
     // Element 2: CBOR-encoded protectedHeader (as bytes)
-    uint8_t protectedHeaderBuffer[100];
+    // CBOR overhead: map/keys/alg token + "address" text + bstr length header.
+    // Allocate MAX_ADDRESS_LENGTH plus a conservative fixed overhead for CBOR tokens.
+    uint8_t protectedHeaderBuffer[MAX_ADDRESS_LENGTH + 32];
     const size_t protectedHeaderSize =
         _createProtectedHeader(ctx, protectedHeaderBuffer, SIZEOF(protectedHeaderBuffer));
 
-    if (!cbor_writeToken(CBOR_TYPE_BYTES, protectedHeaderSize, p, end - p, &written)) {
-        LEDGER_ASSERT(false, "CBOR write failed");
-    }
-    p += written;
-    LEDGER_ASSERT(p + protectedHeaderSize < end, "Buffer overflow");
-    memmove(p, protectedHeaderBuffer, protectedHeaderSize);
-    p += protectedHeaderSize;
+    LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_BYTES, protectedHeaderSize),
+                  "CBOR write failed");
+    LEDGER_ASSERT(buffer_write_bytes(&buffer, protectedHeaderBuffer, protectedHeaderSize),
+                  "Buffer overflow");
 
     // Element 3: empty external_aad (empty byte string)
-    if (!cbor_writeToken(CBOR_TYPE_BYTES, 0, p, end - p, &written)) {
-        LEDGER_ASSERT(false, "CBOR write failed");
-    }
-    p += written;
+    LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_BYTES, 0), "CBOR write failed");
 
     // Element 4: payload (message hash or raw message)
     // Finalize hash first
@@ -423,26 +403,20 @@ __noinline_due_to_stack__ static void _buildAndSignSigStructure(sign_msg_ctx_t *
 
     if (ctx->hashPayload) {
         // Payload is the hash
-        if (!cbor_writeToken(CBOR_TYPE_BYTES, SIZEOF(ctx->msgHash), p, end - p, &written)) {
-            LEDGER_ASSERT(false, "CBOR write failed");
-        }
-        p += written;
-        LEDGER_ASSERT(p + SIZEOF(ctx->msgHash) < end, "Buffer overflow");
-        memmove(p, ctx->msgHash, SIZEOF(ctx->msgHash));
-        p += SIZEOF(ctx->msgHash);
+        LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_BYTES, SIZEOF(ctx->msgHash)),
+                      "CBOR write failed");
+        LEDGER_ASSERT(buffer_write_bytes(&buffer, ctx->msgHash, SIZEOF(ctx->msgHash)),
+                      "Buffer overflow");
     } else {
         // Payload is the raw message (stored in chunk from previous APDU)
         LEDGER_ASSERT(ctx->receivedChunks == 1, "Non-hashed payload must be single chunk");
-        if (!cbor_writeToken(CBOR_TYPE_BYTES, ctx->chunkSize, p, end - p, &written)) {
-            LEDGER_ASSERT(false, "CBOR write failed");
-        }
-        p += written;
-        LEDGER_ASSERT(p + ctx->chunkSize < end, "Buffer overflow");
-        memmove(p, ctx->chunk, ctx->chunkSize);
-        p += ctx->chunkSize;
+        LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_BYTES, ctx->chunkSize),
+                      "CBOR write failed");
+        LEDGER_ASSERT(buffer_write_bytes(&buffer, ctx->chunk, ctx->chunkSize),
+                      "Buffer overflow");
     }
 
-    const size_t sigStructureSize = p - sigStructure;
+    const size_t sigStructureSize = buffer_written_size(&buffer);
     TRACE("Sig_structure size = %u", sigStructureSize);
     TRACE_BUFFER(sigStructure, sigStructureSize);
 
@@ -527,6 +501,11 @@ void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
     switch (p1) {
         case P1_SIGN_MSG_INIT: {
             TRACE("P1_SIGN_MSG_INIT");
+            if (G_context.state.sign_msg_state != SIGN_MSG_STAGE_NONE) {
+                TRACE("Rejecting INIT in stage %d", G_context.state.sign_msg_state);
+                send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+                return;
+            }
             G_context.state.sign_msg_state = SIGN_MSG_STAGE_INIT;
             signMsg_handle_init(cdata);
             break;

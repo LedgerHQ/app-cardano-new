@@ -400,7 +400,7 @@ class Certificate:
     ]
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Transaction:
     network: NetworkDesc
     inputs: List[TxInput]
@@ -430,12 +430,13 @@ class Witness:
     witnessSignatureHex: Optional[str] = None
 
 
-@dataclass
+@dataclass(kw_only=True)
 class SignTxTestCase:
     name: str
-    tx: Transaction
-    signingMode: TransactionSigningMode
-    txBody: str
+    ledgerjs_name: Optional[str] = None
+    tx: Optional[Transaction] = None
+    signingMode: Optional[TransactionSigningMode] = None
+    txBody: Optional[str] = None
     options: bool = False
     additionalWitnessPaths: List[str] = field(default_factory=list)
     expected_sw: Optional[StatusWord] = StatusWord.SWO_SUCCESS
@@ -443,6 +444,7 @@ class SignTxTestCase:
     has_aux_warning: bool = False  # Warnings in auxiliary data (CVote) review
     # TODO: Debug navigation
     nano_skip: Optional[bool] = False
+    works_in_ragger: bool = True  # Whether this test works in ragger (seed-dependent tests may not)
 
 
 # pylint: disable=line-too-long
@@ -511,57 +513,66 @@ destinations: dict[str, TxOutputDestination] = {
     "internalBaseWithStakingPath": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
-            "",
-            Mainnet,
-            AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
-            "m/1852'/1815'/0'/0/0",
-            "m/1852'/1815'/0'/2/0",
+            name="",
+            ledgerjs_name=None,
+            netDesc=Mainnet,
+            addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
+            spendingValue="m/1852'/1815'/0'/0/0",
+            stakingValue="m/1852'/1815'/0'/2/0",
         ),
     ),
     "internalBaseWithStakingKeyHash": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
-            "",
-            Mainnet,
-            AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
-            "m/1852'/1815'/0'/0/0",
-            "122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
+            name="",
+            ledgerjs_name=None,
+            netDesc=Mainnet,
+            addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
+            spendingValue="m/1852'/1815'/0'/0/0",
+            stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
         ),
     ),
     "internalEnterprise": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
-            "", Mainnet, AddressType.ENTERPRISE_KEY, "m/1852'/1815'/0'/0/0"
+            name="",
+            ledgerjs_name=None,
+            netDesc=Mainnet,
+            addrType=AddressType.ENTERPRISE_KEY,
+            spendingValue="m/1852'/1815'/0'/0/0"
         ),
     ),
     "internalPointer": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
-            "",
-            Mainnet,
-            AddressType.POINTER_KEY,
-            "m/1852'/1815'/0'/0/0",
-            pointer_to_str(1, 2, 3),
+            name="",
+            ledgerjs_name=None,
+            netDesc=Mainnet,
+            addrType=AddressType.POINTER_KEY,
+            spendingValue="m/1852'/1815'/0'/0/0",
+            stakingValue=pointer_to_str(1, 2, 3),
         ),
     ),
     "internalBaseWithStakingPathNonReasonable": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
-            "",
-            Mainnet,
-            AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
-            "m/1852'/1815'/456'/0/5000000",
-            "m/1852'/1815'/456'/2/0",
+            name="",
+            ledgerjs_name=None,
+            netDesc=Mainnet,
+            addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
+            spendingValue="m/1852'/1815'/456'/0/5000000",
+            stakingValue="m/1852'/1815'/456'/2/0",
         ),
     ),
     "internalBaseWithStakingPathMap": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
-            "",
-            Mainnet,
-            AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
-            "m/1852'/1815'/0'/0/0",
-            "m/1852'/1815'/0'/2/0",
+            name="",
+            ledgerjs_name=None,
+            netDesc=Mainnet,
+            addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
+            spendingValue="m/1852'/1815'/0'/0/0",
+            stakingValue="m/1852'/1815'/0'/2/0",
         ),
     ),
     "externalShelleyBaseKeyhashKeyhash": TxOutputDestination(
@@ -602,73 +613,89 @@ destinations: dict[str, TxOutputDestination] = {
     "paymentScriptPath": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
-            "", Mainnet, AddressType.REWARD_KEY, "", "m/1852'/1815'/0'/2/0"
+            name="",
+            ledgerjs_name=None,
+            netDesc=Mainnet,
+            addrType=AddressType.REWARD_KEY,
+            spendingValue="",
+            stakingValue="m/1852'/1815'/0'/2/0",
         ),
     ),
     "paymentScriptHash": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
-            "",
-            Mainnet,
-            AddressType.REWARD_SCRIPT,
-            "",
-            "122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
+            name="",
+            ledgerjs_name=None,
+            netDesc=Mainnet,
+            addrType=AddressType.REWARD_SCRIPT,
+            spendingValue="",
+            stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
         ),
     ),
     "paymentKeyPath": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
-            "", Mainnet, AddressType.REWARD_KEY, "", "m/1852'/1815'/0'/2/0"
+            name="",
+            ledgerjs_name=None,
+            netDesc=Mainnet,
+            addrType=AddressType.REWARD_KEY,
+            spendingValue="",
+            stakingValue="m/1852'/1815'/0'/2/0",
         ),
     ),
     "reject1": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
-            "",
-            Mainnet,
-            AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,
-            "29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd",
-            "122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
+            name="",
+            ledgerjs_name=None,
+            netDesc=Mainnet,
+            addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,
+            spendingValue="29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd",
+            stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
         ),
     ),
     "reject2": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
-            "",
-            Mainnet,
-            AddressType.BASE_PAYMENT_SCRIPT_STAKE_SCRIPT,
-            "29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd",
-            "122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
+            name="",
+            ledgerjs_name=None,
+            netDesc=Mainnet,
+            addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_SCRIPT,
+            spendingValue="29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd",
+            stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
         ),
     ),
     "reject3": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
-            "",
-            Mainnet,
-            AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,
-            "29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd",
-            "m/1852'/1815'/456'/2/0",
+            name="",
+            ledgerjs_name=None,
+            netDesc=Mainnet,
+            addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,
+            spendingValue="29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd",
+            stakingValue="m/1852'/1815'/456'/2/0",
         ),
     ),
     "reject4": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
-            "",
-            Mainnet,
-            AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
-            "m/1852'/1815'/1'/0/0",
-            "m/1852'/1815'/0'/2/0",
+            name="",
+            ledgerjs_name=None,
+            netDesc=Mainnet,
+            addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
+            spendingValue="m/1852'/1815'/1'/0/0",
+            stakingValue="m/1852'/1815'/0'/2/0",
         ),
     ),
     "reject5": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
-            "",
-            Mainnet,
-            AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
-            "m/1852'/1815'/1'/0/0",
-            "m/1852'/1815'/1'/2/0",
+            name="",
+            ledgerjs_name=None,
+            netDesc=Mainnet,
+            addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
+            spendingValue="m/1852'/1815'/1'/0/0",
+            stakingValue="m/1852'/1815'/1'/2/0",
         ),
     ),
 }
@@ -1660,139 +1687,151 @@ certificates: dict[str, Certificate] = {
 # =================
 testsByron: List[SignTxTestCase] = [
     SignTxTestCase(
-        "Sign_tx_with_thirdparty_Byron_mainnet_output",
-        Transaction(
-            Mainnet, [inputs["utxoByron"]], [outputs["externalByronMainnet"]], 42, 10
+        name="Sign_tx_with_thirdparty_Byron_mainnet_output",
+        ledgerjs_name="Sign tx with third-party Byron mainnet output",
+        tx=Transaction(
+            network=Mainnet, inputs=[inputs["utxoByron"]], outputs=[outputs["externalByronMainnet"]], fee=42, ttl=10
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a",
     ),
     SignTxTestCase(
-        "Sign_tx_with_thirdparty_Byron_Daedalus_mainnet_output",
-        Transaction(
-            Mainnet,
-            [inputs["utxoByron"]],
-            [outputs["externalByronDaedalusMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_thirdparty_Byron_Daedalus_mainnet_output",
+        ledgerjs_name="Sign tx with third-party Byron Daedalus mainnet output",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoByron"]],
+            outputs=[outputs["externalByronDaedalusMainnet"]],
+            fee=42,
+            ttl=10,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018182584c82d818584283581cd2348b8ef7b8a6d1c922efa499c669b151eeef99e4ce3521e88223f8a101581e581cf281e648a89015a9861bd9e992414d1145ddaf80690be53235b0e2e5001a199834651a002dd2e802182a030a",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018182584c82d818584283581cd2348b8ef7b8a6d1c922efa499c669b151eeef99e4ce3521e88223f8a101581e581cf281e648a89015a9861bd9e992414d1145ddaf80690be53235b0e2e5001a199834651a002dd2e802182a030a",
     ),
     SignTxTestCase(
-        "Sign_tx_with_thirdparty_Byron_testnet_output",
-        Transaction(
-            Testnet, [inputs["utxoByron"]], [outputs["externalByronTestnet"]], 42, 10
+        name="Sign_tx_with_thirdparty_Byron_testnet_output",
+        ledgerjs_name="Sign tx with third-party Byron testnet output",
+        tx=Transaction(
+            network=Testnet, inputs=[inputs["utxoByron"]], outputs=[outputs["externalByronTestnet"]], fee=42, ttl=10
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018182582f82d818582583581c709bfb5d9733cbdd72f520cd2c8b9f8f942da5e6cd0b6994e1803b0aa10242182a001aef14e76d1a002dd2e802182a030a",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018182582f82d818582583581c709bfb5d9733cbdd72f520cd2c8b9f8f942da5e6cd0b6994e1803b0aa10242182a001aef14e76d1a002dd2e802182a030a",
         has_warning=True,
     ),
 ]
 
 testsShelleyNoCertificates: List[SignTxTestCase] = [
     SignTxTestCase(
-        "Sign_tx_without_outputs",
-        Transaction(Mainnet, [inputs["utxoShelley"]], [], 42, 10),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a",
+        name="Sign_tx_without_outputs",
+        ledgerjs_name="Sign tx without outputs",
+        tx=Transaction(network=Mainnet, inputs=[inputs["utxoShelley"]], outputs=[], fee=42, ttl=10),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a",
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_258_tag_on_inputs",
-        Transaction(Mainnet, [inputs["utxoShelley"]], [], 42, 10),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400d90102818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a",
+        name="Sign_tx_with_258_tag_on_inputs",
+        ledgerjs_name="Sign tx with 258 tag on inputs",
+        tx=Transaction(network=Mainnet, inputs=[inputs["utxoShelley"]], outputs=[], fee=42, ttl=10),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400d90102818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a",
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_without_change_address",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalShelleyBaseKeyhashKeyhash"]],
-            42,
-            10,
+        name="Sign_tx_without_change_address",
+        ledgerjs_name="Sign tx without change address",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            fee=42,
+            ttl=10,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a",
     ),
     SignTxTestCase(
-        "Sign_tx_with_change_base_address_with_staking_path",
-        Transaction(
-            Mainnet,
-            [inputs["utxoByron"]],
-            [outputs["externalByronMainnet"], outputs["internalBaseWithStakingPath"]],
-            42,
-            10,
+        name="Sign_tx_with_change_base_address_with_staking_path",
+        ledgerjs_name="Sign tx with change base address with staking path",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoByron"]],
+            outputs=[outputs["externalByronMainnet"], outputs["internalBaseWithStakingPath"]],
+            fee=42,
+            ttl=10,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e88258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e88258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a",
     ),
     SignTxTestCase(
-        "Sign_tx_with_change_base_address_with_staking_key_hash",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [
+        name="Sign_tx_with_change_base_address_with_staking_key_hash",
+        ledgerjs_name="Sign tx with change base address with staking key hash",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[
                 outputs["externalByronMainnet"],
                 outputs["internalBaseWithStakingKeyHash"],
             ],
-            42,
-            10,
+            fee=42,
+            ttl=10,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e88258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f1124122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42771a006ca79302182a030a",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e88258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f1124122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42771a006ca79302182a030a",
     ),
     SignTxTestCase(
-        "Sign_tx_with_enterprise_change_address",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"], outputs["internalEnterprise"]],
-            42,
-            10,
+        name="Sign_tx_with_enterprise_change_address",
+        ledgerjs_name="Sign tx with enterprise change address",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"], outputs["internalEnterprise"]],
+            fee=42,
+            ttl=10,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e882581d6114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241a006ca79302182a030a",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e882581d6114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241a006ca79302182a030a",
         nano_skip=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_pointer_change_address",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"], outputs["internalPointer"]],
-            42,
-            10,
+        name="Sign_tx_with_pointer_change_address",
+        ledgerjs_name="Sign tx with pointer change address",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"], outputs["internalPointer"]],
+            fee=42,
+            ttl=10,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e88258204114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11240102031a006ca79302182a030a",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e88258204114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11240102031a006ca79302182a030a",
     ),
     SignTxTestCase(
-        "Sign_tx_with_nonreasonable_account_and_address",
-        Transaction(
-            Mainnet,
-            [inputs["utxoNonReasonable"]],
-            [outputs["internalBaseWithStakingPathNonReasonable"]],
-            42,
-            10,
+        name="Sign_tx_with_nonreasonable_account_and_address",
+        ledgerjs_name="Sign tx with non-reasonable account and address",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoNonReasonable"]],
+            outputs=[outputs["internalBaseWithStakingPathNonReasonable"]],
+            fee=42,
+            ttl=10,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.ARBITRARY_HASH,
                 TxAuxiliaryDataHash(f"{'deadbeef' * 8}"),
             ),
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182583901f90b0dfcace47bf03e88f7469a2f4fb3a7918461aa4765bfaf55f0dae260546c20562e598fb761f419dad27edcd49f4ee4f0540b8e40d4d51a006ca79302182a030a075820deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182583901f90b0dfcace47bf03e88f7469a2f4fb3a7918461aa4765bfaf55f0dae260546c20562e598fb761f419dad27edcd49f4ee4f0540b8e40d4d51a006ca79302182a030a075820deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
     ),
     SignTxTestCase(
-        "Sign_tx_with_path_based_withdrawal",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_path_based_withdrawal",
+        ledgerjs_name="Sign tx with path based withdrawal",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             withdrawals=[
                 Withdrawal(
                     CredentialParams(
@@ -1802,36 +1841,38 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
                 )
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a05a1581de11d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c186f",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a05a1581de11d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c186f",
     ),
     SignTxTestCase(
-        "Sign_tx_with_auxiliary_data_hash",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_auxiliary_data_hash",
+        ledgerjs_name="Sign tx with auxiliary data hash",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.ARBITRARY_HASH,
                 TxAuxiliaryDataHash(f"{'deadbeef' * 8}"),
             ),
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a075820deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a075820deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
     ),
 ]
 
 testsShelleyWithCertificates: List[SignTxTestCase] = [
     SignTxTestCase(
-        "Sign_tx_with_a_stake_registration_path_certificate_preConway",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_a_stake_registration_path_certificate_preConway",
+        ledgerjs_name="Sign tx with a stake registration path certificate --- pre-Conway",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 Certificate(
                     CertificateType.STAKE_REGISTRATION,
@@ -1843,17 +1884,17 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
                 )
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048182008200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048182008200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c",
     ),
     SignTxTestCase(
-        "Sign_tx_with_a_stake_deregistration_path_certificate_preConway",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_a_stake_deregistration_path_certificate_preConway",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DEREGISTRATION,
@@ -1865,17 +1906,17 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
                 )
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048182018200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048182018200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c",
     ),
     SignTxTestCase(
-        "Sign_tx_with_a_stake_delegation_path_certificate",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_a_stake_delegation_path_certificate",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DELEGATION,
@@ -1888,17 +1929,17 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
                 )
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048183028200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb4973",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048183028200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb4973",
     ),
     SignTxTestCase(
-        "Sign_tx_and_filter_out_witnesses_with_duplicate_paths",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_and_filter_out_witnesses_with_duplicate_paths",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DEREGISTRATION,
@@ -1918,17 +1959,17 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048282018200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c82018200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048282018200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c82018200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c",
     ),
     SignTxTestCase(
-        "Sign_tx_with_pool_retirement_combined_with_stake_registration",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_pool_retirement_combined_with_stake_registration",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 Certificate(
                     CertificateType.STAKE_POOL_RETIREMENT,
@@ -1949,17 +1990,17 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a04828304581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b70a82008200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a04828304581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b70a82008200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c",
     ),
     SignTxTestCase(
-        "Sign_tx_with_pool_retirement_combined_with_stake_deregistration",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_pool_retirement_combined_with_stake_deregistration",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 Certificate(
                     CertificateType.STAKE_POOL_RETIREMENT,
@@ -1980,20 +2021,20 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a04828304581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b70a82018200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a04828304581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b70a82018200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c",
     ),
 ]
 
 testsConwayWithCertificates: List[SignTxTestCase] = [
     SignTxTestCase(
-        "Sign_tx_with_a_stake_registration_path_certificate_Conway",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_a_stake_registration_path_certificate_Conway",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 Certificate(
                     CertificateType.STAKE_REGISTRATION_CONWAY,
@@ -2006,17 +2047,17 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 )
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048183078200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c11",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048183078200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c11",
     ),
     SignTxTestCase(
-        "Sign_tx_with_a_stake_deregistration_path_certificate_Conway",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_a_stake_deregistration_path_certificate_Conway",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DEREGISTRATION_CONWAY,
@@ -2029,17 +2070,17 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 )
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048183088200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c11",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048183088200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c11",
     ),
     SignTxTestCase(
-        "Sign_tx_with_vote_delegation_certificates",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_vote_delegation_certificates",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 Certificate(
                     CertificateType.VOTE_DELEGATION,
@@ -2094,18 +2135,18 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048583098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a183098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c883098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c883098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c810283098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8103",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048583098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a183098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c883098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c883098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c810283098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8103",
         has_warning=False,
     ),
     SignTxTestCase(
-        "Sign_tx_with_AUTHORIZE_COMMITTEE_HOT_certificates",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_AUTHORIZE_COMMITTEE_HOT_certificates",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 Certificate(
                     CertificateType.AUTHORIZE_COMMITTEE_HOT,
@@ -2144,17 +2185,17 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0483830e8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba68200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c48839092830e8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba68200581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8830e8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba68201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0483830e8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba68200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c48839092830e8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba68200581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8830e8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba68201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8",
     ),
     SignTxTestCase(
-        "Sign_tx_with_RESIGN_COMMITTEE_COLD_certificates",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_RESIGN_COMMITTEE_COLD_certificates",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 Certificate(
                     CertificateType.RESIGN_COMMITTEE_COLD,
@@ -2178,17 +2219,17 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0482830f8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba6827880787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787858201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef830f8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba6f6",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0482830f8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba6827880787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787858201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef830f8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba6f6",
     ),
     SignTxTestCase(
-        "Sign_tx_with_DREP_REGISTRATION_certificates",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_DREP_REGISTRATION_certificates",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 Certificate(
                     CertificateType.DREP_REGISTRATION,
@@ -2214,18 +2255,18 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048284108200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11382727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef84108200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a113f6",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048284108200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11382727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef84108200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a113f6",
         nano_skip=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_DREP_DEREGISTRATION_certificate",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_DREP_DEREGISTRATION_certificate",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 Certificate(
                     CertificateType.DREP_DEREGISTRATION,
@@ -2238,18 +2279,18 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 )
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048183118200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a113",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048183118200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a113",
         nano_skip=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_DREP_UPDATE_certificates",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_DREP_UPDATE_certificates",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 Certificate(
                     CertificateType.DREP_UPDATE,
@@ -2273,34 +2314,34 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048283128200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a182727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef83128200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1f6",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048283128200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a182727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef83128200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1f6",
     ),
 ]
 
 testsMultisig: List[SignTxTestCase] = [
     SignTxTestCase(
-        "Sign_tx_without_change_address_with_Shelley_scripthash_output",
-        Transaction(
-            Testnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalShelleyBaseScripthashKeyhash"]],
-            42,
-            10,
+        name="Sign_tx_without_change_address_with_Shelley_scripthash_output",
+        tx=Transaction(
+            network=Testnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalShelleyBaseScripthashKeyhash"]],
+            fee=42,
+            ttl=10,
         ),
-        TransactionSigningMode.MULTISIG_TRANSACTION,
-        "a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e0102182a030a",
+        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e0102182a030a",
         additionalWitnessPaths=["m/1854'/1815'/0'/0/0"],
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_script_based_withdrawal",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_script_based_withdrawal",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             withdrawals=[
                 Withdrawal(
                     CredentialParams(
@@ -2311,18 +2352,18 @@ testsMultisig: List[SignTxTestCase] = [
                 )
             ],
         ),
-        TransactionSigningMode.MULTISIG_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a05a1581df1122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277186f",
+        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a05a1581df1122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277186f",
         additionalWitnessPaths=["m/1854'/1815'/0'/2/0"],
     ),
     SignTxTestCase(
-        "Sign_tx_with_a_stake_registration_script_certificate",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_a_stake_registration_script_certificate",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 Certificate(
                     CertificateType.STAKE_REGISTRATION,
@@ -2335,18 +2376,18 @@ testsMultisig: List[SignTxTestCase] = [
                 )
             ],
         ),
-        TransactionSigningMode.MULTISIG_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048182008201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
+        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048182008201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
         additionalWitnessPaths=["m/1854'/1815'/0'/2/0"],
     ),
     SignTxTestCase(
-        "Sign_tx_with_a_stake_delegation_script_certificate",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_a_stake_delegation_script_certificate",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DELEGATION,
@@ -2360,18 +2401,18 @@ testsMultisig: List[SignTxTestCase] = [
                 )
             ],
         ),
-        TransactionSigningMode.MULTISIG_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048183028201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb4973",
+        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048183028201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb4973",
         additionalWitnessPaths=["m/1854'/1815'/0'/2/0"],
     ),
     SignTxTestCase(
-        "Sign_tx_with_a_stake_deregistration_script_certificate",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_a_stake_deregistration_script_certificate",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DEREGISTRATION,
@@ -2384,163 +2425,163 @@ testsMultisig: List[SignTxTestCase] = [
                 )
             ],
         ),
-        TransactionSigningMode.MULTISIG_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048182018201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
+        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048182018201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
         additionalWitnessPaths=["m/1854'/1815'/0'/2/0"],
     ),
 ]
 
 testsAllegra: List[SignTxTestCase] = [
     SignTxTestCase(
-        "Sign_tx_with_no_ttl_and_no_validity_interval_start",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalShelleyBaseKeyhashKeyhash"]],
-            42,
+        name="Sign_tx_with_no_ttl_and_no_validity_interval_start",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            fee=42,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a300818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a300818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a",
     ),
     SignTxTestCase(
-        "Sign_tx_with_no_ttl_but_with_validity_interval_start",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalShelleyBaseKeyhashKeyhash"]],
-            42,
+        name="Sign_tx_with_no_ttl_but_with_validity_interval_start",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            fee=42,
             validityIntervalStart=47,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a08182f",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a08182f",
     ),
 ]
 
 testsMary: List[SignTxTestCase] = [
     SignTxTestCase(
-        "Sign_tx_with_a_multiasset_output",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["multiassetOneToken"], outputs["internalBaseWithStakingPath"]],
-            42,
-            10,
+        name="Sign_tx_with_a_multiasset_output",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["multiassetOneToken"], outputs["internalBaseWithStakingPath"]],
+            fee=42,
+            ttl=10,
             validityIntervalStart=7,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821904d2a1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1a007838628258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a0807",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821904d2a1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1a007838628258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a0807",
     ),
     SignTxTestCase(
-        "Sign_tx_with_a_complex_multiasset_output",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["multiassetManyTokens"], outputs["internalBaseWithStakingPath"]],
-            42,
-            10,
+        name="Sign_tx_with_a_complex_multiasset_output",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["multiassetManyTokens"], outputs["internalBaseWithStakingPath"]],
+            fee=42,
+            ttl=10,
             validityIntervalStart=7,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821904d2a2581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a34003581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209015820000000000000000000000000000000000000000000000000000000000000000002581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a248456c204e69c3b16f1904d24874652474436f696e1a007838628258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a0807",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821904d2a2581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a34003581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209015820000000000000000000000000000000000000000000000000000000000000000002581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a248456c204e69c3b16f1904d24874652474436f696e1a007838628258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a0807",
     ),
     SignTxTestCase(
-        "Sign_tx_with_big_numbers",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["multiassetBigNumber"]],
-            24103998870869519,
-            24103998870869519,
+        name="Sign_tx_with_big_numbers",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["multiassetBigNumber"]],
+            fee=24103998870869519,
+            ttl=24103998870869519,
             validityIntervalStart=24103998870869519,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821b0055a275925d560fa1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1b0055a275925d560f021b0055a275925d560f031b0055a275925d560f081b0055a275925d560f",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821b0055a275925d560fa1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1b0055a275925d560f021b0055a275925d560f031b0055a275925d560f081b0055a275925d560f",
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_a_multiasset_change_output",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalShelleyBaseKeyhashKeyhash"], outputs["multiassetChange"]],
-            42,
-            10,
+        name="Sign_tx_with_a_multiasset_change_output",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"], outputs["multiassetChange"]],
+            fee=42,
+            ttl=10,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000182825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09018258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c821904d2a1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1a0078386202182a030a",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000182825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09018258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c821904d2a1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1a0078386202182a030a",
     ),
     SignTxTestCase(
-        "Sign_tx_with_zero_fee_TTL_and_validity_interval_start",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["internalBaseWithStakingPath"]],
-            0,
-            0,
+        name="Sign_tx_with_zero_fee_TTL_and_validity_interval_start",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            fee=0,
+            ttl=0,
             validityIntervalStart=0,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca793020003000800",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca793020003000800",
     ),
     SignTxTestCase(
-        "Sign_tx_with_output_with_decimal_places",
-        Transaction(
-            Mainnet, [inputs["utxoShelley"]], [outputs["multiassetDecimalPlaces"]], 33
+        name="Sign_tx_with_output_with_decimal_places",
+        tx=Transaction(
+            network=Mainnet, inputs=[inputs["utxoShelley"]], outputs=[outputs["multiassetDecimalPlaces"]], fee=33
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a300818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821904d2a2581c6954264b15bc92d6d592febeac84f14645e1ed46ca5ebb9acdb5c15fa14553545249501a0034bf15581caf2e27f580f7f08e93190a81f72462f153026d06450924726645891ba244445249501904d24cffffffffffffffffffffffff1904d2021821",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a300818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821904d2a2581c6954264b15bc92d6d592febeac84f14645e1ed46ca5ebb9acdb5c15fa14553545249501a0034bf15581caf2e27f580f7f08e93190a81f72462f153026d06450924726645891ba244445249501904d24cffffffffffffffffffffffff1904d2021821",
     ),
     SignTxTestCase(
-        "Sign_tx_with_mint_fields_with_various_amounts",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [],
-            42,
-            10,
+        name="Sign_tx_with_mint_fields_with_various_amounts",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[],
+            fee=42,
+            ttl=10,
             mint=mints["mintAmountVariety"],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a09a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a44000581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a09a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a44000581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff",
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_mint_with_decimal_places",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalShelleyBaseKeyhashKeyhash"]],
-            33,
+        name="Sign_tx_with_mint_with_decimal_places",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            fee=33,
             mint=mints["mintWithDecimalPlaces"],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182109a2581c6954264b15bc92d6d592febeac84f14645e1ed46ca5ebb9acdb5c15fa14553545249503a0034bf14581caf2e27f580f7f08e93190a81f72462f153026d06450924726645891ba244445249501904d24cffffffffffffffffffffffff1904d2",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182109a2581c6954264b15bc92d6d592febeac84f14645e1ed46ca5ebb9acdb5c15fa14553545249503a0034bf14581caf2e27f580f7f08e93190a81f72462f153026d06450924726645891ba244445249501904d24cffffffffffffffffffffffff1904d2",
     ),
     SignTxTestCase(
-        "Sign_tx_with_mint_fields_among_other_fields",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["multiassetOneToken"], outputs["internalBaseWithStakingPath"]],
-            10,
-            1000,
+        name="Sign_tx_with_mint_fields_among_other_fields",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["multiassetOneToken"], outputs["internalBaseWithStakingPath"]],
+            fee=10,
+            ttl=1000,
             validityIntervalStart=100,
             mint=mints["mintAmountVariety"],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821904d2a1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1a007838628258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca793020a031903e808186409a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a44000581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821904d2a1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1a007838628258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca793020a031903e808186409a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a44000581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff",
     ),
 ]
 
 testsAlonzoTrezorComparison: List[SignTxTestCase] = [
     SignTxTestCase(
-        "Sign_tx_Full_test_for_trezor_feature_parity",
-        Transaction(
-            Mainnet,
-            [inputs["utxoMultisig"]],
-            [outputs["trezorParity1"], outputs["trezorParityDatumHash1"]],
-            42,
-            10,
+        name="Sign_tx_Full_test_for_trezor_feature_parity",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["trezorParity1"], outputs["trezorParityDatumHash1"]],
+            fee=42,
+            ttl=10,
             validityIntervalStart=47,
             certificates=[
                 Certificate(
@@ -2591,21 +2632,21 @@ testsAlonzoTrezorComparison: List[SignTxTestCase] = [
             ),
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         ),
-        TransactionSigningMode.MULTISIG_TRANSACTION,
-        "ab00818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821a001e8480a1581c0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425a14874657374436f696e1a0078386283581d71477e52b3116b62fe8cd34a312615f5fcd678c94e1d6cdb86c1a3964c0158203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b702182a030a048382008201581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd82018201581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd83028201581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb497305a1581df129fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd1903e807582058ec01578fcdfdc376f09631a7b2adc608eaf57e3720484c7ff37c13cff90fdf08182f09a1581c0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425a24874657374436f696e1a007838624875657374436f696e3a007838610b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70f01",
+        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        txBody="ab00818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821a001e8480a1581c0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425a14874657374436f696e1a0078386283581d71477e52b3116b62fe8cd34a312615f5fcd678c94e1d6cdb86c1a3964c0158203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b702182a030a048382008201581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd82018201581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd83028201581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb497305a1581df129fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd1903e807582058ec01578fcdfdc376f09631a7b2adc608eaf57e3720484c7ff37c13cff90fdf08182f09a1581c0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425a24874657374436f696e1a007838624875657374436f696e3a007838610b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70f01",
         additionalWitnessPaths=["m/1854'/1815'/0'/0/0", "m/1854'/1815'/0'/2/0"],
     ),
 ]
 
 testsBabbageTrezorComparison: List[SignTxTestCase] = [
     SignTxTestCase(
-        "Sign_tx_Full_test_for_trezor_feature_parity_Babbage_elements_Plutus",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["trezorParity2"], outputs["trezorParityDatumHash2"]],
-            42,
-            10,
+        name="Sign_tx_Full_test_for_trezor_feature_parity_Babbage_elements_Plutus",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["trezorParity2"], outputs["trezorParityDatumHash2"]],
+            fee=42,
+            ttl=10,
             validityIntervalStart=47,
             includeNetworkId=True,
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
@@ -2614,34 +2655,34 @@ testsBabbageTrezorComparison: List[SignTxTestCase] = [
             totalCollateral=10,
             referenceInputs=[inputs["utxoShelley"]],
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "ab00818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000182825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09821a001e8480a1581c0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425a14874657374436f696e1a0078386283581d71477e52b3116b62fe8cd34a312615f5fcd678c94e1d6cdb86c1a3964c0158203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b702182a030a08182f0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000f0110825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b0901110a12818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="ab00818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000182825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09821a001e8480a1581c0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425a14874657374436f696e1a0078386283581d71477e52b3116b62fe8cd34a312615f5fcd678c94e1d6cdb86c1a3964c0158203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b702182a030a08182f0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000f0110825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b0901110a12818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700",
     ),
     SignTxTestCase(
-        "Sign_tx_Full_test_for_trezor_feature_parity_Babbage_elements_ordinary",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["trezorParityBabbageOutputs"]],
-            42,
-            10,
+        name="Sign_tx_Full_test_for_trezor_feature_parity_Babbage_elements_ordinary",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["trezorParityBabbageOutputs"]],
+            fee=42,
+            ttl=10,
             validityIntervalStart=47,
             includeNetworkId=True,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a400581d71477e52b3116b62fe8cd34a312615f5fcd678c94e1d6cdb86c1a3964c0101028201d818565579657420616e6f746865722063686f636f6c61746503d81858390080f9e2c88e6c817008f3a812ed889b4a4da8e0bd103f86e7335422aa122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b427702182a030a08182f0f01",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a400581d71477e52b3116b62fe8cd34a312615f5fcd678c94e1d6cdb86c1a3964c0101028201d818565579657420616e6f746865722063686f636f6c61746503d81858390080f9e2c88e6c817008f3a812ed889b4a4da8e0bd103f86e7335422aa122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b427702182a030a08182f0f01",
     ),
 ]
 
 testsMultidelegation: List[SignTxTestCase] = [
     SignTxTestCase(
-        "Sign_tx_with_multidelegation_keys_in_all_tx_elements",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley2"]],
-            [outputs["trezorParity1"], outputs["trezorParityDatumHash1"]],
-            42,
-            10,
+        name="Sign_tx_with_multidelegation_keys_in_all_tx_elements",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley2"]],
+            outputs=[outputs["trezorParity1"], outputs["trezorParityDatumHash1"]],
+            fee=42,
+            ttl=10,
             validityIntervalStart=47,
             certificates=[
                 Certificate(
@@ -2684,54 +2725,54 @@ testsMultidelegation: List[SignTxTestCase] = [
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             includeNetworkId=True,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "aa00818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821a001e8480a1581c0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425a14874657374436f696e1a0078386283581d71477e52b3116b62fe8cd34a312615f5fcd678c94e1d6cdb86c1a3964c0158203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b702182a030a048382008200581cee6d266f2b60add5a249a3754f91cf1f423ac94c6cd964b3814f21a382018200581cee6d266f2b60add5a249a3754f91cf1f423ac94c6cd964b3814f21a383028200581cee6d266f2b60add5a249a3754f91cf1f423ac94c6cd964b3814f21a3581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb497305a1581de198acedf1c6b691f963d928147f66697c7cda3899e30c613037a4e9901903e808182f0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70e81581c86df572e0e28bec8ca8066e9d8c3681b4ac86c43c57cd52eb06ae8640f01",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="aa00818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821a001e8480a1581c0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425a14874657374436f696e1a0078386283581d71477e52b3116b62fe8cd34a312615f5fcd678c94e1d6cdb86c1a3964c0158203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b702182a030a048382008200581cee6d266f2b60add5a249a3754f91cf1f423ac94c6cd964b3814f21a382018200581cee6d266f2b60add5a249a3754f91cf1f423ac94c6cd964b3814f21a383028200581cee6d266f2b60add5a249a3754f91cf1f423ac94c6cd964b3814f21a3581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb497305a1581de198acedf1c6b691f963d928147f66697c7cda3899e30c613037a4e9901903e808182f0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70e81581c86df572e0e28bec8ca8066e9d8c3681b4ac86c43c57cd52eb06ae8640f01",
         additionalWitnessPaths=["m/1852'/1815'/0'/0/0", "m/1852'/1815'/0'/2/5"],
     ),
 ]
 
 testsConwayWithoutCertificates: List[SignTxTestCase] = [
     SignTxTestCase(
-        "Sign_tx_with_treasury",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_treasury",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             treasury=27,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a15181b",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a15181b",
         has_warning=False,
     ),
     SignTxTestCase(
-        "Sign_tx_with_donation",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_donation",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             donation=28,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a16181c",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a16181c",
         has_warning=False,
     ),
     SignTxTestCase(
-        "Sign_tx_with_treasury_and_donation",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_treasury_and_donation",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             treasury=27,
             donation=28,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a15181b16181c",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a15181b16181c",
         has_warning=False,
     ),
 ]
@@ -2775,64 +2816,64 @@ vote3_unique = Vote(
 
 testsConwayVotingProcedures: List[SignTxTestCase] = [
     SignTxTestCase(
-        "Sign_tx_with_voting_procedures_COMMITTEE_KEY_PATH_voter",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_voting_procedures_COMMITTEE_KEY_PATH_voter",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             votingProcedures=[
                 VoterVotes(
                     Voter(VoterType.COMMITTEE_KEY_PATH, "m/1852'/1815'/0'/5/0"), [vote1]
                 )
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c48839092a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c48839092a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef",
     ),
     SignTxTestCase(
-        "Sign_tx_with_voting_procedures_DREP_KEY_PATH_voter",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_voting_procedures_DREP_KEY_PATH_voter",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             votingProcedures=[
                 VoterVotes(
                     Voter(VoterType.DREP_KEY_PATH, "m/1852'/1815'/0'/3/0"), [vote2]
                 )
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18202581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038200f6",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18202581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038200f6",
     ),
     SignTxTestCase(
-        "Sign_tx_with_voting_procedures_STAKE_POOL_KEY_PATH_voter",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_voting_procedures_STAKE_POOL_KEY_PATH_voter",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             votingProcedures=[
                 VoterVotes(
                     Voter(VoterType.STAKE_POOL_KEY_PATH, "m/1853'/1815'/0'/0'"), [vote3]
                 )
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18204581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038201f6",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18204581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038201f6",
     ),
     SignTxTestCase(
-        "Sign_tx_with_voting_procedures_COMMITTEE_KEY_HASH_voter",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_voting_procedures_COMMITTEE_KEY_HASH_voter",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             votingProcedures=[
                 VoterVotes(
                     Voter(
@@ -2843,18 +2884,18 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 )
             ],
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18200581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18200581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef",
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_voting_procedures_COMMITTEE_SCRIPT_HASH_voter",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_voting_procedures_COMMITTEE_SCRIPT_HASH_voter",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             votingProcedures=[
                 VoterVotes(
                     Voter(
@@ -2865,18 +2906,18 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 )
             ],
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18201581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038200f6",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18201581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038200f6",
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_voting_procedures_DREP_KEY_HASH_voter",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_voting_procedures_DREP_KEY_HASH_voter",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             votingProcedures=[
                 VoterVotes(
                     Voter(
@@ -2887,18 +2928,18 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 )
             ],
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18202581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038201f6",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18202581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038201f6",
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_voting_procedures_DREP_SCRIPT_HASH_voter",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_voting_procedures_DREP_SCRIPT_HASH_voter",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             votingProcedures=[
                 VoterVotes(
                     Voter(
@@ -2909,18 +2950,18 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 )
             ],
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18203581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18203581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef",
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_voting_procedures_STAKE_POOL_KEY_HASH_voter",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_voting_procedures_STAKE_POOL_KEY_HASH_voter",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             votingProcedures=[
                 VoterVotes(
                     Voter(
@@ -2931,18 +2972,18 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 )
             ],
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18204581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18204581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef",
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_voting_procedures_single_voter_multiple_votes",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_voting_procedures_single_voter_multiple_votes",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             votingProcedures=[
                 VoterVotes(
                     Voter(VoterType.DREP_KEY_PATH, "m/1852'/1815'/0'/3/0"),
@@ -2950,17 +2991,17 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 )
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18202581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1a38258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef8258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f68258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7058201f6",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18202581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1a38258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef8258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f68258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7058201f6",
     ),
     SignTxTestCase(
-        "Sign_tx_with_voting_procedures_multiple_voters_single_vote",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_voting_procedures_multiple_voters_single_vote",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             votingProcedures=[
                 VoterVotes(
                     Voter(VoterType.COMMITTEE_KEY_PATH, "m/1852'/1815'/0'/5/0"),
@@ -2976,17 +3017,17 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a38200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c48839092a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef8202581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f68204581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7058201f6",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a38200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c48839092a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef8202581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f68204581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7058201f6",
     ),
     SignTxTestCase(
-        "Sign_tx_with_voting_procedures_multiple_voters_multiple_votes",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_voting_procedures_multiple_voters_multiple_votes",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             votingProcedures=[
                 VoterVotes(
                     Voter(
@@ -3001,8 +3042,8 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a28201581c8afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a28258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f68258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7058201f68202581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1a28258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef8258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f6",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a28201581c8afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a28258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f68258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7058201f68202581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1a28258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef8258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f6",
         has_warning=True,
     ),
 ]
@@ -3012,13 +3053,13 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
 # =================
 testsCatalystRegistration: List[SignTxTestCase] = [
     SignTxTestCase(
-        "Sign_tx_with_Catalyst_registration_metadata_with_base_address",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["internalBaseWithStakingPath"]],
-            42,
-            10,
+        name="Sign_tx_with_Catalyst_registration_metadata_with_base_address",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            fee=42,
+            ttl=10,
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3031,17 +3072,17 @@ testsCatalystRegistration: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820e9141b460aea0abb69ce113c7302c7c03690267736d6a382ee62d2a53c2ec9260807",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820e9141b460aea0abb69ce113c7302c7c03690267736d6a382ee62d2a53c2ec9260807",
     ),
     SignTxTestCase(
-        "Sign_tx_with_Catalyst_registration_metadata_with_stake_address",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["internalBaseWithStakingPath"]],
-            42,
-            10,
+        name="Sign_tx_with_Catalyst_registration_metadata_with_stake_address",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            fee=42,
+            ttl=10,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
                 TxAuxiliaryDataCIP36(
@@ -3053,8 +3094,8 @@ testsCatalystRegistration: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820d19f7cb4d48a6ae8d370c64d2a42fca1f61d6b2cf3d0c0c02801541811338deb",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820d19f7cb4d48a6ae8d370c64d2a42fca1f61d6b2cf3d0c0c02801541811338deb",
         has_aux_warning=True,
         nano_skip=True,
     ),
@@ -3062,13 +3103,13 @@ testsCatalystRegistration: List[SignTxTestCase] = [
 
 testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
     SignTxTestCase(
-        "Sign_tx_with_CIP36_registration_with_vote_key_hex",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["internalBaseWithStakingPath"]],
-            42,
-            10,
+        name="Sign_tx_with_CIP36_registration_with_vote_key_hex",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            fee=42,
+            ttl=10,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
                 TxAuxiliaryDataCIP36(
@@ -3080,19 +3121,19 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a0758201999b3bb9102b585c42616e40cf1290518d788f967ab4b3329dcb712ac933da0",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a0758201999b3bb9102b585c42616e40cf1290518d788f967ab4b3329dcb712ac933da0",
         has_aux_warning=True,
         nano_skip=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_CIP36_registration_with_vote_key_path",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["internalBaseWithStakingPath"]],
-            42,
-            10,
+        name="Sign_tx_with_CIP36_registration_with_vote_key_path",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            fee=42,
+            ttl=10,
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3105,18 +3146,18 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820d05698c555a117014a3b360a66931ec43bf18e2aa16560fc99dbd92dd7f6f6540807",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820d05698c555a117014a3b360a66931ec43bf18e2aa16560fc99dbd92dd7f6f6540807",
         nano_skip=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_CIP36_registration_with_unusual_vote_key_path",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["internalBaseWithStakingPath"]],
-            42,
-            10,
+        name="Sign_tx_with_CIP36_registration_with_unusual_vote_key_path",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            fee=42,
+            ttl=10,
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3129,19 +3170,19 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582077be323b8df4c6aa1bf2f180112f85ffe8d7f658bc8febdf7dbd5a07453a31cb0807",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582077be323b8df4c6aa1bf2f180112f85ffe8d7f658bc8febdf7dbd5a07453a31cb0807",
         has_aux_warning=True,
         nano_skip=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_CIP36_registration_with_thirdparty_payment_address",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["internalBaseWithStakingPath"]],
-            42,
-            10,
+        name="Sign_tx_with_CIP36_registration_with_thirdparty_payment_address",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            fee=42,
+            ttl=10,
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3154,18 +3195,18 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582042e408fb03986a958be9e2cca01623a31e23f86f31172a5a9b84acdfce6f0e750807",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582042e408fb03986a958be9e2cca01623a31e23f86f31172a5a9b84acdfce6f0e750807",
         nano_skip=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_CIP36_registration_with_voting_purpose",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["internalBaseWithStakingPath"]],
-            42,
-            10,
+        name="Sign_tx_with_CIP36_registration_with_voting_purpose",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            fee=42,
+            ttl=10,
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3179,17 +3220,17 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820d706aed1ebc1e8af188aae6d37ffdf4e259a0f04635bef5edce7f43ff632c4450807",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820d706aed1ebc1e8af188aae6d37ffdf4e259a0f04635bef5edce7f43ff632c4450807",
     ),
     SignTxTestCase(
-        "Sign_tx_with_CIP36_registration_with_delegations",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["internalBaseWithStakingPath"]],
-            42,
-            10,
+        name="Sign_tx_with_CIP36_registration_with_delegations",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            fee=42,
+            ttl=10,
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3212,18 +3253,18 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820f0e62a047ef597d9fb1bfefb9cd3f4e77558c33510ca552484ee8b5c77bbdf650807",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820f0e62a047ef597d9fb1bfefb9cd3f4e77558c33510ca552484ee8b5c77bbdf650807",
         nano_skip=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_CIP36_registration_with_many_delegations_streaming",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["internalBaseWithStakingPath"]],
-            42,
-            10,
+        name="Sign_tx_with_CIP36_registration_with_many_delegations_streaming",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            fee=42,
+            ttl=10,
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3244,8 +3285,8 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582092cc23c0ff5952db0243e891ef08d1360ed9a33c6970156dfe945dd4df284d980807",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582092cc23c0ff5952db0243e891ef08d1360ed9a33c6970156dfe945dd4df284d980807",
         nano_skip=True,
     ),  # TODO needs navigation fix
 ]
@@ -3255,108 +3296,108 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
 # =================
 testsAlonzo: List[SignTxTestCase] = [
     SignTxTestCase(
-        "Sign_tx_with_script_data_hash",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [],
-            42,
-            10,
+        name="Sign_tx_with_script_data_hash",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[],
+            fee=42,
+            ttl=10,
             scriptDataHash="ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce188",
             includeNetworkId=True,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0b5820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce1880f01",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0b5820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce1880f01",
     ),
     # tx does not contain any Plutus elements, but should be accepted (differs only in UI)
     SignTxTestCase(
-        "Sign_tx_with_change_output_as_array",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["internalBaseWithStakingPath"]],
-            42,
-            10,
+        name="Sign_tx_with_change_output_as_array",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            fee=42,
+            ttl=10,
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a",
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_datum_hash_in_output_as_array",
-        Transaction(
-            Testnet, [inputs["utxoShelley"]], [outputs["datumHashExternal"]], 42, 10
+        name="Sign_tx_with_datum_hash_in_output_as_array",
+        tx=Transaction(
+            network=Testnet, inputs=[inputs["utxoShelley"]], outputs=[outputs["datumHashExternal"]], fee=42, ttl=10
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e1a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e1a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a",
         nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_datum_hash_in_output_as_array_with_tokens",
-        Transaction(
-            Testnet, [inputs["utxoShelley"]], [outputs["datumHashWithTokens"]], 42, 10
+        name="Sign_tx_with_datum_hash_in_output_as_array_with_tokens",
+        tx=Transaction(
+            network=Testnet, inputs=[inputs["utxoShelley"]], outputs=[outputs["datumHashWithTokens"]], fee=42, ttl=10
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a007838625820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a007838625820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a",
         nano_skip=True,
         has_warning=True,
     ),
     # tests the path where a warning about missing datum hash is shown on Ledger
     SignTxTestCase(
-        "Sign_tx_with_missing_datum_hash_in_output_with_tokens",
-        Transaction(
-            Testnet,
-            [inputs["utxoShelley"]],
-            [outputs["missingDatumHashWithTokens"]],
-            42,
-            10,
+        name="Sign_tx_with_missing_datum_hash_in_output_with_tokens",
+        tx=Transaction(
+            network=Testnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["missingDatumHashWithTokens"]],
+            fee=42,
+            ttl=10,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a0078386202182a030a",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a0078386202182a030a",
         nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_collateral_inputs",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [],
-            42,
-            10,
+        name="Sign_tx_with_collateral_inputs",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[],
+            fee=42,
+            ttl=10,
             collateralInputs=[inputs["utxoByron"]],
             includeNetworkId=True,
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0d818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc000f01",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0d818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc000f01",
         nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_collateral_inputs_shelley",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [],
-            42,
-            10,
+        name="Sign_tx_with_collateral_inputs_shelley",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[],
+            fee=42,
+            ttl=10,
             collateralInputs=[inputs["utxoShelley"]],
             includeNetworkId=True,
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000f01",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000f01",
         nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_required_signers_mixed",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [],
-            42,
-            10,
+        name="Sign_tx_with_required_signers_mixed",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[],
+            fee=42,
+            ttl=10,
             requiredSigners=[
                 RequiredSigner(
                     TxRequiredSignerType.HASH,
@@ -3366,36 +3407,36 @@ testsAlonzo: List[SignTxTestCase] = [
             ],
             includeNetworkId=True,
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0e82581cfea6646c67fb467f8a5425e9c752e1e262b0420ba4b638f39514049a581c14c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11240f01",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0e82581cfea6646c67fb467f8a5425e9c752e1e262b0420ba4b638f39514049a581c14c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11240f01",
         nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_mint_path_in_a_required_signer",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["externalByronMainnet"]],
-            42,
-            10,
+        name="Sign_tx_with_mint_path_in_a_required_signer",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
             requiredSigners=[
                 RequiredSigner(TxRequiredSignerType.PATH, "m/1855'/1815'/0'")
             ],
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0e81581c43040068ce85252be6164296d6dca9595644bbf424b56b7424458227",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0e81581c43040068ce85252be6164296d6dca9595644bbf424b56b7424458227",
         additionalWitnessPaths=["m/1855'/1815'/0'"],
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_key_hash_in_stake_credential",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [],
-            42,
-            10,
+        name="Sign_tx_with_key_hash_in_stake_credential",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[],
+            fee=42,
+            ttl=10,
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DELEGATION,
@@ -3419,8 +3460,8 @@ testsAlonzo: List[SignTxTestCase] = [
             ],
             includeNetworkId=True,
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a048183028200581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb497305a1581de129fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd1903e80f01",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a048183028200581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb497305a1581de129fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd1903e80f01",
         nano_skip=True,
         has_warning=True,
     ),
@@ -3428,162 +3469,162 @@ testsAlonzo: List[SignTxTestCase] = [
 
 testsBabbage: List[SignTxTestCase] = [
     SignTxTestCase(
-        "Sign_tx_with_short_inline_datum_in_output_with_tokens",
-        Transaction(
-            Testnet_legacy,
-            [inputs["utxoShelley"]],
-            [outputs["inlineDatumWithTokensMap"]],
-            42,
-            10,
+        name="Sign_tx_with_short_inline_datum_in_output_with_tokens",
+        tx=Transaction(
+            network=Testnet_legacy,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineDatumWithTokensMap"]],
+            fee=42,
+            ttl=10,
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a00783862028201d818565579657420616e6f746865722063686f636f6c61746502182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a00783862028201d818565579657420616e6f746865722063686f636f6c61746502182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_long_inline_datum_480_B_in_output",
-        Transaction(
-            Testnet_legacy,
-            [inputs["utxoShelley"]],
-            [outputs["inlineDatum480Map"]],
-            42,
-            10,
+        name="Sign_tx_with_long_inline_datum_480_B_in_output",
+        tx=Transaction(
+            network=Testnet_legacy,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineDatum480Map"]],
+            fee=42,
+            ttl=10,
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca793028201d8185901e012b8240c5470b47c159597b6f71d78c7fc99d1d8d911cb19b8f50211938ef361a22d30cd8f6354ec50e99a7d3cf3e06797ed4af3d358e01b2a957caa4010da328720b9fbe7a3a6d10209a13d2eb11933eb1bf2ab02713117e421b6dcc66297c41b95ad32d3457a0e6b44d8482385f311465964c3daff226acfb7bbda47011f1a6531db30e5b5977143c48f8b8eb739487f87dc13896f58529cfb48e415fc6123e708cdc3cb15cc1900ecf88c5fc9ff66d8ad6dae18c79e4a3c392a0df4d16ffa3e370f4dad8d8e9d171c5656bb317c78a2711057e7ae0beb1dc66ba01aa69d0c0db244e6742d7758ce8da00dfed6225d4aed4b01c42a0352688ed5803f3fd64873f11355305d9db309f4a2a6673cc408a06b8827a5edef7b0fd8742627fb8aa102a084b7db72fcb5c3d1bf437e2a936b738902a9c0258b462b9f2e9befd2c6bcfc036143bb34342b9124888a5b29fa5d60909c81319f034c11542b05ca3ff6c64c7642ff1e2b25fb60dc9bb6f5c914dd4149f31896955d4d204d822deddc46f852115a479edf7521cdf4ce596805875011855158fd303c33a2a7916a9cb7acaaf5aeca7e6efb75960e9597cd845bd9a93610bf1ab47ab0de943e8a96e26a24c4996f7b07fad437829fee5bc3496192608d4c04ac642cdec7bdbb8a948ad1d43402182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca793028201d8185901e012b8240c5470b47c159597b6f71d78c7fc99d1d8d911cb19b8f50211938ef361a22d30cd8f6354ec50e99a7d3cf3e06797ed4af3d358e01b2a957caa4010da328720b9fbe7a3a6d10209a13d2eb11933eb1bf2ab02713117e421b6dcc66297c41b95ad32d3457a0e6b44d8482385f311465964c3daff226acfb7bbda47011f1a6531db30e5b5977143c48f8b8eb739487f87dc13896f58529cfb48e415fc6123e708cdc3cb15cc1900ecf88c5fc9ff66d8ad6dae18c79e4a3c392a0df4d16ffa3e370f4dad8d8e9d171c5656bb317c78a2711057e7ae0beb1dc66ba01aa69d0c0db244e6742d7758ce8da00dfed6225d4aed4b01c42a0352688ed5803f3fd64873f11355305d9db309f4a2a6673cc408a06b8827a5edef7b0fd8742627fb8aa102a084b7db72fcb5c3d1bf437e2a936b738902a9c0258b462b9f2e9befd2c6bcfc036143bb34342b9124888a5b29fa5d60909c81319f034c11542b05ca3ff6c64c7642ff1e2b25fb60dc9bb6f5c914dd4149f31896955d4d204d822deddc46f852115a479edf7521cdf4ce596805875011855158fd303c33a2a7916a9cb7acaaf5aeca7e6efb75960e9597cd845bd9a93610bf1ab47ab0de943e8a96e26a24c4996f7b07fad437829fee5bc3496192608d4c04ac642cdec7bdbb8a948ad1d43402182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_long_inline_datum_304_B_in_output_with_tokens",
-        Transaction(
-            Testnet_legacy,
-            [inputs["utxoShelley"]],
-            [outputs["inlineDatum304WithTokensMap"]],
-            42,
-            10,
+        name="Sign_tx_with_long_inline_datum_304_B_in_output_with_tokens",
+        tx=Transaction(
+            network=Testnet_legacy,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineDatum304WithTokensMap"]],
+            fee=42,
+            ttl=10,
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a00783862028201d8185901305579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f7468657220637468657202182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a00783862028201d8185901305579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f7468657220637468657202182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         nano_skip=True,
         has_warning=True,
     ),
     # reference script
     SignTxTestCase(
-        "Sign_tx_with_datum_hash_and_short_ref_script_in_output",
-        Transaction(
-            Testnet_legacy,
-            [inputs["utxoShelley"]],
-            [outputs["datumHashRefScriptExternalMap"]],
-            42,
-            10,
+        name="Sign_tx_with_datum_hash_and_short_ref_script_in_output",
+        tx=Transaction(
+            network=Testnet_legacy,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["datumHashRefScriptExternalMap"]],
+            fee=42,
+            ttl=10,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a4005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18803d81854deadbeefdeadbeefdeadbeefdeadbeefdeadbeef02182a030a",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a4005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18803d81854deadbeefdeadbeefdeadbeefdeadbeefdeadbeef02182a030a",
         nano_skip=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_datum_hash_and_ref_script_240_B_in_output_in_Babbage_format",
-        Transaction(
-            Testnet_legacy,
-            [inputs["utxoShelley"]],
-            [outputs["datumHashRefScript240ExternalMap"]],
-            42,
-            10,
+        name="Sign_tx_with_datum_hash_and_ref_script_240_B_in_output_in_Babbage_format",
+        tx=Transaction(
+            network=Testnet_legacy,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["datumHashRefScript240ExternalMap"]],
+            fee=42,
+            ttl=10,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a4005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18803d81858f04784392787cc567ac21d7b5346a4a89ae112b7ff7610e402284042aa4e6efca7956a53c3f5cb3ec6745f5e21150f2a77bd71a2adc3f8b9539e9bab41934b477f60a8b302584d1a619ed9b178b5ce6fcad31adc0d6fc17023ede474c09f29fdbfb290a5b30b5240fae5de71168036201772c0d272ae90220181f9bf8c3198e79fc2ae32b076abf4d0e10d3166923ce56994b25c00909e3faab8ef1358c136cd3b197488efc883a7c6cfa3ac63ca9cebc62121c6e22f594420c2abd54e78282adec20ee7dba0e6de65554adb8ee8314f23f86cf7cf0906d4b6c643966baf6c54240c19f4131374e298f38a626a4ad63e6102182a030a",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a4005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18803d81858f04784392787cc567ac21d7b5346a4a89ae112b7ff7610e402284042aa4e6efca7956a53c3f5cb3ec6745f5e21150f2a77bd71a2adc3f8b9539e9bab41934b477f60a8b302584d1a619ed9b178b5ce6fcad31adc0d6fc17023ede474c09f29fdbfb290a5b30b5240fae5de71168036201772c0d272ae90220181f9bf8c3198e79fc2ae32b076abf4d0e10d3166923ce56994b25c00909e3faab8ef1358c136cd3b197488efc883a7c6cfa3ac63ca9cebc62121c6e22f594420c2abd54e78282adec20ee7dba0e6de65554adb8ee8314f23f86cf7cf0906d4b6c643966baf6c54240c19f4131374e298f38a626a4ad63e6102182a030a",
         nano_skip=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_datum_hash_and_script_reference_304_B_in_output_as_map",
-        Transaction(
-            Testnet_legacy,
-            [inputs["utxoShelley"]],
-            [outputs["datumHashRefScript304ExternalMap"]],
-            42,
-            10,
+        name="Sign_tx_with_datum_hash_and_script_reference_304_B_in_output_as_map",
+        tx=Transaction(
+            network=Testnet_legacy,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["datumHashRefScript304ExternalMap"]],
+            fee=42,
+            ttl=10,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a4005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18803d818590130deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeaddeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeaddeadbeef02182a030a",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a4005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18803d818590130deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeaddeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeaddeadbeef02182a030a",
         nano_skip=True,
     ),
     # various output combinations
     SignTxTestCase(
-        "Sign_tx_with_datum_hash_in_output_with_tokens_in_Babbage_format",
-        Transaction(
-            Testnet_legacy,
-            [inputs["utxoShelley"]],
-            [outputs["datumHashWithTokensMap"]],
-            42,
-            10,
+        name="Sign_tx_with_datum_hash_in_output_with_tokens_in_Babbage_format",
+        tx=Transaction(
+            network=Testnet_legacy,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["datumHashWithTokensMap"]],
+            fee=42,
+            ttl=10,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a007838620282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a007838620282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a",
         nano_skip=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_a_complex_multiasset_output_Babbage",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [
+        name="Sign_tx_with_a_complex_multiasset_output_Babbage",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[
                 outputs["multiassetManyTokensBabbage"],
                 outputs["internalBaseWithStakingPathBabbage"],
             ],
-            42,
-            10,
+            fee=42,
+            ttl=10,
             validityIntervalStart=7,
         ),
-        TransactionSigningMode.ORDINARY_TRANSACTION,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000182a200583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff01821904d2a2581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a34003581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209015820000000000000000000000000000000000000000000000000000000000000000002581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a248456c204e69c3b16f1904d24874652474436f696e1a00783862a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0807",
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000182a200583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff01821904d2a2581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a34003581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209015820000000000000000000000000000000000000000000000000000000000000000002581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a248456c204e69c3b16f1904d24874652474436f696e1a00783862a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0807",
         nano_skip=True,
     ),
     # reference inputs
     SignTxTestCase(
-        "Sign_tx_with_change_output_as_map_and_multiple_reference_inputs",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["internalBaseWithStakingPathMap"]],
-            42,
-            10,
+        name="Sign_tx_with_change_output_as_map_and_multiple_reference_inputs",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPathMap"]],
+            fee=42,
+            ttl=10,
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             collateralInputs=[inputs["utxoShelley"]],
             referenceInputs=[inputs["utxoShelley"], inputs["utxoShelley"]],
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70012828258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7008258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70012828258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7008258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700",
         has_warning=True,
     ),
     # total collateral and collateral return output
     SignTxTestCase(
-        "Sign_tx_with_change_output_as_map_and_total_collateral",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["internalBaseWithStakingPathMap"]],
-            42,
-            10,
+        name="Sign_tx_with_change_output_as_map_and_total_collateral",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPathMap"]],
+            fee=42,
+            ttl=10,
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             totalCollateral=10,
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7110a",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7110a",
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_change_output_as_map_and_collateral_output_as_array",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["internalBaseWithStakingPathMap"]],
-            42,
-            10,
+        name="Sign_tx_with_change_output_as_map_and_collateral_output_as_array",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPathMap"]],
+            fee=42,
+            ttl=10,
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             collateralOutput=TxOutputBabbage(
                 destinations["internalBaseWithStakingPathMap"],
@@ -3591,77 +3632,77 @@ testsBabbage: List[SignTxTestCase] = [
                 format=TxOutputFormat.ARRAY_LEGACY,
             ),
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7108258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca793",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7108258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca793",
         nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_change_collateral_output_as_map_without_total_collateral",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["internalBaseWithStakingPathMap"]],
-            42,
-            10,
+        name="Sign_tx_with_change_collateral_output_as_map_without_total_collateral",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPathMap"]],
+            fee=42,
+            ttl=10,
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             collateralInputs=[inputs["utxoShelley"]],
             collateralOutput=outputs["internalBaseWithTokensMap"],
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a1487564247542686911182f",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a1487564247542686911182f",
         nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_change_collateral_output_as_map_with_total_collateral",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["internalBaseWithStakingPathMap"]],
-            42,
-            10,
+        name="Sign_tx_with_change_collateral_output_as_map_with_total_collateral",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPathMap"]],
+            fee=42,
+            ttl=10,
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             collateralInputs=[inputs["utxoShelley"]],
             collateralOutput=outputs["internalBaseWithTokensMap"],
             totalCollateral=5,
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a800818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a1487564247542686911182f1105",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a800818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a1487564247542686911182f1105",
         nano_skip=True,
         has_warning=False,
     ),
     SignTxTestCase(
-        "Sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["multiassetManyTokensBabbage"]],
-            42,
-            10,
+        name="Sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["multiassetManyTokensBabbage"]],
+            fee=42,
+            ttl=10,
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             collateralInputs=[inputs["utxoShelley"]],
             collateralOutput=outputs["externalShelleyBaseKeyhashKeyhash"],
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a200583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff01821904d2a2581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a34003581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209015820000000000000000000000000000000000000000000000000000000000000000002581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a248456c204e69c3b16f1904d24874652474436f696e1a0078386202182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b0901",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a200583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff01821904d2a2581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a34003581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209015820000000000000000000000000000000000000000000000000000000000000000002581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a248456c204e69c3b16f1904d24874652474436f696e1a0078386202182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b0901",
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral",
-        Transaction(
-            Mainnet,
-            [inputs["utxoShelley"]],
-            [outputs["multiassetManyTokensBabbage"]],
-            42,
-            10,
+        name="Sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["multiassetManyTokensBabbage"]],
+            fee=42,
+            ttl=10,
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             collateralInputs=[inputs["utxoShelley"]],
             collateralOutput=outputs["externalShelleyBaseKeyhashKeyhash"],
             totalCollateral=5,
         ),
-        TransactionSigningMode.PLUTUS_TRANSACTION,
-        "a800818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a200583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff01821904d2a2581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a34003581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209015820000000000000000000000000000000000000000000000000000000000000000002581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a248456c204e69c3b16f1904d24874652474436f696e1a0078386202182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09011105",
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a800818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a200583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff01821904d2a2581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a34003581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209015820000000000000000000000000000000000000000000000000000000000000000002581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a248456c204e69c3b16f1904d24874652474436f696e1a0078386202182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09011105",
         has_warning=False,
     ),
 ]
@@ -3671,169 +3712,169 @@ testsBabbage: List[SignTxTestCase] = [
 # =================
 poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
-        "Sign_tx_Witness_valid_multiple_mixed_owners_all_relays_pool_registration",
-        Transaction(
-            Mainnet,
-            [inputs["utxoNoPath"]],
-            [outputs["externalShelleyBaseKeyhashKeyhash"]],
-            42,
-            10,
+        name="Sign_tx_Witness_valid_multiple_mixed_owners_all_relays_pool_registration",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoNoPath"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            fee=42,
+            ttl=10,
             certificates=[certificates["poolRegistrationMixedOwnersAllRelays"]],
         ),
-        TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad848400190bb84436e44b9af68400190bb84436e44b9b500178ff2483e3a2330a34c4a5e576c2078301190bb86d616161612e626262622e636f6d82026d616161612e626262632e636f6d82782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad848400190bb84436e44b9af68400190bb84436e44b9b500178ff2483e3a2330a34c4a5e576c2078301190bb86d616161612e626262622e636f6d82026d616161612e626262632e636f6d82782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
         nano_skip=True,
     ),
     SignTxTestCase(
-        "Sign_tx_Witness_valid_single_path_owner_ipv4_relay_pool_registration",
-        Transaction(
-            Mainnet,
-            [inputs["utxoNoPath"]],
-            [outputs["externalShelleyBaseKeyhashKeyhash"]],
-            42,
-            10,
+        name="Sign_tx_Witness_valid_single_path_owner_ipv4_relay_pool_registration",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoNoPath"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            fee=42,
+            ttl=10,
             certificates=[certificates["poolRegistrationDefault"]],
         ),
-        TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c818400190bb84436e44b9af682782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c818400190bb84436e44b9af682782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
         nano_skip=True,
     ),
     SignTxTestCase(
-        "Sign_tx_Witness_valid_multiple_mixed_owners_ipv4_relay_pool_registration",
-        Transaction(
-            Mainnet,
-            [inputs["utxoNoPath"]],
-            [outputs["externalShelleyBaseKeyhashKeyhash"]],
-            42,
-            10,
+        name="Sign_tx_Witness_valid_multiple_mixed_owners_ipv4_relay_pool_registration",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoNoPath"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            fee=42,
+            ttl=10,
             certificates=[certificates["poolRegistrationMixedOwners"]],
         ),
-        TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad818400190bb84436e44b9af682782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad818400190bb84436e44b9af682782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
         nano_skip=True,
     ),
     SignTxTestCase(
-        "Sign_tx_Witness_valid_multiple_mixed_owners_mixed_ipv4_single_host_relays_pool_registration",
-        Transaction(
-            Mainnet,
-            [inputs["utxoNoPath"]],
-            [outputs["externalShelleyBaseKeyhashKeyhash"]],
-            42,
-            10,
+        name="Sign_tx_Witness_valid_multiple_mixed_owners_mixed_ipv4_single_host_relays_pool_registration",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoNoPath"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 certificates["poolRegistrationMixedOwnersIpv4SingleHostRelays"]
             ],
         ),
-        TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad828400190bb84436e44b9af68301190bb86d616161612e626262622e636f6d82782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad828400190bb84436e44b9af68301190bb86d616161612e626262622e636f6d82782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
         nano_skip=True,
     ),
     SignTxTestCase(
-        "Sign_tx_Witness_valid_multiple_mixed_owners_mixed_ipv4_ipv6_relays_pool_registration",
-        Transaction(
-            Mainnet,
-            [inputs["utxoNoPath"]],
-            [outputs["externalShelleyBaseKeyhashKeyhash"]],
-            42,
-            10,
+        name="Sign_tx_Witness_valid_multiple_mixed_owners_mixed_ipv4_ipv6_relays_pool_registration",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoNoPath"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            fee=42,
+            ttl=10,
             certificates=[certificates["poolRegistrationMixedOwnersIpv4Ipv6Relays"]],
         ),
-        TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad828400190fa04436e44b9af68400190bb84436e44b9b500178ff2483e3a2330a34c4a5e576c20782782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad828400190fa04436e44b9af68400190bb84436e44b9b500178ff2483e3a2330a34c4a5e576c20782782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
         nano_skip=True,
     ),
     SignTxTestCase(
-        "Sign_tx_Witness_valid_single_path_owner_no_relays_pool_registration",
-        Transaction(
-            Mainnet,
-            [inputs["utxoNoPath"]],
-            [outputs["externalShelleyBaseKeyhashKeyhash"]],
-            42,
-            10,
+        name="Sign_tx_Witness_valid_single_path_owner_no_relays_pool_registration",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoNoPath"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            fee=42,
+            ttl=10,
             certificates=[certificates["poolRegistrationNoRelays"]],
         ),
-        TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8082782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8082782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
         nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_Witness_pool_registration_with_no_metadata",
-        Transaction(
-            Mainnet,
-            [inputs["utxoNoPath"]],
-            [outputs["externalShelleyBaseKeyhashKeyhash"]],
-            42,
-            10,
+        name="Sign_tx_Witness_pool_registration_with_no_metadata",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoNoPath"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            fee=42,
+            ttl=10,
             certificates=[certificates["poolRegistrationNoMetadata"]],
         ),
-        TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c818400190bb84436e44b9af6f6",
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c818400190bb84436e44b9af6f6",
         nano_skip=True,
     ),
     SignTxTestCase(
-        "Sign_tx_Witness_pool_registration_without_outputs",
-        Transaction(
-            Mainnet,
-            [inputs["utxoNoPath"]],
-            [],
-            42,
-            10,
+        name="Sign_tx_Witness_pool_registration_without_outputs",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoNoPath"]],
+            outputs=[],
+            fee=42,
+            ttl=10,
             certificates=[certificates["poolRegistrationMixedOwnersAllRelays"]],
         ),
-        TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad848400190bb84436e44b9af68400190bb84436e44b9b500178ff2483e3a2330a34c4a5e576c2078301190bb86d616161612e626262622e636f6d82026d616161612e626262632e636f6d82782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad848400190bb84436e44b9af68400190bb84436e44b9b500178ff2483e3a2330a34c4a5e576c2078301190bb86d616161612e626262622e636f6d82026d616161612e626262632e636f6d82782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
         nano_skip=True,
     ),
 ]
 
 poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
-        "Sign_tx_Witness_pool_registration_as_operator_with_no_owners_and_no_relays",
-        Transaction(
-            Mainnet,
-            [inputs["utxoWithPath0"]],
-            [outputs["externalShelleyBaseKeyhashKeyhash"]],
-            42,
-            10,
+        name="Sign_tx_Witness_pool_registration_as_operator_with_no_owners_and_no_relays",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoWithPath0"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            fee=42,
+            ttl=10,
             certificates=[certificates["poolRegistrationOperatorNoOwnersNoRelays"]],
         ),
-        TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad808082782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad808082782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
         nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_Witness_pool_registration_as_operator_with_one_owner_and_no_relays",
-        Transaction(
-            Mainnet,
-            [inputs["utxoWithPath0"]],
-            [outputs["externalShelleyBaseKeyhashKeyhash"]],
-            42,
-            10,
+        name="Sign_tx_Witness_pool_registration_as_operator_with_one_owner_and_no_relays",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoWithPath0"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 certificates["poolRegistrationOperatorOneOwnerOperatorNoRelays"]
             ],
         ),
-        TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1eef1689a3970b7880dcf3cb4ca9f22453b3833824fea34105117c84081581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad8082782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1eef1689a3970b7880dcf3cb4ca9f22453b3833824fea34105117c84081581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad8082782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
         nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
-        "Sign_tx_Witness_pool_registration_as_operator_with_multiple_owners_and_all_relays",
-        Transaction(
-            Mainnet,
-            [inputs["utxoWithPath0"]],
-            [outputs["externalShelleyBaseKeyhashKeyhash"]],
-            42,
-            10,
+        name="Sign_tx_Witness_pool_registration_as_operator_with_multiple_owners_and_all_relays",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoWithPath0"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            fee=42,
+            ttl=10,
             certificates=[
                 certificates["poolRegistrationOperatorMultipleOwnersAllRelays"]
             ],
         ),
-        TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
-        "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad581c0bd5d796f5e54866a14300ec2a18d706f7461b8f0502cc2a182bc88d848400190bb84436e44b9af68400190bb84436e44b9b500178ff2483e3a2330a34c4a5e576c2078301190bb86d616161612e626262622e636f6d82026d616161612e626262632e636f6d82782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad581c0bd5d796f5e54866a14300ec2a18d706f7461b8f0502cc2a182bc88d848400190bb84436e44b9af68400190bb84436e44b9b500178ff2483e3a2330a34c4a5e576c2078301190bb86d616161612e626262622e636f6d82026d616161612e626262632e636f6d82782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
         nano_skip=True,
     ),
 ]
@@ -3843,7 +3884,8 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
 # =================
 transactionInitRejectTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
-        name="Non-mainnet protocol magic",
+        name="Non_mainnet_protocol_magic",
+        ledgerjs_name="Non-mainnet protocol magic",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824072),
             inputs=[
@@ -3870,21 +3912,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -3895,7 +3923,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Invalid network id",
+        name="Invalid_network_id",
+        ledgerjs_name="Invalid network id",
         tx=Transaction(
             network=NetworkDesc(networkId=16, protocol=764824073),
             inputs=[
@@ -3922,21 +3951,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -3947,7 +3962,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration (operator) - too few certificates",
+        name="Pool_registration_operator_too_few_certificates",
+        ledgerjs_name="Pool registration (operator) - too few certificates",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -3974,21 +3990,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -3999,7 +4001,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration (owner) - too few certificates",
+        name="Pool_registration_owner_too_few_certificates",
+        ledgerjs_name="Pool registration (owner) - too few certificates",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -4026,21 +4029,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -4051,7 +4040,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration (operator) - too many certificates",
+        name="Pool_registration_operator_too_many_certificates",
+        ledgerjs_name="Pool registration (operator) - too many certificates",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -4117,21 +4107,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     ),
                 ),
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -4142,7 +4118,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration (owner) - too many certificates",
+        name="Pool_registration_owner_too_many_certificates",
+        ledgerjs_name="Pool registration (owner) - too many certificates",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -4220,21 +4197,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     ),
                 ),
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -4245,7 +4208,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration (operator) - too many withdrawals",
+        name="Pool_registration_operator_too_many_withdrawals",
+        ledgerjs_name="Pool registration (operator) - too many withdrawals",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -4301,20 +4265,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     amount=1000,
                 )
             ],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -4325,7 +4276,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration (owner) - too many withdrawals",
+        name="Pool_registration_owner_too_many_withdrawals",
+        ledgerjs_name="Pool registration (owner) - too many withdrawals",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -4387,20 +4339,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     amount=1000,
                 )
             ],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -4411,7 +4350,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration (operator) - mint included",
+        name="Pool_registration_operator_mint_included",
+        ledgerjs_name="Pool registration (operator) - mint included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -4458,26 +4398,13 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
             mint=[
                 AssetGroup(
                     policyIdHex="0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425",
                     tokens=[Token(assetNameHex="75657374436f696e", amount=-7878754)],
                 )
             ],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -4488,7 +4415,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration (owner) - mint included",
+        name="Pool_registration_owner_mint_included",
+        ledgerjs_name="Pool registration (owner) - mint included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -4541,26 +4469,13 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
             mint=[
                 AssetGroup(
                     policyIdHex="0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425",
                     tokens=[Token(assetNameHex="75657374436f696e", amount=-7878754)],
                 )
             ],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -4571,7 +4486,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Ordinary tx - collateral inputs included",
+        name="Ordinary_tx_collateral_inputs_included",
+        ledgerjs_name="Ordinary tx - collateral inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -4598,8 +4514,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
             collateralInputs=[
                 TxInput(
                     txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
@@ -4607,18 +4521,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     outputIndex=0,
                 )
             ],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -4629,7 +4532,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Multisig tx - collateral inputs included",
+        name="Multisig_tx_collateral_inputs_included",
+        ledgerjs_name="Multisig tx - collateral inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -4656,8 +4560,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
             collateralInputs=[
                 TxInput(
                     txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
@@ -4665,18 +4567,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     outputIndex=0,
                 )
             ],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
         options=False,
@@ -4687,7 +4578,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration (operator) - collateral inputs included",
+        name="Pool_registration_operator_collateral_inputs_included",
+        ledgerjs_name="Pool registration (operator) - collateral inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -4734,8 +4626,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
             collateralInputs=[
                 TxInput(
                     txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
@@ -4743,18 +4633,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     outputIndex=0,
                 )
             ],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -4765,7 +4644,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration (owner) - collateral inputs included",
+        name="Pool_registration_owner_collateral_inputs_included",
+        ledgerjs_name="Pool registration (owner) - collateral inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -4818,8 +4698,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
             collateralInputs=[
                 TxInput(
                     txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
@@ -4827,18 +4705,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     outputIndex=0,
                 )
             ],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -4849,7 +4716,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration (operator) - required signers included",
+        name="Pool_registration_operator_required_signers_included",
+        ledgerjs_name="Pool registration (operator) - required signers included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -4896,25 +4764,12 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
             requiredSigners=[
                 RequiredSigner(
                     type=TxRequiredSignerType.PATH, pathOrHashHex="m/1852'/1815'/0'/0/0"
                 )
             ],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -4925,7 +4780,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration (owner) - required signers included",
+        name="Pool_registration_owner_required_signers_included",
+        ledgerjs_name="Pool registration (owner) - required signers included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -4978,25 +4834,12 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
             requiredSigners=[
                 RequiredSigner(
                     type=TxRequiredSignerType.PATH, pathOrHashHex="m/1852'/1815'/0'/0/0"
                 )
             ],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -5007,7 +4850,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Ordinary tx - collateral output included",
+        name="Ordinary_tx_collateral_output_included",
+        ledgerjs_name="Ordinary tx - collateral output included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -5034,16 +4878,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
             collateralOutput=TxOutputAlonzo(
                 destination=TxOutputDestination(
                     type=TxOutputDestinationType.THIRD_PARTY,
@@ -5056,10 +4890,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                 tokenBundle=[],
                 datum=None,
             ),
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -5070,7 +4901,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Multisig tx - collateral output included",
+        name="Multisig_tx_collateral_output_included",
+        ledgerjs_name="Multisig tx - collateral output included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -5097,16 +4929,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
             collateralOutput=TxOutputAlonzo(
                 destination=TxOutputDestination(
                     type=TxOutputDestinationType.THIRD_PARTY,
@@ -5119,10 +4941,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                 tokenBundle=[],
                 datum=None,
             ),
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
         options=False,
@@ -5133,7 +4952,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration (operator) - collateral output included",
+        name="Pool_registration_operator_collateral_output_included",
+        ledgerjs_name="Pool registration (operator) - collateral output included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -5180,16 +5000,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
             collateralOutput=TxOutputAlonzo(
                 destination=TxOutputDestination(
                     type=TxOutputDestinationType.THIRD_PARTY,
@@ -5202,10 +5012,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                 tokenBundle=[],
                 datum=None,
             ),
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -5216,7 +5023,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration (owner) - collateral output included",
+        name="Pool_registration_owner_collateral_output_included",
+        ledgerjs_name="Pool registration (owner) - collateral output included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -5269,16 +5077,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
             collateralOutput=TxOutputAlonzo(
                 destination=TxOutputDestination(
                     type=TxOutputDestinationType.THIRD_PARTY,
@@ -5291,10 +5089,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                 tokenBundle=[],
                 datum=None,
             ),
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -5305,7 +5100,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Ordinary tx - total collateral included",
+        name="Ordinary_tx_total_collateral_included",
+        ledgerjs_name="Ordinary tx - total collateral included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -5332,21 +5128,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
             totalCollateral=8,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -5357,7 +5140,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Multisig tx - total collateral included",
+        name="Multisig_tx_total_collateral_included",
+        ledgerjs_name="Multisig tx - total collateral included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -5384,21 +5168,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
             totalCollateral=8,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
         options=False,
@@ -5409,7 +5180,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration (operator) - total collateral included",
+        name="Pool_registration_operator_total_collateral_included",
+        ledgerjs_name="Pool registration (operator) - total collateral included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -5456,21 +5228,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
             totalCollateral=8,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -5481,7 +5240,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration (owner) - total collateral included",
+        name="Pool_registration_owner_total_collateral_included",
+        ledgerjs_name="Pool registration (owner) - total collateral included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -5534,21 +5294,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
             totalCollateral=8,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -5559,7 +5306,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Ordinary tx - reference inputs included",
+        name="Ordinary_tx_reference_inputs_included",
+        ledgerjs_name="Ordinary tx - reference inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -5586,10 +5334,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
             referenceInputs=[
                 TxInput(
                     txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
@@ -5597,16 +5341,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     outputIndex=0,
                 )
             ],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -5617,7 +5352,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Multisig tx - reference inputs included",
+        name="Multisig_tx_reference_inputs_included",
+        ledgerjs_name="Multisig tx - reference inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -5644,10 +5380,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
             referenceInputs=[
                 TxInput(
                     txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
@@ -5655,16 +5387,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     outputIndex=0,
                 )
             ],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
         options=False,
@@ -5675,7 +5398,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration (operator) - reference inputs included",
+        name="Pool_registration_operator_reference_inputs_included",
+        ledgerjs_name="Pool registration (operator) - reference inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -5722,10 +5446,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
             referenceInputs=[
                 TxInput(
                     txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
@@ -5733,16 +5453,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     outputIndex=0,
                 )
             ],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -5753,7 +5464,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration (owner) - reference inputs included",
+        name="Pool_registration_owner_reference_inputs_included",
+        ledgerjs_name="Pool registration (owner) - reference inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -5806,10 +5518,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
             referenceInputs=[
                 TxInput(
                     txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
@@ -5817,16 +5525,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     outputIndex=0,
                 )
             ],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -5840,7 +5539,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
 
 addressParamsRejectTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
-        name="Reward address - key",
+        name="Reward_address_key",
+        ledgerjs_name="Reward address - key",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -5876,21 +5576,7 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -5901,7 +5587,8 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Reward address - script",
+        name="Reward_address_script",
+        ledgerjs_name="Reward address - script",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -5937,21 +5624,7 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -5962,7 +5635,8 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="No spending path - Ordinary Tx 1",
+        name="No_spending_path_Ordinary_Tx_1",
+        ledgerjs_name="No spending path - Ordinary Tx 1",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -5998,21 +5672,7 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -6023,7 +5683,8 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="No spending path - Ordinary Tx 2",
+        name="No_spending_path_Ordinary_Tx_2",
+        ledgerjs_name="No spending path - Ordinary Tx 2",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -6059,21 +5720,7 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -6084,7 +5731,8 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool operator - spending choice not path",
+        name="Pool_operator_spending_choice_not_path",
+        ledgerjs_name="Pool operator - spending choice not path",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -6120,21 +5768,7 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -6145,7 +5779,8 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Multisig - unconditionally",
+        name="Multisig_unconditionally",
+        ledgerjs_name="Multisig - unconditionally",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -6181,21 +5816,7 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
         options=False,
@@ -6206,7 +5827,8 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool owner - unconditionally",
+        name="Pool_owner_unconditionally",
+        ledgerjs_name="Pool owner - unconditionally",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -6242,21 +5864,7 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -6270,7 +5878,8 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
 
 certificateRejectTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
-        name="Pool registration in Ordinary Tx",
+        name="Pool_registration_in_Ordinary_Tx",
+        ledgerjs_name="Pool registration in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -6317,21 +5926,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -6342,7 +5937,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration in Multisig Tx",
+        name="Pool_registration_in_Multisig_Tx",
+        ledgerjs_name="Pool registration in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -6389,21 +5985,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
         options=False,
@@ -6414,7 +5996,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool registration in Plutus Tx",
+        name="Pool_registration_in_Plutus_Tx",
+        ledgerjs_name="Pool registration in Plutus Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -6461,21 +6044,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="",
         options=False,
@@ -6486,7 +6055,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool retirement in Multisig Tx",
+        name="Pool_retirement_in_Multisig_Tx",
+        ledgerjs_name="Pool retirement in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -6524,21 +6094,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
         options=False,
@@ -6549,7 +6105,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Stake registration in Pool Registration Operator",
+        name="Stake_registration_in_Pool_Registration_Operator",
+        ledgerjs_name="Stake registration in Pool Registration Operator",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -6586,21 +6143,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -6611,7 +6154,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Stake registration in Pool Registration Owner",
+        name="Stake_registration_in_Pool_Registration_Owner",
+        ledgerjs_name="Stake registration in Pool Registration Owner",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[],
@@ -6642,21 +6186,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -6667,7 +6197,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Stake deregistration in Pool Registration Operator",
+        name="Stake_deregistration_in_Pool_Registration_Operator",
+        ledgerjs_name="Stake deregistration in Pool Registration Operator",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -6704,21 +6235,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -6729,7 +6246,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Stake deregistration in Pool Registration Owner",
+        name="Stake_deregistration_in_Pool_Registration_Owner",
+        ledgerjs_name="Stake deregistration in Pool Registration Owner",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[],
@@ -6760,21 +6278,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -6785,7 +6289,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Stake delegation in Pool Registration Operator",
+        name="Stake_delegation_in_Pool_Registration_Operator",
+        ledgerjs_name="Stake delegation in Pool Registration Operator",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -6823,21 +6328,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -6848,7 +6339,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Stake delegation in Pool Registration Owner",
+        name="Stake_delegation_in_Pool_Registration_Owner",
+        ledgerjs_name="Stake delegation in Pool Registration Owner",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[],
@@ -6880,21 +6372,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -6905,7 +6383,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool retirement in Pool Registration Operator",
+        name="Pool_retirement_in_Pool_Registration_Operator",
+        ledgerjs_name="Pool retirement in Pool Registration Operator",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -6943,21 +6422,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -6968,7 +6433,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Pool retirement in Pool Registration Owner",
+        name="Pool_retirement_in_Pool_Registration_Owner",
+        ledgerjs_name="Pool retirement in Pool Registration Owner",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[],
@@ -7000,21 +6466,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -7028,7 +6480,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
 
 certificateStakingRejectTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
-        name="Script hash in Ordinary Tx",
+        name="Script_hash_in_Ordinary_Tx",
+        ledgerjs_name="Script hash in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -7065,21 +6518,7 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -7090,7 +6529,8 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Non-staking path in Ordinary Tx",
+        name="Non_staking_path_in_Ordinary_Tx",
+        ledgerjs_name="Non-staking path in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -7127,21 +6567,7 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -7152,7 +6578,8 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Path in Multisig Tx",
+        name="Path_in_Multisig_Tx",
+        ledgerjs_name="Path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -7189,21 +6616,7 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
         options=False,
@@ -7217,7 +6630,8 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
 
 certificateStakePoolRetirementRejectTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
-        name="Non-pool cold key in Ordinary Tx",
+        name="Non_pool_cold_key_in_Ordinary_Tx",
+        ledgerjs_name="Non-pool cold key in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -7255,21 +6669,7 @@ certificateStakePoolRetirementRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -7283,7 +6683,8 @@ certificateStakePoolRetirementRejectTestCases: List[SignTxTestCase] = [
 
 withdrawalRejectTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
-        name="Reject tx with invalid canonical ordering of withdrawals",
+        name="Reject_tx_with_invalid_canonical_ordering_of_withdrawals",
+        ledgerjs_name="Reject tx with invalid canonical ordering of withdrawals",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -7313,20 +6714,7 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
                     amount=33333,
                 ),
             ],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -7335,9 +6723,11 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Seed-dependent: canonical ordering depends on derived reward addresses
     ),
     SignTxTestCase(
-        name="Script hash as stake credential in Ordinary Tx",
+        name="Script_hash_as_stake_credential_in_Ordinary_Tx",
+        ledgerjs_name="Script hash as stake credential in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -7373,20 +6763,7 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
                     amount=1000,
                 )
             ],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -7397,7 +6774,8 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Non-staking path as stake credential in Ordinary Tx",
+        name="Non_staking_path_as_stake_credential_in_Ordinary_Tx",
+        ledgerjs_name="Non-staking path as stake credential in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -7433,20 +6811,7 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
                     amount=1000,
                 )
             ],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -7457,7 +6822,8 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Staking path as stake credential in Multisig Tx",
+        name="Staking_path_as_stake_credential_in_Multisig_Tx",
+        ledgerjs_name="Staking path as stake credential in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -7493,20 +6859,7 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
                     amount=1000,
                 )
             ],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
         options=False,
@@ -7517,7 +6870,8 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Non-staking path as stake credential in Plutus Tx",
+        name="Non_staking_path_as_stake_credential_in_Plutus_Tx",
+        ledgerjs_name="Non-staking path as stake credential in Plutus Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -7553,20 +6907,7 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
                     amount=1000,
                 )
             ],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="",
         options=False,
@@ -7580,7 +6921,8 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
 
 witnessRejectTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
-        name="Ordinary account path in Ordinary Tx",
+        name="Ordinary_account_path_in_Ordinary_Tx",
+        ledgerjs_name="Ordinary account path in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -7607,21 +6949,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -7630,9 +6958,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection happens after tx validation
     ),
     SignTxTestCase(
-        name="Multisig account path in Ordinary Tx",
+        name="Multisig_account_path_in_Ordinary_Tx",
+        ledgerjs_name="Multisig account path in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -7659,21 +6989,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -7682,9 +6998,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Multisig spending path in Ordinary Tx",
+        name="Multisig_spending_path_in_Ordinary_Tx",
+        ledgerjs_name="Multisig spending path in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -7711,21 +7029,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -7734,9 +7038,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Multisig staking path in Ordinary Tx",
+        name="Multisig_staking_path_in_Ordinary_Tx",
+        ledgerjs_name="Multisig staking path in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -7763,21 +7069,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -7786,9 +7078,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Mint path in Ordinary Tx",
+        name="Mint_path_in_Ordinary_Tx",
+        ledgerjs_name="Mint path in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -7815,21 +7109,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -7838,9 +7118,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Ordinary account path in Multisig Tx",
+        name="Ordinary_account_path_in_Multisig_Tx",
+        ledgerjs_name="Ordinary account path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -7867,21 +7149,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
         options=False,
@@ -7890,9 +7158,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Multisig account path in Multisig Tx",
+        name="Multisig_account_path_in_Multisig_Tx",
+        ledgerjs_name="Multisig account path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -7919,21 +7189,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
         options=False,
@@ -7942,9 +7198,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Ordinary spending path in Multisig Tx",
+        name="Ordinary_spending_path_in_Multisig_Tx",
+        ledgerjs_name="Ordinary spending path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -7971,21 +7229,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
         options=False,
@@ -7994,9 +7238,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Ordinary staking path in Multisig Tx",
+        name="Ordinary_staking_path_in_Multisig_Tx",
+        ledgerjs_name="Ordinary staking path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -8023,21 +7269,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
         options=False,
@@ -8046,9 +7278,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Mint path in Multisig Tx",
+        name="Mint_path_in_Multisig_Tx",
+        ledgerjs_name="Mint path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -8075,21 +7309,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
         options=False,
@@ -8098,9 +7318,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Pool cold path in Multisig Tx",
+        name="Pool_cold_path_in_Multisig_Tx",
+        ledgerjs_name="Pool cold path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -8127,21 +7349,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
         options=False,
@@ -8150,9 +7358,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Ordinary account path in Plutus Tx",
+        name="Ordinary_account_path_in_Plutus_Tx",
+        ledgerjs_name="Ordinary account path in Plutus Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -8179,21 +7389,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="",
         options=False,
@@ -8202,9 +7398,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Multisig account path in Plutus Tx",
+        name="Multisig_account_path_in_Plutus_Tx",
+        ledgerjs_name="Multisig account path in Plutus Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -8231,21 +7429,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="",
         options=False,
@@ -8254,9 +7438,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Multisig account path in Pool Registration (Owner) Tx",
+        name="Multisig_account_path_in_Pool_Registration_Owner_Tx",
+        ledgerjs_name="Multisig account path in Pool Registration (Owner) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -8309,21 +7495,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -8332,9 +7504,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Ordinary spending path in Pool Registration (Owner) Tx",
+        name="Ordinary_spending_path_in_Pool_Registration_Owner_Tx",
+        ledgerjs_name="Ordinary spending path in Pool Registration (Owner) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -8387,21 +7561,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -8410,9 +7570,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Multisig spending path in Pool Registration (Owner) Tx",
+        name="Multisig_spending_path_in_Pool_Registration_Owner_Tx",
+        ledgerjs_name="Multisig spending path in Pool Registration (Owner) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -8465,21 +7627,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -8488,9 +7636,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Multisig staking path in Pool Registration (Owner) Tx",
+        name="Multisig_staking_path_in_Pool_Registration_Owner_Tx",
+        ledgerjs_name="Multisig staking path in Pool Registration (Owner) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -8543,21 +7693,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -8566,9 +7702,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Mint path in Pool Registration (Owner) Tx",
+        name="Mint_path_in_Pool_Registration_Owner_Tx",
+        ledgerjs_name="Mint path in Pool Registration (Owner) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -8621,21 +7759,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -8644,9 +7768,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Pool cold path in Pool Registration (Owner) Tx",
+        name="Pool_cold_path_in_Pool_Registration_Owner_Tx",
+        ledgerjs_name="Pool cold path in Pool Registration (Owner) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -8699,21 +7825,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -8722,9 +7834,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Multisig account path in Pool Registration (Operator) Tx",
+        name="Multisig_account_path_in_Pool_Registration_Operator_Tx",
+        ledgerjs_name="Multisig account path in Pool Registration (Operator) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -8771,21 +7885,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -8794,9 +7894,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Multisig spending path in Pool Registration (Operator) Tx",
+        name="Multisig_spending_path_in_Pool_Registration_Operator_Tx",
+        ledgerjs_name="Multisig spending path in Pool Registration (Operator) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -8843,21 +7945,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -8866,9 +7954,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Ordinary staking path in Pool Registration (Operator) Tx",
+        name="Ordinary_staking_path_in_Pool_Registration_Operator_Tx",
+        ledgerjs_name="Ordinary staking path in Pool Registration (Operator) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -8915,21 +8005,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -8938,9 +8014,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Multisig staking path in Pool Registration (Operator) Tx",
+        name="Multisig_staking_path_in_Pool_Registration_Operator_Tx",
+        ledgerjs_name="Multisig staking path in Pool Registration (Operator) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -8987,21 +8065,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -9010,9 +8074,11 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Mint path in Pool Registration (Operator) Tx",
+        name="Mint_path_in_Pool_Registration_Operator_Tx",
+        ledgerjs_name="Mint path in Pool Registration (Operator) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -9059,21 +8125,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -9082,12 +8134,14 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
 ]
 
 singleAccountRejectTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
-        name="Input and change output account mismatch",
+        name="Input_and_change_output_account_mismatch",
+        ledgerjs_name="Input and change output account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -9135,21 +8189,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -9158,9 +8198,11 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Input and stake deregistration certificate account mismatch",
+        name="Input_and_stake_deregistration_certificate_account_mismatch",
+        ledgerjs_name="Input and stake deregistration certificate account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -9197,21 +8239,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -9220,9 +8248,11 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Input and withdrawal account mismatch",
+        name="Input_and_withdrawal_account_mismatch",
+        ledgerjs_name="Input and withdrawal account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -9258,20 +8288,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                     amount=1000,
                 )
             ],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -9280,9 +8297,11 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Change output and stake deregistration account mismatch",
+        name="Change_output_and_stake_deregistration_account_mismatch",
+        ledgerjs_name="Change output and stake deregistration account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -9340,21 +8359,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -9365,7 +8370,8 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Change output and withdrawal account mismatch",
+        name="Change_output_and_withdrawal_account_mismatch",
+        ledgerjs_name="Change output and withdrawal account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -9422,20 +8428,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                     amount=1000,
                 )
             ],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -9446,7 +8439,8 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Stake deregistration certificate and withdrawal account mismatch",
+        name="Stake_deregistration_certificate_and_withdrawal_account_mismatch",
+        ledgerjs_name="Stake deregistration certificate and withdrawal account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -9492,20 +8486,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                     amount=1000,
                 )
             ],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -9516,7 +8497,8 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Byron to Shelley transfer input account mismatch",
+        name="Byron_to_Shelley_transfer_input_account_mismatch",
+        ledgerjs_name="Byron to Shelley transfer input account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -9548,21 +8530,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -9571,9 +8539,11 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Byron to Shelley transfer output account mismatch",
+        name="Byron_to_Shelley_transfer_output_account_mismatch",
+        ledgerjs_name="Byron to Shelley transfer output account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -9609,21 +8579,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -9632,12 +8588,14 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
 ]
 
 collateralOutputRejectTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
-        name="Collateral output with datum hash",
+        name="Collateral_output_with_datum_hash",
+        ledgerjs_name="Collateral output with datum hash",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -9664,16 +8622,6 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
             collateralOutput=TxOutputAlonzo(
                 destination=TxOutputDestination(
                     type=TxOutputDestinationType.THIRD_PARTY,
@@ -9689,10 +8637,7 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
                     datumHex="ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce188",
                 ),
             ),
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="",
         options=False,
@@ -9703,7 +8648,8 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Collateral output with inline datum",
+        name="Collateral_output_with_inline_datum",
+        ledgerjs_name="Collateral output with inline datum",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -9730,16 +8676,6 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
             collateralOutput=TxOutputBabbage(
                 destination=TxOutputDestination(
                     type=TxOutputDestinationType.THIRD_PARTY,
@@ -9756,10 +8692,7 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
                 ),
                 referenceScriptHex=None,
             ),
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="",
         options=False,
@@ -9770,7 +8703,8 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Collateral output with reference script",
+        name="Collateral_output_with_reference_script",
+        ledgerjs_name="Collateral output with reference script",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -9797,16 +8731,6 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
             collateralOutput=TxOutputBabbage(
                 destination=TxOutputDestination(
                     type=TxOutputDestinationType.THIRD_PARTY,
@@ -9820,10 +8744,7 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
                 datum=None,
                 referenceScriptHex="deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
             ),
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="",
         options=False,
@@ -9837,7 +8758,8 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
 
 testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
     SignTxTestCase(
-        name="Reject tx where asset groups are not ordered",
+        name="Reject_tx_where_asset_groups_are_not_ordered",
+        ledgerjs_name="Reject tx where asset groups are not ordered",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -9873,21 +8795,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -9898,7 +8806,8 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Reject tx where asset groups are not unique",
+        name="Reject_tx_where_asset_groups_are_not_unique",
+        ledgerjs_name="Reject tx where asset groups are not unique",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -9934,21 +8843,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -9959,7 +8854,8 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Reject tx where tokens within an asset group are not ordered - alphabetical",
+        name="Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_alphabetical",
+        ledgerjs_name="Reject tx where tokens within an asset group are not ordered - alphabetical",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -9994,21 +8890,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -10019,7 +8901,8 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Reject tx where tokens within an asset group are not ordered - length",
+        name="Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_length",
+        ledgerjs_name="Reject tx where tokens within an asset group are not ordered - length",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -10054,21 +8937,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -10079,7 +8948,8 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Reject tx where tokens within an asset group are not unique",
+        name="Reject_tx_where_tokens_within_an_asset_group_are_not_unique",
+        ledgerjs_name="Reject tx where tokens within an asset group are not unique",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -10114,21 +8984,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -10139,7 +8995,8 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Reject tx with mint fields with invalid canonical ordering of policies",
+        name="Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_policies",
+        ledgerjs_name="Reject tx with mint fields with invalid canonical ordering of policies",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -10153,7 +9010,6 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
             mint=[
                 AssetGroup(
                     policyIdHex="7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc374",
@@ -10170,19 +9026,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                     tokens=[Token(assetNameHex="", amount=0)],
                 ),
             ],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -10193,7 +9037,8 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Reject tx with mint fields with invalid canonical ordering of asset names",
+        name="Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_asset_names",
+        ledgerjs_name="Reject tx with mint fields with invalid canonical ordering of asset names",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -10207,7 +9052,6 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
             certificates=[],
-            withdrawals=[],
             mint=[
                 AssetGroup(
                     policyIdHex="7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc374",
@@ -10220,19 +9064,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                     ],
                 )
             ],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         options=False,
@@ -10246,7 +9078,8 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
 
 poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
-        name="Different index",
+        name="Different_index",
+        ledgerjs_name="Different index",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -10331,21 +9164,7 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -10354,9 +9173,11 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="Different prefix",
+        name="Different_prefix",
+        ledgerjs_name="Different prefix",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -10441,21 +9262,7 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -10464,9 +9271,11 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
         has_warning=False,
         has_aux_warning=False,
         nano_skip=False,
+        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
-        name="No path given",
+        name="No_path_given",
+        ledgerjs_name="No path given",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -10547,21 +9356,7 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -10635,21 +9430,7 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -10663,7 +9444,8 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
 
 stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
-        name="Path sent in for Pool Registration Owner Tx",
+        name="Path_sent_in_for_Pool_Registration_Owner_Tx",
+        ledgerjs_name="Path sent in for Pool Registration Owner Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -10725,21 +9507,7 @@ stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -10750,7 +9518,8 @@ stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="Hash sent in for Pool Registration Operator Tx",
+        name="Hash_sent_in_for_Pool_Registration_Operator_Tx",
+        ledgerjs_name="Hash sent in for Pool Registration Operator Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -10813,21 +9582,7 @@ stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         options=False,
@@ -10904,21 +9659,7 @@ stakePoolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -10936,7 +9677,8 @@ testsCVoteRegistrationRejects: List[SignTxTestCase] = []
 
 invalidCertificates: List[SignTxTestCase] = [
     SignTxTestCase(
-        name="pool registration with multiple path owners",
+        name="pool_registration_with_multiple_path_owners",
+        ledgerjs_name="pool registration with multiple path owners",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -11003,21 +9745,7 @@ invalidCertificates: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -11028,7 +9756,8 @@ invalidCertificates: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="pool registration with no owners",
+        name="pool_registration_with_no_owners",
+        ledgerjs_name="pool registration with no owners",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -11086,21 +9815,7 @@ invalidCertificates: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -11114,7 +9829,8 @@ invalidCertificates: List[SignTxTestCase] = [
 
 invalidPoolMetadataTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
-        name="pool metadata url too long",
+        name="pool_metadata_url_too_long",
+        ledgerjs_name="pool metadata url too long",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -11177,21 +9893,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -11202,7 +9904,8 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="pool metadata invalid url",
+        name="pool_metadata_invalid_url",
+        ledgerjs_name="pool metadata invalid url",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -11265,21 +9968,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -11290,7 +9979,8 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="pool metadata invalid hash length",
+        name="pool_metadata_invalid_hash_length",
+        ledgerjs_name="pool metadata invalid hash length",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -11353,21 +10043,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -11378,7 +10054,8 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="pool metadata missing hash",
+        name="pool_metadata_missing_hash",
+        ledgerjs_name="pool metadata missing hash",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -11441,21 +10118,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -11469,7 +10132,8 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
 
 invalidRelayTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
-        name="SingleHostHostname missing dns",
+        name="SingleHostHostname_missing_dns",
+        ledgerjs_name="SingleHostHostname missing dns",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -11532,21 +10196,7 @@ invalidRelayTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,
@@ -11557,7 +10207,8 @@ invalidRelayTestCases: List[SignTxTestCase] = [
         nano_skip=False,
     ),
     SignTxTestCase(
-        name="MultiHost missing dns",
+        name="MultiHost_missing_dns",
+        ledgerjs_name="MultiHost missing dns",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -11618,21 +10269,7 @@ invalidRelayTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            withdrawals=[],
-            mint=[],
-            collateralInputs=[],
-            requiredSigners=[],
-            referenceInputs=[],
-            votingProcedures=[],
-            auxiliaryData=None,
-            validityIntervalStart=None,
-            scriptDataHash=None,
-            includeNetworkId=None,
-            collateralOutput=None,
-            totalCollateral=None,
-            treasury=None,
-            donation=None,
-        ),
+            ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         options=False,

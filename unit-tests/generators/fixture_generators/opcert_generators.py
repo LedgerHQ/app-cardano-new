@@ -1,0 +1,75 @@
+from __future__ import annotations
+
+from typing import Sequence
+
+from common import (
+    _add_tests_to_sys_path,
+    _ensure_base58_module,
+    extract_apdu_payload,
+    write_file_safe,
+    sanitize_c_identifier,
+    format_bytes_as_c_array,
+)
+from paths import UNIT_TESTS_DIR
+
+FIXTURES_FILE = UNIT_TESTS_DIR / "test_opcert_fixtures.h"
+
+
+def _load_opcert_test_cases() -> Sequence[object]:
+    _add_tests_to_sys_path()
+    _ensure_base58_module()
+    from standalone.input_files.signOpCert import opCertTestCases  # type: ignore
+    return opCertTestCases
+
+
+def generate_opcert_fixtures() -> None:
+    print("Generating opcert fixtures...")
+
+    test_cases = _load_opcert_test_cases()
+    if not test_cases:
+        raise RuntimeError("No opcert test cases found")
+
+    from application_client.command_builder import CommandBuilder  # type: ignore
+
+    builder = CommandBuilder()
+
+    header_lines = [
+        "// Auto-generated Operational Certificate fixtures",
+        "// Generated from tests/standalone/input_files/signOpCert.py",
+        "#pragma once",
+        "",
+        "#include <stdint.h>",
+        "#include <stddef.h>",
+        "",
+        "typedef struct {",
+        "    const char *name;",
+        "    const uint8_t *payload;",
+        "    size_t payload_len;",
+        "} opcert_fixture_t;",
+        "",
+    ]
+
+    fixture_entries: list[str] = []
+    for test_index, test_case in enumerate(test_cases):
+        safe_name = sanitize_c_identifier(test_case.name, uppercase=True)
+        array_name = f"OPCERT_FIXTURE_{safe_name}_PAYLOAD"
+        apdu = builder.sign_opcert(test_case)
+        payload = extract_apdu_payload(apdu)
+        array_lines = format_bytes_as_c_array(payload, array_name).split("\n")
+        header_lines.extend(array_lines)
+        header_lines.append("")
+        entry_lines = [
+            "{",
+            f"    .name = \"{test_case.name}\",",
+            f"    .payload = {array_name},",
+            f"    .payload_len = sizeof({array_name}),",
+            "},",
+        ]
+        fixture_entries.append("\n".join(entry_lines))
+
+    header_lines.append("static const opcert_fixture_t OPCERT_FIXTURES[] = {")
+    header_lines.extend(fixture_entries)
+    header_lines.append("};")
+
+    write_file_safe(FIXTURES_FILE, "\n".join(header_lines) + "\n")
+    print(f"Written opcert fixtures to {FIXTURES_FILE}")

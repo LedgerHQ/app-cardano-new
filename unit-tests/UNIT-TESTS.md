@@ -160,7 +160,7 @@ pytest -xvs --device stax test_mock_key_derivation.py::test_all_mock_key_derivat
 - Account keys
 - All standard Cardano BIP-44 paths
 
-### 3. Opcert Message Construction (`unit-tests/test_opcert_message.c`)
+### 3. Opcert Message Construction (`unit-tests/test_opcert.c`)
 
 **What it does:**
 - Verifies that opcert messages are constructed correctly

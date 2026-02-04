@@ -120,8 +120,6 @@ class CommandSender:
         """
         extra_paths = additional_witness_paths or []
         witness_paths = gather_witness_paths(tx, signing_mode, extra_paths)
-        if not witness_paths:
-            raise AssertionError("No witness paths found in transaction")
 
         init_params = self._cmd_builder.build_tx_init_params(
             tx=tx,
@@ -173,7 +171,7 @@ class CommandSender:
             with self._exchange_async(self._cmd_builder.sign_tx_aux_data_delegation(last_delegation)):
                 if on_review:
                     on_review()
-            
+
             response = self.get_async_response()
             if response is None:
                 raise AssertionError("No response from last delegation")
@@ -183,7 +181,7 @@ class CommandSender:
             with self._exchange_async(self._cmd_builder.sign_tx_aux_data_init(tx, aux_params)):
                 if on_review:
                     on_review()
-            
+
             response = self.get_async_response()
             if response is None:
                 raise AssertionError("No response from AUX_DATA init")

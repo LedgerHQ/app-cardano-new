@@ -8,6 +8,8 @@ fixture generators (valid and reject test cases).
 from __future__ import annotations
 from typing import Any
 
+from common import extract_apdu_payload
+
 
 def _is_simple_native_script(native_script: Any) -> bool:
     """
@@ -74,141 +76,174 @@ def generate_native_script_tree_recursive(
 
     else:
         # Internal node: COMPLEX script (has children)
-        # Generate all child scripts first (post-order traversal)
-
         script_type = native_script.type
-        child_script_identifiers = []
+        child_scripts_list = native_script.params.scripts
+        required_count = getattr(native_script.params, "requiredCount", None)
 
-        if script_type == NativeScriptType.ALL:
-            # NativeScriptParamsScripts: has 'scripts' field (list of NativeScript)
-            child_scripts_list = native_script.params.scripts
-
-            fixture_lines.append(f"// {script_type.name} (internal node): {len(child_scripts_list)} children")
-
-            # Recursively generate each child
-            for child_idx, child_script in enumerate(child_scripts_list):
-                child_lines, child_struct_id = generate_native_script_tree_recursive(
-                    child_script,
-                    current_unique_id,
-                    child_idx,
-                    simple_script_generator_func
-                )
-                fixture_lines.extend(child_lines)
-                fixture_lines.append("")
-                child_script_identifiers.append(child_struct_id)
-
-            # Generate array of child script pointers
-            fixture_lines.append(f"static const native_script_t* CHILDREN_{current_unique_id}[] = {{")
-            if(len(child_script_identifiers) == 0):
-                fixture_lines.append(f"    NULL")
-            else:
-                for child_id in child_script_identifiers:
-                    fixture_lines.append(f"    (const native_script_t*)&{child_id},")
-            fixture_lines.append("};")
-            fixture_lines.append("")
-
-            # Generate parent COMPLEX script struct
-            fixture_lines.append(f"static const native_script_t SCRIPT_{current_unique_id} = {{")
-            fixture_lines.append(f"    .type = NATIVE_SCRIPT_TYPE_{script_type.name},")
-            fixture_lines.append(f"    .impl = {{")
-            fixture_lines.append(f"        .complex = {{")
-            fixture_lines.append(f"             .params = {{")
-            fixture_lines.append(f"                 .all = {{")
-            fixture_lines.append(f"                     .scripts = CHILDREN_{current_unique_id},")
-            fixture_lines.append(f"                     .scripts_count = {len(child_scripts_list)},")
-            fixture_lines.append(f"                 }}")
-            fixture_lines.append(f"             }}")
-            fixture_lines.append(f"         }}")
-            fixture_lines.append(f"     }}")
-            fixture_lines.append("};")
-
-        elif script_type == NativeScriptType.ANY:
-            # NativeScriptParamsScripts: has 'scripts' field (list of NativeScript)
-            child_scripts_list = native_script.params.scripts
-
-            fixture_lines.append(f"// {script_type.name} (internal node): {len(child_scripts_list)} children")
-
-            # Recursively generate each child
-            for child_idx, child_script in enumerate(child_scripts_list):
-                child_lines, child_struct_id = generate_native_script_tree_recursive(
-                    child_script,
-                    current_unique_id,
-                    child_idx,
-                    simple_script_generator_func
-                )
-                fixture_lines.extend(child_lines)
-                fixture_lines.append("")
-                child_script_identifiers.append(child_struct_id)
-
-            # Generate array of child script pointers
-            fixture_lines.append(f"static const native_script_t* CHILDREN_{current_unique_id}[] = {{")
-            if(len(child_script_identifiers) == 0):
-                fixture_lines.append(f"    NULL")
-            else:
-                for child_id in child_script_identifiers:
-                    fixture_lines.append(f"    (const native_script_t*)&{child_id},")
-            fixture_lines.append("};")
-            fixture_lines.append("")
-
-            # Generate parent COMPLEX script struct
-            fixture_lines.append(f"static const native_script_t SCRIPT_{current_unique_id} = {{")
-            fixture_lines.append(f"    .type = NATIVE_SCRIPT_TYPE_{script_type.name},")
-            fixture_lines.append(f"    .impl = {{")
-            fixture_lines.append(f"        .complex = {{")
-            fixture_lines.append(f"             .params = {{")
-            fixture_lines.append(f"                 .any = {{")
-            fixture_lines.append(f"                     .scripts = CHILDREN_{current_unique_id},")
-            fixture_lines.append(f"                     .scripts_count = {len(child_scripts_list)},")
-            fixture_lines.append(f"                 }}")
-            fixture_lines.append(f"             }}")
-            fixture_lines.append(f"         }}")
-            fixture_lines.append(f"     }}")
-            fixture_lines.append("};")
-
-        elif script_type == NativeScriptType.N_OF_K:
-            # NativeScriptParamsNofK: has 'requiredCount' and 'scripts' fields
-            required_count = native_script.params.requiredCount
-            child_scripts_list = native_script.params.scripts
-
+        if script_type == NativeScriptType.N_OF_K:
             fixture_lines.append(f"// N_OF_K (internal node): {required_count} of {len(child_scripts_list)} children required")
+        else:
+            fixture_lines.append(f"// {script_type.name} (internal node): {len(child_scripts_list)} children")
 
-            # Recursively generate each child
-            for child_idx, child_script in enumerate(child_scripts_list):
-                child_lines, child_struct_id = generate_native_script_tree_recursive(
-                    child_script,
-                    current_unique_id,
-                    child_idx,
-                    simple_script_generator_func
-                )
-                fixture_lines.extend(child_lines)
-                fixture_lines.append("")
-                child_script_identifiers.append(child_struct_id)
-
-            # Generate array of child script pointers
-
-            fixture_lines.append(f"static const native_script_t* CHILDREN_{current_unique_id}[] = {{")
-            if(len(child_script_identifiers) == 0):
-                fixture_lines.append(f"    NULL")
-            else:
-                for child_id in child_script_identifiers:
-                    fixture_lines.append(f"    (const native_script_t*)&{child_id},")
-            fixture_lines.append("};")
+        # Recursively generate each child (post-order traversal)
+        child_script_identifiers = []
+        for child_idx, child_script in enumerate(child_scripts_list):
+            child_lines, child_struct_id = generate_native_script_tree_recursive(
+                child_script,
+                current_unique_id,
+                child_idx,
+                simple_script_generator_func
+            )
+            fixture_lines.extend(child_lines)
             fixture_lines.append("")
+            child_script_identifiers.append(child_struct_id)
 
-            # Generate parent COMPLEX script struct
-            fixture_lines.append(f"static const native_script_t SCRIPT_{current_unique_id} = {{")
-            fixture_lines.append(f"    .type = NATIVE_SCRIPT_TYPE_N_OF_K,")
-            fixture_lines.append(f"    .impl = {{")
-            fixture_lines.append(f"        .complex = {{")
-            fixture_lines.append(f"            .params = {{")
-            fixture_lines.append(f"                 .n_of_k = {{")
+        # Generate array of child script pointers
+        fixture_lines.append(f"static const native_script_t* CHILDREN_{current_unique_id}[] = {{")
+        if len(child_script_identifiers) == 0:
+            fixture_lines.append(f"    NULL")
+        else:
+            for child_id in child_script_identifiers:
+                fixture_lines.append(f"    (const native_script_t*)&{child_id},")
+        fixture_lines.append("};")
+        fixture_lines.append("")
+
+        # Generate parent COMPLEX script struct.
+        # Union field name and contents differ per type; N_OF_K adds required_count.
+        union_field = script_type.name.lower()  # "all", "any", or "n_of_k"
+        fixture_lines.append(f"static const native_script_t SCRIPT_{current_unique_id} = {{")
+        fixture_lines.append(f"    .type = NATIVE_SCRIPT_TYPE_{script_type.name},")
+        fixture_lines.append(f"    .impl = {{")
+        fixture_lines.append(f"        .complex = {{")
+        fixture_lines.append(f"             .params = {{")
+        fixture_lines.append(f"                 .{union_field} = {{")
+        if required_count is not None:
             fixture_lines.append(f"                     .required_count = {required_count},")
-            fixture_lines.append(f"                     .scripts = CHILDREN_{current_unique_id},")
-            fixture_lines.append(f"                     .scripts_count = {len(child_scripts_list)},")
-            fixture_lines.append(f"                 }}")
-            fixture_lines.append(f"            }}")
-            fixture_lines.append(f"        }}")
-            fixture_lines.append(f"    }}")
-            fixture_lines.append("};")
+        fixture_lines.append(f"                     .scripts = CHILDREN_{current_unique_id},")
+        fixture_lines.append(f"                     .scripts_count = {len(child_scripts_list)},")
+        fixture_lines.append(f"                 }}")
+        fixture_lines.append(f"             }}")
+        fixture_lines.append(f"         }}")
+        fixture_lines.append(f"     }}")
+        fixture_lines.append("};")
 
         return fixture_lines, f"SCRIPT_{current_unique_id}"
+
+
+def generate_simple_script_apdu_array(
+    script_identifier: str,
+    script: Any,
+) -> tuple[list[str], str]:
+    """
+    Generate APDU payload array for a simple script.
+
+    Args:
+        script_identifier: Unique identifier for this script
+        script: Native script object
+
+    Returns:
+        Tuple of (C code lines, array name)
+    """
+    from application_client.command_builder import CommandBuilder  # type: ignore
+
+    command_builder = CommandBuilder()
+    full_apdu = command_builder.derive_script_add_simple(script)
+    apdu_payload = extract_apdu_payload(full_apdu)
+
+    lines = []
+    array_name = f"APDU_PAYLOAD_{script_identifier}"
+
+    lines.append(f"// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE")
+    lines.append(f"// Script type: {script.type.name}")
+    lines.append(f"static const uint8_t {array_name}[{len(apdu_payload)}] = {{")
+
+    # Format bytes in rows of 8 for readability
+    for i in range(0, len(apdu_payload), 8):
+        byte_chunk = apdu_payload[i:i+8]
+        hex_bytes = ", ".join(f"0x{b:02x}" for b in byte_chunk)
+        trailing_comma = "," if i + 8 < len(apdu_payload) else ""
+        lines.append(f"    {hex_bytes}{trailing_comma}")
+
+    lines.append("};")
+    lines.append("")
+
+    return lines, array_name
+
+
+def generate_simple_script_fixture(
+    script_identifier: str,
+    script: Any,
+) -> list[str]:
+    """
+    Generate complete simple script fixture.
+
+    Args:
+        script_identifier: Unique identifier
+        script: Native script object
+
+    Returns:
+        List of C code lines
+    """
+    lines = []
+
+    # Generate APDU payload array
+    apdu_lines, apdu_array_name = generate_simple_script_apdu_array(
+        script_identifier, script
+    )
+    lines.extend(apdu_lines)
+
+    # Generate script structure
+    script_type_enum = f"NATIVE_SCRIPT_TYPE_{script.type.name}"
+
+    lines.append(f"static const native_script_t SCRIPT_{script_identifier} = {{")
+    lines.append(f"    .type = {script_type_enum},")
+    lines.append(f"    .impl = {{")
+    lines.append(f"        .simple = {{")
+    lines.append(f"            .apdu_payload = {apdu_array_name},")
+    lines.append(f"            .apdu_payload_length = sizeof({apdu_array_name}),")
+    lines.append(f"        }}")
+    lines.append(f"    }}")
+    lines.append("};")
+    lines.append("")
+
+    return lines
+
+
+def generate_finish_apdu_payload(
+    test_case_id: str,
+    display_format: Any,
+) -> tuple[list[str], str]:
+    """
+    Generate APDU payload for derive_script_finish.
+
+    Args:
+        test_case_id: Test case identifier
+        display_format: NativeScriptHashDisplayFormat enum value from test case
+
+    Returns:
+        Tuple of (C code lines, array name)
+    """
+    from application_client.command_builder import CommandBuilder  # type: ignore
+
+    command_builder = CommandBuilder()
+    full_apdu = command_builder.derive_script_finish(display_format)
+    apdu_payload = extract_apdu_payload(full_apdu)
+
+    lines = []
+    array_name = f"FINISH_APDU_PAYLOAD_{test_case_id}"
+
+    lines.append(f"// APDU payload for P1_NATIVE_SCRIPT_FINISH")
+    lines.append(f"// Display format: {display_format.name} (0x{display_format.value:02x})")
+    lines.append(f"static const uint8_t {array_name}[{len(apdu_payload)}] = {{")
+
+    # Format bytes in rows of 8 for readability
+    for i in range(0, len(apdu_payload), 8):
+        byte_chunk = apdu_payload[i:i+8]
+        hex_bytes = ", ".join(f"0x{b:02x}" for b in byte_chunk)
+        trailing_comma = "," if i + 8 < len(apdu_payload) else ""
+        lines.append(f"    {hex_bytes}{trailing_comma}")
+
+    lines.append("};")
+    lines.append("")
+
+    return lines, array_name

@@ -96,36 +96,6 @@ def idTestFunc(testCase: Union[DeriveAddressTestCase, PubKeyTestCase, CVoteTestC
     return testCase.name
 
 
-def pop_sized_buf_from_buffer(buffer:bytes, size:int) -> Tuple[bytes, bytes]:
-    """Extract a buffer of a given size from a buffer
-
-    Args:
-        buffer (bytes): Source buffer
-        size (int): Size of the buffer to extract
-
-    Returns:
-        Tuple of:
-            - The remaining buffer
-            - The extracted buffer
-    """
-    return buffer[size:], buffer[0:size]
-
-
-def pop_size_prefixed_buf_from_buf(buffer:bytes, lenSize:int) -> Tuple[bytes, int, bytes]:
-    """Extract a buffer prefixed with its size from a buffer
-
-    Args:
-        buffer (bytes): Source buffer
-        lenSize (int): Size of the length prefix
-
-    Returns:
-        Tuple of:
-            - The remaining buffer
-            - The extracted data length
-            - The extracted buffer
-    """
-    data_len = int.from_bytes(buffer[0:lenSize], "big")
-    return buffer[lenSize+data_len:], data_len, buffer[lenSize:data_len+lenSize]
 
 
 def derive_address(testCase: DeriveAddressTestCase) -> Union[bytes, str]:

@@ -1,0 +1,93 @@
+// Unit tests for Sign Operational Certificate (auto-generated)
+
+#include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include <stdarg.h>
+#include <setjmp.h>
+
+#include <cmocka.h>
+
+#include "cardano_constants.h"
+#include "buffer.h"
+#include "cardano_swo.h"
+#include "globals.h"
+#include "../src/securityPolicy/securityPolicy.h"
+#include "handler/sign_opcert.h"
+#include "opcert/opcert_types.h"
+#include "test_opcert_fixtures.h"
+
+
+static uint16_t g_last_sw = 0;
+static uint8_t g_last_response[ED25519_SIGNATURE_LENGTH];
+static size_t g_last_response_len = 0;
+
+int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
+    assert_true(bufferLength <= sizeof(g_last_response));
+    memcpy(g_last_response, buffer, bufferLength);
+    g_last_response_len = bufferLength;
+    g_last_sw = swo;
+    return 0;
+}
+
+int io_send_sw(uint16_t swo) {
+    g_last_sw = swo;
+    return 0;
+}
+
+void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings) {
+    (void)securityPolicy;
+    (void)warnings;
+    finalize_sign_opcert(true);
+}
+
+void ui_menu_main(void) {
+    // no-op stub used by nbgl_useCaseStatus callbacks
+}
+
+void nbgl_useCaseStatus(const char *text, bool success, void (*callback)(void)) {
+    (void)text;
+    (void)success;
+    if (callback != NULL) {
+        callback();
+    }
+}
+
+void reset_opcert_context(void) {
+    memset(&G_context, 0, sizeof(G_context));
+    g_last_sw = 0;
+    g_last_response_len = 0;
+}
+
+static void run_opcert_fixture(const opcert_fixture_t *fixture) {
+    assert_non_null(fixture);
+    reset_opcert_context();
+    buffer_t data = {.ptr = fixture->payload, .size = fixture->payload_len, .offset = 0};
+    handler_sign_opcert(&data);
+    assert_int_equal(g_last_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_len, ED25519_SIGNATURE_LENGTH);
+}
+
+
+static void test_opCert_should_correctly_sign_operational_certificate(void **state) {
+    (void) state;
+    run_opcert_fixture(&OPCERT_FIXTURES[0]);
+}
+
+static void test_opCert_should_correctly_sign_operational_certificate_with_warning(void **state) {
+    (void) state;
+    run_opcert_fixture(&OPCERT_FIXTURES[1]);
+}
+
+// ======================================================================
+// Main
+// ======================================================================
+
+int main(void) {
+    const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_opCert_should_correctly_sign_operational_certificate),
+        cmocka_unit_test(test_opCert_should_correctly_sign_operational_certificate_with_warning),
+    };
+    return cmocka_run_group_tests(tests, NULL, NULL);
+}

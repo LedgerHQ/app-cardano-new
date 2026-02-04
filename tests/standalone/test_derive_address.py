@@ -12,6 +12,7 @@ from ledgered.devices import Device
 from ragger.backend import BackendInterface
 from ragger.navigator import Navigator, NavInsID
 from ragger.navigator.navigation_scenario import NavigateWithScenario
+from ragger.error import ExceptionRAPDU
 
 from application_client.app_def import Testnet
 from application_client.status_words import StatusWord
@@ -23,6 +24,7 @@ from standalone.input_files.derive_address import byronTestCases
 from standalone.input_files.derive_address import (
     shelleyTestCasesNoConfirm,
     shelleyTestCasesWithConfirm,
+    rejectTestCases,
 )
 from standalone.utils import idTestFunc, derive_address
 
@@ -81,3 +83,20 @@ def test_derive_address(
         assert encoded == derive_address(testCase)
     elif mode == "return":
         assert response.data == derive_address(testCase)
+
+
+@pytest.mark.parametrize(
+    "testCase",
+    rejectTestCases,
+    ids=idTestFunc
+)
+def test_derive_address_reject(backend: BackendInterface,
+                               testCase: DeriveAddressTestCase) -> None:
+    """Check Reject Derive Address"""
+
+    client = CommandSender(backend)
+
+    with pytest.raises(ExceptionRAPDU) as err:
+        with client.derive_address_async(P1Type.P1_ADDRESS_RETURN, testCase):
+            pass
+    assert err.value.status == StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED

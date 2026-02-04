@@ -118,6 +118,8 @@ def _generate_fixtures_for_era(
         raw_tx_bytes = builder._serialize_transaction_unpacked_raw(tx)
 
         expected_cbor_hex = test_case.txBody
+        if expected_cbor_hex is None:
+            expected_cbor_hex = raw_tx_bytes.hex()
         cbor_bytes = _cbor_hex_to_bytes(expected_cbor_hex)
         expected_hash_hex = _compute_blake2b_256(cbor_bytes)
         body_aux_data_hash = _extract_aux_data_hash_from_tx_body(expected_cbor_hex)

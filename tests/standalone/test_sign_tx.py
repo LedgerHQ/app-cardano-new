@@ -7,13 +7,14 @@ from ledgered.devices import Device
 from ragger.backend import BackendInterface
 from ragger.navigator import Navigator, NavInsID
 from ragger.navigator.navigation_scenario import NavigateWithScenario
+from ragger.error import ExceptionRAPDU
 
 from application_client.status_words import StatusWord
 from application_client.command_builder import gather_witness_paths
 from application_client.command_sender import CommandSender
 from application_client.response_unpacker import unpack_sign_tx_witness_response
 from standalone.utils import verify_signature, idTestFunc
-from standalone.input_files.signTx import (
+from standalone.input_files.signTx import (  # type: ignore
     testsByron,
     testsMary,
     testsShelleyNoCertificates,
@@ -32,6 +33,22 @@ from standalone.input_files.signTx import (
     testsMultisig,
     poolRegistrationOwnerTestCases,
     poolRegistrationOperatorTestCases,
+    transactionInitRejectTestCases,
+    addressParamsRejectTestCases,
+    certificateRejectTestCases,
+    certificateStakingRejectTestCases,
+    certificateStakePoolRetirementRejectTestCases,
+    withdrawalRejectTestCases,
+    witnessRejectTestCases,
+    singleAccountRejectTestCases,
+    collateralOutputRejectTestCases,
+    testsInvalidTokenBundleOrdering,
+    poolRegistrationOwnerRejectTestCases,
+    stakePoolRegistrationPoolIdRejectTestCases,
+    stakePoolRegistrationOwnerRejectTestCases,
+    invalidCertificates,
+    invalidPoolMetadataTestCases,
+    invalidRelayTestCases,
     SignTxTestCase,
     TxAuxiliaryDataType,
     ThirdPartyAddressParams,
@@ -227,3 +244,48 @@ def test_sign_tx(device: Device,
     except Exception as e:
         mode_label = "EXPERT MODE" if expert_mode else "NON-EXPERT MODE"
         raise AssertionError(f"Test FAILED in {mode_label}: {testCase.name}") from e
+
+
+# Collect all reject test cases
+all_reject_test_cases = (
+    transactionInitRejectTestCases +
+    addressParamsRejectTestCases +
+    certificateRejectTestCases +
+    certificateStakingRejectTestCases +
+    certificateStakePoolRetirementRejectTestCases +
+    withdrawalRejectTestCases +
+    witnessRejectTestCases +
+    singleAccountRejectTestCases +
+    collateralOutputRejectTestCases +
+    testsInvalidTokenBundleOrdering +
+    poolRegistrationOwnerRejectTestCases +
+    stakePoolRegistrationPoolIdRejectTestCases +
+    stakePoolRegistrationOwnerRejectTestCases +
+    invalidCertificates +
+    invalidPoolMetadataTestCases +
+    invalidRelayTestCases
+)
+
+
+@pytest.mark.parametrize(
+    "testCase",
+    all_reject_test_cases,
+    ids=idTestFunc
+)
+def test_sign_tx_reject(backend: BackendInterface,
+                        testCase: SignTxTestCase) -> None:
+    """Test that invalid transaction parameters are correctly rejected"""
+
+    if not testCase.works_in_ragger:
+        pytest.skip("This test is seed-dependent and does not work with ragger's seed")
+
+    client = CommandSender(backend)
+
+    with pytest.raises(ExceptionRAPDU) as err:
+        client.sign_tx(
+            tx=testCase.tx,
+            signing_mode=testCase.signingMode,
+            additional_witness_paths=testCase.additionalWitnessPaths,
+            options=testCase.options,
+        )
+    assert err.value.status == testCase.expected_sw

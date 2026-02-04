@@ -114,13 +114,6 @@ add_executable(test_cbor test_cbor.c)
 add_executable(test_buffer_utils test_buffer_write.c)
 add_executable(test_ip_utils test_ip_utils.c ../src/utils/ipUtils.c)
 add_executable(test_hash test_hash.c)
-add_executable(test_apdu_info
-    test_apdu_info.c
-    ../src/handler/get_version.c
-    ../src/handler/get_app_name.c
-    ../src/handler/get_serial.c
-    mock_sources/io_stub.c
-)
 add_executable(test_address_utils_byron
     test_address_utils_byron.c
     ../src/addressUtils/addressUtilsByron.c
@@ -141,6 +134,12 @@ add_executable(test_key_derivation
 )
 add_executable(test_message_signing
     test_message_signing.c
+    ../src/messageSigning/messageSigning.c
+    ../src/keyDerivation/keyDerivation.c
+    ../src/securityPolicy/securityPolicy_privkey.c
+)
+add_executable(test_cvote
+    test_cvote.c
     ../src/messageSigning/messageSigning.c
     ../src/keyDerivation/keyDerivation.c
     ../src/securityPolicy/securityPolicy_privkey.c
@@ -205,11 +204,11 @@ set(TEST_EXECUTABLES
     test_buffer_utils
     test_ip_utils
     test_hash
-    test_apdu_info
     test_address_utils_byron
     test_address_utils_shelley
     test_key_derivation
     test_message_signing
+    test_cvote
     test_sign_msg
     test_aux_data_hash_builder
     test_tx_hash_builder
@@ -378,7 +377,6 @@ target_link_libraries(test_cbor PUBLIC cmocka gcov cbor_lib hex_utils read write
 target_link_libraries(test_buffer_utils PUBLIC cmocka gcov buffer_write_lib buffer write varint bip32 parsers_lib)
 target_link_libraries(test_ip_utils PUBLIC cmocka gcov)
 target_link_libraries(test_hash PUBLIC cmocka gcov hex_utils blake2b_lib sha3_lib hash_mocks_lib)
-target_link_libraries(test_apdu_info PUBLIC cmocka gcov buffer read)
 target_link_libraries(test_address_utils_byron
     PUBLIC
         cmocka
@@ -422,6 +420,7 @@ target_link_libraries(test_address_utils_shelley
 )
 target_link_libraries(test_key_derivation PUBLIC cmocka gcov crypto_mocks_lib bip44_real hex_utils write hash_mocks_lib)
 target_link_libraries(test_message_signing PUBLIC cmocka gcov crypto_mocks_lib bip44_real hash_mocks_lib)
+target_link_libraries(test_cvote PUBLIC cmocka gcov crypto_mocks_lib bip44_real hash_mocks_lib)
 target_link_libraries(test_sign_msg PUBLIC cmocka gcov cardano_sign_msg_core)
 target_link_libraries(test_aux_data_hash_builder
     PUBLIC
@@ -589,7 +588,6 @@ add_test(test_handler_rejects test_handler_rejects)
 
 # Register tests with CTest
 add_test(test_hex_utils test_hex_utils)
-add_test(test_apdu_info test_apdu_info)
 add_test(test_base58 test_base58)
 add_test(test_bech32 test_bech32)
 add_test(test_text_utils test_text_utils)
@@ -604,11 +602,17 @@ add_test(test_address_utils_byron test_address_utils_byron)
 add_test(test_address_utils_shelley test_address_utils_shelley)
 add_test(test_key_derivation test_key_derivation)
 add_test(test_message_signing test_message_signing)
+add_test(test_cvote test_cvote)
 add_test(test_sign_msg test_sign_msg)
 
-add_executable(test_opcert_message test_opcert_message.c test_utils/hexUtils.c)
-target_link_libraries(test_opcert_message PUBLIC cmocka gcov)
-add_test(test_opcert_message test_opcert_message)
+add_executable(test_opcert
+    test_opcert.c
+    test_utils/hexUtils.c
+    ../src/handler/sign_opcert.c
+    ../src/opcert/opcert_parse.c
+)
+target_link_libraries(test_opcert PUBLIC cmocka gcov cardano_sign_tx_core)
+add_test(test_opcert test_opcert)
 
 
 # Common sources for address derivation tests

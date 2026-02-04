@@ -73,62 +73,62 @@ static void run_reject_fixture(const derive_address_fixture_t *fixture) {
     assert_int_equal(g_last_sw, fixture->check_expected);
 }
 
-static void test_derive_address_reject_0_path_too_short(void **state) {
+static void test_derive_address_reject_0_derive_address_path_too_short(void **state) {
     (void) state;
     run_reject_fixture(&DERIVE_ADDRESS_REJECT_FIXTURES[0]);
 }
 
-static void test_derive_address_reject_1_invalid_path(void **state) {
+static void test_derive_address_reject_1_derive_address_invalid_path(void **state) {
     (void) state;
     run_reject_fixture(&DERIVE_ADDRESS_REJECT_FIXTURES[1]);
 }
 
-static void test_derive_address_reject_2_byron_with_shelley_path(void **state) {
+static void test_derive_address_reject_2_derive_address_byron_with_shelley_path(void **state) {
     (void) state;
     run_reject_fixture(&DERIVE_ADDRESS_REJECT_FIXTURES[2]);
 }
 
-static void test_derive_address_reject_3_base_key_key_with_byron_spending_path(void **state) {
+static void test_derive_address_reject_3_derive_address_base_key_key_with_byron_spending_path(void **state) {
     (void) state;
     run_reject_fixture(&DERIVE_ADDRESS_REJECT_FIXTURES[3]);
 }
 
-static void test_derive_address_reject_4_base_key_key_with_wrong_spending_path(void **state) {
+static void test_derive_address_reject_4_derive_address_base_key_key_with_wrong_spending_path(void **state) {
     (void) state;
     run_reject_fixture(&DERIVE_ADDRESS_REJECT_FIXTURES[4]);
 }
 
-static void test_derive_address_reject_5_base_key_key_with_wrong_staking_path_1(void **state) {
+static void test_derive_address_reject_5_derive_address_base_key_key_with_wrong_staking_path_1(void **state) {
     (void) state;
     run_reject_fixture(&DERIVE_ADDRESS_REJECT_FIXTURES[5]);
 }
 
-static void test_derive_address_reject_6_base_key_script_with_byron_spending_path(void **state) {
+static void test_derive_address_reject_6_derive_address_base_key_script_with_byron_spending_path(void **state) {
     (void) state;
     run_reject_fixture(&DERIVE_ADDRESS_REJECT_FIXTURES[6]);
 }
 
-static void test_derive_address_reject_7_base_address_scripthash_keyhash_not_allowed(void **state) {
+static void test_derive_address_reject_7_derive_address_base_address_scripthash_keyhash_not_allowed(void **state) {
     (void) state;
     run_reject_fixture(&DERIVE_ADDRESS_REJECT_FIXTURES[7]);
 }
 
-static void test_derive_address_reject_8_pointer_with_byron_spending_path(void **state) {
+static void test_derive_address_reject_8_derive_address_pointer_with_byron_spending_path(void **state) {
     (void) state;
     run_reject_fixture(&DERIVE_ADDRESS_REJECT_FIXTURES[8]);
 }
 
-static void test_derive_address_reject_9_pointer_with_wrong_spending_path(void **state) {
+static void test_derive_address_reject_9_derive_address_pointer_with_wrong_spending_path(void **state) {
     (void) state;
     run_reject_fixture(&DERIVE_ADDRESS_REJECT_FIXTURES[9]);
 }
 
-static void test_derive_address_reject_10_enterprise_with_byron_spending_path(void **state) {
+static void test_derive_address_reject_10_derive_address_enterprise_with_byron_spending_path(void **state) {
     (void) state;
     run_reject_fixture(&DERIVE_ADDRESS_REJECT_FIXTURES[10]);
 }
 
-static void test_derive_address_reject_11_enterprise_with_wrong_spending_path(void **state) {
+static void test_derive_address_reject_11_derive_address_enterprise_with_wrong_spending_path(void **state) {
     (void) state;
     run_reject_fixture(&DERIVE_ADDRESS_REJECT_FIXTURES[11]);
 }
@@ -136,18 +136,18 @@ static void test_derive_address_reject_11_enterprise_with_wrong_spending_path(vo
 int main(void) {
     TRACE("Starting test_derive_address_rejects");
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_derive_address_reject_0_path_too_short),
-        cmocka_unit_test(test_derive_address_reject_1_invalid_path),
-        cmocka_unit_test(test_derive_address_reject_2_byron_with_shelley_path),
-        cmocka_unit_test(test_derive_address_reject_3_base_key_key_with_byron_spending_path),
-        cmocka_unit_test(test_derive_address_reject_4_base_key_key_with_wrong_spending_path),
-        cmocka_unit_test(test_derive_address_reject_5_base_key_key_with_wrong_staking_path_1),
-        cmocka_unit_test(test_derive_address_reject_6_base_key_script_with_byron_spending_path),
-        cmocka_unit_test(test_derive_address_reject_7_base_address_scripthash_keyhash_not_allowed),
-        cmocka_unit_test(test_derive_address_reject_8_pointer_with_byron_spending_path),
-        cmocka_unit_test(test_derive_address_reject_9_pointer_with_wrong_spending_path),
-        cmocka_unit_test(test_derive_address_reject_10_enterprise_with_byron_spending_path),
-        cmocka_unit_test(test_derive_address_reject_11_enterprise_with_wrong_spending_path),
+        cmocka_unit_test(test_derive_address_reject_0_derive_address_path_too_short),
+        cmocka_unit_test(test_derive_address_reject_1_derive_address_invalid_path),
+        cmocka_unit_test(test_derive_address_reject_2_derive_address_byron_with_shelley_path),
+        cmocka_unit_test(test_derive_address_reject_3_derive_address_base_key_key_with_byron_spending_path),
+        cmocka_unit_test(test_derive_address_reject_4_derive_address_base_key_key_with_wrong_spending_path),
+        cmocka_unit_test(test_derive_address_reject_5_derive_address_base_key_key_with_wrong_staking_path_1),
+        cmocka_unit_test(test_derive_address_reject_6_derive_address_base_key_script_with_byron_spending_path),
+        cmocka_unit_test(test_derive_address_reject_7_derive_address_base_address_scripthash_keyhash_not_allowed),
+        cmocka_unit_test(test_derive_address_reject_8_derive_address_pointer_with_byron_spending_path),
+        cmocka_unit_test(test_derive_address_reject_9_derive_address_pointer_with_wrong_spending_path),
+        cmocka_unit_test(test_derive_address_reject_10_derive_address_enterprise_with_byron_spending_path),
+        cmocka_unit_test(test_derive_address_reject_11_derive_address_enterprise_with_wrong_spending_path),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

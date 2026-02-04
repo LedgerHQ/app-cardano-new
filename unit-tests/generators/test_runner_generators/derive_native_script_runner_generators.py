@@ -82,7 +82,11 @@ def _build_test_functions(fixture_names: list[str]) -> tuple[str, list[str]]:
     test_function_names = []
     
     for test_case_index, test_case_name in enumerate(fixture_names):
-        test_case_name_sanitized = sanitize_c_identifier(test_case_name, uppercase=False)
+        fixture_base = test_case_name
+        prefix = "Native_script_"
+        if fixture_base.startswith(prefix):
+            fixture_base = fixture_base[len(prefix):]
+        test_case_name_sanitized = sanitize_c_identifier(fixture_base, uppercase=False)
         test_function_name = f"test_derive_native_script_{test_case_name_sanitized}"
         
         test_functions_lines.extend([

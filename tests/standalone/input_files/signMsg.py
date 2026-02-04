@@ -46,11 +46,12 @@ class SignMsgExpectedInUnitTest:
     addressFieldHex: str
 
 
-@dataclass
+@dataclass(kw_only=True)
 class SignMsgTestCase:
     name: str
-    msgData: MessageData
-    nav: NavigationData
+    ledgerjs_name: Optional[str] = None
+    msgData: Optional[MessageData] = None
+    nav: Optional[NavigationData] = None
     expected_in_unit_test: Optional[SignMsgExpectedInUnitTest] = None
 
 
@@ -58,14 +59,19 @@ class SignMsgTestCase:
 # pylint: disable=line-too-long
 signMsgTestCases = [
     SignMsgTestCase(
-        "Sign_msg_empty_message_with_keyhash_as_address_field",
-        MessageData(
-            "", "m/1852'/1815'/0'/0/1", False, False, MessageAddressFieldType.KEY_HASH
+        name="Sign_msg_empty_message_with_keyhash_as_address_field",
+        ledgerjs_name="msg01: Should correctly sign an empty message with keyhash as address field",
+        msgData=MessageData(
+            messageHex="",
+            signingPath="m/1852'/1815'/0'/0/1",
+            hashPayload=False,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.KEY_HASH
         ),
-        NavigationData(
-            [NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
-            [NavInsID.BOTH_CLICK],
-            [NavInsID.BOTH_CLICK] * 2,
+        nav=NavigationData(
+            init=[NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
+            chunk=[NavInsID.BOTH_CLICK],
+            confirm=[NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
@@ -77,18 +83,19 @@ signMsgTestCases = [
         ),
     ),
     SignMsgTestCase(
-        "Sign_msg_short_nonhashed_ascii_message_with_keyhash_as_address_field",
-        MessageData(
-            "68656c6c6f20776f726c64",  # "hello world"
-            "m/1852'/1815'/0'/0/1",
-            False,
-            False,
-            MessageAddressFieldType.KEY_HASH,
+        name="Sign_msg_short_nonhashed_ascii_message_with_keyhash_as_address_field",
+        ledgerjs_name="msg02: Should correctly sign a short non-hashed ascii message with keyhash as address field",
+        msgData=MessageData(
+            messageHex="68656c6c6f20776f726c64",  # "hello world"
+            signingPath="m/1852'/1815'/0'/0/1",
+            hashPayload=False,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        NavigationData(
-            [NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
-            [NavInsID.BOTH_CLICK] * 2,
-            [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
+        nav=NavigationData(
+            init=[NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
+            chunk=[NavInsID.BOTH_CLICK] * 2,
+            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
@@ -100,18 +107,19 @@ signMsgTestCases = [
         ),
     ),
     SignMsgTestCase(
-        "Sign_msg_short_hashed_ascii_message_with_keyhash_as_address_field",
-        MessageData(
-            "68656c6c6f20776f726c64",  # "hello world"
-            "m/1852'/1815'/0'/0/1",
-            True,
-            False,
-            MessageAddressFieldType.KEY_HASH,
+        name="Sign_msg_short_hashed_ascii_message_with_keyhash_as_address_field",
+        ledgerjs_name="msg03: Should correctly sign a short hashed ascii message with keyhash as address field",
+        msgData=MessageData(
+            messageHex="68656c6c6f20776f726c64",  # "hello world"
+            signingPath="m/1852'/1815'/0'/0/1",
+            hashPayload=True,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        NavigationData(
-            [NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
-            [NavInsID.BOTH_CLICK] * 2,
-            [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
+        nav=NavigationData(
+            init=[NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
+            chunk=[NavInsID.BOTH_CLICK] * 2,
+            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
@@ -123,18 +131,19 @@ signMsgTestCases = [
         ),
     ),
     SignMsgTestCase(
-        "Sign_msg_short_nonhashed_ascii_message_displayed_as_hex",
-        MessageData(
-            "68656c6c6f20776f726c64",  # "hello world"
-            "m/1852'/1815'/0'/4/0",
-            False,
-            False,
-            MessageAddressFieldType.KEY_HASH,
+        name="Sign_msg_short_nonhashed_ascii_message_displayed_as_hex",
+        ledgerjs_name="msg04: Should correctly sign a short non-hashed ascii message displayed as hex",
+        msgData=MessageData(
+            messageHex="68656c6c6f20776f726c64",  # "hello world"
+            signingPath="m/1852'/1815'/0'/4/0",
+            hashPayload=False,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        NavigationData(
-            [NavInsID.BOTH_CLICK] * 3,
-            [NavInsID.BOTH_CLICK] * 2,
-            [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
+        nav=NavigationData(
+            init=[NavInsID.BOTH_CLICK] * 3,
+            chunk=[NavInsID.BOTH_CLICK] * 2,
+            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
@@ -146,18 +155,19 @@ signMsgTestCases = [
         ),
     ),
     SignMsgTestCase(
-        "Sign_msg_short_nonhashed_hex_message_with_keyhash_as_address_field",
-        MessageData(
-            "ff656c6c6f20776f726c64",
-            "m/1853'/1815'/0'/0'",
-            False,
-            False,
-            MessageAddressFieldType.KEY_HASH,
+        name="Sign_msg_short_nonhashed_hex_message_with_keyhash_as_address_field",
+        ledgerjs_name="msg05: Should correctly sign a short non-hashed hex message with keyhash as address field",
+        msgData=MessageData(
+            messageHex="ff656c6c6f20776f726c64",
+            signingPath="m/1853'/1815'/0'/0'",
+            hashPayload=False,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        NavigationData(
-            [NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
-            [NavInsID.BOTH_CLICK] * 2,
-            [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
+        nav=NavigationData(
+            init=[NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
+            chunk=[NavInsID.BOTH_CLICK] * 2,
+            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
@@ -169,18 +179,19 @@ signMsgTestCases = [
         ),
     ),
     SignMsgTestCase(
-        "Sign_msg_short_hashed_hex_message_with_keyhash_as_address_field",
-        MessageData(
-            "ff656c6c6f20776f726c64",
-            "m/1853'/1815'/0'/0'",
-            True,
-            False,
-            MessageAddressFieldType.KEY_HASH,
+        name="Sign_msg_short_hashed_hex_message_with_keyhash_as_address_field",
+        ledgerjs_name="msg06: Should correctly sign a short hashed hex message with keyhash as address field",
+        msgData=MessageData(
+            messageHex="ff656c6c6f20776f726c64",
+            signingPath="m/1853'/1815'/0'/0'",
+            hashPayload=True,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        NavigationData(
-            [NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
-            [NavInsID.BOTH_CLICK] * 2,
-            [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
+        nav=NavigationData(
+            init=[NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
+            chunk=[NavInsID.BOTH_CLICK] * 2,
+            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
@@ -192,18 +203,19 @@ signMsgTestCases = [
         ),
     ),
     SignMsgTestCase(
-        "Sign_msg_198_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field",
-        MessageData(
-            f"{'6869' * 99}",
-            "m/1852'/1815'/0'/3/0",
-            True,
-            True,
-            MessageAddressFieldType.KEY_HASH,
+        name="Sign_msg_198_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field",
+        ledgerjs_name="msg07: Should correctly sign a 198 bytes long non-hashed ascii message with keyhash as address field",
+        msgData=MessageData(
+            messageHex=f"{'6869' * 99}",
+            signingPath="m/1852'/1815'/0'/3/0",
+            hashPayload=True,
+            isAscii=True,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        NavigationData(
-            [NavInsID.BOTH_CLICK] * 3,
-            [NavInsID.BOTH_CLICK] + [NavInsID.RIGHT_CLICK] * 2 + [NavInsID.BOTH_CLICK],
-            [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
+        nav=NavigationData(
+            init=[NavInsID.BOTH_CLICK] * 3,
+            chunk=[NavInsID.BOTH_CLICK] + [NavInsID.RIGHT_CLICK] * 2 + [NavInsID.BOTH_CLICK],
+            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
@@ -215,18 +227,19 @@ signMsgTestCases = [
         ),
     ),
     SignMsgTestCase(
-        "Sign_msg_99_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field",
-        MessageData(
-            f"{'de' * 99}",
-            "m/1852'/1815'/0'/3/0",
-            True,
-            False,
-            MessageAddressFieldType.KEY_HASH,
+        name="Sign_msg_99_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field",
+        ledgerjs_name="msg08: Should correctly sign a 99 bytes long non-hashed hex message with keyhash as address field",
+        msgData=MessageData(
+            messageHex=f"{'de' * 99}",
+            signingPath="m/1852'/1815'/0'/3/0",
+            hashPayload=True,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        NavigationData(
-            [NavInsID.BOTH_CLICK] * 3,
-            [NavInsID.BOTH_CLICK] + [NavInsID.RIGHT_CLICK] * 3 + [NavInsID.BOTH_CLICK],
-            [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
+        nav=NavigationData(
+            init=[NavInsID.BOTH_CLICK] * 3,
+            chunk=[NavInsID.BOTH_CLICK] + [NavInsID.RIGHT_CLICK] * 3 + [NavInsID.BOTH_CLICK],
+            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
@@ -238,18 +251,19 @@ signMsgTestCases = [
         ),
     ),
     SignMsgTestCase(
-        "Sign_msg_1000_bytes_long_hashed_ascii_message_with_keyhash_as_address_field",
-        MessageData(
-            f"{'6869' * 500}",
-            "m/1852'/1815'/0'/3/0",
-            True,
-            True,
-            MessageAddressFieldType.KEY_HASH,
+        name="Sign_msg_1000_bytes_long_hashed_ascii_message_with_keyhash_as_address_field",
+        ledgerjs_name="msg09: Should correctly sign a 1000 bytes long hashed ascii message with keyhash as address field",
+        msgData=MessageData(
+            messageHex=f"{'6869' * 500}",
+            signingPath="m/1852'/1815'/0'/3/0",
+            hashPayload=True,
+            isAscii=True,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        NavigationData(
-            [NavInsID.BOTH_CLICK] * 3,
-            [NavInsID.BOTH_CLICK] + [NavInsID.RIGHT_CLICK] * 2 + [NavInsID.BOTH_CLICK],
-            [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
+        nav=NavigationData(
+            init=[NavInsID.BOTH_CLICK] * 3,
+            chunk=[NavInsID.BOTH_CLICK] + [NavInsID.RIGHT_CLICK] * 2 + [NavInsID.BOTH_CLICK],
+            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
@@ -261,18 +275,19 @@ signMsgTestCases = [
         ),
     ),
     SignMsgTestCase(
-        "Sign_msg_349_bytes_long_hashed_hex_message_with_keyhash_as_address_field",
-        MessageData(
-            f"{'fa' * 349}",
-            "m/1852'/1815'/0'/3/0",
-            True,
-            False,
-            MessageAddressFieldType.KEY_HASH,
+        name="Sign_msg_349_bytes_long_hashed_hex_message_with_keyhash_as_address_field",
+        ledgerjs_name="msg10: Should correctly sign a 349 bytes long hashed hex message with keyhash as address field",
+        msgData=MessageData(
+            messageHex=f"{'fa' * 349}",
+            signingPath="m/1852'/1815'/0'/3/0",
+            hashPayload=True,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        NavigationData(
-            [NavInsID.BOTH_CLICK] * 3,
-            [NavInsID.BOTH_CLICK] + [NavInsID.RIGHT_CLICK] * 3 + [NavInsID.BOTH_CLICK],
-            [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
+        nav=NavigationData(
+            init=[NavInsID.BOTH_CLICK] * 3,
+            chunk=[NavInsID.BOTH_CLICK] + [NavInsID.RIGHT_CLICK] * 3 + [NavInsID.BOTH_CLICK],
+            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
@@ -284,25 +299,27 @@ signMsgTestCases = [
         ),
     ),
     SignMsgTestCase(
-        "Sign_msg_short_nonhashed_hex_message_with_base_address_in_address_field",
-        MessageData(
-            "deadbeef",
-            "m/1852'/1815'/0'/5/0",
-            False,
-            False,
-            MessageAddressFieldType.ADDRESS,
-            DeriveAddressTestCase(
-                "",
-                Mainnet,
-                AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
-                "m/1852'/1815'/0'/0/1",
-                "m/1852'/1815'/0'/2/0",
+        name="Sign_msg_short_nonhashed_hex_message_with_base_address_in_address_field",
+        ledgerjs_name="msg11: Should correctly sign a short non-hashed hex message with base address in address field",
+        msgData=MessageData(
+            messageHex="deadbeef",
+            signingPath="m/1852'/1815'/0'/5/0",
+            hashPayload=False,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.ADDRESS,
+            addressDesc=DeriveAddressTestCase(
+                name="",
+                ledgerjs_name=None,
+                netDesc=Mainnet,
+                addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
+                spendingValue="m/1852'/1815'/0'/0/1",
+                stakingValue="m/1852'/1815'/0'/2/0",
             ),
         ),
-        NavigationData(
-            [NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
-            [NavInsID.BOTH_CLICK] * 2,
-            [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
+        nav=NavigationData(
+            init=[NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
+            chunk=[NavInsID.BOTH_CLICK] * 2,
+            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
@@ -317,21 +334,27 @@ signMsgTestCases = [
         ),
     ),
     SignMsgTestCase(
-        "Sign_msg_short_nonhashed_hex_message_with_reward_address_in_address_field",
-        MessageData(
-            "deadbeef",
-            "m/1852'/1815'/0'/5/0",
-            False,
-            False,
-            MessageAddressFieldType.ADDRESS,
-            DeriveAddressTestCase(
-                "", Mainnet, AddressType.REWARD_KEY, "", "m/1852'/1815'/0'/2/0"
+        name="Sign_msg_short_nonhashed_hex_message_with_reward_address_in_address_field",
+        ledgerjs_name="msg12: Should correctly sign a short non-hashed hex message with reward address in address field",
+        msgData=MessageData(
+            messageHex="deadbeef",
+            signingPath="m/1852'/1815'/0'/5/0",
+            hashPayload=False,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.ADDRESS,
+            addressDesc=DeriveAddressTestCase(
+                name="",
+                ledgerjs_name=None,
+                netDesc=Mainnet,
+                addrType=AddressType.REWARD_KEY,
+                spendingValue="",
+                stakingValue="m/1852'/1815'/0'/2/0"
             ),
         ),
-        NavigationData(
-            [NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
-            [NavInsID.BOTH_CLICK] * 2,
-            [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
+        nav=NavigationData(
+            init=[NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
+            chunk=[NavInsID.BOTH_CLICK] * 2,
+            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(

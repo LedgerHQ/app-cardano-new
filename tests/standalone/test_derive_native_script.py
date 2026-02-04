@@ -5,6 +5,9 @@
 This module provides Ragger tests for Derive Native Script Hash check
 """
 
+import hashlib
+
+import cbor2  # type: ignore
 import pytest
 
 from ragger.backend import BackendInterface
@@ -22,7 +25,65 @@ from standalone.input_files.native_script import NativeScript, NativeScriptType
 from standalone.input_files.native_script import NativeScriptParamsPubkey, NativeScriptHashDisplayFormat
 from standalone.input_files.native_script import NativeScriptParamsScripts, NativeScriptParamsNofK
 
-from standalone.utils import idTestFunc
+from standalone.utils import idTestFunc, get_device_pubkey
+
+
+def _resolve_key_hash(script: NativeScript) -> bytes:
+    """Resolve a PUBKEY script to its 28-byte key hash.
+
+    PUBKEY_THIRD_PARTY: the key field is already a hex-encoded key hash.
+    PUBKEY_DEVICE_OWNED: the key field is a BIP44 derivation path; derive
+    the public key from the device mnemonic and blake2b-224 it.
+    """
+    if script.type == NativeScriptType.PUBKEY_THIRD_PARTY:
+        return bytes.fromhex(script.params.key)
+
+    # PUBKEY_DEVICE_OWNED — derive pubkey from path, then hash it
+    pubkey_bytes, _ = get_device_pubkey(script.params.key)
+    return hashlib.blake2b(pubkey_bytes, digest_size=28).digest()
+
+
+def _native_script_to_cbor_structure(script: NativeScript) -> list:
+    """Recursively build the CBOR-encodable structure for a NativeScript.
+
+    Cardano native script encoding:
+        sig(key_hash)        -> [0, key_hash]
+        all(scripts)         -> [1, [scripts...]]
+        any(scripts)         -> [2, [scripts...]]
+        atLeast(n, scripts)  -> [3, n, [scripts...]]
+        after(slot)          -> [4, slot]
+        before(slot)         -> [5, slot]
+    """
+    if script.type in (NativeScriptType.PUBKEY_DEVICE_OWNED, NativeScriptType.PUBKEY_THIRD_PARTY):
+        return [0, _resolve_key_hash(script)]
+
+    if script.type == NativeScriptType.ALL:
+        return [1, [_native_script_to_cbor_structure(s) for s in script.params.scripts]]
+
+    if script.type == NativeScriptType.ANY:
+        return [2, [_native_script_to_cbor_structure(s) for s in script.params.scripts]]
+
+    if script.type == NativeScriptType.N_OF_K:
+        return [3, script.params.requiredCount,
+                [_native_script_to_cbor_structure(s) for s in script.params.scripts]]
+
+    if script.type == NativeScriptType.INVALID_BEFORE:
+        return [4, script.params.slot]
+
+    if script.type == NativeScriptType.INVALID_HEREAFTER:
+        return [5, script.params.slot]
+
+    raise ValueError(f"Unknown NativeScriptType: {script.type}")
+
+
+def _compute_expected_script_hash(script: NativeScript) -> str:
+    """Compute the expected script hash: blake2b-224 of (language_tag || CBOR).
+
+    Cardano script hashes are prefixed with a language tag byte before hashing.
+    Native scripts use tag 0x00.
+    """
+    serialized = cbor2.dumps(_native_script_to_cbor_structure(script))
+    return hashlib.blake2b(b'\x00' + serialized, digest_size=28).hexdigest()
 
 
 @pytest.mark.parametrize(
@@ -105,14 +166,14 @@ def _deriveNativeScriptHash_addSimpleScript(device: Device,
                 #                   screen_change_before_first_instruction=False,
                 #                   screen_change_after_last_instruction=False)
         """
-        
+
         moves = []
         moves += [NavInsID.USE_CASE_REVIEW_TAP]
         if device.type is DeviceType.STAX and navigator is not None:
             navigator.navigate(
                 moves, screen_change_before_first_instruction=False
             )
-        
+
     # Check the status (Asynchronous)
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS
@@ -148,16 +209,16 @@ def _deriveScriptHash_startComplexScript(device: Device,
             moves += [NavInsID.SWIPE_CENTER_TO_LEFT]
         navigator.navigate(moves)
         """
-    
+
         moves = []
         moves += [NavInsID.USE_CASE_REVIEW_TAP]
         if device.type is DeviceType.STAX and navigator is not None:
             navigator.navigate(
                 moves, screen_change_before_first_instruction=False
             )
-        
+
     # Check the status (Asynchronous)
-    
+
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS
 
@@ -212,5 +273,12 @@ def _deriveNativeScriptHash_finishWholeNativeScript(device: Device,
     assert response and response.status == StatusWord.SWO_SUCCESS
     # Check the response
     script_hash = unpack_derive_native_script_hash_response(response.data)
-    assert script_hash.hex() == testCase.expected.hash
-    # TODO: Generate the payload and verify the signature
+    if not (
+        device.type is DeviceType.STAX
+        and testCase.skip_expected_in_ragger
+    ):
+        assert script_hash.hex() == testCase.expected_in_unit_test.hash
+    # Independently verify the hash by serializing the script to CBOR and
+    # hashing it.  For PUBKEY_DEVICE_OWNED scripts the key hash is derived
+    # from the device mnemonic at runtime via get_device_pubkey().
+    assert script_hash.hex() == _compute_expected_script_hash(testCase.script)
