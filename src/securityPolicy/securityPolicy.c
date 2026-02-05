@@ -260,7 +260,7 @@ security_policy_t policyForShowDeriveAddress(const addressParams_t *addressParam
 }
 
 // true iff network is the standard mainnet or testnet
-bool isNetworkUsual(uint32_t networkId, uint32_t protocolMagic) {
+static bool isNetworkUsual(uint32_t networkId, uint32_t protocolMagic) {
     if (networkId == MAINNET_NETWORK_ID && protocolMagic == MAINNET_PROTOCOL_MAGIC) {
         return true;
     }
@@ -277,10 +277,10 @@ bool isNetworkUsual(uint32_t networkId, uint32_t protocolMagic) {
 }
 
 // true iff tx contains an element with network id
-bool isTxNetworkIdVerifiable(bool includeNetworkId,
-                             uint32_t numOutputs,
-                             uint32_t numWithdrawals,
-                             sign_tx_signingmode_t txSigningMode) {
+static bool isTxNetworkIdVerifiable(bool includeNetworkId,
+                                    uint32_t numOutputs,
+                                    uint32_t numWithdrawals,
+                                    sign_tx_signingmode_t txSigningMode) {
     if (includeNetworkId) return true;
 
     if (numOutputs > 0) return true;
@@ -297,26 +297,59 @@ bool isTxNetworkIdVerifiable(bool includeNetworkId,
     }
 }
 
-bool needsRunningScriptWarning(int32_t numCollateralInputs) {
-    return numCollateralInputs > 0;
-}
+static inline void set_missing_collateral_warning(warning_bits_t *warnings,
+                                                  sign_tx_signingmode_t signingMode,
+                                                  uint32_t numCollateralInputs) {
+    LEDGER_ASSERT(warnings != NULL, "NULL warnings");
 
-bool needsMissingCollateralWarning(sign_tx_signingmode_t signingMode,
-                                   uint32_t numCollateralInputs) {
     const bool collateralExpected = (signingMode == SIGN_TX_SIGNINGMODE_PLUTUS_TX);
-    return collateralExpected && (numCollateralInputs == 0);
+    if (collateralExpected && (numCollateralInputs == 0)) {
+        warning_bits_set(warnings, WARNING_BIT_PLUTUS_MISSING_COLLATERAL);
+    }
 }
 
-bool needsUnknownCollateralWarning(sign_tx_signingmode_t signingMode,
-                                   bool includesTotalCollateral) {
+static inline void set_unknown_collateral_warning(warning_bits_t *warnings,
+                                                  sign_tx_signingmode_t signingMode,
+                                                  bool includesTotalCollateral) {
+    LEDGER_ASSERT(warnings != NULL, "NULL warnings");
+
     const bool collateralExpected = (signingMode == SIGN_TX_SIGNINGMODE_PLUTUS_TX);
-    return collateralExpected && (!includesTotalCollateral);
+    if (collateralExpected && (!includesTotalCollateral)) {
+        warning_bits_set(warnings, WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL);
+    }
 }
 
-bool needsMissingScriptDataHashWarning(sign_tx_signingmode_t signingMode,
-                                       bool includesScriptDataHash) {
+static inline void set_missing_script_data_hash_warning(warning_bits_t *warnings,
+                                                        sign_tx_signingmode_t signingMode,
+                                                        bool includesScriptDataHash) {
+    LEDGER_ASSERT(warnings != NULL, "NULL warnings");
+
     const bool scriptDataHashExpected = (signingMode == SIGN_TX_SIGNINGMODE_PLUTUS_TX);
-    return scriptDataHashExpected && !includesScriptDataHash;
+    if (scriptDataHashExpected && !includesScriptDataHash) {
+        warning_bits_set(warnings, WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH);
+    }
+}
+
+static inline void set_network_not_verifiable_warning(warning_bits_t *warnings,
+                                                      bool includeNetworkId,
+                                                      uint32_t numOutputs,
+                                                      uint32_t numWithdrawals,
+                                                      sign_tx_signingmode_t txSigningMode) {
+    LEDGER_ASSERT(warnings != NULL, "NULL warnings");
+
+    if (!isTxNetworkIdVerifiable(includeNetworkId, numOutputs, numWithdrawals, txSigningMode)) {
+        warning_bits_set(warnings, WARNING_BIT_NETWORK_NOT_VERIFIABLE);
+    }
+}
+
+static inline void set_network_unusual_warning(warning_bits_t *warnings,
+                                               uint32_t networkId,
+                                               uint32_t protocolMagic) {
+    LEDGER_ASSERT(warnings != NULL, "NULL warnings");
+
+    if (!isNetworkUsual(networkId, protocolMagic)) {
+        warning_bits_set(warnings, WARNING_BIT_NETWORK_UNUSUAL);
+    }
 }
 
 // Initiate transaction signing
@@ -339,7 +372,6 @@ security_policy_t policyForSignTxInit(sign_tx_signingmode_t txSigningMode,
                                       bool includeDonation,
                                       warning_bits_t *warnings) {
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
-    bool hasWarning = false;
     DENY_UNLESS(isValidNetworkId(networkId));
     // Deny shelley mainnet with weird byron protocol magic
     DENY_IF(networkId == MAINNET_NETWORK_ID && protocolMagic != MAINNET_PROTOCOL_MAGIC);
@@ -386,52 +418,25 @@ security_policy_t policyForSignTxInit(sign_tx_signingmode_t txSigningMode,
             DENY_IF(numReferenceInputs > 0);
             break;
 
-        case SIGN_TX_SIGNINGMODE_PLUTUS_TX: {
-            if (numCollateralInputs == 0) {
-                warning_bits_set(warnings, WARNING_BIT_PLUTUS_MISSING_COLLATERAL);
-                hasWarning = true;
-            }
-            if (!includeScriptDataHash) {
-                warning_bits_set(warnings, WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH);
-                hasWarning = true;
-            }
+        case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
             break;
-        }
 
         default:
             ASSERT(false);
     }
 
-    // there are separate screens for various warnings
-    // the return value of the policy only says that at least one should be applied
-    // and the need for individual warnings is reassessed in the UI machine
-    if (!isTxNetworkIdVerifiable(includeNetworkId, numOutputs, numWithdrawals, txSigningMode)) {
-        warning_bits_set(warnings, WARNING_BIT_NETWORK_NOT_VERIFIABLE);
-        hasWarning = true;
-    }
-    if (!isNetworkUsual(networkId, protocolMagic)) {
-        warning_bits_set(warnings, WARNING_BIT_NETWORK_UNUSUAL);
-        hasWarning = true;
-    }
+    // warnings are collected here; UI machine decides which screens to show
+    set_network_not_verifiable_warning(
+        warnings,
+        includeNetworkId,
+        numOutputs,
+        numWithdrawals,
+        txSigningMode);
+    set_network_unusual_warning(warnings, networkId, protocolMagic);
+    set_missing_collateral_warning(warnings, txSigningMode, numCollateralInputs);
+    set_unknown_collateral_warning(warnings, txSigningMode, includeTotalCollateral);
+    set_missing_script_data_hash_warning(warnings, txSigningMode, includeScriptDataHash);
 
-    if (needsMissingCollateralWarning(txSigningMode, numCollateralInputs)) {
-        warning_bits_set(warnings, WARNING_BIT_PLUTUS_MISSING_COLLATERAL);
-        hasWarning = true;
-    }
-    if (needsUnknownCollateralWarning(txSigningMode, includeTotalCollateral)) {
-        warning_bits_set(warnings, WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL);
-        hasWarning = true;
-    }
-    if (needsMissingScriptDataHashWarning(txSigningMode, includeScriptDataHash)) {
-        warning_bits_set(warnings, WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH);
-        hasWarning = true;
-    }
-
-    // Could be switched to POLICY_HIDE to skip initial "new transaction" question
-    // but it is safe only for a very narrow set of transactions (e.g. no Plutus)
-    if (hasWarning) {
-        return POLICY_SHOW;
-    }
     SHOW();
 }
 
@@ -547,7 +552,7 @@ static bool contains_forbidden_plutus_elements(const tx_output_description_t *ou
     return false;
 }
 
-bool needsMissingDatumWarning(const tx_output_destination_t *destination, bool includeDatum) {
+static bool needsMissingDatumWarning(const tx_output_destination_t *destination, bool includeDatum) {
     const bool mightRequireDatum =
         determinePaymentChoice(getDestinationAddressType(destination)) == PAYMENT_SCRIPT_HASH;
     return mightRequireDatum && !includeDatum;
