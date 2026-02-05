@@ -208,9 +208,10 @@ static void test_tx_init_rejected_when_active(void **state) {
 
     G_context.req_type = REQUEST_SIGN_TRANSACTION;
     G_context.state.tx_state = TX_STATE_NONE;
+    uint8_t dummy = 0;
 
     buffer_t init_buf = {
-        .ptr = NULL,
+        .ptr = &dummy,
         .size = 0,
         .offset = 0,
     };

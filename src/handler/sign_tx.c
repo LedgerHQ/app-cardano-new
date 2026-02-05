@@ -417,7 +417,7 @@ static void handle_tx_data_chunk(buffer_t *cdata, bool more) {
 
 void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_tx handler");
-    TRACE_BUFFER(cdata->ptr, cdata->size);
+    TRACE_BUFFER_T(cdata);
 
     switch (p1) {
         case P1_TX_INIT:
@@ -534,7 +534,7 @@ void finalize_witness(bool confirm)
 
 void handler_sign_tx_witness(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_tx_witness handler");
-    TRACE_BUFFER(cdata->ptr, cdata->size);
+    TRACE_BUFFER_T(cdata);
 
     // Verify we're in correct state for witness signing
     if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {

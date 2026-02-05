@@ -29,25 +29,27 @@ static inline security_policy_t _combine_policies(security_policy_t a,
 }
 
 // stake key path has the same account as the payment key path
-static inline bool is_standard_base_address(const addressParams_t *addressParams) {
-    ASSERT(isValidAddressParams(addressParams));
+static inline bool is_standard_base_address(const address_params_t *address_params) {
+    ASSERT(isValidAddressParams(address_params));
 
 #define CHECK(cond) \
     if (!(cond)) return false
-    CHECK(addressParams->type == BASE_PAYMENT_KEY_STAKE_KEY);
-    CHECK(addressParams->stakingDataSource == STAKING_KEY_PATH);
+    CHECK(address_params->type == BASE_PAYMENT_KEY_STAKE_KEY);
+    CHECK(addressParams_getStakingPartType(address_params) == STAKING_PART_KEY_PATH);
 
-    CHECK(bip44_classifyPath(&addressParams->paymentKeyPath) == PATH_ORDINARY_PAYMENT_KEY);
-    CHECK(bip44_isPathReasonable(&addressParams->paymentKeyPath));
+    CHECK(addressParams_getPaymentPartType(address_params) == PAYMENT_PART_KEY_PATH);
+    CHECK(bip44_classifyPath(&address_params->paymentKeyPath) == PATH_ORDINARY_PAYMENT_KEY);
+    CHECK(bip44_isPathReasonable(&address_params->paymentKeyPath));
 
-    CHECK(bip44_classifyPath(&addressParams->stakingKeyPath) == PATH_ORDINARY_STAKING_KEY);
-    CHECK(bip44_isPathReasonable(&addressParams->stakingKeyPath));
+    CHECK(addressParams_getStakingPartType(address_params) == STAKING_PART_KEY_PATH);
+    CHECK(bip44_classifyPath(&address_params->stakingKeyPath) == PATH_ORDINARY_STAKING_KEY);
+    CHECK(bip44_isPathReasonable(&address_params->stakingKeyPath));
     // most SW wallets do not use multidelegation,
     // so outputs sending funds to such addresses should not be hidden
-    CHECK(!bip44_isMultidelegationStakingKeyPath(&addressParams->stakingKeyPath));
+    CHECK(!bip44_isMultidelegationStakingKeyPath(&address_params->stakingKeyPath));
 
-    CHECK(bip44_getAccount(&addressParams->stakingKeyPath) ==
-          bip44_getAccount(&addressParams->paymentKeyPath));
+    CHECK(bip44_getAccount(&address_params->stakingKeyPath) ==
+          bip44_getAccount(&address_params->paymentKeyPath));
 
     return true;
 #undef CHECK
@@ -180,43 +182,43 @@ security_policy_t policyForGetExtendedPublicKey(const bip44_path_t *path,
 
 // common policy for DENY and WARN cases in returnDeriveAddress and showDeriveAddress
 // successPolicy is returned if no DENY or WARN applies
-static security_policy_t _policyForDeriveAddress(const addressParams_t *addressParams,
+static security_policy_t _policyForDeriveAddress(const address_params_t *address_params,
                                                  security_policy_t successPolicy,
                                                  warning_bits_t *warnings) {
-    DENY_UNLESS(isValidAddressParams(addressParams));
+    DENY_UNLESS(isValidAddressParams(address_params));
 
-    switch (addressParams->type) {
+    switch (address_params->type) {
         case BASE_PAYMENT_KEY_STAKE_KEY:
-            if (!bip44_isPathReasonable(&addressParams->paymentKeyPath)) {
-                mark_unusual_key_derivation(warnings, &addressParams->paymentKeyPath);
+            if (!bip44_isPathReasonable(&address_params->paymentKeyPath)) {
+                mark_unusual_key_derivation(warnings, &address_params->paymentKeyPath);
             }
-            SHOW_UNLESS(bip44_isPathReasonable(&addressParams->paymentKeyPath));
+            SHOW_UNLESS(bip44_isPathReasonable(&address_params->paymentKeyPath));
 
-            if (addressParams->stakingDataSource == STAKING_KEY_PATH &&
-                !bip44_isPathReasonable(&addressParams->stakingKeyPath)) {
-                mark_unusual_key_derivation(warnings, &addressParams->stakingKeyPath);
+            if (addressParams_getStakingPartType(address_params) == STAKING_PART_KEY_PATH &&
+                !bip44_isPathReasonable(&address_params->stakingKeyPath)) {
+                mark_unusual_key_derivation(warnings, &address_params->stakingKeyPath);
             }
-            SHOW_IF(addressParams->stakingDataSource == STAKING_KEY_PATH &&
-                    !bip44_isPathReasonable(&addressParams->stakingKeyPath));
+            SHOW_IF(addressParams_getStakingPartType(address_params) == STAKING_PART_KEY_PATH &&
+                    !bip44_isPathReasonable(&address_params->stakingKeyPath));
             break;
 
         case BASE_PAYMENT_KEY_STAKE_SCRIPT:
         case POINTER_KEY:
         case ENTERPRISE_KEY:
         case BYRON:
-            if (!bip44_isPathReasonable(&addressParams->paymentKeyPath)) {
-                mark_unusual_key_derivation(warnings, &addressParams->paymentKeyPath);
+            if (!bip44_isPathReasonable(&address_params->paymentKeyPath)) {
+                mark_unusual_key_derivation(warnings, &address_params->paymentKeyPath);
             }
-            SHOW_UNLESS(bip44_isPathReasonable(&addressParams->paymentKeyPath));
+            SHOW_UNLESS(bip44_isPathReasonable(&address_params->paymentKeyPath));
             break;
 
         case BASE_PAYMENT_SCRIPT_STAKE_KEY:
         case REWARD_KEY:
-            DENY_IF(addressParams->stakingDataSource != STAKING_KEY_PATH);
-            if (!bip44_isPathReasonable(&addressParams->stakingKeyPath)) {
-                mark_unusual_key_derivation(warnings, &addressParams->stakingKeyPath);
+            DENY_IF(addressParams_getStakingPartType(address_params) != STAKING_PART_KEY_PATH);
+            if (!bip44_isPathReasonable(&address_params->stakingKeyPath)) {
+                mark_unusual_key_derivation(warnings, &address_params->stakingKeyPath);
             }
-            SHOW_UNLESS(bip44_isPathReasonable(&addressParams->stakingKeyPath));
+            SHOW_UNLESS(bip44_isPathReasonable(&address_params->stakingKeyPath));
             break;
 
         case BASE_PAYMENT_SCRIPT_STAKE_SCRIPT:
@@ -235,12 +237,12 @@ static security_policy_t _policyForDeriveAddress(const addressParams_t *addressP
 }
 
 // Derive address and return it to the host
-security_policy_t policyForReturnDeriveAddress(const addressParams_t *addressParams,
+security_policy_t policyForReturnDeriveAddress(const address_params_t *address_params,
                                                warning_bits_t *warnings) {
     // in expert mode, do not export addresses without permission
     security_policy_t policy = is_expert_mode() ? POLICY_SHOW : POLICY_HIDE;
 
-    return _policyForDeriveAddress(addressParams, policy, warnings);
+    return _policyForDeriveAddress(address_params, policy, warnings);
 }
 
 security_policy_t policyForDeriveNativeScriptHashDevicePubkey(const bip44_path_t *path,
@@ -254,9 +256,9 @@ security_policy_t policyForDeriveNativeScriptHashDevicePubkey(const bip44_path_t
 }
 
 // Derive address and show it to the user
-security_policy_t policyForShowDeriveAddress(const addressParams_t *addressParams,
+security_policy_t policyForShowDeriveAddress(const address_params_t *address_params,
                                              warning_bits_t *warnings) {
-    return _policyForDeriveAddress(addressParams, POLICY_SHOW, warnings);
+    return _policyForDeriveAddress(address_params, POLICY_SHOW, warnings);
 }
 
 // true iff network is the standard mainnet or testnet
@@ -559,11 +561,11 @@ static bool needsMissingDatumWarning(const tx_output_destination_t *destination,
 }
 
 // For each transaction output with third-party address
-security_policy_t policyForSignTxOutputAddressBytes(const tx_output_description_t *output,
-                                                    sign_tx_signingmode_t txSigningMode,
-                                                    const uint8_t networkId,
-                                                    const uint32_t protocolMagic,
-                                                    warning_bits_t *warnings) {
+static security_policy_t policyForSignTxOutputAddressBytes(const tx_output_description_t *output,
+                                                           sign_tx_signingmode_t txSigningMode,
+                                                           const uint8_t networkId,
+                                                           const uint32_t protocolMagic,
+                                                           warning_bits_t *warnings) {
     LEDGER_ASSERT(output != NULL, "NULL output");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
     ASSERT(output->destination.type == DESTINATION_THIRD_PARTY);
@@ -604,7 +606,7 @@ security_policy_t policyForSignTxOutputAddressBytes(const tx_output_description_
     DENY();  // should not be reached
 }
 
-static bool is_addressParams_suitable_for_tx_output(const addressParams_t *params,
+static bool is_address_params_suitable_for_tx_output(const address_params_t *params,
                                                     const uint8_t networkId,
                                                     const uint32_t protocolMagic) {
 #define CHECK(cond) \
@@ -639,6 +641,7 @@ static bool is_addressParams_suitable_for_tx_output(const addressParams_t *param
         // for missing datum (see policyForSignTxOutputAddressBytes)
 
         ASSERT(determinePaymentChoice(params->type) == PAYMENT_PATH);
+        ASSERT(addressParams_getPaymentPartType(params) == PAYMENT_PART_KEY_PATH);
         CHECK(!violatesSingleAccountOrStoreIt(&params->paymentKeyPath));
     }
 
@@ -647,18 +650,18 @@ static bool is_addressParams_suitable_for_tx_output(const addressParams_t *param
 }
 
 // For each output given by payment derivation path
-security_policy_t policyForSignTxOutputAddressParams(const tx_output_description_t *output,
-                                                     sign_tx_signingmode_t txSigningMode,
-                                                     const uint8_t networkId,
-                                                     const uint32_t protocolMagic,
-                                                     warning_bits_t *warnings) {
+static security_policy_t policyForSignTxOutputAddressParams(const tx_output_description_t *output,
+                                                            sign_tx_signingmode_t txSigningMode,
+                                                            const uint8_t networkId,
+                                                            const uint32_t protocolMagic,
+                                                            warning_bits_t *warnings) {
     LEDGER_ASSERT(output != NULL, "NULL output");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
     (void) warnings;
     ASSERT(output->destination.type == DESTINATION_DEVICE_OWNED);
-    const addressParams_t *params = output->destination.params;
+    const address_params_t *params = output->destination.params;
 
-    DENY_UNLESS(is_addressParams_suitable_for_tx_output(params, networkId, protocolMagic));
+    DENY_UNLESS(is_address_params_suitable_for_tx_output(params, networkId, protocolMagic));
 
     DENY_IF(contains_forbidden_plutus_elements(output, txSigningMode));
 
@@ -712,6 +715,33 @@ security_policy_t policyForSignTxOutputAddressParams(const tx_output_description
     DENY();  // should not be reached
 }
 
+security_policy_t policyForSignTxOutputAddress(const tx_output_description_t *output,
+                                               sign_tx_signingmode_t txSigningMode,
+                                               const uint8_t networkId,
+                                               const uint32_t protocolMagic,
+                                               warning_bits_t *warnings) {
+    LEDGER_ASSERT(output != NULL, "NULL output");
+    LEDGER_ASSERT(warnings != NULL, "NULL warnings");
+
+    switch (output->destination.type) {
+        case DESTINATION_THIRD_PARTY:
+            return policyForSignTxOutputAddressBytes(output,
+                                                     txSigningMode,
+                                                     networkId,
+                                                     protocolMagic,
+                                                     warnings);
+        case DESTINATION_DEVICE_OWNED:
+            return policyForSignTxOutputAddressParams(output,
+                                                      txSigningMode,
+                                                      networkId,
+                                                      protocolMagic,
+                                                      warnings);
+        default:
+            ASSERT(false);
+            return POLICY_DENY;
+    }
+}
+
 security_policy_t policyForSignTxOutputDatumHash(security_policy_t outputPolicy) {
     switch (outputPolicy) {
         case POLICY_DENY:
@@ -760,10 +790,11 @@ static bool is_address_suitable_for_collateral_output(const tx_output_descriptio
     }
 }
 
-security_policy_t policyForSignTxCollateralOutputAddressBytes(const tx_output_description_t *output,
-                                                              sign_tx_signingmode_t txSigningMode,
-                                                              const uint8_t networkId,
-                                                              const uint32_t protocolMagic) {
+static security_policy_t policyForSignTxCollateralOutputAddressBytes(
+    const tx_output_description_t *output,
+    sign_tx_signingmode_t txSigningMode,
+    const uint8_t networkId,
+    const uint32_t protocolMagic) {
     // WARNING: policies for collateral inputs, collateral return output and total collateral are
     // interdependent
 
@@ -785,7 +816,7 @@ security_policy_t policyForSignTxCollateralOutputAddressBytes(const tx_output_de
     SHOW();
 }
 
-security_policy_t policyForSignTxCollateralOutputAddressParams(
+static security_policy_t policyForSignTxCollateralOutputAddressParams(
     const tx_output_description_t *output,
     sign_tx_signingmode_t txSigningMode,
     const uint8_t networkId,
@@ -795,9 +826,9 @@ security_policy_t policyForSignTxCollateralOutputAddressParams(
     // interdependent
 
     ASSERT(output->destination.type == DESTINATION_DEVICE_OWNED);
-    const addressParams_t *params = output->destination.params;
+    const address_params_t *params = output->destination.params;
 
-    DENY_UNLESS(is_addressParams_suitable_for_tx_output(params, networkId, protocolMagic));
+    DENY_UNLESS(is_address_params_suitable_for_tx_output(params, networkId, protocolMagic));
     DENY_UNLESS(is_address_suitable_for_collateral_output(output));
 
     DENY_IF(output->includeDatum);
@@ -825,6 +856,31 @@ security_policy_t policyForSignTxCollateralOutputAddressParams(
     }
 
     DENY();  // should not be reached
+}
+
+security_policy_t policyForSignTxCollateralOutputAddress(const tx_output_description_t *output,
+                                                         sign_tx_signingmode_t txSigningMode,
+                                                         const uint8_t networkId,
+                                                         const uint32_t protocolMagic,
+                                                         bool isTotalCollateralIncluded) {
+    LEDGER_ASSERT(output != NULL, "NULL output");
+
+    switch (output->destination.type) {
+        case DESTINATION_THIRD_PARTY:
+            return policyForSignTxCollateralOutputAddressBytes(output,
+                                                               txSigningMode,
+                                                               networkId,
+                                                               protocolMagic);
+        case DESTINATION_DEVICE_OWNED:
+            return policyForSignTxCollateralOutputAddressParams(output,
+                                                                txSigningMode,
+                                                                networkId,
+                                                                protocolMagic,
+                                                                isTotalCollateralIncluded);
+        default:
+            ASSERT(false);
+            return POLICY_DENY;
+    }
 }
 
 security_policy_t policyForSignTxCollateralOutputAdaAmount(security_policy_t outputPolicy,
@@ -2002,7 +2058,7 @@ security_policy_t policyForCVoteRegistrationStakingKey(const bip44_path_t *staki
 
 // based on https://input-output-rnd.slack.com/archives/C036XSMFXE3/p1668185230182239
 security_policy_t policyForCVoteRegistrationPaymentDestination(
-    const cvote_destination_t *destination,
+    const tx_output_destination_t *destination,
     const uint8_t networkId,
     warning_bits_t* warnings) {
     LEDGER_ASSERT(destination != NULL, "NULL destination");
@@ -2010,16 +2066,17 @@ security_policy_t policyForCVoteRegistrationPaymentDestination(
 
     switch (destination->type) {
         case DESTINATION_DEVICE_OWNED: {
-            DENY_UNLESS(isValidAddressParams(&destination->params));
-            DENY_UNLESS(isShelleyAddressType(destination->params.type));
-            DENY_IF(destination->params.networkId != networkId);
+            LEDGER_ASSERT(destination->params != NULL, "NULL CVote device-owned destination params");
+            DENY_UNLESS(isValidAddressParams(destination->params));
+            DENY_UNLESS(isShelleyAddressType(destination->params->type));
+            DENY_IF(destination->params->networkId != networkId);
 
             // in a typical case, the rewards go to an address controlled by this device
             // and the address is sent in a way allowing a verification of that fact
-            if (!is_standard_base_address(&destination->params)) {
+            if (!is_standard_base_address(destination->params)) {
                 warning_bits_set(warnings, WARNING_BIT_CVOTE_PAYMENT_NONSTANDARD_OWNED);
             }
-            SHOW_UNLESS(is_standard_base_address(&destination->params));
+            SHOW_UNLESS(is_standard_base_address(destination->params));
 
             // we are sure the address belongs to the device
             SHOW();
@@ -2205,7 +2262,7 @@ security_policy_t policyForSignCVoteWitness(const bip44_path_t *path, warning_bi
 
 security_policy_t policyForSignMsg(const bip44_path_t *witnessPath,
                                    cip8_address_field_type_t addressFieldType,
-                                   const addressParams_t *addressParams) {
+                                   const address_params_t *address_params) {
     switch (bip44_classifyPath(witnessPath)) {
         case PATH_ORDINARY_PAYMENT_KEY:
         case PATH_ORDINARY_STAKING_KEY:
@@ -2224,9 +2281,9 @@ security_policy_t policyForSignMsg(const bip44_path_t *witnessPath,
     }
 
     if (addressFieldType == CIP8_ADDRESS_FIELD_ADDRESS) {
-        DENY_UNLESS(isValidAddressParams(addressParams));
+        DENY_UNLESS(isValidAddressParams(address_params));
 
-        switch (addressParams->type) {
+        switch (address_params->type) {
             case BASE_PAYMENT_KEY_STAKE_KEY:
             case BASE_PAYMENT_KEY_STAKE_SCRIPT:
             case REWARD_KEY:

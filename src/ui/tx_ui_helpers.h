@@ -111,9 +111,9 @@ void addCertificateUIPairs(const certificate_data_t* certificate_data);
  *
  * On error, error status is set via ui_set_error_status() and can be retrieved with ui_get_error_status()
  *
- * @param[in]  addressParams  Address parameters containing payment info
+ * @param[in]  address_params  Address parameters containing payment info
  */
-void addPaymentInfoUIPairs(const addressParams_t* addressParams);
+void addPaymentInfoUIPairs(const address_params_t* address_params);
 
 /**
  * Add staking credential UI pair for device-owned address
@@ -122,6 +122,6 @@ void addPaymentInfoUIPairs(const addressParams_t* addressParams);
  *
  * On error, error status is set via ui_set_error_status() and can be retrieved with ui_get_error_status()
  *
- * @param[in]  addressParams  Address parameters containing staking info
+ * @param[in]  address_params  Address parameters containing staking info
  */
-void addStakingInfoUIPairs(const addressParams_t* addressParams);
+void addStakingInfoUIPairs(const address_params_t* address_params);

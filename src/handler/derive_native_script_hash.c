@@ -403,12 +403,7 @@ static void deriveNativeScriptHash_handleWholeNativeScriptFinish(buffer_t *cdata
 
 void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
 
-    if (!cdata->ptr) {
-        TRACE("cdata->ptr is NULL");
-        io_send_sw(SWO_WRONG_DATA_LENGTH);
-        return;
-    }
-    TRACE_BUFFER(cdata->ptr, cdata->size);
+    TRACE_BUFFER_T(cdata);
 
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     if (G_context.req_type != REQUEST_DERIVE_NATIVE_SCRIPT_HASH) {

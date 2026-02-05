@@ -144,7 +144,7 @@ static bool format_cvote_delegation_index(uint16_t delegation_index,
     return (written > 0) && ((size_t) written < out_size);
 }
 
-static bool format_cvote_reward_address(const cvote_destination_t *destination,
+static bool format_cvote_reward_address(const tx_output_destination_t *destination,
                                         uint8_t network_id,
                                         char *out,
                                         size_t out_size) {
@@ -162,8 +162,9 @@ static bool format_cvote_reward_address(const cvote_destination_t *destination,
                                              out_size);
     }
 
+    LEDGER_ASSERT(destination->params != NULL, "NULL CVote device-owned destination params");
     uint8_t address_buffer[MAX_ADDRESS_LENGTH] = {0};
-    size_t address_size = deriveAddress(&destination->params, address_buffer, SIZEOF(address_buffer));
+    size_t address_size = deriveAddress(destination->params, address_buffer, SIZEOF(address_buffer));
     if (address_size == 0 || address_size > MAX_ADDRESS_LENGTH) {
         return false;
     }

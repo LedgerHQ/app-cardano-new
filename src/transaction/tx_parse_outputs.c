@@ -23,10 +23,11 @@
 #include "cardano_parsers.h"
 
 parser_status_e parse_output_destination(buffer_t* buf,
-                                         tx_output_destination_storage_t* destination,
-                                         uint8_t networkId) {
+                                         tx_output_destination_t* destination,
+                                         address_params_t* paramsStorage) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     LEDGER_ASSERT(destination != NULL, "NULL destination");
+    LEDGER_ASSERT(paramsStorage != NULL, "NULL paramsStorage");
 
     // Read destination type
     uint8_t dest_type = 0;
@@ -57,16 +58,13 @@ parser_status_e parse_output_destination(buffer_t* buf,
         }
 
         case DESTINATION_DEVICE_OWNED: {
-            // Parse address params
-            // Wire format should include: address_type + [protocol_magic for Byron | network_id for Shelley] + address_data
-            if (!buffer_parseAddressParams(buf, &destination->params)) {
+            // Parse address params into the caller-provided storage.
+            // Credential pointers within paramsStorage reference the persistent raw buffer.
+            if (!buffer_read_address_params(buf, paramsStorage)) {
                 return OUTPUTS_PARSING_ERROR;
             }
-            // Override network ID if needed (for Shelley addresses)
-            // Byron addresses use protocol magic, not network ID
-            if (destination->params.type != BYRON) {
-                destination->params.networkId = networkId;
-            }
+            // Point destination at the storage
+            destination->params = paramsStorage;
             break;
         }
 

@@ -30,6 +30,7 @@
 #include "io.h"
 #include "mem.h"
 #include "securityPolicy.h"
+#include "utils/buffer_helpers.h"
 #include "sign_tx_aux_data.h"
 #include "tx.h"
 #include "tx_credential_types.h"
@@ -162,15 +163,18 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
                   aux_data->state);
 
     // Allocate persistent buffer for CVote init data
-    G_context.tx_info.raw_cvote_init_data = (uint8_t *) APP_MEM_ALLOC_ZEROED(cdata->size);
+    const size_t init_payload_len = buffer_remaining(cdata);
+    G_context.tx_info.raw_cvote_init_data = (uint8_t *) APP_MEM_ALLOC_ZEROED(init_payload_len);
     if (G_context.tx_info.raw_cvote_init_data == NULL) {
-        TRACE("CVote AUX_DATA init: failed to allocate %u byte buffer", (unsigned)cdata->size);
+        TRACE("CVote AUX_DATA init: failed to allocate %u byte buffer", (unsigned)init_payload_len);
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
     }
 
-    memcpy(G_context.tx_info.raw_cvote_init_data, cdata->ptr, cdata->size);
-    G_context.tx_info.raw_cvote_init_data_len = cdata->size;
+    const uint8_t *payload_start = buffer_current_ptr(cdata);
+    LEDGER_ASSERT(payload_start != NULL, "NULL cdata ptr in AUX_DATA init");
+    memcpy(G_context.tx_info.raw_cvote_init_data, payload_start, init_payload_len);
+    G_context.tx_info.raw_cvote_init_data_len = init_payload_len;
 
     cvote_parser_status_t status = cvote_parse_aux_data_init(aux_data);
     if (status != CVOTE_PARSER_OK) {
@@ -327,7 +331,7 @@ static void handler_tx_aux_data_delegation(buffer_t *cdata) {
 
 void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_tx_aux_data handler");
-    TRACE_BUFFER(cdata->ptr, cdata->size);
+    TRACE_BUFFER_T(cdata);
 
     cvote_aux_data_t *aux_data = &G_context.tx_info.cvote_aux_data;
 

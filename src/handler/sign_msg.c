@@ -60,7 +60,7 @@ __noinline_due_to_stack__ void signMsg_handle_init(buffer_t *cdata) {
 
     // Parse INIT APDU payload:
     // [4 bytes: msgLength] [BIP44 path] [1 byte: hashPayload] [1 byte: isAscii]
-    // [1 byte: addressFieldType] [addressParams if addressFieldType == ADDRESS]
+    // [1 byte: addressFieldType] [address_params if addressFieldType == ADDRESS]
 
     if (!buffer_read_u32(cdata, &ctx->msgLength, BE)) {
         TRACE("Failed to read msgLength");
@@ -117,11 +117,15 @@ __noinline_due_to_stack__ void signMsg_handle_init(buffer_t *cdata) {
 
     switch (ctx->addressFieldType) {
         case CIP8_ADDRESS_FIELD_ADDRESS:
-            if (!buffer_parseAddressParams(cdata, &ctx->addressParams)) {
+            if (!buffer_read_address_params(cdata, &ctx->address_params)) {
                 TRACE("Failed to parse address params");
                 send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
                 return;
             }
+            // Copy any hash pointers into context-owned storage: the INIT APDU buffer
+            // will be overwritten before CONFIRM stage when deriveAddress is called.
+            address_params_copyHashesToStorage(&ctx->address_params,
+                                             &ctx->hashStorage);
             break;
         case CIP8_ADDRESS_FIELD_KEYHASH:
             // No additional data to parse
@@ -138,7 +142,7 @@ __noinline_due_to_stack__ void signMsg_handle_init(buffer_t *cdata) {
     // Check security policy
     security_policy_t policy = policyForSignMsg(&ctx->signingPath,
                                                  ctx->addressFieldType,
-                                                 &ctx->addressParams);
+                                                 &ctx->address_params);
     TRACE("Policy: %d", (int) policy);
     if (policy == POLICY_DENY) {
         TRACE("Policy denied");
@@ -289,7 +293,7 @@ static void _prepareAddressField(sign_msg_ctx_t *ctx) {
     switch (ctx->addressFieldType) {
         case CIP8_ADDRESS_FIELD_ADDRESS: {
             ctx->addressFieldSize =
-                deriveAddress(&ctx->addressParams, ctx->addressField, SIZEOF(ctx->addressField));
+                deriveAddress(&ctx->address_params, ctx->addressField, SIZEOF(ctx->addressField));
             LEDGER_ASSERT(ctx->addressFieldSize > 0 && ctx->addressFieldSize <= SIZEOF(ctx->addressField),
                           "Invalid address size");
             break;

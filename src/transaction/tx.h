@@ -180,15 +180,7 @@ typedef struct {
     bool includeNetworkId;              // key 15
 
     bool includeCollateralOutput;       // key 16
-    struct {
-        tx_output_destination_storage_t destination;
-        uint64_t adaAmount;
-        uint16_t numAssetGroups;
-        s_flist_node* assetGroups;
-        output_datum_t datum;
-        ref_script_t refScript;
-        tx_output_serialization_format_t format;
-    } collateral_output;
+    parsed_tx_output_t collateral_output;
 
     bool includeTotalCollateral;        // key 17
     uint64_t totalCollateral;

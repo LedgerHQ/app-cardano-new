@@ -22,6 +22,7 @@
 #include "utils/assert.h"
 #include "utils/textUtils.h"
 #include "utils/utils.h"
+#include "utils/buffer_helpers.h"
 
 #include <string.h>
 
@@ -37,11 +38,9 @@ bool buffer_read_flag_included(buffer_t *buf, bool* result) {
     switch (value) {
         case FLAG_INCLUDED_YES:
             *result = true;
-            TRACE("Flag included = true");
             return true;
         case FLAG_INCLUDED_NO:
             *result = false;
-            TRACE("Flag included = false");
             return true;
         default:
             TRACE("Invalid flag included value: 0x%02x", value);
@@ -51,14 +50,13 @@ bool buffer_read_flag_included(buffer_t *buf, bool* result) {
 
 bool buffer_read_bytes(buffer_t *buffer, uint8_t *destBuffer, size_t n) {
     LEDGER_ASSERT(buffer != NULL, "NULL buffer");
-    LEDGER_ASSERT(buffer->ptr != NULL, "NULL buffer ptr");
     LEDGER_ASSERT(destBuffer != NULL, "NULL destination");
 
     if (!buffer_can_read(buffer, n)) {
         return false;
     }
 
-    memmove(destBuffer, buffer->ptr + buffer->offset, n);
+    memmove(destBuffer, buffer_current_ptr(buffer), n);
     return buffer_seek_cur(buffer, n);
 }
 
@@ -70,7 +68,7 @@ bool buffer_read_bytes_ptr(buffer_t *buffer, const uint8_t **destBuffer, size_t 
         return false;
     }
 
-    *destBuffer = (const uint8_t *)(buffer->ptr + buffer->offset);
+    *destBuffer = buffer_current_ptr(buffer);
     return buffer_seek_cur(buffer, n);
 }
 

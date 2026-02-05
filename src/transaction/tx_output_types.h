@@ -25,19 +25,15 @@ typedef struct {
     size_t size;
 } third_party_address_t;
 
+// Unified output destination.  For DESTINATION_THIRD_PARTY the address pointer
+// references the persistent raw buffer.  For DESTINATION_DEVICE_OWNED, params
+// points to an address_params_t whose credential pointers likewise reference the
+// persistent raw buffer.  No separate "storage" variant is needed.
 typedef struct {
     tx_output_destination_type_t type;
     union {
         third_party_address_t address;
-        addressParams_t params;
-    };
-} tx_output_destination_storage_t;
-
-typedef struct {
-    tx_output_destination_type_t type;
-    union {
-        third_party_address_t address;
-        addressParams_t* params;
+        address_params_t* params;
     };
 } tx_output_destination_t;
 
@@ -92,14 +88,19 @@ typedef enum {
 } tx_output_serialization_format_t;
 
 typedef struct {
+    tx_output_destination_t destination;
+    // Storage for device-owned address params.
+    // destination.params points here when type == DESTINATION_DEVICE_OWNED.
+    address_params_t paramsStorage;
+    uint64_t adaAmount;
+    uint16_t numAssetGroups;
+    s_flist_node* assetGroups;
+    output_datum_t datum;
+    ref_script_t refScript;
+    tx_output_serialization_format_t format;
+} parsed_tx_output_t;
+
+typedef struct {
     s_flist_node flist_node;
-    struct {
-        tx_output_destination_storage_t destination;
-        uint64_t adaAmount;
-        uint16_t numAssetGroups;
-        s_flist_node* assetGroups;
-        output_datum_t datum;
-        ref_script_t refScript;
-        tx_output_serialization_format_t format;
-    } output_data;
+    parsed_tx_output_t output_data;
 } tx_output_node_t;

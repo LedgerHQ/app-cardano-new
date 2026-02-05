@@ -206,7 +206,7 @@ static bool format_output_address(const tx_output_description_t *output_desc, ch
     }
 }
 
-// TODO this needs revision, does not follow conventions and might not need tx_output_description_t?
+// Keep this in lockstep with tx_validate.c output pair-counting rules.
 static void add_ui_and_free_outputs(transaction_t *tx) {
     uint16_t output_num = 1;
     s_flist_node *node = tx->outputs;
@@ -222,29 +222,16 @@ static void add_ui_and_free_outputs(transaction_t *tx) {
             .includeRefScript = output_node->output_data.refScript.hasRefScript,
         };
 
-        if (output_node->output_data.destination.type == DESTINATION_THIRD_PARTY) {
-            output_desc.destination.type = DESTINATION_THIRD_PARTY;
-            output_desc.destination.address.buffer = output_node->output_data.destination.address.buffer;
-            output_desc.destination.address.size = output_node->output_data.destination.address.size;
-        } else {
-            output_desc.destination.type = DESTINATION_DEVICE_OWNED;
-            output_desc.destination.params = &output_node->output_data.destination.params;
-        }
+        output_desc.destination = output_node->output_data.destination;
 
         warning_bits_t output_warnings = 0;
-        security_policy_t policy = (output_desc.destination.type == DESTINATION_THIRD_PARTY)
-            ? policyForSignTxOutputAddressBytes(
-                &output_desc,
-                tx->txSigningMode,
-                tx->networkId,
-                tx->protocolMagic,
-                &output_warnings)
-            : policyForSignTxOutputAddressParams(
-                &output_desc,
-                tx->txSigningMode,
-                tx->networkId,
-                tx->protocolMagic,
-                &output_warnings);
+        security_policy_t policy = policyForSignTxOutputAddress(
+            &output_desc,
+            tx->txSigningMode,
+            tx->networkId,
+            tx->protocolMagic,
+            &output_warnings
+        );
         LEDGER_ASSERT((output_warnings & ~G_context.tx_info.warning_bits) == 0,
                       "Output warnings mismatch");
         LEDGER_ASSERT(policy != POLICY_DENY, "Output denied during UI");
@@ -257,8 +244,8 @@ static void add_ui_and_free_outputs(transaction_t *tx) {
 
                 // For device-owned addresses, show payment and staking details
                 if (output_node->output_data.destination.type == DESTINATION_DEVICE_OWNED) {
-                    addPaymentInfoUIPairs(&output_node->output_data.destination.params);
-                    addStakingInfoUIPairs(&output_node->output_data.destination.params);
+                    addPaymentInfoUIPairs(output_node->output_data.destination.params);
+                    addStakingInfoUIPairs(output_node->output_data.destination.params);
                 }
 
                 UI_ADD_FORMAT1(UI_STATIC_LABEL("Amount"), MAX_ADA_AMOUNT_STRING_LENGTH, format_ada_amount, output_node->output_data.adaAmount);
@@ -964,7 +951,7 @@ static void add_ui_and_free_required_signers(transaction_t *tx) {
     tx->required_signers = NULL;
 }
 
-// TODO needs clean up
+// Keep this in lockstep with tx_validate.c collateral-output pair-counting rules.
 static void add_ui_and_free_collateral_output(transaction_t *tx) {
     if (!tx->includeCollateralOutput) {
         return;
@@ -977,30 +964,15 @@ static void add_ui_and_free_collateral_output(transaction_t *tx) {
         .includeRefScript = tx->collateral_output.refScript.hasRefScript,
     };
 
-    if (tx->collateral_output.destination.type == DESTINATION_THIRD_PARTY) {
-        collateral_desc.destination.type = DESTINATION_THIRD_PARTY;
-        collateral_desc.destination.address.buffer =
-            tx->collateral_output.destination.address.buffer;
-        collateral_desc.destination.address.size =
-            tx->collateral_output.destination.address.size;
-    } else {
-        collateral_desc.destination.type = DESTINATION_DEVICE_OWNED;
-        collateral_desc.destination.params = &tx->collateral_output.destination.params;
-    }
+    collateral_desc.destination = tx->collateral_output.destination;
 
-    security_policy_t collateral_policy =
-        (collateral_desc.destination.type == DESTINATION_THIRD_PARTY)
-            ? policyForSignTxCollateralOutputAddressBytes(
-                &collateral_desc,
-                tx->txSigningMode,
-                tx->networkId,
-                tx->protocolMagic)
-            : policyForSignTxCollateralOutputAddressParams(
-                &collateral_desc,
-                tx->txSigningMode,
-                tx->networkId,
-                tx->protocolMagic,
-                tx->includeTotalCollateral);
+    security_policy_t collateral_policy = policyForSignTxCollateralOutputAddress(
+        &collateral_desc,
+        tx->txSigningMode,
+        tx->networkId,
+        tx->protocolMagic,
+        tx->includeTotalCollateral
+    );
     LEDGER_ASSERT(collateral_policy != POLICY_DENY, "Collateral output denied during UI");
 
     security_policy_t collateral_ada_policy =

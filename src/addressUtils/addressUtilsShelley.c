@@ -72,46 +72,46 @@ bool isValidNetworkId(uint8_t networkId) {
     return networkId <= MAXIMUM_NETWORK_ID;
 }
 
-bool isValidStakingChoice(staking_data_source_t stakingDataSource) {
-    switch (stakingDataSource) {
-        case NO_STAKING:
-        case STAKING_KEY_PATH:
-        case STAKING_KEY_HASH:
-        case BLOCKCHAIN_POINTER:
-        case STAKING_SCRIPT_HASH:
+static bool is_valid_staking_part_type(staking_part_type_t stakingPartType) {
+    switch (stakingPartType) {
+        case STAKING_PART_NONE:
+        case STAKING_PART_KEY_PATH:
+        case STAKING_PART_KEY_HASH:
+        case STAKING_PART_BLOCKCHAIN_POINTER:
+        case STAKING_PART_SCRIPT_HASH:
             return true;
         default:
             return false;
     }
 }
 
-bool isStakingInfoConsistentWithAddressType(const addressParams_t* addressParams) {
+static bool is_staking_part_consistent_with_address_type(const address_params_t* address_params) {
 #define CONSISTENT_WITH(STAKING_CHOICE) \
-    if (addressParams->stakingDataSource == (STAKING_CHOICE)) return true
+    if (address_params->stakingPartType == (STAKING_CHOICE)) return true
 
-    switch (addressParams->type) {
+    switch (address_params->type) {
         case BASE_PAYMENT_KEY_STAKE_KEY:
         case BASE_PAYMENT_SCRIPT_STAKE_KEY:
         case REWARD_KEY:
-            CONSISTENT_WITH(STAKING_KEY_HASH);
-            CONSISTENT_WITH(STAKING_KEY_PATH);
+            CONSISTENT_WITH(STAKING_PART_KEY_HASH);
+            CONSISTENT_WITH(STAKING_PART_KEY_PATH);
             break;
 
         case BASE_PAYMENT_KEY_STAKE_SCRIPT:
         case BASE_PAYMENT_SCRIPT_STAKE_SCRIPT:
         case REWARD_SCRIPT:
-            CONSISTENT_WITH(STAKING_SCRIPT_HASH);
+            CONSISTENT_WITH(STAKING_PART_SCRIPT_HASH);
 
             __attribute__((fallthrough));
         case POINTER_KEY:
         case POINTER_SCRIPT:
-            CONSISTENT_WITH(BLOCKCHAIN_POINTER);
+            CONSISTENT_WITH(STAKING_PART_BLOCKCHAIN_POINTER);
             break;
 
         case ENTERPRISE_KEY:
         case ENTERPRISE_SCRIPT:
         case BYRON:
-            CONSISTENT_WITH(NO_STAKING);
+            CONSISTENT_WITH(STAKING_PART_NONE);
             break;
 
         default:
@@ -123,33 +123,7 @@ bool isStakingInfoConsistentWithAddressType(const addressParams_t* addressParams
 #undef CONSISTENT_WITH
 }
 
-staking_data_source_t determineStakingChoice(address_type_t addressType) {
-    switch (addressType) {
-        case BASE_PAYMENT_KEY_STAKE_KEY:
-        case BASE_PAYMENT_SCRIPT_STAKE_KEY:
-        case REWARD_KEY:
-            return STAKING_KEY_HASH;
-
-        case BASE_PAYMENT_KEY_STAKE_SCRIPT:
-        case BASE_PAYMENT_SCRIPT_STAKE_SCRIPT:
-        case REWARD_SCRIPT:
-            return STAKING_SCRIPT_HASH;
-
-        case POINTER_KEY:
-        case POINTER_SCRIPT:
-            return BLOCKCHAIN_POINTER;
-
-        case ENTERPRISE_KEY:
-        case ENTERPRISE_SCRIPT:
-        case BYRON:
-            return NO_STAKING;
-
-        default:
-            ASSERT(false);
-    }
-}
-
-__noinline_due_to_stack__ static bool buffer_appendPublicKeyHash(
+static bool buffer_write_pubkey_hash(
     write_buffer_t* buf,
     const bip44_path_t* keyDerivationPath) {
 
@@ -159,65 +133,40 @@ __noinline_due_to_stack__ static bool buffer_appendPublicKeyHash(
     return buffer_write_bytes(buf, hashedPubKey, SIZEOF(hashedPubKey));
 }
 
-static bool _isBaseAddress(address_type_t addressType) {
-    switch (addressType) {
-        case BASE_PAYMENT_KEY_STAKE_KEY:
-        case BASE_PAYMENT_SCRIPT_STAKE_KEY:
-        case BASE_PAYMENT_KEY_STAKE_SCRIPT:
-        case BASE_PAYMENT_SCRIPT_STAKE_SCRIPT:
-            return true;
+// Write the payment credential (key-hash or script-hash) into buf.
+static void write_payment_credential(write_buffer_t* buf, const address_params_t* address_params) {
+    ASSERT(isValidAddressParams(address_params));
+    switch (address_params->paymentPartType) {
+        case PAYMENT_PART_KEY_PATH:
+            ASSERT(buffer_write_pubkey_hash(buf, &address_params->paymentKeyPath));
+            break;
+        case PAYMENT_PART_SCRIPT_HASH:
+            ASSERT(buffer_write_bytes(buf, address_params->paymentScriptHash, SCRIPT_HASH_LENGTH));
+            break;
+        case PAYMENT_PART_NONE:
+            break;
         default:
-            return false;
+            ASSERT(false);
     }
 }
 
-static size_t deriveAddress_base(const addressParams_t* addressParams,
-                                 uint8_t* outBuffer,
-                                 size_t outSize) {
-    ASSERT(_isBaseAddress(addressParams->type));
-    ASSERT(outSize < BUFFER_SIZE_PARANOIA);
-
-    const uint8_t header =
-        constructShelleyAddressHeader(addressParams->type, addressParams->networkId);
-    write_buffer_t out = buffer_init_write(outBuffer, outSize);
-    {
-        ASSERT(buffer_write_bytes(&out, &header, 1));
-    }
-    STATIC_ASSERT(SIZEOF(addressParams->paymentScriptHash) == SCRIPT_HASH_LENGTH,
-                  "bad payment script hash size");
-    switch (addressParams->type) {
-        case BASE_PAYMENT_KEY_STAKE_KEY:
-        case BASE_PAYMENT_KEY_STAKE_SCRIPT: {
-            ASSERT(buffer_appendPublicKeyHash(&out, &addressParams->paymentKeyPath));
-        } break;
-        case BASE_PAYMENT_SCRIPT_STAKE_KEY:
-        case BASE_PAYMENT_SCRIPT_STAKE_SCRIPT: {
-            ASSERT(buffer_write_bytes(&out, addressParams->paymentScriptHash, SCRIPT_HASH_LENGTH));
-        } break;
+// Write the staking credential (key-hash or script-hash) into buf.
+// stakingPartType must be one of STAKING_PART_KEY_PATH / STAKING_PART_KEY_HASH / STAKING_PART_SCRIPT_HASH.
+static void write_staking_credential(write_buffer_t* buf, const address_params_t* address_params) {
+    ASSERT(isValidAddressParams(address_params));
+    switch (address_params->stakingPartType) {
+        case STAKING_PART_KEY_PATH:
+            ASSERT(buffer_write_pubkey_hash(buf, &address_params->stakingKeyPath));
+            break;
+        case STAKING_PART_KEY_HASH:
+            ASSERT(buffer_write_bytes(buf, address_params->stakingKeyHash, ADDRESS_KEY_HASH_LENGTH));
+            break;
+        case STAKING_PART_SCRIPT_HASH:
+            ASSERT(buffer_write_bytes(buf, address_params->stakingScriptHash, SCRIPT_HASH_LENGTH));
+            break;
         default:
             ASSERT(false);
     }
-
-    STATIC_ASSERT(SIZEOF(addressParams->stakingKeyHash) == ADDRESS_KEY_HASH_LENGTH,
-                  "bad stake key hash size");
-    STATIC_ASSERT(SIZEOF(addressParams->stakingScriptHash) == SCRIPT_HASH_LENGTH,
-                  "bad stake script hash size");
-    switch (addressParams->stakingDataSource) {
-        case STAKING_KEY_PATH: {
-            ASSERT(buffer_appendPublicKeyHash(&out, &addressParams->stakingKeyPath));
-        } break;
-
-        case STAKING_KEY_HASH: {
-            ASSERT(buffer_write_bytes(&out, addressParams->stakingKeyHash, ADDRESS_KEY_HASH_LENGTH));
-        } break;
-
-        case STAKING_SCRIPT_HASH: {
-            ASSERT(buffer_write_bytes(&out, addressParams->stakingScriptHash, SCRIPT_HASH_LENGTH));
-        } break;
-        default:
-            ASSERT(false);
-    }
-    return buffer_written_size(&out);
 }
 
 static bool buffer_appendVariableLengthUInt(write_buffer_t* buf, uint64_t value) {
@@ -252,104 +201,18 @@ static bool buffer_appendVariableLengthUInt(write_buffer_t* buf, uint64_t value)
     return buffer_write_bytes(buf, &chunks[0], 1);
 }
 
-static size_t deriveAddress_pointer(const addressParams_t* addressParams,
-                                    uint8_t* outBuffer,
-                                    size_t outSize) {
-    const address_type_t addressType = addressParams->type;
-    ASSERT(addressType == POINTER_KEY || addressType == POINTER_SCRIPT);
-    ASSERT(outSize < BUFFER_SIZE_PARANOIA);
-
-    const uint8_t addressHeader =
-        constructShelleyAddressHeader(addressType, addressParams->networkId);
-
-    write_buffer_t out = buffer_init_write(outBuffer, outSize);
-    {
-        ASSERT(buffer_write_bytes(&out, &addressHeader, 1));
-    }
-
-    if (addressType == POINTER_KEY) {
-        ASSERT(buffer_appendPublicKeyHash(&out, &addressParams->paymentKeyPath));
-    } else {
-        ASSERT(buffer_write_bytes(&out, addressParams->paymentScriptHash, SCRIPT_HASH_LENGTH));
-    }
-
-    STATIC_ASSERT(SCRIPT_HASH_LENGTH == ADDRESS_KEY_HASH_LENGTH, "incompatible hash lengths");
-    const int ADDRESS_LENGTH = 1 + ADDRESS_KEY_HASH_LENGTH;
-    ASSERT(buffer_written_size(&out) == ADDRESS_LENGTH);
-
-    {
-        const blockchainPointer_t* stakingKeyBlockchainPointer =
-            &addressParams->stakingKeyBlockchainPointer;
-        ASSERT(buffer_appendVariableLengthUInt(&out, stakingKeyBlockchainPointer->blockIndex));
-        ASSERT(buffer_appendVariableLengthUInt(&out, stakingKeyBlockchainPointer->txIndex));
-        ASSERT(buffer_appendVariableLengthUInt(&out, stakingKeyBlockchainPointer->certificateIndex));
-    }
-
-    return buffer_written_size(&out);
-}
-
-static size_t deriveAddress_enterprise(const addressParams_t* addressParams,
-                                       uint8_t* outBuffer,
-                                       size_t outSize) {
-    const address_type_t addressType = addressParams->type;
-    ASSERT(addressType == ENTERPRISE_KEY || addressType == ENTERPRISE_SCRIPT);
-    ASSERT(outSize < BUFFER_SIZE_PARANOIA);
-
-    const uint8_t addressHeader =
-        constructShelleyAddressHeader(addressType, addressParams->networkId);
-
-    write_buffer_t out = buffer_init_write(outBuffer, outSize);
-    {
-        ASSERT(buffer_write_bytes(&out, &addressHeader, 1));
-    }
-
-    if (addressType == ENTERPRISE_KEY) {
-        ASSERT(buffer_appendPublicKeyHash(&out, &addressParams->paymentKeyPath));
-    } else {
-        ASSERT(buffer_write_bytes(&out, addressParams->paymentScriptHash, SCRIPT_HASH_LENGTH));
-    }
-
-    // no staking data
-
-    STATIC_ASSERT(SCRIPT_HASH_LENGTH == ADDRESS_KEY_HASH_LENGTH, "incompatible hash lengths");
-    const int ADDRESS_LENGTH = 1 + ADDRESS_KEY_HASH_LENGTH;
-    ASSERT(buffer_written_size(&out) == ADDRESS_LENGTH);
-
-    return buffer_written_size(&out);
-}
-
-static size_t deriveAddress_reward(const addressParams_t* addressParams,
+static size_t deriveAddress_reward(const address_params_t* address_params,
                                    uint8_t* outBuffer,
                                    size_t outSize) {
-    const address_type_t addressType = addressParams->type;
-    ASSERT(addressType == REWARD_KEY || addressType == REWARD_SCRIPT);
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
 
-    const uint8_t addressHeader =
-        constructShelleyAddressHeader(addressType, addressParams->networkId);
+    const uint8_t header =
+        constructShelleyAddressHeader(address_params->type, address_params->networkId);
 
     write_buffer_t out = buffer_init_write(outBuffer, outSize);
-    {
-        ASSERT(buffer_write_bytes(&out, &addressHeader, 1));
-    }
-
-    // no payment data
-
-    if (addressType == REWARD_KEY) {
-        const bip44_path_t* stakingKeyPath = &addressParams->stakingKeyPath;
-        // stake key path expected (corresponds to reward account)
-        BIP44_PRINTF(stakingKeyPath);
-        TRACE("");
-        ASSERT(bip44_isOrdinaryStakingKeyPath(stakingKeyPath));
-        ASSERT(buffer_appendPublicKeyHash(&out, stakingKeyPath));
-    } else {
-        ASSERT(buffer_write_bytes(&out, addressParams->stakingScriptHash, SCRIPT_HASH_LENGTH));
-    }
-
-    STATIC_ASSERT(SCRIPT_HASH_LENGTH == ADDRESS_KEY_HASH_LENGTH, "incompatible hash lengths");
-    const int ADDRESS_LENGTH = 1 + ADDRESS_KEY_HASH_LENGTH;
-    ASSERT(buffer_written_size(&out) == ADDRESS_LENGTH);
-
+    ASSERT(buffer_write_bytes(&out, &header, 1));
+    // no payment data — reward addresses contain only the staking credential
+    write_staking_credential(&out, address_params);
     return buffer_written_size(&out);
 }
 
@@ -360,12 +223,14 @@ size_t constructRewardAddressFromKeyPath(const bip44_path_t* path,
     ASSERT(outSize == REWARD_ACCOUNT_LENGTH);
     ASSERT(bip44_isOrdinaryStakingKeyPath(path));
 
-    addressParams_t addressParamsStub;
-    addressParamsStub.type = REWARD_KEY;
-    addressParamsStub.networkId = networkId;
-    addressParamsStub.stakingDataSource = STAKING_KEY_HASH;
-    addressParamsStub.stakingKeyPath = *path;
-    return deriveAddress_reward(&addressParamsStub, outBuffer, outSize);
+    address_params_t address_paramsStub;
+    explicit_bzero(&address_paramsStub, SIZEOF(address_paramsStub));
+    address_paramsStub.type = REWARD_KEY;
+    address_paramsStub.networkId = networkId;
+    address_paramsStub.paymentPartType = PAYMENT_PART_NONE;
+    address_paramsStub.stakingPartType = STAKING_PART_KEY_PATH;
+    address_paramsStub.stakingKeyPath = *path;
+    return deriveAddress_reward(&address_paramsStub, outBuffer, outSize);
 }
 
 size_t constructRewardAddressFromHash(uint8_t networkId,
@@ -375,6 +240,8 @@ size_t constructRewardAddressFromHash(uint8_t networkId,
                                       uint8_t* outBuffer,
                                       size_t outSize) {
     ASSERT(isValidNetworkId(networkId));
+    ASSERT(hashBuffer != NULL);
+    ASSERT(outBuffer != NULL);
     ASSERT(hashSize == ADDRESS_KEY_HASH_LENGTH);
     STATIC_ASSERT(ADDRESS_KEY_HASH_LENGTH == SCRIPT_HASH_LENGTH, "incompatible hash sizes");
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
@@ -394,38 +261,51 @@ size_t constructRewardAddressFromHash(uint8_t networkId,
     return buffer_written_size(&out);
 }
 
-size_t deriveAddress(const addressParams_t* addressParams, uint8_t* outBuffer, size_t outSize) {
+size_t deriveAddress(const address_params_t* address_params, uint8_t* outBuffer, size_t outSize) {
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
-    ASSERT(isValidAddressParams(addressParams));
+    ASSERT(isValidAddressParams(address_params));
 
-    // shelley
-    switch (addressParams->type) {
-        case BASE_PAYMENT_KEY_STAKE_KEY:
-        case BASE_PAYMENT_SCRIPT_STAKE_KEY:
-        case BASE_PAYMENT_KEY_STAKE_SCRIPT:
-        case BASE_PAYMENT_SCRIPT_STAKE_SCRIPT:
-            return deriveAddress_base(addressParams, outBuffer, outSize);
-        case POINTER_KEY:
-        case POINTER_SCRIPT:
-            ASSERT(addressParams->stakingDataSource == BLOCKCHAIN_POINTER);
-            return deriveAddress_pointer(addressParams, outBuffer, outSize);
-        case ENTERPRISE_KEY:
-        case ENTERPRISE_SCRIPT:
-            return deriveAddress_enterprise(addressParams, outBuffer, outSize);
-        case REWARD_KEY:
-        case REWARD_SCRIPT:
-            return deriveAddress_reward(addressParams, outBuffer, outSize);
+    // Byron is a completely different serialisation
+    if (address_params->type == BYRON) {
+        return deriveAddress_byron(&address_params->paymentKeyPath,
+                                   address_params->protocolMagic,
+                                   outBuffer,
+                                   outSize);
+    }
 
-        case BYRON:
-            return deriveAddress_byron(&addressParams->paymentKeyPath,
-                                       addressParams->protocolMagic,
-                                       outBuffer,
-                                       outSize);
+    // Reward addresses are also called from constructRewardAddressFromKeyPath
+    if (address_params->type == REWARD_KEY || address_params->type == REWARD_SCRIPT) {
+        return deriveAddress_reward(address_params, outBuffer, outSize);
+    }
 
+    // All remaining Shelley types: header + payment + (staking credential | blockchain pointer | nothing)
+    write_buffer_t out = buffer_init_write(outBuffer, outSize);
+    const uint8_t header =
+        constructShelleyAddressHeader(address_params->type, address_params->networkId);
+    ASSERT(buffer_write_bytes(&out, &header, 1));
+    write_payment_credential(&out, address_params);
+
+    switch (address_params->stakingPartType) {
+        case STAKING_PART_KEY_PATH:
+        case STAKING_PART_KEY_HASH:
+        case STAKING_PART_SCRIPT_HASH:
+            write_staking_credential(&out, address_params);
+            break;
+        case STAKING_PART_BLOCKCHAIN_POINTER: {
+            const blockchainPointer_t* ptr = &address_params->stakingKeyBlockchainPointer;
+            ASSERT(buffer_appendVariableLengthUInt(&out, ptr->blockIndex));
+            ASSERT(buffer_appendVariableLengthUInt(&out, ptr->txIndex));
+            ASSERT(buffer_appendVariableLengthUInt(&out, ptr->certificateIndex));
+            break;
+        }
+        case STAKING_PART_NONE:
+            // enterprise addresses — nothing to append
+            break;
         default:
             ASSERT(false);
     }
-    return BUFFER_SIZE_PARANOIA + 1;
+
+    return buffer_written_size(&out);
 }
 
 bool format_blockchain_pointer(blockchainPointer_t blockchainPointer, char* out, size_t outSize) {
@@ -517,6 +397,7 @@ bool format_reward_account_from_credential(uint8_t networkId,
             );
             break;
         case EXT_CREDENTIAL_KEY_HASH:
+            LEDGER_ASSERT(credential->keyHash != NULL, "NULL key hash in key-hash credential");
             reward_addr_len = constructRewardAddressFromHash(
                 networkId,
                 REWARD_HASH_SOURCE_KEY,
@@ -527,6 +408,7 @@ bool format_reward_account_from_credential(uint8_t networkId,
             );
             break;
         case EXT_CREDENTIAL_SCRIPT_HASH:
+            LEDGER_ASSERT(credential->scriptHash != NULL, "NULL script hash in script-hash credential");
             reward_addr_len = constructRewardAddressFromHash(
                 networkId,
                 REWARD_HASH_SOURCE_SCRIPT,
@@ -579,20 +461,28 @@ bool format_pool_reward_account(uint8_t networkId,
  *     protocol magic 4B
  * else
  *     network id 1B
- * payment public key derivation path (1B for length + [0-10] x 4B)
- * staking choice 1B
- *     if NO_STAKING:
+ * payment part:
+ *     for PAYMENT_PART_KEY_PATH:
+ *         payment public key derivation path (1B for length + [0-10] x 4B)
+ *     for PAYMENT_PART_SCRIPT_HASH:
+ *         payment script hash 28B
+ *     for PAYMENT_PART_NONE:
+ *         nothing
+ * staking part type 1B
+ *     if STAKING_PART_NONE:
  *         nothing more
- *     if STAKING_KEY_PATH:
+ *     if STAKING_PART_KEY_PATH:
  *         staking public key derivation path (1B for length + [0-10] x 4B)
- *     if STAKING_KEY_HASH:
+ *     if STAKING_PART_KEY_HASH:
  *         stake key hash 28B
- *     if BLOCKCHAIN_POINTER:
+ *     if STAKING_PART_BLOCKCHAIN_POINTER:
  *         certificate blockchain pointer 3 x 4B
  *
  * (see also enums in addressUtilsShelley.h)
  */
-bool buffer_parseAddressParams(buffer_t* buffer, addressParams_t* params) {
+bool buffer_read_address_params(buffer_t* buffer, address_params_t* params) {
+    explicit_bzero(params, SIZEOF(*params));
+
     // address type
     uint8_t addressType = 0;
     if (!buffer_read_u8(buffer, &addressType)) {
@@ -631,6 +521,7 @@ bool buffer_parseAddressParams(buffer_t* buffer, addressParams_t* params) {
         case POINTER_KEY:
         case ENTERPRISE_KEY:
         case BYRON: {
+            params->paymentPartType = PAYMENT_PART_KEY_PATH;
             if (!buffer_read_bip44_path(buffer, &params->paymentKeyPath)) {
                 return false;
             }
@@ -643,19 +534,20 @@ bool buffer_parseAddressParams(buffer_t* buffer, addressParams_t* params) {
         case BASE_PAYMENT_SCRIPT_STAKE_SCRIPT:
         case POINTER_SCRIPT:
         case ENTERPRISE_SCRIPT: {
-            STATIC_ASSERT(SIZEOF(params->paymentScriptHash) == SCRIPT_HASH_LENGTH,
-                          "Wrong address key hash length");
-            if (!buffer_read_bytes(buffer, params->paymentScriptHash, SCRIPT_HASH_LENGTH)) {
+            params->paymentPartType = PAYMENT_PART_SCRIPT_HASH;
+            if (!buffer_read_bytes_ptr(buffer, &params->paymentScriptHash, SCRIPT_HASH_LENGTH)) {
                 return false;
             }
+            LEDGER_ASSERT(params->paymentScriptHash != NULL, "NULL payment script hash pointer");
             TRACE("Payment script hash: ");
-            TRACE_BUFFER(params->paymentScriptHash, SIZEOF(params->paymentScriptHash));
+            TRACE_BUFFER(params->paymentScriptHash, SCRIPT_HASH_LENGTH);
             break;
         }
 
         case REWARD_KEY:
         case REWARD_SCRIPT:
             // no payment info for reward address types
+            params->paymentPartType = PAYMENT_PART_NONE;
             break;
 
         default:
@@ -663,22 +555,22 @@ bool buffer_parseAddressParams(buffer_t* buffer, addressParams_t* params) {
             break;
     }
 
-    // staking choice
+    // staking part type
     uint8_t stakingChoice = 0;
     if (!buffer_read_u8(buffer, &stakingChoice)) {
         return false;
     }
-    params->stakingDataSource = stakingChoice;
-    if (!isValidStakingChoice(params->stakingDataSource)) {
+    params->stakingPartType = stakingChoice;
+    if (!is_valid_staking_part_type(params->stakingPartType)) {
         return false;
     }
 
-    // staking choice determines what to parse next
-    switch (params->stakingDataSource) {
-        case NO_STAKING:
+    // staking part type determines what to parse next
+    switch (params->stakingPartType) {
+        case STAKING_PART_NONE:
             break;
 
-        case STAKING_KEY_PATH: {
+        case STAKING_PART_KEY_PATH: {
             if (!buffer_read_bip44_path(buffer, &params->stakingKeyPath)) {
                 return false;
             }
@@ -687,29 +579,27 @@ bool buffer_parseAddressParams(buffer_t* buffer, addressParams_t* params) {
             break;
         }
 
-        case STAKING_KEY_HASH: {
-            STATIC_ASSERT(SIZEOF(params->stakingKeyHash) == ADDRESS_KEY_HASH_LENGTH,
-                          "Wrong address key hash length");
-            if (!buffer_read_bytes(buffer, params->stakingKeyHash, ADDRESS_KEY_HASH_LENGTH)) {
+        case STAKING_PART_KEY_HASH: {
+            if (!buffer_read_bytes_ptr(buffer, &params->stakingKeyHash, ADDRESS_KEY_HASH_LENGTH)) {
                 return false;
             }
+            LEDGER_ASSERT(params->stakingKeyHash != NULL, "NULL staking key hash pointer");
             TRACE("Stake key hash: ");
-            TRACE_BUFFER(params->stakingKeyHash, SIZEOF(params->stakingKeyHash));
+            TRACE_BUFFER(params->stakingKeyHash, ADDRESS_KEY_HASH_LENGTH);
             break;
         }
 
-        case STAKING_SCRIPT_HASH: {
-            STATIC_ASSERT(SIZEOF(params->stakingScriptHash) == SCRIPT_HASH_LENGTH,
-                          "Wrong script hash length");
-            if (!buffer_read_bytes(buffer, params->stakingScriptHash, SCRIPT_HASH_LENGTH)) {
+        case STAKING_PART_SCRIPT_HASH: {
+            if (!buffer_read_bytes_ptr(buffer, &params->stakingScriptHash, SCRIPT_HASH_LENGTH)) {
                 return false;
             }
+            LEDGER_ASSERT(params->stakingScriptHash != NULL, "NULL staking script hash pointer");
             TRACE("Stake script hash: ");
-            TRACE_BUFFER(params->stakingScriptHash, SIZEOF(params->stakingScriptHash));
+            TRACE_BUFFER(params->stakingScriptHash, SCRIPT_HASH_LENGTH);
             break;
         }
 
-        case BLOCKCHAIN_POINTER: {
+        case STAKING_PART_BLOCKCHAIN_POINTER: {
             uint32_t blockIndex = 0, txIndex = 0, certIndex = 0;
             if (!buffer_read_u32(buffer, &blockIndex, BE)) {
                 return false;
@@ -723,7 +613,7 @@ bool buffer_parseAddressParams(buffer_t* buffer, addressParams_t* params) {
             params->stakingKeyBlockchainPointer.blockIndex = blockIndex;
             params->stakingKeyBlockchainPointer.txIndex = txIndex;
             params->stakingKeyBlockchainPointer.certificateIndex = certIndex;
-            TRACE("Stake key pointer: [%d, %d, %d]",
+            TRACE("Stake key pointer: [%u, %u, %u]",
                   blockIndex,
                   txIndex,
                   certIndex);
@@ -737,22 +627,29 @@ bool buffer_parseAddressParams(buffer_t* buffer, addressParams_t* params) {
     return true;
 }
 
-static inline bool isValidStakingInfo(const addressParams_t* params) {
+static inline bool isValidStakingInfo(const address_params_t* params) {
 #define CHECK(cond) \
     if (!(cond)) return false
-    CHECK(isStakingInfoConsistentWithAddressType(params));
-    if (params->stakingDataSource == STAKING_KEY_PATH) {
+    CHECK(is_staking_part_consistent_with_address_type(params));
+    if (params->stakingPartType == STAKING_PART_KEY_PATH) {
         CHECK(bip44_classifyPath(&params->stakingKeyPath) == PATH_ORDINARY_STAKING_KEY);
+    }
+    if (params->stakingPartType == STAKING_PART_KEY_HASH) {
+        CHECK(params->stakingKeyHash != NULL);
+    }
+    if (params->stakingPartType == STAKING_PART_SCRIPT_HASH) {
+        CHECK(params->stakingScriptHash != NULL);
     }
     return true;
 #undef CHECK
 }
 
-static inline bool isValidPaymentInfo(const addressParams_t* params) {
+static inline bool isValidPaymentInfo(const address_params_t* params) {
 #define CHECK(cond) \
     if (!(cond)) return false
     switch (params->type) {
         case BYRON:
+            CHECK(params->paymentPartType == PAYMENT_PART_KEY_PATH);
             CHECK(bip44_classifyPath(&params->paymentKeyPath) == PATH_ORDINARY_PAYMENT_KEY);
             CHECK(bip44_hasByronPrefix(&params->paymentKeyPath));
             break;
@@ -761,6 +658,7 @@ static inline bool isValidPaymentInfo(const addressParams_t* params) {
         case BASE_PAYMENT_KEY_STAKE_SCRIPT:
         case POINTER_KEY:
         case ENTERPRISE_KEY:
+            CHECK(params->paymentPartType == PAYMENT_PART_KEY_PATH);
             CHECK(bip44_classifyPath(&params->paymentKeyPath) == PATH_ORDINARY_PAYMENT_KEY);
             CHECK(bip44_hasShelleyPrefix(&params->paymentKeyPath));
             break;
@@ -769,9 +667,14 @@ static inline bool isValidPaymentInfo(const addressParams_t* params) {
         case BASE_PAYMENT_SCRIPT_STAKE_SCRIPT:
         case POINTER_SCRIPT:
         case ENTERPRISE_SCRIPT:
+            CHECK(params->paymentPartType == PAYMENT_PART_SCRIPT_HASH);
+            CHECK(params->paymentScriptHash != NULL);
+            break;
+
         case REWARD_KEY:
         case REWARD_SCRIPT:
-            // nothing to validate
+            // no payment credential for reward address types
+            CHECK(params->paymentPartType == PAYMENT_PART_NONE);
             break;
 
         default:
@@ -782,7 +685,7 @@ static inline bool isValidPaymentInfo(const addressParams_t* params) {
 #undef CHECK
 }
 
-bool isValidAddressParams(const addressParams_t* params) {
+bool isValidAddressParams(const address_params_t* params) {
 #define CHECK(cond) \
     if (!(cond)) return false
 
@@ -795,6 +698,36 @@ bool isValidAddressParams(const addressParams_t* params) {
 
     return true;
 #undef CHECK
+}
+
+void address_params_copyHashesToStorage(address_params_t* params,
+                                        address_params_hashes_storage_t* storage) {
+    LEDGER_ASSERT(params != NULL, "NULL address_params");
+    LEDGER_ASSERT(storage != NULL, "NULL storage");
+
+    // Copy payment script hash if present
+    if (params->paymentPartType == PAYMENT_PART_SCRIPT_HASH) {
+        LEDGER_ASSERT(params->paymentScriptHash != NULL, "NULL payment script hash to copy");
+        memmove(storage->paymentHash, params->paymentScriptHash, SCRIPT_HASH_LENGTH);
+        params->paymentScriptHash = storage->paymentHash;
+    }
+
+    // Copy staking key/script hash if present
+    switch (params->stakingPartType) {
+        case STAKING_PART_KEY_HASH:
+            LEDGER_ASSERT(params->stakingKeyHash != NULL, "NULL staking key hash to copy");
+            memmove(storage->stakingHash, params->stakingKeyHash, ADDRESS_KEY_HASH_LENGTH);
+            params->stakingKeyHash = storage->stakingHash;
+            break;
+        case STAKING_PART_SCRIPT_HASH:
+            LEDGER_ASSERT(params->stakingScriptHash != NULL, "NULL staking script hash to copy");
+            memmove(storage->stakingHash, params->stakingScriptHash, SCRIPT_HASH_LENGTH);
+            params->stakingScriptHash = storage->stakingHash;
+            break;
+        default:
+            // STAKING_PART_NONE, STAKING_PART_KEY_PATH, STAKING_PART_BLOCKCHAIN_POINTER: no hash to copy
+            break;
+    }
 }
 
 payment_choice_t determinePaymentChoice(address_type_t addressType) {
@@ -819,6 +752,16 @@ payment_choice_t determinePaymentChoice(address_type_t addressType) {
         case REWARD_SCRIPT:
             return PAYMENT_NONE;
     }
+}
+
+payment_part_type_t addressParams_getPaymentPartType(const address_params_t* address_params) {
+    LEDGER_ASSERT(address_params != NULL, "NULL address_params");
+    return address_params->paymentPartType;
+}
+
+staking_part_type_t addressParams_getStakingPartType(const address_params_t* address_params) {
+    LEDGER_ASSERT(address_params != NULL, "NULL address_params");
+    return address_params->stakingPartType;
 }
 
 void poolRewardAccountToBuffer(const pool_reward_account_t* rewardAccount,

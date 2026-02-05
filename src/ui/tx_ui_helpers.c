@@ -512,16 +512,22 @@ void addCertificateUIPairs(const certificate_data_t* certificate_data) {
     }
 }
 
-void addPaymentInfoUIPairs(const addressParams_t* addressParams) {
+void addPaymentInfoUIPairs(const address_params_t* address_params) {
     START_COUNT();
-    switch (determinePaymentChoice(addressParams->type)) {
+    switch (determinePaymentChoice(address_params->type)) {
         case PAYMENT_PATH: {
-            UI_ADD_FORMAT1(UI_STATIC_LABEL("Payment key path"), MAX_BIP44_PATH_STRING_LENGTH, format_bip44_path, &addressParams->paymentKeyPath);
+            LEDGER_ASSERT(addressParams_getPaymentPartType(address_params) == PAYMENT_PART_KEY_PATH,
+                          "Payment credential must be KEY_PATH");
+            UI_ADD_FORMAT1(UI_STATIC_LABEL("Payment key path"), MAX_BIP44_PATH_STRING_LENGTH, format_bip44_path, &address_params->paymentKeyPath);
             break;
         }
 
         case PAYMENT_SCRIPT_HASH: {
-            UI_ADD_FORMAT3(UI_STATIC_LABEL("Payment script hash"), MAX_BECH32_STRING_LENGTH, format_bech32, "script", addressParams->paymentScriptHash, SIZEOF(addressParams->paymentScriptHash));
+            LEDGER_ASSERT(addressParams_getPaymentPartType(address_params) == PAYMENT_PART_SCRIPT_HASH,
+                          "Payment credential must be SCRIPT_HASH");
+            LEDGER_ASSERT(address_params->paymentScriptHash != NULL,
+                          "NULL payment script hash");
+            UI_ADD_FORMAT3(UI_STATIC_LABEL("Payment script hash"), MAX_BECH32_STRING_LENGTH, format_bech32, "script", address_params->paymentScriptHash, SCRIPT_HASH_LENGTH);
             break;
         }
 
@@ -532,11 +538,11 @@ void addPaymentInfoUIPairs(const addressParams_t* addressParams) {
     CHECK_COUNT(UI_PAIRS_PAYMENT_INFO);
 }
 
-void addStakingInfoUIPairs(const addressParams_t* addressParams) {
+void addStakingInfoUIPairs(const address_params_t* address_params) {
     START_COUNT();
-    switch (addressParams->stakingDataSource) {
-        case NO_STAKING: {
-            switch (addressParams->type) {
+    switch (addressParams_getStakingPartType(address_params)) {
+        case STAKING_PART_NONE: {
+            switch (address_params->type) {
                 case BYRON:
                     UI_ADD_STATIC(UI_STATIC_LABEL("Warning:"), UI_STATIC_LABEL("Legacy Byron address (no staking rewards)"));
                     break;
@@ -552,23 +558,33 @@ void addStakingInfoUIPairs(const addressParams_t* addressParams) {
             break;
         }
 
-        case STAKING_KEY_PATH: {
-            UI_ADD_FORMAT1(UI_STATIC_LABEL("Staking path"), MAX_BIP44_PATH_STRING_LENGTH, format_bip44_path, &addressParams->stakingKeyPath);
+        case STAKING_PART_KEY_PATH: {
+            LEDGER_ASSERT(addressParams_getStakingPartType(address_params) == STAKING_PART_KEY_PATH,
+                          "Staking credential must be KEY_PATH");
+            UI_ADD_FORMAT1(UI_STATIC_LABEL("Staking path"), MAX_BIP44_PATH_STRING_LENGTH, format_bip44_path, &address_params->stakingKeyPath);
             break;
         }
 
-        case STAKING_KEY_HASH: {
-            UI_ADD_FORMAT3(UI_STATIC_LABEL("Stake key hash"), MAX_BECH32_STRING_LENGTH, format_bech32, "stake_vkh", addressParams->stakingKeyHash, SIZEOF(addressParams->stakingKeyHash));
+        case STAKING_PART_KEY_HASH: {
+            LEDGER_ASSERT(addressParams_getStakingPartType(address_params) == STAKING_PART_KEY_HASH,
+                          "Staking credential must be KEY_HASH");
+            LEDGER_ASSERT(address_params->stakingKeyHash != NULL,
+                          "NULL staking key hash");
+            UI_ADD_FORMAT3(UI_STATIC_LABEL("Stake key hash"), MAX_BECH32_STRING_LENGTH, format_bech32, "stake_vkh", address_params->stakingKeyHash, ADDRESS_KEY_HASH_LENGTH);
             break;
         }
 
-        case STAKING_SCRIPT_HASH: {
-            UI_ADD_FORMAT3(UI_STATIC_LABEL("Stake script hash"), MAX_BECH32_STRING_LENGTH, format_bech32, "script", addressParams->stakingScriptHash, SIZEOF(addressParams->stakingScriptHash));
+        case STAKING_PART_SCRIPT_HASH: {
+            LEDGER_ASSERT(addressParams_getStakingPartType(address_params) == STAKING_PART_SCRIPT_HASH,
+                          "Staking credential must be SCRIPT_HASH");
+            LEDGER_ASSERT(address_params->stakingScriptHash != NULL,
+                          "NULL staking script hash");
+            UI_ADD_FORMAT3(UI_STATIC_LABEL("Stake script hash"), MAX_BECH32_STRING_LENGTH, format_bech32, "script", address_params->stakingScriptHash, SCRIPT_HASH_LENGTH);
             break;
         }
 
-        case BLOCKCHAIN_POINTER: {
-            UI_ADD_FORMAT1(UI_STATIC_LABEL("Stake key pointer"), MAX_BIP44_PATH_STRING_LENGTH, format_blockchain_pointer, addressParams->stakingKeyBlockchainPointer);
+        case STAKING_PART_BLOCKCHAIN_POINTER: {
+            UI_ADD_FORMAT1(UI_STATIC_LABEL("Stake key pointer"), MAX_BIP44_PATH_STRING_LENGTH, format_blockchain_pointer, address_params->stakingKeyBlockchainPointer);
             break;
         }
 

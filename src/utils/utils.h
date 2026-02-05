@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "assert.h"
+#include "buffer_helpers.h"
 
 // Does not compile if x is pointer of some kind
 // See http://zubplot.blogspot.com/2015/01/gcc-is-wonderful-better-arraysize-macro.html
@@ -54,8 +55,20 @@
 
 #ifdef HAVE_PRINTF
 #define TRACE_BUFFER(BUF, SIZE) TRACE("%.*h", SIZE, BUF);
+
+static inline void trace_buffer_t_impl(const buffer_t *buffer) {
+    size_t remaining = buffer_remaining(buffer);
+    if (remaining == 0) {
+        TRACE("empty buffer (size=%u)", (unsigned)buffer_total_size(buffer));
+        return;
+    }
+    TRACE("%.*h", (int)remaining, buffer_current_ptr(buffer));
+}
+
+#define TRACE_BUFFER_T(BUF) trace_buffer_t_impl(BUF)
 #else
 #define TRACE_BUFFER(BUF, SIZE)
+#define TRACE_BUFFER_T(BUF)
 #endif
 
 #define IS_SIGNED_TYPE(type) (((type)(-1)) < 0)

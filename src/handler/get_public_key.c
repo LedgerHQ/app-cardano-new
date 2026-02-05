@@ -41,7 +41,7 @@
 
 void handler_get_public_key(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to get_public_key handler");
-    TRACE_BUFFER(cdata->ptr, cdata->size);
+    TRACE_BUFFER_T(cdata);
 
     // Handler entry invariant: no other request should be active
     // (Dispatcher prevents this with SWO_COMMAND_NOT_ALLOWED, but we validate here too)

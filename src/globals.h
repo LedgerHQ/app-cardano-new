@@ -162,9 +162,12 @@ typedef struct {
 
 /**
  * Structure for derive address information context.
+ * hashStorage buffers own copies of any script/key hashes that originally
+ * pointed into a transient APDU buffer.
  */
 typedef struct {
-    addressParams_t addressParams;
+    address_params_t address_params;
+    address_params_hashes_storage_t hashStorage;
     struct {
         uint8_t buffer[MAX_ADDRESS_LENGTH];
         size_t size;
@@ -196,11 +199,14 @@ typedef struct {
 
 /**
  * Context for CIP-8 message signing.
+ * hashStorage buffers own copies of any script/key hashes that originally
+ * pointed into the INIT APDU buffer (which is gone by CONFIRM stage).
  */
 typedef struct {
     bip44_path_t signingPath;
     cip8_address_field_type_t addressFieldType;
-    addressParams_t addressParams;
+    address_params_t address_params;
+    address_params_hashes_storage_t hashStorage;
 
     bool isAscii;
     bool hashPayload;
@@ -244,8 +250,6 @@ typedef struct {
     };
 
     request_type_e req_type;
-    uint32_t bip32_path[MAX_BIP32_PATH];
-    uint8_t bip32_path_len;
 } global_ctx_t;
 
 extern global_ctx_t G_context;

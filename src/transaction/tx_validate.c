@@ -150,6 +150,40 @@ static voter_t _voterForTxHash(const ext_voter_t* ext_voter) {
     return voter;
 }
 
+static void _hashOutputTopLevel(tx_hash_builder_t* txHashBuilder,
+                                const tx_output_description_t* output_desc,
+                                bool is_collateral) {
+    LEDGER_ASSERT(txHashBuilder != NULL, "NULL txHashBuilder");
+    LEDGER_ASSERT(output_desc != NULL, "NULL output_desc");
+
+    if (output_desc->destination.type == DESTINATION_THIRD_PARTY) {
+        if (is_collateral) {
+            txHashBuilder_addCollateralOutput(txHashBuilder, output_desc);
+        } else {
+            txHashBuilder_addOutput_topLevelData(txHashBuilder, output_desc);
+        }
+        return;
+    }
+
+    uint8_t address_bytes[MAX_ADDRESS_LENGTH];
+    size_t address_size = deriveAddress(
+        output_desc->destination.params,
+        address_bytes,
+        SIZEOF(address_bytes)
+    );
+
+    tx_output_description_t hash_desc = *output_desc;
+    hash_desc.destination.type = DESTINATION_THIRD_PARTY;
+    hash_desc.destination.address.buffer = address_bytes;
+    hash_desc.destination.address.size = address_size;
+
+    if (is_collateral) {
+        txHashBuilder_addCollateralOutput(txHashBuilder, &hash_desc);
+    } else {
+        txHashBuilder_addOutput_topLevelData(txHashBuilder, &hash_desc);
+    }
+}
+
 static int validate_and_hash_inputs(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
     txHashBuilder_enterInputs(txHashBuilder);
     s_flist_node *node = G_context.tx_info.transaction.inputs;
@@ -187,7 +221,7 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
     s_flist_node *node = G_context.tx_info.transaction.outputs;
     while (node != NULL) {
         tx_output_node_t *output_node = (tx_output_node_t *) node;
-        tx_output_destination_storage_t *output_destination = &output_node->output_data.destination;
+        const tx_output_destination_t *output_destination = &output_node->output_data.destination;
         const output_datum_t *output_datum = &output_node->output_data.datum;
         const ref_script_t *output_ref_script = &output_node->output_data.refScript;
 
@@ -197,36 +231,17 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
         output_desc.numAssetGroups = output_node->output_data.numAssetGroups;
         output_desc.includeDatum = output_datum->hasDatum;
         output_desc.includeRefScript = output_ref_script->hasRefScript;
-
-        if (output_destination->type == DESTINATION_THIRD_PARTY) {
-            output_desc.destination.type = DESTINATION_THIRD_PARTY;
-            output_desc.destination.address.buffer = output_destination->address.buffer;
-            output_desc.destination.address.size = output_destination->address.size;
-        } else {
-            output_desc.destination.type = DESTINATION_DEVICE_OWNED;
-            output_desc.destination.params = &output_destination->params;
-        }
+        output_desc.destination = *output_destination;
 
         security_policy_t datum_policy = POLICY_HIDE;
         security_policy_t ref_script_policy = POLICY_HIDE;
-        security_policy_t output_policy;
-        if (output_destination->type == DESTINATION_THIRD_PARTY) {
-            output_policy = policyForSignTxOutputAddressBytes(
-                &output_desc,
-                G_context.tx_info.transaction.txSigningMode,
-                G_context.tx_info.transaction.networkId,
-                G_context.tx_info.transaction.protocolMagic,
-                &G_context.tx_info.warning_bits
-            );
-        } else {
-            output_policy = policyForSignTxOutputAddressParams(
-                &output_desc,
-                G_context.tx_info.transaction.txSigningMode,
-                G_context.tx_info.transaction.networkId,
-                G_context.tx_info.transaction.protocolMagic,
-                &G_context.tx_info.warning_bits
-            );
-        }
+        security_policy_t output_policy = policyForSignTxOutputAddress(
+            &output_desc,
+            G_context.tx_info.transaction.txSigningMode,
+            G_context.tx_info.transaction.networkId,
+            G_context.tx_info.transaction.protocolMagic,
+            &G_context.tx_info.warning_bits
+        );
 
         switch (output_policy) {
             case POLICY_DENY:
@@ -282,31 +297,7 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
                 break;
         }
 
-        if (output_destination->type == DESTINATION_THIRD_PARTY) {
-            txHashBuilder_addOutput_topLevelData(txHashBuilder, &output_desc);
-        } else {
-            uint8_t *address_bytes = (uint8_t *) APP_MEM_ALLOC_ZEROED(MAX_ADDRESS_LENGTH);
-            if (address_bytes == NULL) {
-                return SWO_INSUFFICIENT_MEMORY;
-            }
-
-            size_t address_size = deriveAddress(
-                &output_destination->params,
-                address_bytes,
-                MAX_ADDRESS_LENGTH
-            );
-
-            if (address_size == 0 || address_size > MAX_ADDRESS_LENGTH) {
-                APP_MEM_FREE(address_bytes);
-                return SWO_INCORRECT_DATA;
-            }
-
-            output_desc.destination.type = DESTINATION_THIRD_PARTY;
-            output_desc.destination.address.buffer = address_bytes;
-            output_desc.destination.address.size = address_size;
-            txHashBuilder_addOutput_topLevelData(txHashBuilder, &output_desc);
-            APP_MEM_FREE(address_bytes);
-        }
+        _hashOutputTopLevel(txHashBuilder, &output_desc, false);
 
         {
             uint16_t asset_group_count = 0;
@@ -1246,7 +1237,7 @@ static int validate_and_hash_withdrawals(tx_hash_builder_t* txHashBuilder, tx_ui
     txHashBuilder_enterWithdrawals(txHashBuilder);
 
     uint8_t previousRewardAccount[REWARD_ACCOUNT_LENGTH];
-    explicit_bzero(previousRewardAccount, REWARD_ACCOUNT_LENGTH);
+    explicit_bzero(previousRewardAccount, SIZEOF(previousRewardAccount));
     bool isFirstWithdrawal = true;
 
     s_flist_node *node = G_context.tx_info.transaction.withdrawals;
@@ -1601,35 +1592,15 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
     collateral_desc.includeDatum = G_context.tx_info.transaction.collateral_output.datum.hasDatum;
     collateral_desc.includeRefScript = G_context.tx_info.transaction.collateral_output.refScript.hasRefScript;
 
-    if (G_context.tx_info.transaction.collateral_output.destination.type == DESTINATION_THIRD_PARTY) {
-        collateral_desc.destination.type = DESTINATION_THIRD_PARTY;
-        collateral_desc.destination.address.buffer =
-            G_context.tx_info.transaction.collateral_output.destination.address.buffer;
-        collateral_desc.destination.address.size =
-            G_context.tx_info.transaction.collateral_output.destination.address.size;
-    } else {
-        collateral_desc.destination.type = DESTINATION_DEVICE_OWNED;
-        collateral_desc.destination.params =
-            &G_context.tx_info.transaction.collateral_output.destination.params;
-    }
+    collateral_desc.destination = G_context.tx_info.transaction.collateral_output.destination;
 
-    security_policy_t collateral_policy;
-    if (collateral_desc.destination.type == DESTINATION_THIRD_PARTY) {
-        collateral_policy = policyForSignTxCollateralOutputAddressBytes(
-            &collateral_desc,
-            G_context.tx_info.transaction.txSigningMode,
-            G_context.tx_info.transaction.networkId,
-            G_context.tx_info.transaction.protocolMagic
-        );
-    } else {
-        collateral_policy = policyForSignTxCollateralOutputAddressParams(
-            &collateral_desc,
-            G_context.tx_info.transaction.txSigningMode,
-            G_context.tx_info.transaction.networkId,
-            G_context.tx_info.transaction.protocolMagic,
-            G_context.tx_info.transaction.includeTotalCollateral
-        );
-    }
+    security_policy_t collateral_policy = policyForSignTxCollateralOutputAddress(
+        &collateral_desc,
+        G_context.tx_info.transaction.txSigningMode,
+        G_context.tx_info.transaction.networkId,
+        G_context.tx_info.transaction.protocolMagic,
+        G_context.tx_info.transaction.includeTotalCollateral
+    );
 
     security_policy_t collateral_ada_policy =
         policyForSignTxCollateralOutputAdaAmount(
@@ -1695,31 +1666,7 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
             break;
     }
 
-    if (collateral_desc.destination.type == DESTINATION_THIRD_PARTY) {
-        txHashBuilder_addCollateralOutput(txHashBuilder, &collateral_desc);
-    } else {
-        uint8_t *address_bytes = (uint8_t *) APP_MEM_ALLOC_ZEROED(MAX_ADDRESS_LENGTH);
-        if (address_bytes == NULL) {
-            return SWO_INSUFFICIENT_MEMORY;
-        }
-
-        size_t address_size = deriveAddress(
-            &G_context.tx_info.transaction.collateral_output.destination.params,
-            address_bytes,
-            MAX_ADDRESS_LENGTH
-        );
-
-        if (address_size == 0 || address_size > MAX_ADDRESS_LENGTH) {
-            APP_MEM_FREE(address_bytes);
-            return SWO_INCORRECT_DATA;
-        }
-
-        collateral_desc.destination.type = DESTINATION_THIRD_PARTY;
-        collateral_desc.destination.address.buffer = address_bytes;
-        collateral_desc.destination.address.size = address_size;
-        txHashBuilder_addCollateralOutput(txHashBuilder, &collateral_desc);
-        APP_MEM_FREE(address_bytes);
-    }
+    _hashOutputTopLevel(txHashBuilder, &collateral_desc, true);
 
     uint16_t collateral_group_count = 0;
     s_flist_node *node2 = G_context.tx_info.transaction.collateral_output.assetGroups;

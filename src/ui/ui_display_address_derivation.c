@@ -106,7 +106,7 @@ static void derive_address_display_review_choice(bool confirm) {
 #define DERIVE_ADDRESS_PAIRS_PAYMENT_AND_STAKE  2  // Payment + Staking info
 #define DERIVE_ADDRESS_PAIRS_WARNING            1  // Warning banner
 
-static ui_status_t format_address_fields(const addressParams_t *params, warning_bits_t warnings) {
+static ui_status_t format_address_fields(const address_params_t *params, warning_bits_t warnings) {
     ui_reset_error_status();
     const bool hasWarning = (warnings != 0);
 
@@ -182,7 +182,7 @@ static void ui_displayAddressReview(const char *title,
                                     nbgl_choiceCallback_t callback,
                                     warning_bits_t warnings) {
     derive_address_ctx_t *ctx = &G_context.derive_address_info;
-    ui_status_t status = format_address_fields(&ctx->addressParams, warnings);
+    ui_status_t status = format_address_fields(&ctx->address_params, warnings);
 
     switch (status) {
         case UI_STATUS_SUCCESS:

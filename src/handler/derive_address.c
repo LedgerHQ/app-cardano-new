@@ -11,6 +11,7 @@
 #include "app_context.h"
 #include "io.h"
 #include "ui_display_address_derivation.h"
+#include "utils/buffer_helpers.h"
 
 static void prepareResponse() {
     // Verify we're at the expected state: parameters validated by policy
@@ -21,7 +22,7 @@ static void prepareResponse() {
 
     derive_address_ctx_t *ctx = &G_context.derive_address_info;
     ctx->address.size =
-        deriveAddress(&ctx->addressParams, ctx->address.buffer, SIZEOF(ctx->address.buffer));
+        deriveAddress(&ctx->address_params, ctx->address.buffer, SIZEOF(ctx->address.buffer));
     if (ctx->address.size == 0 || ctx->address.size > SIZEOF(ctx->address.buffer)) {
         send_swo_and_reset(SWO_INCORRECT_DATA);
         return;
@@ -34,19 +35,18 @@ static void prepareResponse() {
 void handler_derive_address(buffer_t *cdata, uint8_t p1) {
     G_context.req_type = REQUEST_DERIVE_ADDRESS;
     G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_NONE;
-    if (!cdata->ptr) {
-        io_send_sw(SWO_WRONG_DATA_LENGTH);
-        return;
-    }
-    TRACE_BUFFER(cdata->ptr, cdata->size);
+    TRACE_BUFFER_T(cdata);
 
     derive_address_ctx_t *ctx = &G_context.derive_address_info;
-    bool is_parsed = buffer_parseAddressParams(cdata, &ctx->addressParams);
+    bool is_parsed = buffer_read_address_params(cdata, &ctx->address_params);
     TRACE("Parsed address params: %d", is_parsed);
     if (!is_parsed) {
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
+    // Copy any hash pointers into context-owned storage so they survive beyond this APDU
+    address_params_copyHashesToStorage(&ctx->address_params,
+                                     &ctx->hashStorage);
 
     // Parameters successfully parsed
     G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_PARSED;
@@ -59,7 +59,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
                           "handleReturn called in wrong state: %d", G_context.state.derive_address_state);
             warning_bits_t warnings = 0;
             warning_bits_init(&warnings);
-            security_policy_t policy = policyForReturnDeriveAddress(&ctx->addressParams, &warnings);
+            security_policy_t policy = policyForReturnDeriveAddress(&ctx->address_params, &warnings);
             TRACE("Policy: %d", (int) policy);
             if (policy == POLICY_DENY) {
                 TRACE("Policy denied");
@@ -78,7 +78,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
                           "handleDisplay called in wrong state: %d", G_context.state.derive_address_state);
             warning_bits_t warnings = 0;
             warning_bits_init(&warnings);
-            security_policy_t policy = policyForShowDeriveAddress(&ctx->addressParams, &warnings);
+            security_policy_t policy = policyForShowDeriveAddress(&ctx->address_params, &warnings);
             TRACE("Policy: %d", (int) policy);
             if (policy == POLICY_DENY) {
                 TRACE("Policy denied");

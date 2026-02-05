@@ -18,16 +18,16 @@
  *     - address size: 2 bytes (BE)
  *     - address bytes: <size> bytes
  * - if DESTINATION_DEVICE_OWNED:
- *     - address params (see buffer_parseAddressParams in addressUtilsShelley.h)
+ *     - address params (see buffer_read_address_params in addressUtilsShelley.h)
  *
  * @param[in,out] buf Buffer to read from
- * @param[out] destination Destination structure to populate
- * @param[in] networkId Network ID (used for DEVICE_OWNED addresses)
+ * @param[out] destination Destination structure to populate (params pointer)
+ * @param[out] paramsStorage Storage for address_params when type == DEVICE_OWNED
  * @return PARSING_OK on success, appropriate error code on failure
  */
 parser_status_e parse_output_destination(buffer_t* buf,
-                                         tx_output_destination_storage_t* destination,
-                                         uint8_t networkId);
+                                         tx_output_destination_t* destination,
+                                         address_params_t* paramsStorage);
 
 /**
  * Parse transaction output serialization format from buffer.

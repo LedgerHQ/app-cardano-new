@@ -169,7 +169,6 @@ static void free_vote_list(s_flist_node *vote_node) {
 
 parser_status_e parse_tx(buffer_t *buf, transaction_t *tx) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(buf->ptr != NULL, "NULL buffer ptr");
     LEDGER_ASSERT(tx != NULL, "NULL tx");
 
     if (buf->size > TX_BUFFER_SIZE) {
@@ -381,9 +380,9 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
             return OUTPUTS_PARSING_ERROR;
         }
         buffer_t output_buf = {
-            .ptr = buf->ptr + buf->offset,  // Current position in main buffer
-            .size = output_len,              // Length of this output
-            .offset = 0                      // Start parsing from beginning of sub-buffer
+            .ptr = buffer_current_ptr(buf),
+            .size = output_len,
+            .offset = 0
         };
 
         tx_output_node_t *item = (tx_output_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(tx_output_node_t));
@@ -396,7 +395,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
         // Parse destination (third-party address or device-owned address params)
         parser_status_e status = parse_output_destination(&output_buf,
                                                           &item->output_data.destination,
-                                                          tx->networkId);
+                                                          &item->output_data.paramsStorage);
         if (status != PARSING_OK) {
             APP_MEM_FREE(item);
             return status;
@@ -1076,56 +1075,61 @@ static parser_status_e parse_tx_required_signers(buffer_t *buf, transaction_t *t
     return PARSING_OK;
 }
 
-// Helper function to parse output structure (reused for regular and collateral outputs)
-static parser_status_e parse_output_structure(buffer_t *output_buf,
-                                             tx_output_destination_storage_t *destination,
-                                             uint64_t *adaAmount,
-                                             tx_output_serialization_format_t *format,
-                                             uint16_t *numAssetGroups,
-                                             s_flist_node **assetGroups,
-                                             uint8_t networkId) {
-    // Parse destination
-    parser_status_e status = parse_output_destination(output_buf, destination, networkId);
+static parser_status_e parse_tx_collateral_output(buffer_t *buf, transaction_t *tx) {
+    uint16_t output_len;
+    if (!buffer_read_u16(buf, &output_len, BE)) {
+        return COLLATERAL_OUTPUT_PARSING_ERROR;
+    }
+
+    if (!buffer_can_read(buf, output_len)) {
+        return COLLATERAL_OUTPUT_PARSING_ERROR;
+    }
+
+    buffer_t output_buf = {
+        .ptr = buffer_current_ptr(buf),
+        .size = output_len,
+        .offset = 0
+    };
+
+    parser_status_e status = parse_output_destination(&output_buf,
+                                                      &tx->collateral_output.destination,
+                                                      &tx->collateral_output.paramsStorage);
     if (status != PARSING_OK) {
         return status;
     }
 
-    // Read ADA amount
-    if (!buffer_read_u64(output_buf, adaAmount, BE)) {
+    if (!buffer_read_u64(&output_buf, &tx->collateral_output.adaAmount, BE)) {
         return OUTPUTS_PARSING_ERROR;
     }
 
-    // Parse output format
-    status = parse_output_format(output_buf, format);
+    status = parse_output_format(&output_buf, &tx->collateral_output.format);
     if (status != PARSING_OK) {
         return status;
     }
 
-    // Read asset group count
-    if (!buffer_read_u16(output_buf, numAssetGroups, BE)) {
+    if (!buffer_read_u16(&output_buf, &tx->collateral_output.numAssetGroups, BE)) {
         return OUTPUTS_PARSING_ERROR;
     }
 
-    *assetGroups = NULL;
-    if (*numAssetGroups > 0) {
+    tx->collateral_output.assetGroups = NULL;
+    if (tx->collateral_output.numAssetGroups > 0) {
         const uint8_t* previous_policy_id = NULL;
         bool has_previous_policy = false;
 
-        for (uint16_t ag = 0; ag < *numAssetGroups; ag++) {
+        for (uint16_t ag = 0; ag < tx->collateral_output.numAssetGroups; ag++) {
             output_asset_group_node_t *group_node =
                 (output_asset_group_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(output_asset_group_node_t));
             if (group_node == NULL) {
-                TRACE("parse_output_asset_data: out of memory allocating asset group for collateral output");
-                free_asset_groups(*assetGroups);
+                TRACE("parse_tx_collateral_output: out of memory allocating asset group");
+                free_asset_groups(tx->collateral_output.assetGroups);
                 return OUT_OF_MEMORY_ERROR;
             }
             explicit_bzero(group_node, sizeof(*group_node));
 
             output_asset_group_t *group = &group_node->asset_group;
-
-            if (!buffer_read_bytes_ptr(output_buf, &group->policyId, MINTING_POLICY_ID_LENGTH)) {
+            if (!buffer_read_bytes_ptr(&output_buf, &group->policyId, MINTING_POLICY_ID_LENGTH)) {
                 free_asset_group_node(group_node);
-                free_asset_groups(*assetGroups);
+                free_asset_groups(tx->collateral_output.assetGroups);
                 return OUTPUTS_PARSING_ERROR;
             }
             ASSERT(group->policyId != NULL);
@@ -1137,54 +1141,51 @@ static parser_status_e parse_output_structure(buffer_t *output_buf,
                                   MINTING_POLICY_ID_LENGTH)) {
                 TRACE("Collateral asset groups not canonical");
                 free_asset_group_node(group_node);
-                free_asset_groups(*assetGroups);
+                free_asset_groups(tx->collateral_output.assetGroups);
                 return CANONICAL_ORDERING_ERROR;
             }
             previous_policy_id = group->policyId;
             has_previous_policy = true;
 
-            if (!buffer_read_u16(output_buf, &group->numTokens, BE)) {
+            if (!buffer_read_u16(&output_buf, &group->numTokens, BE)) {
                 free_asset_group_node(group_node);
-                free_asset_groups(*assetGroups);
+                free_asset_groups(tx->collateral_output.assetGroups);
                 return OUTPUTS_PARSING_ERROR;
             }
 
-            // Initialize tokens linked list
             group->tokens = NULL;
-
             const uint8_t* previous_token_name = NULL;
             size_t previous_token_len = 0;
             bool has_previous_token = false;
 
             for (uint16_t tk = 0; tk < group->numTokens; tk++) {
-                // Allocate list node for this token
                 output_token_node_t *token_item =
                     (output_token_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(output_token_node_t));
                 if (token_item == NULL) {
-                    TRACE("parse_output_asset_data: out of memory allocating token node for collateral output");
+                    TRACE("parse_tx_collateral_output: out of memory allocating token");
                     free_asset_group_node(group_node);
-                    free_asset_groups(*assetGroups);
+                    free_asset_groups(tx->collateral_output.assetGroups);
                     return OUT_OF_MEMORY_ERROR;
                 }
 
                 output_token_t *token = &token_item->token_data;
-                if (!buffer_read_u8(output_buf, &token->assetNameLen)) {
+                if (!buffer_read_u8(&output_buf, &token->assetNameLen)) {
                     APP_MEM_FREE(token_item);
                     free_asset_group_node(group_node);
-                    free_asset_groups(*assetGroups);
+                    free_asset_groups(tx->collateral_output.assetGroups);
                     return OUTPUTS_PARSING_ERROR;
                 }
                 if (token->assetNameLen > MAX_ASSET_NAME_LENGTH) {
                     APP_MEM_FREE(token_item);
                     free_asset_group_node(group_node);
-                    free_asset_groups(*assetGroups);
+                    free_asset_groups(tx->collateral_output.assetGroups);
                     return OUTPUTS_PARSING_ERROR;
                 }
 
-                if (!buffer_read_bytes_ptr(output_buf, &token->assetName, token->assetNameLen)) {
+                if (!buffer_read_bytes_ptr(&output_buf, &token->assetName, token->assetNameLen)) {
                     APP_MEM_FREE(token_item);
                     free_asset_group_node(group_node);
-                    free_asset_groups(*assetGroups);
+                    free_asset_groups(tx->collateral_output.assetGroups);
                     return OUTPUTS_PARSING_ERROR;
                 }
                 ASSERT(token->assetName != NULL);
@@ -1197,59 +1198,27 @@ static parser_status_e parse_output_structure(buffer_t *output_buf,
                     TRACE("Collateral asset group %u tokens not canonical", ag);
                     APP_MEM_FREE(token_item);
                     free_asset_group_node(group_node);
-                    free_asset_groups(*assetGroups);
+                    free_asset_groups(tx->collateral_output.assetGroups);
                     return CANONICAL_ORDERING_ERROR;
                 }
                 previous_token_name = token->assetName;
                 previous_token_len = token->assetNameLen;
                 has_previous_token = true;
 
-                if (!buffer_read_u64(output_buf, &token->amount, BE)) {
+                if (!buffer_read_u64(&output_buf, &token->amount, BE)) {
                     APP_MEM_FREE(token_item);
                     free_asset_group_node(group_node);
-                    free_asset_groups(*assetGroups);
+                    free_asset_groups(tx->collateral_output.assetGroups);
                     return OUTPUTS_PARSING_ERROR;
                 }
 
-                // Add token to asset group's token list
                 token_item->flist_node.next = NULL;
                 flist_push_back(&group->tokens, (s_flist_node *) token_item);
             }
 
             group_node->flist_node.next = NULL;
-            flist_push_back(assetGroups, (s_flist_node *) group_node);
+            flist_push_back(&tx->collateral_output.assetGroups, (s_flist_node *) group_node);
         }
-    }
-
-    return PARSING_OK;
-}
-
-static parser_status_e parse_tx_collateral_output(buffer_t *buf, transaction_t *tx) {
-    uint16_t output_len;
-    if (!buffer_read_u16(buf, &output_len, BE)) {
-        return COLLATERAL_OUTPUT_PARSING_ERROR;
-    }
-
-    if (!buffer_can_read(buf, output_len)) {
-        return COLLATERAL_OUTPUT_PARSING_ERROR;
-    }
-
-    buffer_t output_buf = {
-        .ptr = buf->ptr + buf->offset,
-        .size = output_len,
-        .offset = 0
-    };
-
-    // Reuse output structure parsing
-    parser_status_e status = parse_output_structure(&output_buf,
-                                                   &tx->collateral_output.destination,
-                                                   &tx->collateral_output.adaAmount,
-                                                   &tx->collateral_output.format,
-                                                   &tx->collateral_output.numAssetGroups,
-                                                   &tx->collateral_output.assetGroups,
-                                                   tx->networkId);
-    if (status != PARSING_OK) {
-        return status;
     }
 
     status = parse_output_datum(&output_buf, &tx->collateral_output.datum);
@@ -1258,12 +1227,22 @@ static parser_status_e parse_tx_collateral_output(buffer_t *buf, transaction_t *
     }
 
     status = parse_output_ref_script(&output_buf,
-                                       &tx->collateral_output.refScript);
+                                     &tx->collateral_output.refScript);
     if (status != PARSING_OK) {
         return status;
     }
 
-    buf->offset += output_len;
+    if (buffer_can_read(&output_buf, 1)) {
+        TRACE("Collateral output buffer not fully consumed: offset=%u, size=%u",
+              output_buf.offset,
+              output_buf.size);
+        return COLLATERAL_OUTPUT_PARSING_ERROR;
+    }
+
+    if (!buffer_seek_cur(buf, output_len)) {
+        return COLLATERAL_OUTPUT_PARSING_ERROR;
+    }
+
     return PARSING_OK;
 }
 

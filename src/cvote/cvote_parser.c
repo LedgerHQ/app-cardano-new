@@ -8,6 +8,7 @@
 #include "mem.h"
 #include "buffer_write.h"
 #include "cardano_parsers.h"
+#include "tx_parse_outputs.h"
 #include "utils.h"
 
 /**
@@ -52,79 +53,42 @@ bool buffer_read_cvote_credential(buffer_t *buf, cvote_credential_t *credential)
     return true;
 }
 
-static cvote_parser_status_t parse_third_party_destination(buffer_t *buf, cvote_destination_t *destination) {
-    ASSERT(buf != NULL);
-    ASSERT(destination != NULL);
-
-    destination->address.size = 0;
-    destination->address.buffer = NULL;
-
-    uint16_t address_len = 0;
-    if (!buffer_read_u16(buf, &address_len, BE)) {
-        TRACE("CVote third-party address length missing");
-        return CVOTE_PARSER_INVALID_FORMAT;
-    }
-    TRACE("CVote third-party destination len %u", address_len);
-
-    if (address_len == 0) {
-        TRACE("CVote third-party address cannot be zero-length");
-        return CVOTE_PARSER_INVALID_FORMAT;
-    }
-
-    // Store pointer into raw buffer (like TX does for addresses)
-    if (!buffer_read_bytes_ptr(buf, &destination->address.buffer, address_len)) {
-        TRACE("CVote third-party destination truncated");
-        return CVOTE_PARSER_INVALID_FORMAT;
-    }
-
-    destination->address.size = address_len;
-    return CVOTE_PARSER_OK;
-}
-
-// TODO: Unify destination parsing with TX outputs and collateral outputs
-// Structure now uses tx_output_destination_type_t (fully aligned).
-// Remaining items for unification:
-// 1. Return type: cvote_parse_destination returns cvote_parser_status_t, TX uses parser_status_e
-// 2. Network ID: TX overrides network ID for Shelley addresses, CVote does not (verify against CIP-36 spec)
-// 3. Target: Create unified parser in src/parsers/cardano_parsers.c with configurable network ID handling
-cvote_parser_status_t cvote_parse_destination(buffer_t *buf, cvote_destination_t *destination) {
-    ASSERT(buf != NULL);
-    ASSERT(destination != NULL);
-
-    uint8_t destination_type = 0;
-    if (!buffer_read_u8(buf, &destination_type)) {
-        TRACE("CVote destination data missing");
-        return CVOTE_PARSER_INVALID_FORMAT;
-    }
-
-    TRACE("CVote destination payload type 0x%x", destination_type);
-
-    switch (destination_type) {
-        case DESTINATION_THIRD_PARTY:
-            destination->type = (tx_output_destination_type_t) destination_type;
-            cvote_parser_status_t dest_status = parse_third_party_destination(buf, destination);
-            if (dest_status != CVOTE_PARSER_OK) {
-                return dest_status;
-            }
-            TRACE("CVote destination: third-party payload");
+static cvote_parser_status_t _map_output_parser_status(parser_status_e status) {
+    switch (status) {
+        case PARSING_OK:
             return CVOTE_PARSER_OK;
-
-        case DESTINATION_DEVICE_OWNED:
-            destination->type = (tx_output_destination_type_t) destination_type;
-            explicit_bzero(&destination->params, sizeof(destination->params));
-            if (!buffer_parseAddressParams(buf, &destination->params)) {
-                TRACE("CVote destination parsing failed");
-                return CVOTE_PARSER_INVALID_FORMAT;
-            }
-            // TODO: Network ID handling - unlike TX outputs, CVote does not override network ID from wire
-            // Verify this is correct per CIP-36 specification and align with TX output behavior if needed
-            TRACE("CVote destination type 0x%x, staking %d", destination->params.type, destination->params.stakingDataSource);
-            return CVOTE_PARSER_OK;
-
+        case OUT_OF_MEMORY_ERROR:
+            return CVOTE_PARSER_OUT_OF_MEMORY;
         default:
-            TRACE("Unsupported CVote destination type 0x%x", destination_type);
             return CVOTE_PARSER_INVALID_FORMAT;
     }
+}
+
+cvote_parser_status_t cvote_parse_destination(buffer_t *buf,
+                                              tx_output_destination_t *destination,
+                                              address_params_t *paramsStorage) {
+    ASSERT(buf != NULL);
+    ASSERT(destination != NULL);
+    ASSERT(paramsStorage != NULL);
+
+    explicit_bzero(paramsStorage, sizeof(*paramsStorage));
+
+    parser_status_e output_status = parse_output_destination(buf, destination, paramsStorage);
+    cvote_parser_status_t cvote_status = _map_output_parser_status(output_status);
+    if (cvote_status != CVOTE_PARSER_OK) {
+        TRACE("CVote destination parsing failed with output status %d", output_status);
+        return cvote_status;
+    }
+
+    if (destination->type == DESTINATION_DEVICE_OWNED) {
+        TRACE("CVote destination type 0x%x, staking %d",
+              paramsStorage->type,
+              addressParams_getStakingPartType(paramsStorage));
+    } else {
+        TRACE("CVote destination: third-party payload");
+    }
+
+    return CVOTE_PARSER_OK;
 }
 
 cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
@@ -173,7 +137,7 @@ cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
     }
 
     // Parse destination
-    cvote_parser_status_t dest_status = cvote_parse_destination(&parse_buf, &out_data->destination);
+    cvote_parser_status_t dest_status = cvote_parse_destination(&parse_buf, &out_data->destination, &out_data->destinationParamsStorage);
     if (dest_status != CVOTE_PARSER_OK) {
         TRACE("CVote init: failed to parse destination");
         return dest_status;

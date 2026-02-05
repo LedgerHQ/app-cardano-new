@@ -143,12 +143,12 @@ static void test_sign_tx_with_change_base_address_with_staking_path_expert_on(vo
 
 static void test_sign_tx_with_change_base_address_with_staking_key_hash_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_KEY_HASH, false);
+    run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_PART_KEY_HASH, false);
 }
 
 static void test_sign_tx_with_change_base_address_with_staking_key_hash_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_KEY_HASH, true);
+    run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_PART_KEY_HASH, true);
 }
 
 static void test_sign_tx_with_enterprise_change_address_expert_off(void **state) {

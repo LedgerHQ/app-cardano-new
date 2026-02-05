@@ -49,7 +49,7 @@ void handler_sign_opcert(buffer_t *cdata) {
     G_context.req_type = REQUEST_SIGN_OPCERT;
     G_context.state.opcert_state = OPCERT_STATE_NONE;
 
-    TRACE_BUFFER(cdata->ptr, cdata->size);
+    TRACE_BUFFER_T(cdata);
 
     G_context.opcert_info.raw_opcert_len = cdata->size;
     if (!buffer_move(cdata, G_context.opcert_info.raw_opcert, sizeof(G_context.opcert_info.raw_opcert))) {

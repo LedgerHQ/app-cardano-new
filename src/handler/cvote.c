@@ -17,6 +17,7 @@
 #include "cvote/vote_cast_hash_builder.h"
 #include "messageSigning.h"
 #include "ui_cvote.h"
+#include "utils/buffer_helpers.h"
 
 static bool ensure_cvote_stage(const char *command_name, cvote_stage_e required_stage) {
     if (G_context.state.cvote_state != required_stage) {
@@ -51,7 +52,8 @@ __noinline_due_to_stack__ void signCVote_handle_init(buffer_t *cdata) {
     TRACE("Remaining votecast bytes = %u", ctx->remaining_votecast_bytes);
 
     // Verify that the rest of the APDU contains exactly the amount of data specified
-    const size_t votecast_chunk_size = cdata->size - cdata->offset;
+    const size_t votecast_chunk_size = buffer_remaining(cdata);
+    const uint8_t *votecast_chunk_ptr = buffer_current_ptr(cdata);
     if (votecast_chunk_size > ctx->remaining_votecast_bytes) {
         TRACE("APDU contains more data than specified in length field");
         send_swo_and_reset(SWO_WRONG_LENGTH);
@@ -91,7 +93,7 @@ __noinline_due_to_stack__ void signCVote_handle_init(buffer_t *cdata) {
 
     vote_cast_hash_builder_init(&ctx->votecast_hash_builder, ctx->remaining_votecast_bytes);
     vote_cast_hash_builder_chunk(&ctx->votecast_hash_builder,
-                                 cdata->ptr + 4,  // Start after the 4-byte length field
+                                 votecast_chunk_ptr,
                                  votecast_chunk_size);
 
     ctx->remaining_votecast_bytes -= votecast_chunk_size;
@@ -131,7 +133,9 @@ __noinline_due_to_stack__ void signCVote_handle_votecast_chunk(buffer_t *cdata) 
         return;
     }
 
-    vote_cast_hash_builder_chunk(&ctx->votecast_hash_builder, cdata->ptr, chunkSize);
+    vote_cast_hash_builder_chunk(&ctx->votecast_hash_builder,
+                                 buffer_current_ptr(cdata),
+                                 chunkSize);
 
     ctx->remaining_votecast_bytes -= chunkSize;
 

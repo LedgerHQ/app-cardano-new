@@ -41,12 +41,3 @@ typedef struct {
         const uint8_t* publicKey;
     };
 } cvote_credential_t;
-
-// CVote destination - uses shared types from TX outputs
-typedef struct {
-    tx_output_destination_type_t type;  // 1 = DESTINATION_THIRD_PARTY, 2 = DESTINATION_DEVICE_OWNED
-    union {
-        third_party_address_t address;  // Shared third-party address type
-        addressParams_t params;
-    };
-} cvote_destination_t;

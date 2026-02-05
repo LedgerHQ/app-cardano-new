@@ -8,6 +8,8 @@
 #include "lcx_crc.h"
 #include "cardano_swo.h"
 #include "utils.h"
+#include "utils/assert.h"
+#include "utils/buffer_helpers.h"
 
 #define BYRON_ADDRESS_CBOR_HASH_SIZE 32
 #define ADDRESS_ROOT_SIZE 28
@@ -171,13 +173,10 @@ size_t deriveAddress_byron(const bip44_path_t* pathSpec,
 
 // Parse helpers for extractProtocolMagic - return false on error
 // These helpers work with CBOR data from address parsing.
-// cbor_parseToken is now safe and never throws.
 static bool parseToken(buffer_t* buf, uint8_t expectedType, uint64_t* out_value) {
     cbor_token_t token = {0};
-    size_t remaining = buf->size - buf->offset;
 
-    // cbor_parseToken handles all bounds checking and returns false on error
-    if (!cbor_parseToken(buf->ptr + buf->offset, remaining, &token)) {
+    if (!cbor_parseToken(buffer_current_ptr(buf), buffer_remaining(buf), &token)) {
         return false;
     }
 
@@ -225,7 +224,7 @@ static bool parseBytesSizeToken(buffer_t* buf, size_t* out_size) {
     }
 
     // Check remaining size in read buffer
-    size_t remaining = buf->size - buf->offset;
+    size_t remaining = buffer_remaining(buf);
     if (parsedSizeDowncasted > remaining) {
         return false;
     }
@@ -235,6 +234,8 @@ static bool parseBytesSizeToken(buffer_t* buf, size_t* out_size) {
 }
 
 bool extractProtocolMagic(const uint8_t* addressBuffer, size_t addressSize, uint32_t* out_protocol_magic) {
+    ASSERT(addressBuffer != NULL);
+    ASSERT(out_protocol_magic != NULL);
     ASSERT(addressSize < BUFFER_SIZE_PARANOIA);
 
     buffer_t buf = {.ptr = (uint8_t *)addressBuffer, .size = addressSize, .offset = 0};
@@ -301,14 +302,23 @@ bool extractProtocolMagic(const uint8_t* addressBuffer, size_t addressSize, uint
                     return false;  // duplicate protocol magic attribute
                 }
 
+                // Protocol magic attribute value is CBOR bytes containing exactly one
+                // CBOR-encoded unsigned integer; parse it in an isolated sub-buffer.
+                buffer_t valueBuf = {
+                    .ptr = buf.ptr + buf.offset,
+                    .size = currentValueSize,
+                    .offset = 0
+                };
                 uint64_t parsedProtocolMagic;
-                if (!parseToken(&buf, CBOR_TYPE_UNSIGNED, &parsedProtocolMagic)) {
+                if (!parseToken(&valueBuf, CBOR_TYPE_UNSIGNED, &parsedProtocolMagic)) {
+                    return false;
+                }
+                if (valueBuf.offset != valueBuf.size) {
                     return false;
                 }
 
                 // ensure the parsed protocol magic can be downcasted to uint32
-                STATIC_ASSERT(sizeof(parsedProtocolMagic) >= sizeof(SIZE_MAX), "bad int size");
-                if (parsedProtocolMagic >= (uint32_t) SIZE_MAX) {
+                if (parsedProtocolMagic > UINT32_MAX) {
                     return false;
                 }
 
@@ -319,11 +329,11 @@ bool extractProtocolMagic(const uint8_t* addressBuffer, size_t addressSize, uint
                 }
 
                 protocolMagicFound = true;
-            } else {
-                // skip this attribute value
-                if (!buffer_seek_cur(&buf, currentValueSize)) {
-                    return false;
-                }
+            }
+
+            // Skip this attribute value in the outer buffer.
+            if (!buffer_seek_cur(&buf, currentValueSize)) {
+                return false;
             }
         }
     }

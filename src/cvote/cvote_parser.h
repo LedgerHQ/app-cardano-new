@@ -24,7 +24,8 @@ typedef struct {
     uint16_t remaining_delegations;
     cvote_credential_t staking_credential;  // CVote-specific credential (KEY_HASH = 32-byte pubkey)
     cvote_credential_t vote_credential;     // CVote-specific credential (KEY_HASH = 32-byte pubkey)
-    cvote_destination_t destination;        // Address params or pointer into raw buffer
+    tx_output_destination_t destination;     // Address params pointer or raw buffer pointer
+    address_params_t destinationParamsStorage; // Storage for device-owned destination params
     uint64_t nonce;
     uint64_t voting_purpose;
 
@@ -65,8 +66,12 @@ typedef struct {
 // Supported types: KEY (0, 32-byte pubkey) and KEY_PATH (2, BIP44 path)
 bool buffer_read_cvote_credential(buffer_t *buf, cvote_credential_t *credential);
 
-// Parse CVote destination (device-owned params or third-party address pointer)
-cvote_parser_status_t cvote_parse_destination(buffer_t *buf, cvote_destination_t *destination);
+// Parse CVote destination (device-owned params or third-party address pointer).
+// paramsStorage is populated and destination->params is set to point at it
+// when type == DESTINATION_DEVICE_OWNED.
+cvote_parser_status_t cvote_parse_destination(buffer_t *buf,
+                                              tx_output_destination_t *destination,
+                                              address_params_t *paramsStorage);
 
 // Parse CVote init from global context raw_cvote_init_data into cvote_aux_data structure
 // Credentials and addresses point into the persistent raw_cvote_init_data buffer

@@ -721,7 +721,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward_address_key
+// Source: tests/standalone/input_files/signTx.py > address_paramsRejectTestCases > Reward_address_key
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_KEY[] = {
     {
         .hex_payload =
@@ -739,7 +739,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_KEY[]
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward_address_script
+// Source: tests/standalone/input_files/signTx.py > address_paramsRejectTestCases > Reward_address_script
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_SCRIPT[] = {
     {
         .hex_payload =
@@ -758,7 +758,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_SCRIP
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No_spending_path_Ordinary_Tx_1
+// Source: tests/standalone/input_files/signTx.py > address_paramsRejectTestCases > No_spending_path_Ordinary_Tx_1
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORDINARY_TX_1[] = {
     {
         .hex_payload =
@@ -777,7 +777,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORD
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No_spending_path_Ordinary_Tx_2
+// Source: tests/standalone/input_files/signTx.py > address_paramsRejectTestCases > No_spending_path_Ordinary_Tx_2
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORDINARY_TX_2[] = {
     {
         .hex_payload =
@@ -796,7 +796,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORD
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool_operator_spending_choice_not_path
+// Source: tests/standalone/input_files/signTx.py > address_paramsRejectTestCases > Pool_operator_spending_choice_not_path
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OPERATOR_SPENDING_CHOICE_NOT_PATH[] = {
     {
         .hex_payload =
@@ -815,7 +815,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OPERATOR_SPENDI
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Multisig_unconditionally
+// Source: tests/standalone/input_files/signTx.py > address_paramsRejectTestCases > Multisig_unconditionally
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_MULTISIG_UNCONDITIONALLY[] = {
     {
         .hex_payload =
@@ -828,7 +828,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_MULTISIG_UNCONDITION
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool_owner_unconditionally
+// Source: tests/standalone/input_files/signTx.py > address_paramsRejectTestCases > Pool_owner_unconditionally
 static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OWNER_UNCONDITIONALLY[] = {
     {
         .hex_payload =
@@ -1089,7 +1089,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL
 
 
 // Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Script_hash_in_Ordinary_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_SCRIPT_HASH_IN_ORDINARY_TX[] = {
+static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_PART_SCRIPT_HASH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -3127,7 +3127,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward_address_key
+    // Source: tests/standalone/input_files/signTx.py > address_paramsRejectTestCases > Reward_address_key
     {
         .name = "[REJECT_ADDRESS] Reward_address_key",
         .init_hex =
@@ -3139,7 +3139,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward_address_script
+    // Source: tests/standalone/input_files/signTx.py > address_paramsRejectTestCases > Reward_address_script
     {
         .name = "[REJECT_ADDRESS] Reward_address_script",
         .init_hex =
@@ -3151,7 +3151,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No_spending_path_Ordinary_Tx_1
+    // Source: tests/standalone/input_files/signTx.py > address_paramsRejectTestCases > No_spending_path_Ordinary_Tx_1
     {
         .name = "[REJECT_ADDRESS] No_spending_path_Ordinary_Tx_1",
         .init_hex =
@@ -3163,7 +3163,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No_spending_path_Ordinary_Tx_2
+    // Source: tests/standalone/input_files/signTx.py > address_paramsRejectTestCases > No_spending_path_Ordinary_Tx_2
     {
         .name = "[REJECT_ADDRESS] No_spending_path_Ordinary_Tx_2",
         .init_hex =
@@ -3175,7 +3175,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool_operator_spending_choice_not_path
+    // Source: tests/standalone/input_files/signTx.py > address_paramsRejectTestCases > Pool_operator_spending_choice_not_path
     {
         .name = "[REJECT_ADDRESS] Pool_operator_spending_choice_not_path",
         .init_hex =
@@ -3187,7 +3187,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Multisig_unconditionally
+    // Source: tests/standalone/input_files/signTx.py > address_paramsRejectTestCases > Multisig_unconditionally
     {
         .name = "[REJECT_ADDRESS] Multisig_unconditionally",
         .init_hex =
@@ -3199,7 +3199,7 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool_owner_unconditionally
+    // Source: tests/standalone/input_files/signTx.py > address_paramsRejectTestCases > Pool_owner_unconditionally
     {
         .name = "[REJECT_ADDRESS] Pool_owner_unconditionally",
         .init_hex =
@@ -3361,8 +3361,8 @@ static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES[] = {
         .init_hex =
         "0000000000000000012D964A0903000100010200010000010100000100000000"
         "0101010000000001010001",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_SCRIPT_HASH_IN_ORDINARY_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_SCRIPT_HASH_IN_ORDINARY_TX),
+        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_PART_SCRIPT_HASH_IN_ORDINARY_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_PART_SCRIPT_HASH_IN_ORDINARY_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
