@@ -97,10 +97,10 @@ __noinline_due_to_stack__ void signMsg_handle_init(buffer_t *cdata) {
 
     // Non-hashed payload must fit into a single displayable chunk
     if (!ctx->hashPayload) {
-        const uint32_t max_first_chunk_size = ctx->isAscii ? MAX_CIP8_MSG_FIRST_CHUNK_ASCII_SIZE
-                                                           : MAX_CIP8_MSG_FIRST_CHUNK_HEX_SIZE;
-        if (ctx->msgLength > max_first_chunk_size) {
-            TRACE("Non-hashed payload too large: %u > %u", ctx->msgLength, max_first_chunk_size);
+        if (ctx->msgLength > MAX_CIP8_MSG_CHUNK_SIZE) {
+            TRACE("Non-hashed payload too large: %u > %u",
+                  ctx->msgLength,
+                  MAX_CIP8_MSG_CHUNK_SIZE);
             send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
             return;
         }
@@ -213,12 +213,7 @@ __noinline_due_to_stack__ void signMsg_handle_chunk(buffer_t *cdata) {
 
     if (ctx->receivedChunks == 1) {
         // First chunk must be displayable with maximum allowed size
-        uint32_t expected_first_chunk_size;
-        if (ctx->isAscii) {
-            expected_first_chunk_size = MIN(ctx->msgLength, MAX_CIP8_MSG_FIRST_CHUNK_ASCII_SIZE);
-        } else {
-            expected_first_chunk_size = MIN(ctx->msgLength, MAX_CIP8_MSG_FIRST_CHUNK_HEX_SIZE);
-        }
+        uint32_t expected_first_chunk_size = MIN(ctx->msgLength, MAX_CIP8_MSG_CHUNK_SIZE);
         if (chunkSize_u32 != expected_first_chunk_size) {
             TRACE("First chunk size mismatch: expected %u, got %u",
                   expected_first_chunk_size,
@@ -228,7 +223,7 @@ __noinline_due_to_stack__ void signMsg_handle_chunk(buffer_t *cdata) {
         }
     } else {
         // Subsequent chunks must be maximum allowed size
-        uint32_t expected_chunk_size = MIN(ctx->remainingBytes, MAX_CIP8_MSG_HIDDEN_CHUNK_SIZE);
+        uint32_t expected_chunk_size = MIN(ctx->remainingBytes, MAX_CIP8_MSG_CHUNK_SIZE);
         if (chunkSize_u32 != expected_chunk_size) {
             TRACE("Subsequent chunk size mismatch: expected %u, got %u",
                   expected_chunk_size,

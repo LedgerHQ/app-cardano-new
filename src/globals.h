@@ -174,7 +174,7 @@ typedef struct {
     } address;
 } derive_address_ctx_t;
 
-#define MAX_VOTECAST_CHUNK_SIZE 240
+#define MAX_VOTECAST_CHUNK_SIZE 250
 #define VOTE_PLAN_ID_SIZE       32
 #define VOTECAST_HASH_LENGTH 32
 
@@ -193,9 +193,7 @@ typedef struct {
 
 // CIP-8 message signing constants
 #define CIP8_MSG_HASH_LENGTH 28
-#define MAX_CIP8_MSG_FIRST_CHUNK_ASCII_SIZE 198
-#define MAX_CIP8_MSG_FIRST_CHUNK_HEX_SIZE   99
-#define MAX_CIP8_MSG_HIDDEN_CHUNK_SIZE      250
+#define MAX_CIP8_MSG_CHUNK_SIZE 250
 
 /**
  * Context for CIP-8 message signing.
@@ -216,7 +214,7 @@ typedef struct {
     uint32_t receivedChunks;
 
     // First chunk stored for display (full if short message, prefix if long)
-    uint8_t chunk[MAX_CIP8_MSG_HIDDEN_CHUNK_SIZE];
+    uint8_t chunk[MAX_CIP8_MSG_CHUNK_SIZE];
     size_t chunkSize;
 
     blake2b_224_context_t msgHashCtx;

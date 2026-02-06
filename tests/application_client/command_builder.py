@@ -79,9 +79,7 @@ SETTINGS_DISABLED: int = 0x00
 SETTINGS_ENABLED: int = 0x01
 MAX_UINT8: int = 0xFF
 MAX_UINT16: int = 0xFFFF
-MAX_CIP8_MSG_FIRST_CHUNK_ASCII_SIZE = 198
-MAX_CIP8_MSG_FIRST_CHUNK_HEX_SIZE = 99
-MAX_CIP8_MSG_HIDDEN_CHUNK_SIZE = 250
+MAX_CIP8_MSG_CHUNK_SIZE = 250
 # Mirrors `src/apdu/dispatcher.h::command_e`
 class InsType(IntEnum):
     INS_GET_VERSION = 0x03
@@ -401,7 +399,7 @@ class CommandBuilder:
 
         # Serialization format:
         #    Full length of voteCastDataHex (4B)
-        #    voteCastDataHex (first chunk, up to 240 B)
+        #    voteCastDataHex (first chunk, up to 250 B)
         data = bytes()
         # 2 hex chars per byte
         data_size = int(len(testCase.cVote.voteCastDataHex) / 2)
@@ -1080,16 +1078,12 @@ class CommandBuilder:
         if not testCase.msgData.hashPayload:
             chunk_sizes.append(remaining_bytes)
         else:
-            first_chunk_limit = (
-                MAX_CIP8_MSG_FIRST_CHUNK_ASCII_SIZE if testCase.msgData.isAscii
-                else MAX_CIP8_MSG_FIRST_CHUNK_HEX_SIZE
-            )
-            first_chunk_size = min(remaining_bytes, first_chunk_limit)
+            first_chunk_size = min(remaining_bytes, MAX_CIP8_MSG_CHUNK_SIZE)
             chunk_sizes.append(first_chunk_size)
             remaining_bytes -= first_chunk_size
 
             while remaining_bytes > 0:
-                next_chunk = min(remaining_bytes, MAX_CIP8_MSG_HIDDEN_CHUNK_SIZE)
+                next_chunk = min(remaining_bytes, MAX_CIP8_MSG_CHUNK_SIZE)
                 chunk_sizes.append(next_chunk)
                 remaining_bytes -= next_chunk
 

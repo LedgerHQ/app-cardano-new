@@ -19,7 +19,7 @@ from standalone.input_files.derive_address import (
 )
 
 
-MAX_SIGN_TX_CHUNK_SIZE = 240
+MAX_SIGN_TX_CHUNK_SIZE = 250
 
 
 class TransactionSigningMode(IntEnum):
