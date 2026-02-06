@@ -211,11 +211,11 @@ typedef struct {
 
     uint32_t msgLength;
     uint32_t remainingBytes;
-    uint32_t receivedChunks;
 
-    // First chunk stored for display (full if short message, prefix if long)
-    uint8_t chunk[MAX_CIP8_MSG_CHUNK_SIZE];
-    size_t chunkSize;
+    // Dynamically allocated buffer accumulating all received chunks.
+    // Allocated in INIT with size msgLength via APP_MEM_CALLOC.
+    uint8_t *msgBuffer;
+    uint32_t msgBufferSize;
 
     blake2b_224_context_t msgHashCtx;
     uint8_t msgHash[CIP8_MSG_HASH_LENGTH];

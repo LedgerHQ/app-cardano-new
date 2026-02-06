@@ -145,49 +145,25 @@ void ui_display_sign_msg(security_policy_t securityPolicy) {
                    format_uint64,
                    ctx->msgLength);
 
-    // Field 5: Message preview (ASCII or hex)
-    // Show first chunk (full if short message, prefix if long)
+    // Field 5: Full message content (ASCII or hex)
     if (ctx->msgLength == 0) {
-        // Empty message
         if (ctx->isAscii) {
             UI_ADD_STATIC(UI_STATIC_LABEL("Message (ASCII)"), UI_STATIC_LABEL("(empty)"));
         } else {
             UI_ADD_STATIC(UI_STATIC_LABEL("Message (hex)"), UI_STATIC_LABEL("(empty)"));
         }
-    } else if (ctx->remainingBytes == 0 && ctx->receivedChunks == 1) {
-        // Full message displayed (short message)
-        if (ctx->isAscii) {
-            // Display as ASCII text (chunk is already validated as unambiguous ASCII)
-            // Format as string by null-terminating
-            UI_ADD_FORMAT2(UI_STATIC_LABEL("Message (ASCII)"),
-                           ctx->chunkSize,
-                           format_ascii_chunk,
-                           ctx->chunk,
-                           ctx->chunkSize);
-        } else {
-            // Display as hex
-            UI_ADD_FORMAT2(UI_STATIC_LABEL("Message (hex)"),
-                           2 * ctx->chunkSize + 1,
-                           format_hex_bytes,
-                           ctx->chunk,
-                           ctx->chunkSize);
-        }
+    } else if (ctx->isAscii) {
+        UI_ADD_FORMAT2(UI_STATIC_LABEL("Message (ASCII)"),
+                       ctx->msgLength,
+                       format_ascii_chunk,
+                       ctx->msgBuffer,
+                       ctx->msgLength);
     } else {
-        // Partial message (long message with multiple chunks)
-        // Show "starts with..." prefix
-        if (ctx->isAscii) {
-            UI_ADD_FORMAT2(UI_STATIC_LABEL("Message starts with"),
-                           ctx->chunkSize,
-                           format_ascii_chunk,
-                           ctx->chunk,
-                           ctx->chunkSize);
-        } else {
-            UI_ADD_FORMAT2(UI_STATIC_LABEL("Message starts with"),
-                           2 * ctx->chunkSize + 1,
-                           format_hex_bytes,
-                           ctx->chunk,
-                           ctx->chunkSize);
-        }
+        UI_ADD_FORMAT2(UI_STATIC_LABEL("Message (hex)"),
+                       2 * ctx->msgLength + 1,
+                       format_hex_bytes,
+                       ctx->msgBuffer,
+                       ctx->msgLength);
     }
 
     // Field 6: Message hash (always computed)
@@ -197,9 +173,9 @@ void ui_display_sign_msg(security_policy_t securityPolicy) {
                    ctx->msgHash,
                    SIZEOF(ctx->msgHash));
 
-    // Display review screen
-    TRACE("Calling nbgl_useCaseAdvancedReview(TYPE_OPERATION)");
-    nbgl_useCaseAdvancedReview(TYPE_OPERATION,
+    // Display review screen with skip button for long messages
+    TRACE("Calling nbgl_useCaseAdvancedReview(TYPE_OPERATION | SKIPPABLE_OPERATION)");
+    nbgl_useCaseAdvancedReview(TYPE_OPERATION | SKIPPABLE_OPERATION,
                                g_pairsList,
                                &ICON_APP_CARDANO,
                                "Sign message",

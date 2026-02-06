@@ -365,4 +365,45 @@ signMsgTestCases = [
             addressFieldHex="e11d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c",
         ),
     ),
+    # --- Long non-hashed messages (multi-chunk, tests dynamic allocation) ---
+    SignMsgTestCase(
+        name="Sign_msg_257_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field",
+        msgData=MessageData(
+            messageHex=("68" * 257),  # 257 bytes of 'h' — not a multiple of 250
+            signingPath="m/1852'/1815'/0'/3/0",
+            hashPayload=False,
+            isAscii=True,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
+        ),
+    ),
+    SignMsgTestCase(
+        name="Sign_msg_1000_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field",
+        msgData=MessageData(
+            messageHex=("6869" * 500),  # 1000 bytes of "hi" repeated
+            signingPath="m/1852'/1815'/0'/3/0",
+            hashPayload=False,
+            isAscii=True,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
+        ),
+    ),
+    SignMsgTestCase(
+        name="Sign_msg_257_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field",
+        msgData=MessageData(
+            messageHex=("de" * 257),  # 257 bytes of 0xDE — not a multiple of 250
+            signingPath="m/1852'/1815'/0'/3/0",
+            hashPayload=False,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
+        ),
+    ),
+    SignMsgTestCase(
+        name="Sign_msg_1000_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field",
+        msgData=MessageData(
+            messageHex=("fa" * 1000),  # 1000 bytes of 0xFA
+            signingPath="m/1852'/1815'/0'/3/0",
+            hashPayload=False,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
+        ),
+    ),
 ]

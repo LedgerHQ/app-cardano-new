@@ -76,6 +76,26 @@ static void test_sign_message_sign_msg_short_nonhashed_hex_message_with_reward_a
     run_fixture(&SIGN_MSG_FIXTURES[11]);
 }
 
+static void test_sign_message_sign_msg_257_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field_12(void **state) {
+    (void) state;
+    run_fixture(&SIGN_MSG_FIXTURES[12]);
+}
+
+static void test_sign_message_sign_msg_1000_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field_13(void **state) {
+    (void) state;
+    run_fixture(&SIGN_MSG_FIXTURES[13]);
+}
+
+static void test_sign_message_sign_msg_257_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_14(void **state) {
+    (void) state;
+    run_fixture(&SIGN_MSG_FIXTURES[14]);
+}
+
+static void test_sign_message_sign_msg_1000_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_15(void **state) {
+    (void) state;
+    run_fixture(&SIGN_MSG_FIXTURES[15]);
+}
+
 // ======================================================================
 // Main
 // ======================================================================
@@ -94,6 +114,10 @@ int main(void) {
         cmocka_unit_test(test_sign_message_sign_msg_349_bytes_long_hashed_hex_message_with_keyhash_as_address_field_9),
         cmocka_unit_test(test_sign_message_sign_msg_short_nonhashed_hex_message_with_base_address_in_address_field_10),
         cmocka_unit_test(test_sign_message_sign_msg_short_nonhashed_hex_message_with_reward_address_in_address_field_11),
+        cmocka_unit_test(test_sign_message_sign_msg_257_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field_12),
+        cmocka_unit_test(test_sign_message_sign_msg_1000_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field_13),
+        cmocka_unit_test(test_sign_message_sign_msg_257_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_14),
+        cmocka_unit_test(test_sign_message_sign_msg_1000_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_15),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

@@ -188,16 +188,17 @@ def _generate_fixture_code_for_test_case(
         chunk_array_names.append(chunk_array_name)
 
     chunk_struct_name = f"SIGN_MSG_{test_number:03d}_{safe_test_name}_CHUNKS"
-    code_lines.append(f"static const sign_msg_chunk_t {chunk_struct_name}[] = {{")
-    for chunk_array_name in chunk_array_names:
-        code_lines.append(
-            "    {"
-            f" .data = {chunk_array_name},"
-            f" .data_len = sizeof({chunk_array_name}),"
-            " },"
-        )
-    code_lines.append("};")
-    code_lines.append("")
+    if chunk_array_names:
+        code_lines.append(f"static const sign_msg_chunk_t {chunk_struct_name}[] = {{")
+        for chunk_array_name in chunk_array_names:
+            code_lines.append(
+                "    {"
+                f" .data = {chunk_array_name},"
+                f" .data_len = sizeof({chunk_array_name}),"
+                " },"
+            )
+        code_lines.append("};")
+        code_lines.append("")
 
     # CONFIRM payload (usually empty)
     confirm_array_name = f"SIGN_MSG_{test_number:03d}_{safe_test_name}_CONFIRM_APDU"
@@ -283,12 +284,16 @@ def _build_fixtures() -> str:
             f"    .init_data_len = sizeof(SIGN_MSG_{idx:03d}_{safe_test_name}_INIT_APDU),"
         )
         chunk_struct_name = f"SIGN_MSG_{idx:03d}_{safe_test_name}_CHUNKS"
-        header_lines.append(
-            f"    .chunks = {chunk_struct_name},"
-        )
-        header_lines.append(
-            f"    .chunk_count = sizeof({chunk_struct_name}) / sizeof(sign_msg_chunk_t),"
-        )
+        if payloads['chunk_payloads']:
+            header_lines.append(
+                f"    .chunks = {chunk_struct_name},"
+            )
+            header_lines.append(
+                f"    .chunk_count = sizeof({chunk_struct_name}) / sizeof(sign_msg_chunk_t),"
+            )
+        else:
+            header_lines.append("    .chunks = NULL,")
+            header_lines.append("    .chunk_count = 0,")
         if payloads['confirm_payload']:
             header_lines.append(
                 f"    .confirm_data = SIGN_MSG_{idx:03d}_{safe_test_name}_CONFIRM_APDU,"

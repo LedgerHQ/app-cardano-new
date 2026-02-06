@@ -37,6 +37,7 @@
 #include "textUtils.h"
 #include "cbor.h"
 #include "nbgl_use_case.h"
+#include "app_mem_utils.h"
 
 static bool ensure_sign_msg_stage(const char *command_name, sign_msg_stage_e required_stage) {
     if (G_context.state.sign_msg_state != required_stage) {
@@ -95,17 +96,6 @@ __noinline_due_to_stack__ void signMsg_handle_init(buffer_t *cdata) {
     ctx->isAscii = (isAscii_byte != 0);
     TRACE("Is ASCII = %d", ctx->isAscii);
 
-    // Non-hashed payload must fit into a single displayable chunk
-    if (!ctx->hashPayload) {
-        if (ctx->msgLength > MAX_CIP8_MSG_CHUNK_SIZE) {
-            TRACE("Non-hashed payload too large: %u > %u",
-                  ctx->msgLength,
-                  MAX_CIP8_MSG_CHUNK_SIZE);
-            send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-            return;
-        }
-    }
-
     uint8_t addressFieldType_byte;
     if (!buffer_read_u8(cdata, &addressFieldType_byte)) {
         TRACE("Failed to read addressFieldType");
@@ -162,15 +152,32 @@ __noinline_due_to_stack__ void signMsg_handle_init(buffer_t *cdata) {
 
     // Initialize chunk tracking
     ctx->remainingBytes = ctx->msgLength;
-    ctx->receivedChunks = 0;
-    ctx->chunkSize = 0;
+
+    // Dynamically allocate message buffer to accumulate all chunks
+    if (ctx->msgLength > 0) {
+        if (ctx->msgLength > UINT16_MAX) {
+            TRACE("Message too large for allocation: %u", ctx->msgLength);
+            send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+            return;
+        }
+        if (!APP_MEM_CALLOC((void **) &ctx->msgBuffer, (uint16_t) ctx->msgLength)) {
+            TRACE("Failed to allocate %u byte message buffer", ctx->msgLength);
+            send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+            return;
+        }
+        ctx->msgBufferSize = ctx->msgLength;
+    }
 
     // Show spinner to indicate message processing
     TRACE("Calling nbgl_useCaseSpinner(\"Processing\")");
     nbgl_useCaseSpinner("Processing");
 
-    // Transition to CHUNK stage
-    G_context.state.sign_msg_state = SIGN_MSG_STAGE_CHUNK;
+    // Transition: skip CHUNK stage for empty messages
+    if (ctx->msgLength == 0) {
+        G_context.state.sign_msg_state = SIGN_MSG_STAGE_CONFIRM;
+    } else {
+        G_context.state.sign_msg_state = SIGN_MSG_STAGE_CHUNK;
+    }
 
     io_send_sw(SWO_SUCCESS);
 }
@@ -199,43 +206,12 @@ __noinline_due_to_stack__ void signMsg_handle_chunk(buffer_t *cdata) {
         return;
     }
 
-    // Enforce chunk size rules (matching old app exactly)
-    ctx->receivedChunks++;
-
-    if (!ctx->hashPayload) {
-        // Non-hashed payload: only single chunk allowed
-        if (ctx->receivedChunks != 1) {
-            TRACE("Non-hashed payload expects single chunk");
-            send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-            return;
-        }
-    }
-
-    if (ctx->receivedChunks == 1) {
-        // First chunk must be displayable with maximum allowed size
-        uint32_t expected_first_chunk_size = MIN(ctx->msgLength, MAX_CIP8_MSG_CHUNK_SIZE);
-        if (chunkSize_u32 != expected_first_chunk_size) {
-            TRACE("First chunk size mismatch: expected %u, got %u",
-                  expected_first_chunk_size,
-                  chunkSize_u32);
-            send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-            return;
-        }
-    } else {
-        // Subsequent chunks must be maximum allowed size
-        uint32_t expected_chunk_size = MIN(ctx->remainingBytes, MAX_CIP8_MSG_CHUNK_SIZE);
-        if (chunkSize_u32 != expected_chunk_size) {
-            TRACE("Subsequent chunk size mismatch: expected %u, got %u",
-                  expected_chunk_size,
-                  chunkSize_u32);
-            send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-            return;
-        }
-    }
-
-    // Validate chunk size fits in our buffer
-    if (chunkSize_u32 > SIZEOF(ctx->chunk)) {
-        TRACE("Chunk size too large for buffer");
+    // Each chunk must be exactly min(remaining, MAX_CIP8_MSG_CHUNK_SIZE)
+    uint32_t expectedChunkSize = MIN(ctx->remainingBytes, MAX_CIP8_MSG_CHUNK_SIZE);
+    if (chunkSize_u32 != expectedChunkSize) {
+        TRACE("Chunk size mismatch: expected %u, got %u",
+              expectedChunkSize,
+              chunkSize_u32);
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
@@ -247,28 +223,32 @@ __noinline_due_to_stack__ void signMsg_handle_chunk(buffer_t *cdata) {
         return;
     }
 
-    // Read chunk data
-    if (!buffer_read_bytes(cdata, ctx->chunk, chunkSize_u32)) {
-        TRACE("Failed to read chunk data");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
-    }
-    ctx->chunkSize = chunkSize_u32;
+    if (chunkSize_u32 > 0) {
+        // Compute write offset into the accumulated message buffer
+        const uint32_t writeOffset = ctx->msgLength - ctx->remainingBytes;
+        LEDGER_ASSERT(ctx->msgBuffer != NULL, "Message buffer not allocated");
+        LEDGER_ASSERT(writeOffset + chunkSize_u32 <= ctx->msgBufferSize,
+                      "Chunk would overflow message buffer");
 
-    // Verify APDU fully consumed
-    LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");
-
-    // ASCII validation if needed
-    if (ctx->isAscii) {
-        if (!str_isUnambiguousAscii(ctx->chunk, ctx->chunkSize)) {
-            TRACE("ASCII validation failed");
+        // Read chunk data directly into accumulated message buffer
+        if (!buffer_read_bytes(cdata, ctx->msgBuffer + writeOffset, chunkSize_u32)) {
+            TRACE("Failed to read chunk data");
             send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
             return;
         }
-    }
 
-    // Add chunk to hash
-    blake2b_224_append(&ctx->msgHashCtx, ctx->chunk, ctx->chunkSize);
+        // ASCII validation on this chunk
+        if (ctx->isAscii) {
+            if (!str_isUnambiguousAscii(ctx->msgBuffer + writeOffset, chunkSize_u32)) {
+                TRACE("ASCII validation failed");
+                send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+                return;
+            }
+        }
+
+        // Add chunk to hash
+        blake2b_224_append(&ctx->msgHashCtx, ctx->msgBuffer + writeOffset, chunkSize_u32);
+    }
 
     // Update remaining bytes
     ctx->remainingBytes -= chunkSize_u32;
@@ -356,6 +336,15 @@ static size_t _createProtectedHeader(sign_msg_ctx_t *ctx,
     return protectedHeaderSize;
 }
 
+// Overhead for Sig_structure CBOR encoding:
+// - 1 byte array(4) header
+// - 1 + 10 bytes "Signature1" text
+// - up to 3 + (MAX_ADDRESS_LENGTH + 32) bytes protectedHeader as bstr
+// - 1 byte empty external_aad
+// - up to 5 bytes payload bstr length header
+// Conservative fixed overhead (covers all CBOR tokens + protectedHeader):
+#define SIG_STRUCTURE_OVERHEAD 256
+
 // Helper: build Sig_structure and sign it
 static void _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
     // Sig_structure = [
@@ -365,9 +354,27 @@ static void _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
     //     payload : bstr                  // message hash or raw message
     // ]
 
-    uint8_t sigStructure[400];
-    explicit_bzero(sigStructure, SIZEOF(sigStructure));
-    write_buffer_t buffer = buffer_init_write(sigStructure, SIZEOF(sigStructure));
+    // Compute payload size for allocation
+    const size_t payloadSize = ctx->hashPayload
+        ? SIZEOF(ctx->msgHash)
+        : ctx->msgLength;
+
+    const size_t sigStructureMaxSize = SIG_STRUCTURE_OVERHEAD + payloadSize;
+
+    // Dynamically allocate Sig_structure buffer
+    uint8_t *sigStructure = NULL;
+    if (sigStructureMaxSize > UINT16_MAX) {
+        TRACE("Sig_structure too large for allocation: %u", (unsigned) sigStructureMaxSize);
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return;
+    }
+    if (!APP_MEM_CALLOC((void **) &sigStructure, (uint16_t) sigStructureMaxSize)) {
+        TRACE("Failed to allocate %u byte Sig_structure buffer", (unsigned) sigStructureMaxSize);
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return;
+    }
+
+    write_buffer_t buffer = buffer_init_write(sigStructure, sigStructureMaxSize);
 
     // Array with 4 elements
     LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_ARRAY, 4), "CBOR write failed");
@@ -381,8 +388,6 @@ static void _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
                   "Buffer overflow");
 
     // Element 2: CBOR-encoded protectedHeader (as bytes)
-    // CBOR overhead: map/keys/alg token + "address" text + bstr length header.
-    // Allocate MAX_ADDRESS_LENGTH plus a conservative fixed overhead for CBOR tokens.
     uint8_t protectedHeaderBuffer[MAX_ADDRESS_LENGTH + 32];
     const size_t protectedHeaderSize =
         _createProtectedHeader(ctx, protectedHeaderBuffer, SIZEOF(protectedHeaderBuffer));
@@ -407,11 +412,11 @@ static void _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
         LEDGER_ASSERT(buffer_write_bytes(&buffer, ctx->msgHash, SIZEOF(ctx->msgHash)),
                       "Buffer overflow");
     } else {
-        // Payload is the raw message (stored in chunk from previous APDU)
-        LEDGER_ASSERT(ctx->receivedChunks == 1, "Non-hashed payload must be single chunk");
-        LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_BYTES, ctx->chunkSize),
+        // Payload is the raw message from accumulated buffer
+        LEDGER_ASSERT(ctx->remainingBytes == 0, "Message not fully received");
+        LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_BYTES, ctx->msgLength),
                       "CBOR write failed");
-        LEDGER_ASSERT(buffer_write_bytes(&buffer, ctx->chunk, ctx->chunkSize),
+        LEDGER_ASSERT(buffer_write_bytes(&buffer, ctx->msgBuffer, ctx->msgLength),
                       "Buffer overflow");
     }
 

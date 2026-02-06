@@ -1075,17 +1075,12 @@ class CommandBuilder:
         chunk_sizes: list[int] = []
         remaining_bytes = len(messageBytes)
 
-        if not testCase.msgData.hashPayload:
-            chunk_sizes.append(remaining_bytes)
-        else:
-            first_chunk_size = min(remaining_bytes, MAX_CIP8_MSG_CHUNK_SIZE)
-            chunk_sizes.append(first_chunk_size)
-            remaining_bytes -= first_chunk_size
-
-            while remaining_bytes > 0:
-                next_chunk = min(remaining_bytes, MAX_CIP8_MSG_CHUNK_SIZE)
-                chunk_sizes.append(next_chunk)
-                remaining_bytes -= next_chunk
+        # Both hashed and non-hashed messages use the same chunking:
+        # each chunk is min(remaining, MAX_CIP8_MSG_CHUNK_SIZE)
+        while remaining_bytes > 0:
+            next_chunk = min(remaining_bytes, MAX_CIP8_MSG_CHUNK_SIZE)
+            chunk_sizes.append(next_chunk)
+            remaining_bytes -= next_chunk
 
         offset = 0
         payloads: list[bytes] = []
