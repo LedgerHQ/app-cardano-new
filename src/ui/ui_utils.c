@@ -15,6 +15,14 @@ ui_status_t g_ui_error_status = UI_STATUS_UNINITIALIZED;
 
 static uint16_t g_next_pair_index = 0;
 
+static bool ui_allocate_zeroed(void **result, size_t allocation_size) {
+    if (allocation_size > UINT16_MAX) {
+        return false;
+    }
+    *result = NULL;
+    return APP_MEM_CALLOC(result, (uint16_t) allocation_size);
+}
+
 
 /**
  * Initialize UI error status to SUCCESS before starting UI formatting
@@ -111,8 +119,8 @@ bool ui_pairs_add_static_label_impl(const char* label, char* tmp_buf, bool shrin
 
     if (shrink) {
         size_t len = strlen(tmp_buf);
-        char *shrinked = (char *) APP_MEM_ALLOC_ZEROED(len + 1);
-        if (shrinked == NULL) {
+        char *shrinked = NULL;
+        if (!ui_allocate_zeroed((void **) &shrinked, len + 1)) {
             TRACE("Failed to allocate shrunk string");
             APP_MEM_FREE(tmp_buf);
             return false;
@@ -143,8 +151,7 @@ bool ui_pairs_init(uint8_t nbPairs) {
         APP_MEM_FREE(g_pairsList);
         g_pairsList = NULL;
     }
-    g_pairsList = (nbgl_contentTagValueList_t *) APP_MEM_ALLOC_ZEROED(sizeof(nbgl_contentTagValueList_t));
-    if (g_pairsList == NULL) {
+    if (!ui_allocate_zeroed((void **) &g_pairsList, sizeof(nbgl_contentTagValueList_t))) {
         goto error;
     }
 
@@ -153,8 +160,7 @@ bool ui_pairs_init(uint8_t nbPairs) {
         APP_MEM_FREE(g_pairs);
         g_pairs = NULL;
     }
-    g_pairs = (nbgl_contentTagValue_t *) APP_MEM_ALLOC_ZEROED(nbPairs * sizeof(nbgl_contentTagValue_t));
-    if (g_pairs == NULL) {
+    if (!ui_allocate_zeroed((void **) &g_pairs, nbPairs * sizeof(nbgl_contentTagValue_t))) {
         goto error;
     }
     g_pairsList->nbPairs = nbPairs;

@@ -107,12 +107,13 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
  * @param value      Value to format (passed as first argument to format_fn)
  */
 #define UI_ADD_FORMAT1(label, max_len, format_fn, value) do { \
-    char *_buf = (char *) APP_MEM_ALLOC_ZEROED((max_len) + UI_BUFFER_SAFETY_MARGIN); \
-    if (_buf == NULL) { \
+    char *_buf = NULL; \
+    const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
+    if ((_buf_size > UINT16_MAX) || !APP_MEM_CALLOC((void **) &_buf, (uint16_t) _buf_size)) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \
-    bool _ok = format_fn((value), _buf, (max_len) + UI_BUFFER_SAFETY_MARGIN); \
+    bool _ok = format_fn((value), _buf, _buf_size); \
     LEDGER_ASSERT(_ok, "Format failed: " #format_fn); \
     LEDGER_ASSERT(strlen(_buf) <= (max_len), "Buffer too short: " #format_fn " (max %u bytes)", (unsigned int)(max_len)); \
     if (!ui_pairs_add_static_label((label), _buf)) { \
@@ -137,12 +138,13 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
  * @param param2     Second parameter to pass to format_fn
  */
 #define UI_ADD_FORMAT2(label, max_len, format_fn, param1, param2) do { \
-    char *_buf = (char *) APP_MEM_ALLOC_ZEROED((max_len) + UI_BUFFER_SAFETY_MARGIN); \
-    if (_buf == NULL) { \
+    char *_buf = NULL; \
+    const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
+    if ((_buf_size > UINT16_MAX) || !APP_MEM_CALLOC((void **) &_buf, (uint16_t) _buf_size)) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \
-    bool _ok = format_fn((param1), (param2), _buf, (max_len) + UI_BUFFER_SAFETY_MARGIN); \
+    bool _ok = format_fn((param1), (param2), _buf, _buf_size); \
     LEDGER_ASSERT(_ok, "Format failed: " #format_fn); \
     LEDGER_ASSERT(strlen(_buf) <= (max_len), "Buffer too short: " #format_fn " (max %u bytes)", (unsigned int)(max_len)); \
     if (!ui_pairs_add_static_label((label), _buf)) { \
@@ -168,12 +170,13 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
  * @param param3     Third parameter to pass to format_fn
  */
 #define UI_ADD_FORMAT3(label, max_len, format_fn, param1, param2, param3) do { \
-    char *_buf = (char *) APP_MEM_ALLOC_ZEROED((max_len) + UI_BUFFER_SAFETY_MARGIN); \
-    if (_buf == NULL) { \
+    char *_buf = NULL; \
+    const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
+    if ((_buf_size > UINT16_MAX) || !APP_MEM_CALLOC((void **) &_buf, (uint16_t) _buf_size)) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \
-    bool _ok = format_fn((param1), (param2), (param3), _buf, (max_len) + UI_BUFFER_SAFETY_MARGIN); \
+    bool _ok = format_fn((param1), (param2), (param3), _buf, _buf_size); \
     LEDGER_ASSERT(_ok, "Format failed: " #format_fn); \
     LEDGER_ASSERT(strlen(_buf) <= (max_len), "Buffer too short: " #format_fn " (max %u bytes)", (unsigned int)(max_len)); \
     if (!ui_pairs_add_static_label((label), _buf)) { \
@@ -194,8 +197,8 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
 #define UI_ADD_STATIC(label, value) do { \
     const char *_static_value = (value); \
     size_t _static_value_len = strlen(_static_value); \
-    char *_static_value_copy = (char *) APP_MEM_ALLOC_ZEROED(_static_value_len + 1); \
-    if (_static_value_copy == NULL) { \
+    char *_static_value_copy = NULL; \
+    if ((_static_value_len + 1 > UINT16_MAX) || !APP_MEM_CALLOC((void **) &_static_value_copy, (uint16_t) (_static_value_len + 1))) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \
@@ -224,12 +227,13 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
  * @param param4     Fourth parameter to pass to format_fn
  */
 #define UI_ADD_FORMAT4(label, max_len, format_fn, param1, param2, param3, param4) do { \
-    char *_buf = (char *) APP_MEM_ALLOC_ZEROED((max_len) + UI_BUFFER_SAFETY_MARGIN); \
-    if (_buf == NULL) { \
+    char *_buf = NULL; \
+    const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
+    if ((_buf_size > UINT16_MAX) || !APP_MEM_CALLOC((void **) &_buf, (uint16_t) _buf_size)) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \
-    bool _ok = format_fn((param1), (param2), (param3), (param4), _buf, (max_len) + UI_BUFFER_SAFETY_MARGIN); \
+    bool _ok = format_fn((param1), (param2), (param3), (param4), _buf, _buf_size); \
     LEDGER_ASSERT(_ok, "Format failed: " #format_fn); \
     LEDGER_ASSERT(strlen(_buf) <= (max_len), "Buffer too short: " #format_fn " (max %u bytes)", (unsigned int)(max_len)); \
     if (!ui_pairs_add_static_label((label), _buf)) { \

@@ -332,8 +332,8 @@ void tx_handle_parse_error(parser_status_e status) {
 // Helper function to parse a single input (reused for inputs, collateral inputs, reference inputs)
 // error_on_failure: error code to return if parsing fails (e.g., INPUTS_PARSING_ERROR, COLLATERAL_INPUTS_PARSING_ERROR)
 static parser_status_e parse_input_item(buffer_t *buf, flist_node_t **list_head, parser_status_e error_on_failure) {
-    tx_input_node_t *item = (tx_input_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(tx_input_node_t));
-    if (item == NULL) {
+    tx_input_node_t *item = NULL;
+    if (!APP_MEM_CALLOC((void **) &item, (uint16_t) sizeof(*item))) {
         TRACE("parse_input_item: out of memory allocating tx_input_node");
         return OUT_OF_MEMORY_ERROR;
     }
@@ -385,12 +385,11 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
             .offset = 0
         };
 
-        tx_output_node_t *item = (tx_output_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(tx_output_node_t));
-        if (item == NULL) {
+        tx_output_node_t *item = NULL;
+        if (!APP_MEM_CALLOC((void **) &item, (uint16_t) sizeof(*item))) {
             TRACE("parse_tx_outputs: out of memory allocating tx_output_node");
             return OUT_OF_MEMORY_ERROR;
         }
-        explicit_bzero(item, sizeof(*item));
 
         // Parse destination (third-party address or device-owned address params)
         parser_status_e status = parse_output_destination(&output_buf,
@@ -425,14 +424,12 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
             bool has_previous_policy = false;
 
             for (uint16_t ag = 0; ag < item->output_data.numAssetGroups; ag++) {
-                output_asset_group_node_t *group_node =
-                    (output_asset_group_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(output_asset_group_node_t));
-                if (group_node == NULL) {
+                output_asset_group_node_t *group_node = NULL;
+                if (!APP_MEM_CALLOC((void **) &group_node, (uint16_t) sizeof(*group_node))) {
                     TRACE("parse_tx_outputs: out of memory allocating asset group node");
                     free_output_item(item);
                     return OUT_OF_MEMORY_ERROR;
                 }
-                explicit_bzero(group_node, sizeof(*group_node));
 
                 output_asset_group_t *group = &group_node->asset_group;
 
@@ -476,9 +473,8 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
 
                 for (uint16_t tk = 0; tk < group->numTokens; tk++) {
                     // Allocate list node for this token
-                    output_token_node_t *token_item =
-                        (output_token_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(output_token_node_t));
-                    if (token_item == NULL) {
+                    output_token_node_t *token_item = NULL;
+                    if (!APP_MEM_CALLOC((void **) &token_item, (uint16_t) sizeof(*token_item))) {
                         TRACE("parse_tx_outputs: out of memory allocating token node");
                         free_asset_group_node(group_node);
                         free_output_item(item);
@@ -594,12 +590,11 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx) {
     bool has_previous_policy = false;
 
     for (uint16_t ag = 0; ag < tx->num_mint_asset_groups; ag++) {
-        mint_asset_group_node_t *item = (mint_asset_group_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(mint_asset_group_node_t));
-        if (item == NULL) {
+        mint_asset_group_node_t *item = NULL;
+        if (!APP_MEM_CALLOC((void **) &item, (uint16_t) sizeof(*item))) {
             TRACE("parse_tx_mint_groups: out of memory allocating mint asset group");
             return OUT_OF_MEMORY_ERROR;
         }
-        explicit_bzero(item, sizeof(*item));
 
         // Store pointer to policy ID in raw buffer instead of copying
         if (!buffer_read_bytes_ptr(buf, &item->asset_group.policyId, MINTING_POLICY_ID_LENGTH)) {
@@ -634,8 +629,8 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx) {
 
         for (uint16_t tk = 0; tk < item->asset_group.numTokens; tk++) {
             // Allocate list node for this token
-            mint_token_node_t *token_item = (mint_token_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(mint_token_node_t));
-            if (token_item == NULL) {
+            mint_token_node_t *token_item = NULL;
+            if (!APP_MEM_CALLOC((void **) &token_item, (uint16_t) sizeof(*token_item))) {
                 TRACE("parse_tx_mint_groups: out of memory allocating mint token node");
                 free_mint_item(item);
                 return OUT_OF_MEMORY_ERROR;
@@ -702,8 +697,8 @@ static parser_status_e parse_tx_certificates(buffer_t *buf, transaction_t *tx) {
     TRACE("parse_tx_certificates: num_certificates=%u buf->offset=%u buf->size=%u",
           tx->num_certificates, buf->offset, buf->size);
     for (uint16_t i = 0; i < tx->num_certificates; i++) {
-        tx_certificate_node_t *item = (tx_certificate_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(tx_certificate_node_t));
-        if (item == NULL) {
+        tx_certificate_node_t *item = NULL;
+        if (!APP_MEM_CALLOC((void **) &item, (uint16_t) sizeof(*item))) {
             TRACE("OUT OF MEMORY");
             return OUT_OF_MEMORY_ERROR;
         }
@@ -805,8 +800,8 @@ static parser_status_e parse_tx_withdrawals(buffer_t *buf, transaction_t *tx) {
     // to the later planning stage where the derived reward addresses are already
     // exposed to policy checks.
     for (uint16_t i = 0; i < tx->num_withdrawals; i++) {
-        tx_withdrawal_node_t *item = (tx_withdrawal_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(tx_withdrawal_node_t));
-        if (item == NULL) {
+        tx_withdrawal_node_t *item = NULL;
+        if (!APP_MEM_CALLOC((void **) &item, (uint16_t) sizeof(*item))) {
             TRACE("parse_tx_withdrawals: out of memory allocating withdrawal node");
             return OUT_OF_MEMORY_ERROR;
         }
@@ -1033,9 +1028,8 @@ static parser_status_e parse_tx_collateral_inputs(buffer_t *buf, transaction_t *
 
 static parser_status_e parse_tx_required_signers(buffer_t *buf, transaction_t *tx) {
     for (uint16_t i = 0; i < tx->num_required_signers; i++) {
-        tx_required_signer_node_t *item =
-            (tx_required_signer_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(tx_required_signer_node_t));
-        if (item == NULL) {
+        tx_required_signer_node_t *item = NULL;
+        if (!APP_MEM_CALLOC((void **) &item, (uint16_t) sizeof(*item))) {
             TRACE("parse_tx_required_signers: out of memory allocating signer node");
             return OUT_OF_MEMORY_ERROR;
         }
@@ -1118,14 +1112,12 @@ static parser_status_e parse_tx_collateral_output(buffer_t *buf, transaction_t *
         bool has_previous_policy = false;
 
         for (uint16_t ag = 0; ag < tx->collateral_output.numAssetGroups; ag++) {
-            output_asset_group_node_t *group_node =
-                (output_asset_group_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(output_asset_group_node_t));
-            if (group_node == NULL) {
+            output_asset_group_node_t *group_node = NULL;
+            if (!APP_MEM_CALLOC((void **) &group_node, (uint16_t) sizeof(*group_node))) {
                 TRACE("parse_tx_collateral_output: out of memory allocating asset group");
                 free_asset_groups(tx->collateral_output.assetGroups);
                 return OUT_OF_MEMORY_ERROR;
             }
-            explicit_bzero(group_node, sizeof(*group_node));
 
             output_asset_group_t *group = &group_node->asset_group;
             if (!buffer_read_bytes_ptr(&output_buf, &group->policyId, MINTING_POLICY_ID_LENGTH)) {
@@ -1160,9 +1152,8 @@ static parser_status_e parse_tx_collateral_output(buffer_t *buf, transaction_t *
             bool has_previous_token = false;
 
             for (uint16_t tk = 0; tk < group->numTokens; tk++) {
-                output_token_node_t *token_item =
-                    (output_token_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(output_token_node_t));
-                if (token_item == NULL) {
+                output_token_node_t *token_item = NULL;
+                if (!APP_MEM_CALLOC((void **) &token_item, (uint16_t) sizeof(*token_item))) {
                     TRACE("parse_tx_collateral_output: out of memory allocating token");
                     free_asset_group_node(group_node);
                     free_asset_groups(tx->collateral_output.assetGroups);
@@ -1258,13 +1249,11 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
     // For each voter in the outer map
     for (uint16_t voter_idx = 0; voter_idx < tx->num_voters; voter_idx++) {
         // Allocate list node for this voter
-        voter_votes_node_t *voter_item =
-            (voter_votes_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(voter_votes_node_t));
-        if (voter_item == NULL) {
+        voter_votes_node_t *voter_item = NULL;
+        if (!APP_MEM_CALLOC((void **) &voter_item, (uint16_t) sizeof(*voter_item))) {
             TRACE("parse_tx_voting_procedures: out of memory allocating voter node");
             return OUT_OF_MEMORY_ERROR;
         }
-        explicit_bzero(voter_item, sizeof(*voter_item));
 
         // Initialize votes list
         voter_item->voter_votes_data.votes = NULL;
@@ -1315,13 +1304,11 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
         // Parse each vote for this voter
         for (uint16_t vote_idx = 0; vote_idx < voter_item->voter_votes_data.numVotes; vote_idx++) {
             // Allocate list node for this vote
-            vote_node_t *vote_item =
-                (vote_node_t *) APP_MEM_ALLOC_ZEROED(sizeof(vote_node_t));
-            if (vote_item == NULL) {
+            vote_node_t *vote_item = NULL;
+            if (!APP_MEM_CALLOC((void **) &vote_item, (uint16_t) sizeof(*vote_item))) {
                 TRACE("parse_tx_voting_procedures: out of memory allocating vote node");
                 return OUT_OF_MEMORY_ERROR;
             }
-            explicit_bzero(vote_item, sizeof(*vote_item));
 
             // Parse gov_action_id (tx_hash + index)
             if (!buffer_read_bytes_ptr(buf, &vote_item->vote_data.govActionId.txHash, TX_HASH_LENGTH)) {

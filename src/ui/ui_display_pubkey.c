@@ -75,9 +75,9 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
     pubkey_ctx_t* pk = &G_context.pk_info;
 
     // Allocate display buffers
-    G_context.pk_info.path_str =
-        (char *) APP_MEM_ALLOC_ZEROED(MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN);
-    if (G_context.pk_info.path_str == NULL) {
+    G_context.pk_info.path_str = NULL;
+    if (!APP_MEM_CALLOC((void **) &G_context.pk_info.path_str,
+                        (uint16_t) (MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN))) {
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
     }

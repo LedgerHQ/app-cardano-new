@@ -164,8 +164,8 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
 
     // Allocate persistent buffer for CVote init data
     const size_t init_payload_len = buffer_remaining(cdata);
-    G_context.tx_info.raw_cvote_init_data = (uint8_t *) APP_MEM_ALLOC_ZEROED(init_payload_len);
-    if (G_context.tx_info.raw_cvote_init_data == NULL) {
+    if ((init_payload_len > UINT16_MAX) ||
+        !APP_MEM_CALLOC((void **) &G_context.tx_info.raw_cvote_init_data, (uint16_t) init_payload_len)) {
         TRACE("CVote AUX_DATA init: failed to allocate %u byte buffer", (unsigned)init_payload_len);
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;

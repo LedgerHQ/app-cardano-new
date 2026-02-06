@@ -17,8 +17,8 @@ static void test_ui_pairs_add_static_label_stores_value(void **state) {
     assert_true(mem_utils_init(test_heap, sizeof(test_heap)));
     assert_true(ui_pairs_init(1));
 
-    char *tmp = (char *) APP_MEM_ALLOC_ZEROED(16);
-    assert_non_null(tmp);
+    char *tmp = NULL;
+    assert_true(APP_MEM_CALLOC((void **) &tmp, 16));
     memcpy(tmp, "hello", sizeof("hello"));
 
     assert_true(ui_pairs_add_static_label("Label", tmp));

@@ -26,6 +26,14 @@
 
 static nbgl_warning_t *g_warning = NULL;
 
+static bool warning_allocate_zeroed(void **result, size_t allocation_size) {
+    if (allocation_size > UINT16_MAX) {
+        return false;
+    }
+    *result = NULL;
+    return APP_MEM_CALLOC(result, (uint16_t) allocation_size);
+}
+
 ui_status_t ui_build_warnings(warning_bits_t warnings) {
     LEDGER_ASSERT(g_warning == NULL, "Warnings already built");
     const warning_definition_t *warning_defs[WARNING_BIT_COUNT];
@@ -37,19 +45,23 @@ ui_status_t ui_build_warnings(warning_bits_t warnings) {
         return UI_STATUS_SUCCESS;
     }
 
-    const nbgl_icon_details_t **icons =
-        (const nbgl_icon_details_t **) APP_MEM_ALLOC_ZEROED(sizeof(nbgl_icon_details_t *) * warning_count);
-    const char **titles = (const char **) APP_MEM_ALLOC_ZEROED(sizeof(const char *) * warning_count);
-    const char **subtexts = (const char **) APP_MEM_ALLOC_ZEROED(sizeof(const char *) * warning_count);
-    nbgl_warningDetails_t *details =
-        (nbgl_warningDetails_t *) APP_MEM_ALLOC_ZEROED(sizeof(nbgl_warningDetails_t) * warning_count);
-    nbgl_warningDetails_t *intro = (nbgl_warningDetails_t *) APP_MEM_ALLOC_ZEROED(sizeof(nbgl_warningDetails_t));
-    nbgl_warningDetails_t *review = (nbgl_warningDetails_t *) APP_MEM_ALLOC_ZEROED(sizeof(nbgl_warningDetails_t));
-    nbgl_contentCenter_t *info = (nbgl_contentCenter_t *) APP_MEM_ALLOC_ZEROED(sizeof(nbgl_contentCenter_t));
-    g_warning = (nbgl_warning_t *) APP_MEM_ALLOC_ZEROED(sizeof(nbgl_warning_t));
+    const nbgl_icon_details_t **icons = NULL;
+    const char **titles = NULL;
+    const char **subtexts = NULL;
+    nbgl_warningDetails_t *details = NULL;
+    nbgl_warningDetails_t *intro = NULL;
+    nbgl_warningDetails_t *review = NULL;
+    nbgl_contentCenter_t *info = NULL;
+    g_warning = NULL;
 
-    if (icons == NULL || titles == NULL || subtexts == NULL || details == NULL || intro == NULL ||
-        review == NULL || info == NULL || g_warning == NULL) {
+    if (!warning_allocate_zeroed((void **) &icons, sizeof(nbgl_icon_details_t *) * warning_count) ||
+        !warning_allocate_zeroed((void **) &titles, sizeof(const char *) * warning_count) ||
+        !warning_allocate_zeroed((void **) &subtexts, sizeof(const char *) * warning_count) ||
+        !warning_allocate_zeroed((void **) &details, sizeof(nbgl_warningDetails_t) * warning_count) ||
+        !warning_allocate_zeroed((void **) &intro, sizeof(nbgl_warningDetails_t)) ||
+        !warning_allocate_zeroed((void **) &review, sizeof(nbgl_warningDetails_t)) ||
+        !warning_allocate_zeroed((void **) &info, sizeof(nbgl_contentCenter_t)) ||
+        !warning_allocate_zeroed((void **) &g_warning, sizeof(nbgl_warning_t))) {
         if (icons != NULL) {
             APP_MEM_FREE((void *) icons);
         }
@@ -134,8 +146,8 @@ const nbgl_warning_t* ui_get_warnings(void) {
 
 ui_status_t ui_build_predefined_warning(uint32_t predefinedSet) {
     LEDGER_ASSERT(g_warning == NULL, "Warnings already built");
-    g_warning = (nbgl_warning_t *) APP_MEM_ALLOC_ZEROED(sizeof(nbgl_warning_t));
-    if (g_warning == NULL) {
+    g_warning = NULL;
+    if (!warning_allocate_zeroed((void **) &g_warning, sizeof(nbgl_warning_t))) {
         return UI_STATUS_OUT_OF_MEMORY;
     }
 

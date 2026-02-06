@@ -20,19 +20,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <string.h>
 
 #include "app_mem_utils.h"
-
-static inline void *app_mem_alloc_zeroed(size_t size) {
-    void *ptr = APP_MEM_ALLOC(size);
-    if (ptr != NULL) {
-        explicit_bzero(ptr, size);
-    }
-    return ptr;
-}
-
-#define APP_MEM_ALLOC_ZEROED(size) app_mem_alloc_zeroed(size)
 
 void *app_mem_get_buffer(void);
 size_t app_mem_get_buffer_size(void);

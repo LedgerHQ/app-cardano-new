@@ -379,8 +379,7 @@ static void handle_tx_data_chunk(buffer_t *cdata, bool more) {
     // Allocate buffer on first data chunk
     if (G_context.tx_info.raw_tx == NULL) {
         TRACE("Allocating transaction buffer: %d bytes", TX_BUFFER_SIZE);
-        G_context.tx_info.raw_tx = (uint8_t *) APP_MEM_ALLOC_ZEROED(TX_BUFFER_SIZE);
-        if (G_context.tx_info.raw_tx == NULL) {
+        if (!APP_MEM_CALLOC((void **) &G_context.tx_info.raw_tx, (uint16_t) TX_BUFFER_SIZE)) {
             TRACE("Failed to allocate %d byte transaction buffer!", TX_BUFFER_SIZE);
             send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
             return;

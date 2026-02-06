@@ -78,9 +78,9 @@ void ui_display_witness(const bip44_path_t* witnessPath,
     }
 
     // Allocate display buffer for witness path
-    G_context.tx_info.witness_path_str =
-        (char *) APP_MEM_ALLOC_ZEROED(MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN);
-    if (G_context.tx_info.witness_path_str == NULL) {
+    G_context.tx_info.witness_path_str = NULL;
+    if (!APP_MEM_CALLOC((void **) &G_context.tx_info.witness_path_str,
+                        (uint16_t) (MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN))) {
         TRACE("Failed to allocate witness path string");
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
