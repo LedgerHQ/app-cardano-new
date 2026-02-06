@@ -112,7 +112,7 @@ static bool format_input_with_index(const tx_input_t *input, char *out, size_t o
 }
 
 static void add_ui_and_free_inputs(transaction_t *tx) {
-    s_flist_node *node = tx->inputs;
+    flist_node_t *node = tx->inputs;
     while (node != NULL) {
         tx_input_node_t *input_node = (tx_input_node_t *) node;
         security_policy_t input_policy = policyForSignTxInput(tx->txSigningMode, &input_node->input);
@@ -131,9 +131,9 @@ static void add_ui_and_free_inputs(transaction_t *tx) {
 }
 
 
-static uint16_t count_output_tokens(s_flist_node* asset_group_nodes) {
+static uint16_t count_output_tokens(flist_node_t* asset_group_nodes) {
     uint16_t total_tokens = 0;
-    s_flist_node *node = asset_group_nodes;
+    flist_node_t *node = asset_group_nodes;
     while (node != NULL) {
         output_asset_group_node_t *group_node = (output_asset_group_node_t *) node;
         total_tokens += group_node->asset_group.numTokens;
@@ -143,9 +143,9 @@ static uint16_t count_output_tokens(s_flist_node* asset_group_nodes) {
 }
 
 static void add_ui_and_free_output_tokens(const output_asset_group_t *group,
-                                               s_flist_node *token_nodes,
+                                               flist_node_t *token_nodes,
                                                bool show_tokens) {
-    s_flist_node *node = token_nodes;
+    flist_node_t *node = token_nodes;
     while (node != NULL) {
         output_token_node_t *token_node = (output_token_node_t *) node;
         output_token_t *token = &token_node->token_data;
@@ -160,11 +160,11 @@ static void add_ui_and_free_output_tokens(const output_asset_group_t *group,
     }
 }
 
-static void add_ui_and_free_output_asset_groups(s_flist_node* asset_group_nodes,
+static void add_ui_and_free_output_asset_groups(flist_node_t* asset_group_nodes,
                                             uint16_t numGroups,
                                             bool show_tokens) {
     uint16_t group_count = 0;
-    s_flist_node *node = asset_group_nodes;
+    flist_node_t *node = asset_group_nodes;
     while (node != NULL) {
         group_count++;
         output_asset_group_node_t *group_node = (output_asset_group_node_t *) node;
@@ -209,7 +209,7 @@ static bool format_output_address(const tx_output_description_t *output_desc, ch
 // Keep this in lockstep with tx_validate.c output pair-counting rules.
 static void add_ui_and_free_outputs(transaction_t *tx) {
     uint16_t output_num = 1;
-    s_flist_node *node = tx->outputs;
+    flist_node_t *node = tx->outputs;
     TRACE("Formatting %u outputs", tx->num_outputs);
     while (node != NULL) {
         tx_output_node_t *output_node = (tx_output_node_t *) node;
@@ -466,7 +466,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
     }
 
     uint32_t owner_index = 0;
-    s_flist_node* owner_node = certificate->poolRegistration.poolOwners;
+    flist_node_t* owner_node = certificate->poolRegistration.poolOwners;
     while (owner_node != NULL) {
         tx_certificate_node_t* owner_item = (tx_certificate_node_t*) owner_node;
         ext_credential_t* owner_credential = &owner_item->certificate.stakeCredential;
@@ -503,7 +503,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
     }
 
     uint32_t relay_index = 0;
-    s_flist_node* relay_node = certificate->poolRegistration.relays;
+    flist_node_t* relay_node = certificate->poolRegistration.relays;
     while (relay_node != NULL) {
         tx_certificate_node_t* relay_item = (tx_certificate_node_t*) relay_node;
         pool_relay_t* relay = (pool_relay_t*) &relay_item->certificate;
@@ -749,7 +749,7 @@ static bool should_show_certificate(
 }
 
 static void add_ui_and_free_certificates(transaction_t *tx) {
-    s_flist_node *node = tx->certificates;
+    flist_node_t *node = tx->certificates;
     TRACE("Formatting %u certificates", tx->num_certificates);
     while (node != NULL) {
         tx_certificate_node_t *certificate_node = (tx_certificate_node_t *) node;
@@ -771,7 +771,7 @@ static void add_ui_and_free_certificates(transaction_t *tx) {
 }
 
 static void add_ui_and_free_withdrawals(transaction_t *tx) {
-    s_flist_node *node = tx->withdrawals;
+    flist_node_t *node = tx->withdrawals;
     TRACE("Formatting %u withdrawals", tx->num_withdrawals);
     while (node != NULL) {
         tx_withdrawal_node_t *withdrawal_node = (tx_withdrawal_node_t *) node;
@@ -848,13 +848,13 @@ static void add_ui_and_free_mint(transaction_t *tx) {
     }
 
     uint16_t token_count = 0;
-    s_flist_node *node = tx->mint_asset_groups;
+    flist_node_t *node = tx->mint_asset_groups;
     while (node != NULL) {
         mint_asset_group_node_t *asset_group_node = (mint_asset_group_node_t *) node;
         mint_asset_group_t *asset_group = &asset_group_node->asset_group;
 
         LEDGER_ASSERT(asset_group->policyId != NULL, "Missing policy id");
-        s_flist_node *node2 = asset_group->tokens;
+        flist_node_t *node2 = asset_group->tokens;
         while (node2 != NULL) {
             mint_token_node_t *token_node_entry = (mint_token_node_t *) node2;
             mint_token_t *token = &token_node_entry->token;
@@ -897,7 +897,7 @@ static void add_ui_and_free_script_data_hash(transaction_t *tx) {
 }
 
 static void add_ui_and_free_collateral_inputs(transaction_t *tx) {
-    s_flist_node *node = tx->collateral_inputs;
+    flist_node_t *node = tx->collateral_inputs;
     while (node != NULL) {
         tx_collateral_input_node_t *collateral_input_node = (tx_collateral_input_node_t *) node;
 
@@ -920,7 +920,7 @@ static void add_ui_and_free_collateral_inputs(transaction_t *tx) {
 }
 
 static void add_ui_and_free_required_signers(transaction_t *tx) {
-    s_flist_node *node = tx->required_signers;
+    flist_node_t *node = tx->required_signers;
     while (node != NULL) {
         tx_required_signer_node_t *required_signer_node = (tx_required_signer_node_t *) node;
         required_signer_t *required_signer = &required_signer_node->required_signer;
@@ -1042,7 +1042,7 @@ static void add_ui_and_free_total_collateral(transaction_t *tx) {
 }
 
 static void add_ui_and_free_reference_inputs(transaction_t *tx) {
-    s_flist_node *node = tx->reference_inputs;
+    flist_node_t *node = tx->reference_inputs;
     while (node != NULL) {
         tx_input_node_t *ref_input_node = (tx_input_node_t *) node;
 
@@ -1064,7 +1064,7 @@ static void add_ui_and_free_reference_inputs(transaction_t *tx) {
 }
 
 static void add_ui_and_free_voting_procedures(transaction_t *tx) {
-    s_flist_node *node = tx->voting_procedures;
+    flist_node_t *node = tx->voting_procedures;
     while (node != NULL) {
         voter_votes_node_t *voter_node = (voter_votes_node_t *) node;
 
@@ -1075,7 +1075,7 @@ static void add_ui_and_free_voting_procedures(transaction_t *tx) {
             addVoterUIPairs(&voter_node->voter_votes_data.voter);
         }
 
-        s_flist_node *vote_node = voter_node->voter_votes_data.votes;
+        flist_node_t *vote_node = voter_node->voter_votes_data.votes;
         while (vote_node != NULL) {
             vote_node_t *vote_node_data = (vote_node_t *) vote_node;
             vote_item_t *vote_data = &vote_node_data->vote_data;

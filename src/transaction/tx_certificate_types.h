@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 #include "cardano_constants.h"
-#include "flist.h"
+#include "lists.h"
 #include "tx_credential_types.h"
 #include "tx_address_types.h"
 
@@ -94,8 +94,8 @@ typedef struct {
     pool_metadata_t poolMetadata;
     bool poolMetadataIsNull;
     // Arrays are stored separately during parsing
-    s_flist_node* poolOwners;
-    s_flist_node* relays;
+    flist_node_t* poolOwners;
+    flist_node_t* relays;
 } pool_registration_data_t;
 
 typedef struct {

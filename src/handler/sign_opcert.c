@@ -73,10 +73,8 @@ void handler_sign_opcert(buffer_t *cdata) {
 
     // Log parsed opcert details (path, KES period, issue counter)
     BIP44_PRINTF(&opcert->poolColdKeyPath);
-    TRACE("KES period = ");
-    TRACE_UINT64(opcert->kesPeriod);
-    TRACE("issue counter = ");
-    TRACE_UINT64(opcert->issueCounter);
+    TRACE("KES period = %llu", (unsigned long long) opcert->kesPeriod);
+    TRACE("issue counter = %llu", (unsigned long long) opcert->issueCounter);
 
     // Check security policy
     warning_bits_t warnings = 0;

@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #include "cardano_constants.h"
-#include "flist.h"
+#include "lists.h"
 #include "addressUtilsShelley.h"
 
 #define ASSET_NAME_HASH_SIZE 32
@@ -44,18 +44,18 @@ typedef struct {
 } output_token_t;
 
 typedef struct {
-    s_flist_node flist_node;
+    flist_node_t flist_node;
     output_token_t token_data;
 } output_token_node_t;
 
 typedef struct {
     const uint8_t* policyId;
     uint16_t numTokens;
-    s_flist_node* tokens;
+    flist_node_t* tokens;
 } output_asset_group_t;
 
 typedef struct {
-    s_flist_node flist_node;
+    flist_node_t flist_node;
     output_asset_group_t asset_group;
 } output_asset_group_node_t;
 
@@ -94,13 +94,13 @@ typedef struct {
     address_params_t paramsStorage;
     uint64_t adaAmount;
     uint16_t numAssetGroups;
-    s_flist_node* assetGroups;
+    flist_node_t* assetGroups;
     output_datum_t datum;
     ref_script_t refScript;
     tx_output_serialization_format_t format;
 } parsed_tx_output_t;
 
 typedef struct {
-    s_flist_node flist_node;
+    flist_node_t flist_node;
     parsed_tx_output_t output_data;
 } tx_output_node_t;

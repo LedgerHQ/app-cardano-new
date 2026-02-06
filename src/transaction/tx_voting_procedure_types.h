@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 #include "tx_certificate_types.h"  // For ext_voter_t, vote_t, gov_action_id_t, anchor_t
-#include "flist.h"
+#include "lists.h"
 
 // A single vote: gov_action_id + voting_procedure
 typedef struct {
@@ -13,7 +13,7 @@ typedef struct {
 
 // List node for individual votes (inner map entries)
 typedef struct {
-    s_flist_node flist_node;
+    flist_node_t flist_node;
     vote_item_t vote_data;
 } vote_node_t;
 
@@ -21,11 +21,11 @@ typedef struct {
 typedef struct {
     ext_voter_t voter;                 // Voter (key_path, key_hash, or script_hash)
     uint16_t numVotes;                 // Number of votes for this voter
-    s_flist_node* votes;               // Linked list of vote_node_t
+    flist_node_t* votes;               // Linked list of vote_node_t
 } voter_votes_t;
 
 // List node for voters (outer map entries)
 typedef struct {
-    s_flist_node flist_node;
+    flist_node_t flist_node;
     voter_votes_t voter_votes_data;
 } voter_votes_node_t;

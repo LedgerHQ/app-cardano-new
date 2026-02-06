@@ -65,6 +65,7 @@ include_directories(../src/tokenRegistry)
 include_directories($ENV{BOLOS_SDK}/lib_standard_app)
 include_directories($ENV{BOLOS_SDK}/include)
 include_directories($ENV{BOLOS_SDK}/lib_alloc)
+include_directories($ENV{BOLOS_SDK}/lib_lists)
 include_directories($ENV{BOLOS_SDK}/lib_cxng/include)
 include_directories($ENV{BOLOS_SDK}/lib_nbgl/include)
 include_directories(test_utils)
@@ -73,8 +74,10 @@ set(UNIT_TEST_MEM_UTILS_STUB mock_sources/mem_utils_stub.c)
 
 add_compile_definitions(HAVE_CRC)
 add_compile_definitions(HAVE_PRINTF)
+add_compile_definitions(HAVE_SNPRINTF_FORMAT_U)
+add_compile_definitions(HAVE_SNPRINTF_FORMAT_LL)
 # Prevent os.h from defining PRINTF as empty macro
-add_compile_definitions(PRINTF=PRINTF)
+add_compile_definitions(PRINTF=mcu_usb_printf)
 add_compile_definitions(APPNAME=\"Cardano\")
 add_compile_definitions(APPVERSION=\"8.0.0\")
 add_compile_definitions(MAJOR_VERSION=8)
@@ -172,7 +175,7 @@ add_executable(test_tx_prepare
     ../src/securityPolicy/securityPolicy_privkey.c
     ../src/keyDerivation/keyDerivation.c
     ../src/memory/mem.c
-    ../src/memory/flist.c
+    $ENV{BOLOS_SDK}/lib_lists/lists.c
     ../src/cardano_tokens/cardano_tokens.c
     ../src/ui/ui_utils.c
     ../src/ui/ui_warnings.c
@@ -251,7 +254,10 @@ add_library(crypto_mocks_lib SHARED
     mock_crypto/crypto_mocks.c
 )
 target_link_libraries(crypto_mocks_lib PUBLIC c)
-add_library(mock_printf STATIC mock_sources/printf_stub.c)
+add_library(mock_printf STATIC
+    $ENV{BOLOS_SDK}/src/os_printf.c
+    mock_sources/os_printf_sink.c
+)
 target_link_libraries(mock_printf PUBLIC c)
 add_library(cx_crc_support SHARED
     $ENV{BOLOS_SDK}/lib_cxng/src/cx_crc16.c
@@ -262,7 +268,7 @@ target_link_libraries(cx_crc_support PUBLIC c)
 
 set(SIGN_TX_COMMON_SOURCES
     mock_sources/mock_globals.c
-    ../src/memory/flist.c
+    $ENV{BOLOS_SDK}/lib_lists/lists.c
     ../src/memory/mem.c
     ../src/handler/sign_tx.c
     ../src/handler/sign_tx_aux_data.c
@@ -552,9 +558,6 @@ endforeach()
 
 add_executable(test_sign_tx_rejects
     test_sign_tx_rejects.c
-    # mem implementation is provided by test fixtures (test_sign_tx_rejects.c) to avoid
-    # duplicate allocator state in mocks.
-    mock_sources/mem_alloc_stub.c
 )
 target_link_libraries(test_sign_tx_rejects PUBLIC cmocka gcov cardano_sign_tx_core)
 target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
@@ -720,7 +723,7 @@ target_link_libraries(cardano_pubkey_core PUBLIC ${PUBKEY_COMMON_LIBS})
 set(SIGN_MSG_COMMON_SOURCES
     mock_sources/mock_globals.c
     ../src/app_context.c
-    ../src/memory/flist.c
+    $ENV{BOLOS_SDK}/lib_lists/lists.c
     ../src/memory/mem.c
     ../src/handler/sign_msg.c
     ../src/messageSigning/messageSigning.c

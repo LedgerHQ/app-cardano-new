@@ -32,4 +32,4 @@ typedef struct {
     const ext_credential_t* first_path_owner;
 } pool_owner_counts_t;
 
-pool_owner_counts_t count_pool_owner_nodes(const s_flist_node* owners);
+pool_owner_counts_t count_pool_owner_nodes(const flist_node_t* owners);

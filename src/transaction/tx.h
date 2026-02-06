@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 #include "cardano_constants.h"
-#include "flist.h"
+#include "lists.h"
 #include "bip44.h"
 #include "tx_aux_data_types.h"
 #include "tx_credential_types.h"
@@ -31,18 +31,18 @@ typedef struct {
 } mint_token_t;
 
 typedef struct {
-    s_flist_node flist_node;
+    flist_node_t flist_node;
     mint_token_t token;
 } mint_token_node_t;
 
 typedef struct {
     const uint8_t* policyId;
     uint16_t numTokens;
-    s_flist_node* tokens;
+    flist_node_t* tokens;
 } mint_asset_group_t;
 
 typedef struct {
-    s_flist_node flist_node;
+    flist_node_t flist_node;
     mint_asset_group_t asset_group;
 } mint_asset_group_node_t;
 
@@ -59,7 +59,7 @@ typedef enum {
 } tx_options_e;
 
 typedef struct {
-    s_flist_node flist_node;
+    flist_node_t flist_node;
     tx_input_t input;
 } tx_input_node_t;
 
@@ -82,12 +82,12 @@ typedef struct {
 } required_signer_t;
 
 typedef struct {
-    s_flist_node flist_node;
+    flist_node_t flist_node;
     withdrawal_t withdrawal;
 } tx_withdrawal_node_t;
 
 typedef struct {
-    s_flist_node flist_node;
+    flist_node_t flist_node;
     required_signer_t required_signer;
 } tx_required_signer_node_t;
 
@@ -126,7 +126,7 @@ typedef struct {
 } certificate_data_t;
 
 typedef struct {
-    s_flist_node flist_node;
+    flist_node_t flist_node;
     certificate_data_t certificate;
 } tx_certificate_node_t;
 
@@ -143,10 +143,10 @@ typedef struct {
 
     // CBOR key order (matches transaction_body CDDL)
     uint16_t num_inputs;                // key 0
-    s_flist_node* inputs;
+    flist_node_t* inputs;
 
     uint16_t num_outputs;               // key 1
-    s_flist_node* outputs;
+    flist_node_t* outputs;
 
     uint64_t fee;                       // key 2
 
@@ -154,16 +154,16 @@ typedef struct {
     uint64_t ttl;
 
     uint16_t num_certificates;          // key 4
-    s_flist_node* certificates;
+    flist_node_t* certificates;
 
     uint16_t num_withdrawals;           // key 5
-    s_flist_node* withdrawals;
+    flist_node_t* withdrawals;
 
     bool includeValidityIntervalStart;  // key 8
     uint64_t validityIntervalStart;
 
     uint16_t num_mint_asset_groups;     // key 9 (mint)
-    s_flist_node* mint_asset_groups;
+    flist_node_t* mint_asset_groups;
     bool includeAuxDataHash;
     aux_data_type_t auxDataType;
     uint8_t auxDataHash[AUX_DATA_HASH_LENGTH];
@@ -172,10 +172,10 @@ typedef struct {
     const uint8_t* scriptDataHash;
 
     uint16_t num_collateral_inputs;     // key 13
-    s_flist_node* collateral_inputs;
+    flist_node_t* collateral_inputs;
 
     uint16_t num_required_signers;      // key 14
-    s_flist_node* required_signers;
+    flist_node_t* required_signers;
 
     bool includeNetworkId;              // key 15
 
@@ -186,10 +186,10 @@ typedef struct {
     uint64_t totalCollateral;
 
     uint16_t num_reference_inputs;      // key 18
-    s_flist_node* reference_inputs;
+    flist_node_t* reference_inputs;
 
     uint16_t num_voters;                 // key 19
-    s_flist_node* voting_procedures;
+    flist_node_t* voting_procedures;
 
     bool includeTreasury;                // key 21
     uint64_t treasury;

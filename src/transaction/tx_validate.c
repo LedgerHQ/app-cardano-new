@@ -186,7 +186,7 @@ static void _hashOutputTopLevel(tx_hash_builder_t* txHashBuilder,
 
 static int validate_and_hash_inputs(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
     txHashBuilder_enterInputs(txHashBuilder);
-    s_flist_node *node = G_context.tx_info.transaction.inputs;
+    flist_node_t *node = G_context.tx_info.transaction.inputs;
     while (node != NULL) {
         tx_input_node_t *input_node = (tx_input_node_t *) node;
         const tx_input_t *input = &input_node->input;
@@ -218,7 +218,7 @@ static int validate_and_hash_inputs(tx_hash_builder_t* txHashBuilder, tx_ui_plan
 // TODO clean up needed
 static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
     txHashBuilder_enterOutputs(txHashBuilder);
-    s_flist_node *node = G_context.tx_info.transaction.outputs;
+    flist_node_t *node = G_context.tx_info.transaction.outputs;
     while (node != NULL) {
         tx_output_node_t *output_node = (tx_output_node_t *) node;
         const tx_output_destination_t *output_destination = &output_node->output_data.destination;
@@ -264,14 +264,14 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
 
                 if (output_node->output_data.assetGroups != NULL) {
                     uint16_t asset_group_count = 0;
-                    s_flist_node *node2 = output_node->output_data.assetGroups;
+                    flist_node_t *node2 = output_node->output_data.assetGroups;
                     while (node2 != NULL) {
                         output_asset_group_node_t *asset_group_node =
                             (output_asset_group_node_t *) node2;
                         const output_asset_group_t *asset_group = &asset_group_node->asset_group;
                         {
                             uint16_t token_count = 0;
-                            s_flist_node *node3 = asset_group->tokens;
+                            flist_node_t *node3 = asset_group->tokens;
                             while (node3 != NULL) {
                                 plan->pair_count += UI_PAIRS_TOKEN;
                                 token_count++;
@@ -301,7 +301,7 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
 
         {
             uint16_t asset_group_count = 0;
-            s_flist_node *node2 = output_node->output_data.assetGroups;
+            flist_node_t *node2 = output_node->output_data.assetGroups;
             while (node2 != NULL) {
                 output_asset_group_node_t *asset_group_node =
                     (output_asset_group_node_t *) node2;
@@ -311,7 +311,7 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
                                                    MINTING_POLICY_ID_LENGTH,
                                                    asset_group->numTokens);
 
-                s_flist_node *node3 = asset_group->tokens;
+                flist_node_t *node3 = asset_group->tokens;
                 while (node3 != NULL) {
                     output_token_node_t *token_node = (output_token_node_t *) node3;
                     const output_token_t *token = &token_node->token_data;
@@ -412,7 +412,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
     }
 
     txHashBuilder_enterCertificates(txHashBuilder);
-    s_flist_node *node = G_context.tx_info.transaction.certificates;
+    flist_node_t *node = G_context.tx_info.transaction.certificates;
     while (node != NULL) {
         tx_certificate_node_t *certificate_node = (tx_certificate_node_t *) node;
         const certificate_data_t *certificate = &certificate_node->certificate;
@@ -791,7 +791,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
 
                         // Pool Owners (variable count: each owner gets 1 pair if SHOW policy)
                         {
-                            s_flist_node *node2 = certificate->poolRegistration.poolOwners;
+                            flist_node_t *node2 = certificate->poolRegistration.poolOwners;
                             while (node2 != NULL) {
                                 tx_certificate_node_t *owner_node = (tx_certificate_node_t *) node2;
                                 ext_credential_t *owner_credential =
@@ -829,7 +829,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                         // Each relay itself is 1 pair, plus additional pairs for its endpoints
                         uint32_t relay_count = 0;
                         {
-                            s_flist_node *node2 = certificate->poolRegistration.relays;
+                            flist_node_t *node2 = certificate->poolRegistration.relays;
                             while (node2 != NULL) {
                                 tx_certificate_node_t *relay_node = (tx_certificate_node_t *) node2;
                                 const pool_relay_t *relay = (const pool_relay_t *) &relay_node->certificate;
@@ -1075,7 +1075,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
 
                 txHashBuilder_addPoolRegistrationCertificate_enterOwners(txHashBuilder);
                 {
-                    s_flist_node *node2 = poolReg->poolOwners;
+                    flist_node_t *node2 = poolReg->poolOwners;
                     while (node2 != NULL) {
                         tx_certificate_node_t *owner_node = (tx_certificate_node_t *) node2;
                         ext_credential_t *owner_credential = &owner_node->certificate.stakeCredential;
@@ -1092,7 +1092,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
 
                 txHashBuilder_addPoolRegistrationCertificate_enterRelays(txHashBuilder);
                 {
-                    s_flist_node *node2 = poolReg->relays;
+                    flist_node_t *node2 = poolReg->relays;
                     while (node2 != NULL) {
                         tx_certificate_node_t *relay_node = (tx_certificate_node_t *) node2;
                         const pool_relay_t *relay = (const pool_relay_t *) &relay_node->certificate;
@@ -1240,7 +1240,7 @@ static int validate_and_hash_withdrawals(tx_hash_builder_t* txHashBuilder, tx_ui
     explicit_bzero(previousRewardAccount, SIZEOF(previousRewardAccount));
     bool isFirstWithdrawal = true;
 
-    s_flist_node *node = G_context.tx_info.transaction.withdrawals;
+    flist_node_t *node = G_context.tx_info.transaction.withdrawals;
     while (node != NULL) {
         tx_withdrawal_node_t *withdrawal_node = (tx_withdrawal_node_t *) node;
         const withdrawal_t *withdrawal = &withdrawal_node->withdrawal;
@@ -1397,14 +1397,14 @@ static int validate_and_hash_mint(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t
         case POLICY_SHOW: {
             plan->pair_count += UI_PAIRS_MINT_SUMMARY;
             uint16_t asset_group_count = 0;
-            s_flist_node *node = G_context.tx_info.transaction.mint_asset_groups;
+            flist_node_t *node = G_context.tx_info.transaction.mint_asset_groups;
             while (node != NULL) {
                 mint_asset_group_node_t *asset_group_node =
                     (mint_asset_group_node_t *) node;
                 const mint_asset_group_t *asset_group = &asset_group_node->asset_group;
                 if (asset_group->tokens != NULL) {
                     uint16_t token_count = 0;
-                    s_flist_node *node2 = asset_group->tokens;
+                    flist_node_t *node2 = asset_group->tokens;
                     while (node2 != NULL) {
                         plan->pair_count += UI_PAIRS_TOKEN;
                         token_count++;
@@ -1431,7 +1431,7 @@ static int validate_and_hash_mint(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t
     txHashBuilder_addMint_topLevelData(txHashBuilder,
                                        G_context.tx_info.transaction.num_mint_asset_groups);
 
-    s_flist_node *node = G_context.tx_info.transaction.mint_asset_groups;
+    flist_node_t *node = G_context.tx_info.transaction.mint_asset_groups;
     while (node != NULL) {
         mint_asset_group_node_t *asset_group_node = (mint_asset_group_node_t *) node;
         const mint_asset_group_t *asset_group = &asset_group_node->asset_group;
@@ -1441,7 +1441,7 @@ static int validate_and_hash_mint(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t
                                          MINTING_POLICY_ID_LENGTH,
                                          asset_group->numTokens);
 
-        s_flist_node *node2 = asset_group->tokens;
+        flist_node_t *node2 = asset_group->tokens;
         while (node2 != NULL) {
             mint_token_node_t *token_node = (mint_token_node_t *) node2;
             const mint_token_t *token = &token_node->token;
@@ -1493,7 +1493,7 @@ static int validate_and_hash_collateral_inputs(tx_hash_builder_t* txHashBuilder,
     }
 
     txHashBuilder_enterCollateralInputs(txHashBuilder);
-    s_flist_node *node = G_context.tx_info.transaction.collateral_inputs;
+    flist_node_t *node = G_context.tx_info.transaction.collateral_inputs;
     while (node != NULL) {
         tx_collateral_input_node_t *input_node = (tx_collateral_input_node_t *) node;
         const tx_input_t *input = &input_node->input;
@@ -1531,7 +1531,7 @@ static int validate_and_hash_required_signers(tx_hash_builder_t* txHashBuilder, 
     }
 
     txHashBuilder_enterRequiredSigners(txHashBuilder);
-    s_flist_node *node = G_context.tx_info.transaction.required_signers;
+    flist_node_t *node = G_context.tx_info.transaction.required_signers;
     while (node != NULL) {
         tx_required_signer_node_t *signer_node = (tx_required_signer_node_t *) node;
         required_signer_t *required_signer = &signer_node->required_signer;
@@ -1633,7 +1633,7 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
             if (collateral_tokens_policy == POLICY_SHOW &&
                 G_context.tx_info.transaction.collateral_output.assetGroups != NULL) {
                 uint16_t collateral_group_count = 0;
-                s_flist_node *node2 =
+                flist_node_t *node2 =
                     G_context.tx_info.transaction.collateral_output.assetGroups;
                 while (node2 != NULL) {
                     output_asset_group_node_t *asset_group_node =
@@ -1641,7 +1641,7 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
                     const output_asset_group_t *asset_group = &asset_group_node->asset_group;
                     {
                         uint16_t token_count = 0;
-                        s_flist_node *node3 = asset_group->tokens;
+                        flist_node_t *node3 = asset_group->tokens;
                         while (node3 != NULL) {
                             plan->pair_count += UI_PAIRS_TOKEN;
                             token_count++;
@@ -1669,7 +1669,7 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
     _hashOutputTopLevel(txHashBuilder, &collateral_desc, true);
 
     uint16_t collateral_group_count = 0;
-    s_flist_node *node2 = G_context.tx_info.transaction.collateral_output.assetGroups;
+    flist_node_t *node2 = G_context.tx_info.transaction.collateral_output.assetGroups;
     while (node2 != NULL) {
         output_asset_group_node_t *asset_group_node =
             (output_asset_group_node_t *) node2;
@@ -1679,7 +1679,7 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
                                                      MINTING_POLICY_ID_LENGTH,
                                                      asset_group->numTokens);
 
-        s_flist_node *node3 = asset_group->tokens;
+        flist_node_t *node3 = asset_group->tokens;
         while (node3 != NULL) {
             output_token_node_t *token_node = (output_token_node_t *) node3;
             const output_token_t *token = &token_node->token_data;
@@ -1730,7 +1730,7 @@ static int validate_and_hash_reference_inputs(tx_hash_builder_t* txHashBuilder, 
     }
 
     txHashBuilder_enterReferenceInputs(txHashBuilder);
-    s_flist_node *node = G_context.tx_info.transaction.reference_inputs;
+    flist_node_t *node = G_context.tx_info.transaction.reference_inputs;
     while (node != NULL) {
         tx_input_node_t *input_node = (tx_input_node_t *) node;
         const tx_input_t *input = &input_node->input;
@@ -1772,7 +1772,7 @@ static int validate_and_hash_voting_procedures(tx_hash_builder_t* txHashBuilder,
     size_t previous_voter_key_len = 0;
     bool has_previous_voter_key = false;
 
-    s_flist_node *node = G_context.tx_info.transaction.voting_procedures;
+    flist_node_t *node = G_context.tx_info.transaction.voting_procedures;
     while (node != NULL) {
         voter_votes_node_t *voter_node = (voter_votes_node_t *) node;
         voter_votes_t *voter_votes = &voter_node->voter_votes_data;
@@ -1787,7 +1787,7 @@ static int validate_and_hash_voting_procedures(tx_hash_builder_t* txHashBuilder,
                 return SWO_SECURITY_CONDITION_NOT_SATISFIED;
             case POLICY_SHOW: {
                 plan->pair_count += UI_PAIRS_VOTER;
-                s_flist_node *node2 = voter_votes->votes;
+                flist_node_t *node2 = voter_votes->votes;
                 while (node2 != NULL) {
                     vote_node_t *vote_node = (vote_node_t *) node2;
                     const vote_item_t *vote_data = &vote_node->vote_data;
@@ -1851,7 +1851,7 @@ static int validate_and_hash_voting_procedures(tx_hash_builder_t* txHashBuilder,
         size_t previous_vote_key_len = 0;
         bool has_previous_vote_key = false;
         {
-            s_flist_node *node2 = voter_votes->votes;
+            flist_node_t *node2 = voter_votes->votes;
             while (node2 != NULL) {
                 vote_node_t *vote_node = (vote_node_t *) node2;
                 const vote_item_t *vote_data = &vote_node->vote_data;

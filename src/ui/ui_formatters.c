@@ -166,22 +166,6 @@ void str_traceAdaAmount(const char* prefix, uint64_t amount) {
     ASSERT(formatted);
     TRACE("%s", adaAmountStr);
 }
-
-void str_traceUint64(uint64_t number) {
-    char numberStr[30] = {0};
-    explicit_bzero(numberStr, SIZEOF(numberStr));
-
-    format_u64(numberStr, SIZEOF(numberStr), number);
-    TRACE("%s", numberStr);
-}
-
-void str_traceInt64(int64_t number) {
-    char numberStr[30] = {0};
-    explicit_bzero(numberStr, SIZEOF(numberStr));
-
-    format_i64(numberStr, SIZEOF(numberStr), number);
-    TRACE("%s", numberStr);
-}
 #endif  // DEBUG
 
 // Note: This is valid only for mainnet

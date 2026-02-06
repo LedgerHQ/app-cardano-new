@@ -59,9 +59,9 @@ bool violatesSingleAccountOrStoreIt(const bip44_path_t* path) {
     return false;
 }
 
-pool_owner_counts_t count_pool_owner_nodes(const s_flist_node* owners) {
+pool_owner_counts_t count_pool_owner_nodes(const flist_node_t* owners) {
     pool_owner_counts_t counts = {0};
-    const s_flist_node* node = owners;
+    const flist_node_t* node = owners;
     while (node != NULL) {
         const tx_certificate_node_t* owner_item = (const tx_certificate_node_t*) node;
         const ext_credential_t* owner_cred = &owner_item->certificate.stakeCredential;
