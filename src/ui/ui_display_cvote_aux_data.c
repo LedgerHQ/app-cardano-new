@@ -253,11 +253,11 @@ static bool cvote_add_initial_pairs(cvote_aux_data_t *aux_data) {
 static bool cvote_add_delegation_pairs(cvote_aux_data_t *aux_data,
                                        const cvote_credential_t *credential,
                                        uint32_t weight) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
     LEDGER_ASSERT(credential != NULL, "NULL delegation credential");
 
     START_COUNT();
-    LEDGER_ASSERT(aux_data->ui_delegations_shown < aux_data->ui_delegations_total,
+    LEDGER_ASSERT(aux_data != NULL &&
+                      aux_data->ui_delegations_shown < aux_data->ui_delegations_total,
                   "Delegation count exceeded");
     aux_data->ui_delegations_shown++;
     uint16_t delegation_index = aux_data->ui_delegations_shown;
@@ -298,7 +298,8 @@ static bool cvote_add_delegation_pairs(cvote_aux_data_t *aux_data,
 
 static bool cvote_init_pairs_for_streaming_page(cvote_aux_data_t *aux_data) {
     LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
-    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS,
+    LEDGER_ASSERT(aux_data != NULL &&
+                      aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS,
                   "Streaming delegation page in wrong state: %d",
                   aux_data->state);
 
@@ -321,8 +322,8 @@ static bool cvote_init_pairs_for_streaming_page(cvote_aux_data_t *aux_data) {
 }
 
 bool ui_cvote_aux_data_init_non_streaming(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
-    LEDGER_ASSERT(!aux_data->ui_streaming.on, "Called with streaming enabled");
+    LEDGER_ASSERT(aux_data != NULL && !aux_data->ui_streaming.on,
+                  "Called with streaming enabled");
 
     uint16_t total_pair_count = cvote_initial_pairs_count(aux_data) +
                                 (aux_data->remaining_delegations * CVOTE_DELEGATION_UI_PAIRS);
@@ -342,10 +343,10 @@ bool ui_cvote_aux_data_init_non_streaming(cvote_aux_data_t *aux_data) {
 }
 
 void ui_cvote_aux_data_init_vars(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
-    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED ||
-                  aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS ||
-                  aux_data->state == CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE,
+    LEDGER_ASSERT(aux_data != NULL &&
+                      (aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED ||
+                       aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS ||
+                       aux_data->state == CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE),
                   "ui_cvote_aux_data_init_vars called in wrong state: %d",
                   aux_data->state);
 
@@ -363,9 +364,10 @@ void ui_cvote_aux_data_init_vars(cvote_aux_data_t *aux_data) {
 }
 
 void ui_cvote_aux_data_streaming_show_initial_page(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
-    LEDGER_ASSERT(aux_data->ui_streaming.on, "Called with streaming disabled");
-    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE,
+    LEDGER_ASSERT(aux_data != NULL && aux_data->ui_streaming.on,
+                  "Called with streaming disabled");
+    LEDGER_ASSERT(aux_data != NULL &&
+                      aux_data->state == CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE,
                   "Streaming initial page in wrong state: %d",
                   aux_data->state);
 
@@ -404,8 +406,10 @@ void ui_cvote_aux_data_add_delegation_non_streaming(cvote_aux_data_t *aux_data,
                                                      uint32_t weight) {
     LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
     LEDGER_ASSERT(credential != NULL, "NULL credential");
-    LEDGER_ASSERT(!aux_data->ui_streaming.on, "Called with streaming enabled");
-    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS,
+    LEDGER_ASSERT(aux_data != NULL && !aux_data->ui_streaming.on,
+                  "Called with streaming enabled");
+    LEDGER_ASSERT(aux_data != NULL &&
+                      aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS,
                   "ui_cvote_aux_data_add_delegation_non_streaming called in wrong state: %d",
                   aux_data->state);
 
@@ -419,10 +423,11 @@ void ui_cvote_aux_data_add_delegation_non_streaming(cvote_aux_data_t *aux_data,
 bool ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
                                                   const cvote_credential_t *credential,
                                                   uint32_t weight) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
     LEDGER_ASSERT(credential != NULL, "NULL credential");
-    LEDGER_ASSERT(aux_data->ui_streaming.on, "Called with streaming disabled");
-    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS,
+    LEDGER_ASSERT(aux_data != NULL && aux_data->ui_streaming.on,
+                  "Called with streaming disabled");
+    LEDGER_ASSERT(aux_data != NULL &&
+                      aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS,
                   "ui_cvote_aux_data_add_delegation_streaming called in wrong state: %d",
                   aux_data->state);
 
@@ -454,11 +459,11 @@ bool ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
 }
 
 void ui_cvote_aux_data_show_non_streaming_final_review(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
-    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED,
+    LEDGER_ASSERT(aux_data != NULL &&
+                      aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED,
                   "ui_cvote_aux_data_show_non_streaming_final_review called in wrong state: %d",
                   aux_data->state);
-    LEDGER_ASSERT(!aux_data->ui_streaming.on,
+    LEDGER_ASSERT(aux_data != NULL && !aux_data->ui_streaming.on,
                   "ui_cvote_aux_data_show_non_streaming_final_review called with streaming on");
 
     LEDGER_ASSERT(warning_bits_is_empty(&G_context.tx_info.warning_bits),

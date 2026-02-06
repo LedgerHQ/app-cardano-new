@@ -283,6 +283,10 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
             case POLICY_HIDE:
                 datum_policy = policyForSignTxOutputDatumHash(output_policy);
                 ref_script_policy = policyForSignTxOutputRefScript(output_policy);
+                LEDGER_ASSERT(datum_policy == POLICY_HIDE,
+                              "Output datum policy should be hidden when output is hidden");
+                LEDGER_ASSERT(ref_script_policy == POLICY_HIDE,
+                              "Output ref script policy should be hidden when output is hidden");
                 break;
             default:
                 LEDGER_ASSERT(false, "Unknown output policy");

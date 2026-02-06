@@ -42,7 +42,8 @@ ICON_NANOX = icons/icon_ada_nanox.gif
 ICON_NANOSP = icons/icon_ada_nanox.gif
 ICON_STAX = icons/icon_ada_stax.gif
 ICON_FLEX = icons/icon_ada_flex.gif
-ICON_APEX = icons/icon_ada_apex.gif
+ICON_APEX_P = icons/icon_ada_apex.gif
+ICON_APEX_M = icons/icon_ada_apex.gif
 
 #ifeq ($(TARGET_NAME),$(filter $(TARGET_NAME),TARGET_NANOX TARGET_NANOS2))
     # With the Nano NBGL Design, the Home Screen icon is the reverse of the App icon:
@@ -91,8 +92,8 @@ endif
 # See SDK `include/appflags.h` for the purpose of each permission
 #HAVE_APPLICATION_FLAG_DERIVE_MASTER = 1
 #HAVE_APPLICATION_FLAG_GLOBAL_PIN = 1
-#HAVE_APPLICATION_FLAG_BOLOS_SETTINGS = 1
-#HAVE_APPLICATION_FLAG_LIBRARY = 1
+HAVE_APPLICATION_FLAG_BOLOS_SETTINGS = 1
+HAVE_APPLICATION_FLAG_LIBRARY = 1
 
 ########################################
 # Application communication interfaces #

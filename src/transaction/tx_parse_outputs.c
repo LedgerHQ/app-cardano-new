@@ -104,11 +104,10 @@ parser_status_e parse_output_datum(buffer_t* buf,
     LEDGER_ASSERT(datum != NULL, "NULL datum");
     LEDGER_ASSERT(parseFailureStatus != PARSING_OK, "Invalid parse failure status");
 
-    size_t offset_before = buf->offset;
     if (!buffer_read_flag_included(buf, &datum->hasDatum)) {
         return parseFailureStatus;
     }
-    TRACE("Datum present: %u, offset %u -> %u", datum->hasDatum, (unsigned int)offset_before, (unsigned int)buf->offset);
+    TRACE("Datum present: %u", datum->hasDatum);
 
     if (!datum->hasDatum) {
         return PARSING_OK;
@@ -165,11 +164,10 @@ parser_status_e parse_output_ref_script(buffer_t* buf,
     LEDGER_ASSERT(refScript != NULL, "NULL refScript");
     LEDGER_ASSERT(parseFailureStatus != PARSING_OK, "Invalid parse failure status");
 
-    size_t offset_before = buf->offset;
     if (!buffer_read_flag_included(buf, &refScript->hasRefScript)) {
         return parseFailureStatus;
     }
-    TRACE("Reference script present: %u, offset %u -> %u", refScript->hasRefScript, (unsigned int)offset_before, (unsigned int)buf->offset);
+    TRACE("Reference script present: %u", refScript->hasRefScript);
 
     if (!refScript->hasRefScript) {
         refScript->size = 0;

@@ -647,8 +647,10 @@ void handler_sign_tx_witness(buffer_t *cdata) {
         case POLICY_DENY:
             // Already handled earlier in function - should never reach here
             LEDGER_ASSERT(false, "POLICY_DENY should be handled before signing");
+            return;
 
         default:
             LEDGER_ASSERT(false, "Invalid security policy");
+            return;
     }
 }

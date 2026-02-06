@@ -327,9 +327,9 @@ static bool should_show_pool_registration(
     const certificate_data_t *certificate,
     sign_tx_signingmode_t txSigningMode,
     pool_owner_counts_t *pool_owner_counts) {
-    LEDGER_ASSERT(certificate != NULL, "NULL certificate data");
     LEDGER_ASSERT(pool_owner_counts != NULL, "NULL pool owner counts");
-    LEDGER_ASSERT(certificate->type == CERTIFICATE_STAKE_POOL_REGISTRATION,
+    LEDGER_ASSERT(certificate != NULL &&
+                      certificate->type == CERTIFICATE_STAKE_POOL_REGISTRATION,
                   "Expected stake pool registration certificate");
 
     *pool_owner_counts = count_pool_owner_nodes(

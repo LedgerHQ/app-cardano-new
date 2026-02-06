@@ -212,10 +212,6 @@ static void derive_native_script_hash_review_ask_confirmation(bool confirm) {
 void display_complex_script_content(ui_native_script_type scriptType) {
     TRACE("display_complex_script_content");
 
-    LEDGER_ASSERT(scriptType == UI_SCRIPT_ALL || scriptType == UI_SCRIPT_ANY ||
-                      scriptType == UI_SCRIPT_N_OF_K,
-                  "Invalid script type for complex script display");
-
     const char *script_label = NULL;
     int expectedPairs = 0;
     switch (scriptType) {
@@ -232,7 +228,8 @@ void display_complex_script_content(ui_native_script_type scriptType) {
             expectedPairs = UI_PAIRS_SCRIPT_TYPE + UI_PAIRS_REQUIREMENT + UI_PAIRS_CONTENT;
             break;
         default:
-            break;
+            LEDGER_ASSERT(false, "Invalid script type for complex script display");
+            return;
     }
 
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;

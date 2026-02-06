@@ -39,10 +39,9 @@
 #include "nbgl_use_case.h"
 #include "app_mem_utils.h"
 
-static bool ensure_sign_msg_stage(const char *command_name, sign_msg_stage_e required_stage) {
+static bool ensure_sign_msg_stage(sign_msg_stage_e required_stage) {
     if (G_context.state.sign_msg_state != required_stage) {
-        TRACE("Rejecting %s in stage %d (expected %d)",
-              command_name,
+        TRACE("Rejecting sign_msg command in stage %d (expected %d)",
               G_context.state.sign_msg_state,
               required_stage);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
@@ -515,7 +514,7 @@ void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
         }
         case P1_SIGN_MSG_CHUNK: {
             TRACE("P1_SIGN_MSG_CHUNK");
-            if (!ensure_sign_msg_stage("P1_SIGN_MSG_CHUNK", SIGN_MSG_STAGE_CHUNK)) {
+            if (!ensure_sign_msg_stage(SIGN_MSG_STAGE_CHUNK)) {
                 return;
             }
             signMsg_handle_chunk(cdata);
@@ -523,7 +522,7 @@ void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
         }
         case P1_SIGN_MSG_CONFIRM: {
             TRACE("P1_SIGN_MSG_CONFIRM");
-            if (!ensure_sign_msg_stage("P1_SIGN_MSG_CONFIRM", SIGN_MSG_STAGE_CONFIRM)) {
+            if (!ensure_sign_msg_stage(SIGN_MSG_STAGE_CONFIRM)) {
                 return;
             }
             signMsg_handle_confirm(cdata);

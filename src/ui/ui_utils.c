@@ -80,10 +80,8 @@ uint16_t ui_pairs_get_count(void) {
 }
 
 bool ui_pairs_add_static_label_impl(const char* label, char* tmp_buf, bool shrink) {
-    LEDGER_ASSERT(label != NULL, "NULL label");
-    LEDGER_ASSERT(label[0] != '\0', "Empty UI label");
-    LEDGER_ASSERT(tmp_buf != NULL, "NULL buffer");
-    LEDGER_ASSERT(tmp_buf[0] != '\0', "Empty UI value");
+    LEDGER_ASSERT(label != NULL && label[0] != '\0', "Invalid UI label");
+    LEDGER_ASSERT(tmp_buf != NULL && tmp_buf[0] != '\0', "Invalid UI value");
 
     #ifdef DEBUG
     {

@@ -390,9 +390,7 @@ static parser_status_e cleanup_token_parse_error(parsed_tx_output_t *output,
 
 static parser_status_e parse_output_asset_groups(buffer_t *output_buf,
                                                  parsed_tx_output_t *output,
-                                                 parser_status_e parse_failure_status,
-                                                 const char *trace_context,
-                                                 uint16_t trace_index) {
+                                                 parser_status_e parse_failure_status) {
     LEDGER_ASSERT(output_buf != NULL, "NULL output_buf");
     LEDGER_ASSERT(output != NULL, "NULL output");
 
@@ -407,7 +405,7 @@ static parser_status_e parse_output_asset_groups(buffer_t *output_buf,
     for (uint16_t asset_group_index = 0; asset_group_index < output->numAssetGroups; asset_group_index++) {
         output_asset_group_node_t *group_node = NULL;
         if (!APP_MEM_CALLOC((void **) &group_node, (uint16_t) sizeof(*group_node))) {
-            TRACE("%s %u: out of memory allocating asset group", trace_context, trace_index);
+            TRACE("Out of memory allocating asset group");
             cleanup_parsed_output_asset_groups(output);
             return OUT_OF_MEMORY_ERROR;
         }
@@ -425,7 +423,7 @@ static parser_status_e parse_output_asset_groups(buffer_t *output_buf,
                               MINTING_POLICY_ID_LENGTH,
                               group->policyId,
                               MINTING_POLICY_ID_LENGTH)) {
-            TRACE("%s %u asset groups not canonical", trace_context, trace_index);
+            TRACE("Output asset groups not canonical");
             free_asset_group_node(group_node);
             cleanup_parsed_output_asset_groups(output);
             return CANONICAL_ORDERING_ERROR;
@@ -439,9 +437,7 @@ static parser_status_e parse_output_asset_groups(buffer_t *output_buf,
             cleanup_parsed_output_asset_groups(output);
             return parse_failure_status;
         }
-        TRACE("Deserialize: %s %u asset group %u: %u tokens",
-              trace_context,
-              trace_index,
+        TRACE("Deserialize: asset group %u: %u tokens",
               asset_group_index,
               group->numTokens);
 
@@ -454,7 +450,7 @@ static parser_status_e parse_output_asset_groups(buffer_t *output_buf,
         for (uint16_t token_index = 0; token_index < group->numTokens; token_index++) {
             output_token_node_t *token_item = NULL;
             if (!APP_MEM_CALLOC((void **) &token_item, (uint16_t) sizeof(*token_item))) {
-                TRACE("%s %u: out of memory allocating token", trace_context, trace_index);
+                TRACE("Out of memory allocating token");
                 free_asset_group_node(group_node);
                 cleanup_parsed_output_asset_groups(output);
                 return OUT_OF_MEMORY_ERROR;
@@ -488,10 +484,7 @@ static parser_status_e parse_output_asset_groups(buffer_t *output_buf,
                                   previous_token_len,
                                   token->assetName,
                                   token->assetNameLen)) {
-                TRACE("%s %u asset group %u tokens not canonical",
-                      trace_context,
-                      trace_index,
-                      asset_group_index);
+                TRACE("Output asset group %u tokens not canonical", asset_group_index);
                 return cleanup_token_parse_error(output,
                                                  group_node,
                                                  token_item,
@@ -522,9 +515,7 @@ static parser_status_e parse_output_asset_groups(buffer_t *output_buf,
 
 static parser_status_e parse_output_payload(buffer_t *output_buf,
                                             parsed_tx_output_t *output,
-                                            parser_status_e parse_failure_status,
-                                            const char *trace_context,
-                                            uint16_t trace_index) {
+                                            parser_status_e parse_failure_status) {
     LEDGER_ASSERT(output_buf != NULL, "NULL output_buf");
     LEDGER_ASSERT(output != NULL, "NULL output");
 
@@ -552,9 +543,7 @@ static parser_status_e parse_output_payload(buffer_t *output_buf,
 
     status = parse_output_asset_groups(output_buf,
                                        output,
-                                       parse_failure_status,
-                                       trace_context,
-                                       trace_index);
+                                       parse_failure_status);
     if (status != PARSING_OK) {
         return status;
     }
@@ -572,11 +561,9 @@ static parser_status_e parse_output_payload(buffer_t *output_buf,
     }
 
     if (buffer_can_read(output_buf, 1)) {
-        TRACE("Deserialize: %s %u buffer not fully consumed: offset=%u, size=%u",
-              trace_context,
-              trace_index,
-              output_buf->offset,
-              output_buf->size);
+        TRACE("Deserialize: output buffer not fully consumed: offset=%u, size=%u",
+              (unsigned int) buffer_current_offset(output_buf),
+              (unsigned int) buffer_total_size(output_buf));
         cleanup_parsed_output_asset_groups(output);
         return parse_failure_status;
     }
@@ -591,7 +578,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
             return OUTPUTS_PARSING_ERROR;
         }
         TRACE("Deserialize: Output %u: length=%u, buffer offset before parse=%u",
-              i, output_len, buf->offset);
+              i, output_len, (unsigned int) buffer_current_offset(buf));
 
         // Create sub-buffer for this output with exact length
         if (!buffer_can_read(buf, output_len)) {
@@ -611,9 +598,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
 
         parser_status_e status = parse_output_payload(&output_buf,
                                                       &item->output_data,
-                                                      OUTPUTS_PARSING_ERROR,
-                                                      "Output",
-                                                      i);
+                                                      OUTPUTS_PARSING_ERROR);
         if (status != PARSING_OK) {
             APP_MEM_FREE(item);
             return status;
@@ -627,7 +612,9 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
             free_output_item(item);
             return OUTPUTS_PARSING_ERROR;
         }
-        TRACE("Deserialize: Output %u complete, buffer offset now=%u", i, buf->offset);
+        TRACE("Deserialize: Output %u complete, buffer offset now=%u",
+              i,
+              (unsigned int) buffer_current_offset(buf));
 
         item->flist_node.next = NULL;
         flist_push_back(&tx->outputs, (flist_node_t *) item);
@@ -745,7 +732,9 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx) {
 /// Parse certificate data structure supporting multiple certificate types
 static parser_status_e parse_tx_certificates(buffer_t *buf, transaction_t *tx) {
     TRACE("parse_tx_certificates: num_certificates=%u buf->offset=%u buf->size=%u",
-          tx->num_certificates, buf->offset, buf->size);
+          tx->num_certificates,
+          (unsigned int) buffer_current_offset(buf),
+          (unsigned int) buffer_total_size(buf));
     for (uint16_t i = 0; i < tx->num_certificates; i++) {
         tx_certificate_node_t *item = NULL;
         if (!APP_MEM_CALLOC((void **) &item, (uint16_t) sizeof(*item))) {
@@ -1135,9 +1124,7 @@ static parser_status_e parse_tx_collateral_output(buffer_t *buf, transaction_t *
 
     parser_status_e status = parse_output_payload(&output_buf,
                                                   &tx->collateral_output,
-                                                  COLLATERAL_OUTPUT_PARSING_ERROR,
-                                                  "Collateral output",
-                                                  0);
+                                                  COLLATERAL_OUTPUT_PARSING_ERROR);
     if (status != PARSING_OK) {
         return status;
     }

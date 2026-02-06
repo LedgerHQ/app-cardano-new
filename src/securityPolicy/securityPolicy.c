@@ -1409,7 +1409,8 @@ security_policy_t policyForSignTxStakePoolRegistrationNoMetadata() {
 security_policy_t policyForSignTxAnchor(const anchor_t* anchor, warning_bits_t* warnings) {
     LEDGER_ASSERT(anchor != NULL, "NULL anchor");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
-    LEDGER_ASSERT(anchor->isIncluded, "Anchor policy called on non-included anchor");
+    LEDGER_ASSERT(anchor != NULL && anchor->isIncluded,
+                  "Anchor policy called on non-included anchor");
 
     if (anchor->urlLength == 0) {
         warning_bits_set(warnings, WARNING_BIT_EMPTY_ANCHOR_URL);

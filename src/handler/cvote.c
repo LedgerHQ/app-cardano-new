@@ -19,10 +19,9 @@
 #include "ui_cvote.h"
 #include "utils/buffer_helpers.h"
 
-static bool ensure_cvote_stage(const char *command_name, cvote_stage_e required_stage) {
+static bool ensure_cvote_stage(cvote_stage_e required_stage) {
     if (G_context.state.cvote_state != required_stage) {
-        TRACE("Rejecting %s in stage %d (expected %d)",
-              command_name,
+        TRACE("Rejecting CVote command in stage %d (expected %d)",
               G_context.state.cvote_state,
               required_stage);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
@@ -243,7 +242,7 @@ void handler_cvote(buffer_t *cdata, uint8_t p1) {
         }
         case P1_CVOTE_CHUNK: {
             TRACE("P1_CVOTE_CHUNK");
-            if (!ensure_cvote_stage("P1_CVOTE_CHUNK", VOTECAST_STAGE_CHUNK)) {
+            if (!ensure_cvote_stage(VOTECAST_STAGE_CHUNK)) {
                 return;
             }
             signCVote_handle_votecast_chunk(cdata);
@@ -251,7 +250,7 @@ void handler_cvote(buffer_t *cdata, uint8_t p1) {
         }
         case P1_CVOTE_CONFIRM: {
             TRACE("P1_CVOTE_CONFIRM");
-            if (!ensure_cvote_stage("P1_CVOTE_CONFIRM", VOTECAST_STAGE_CONFIRM)) {
+            if (!ensure_cvote_stage(VOTECAST_STAGE_CONFIRM)) {
                 return;
             }
             signCVote_handle_confirm(cdata);

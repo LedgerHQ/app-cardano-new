@@ -702,11 +702,17 @@ bool isValidAddressParams(const address_params_t* params) {
 
 void address_params_copyHashesToStorage(address_params_t* params,
                                         address_params_hashes_storage_t* storage) {
-    LEDGER_ASSERT(params != NULL, "NULL address_params");
-    LEDGER_ASSERT(storage != NULL, "NULL storage");
+    if (params == NULL || storage == NULL) {
+        LEDGER_ASSERT(false, "NULL address params or storage");
+        return;
+    }
 
     // Copy payment script hash if present
     if (params->paymentPartType == PAYMENT_PART_SCRIPT_HASH) {
+        if (params->paymentScriptHash == NULL) {
+            LEDGER_ASSERT(false, "NULL payment script hash to copy");
+            return;
+        }
         LEDGER_ASSERT(params->paymentScriptHash != NULL, "NULL payment script hash to copy");
         memmove(storage->paymentHash, params->paymentScriptHash, SCRIPT_HASH_LENGTH);
         params->paymentScriptHash = storage->paymentHash;
@@ -715,11 +721,19 @@ void address_params_copyHashesToStorage(address_params_t* params,
     // Copy staking key/script hash if present
     switch (params->stakingPartType) {
         case STAKING_PART_KEY_HASH:
+            if (params->stakingKeyHash == NULL) {
+                LEDGER_ASSERT(false, "NULL staking key hash to copy");
+                return;
+            }
             LEDGER_ASSERT(params->stakingKeyHash != NULL, "NULL staking key hash to copy");
             memmove(storage->stakingHash, params->stakingKeyHash, ADDRESS_KEY_HASH_LENGTH);
             params->stakingKeyHash = storage->stakingHash;
             break;
         case STAKING_PART_SCRIPT_HASH:
+            if (params->stakingScriptHash == NULL) {
+                LEDGER_ASSERT(false, "NULL staking script hash to copy");
+                return;
+            }
             LEDGER_ASSERT(params->stakingScriptHash != NULL, "NULL staking script hash to copy");
             memmove(storage->stakingHash, params->stakingScriptHash, SCRIPT_HASH_LENGTH);
             params->stakingScriptHash = storage->stakingHash;

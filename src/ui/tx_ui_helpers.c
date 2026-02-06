@@ -43,16 +43,13 @@ void addCredentialUIPairs(const ext_credential_t *credential,
                         const char *scriptHashLabel,
                         const char *scriptHashPrefix) {
     LEDGER_ASSERT(credential != NULL, "NULL credential");
-    LEDGER_ASSERT(keyPathLabel != NULL, "NULL keyPathLabel");
-    LEDGER_ASSERT(keyHashLabel != NULL, "NULL keyHashLabel");
-    LEDGER_ASSERT(keyHashPrefix != NULL, "NULL keyHashPrefix");
-    LEDGER_ASSERT(scriptHashLabel != NULL, "NULL scriptHashLabel");
-    LEDGER_ASSERT(scriptHashPrefix != NULL, "NULL scriptHashPrefix");
-    LEDGER_ASSERT(keyPathLabel[0] != '\0', "Empty keyPathLabel");
-    LEDGER_ASSERT(keyHashLabel[0] != '\0', "Empty keyHashLabel");
-    LEDGER_ASSERT(keyHashPrefix[0] != '\0', "Empty keyHashPrefix");
-    LEDGER_ASSERT(scriptHashLabel[0] != '\0', "Empty scriptHashLabel");
-    LEDGER_ASSERT(scriptHashPrefix[0] != '\0', "Empty scriptHashPrefix");
+    LEDGER_ASSERT(keyPathLabel != NULL && keyPathLabel[0] != '\0', "Invalid keyPathLabel");
+    LEDGER_ASSERT(keyHashLabel != NULL && keyHashLabel[0] != '\0', "Invalid keyHashLabel");
+    LEDGER_ASSERT(keyHashPrefix != NULL && keyHashPrefix[0] != '\0', "Invalid keyHashPrefix");
+    LEDGER_ASSERT(scriptHashLabel != NULL && scriptHashLabel[0] != '\0',
+                  "Invalid scriptHashLabel");
+    LEDGER_ASSERT(scriptHashPrefix != NULL && scriptHashPrefix[0] != '\0',
+                  "Invalid scriptHashPrefix");
 
     START_COUNT();
     switch (credential->type) {

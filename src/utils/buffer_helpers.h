@@ -22,9 +22,12 @@ static inline size_t buffer_remaining(const buffer_t *buffer) {
 }
 
 static inline const uint8_t *buffer_current_ptr(const buffer_t *buffer) {
-    LEDGER_ASSERT(buffer != NULL, "NULL buffer");
-    LEDGER_ASSERT(buffer->ptr != NULL, "NULL buffer ptr");
-    return buffer->ptr + buffer_current_offset(buffer);
+    const uint8_t *current_ptr =
+            (buffer != NULL && buffer->ptr != NULL)
+                    ? (buffer->ptr + buffer_current_offset(buffer))
+                    : NULL;
+    LEDGER_ASSERT(current_ptr != NULL, "NULL buffer or buffer ptr");
+    return current_ptr;
 }
 
 static inline bool buffer_consume(buffer_t *buffer, size_t length) {

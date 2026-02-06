@@ -83,9 +83,11 @@ static void _append_map_key_bytes(uint8_t* buffer,
                                   size_t* offset,
                                   const uint8_t* data,
                                   size_t dataLen) {
-    LEDGER_ASSERT(buffer != NULL, "NULL buffer");
-    LEDGER_ASSERT(offset != NULL, "NULL offset");
-    LEDGER_ASSERT(data != NULL, "NULL data");
+    if (buffer == NULL || offset == NULL || data == NULL) {
+        LEDGER_ASSERT(false, "NULL buffer, offset, or data");
+        return;
+    }
+    LEDGER_ASSERT(bufferLen >= *offset, "Map bytes invalid offset");
     LEDGER_ASSERT(bufferLen - *offset >= dataLen, "Map bytes overflow");
 
     memcpy(buffer + *offset, data, dataLen);
@@ -134,7 +136,7 @@ size_t txHashBuilder_serializeGovActionKey(const gov_action_id_t* govActionId,
                                            size_t bufferLen) {
     LEDGER_ASSERT(govActionId != NULL, "NULL gov action id");
     LEDGER_ASSERT(buffer != NULL, "NULL buffer");
-    LEDGER_ASSERT(govActionId->txHash != NULL, "NULL tx hash");
+    LEDGER_ASSERT(govActionId != NULL && govActionId->txHash != NULL, "NULL tx hash");
     size_t offset = 0;
     _append_cbor_token(buffer, bufferLen, &offset, CBOR_TYPE_ARRAY, 2);
     _append_cbor_token(buffer, bufferLen, &offset, CBOR_TYPE_BYTES, TX_HASH_LENGTH);
