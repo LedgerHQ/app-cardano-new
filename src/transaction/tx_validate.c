@@ -167,9 +167,7 @@ static void _hashOutputTopLevel(tx_hash_builder_t* txHashBuilder,
     LEDGER_ASSERT(parsed, "Failed to build address bytes for hashing");
 
     tx_output_description_t hash_desc = *output_desc;
-    hash_desc.destination.type = DESTINATION_THIRD_PARTY;
-    hash_desc.destination.address.buffer = address_bytes;
-    hash_desc.destination.address.length = address_size;
+    hash_desc.destination = tx_output_destination_make_third_party(address_bytes, address_size);
 
     if (is_collateral) {
         txHashBuilder_addCollateralOutput(txHashBuilder, &hash_desc);

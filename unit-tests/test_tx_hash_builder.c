@@ -59,10 +59,8 @@ static void test_tx_hash_builder_full(void** state) {
         mainAddress,
         sizeof(mainAddress));
 
-    tx_output_destination_t mainDestination = {
-        .type = DESTINATION_THIRD_PARTY,
-        .address = { .buffer = mainAddress, .length = mainAddressLen },
-    };
+    tx_output_destination_t mainDestination =
+        tx_output_destination_make_third_party(mainAddress, mainAddressLen);
 
     tx_output_description_t output = {
         .format = MAP_BABBAGE,
@@ -153,10 +151,8 @@ static void test_tx_hash_builder_full(void** state) {
         "1300",
         collateralAddress,
         sizeof(collateralAddress));
-    tx_output_destination_t collateralDestination = {
-        .type = DESTINATION_THIRD_PARTY,
-        .address = { .buffer = collateralAddress, .length = collateralAddressLen },
-    };
+    tx_output_destination_t collateralDestination =
+        tx_output_destination_make_third_party(collateralAddress, collateralAddressLen);
     tx_output_description_t collateralOutput = {
         .format = ARRAY_LEGACY,
         .destination = collateralDestination,
@@ -289,10 +285,8 @@ static void test_tx_hash_builder_minimal(void** state) {
         uint8_t addressBuf[200] = {0};
         size_t addressLen = decode_hex_buffer(outputs[i].address, addressBuf, sizeof(addressBuf));
 
-        tx_output_destination_t dest = {
-            .type = DESTINATION_THIRD_PARTY,
-            .address = { .buffer = addressBuf, .length = addressLen },
-        };
+        tx_output_destination_t dest =
+            tx_output_destination_make_third_party(addressBuf, addressLen);
         tx_output_description_t output = {
             .format = MAP_BABBAGE,
             .destination = dest,

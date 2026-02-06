@@ -8,6 +8,7 @@
 #include "cardano_constants.h"
 #include "lists.h"
 #include "addressUtilsShelley.h"
+#include "assert.h"
 
 #define ASSET_NAME_HASH_SIZE 32
 #define ASSET_NAME_DISPLAY_SIZE 32
@@ -35,6 +36,34 @@ typedef struct {
         address_params_t* params;
     };
 } tx_output_destination_t;
+
+static inline tx_output_destination_t tx_output_destination_make_third_party(const uint8_t* addressBuffer,
+                                                                             size_t addressLength)
+{
+    ASSERT(addressBuffer != NULL);
+    ASSERT(addressLength > 0);
+    ASSERT(addressLength <= MAX_ADDRESS_LENGTH);
+
+    tx_output_destination_t destination = {
+        .type = DESTINATION_THIRD_PARTY,
+        .address = {
+            .buffer = addressBuffer,
+            .length = addressLength,
+        },
+    };
+    return destination;
+}
+
+static inline tx_output_destination_t tx_output_destination_make_device_owned(address_params_t* params)
+{
+    ASSERT(params != NULL);
+
+    tx_output_destination_t destination = {
+        .type = DESTINATION_DEVICE_OWNED,
+        .params = params,
+    };
+    return destination;
+}
 
 typedef struct {
     const uint8_t* assetName;

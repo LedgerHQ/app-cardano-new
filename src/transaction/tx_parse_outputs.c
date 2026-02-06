@@ -35,7 +35,6 @@ parser_status_e parse_output_destination(buffer_t* buf,
         return OUTPUTS_PARSING_ERROR;
     }
     TRACE("Deserialize: Output destination type=0x%02x (1=THIRD_PARTY, 2=DEVICE_OWNED)", dest_type);
-    destination->type = (tx_output_destination_type_t) dest_type;
 
     switch (dest_type) {
         case DESTINATION_THIRD_PARTY: {
@@ -47,13 +46,13 @@ parser_status_e parse_output_destination(buffer_t* buf,
             if (addr_size == 0 || addr_size > MAX_ADDRESS_LENGTH) {
                 return OUTPUT_ADDRESS_SIZE_ERROR;
             }
-            destination->address.length = addr_size;
 
             // Store pointer to address in raw buffer instead of copying
-            if (!buffer_read_bytes_ptr(buf, &destination->address.buffer, addr_size)) {
+            const uint8_t* address_buffer = NULL;
+            if (!buffer_read_bytes_ptr(buf, &address_buffer, addr_size)) {
                 return OUTPUTS_PARSING_ERROR;
             }
-            ASSERT(destination->address.buffer != NULL);
+            *destination = tx_output_destination_make_third_party(address_buffer, addr_size);
             break;
         }
 
@@ -63,8 +62,7 @@ parser_status_e parse_output_destination(buffer_t* buf,
             if (!buffer_read_address_params(buf, paramsStorage)) {
                 return OUTPUTS_PARSING_ERROR;
             }
-            // Point destination at the storage
-            destination->params = paramsStorage;
+            *destination = tx_output_destination_make_device_owned(paramsStorage);
             break;
         }
 
