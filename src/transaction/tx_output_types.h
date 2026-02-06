@@ -19,10 +19,9 @@ typedef enum {
 
 // Third-party address: pointer to raw address bytes and length
 // Used by both TX outputs and CVote destinations
-// TODO: Consider renaming 'size' to 'length' for semantic consistency with anchor_t and urlLength patterns
 typedef struct {
     const uint8_t* buffer;
-    size_t size;
+    size_t length;
 } third_party_address_t;
 
 // Unified output destination.  For DESTINATION_THIRD_PARTY the address pointer

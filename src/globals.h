@@ -170,7 +170,7 @@ typedef struct {
     address_params_hashes_storage_t hashStorage;
     struct {
         uint8_t buffer[MAX_ADDRESS_LENGTH];
-        size_t size;
+        size_t length;
     } address;
 } derive_address_ctx_t;
 

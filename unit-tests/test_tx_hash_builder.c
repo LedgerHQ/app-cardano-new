@@ -61,7 +61,7 @@ static void test_tx_hash_builder_full(void** state) {
 
     tx_output_destination_t mainDestination = {
         .type = DESTINATION_THIRD_PARTY,
-        .address = { .buffer = mainAddress, .size = mainAddressLen },
+        .address = { .buffer = mainAddress, .length = mainAddressLen },
     };
 
     tx_output_description_t output = {
@@ -155,7 +155,7 @@ static void test_tx_hash_builder_full(void** state) {
         sizeof(collateralAddress));
     tx_output_destination_t collateralDestination = {
         .type = DESTINATION_THIRD_PARTY,
-        .address = { .buffer = collateralAddress, .size = collateralAddressLen },
+        .address = { .buffer = collateralAddress, .length = collateralAddressLen },
     };
     tx_output_description_t collateralOutput = {
         .format = ARRAY_LEGACY,
@@ -291,7 +291,7 @@ static void test_tx_hash_builder_minimal(void** state) {
 
         tx_output_destination_t dest = {
             .type = DESTINATION_THIRD_PARTY,
-            .address = { .buffer = addressBuf, .size = addressLen },
+            .address = { .buffer = addressBuf, .length = addressLen },
         };
         tx_output_description_t output = {
             .format = MAP_BABBAGE,

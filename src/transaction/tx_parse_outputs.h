@@ -15,8 +15,8 @@
  * Wire format:
  * - destination type: 1 byte (DESTINATION_THIRD_PARTY=1 or DESTINATION_DEVICE_OWNED=2)
  * - if DESTINATION_THIRD_PARTY:
- *     - address size: 2 bytes (BE)
- *     - address bytes: <size> bytes
+ *     - address length: 2 bytes (BE)
+ *     - address bytes: <length> bytes
  * - if DESTINATION_DEVICE_OWNED:
  *     - address params (see buffer_read_address_params in addressUtilsShelley.h)
  *
@@ -39,10 +39,12 @@ parser_status_e parse_output_destination(buffer_t* buf,
  *
  * @param[in,out] buf Buffer to read from
  * @param[out] format Output format to populate
- * @return PARSING_OK on success, OUTPUTS_PARSING_ERROR on failure
+ * @param[in] parseFailureStatus Error status to return on parse failure
+ * @return PARSING_OK on success, parseFailureStatus on failure
  */
 parser_status_e parse_output_format(buffer_t* buf,
-                                    tx_output_serialization_format_t* format);
+                                    tx_output_serialization_format_t* format,
+                                    parser_status_e parseFailureStatus);
 
 /**
  * Parse transaction output datum from buffer.
@@ -50,17 +52,20 @@ parser_status_e parse_output_format(buffer_t* buf,
  * Wire format:
  * - datum_present: 1 byte (FLAG_INCLUDED_NO/FLAG_INCLUDED_YES)
  * - datum_type: 1 byte (DATUM_HASH/DATUM_INLINE), only if present
- * - if HASH (1):
+ * - if HASH (0):
  *     - hash bytes: 32 bytes (no length prefix)
- * - if INLINE (2):
+ * - if INLINE (1):
  *     - size: 2 bytes (BE)
  *     - data bytes: <size> bytes
  *
  * @param[in,out] buf Buffer to read from
  * @param[out] datum Datum structure to populate
- * @return PARSING_OK on success, OUTPUTS_PARSING_ERROR on failure
+ * @param[in] parseFailureStatus Error status to return on parse failure
+ * @return PARSING_OK on success, parseFailureStatus on failure
  */
-parser_status_e parse_output_datum(buffer_t* buf, output_datum_t* datum);
+parser_status_e parse_output_datum(buffer_t* buf,
+                                   output_datum_t* datum,
+                                   parser_status_e parseFailureStatus);
 
 /**
  * Parse transaction output reference script from buffer.
@@ -73,7 +78,9 @@ parser_status_e parse_output_datum(buffer_t* buf, output_datum_t* datum);
  *
  * @param[in,out] buf Buffer to read from
  * @param[out] refScript Reference script structure to populate (includes presence flag)
- * @return PARSING_OK on success, OUTPUTS_PARSING_ERROR on failure
+ * @param[in] parseFailureStatus Error status to return on parse failure
+ * @return PARSING_OK on success, parseFailureStatus on failure
  */
 parser_status_e parse_output_ref_script(buffer_t* buf,
-                                        ref_script_t* refScript);
+                                        ref_script_t* refScript,
+                                        parser_status_e parseFailureStatus);

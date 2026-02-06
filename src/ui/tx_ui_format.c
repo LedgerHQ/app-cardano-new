@@ -181,29 +181,8 @@ static void add_ui_and_free_output_asset_groups(flist_node_t* asset_group_nodes,
 // Helper function to format output address (handles both third-party and device-owned destinations)
 static bool format_output_address(const tx_output_description_t *output_desc, char *out, size_t out_size) {
     LEDGER_ASSERT(output_desc != NULL, "NULL output_desc");
-    LEDGER_ASSERT(out != NULL, "NULL output buffer");
 
-    if (output_desc->destination.type == DESTINATION_THIRD_PARTY) {
-        return format_address_human_readable(
-            output_desc->destination.address.buffer,
-            output_desc->destination.address.size,
-            out,
-            out_size);
-    } else {
-        uint8_t address_bytes[MAX_ADDRESS_LENGTH] = {0};
-        size_t derived_len = deriveAddress(
-            output_desc->destination.params,
-            address_bytes,
-            sizeof(address_bytes));
-        if (derived_len > 0) {
-            return format_address_human_readable(
-                address_bytes,
-                derived_len,
-                out,
-                out_size);
-        }
-        return false;
-    }
+    return format_tx_output_destination_human_readable(&output_desc->destination, out, out_size);
 }
 
 // Keep this in lockstep with tx_validate.c output pair-counting rules.
@@ -391,7 +370,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
     if (pool_id_policy == POLICY_SHOW) {
         START_COUNT();
         const pool_id_t *pool_id = &certificate->poolId;
-        uint8_t pool_key_hash[POOL_KEY_HASH_LENGTH];
+        uint8_t pool_key_hash[POOL_KEY_HASH_LENGTH] = {0};
 
         switch (pool_id->keyReferenceType) {
             case KEY_REFERENCE_PATH:

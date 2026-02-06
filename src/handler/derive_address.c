@@ -21,9 +21,9 @@ static void prepareResponse() {
                   "prepareResponse called in wrong state: %d", G_context.state.derive_address_state);
 
     derive_address_ctx_t *ctx = &G_context.derive_address_info;
-    ctx->address.size =
+    ctx->address.length =
         deriveAddress(&ctx->address_params, ctx->address.buffer, SIZEOF(ctx->address.buffer));
-    if (ctx->address.size == 0 || ctx->address.size > SIZEOF(ctx->address.buffer)) {
+    if (ctx->address.length == 0 || ctx->address.length > SIZEOF(ctx->address.buffer)) {
         send_swo_and_reset(SWO_INCORRECT_DATA);
         return;
     }

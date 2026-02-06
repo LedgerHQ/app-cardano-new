@@ -175,9 +175,9 @@ static void cbor_append_txOutput_array(tx_hash_builder_t* builder,
     BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 2 + output->includeDatum);
     {
         ASSERT(output->destination.type == DESTINATION_THIRD_PARTY);
-        ASSERT(output->destination.address.size < BUFFER_SIZE_PARANOIA);
-        BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, output->destination.address.size);
-        BUILDER_APPEND_DATA(output->destination.address.buffer, output->destination.address.size);
+        ASSERT(output->destination.address.length < BUFFER_SIZE_PARANOIA);
+        BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, output->destination.address.length);
+        BUILDER_APPEND_DATA(output->destination.address.buffer, output->destination.address.length);
     }
 
     if (output->numAssetGroups == 0) {
@@ -218,9 +218,9 @@ static void cbor_append_txOutput_map(tx_hash_builder_t* builder,
         BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, TX_OUTPUT_KEY_ADDRESS);
 
         ASSERT(output->destination.type == DESTINATION_THIRD_PARTY);
-        ASSERT(output->destination.address.size < BUFFER_SIZE_PARANOIA);
-        BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, output->destination.address.size);
-        BUILDER_APPEND_DATA(output->destination.address.buffer, output->destination.address.size);
+        ASSERT(output->destination.address.length < BUFFER_SIZE_PARANOIA);
+        BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, output->destination.address.length);
+        BUILDER_APPEND_DATA(output->destination.address.buffer, output->destination.address.length);
     }
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, TX_OUTPUT_KEY_VALUE);

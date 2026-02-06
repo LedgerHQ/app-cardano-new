@@ -68,14 +68,14 @@ void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warn
 // Validate state before proceeding (address must be prepared before UI display)
     switch (policy) {
         case POLICY_SHOW:
-            io_send_response_pointer(ctx->address.buffer, ctx->address.size, SWO_SUCCESS);
+            io_send_response_pointer(ctx->address.buffer, ctx->address.length, SWO_SUCCESS);
             break;
         case POLICY_HIDE: {
             // Silently approve and return address without UI
             derive_address_ctx_t *ctx = &G_context.derive_address_info;
-            LEDGER_ASSERT(ctx->address.size <= sizeof(ctx->address.buffer), "Address size too large");
+            LEDGER_ASSERT(ctx->address.length <= sizeof(ctx->address.buffer), "Address length too large");
             G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_APPROVED;
-            io_send_response_pointer(ctx->address.buffer, ctx->address.size, SWO_SUCCESS);
+            io_send_response_pointer(ctx->address.buffer, ctx->address.length, SWO_SUCCESS);
             reset_app_context();
             break;
         }
@@ -118,7 +118,7 @@ static inline void run_fixture(const derive_address_fixture_t *fixture) {
 
     if (fixture->expected_address != NULL && fixture->expected_address_len > 0) {
         derive_address_ctx_t *ctx = &G_context.derive_address_info;
-        assert_int_equal(ctx->address.size, fixture->expected_address_len);
+        assert_int_equal(ctx->address.length, fixture->expected_address_len);
         assert_memory_equal(
             ctx->address.buffer,
             fixture->expected_address,

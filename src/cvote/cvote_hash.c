@@ -28,6 +28,7 @@
 #include "io.h"
 #include "keyDerivation.h"
 #include "messageSigning.h"
+#include "tx_utils.h"
 #include "utils.h"
 
 static void cvote_extract_pubkey(const cvote_credential_t *credential, uint8_t *out_pubkey, size_t out_pubkey_size) {
@@ -56,26 +57,11 @@ static void cvote_extract_destination_address(const tx_output_destination_t *des
                                               uint8_t *address_buffer,
                                               size_t address_buffer_size,
                                               size_t *out_len) {
-    LEDGER_ASSERT(destination != NULL, "Destination cannot be null");
-    LEDGER_ASSERT(address_buffer != NULL, "Address buffer cannot be null");
-    LEDGER_ASSERT(address_buffer_size > 0, "Address buffer size cannot be zero");
-    LEDGER_ASSERT(out_len != NULL, "Output length pointer cannot be null");
-
-    if (destination->type == DESTINATION_THIRD_PARTY) {
-        LEDGER_ASSERT(destination->address.size > 0 &&
-                         destination->address.size <= MAX_ADDRESS_LENGTH &&
-                         destination->address.buffer != NULL,
-                     "CVote third-party destination invalid");
-        memmove(address_buffer, destination->address.buffer, destination->address.size);
-        *out_len = destination->address.size;
-        return;
-    }
-
-    LEDGER_ASSERT(destination->params != NULL, "NULL CVote device-owned destination params");
-    size_t address_size = deriveAddress(destination->params, address_buffer, address_buffer_size);
-    LEDGER_ASSERT(address_size > 0 && address_size <= MAX_ADDRESS_LENGTH,
-                 "CVote destination address derivation failed (%u)", (unsigned) address_size);
-    *out_len = address_size;
+    bool parsed = tx_output_destination_to_address_bytes(destination,
+                                                         address_buffer,
+                                                         address_buffer_size,
+                                                         out_len);
+    LEDGER_ASSERT(parsed, "CVote destination address conversion failed");
 }
 
 void cvote_hash_builder_setup(cvote_aux_data_t *aux_data) {

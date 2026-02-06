@@ -270,7 +270,7 @@ static void _prepareAddressField(sign_msg_ctx_t *ctx) {
             ctx->addressFieldSize =
                 deriveAddress(&ctx->address_params, ctx->addressField, SIZEOF(ctx->addressField));
             LEDGER_ASSERT(ctx->addressFieldSize > 0 && ctx->addressFieldSize <= SIZEOF(ctx->addressField),
-                          "Invalid address size");
+                          "Invalid address length");
             break;
         }
 

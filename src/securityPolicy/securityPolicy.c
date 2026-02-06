@@ -56,10 +56,15 @@ static inline bool is_standard_base_address(const address_params_t *address_para
 }
 
 static address_type_t getDestinationAddressType(const tx_output_destination_t *destination) {
+    LEDGER_ASSERT(destination != NULL, "NULL destination");
+
     switch (destination->type) {
         case DESTINATION_DEVICE_OWNED:
+            LEDGER_ASSERT(destination->params != NULL, "NULL destination params");
             return destination->params->type;
         case DESTINATION_THIRD_PARTY:
+            LEDGER_ASSERT(destination->address.buffer != NULL, "NULL destination address");
+            LEDGER_ASSERT(destination->address.length > 0, "Zero destination address length");
             return getAddressType(destination->address.buffer[0]);
         default:
             ASSERT(false);
@@ -570,7 +575,7 @@ static security_policy_t policyForSignTxOutputAddressBytes(const tx_output_descr
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
     ASSERT(output->destination.type == DESTINATION_THIRD_PARTY);
     const uint8_t *addressBuffer = output->destination.address.buffer;
-    const size_t addressSize = output->destination.address.size;
+    const size_t addressSize = output->destination.address.length;
 
     DENY_UNLESS(is_addressBytes_suitable_for_tx_output(addressBuffer,
                                                        addressSize,
@@ -800,7 +805,7 @@ static security_policy_t policyForSignTxCollateralOutputAddressBytes(
 
     ASSERT(output->destination.type == DESTINATION_THIRD_PARTY);
     const uint8_t *addressBuffer = output->destination.address.buffer;
-    const size_t addressSize = output->destination.address.size;
+    const size_t addressSize = output->destination.address.length;
 
     DENY_UNLESS(is_addressBytes_suitable_for_tx_output(addressBuffer,
                                                        addressSize,
@@ -2085,7 +2090,7 @@ security_policy_t policyForCVoteRegistrationPaymentDestination(
 
         case DESTINATION_THIRD_PARTY: {
             const uint8_t header =
-                getAddressHeader(destination->address.buffer, destination->address.size);
+                getAddressHeader(destination->address.buffer, destination->address.length);
             DENY_UNLESS(isShelleyAddressType(getAddressType(header)));
             DENY_IF(getNetworkId(header) != networkId);
 

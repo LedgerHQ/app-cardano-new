@@ -156,26 +156,20 @@ static void _hashOutputTopLevel(tx_hash_builder_t* txHashBuilder,
     LEDGER_ASSERT(txHashBuilder != NULL, "NULL txHashBuilder");
     LEDGER_ASSERT(output_desc != NULL, "NULL output_desc");
 
-    if (output_desc->destination.type == DESTINATION_THIRD_PARTY) {
-        if (is_collateral) {
-            txHashBuilder_addCollateralOutput(txHashBuilder, output_desc);
-        } else {
-            txHashBuilder_addOutput_topLevelData(txHashBuilder, output_desc);
-        }
-        return;
-    }
-
-    uint8_t address_bytes[MAX_ADDRESS_LENGTH];
-    size_t address_size = deriveAddress(
-        output_desc->destination.params,
+    uint8_t address_bytes[MAX_ADDRESS_LENGTH] = {0};
+    size_t address_size = 0;
+    bool parsed = tx_output_destination_to_address_bytes(
+        &output_desc->destination,
         address_bytes,
-        SIZEOF(address_bytes)
+        SIZEOF(address_bytes),
+        &address_size
     );
+    LEDGER_ASSERT(parsed, "Failed to build address bytes for hashing");
 
     tx_output_description_t hash_desc = *output_desc;
     hash_desc.destination.type = DESTINATION_THIRD_PARTY;
     hash_desc.destination.address.buffer = address_bytes;
-    hash_desc.destination.address.size = address_size;
+    hash_desc.destination.address.length = address_size;
 
     if (is_collateral) {
         txHashBuilder_addCollateralOutput(txHashBuilder, &hash_desc);
@@ -998,7 +992,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
             }
             case CERTIFICATE_STAKE_POOL_RETIREMENT: {
                 const ext_credential_t *poolCred = &certificate->poolCredential;
-                uint8_t poolKeyHash[POOL_KEY_HASH_LENGTH];
+                uint8_t poolKeyHash[POOL_KEY_HASH_LENGTH] = {0};
                 TRACE("Pool retirement credential type = %d", poolCred->type);
                 switch (poolCred->type) {
                     case EXT_CREDENTIAL_KEY_PATH:
@@ -1034,7 +1028,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                     poolReg->numRelays
                 );
 
-                uint8_t poolKeyHash[POOL_KEY_HASH_LENGTH];
+                uint8_t poolKeyHash[POOL_KEY_HASH_LENGTH] = {0};
                 if (certificate->poolId.keyReferenceType == KEY_REFERENCE_PATH) {
                     keyPathToKeyHash(&certificate->poolId.path, poolKeyHash, sizeof(poolKeyHash));
                 } else {
@@ -1061,7 +1055,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                     poolReg->marginDenominator
                 );
 
-                uint8_t rewardAccountBuf[REWARD_ACCOUNT_LENGTH];
+                uint8_t rewardAccountBuf[REWARD_ACCOUNT_LENGTH] = {0};
                 poolRewardAccountToBuffer(
                     &poolReg->rewardAccount,
                     G_context.tx_info.transaction.networkId,
@@ -1236,7 +1230,7 @@ static int validate_and_hash_withdrawals(tx_hash_builder_t* txHashBuilder, tx_ui
 
     txHashBuilder_enterWithdrawals(txHashBuilder);
 
-    uint8_t previousRewardAccount[REWARD_ACCOUNT_LENGTH];
+    uint8_t previousRewardAccount[REWARD_ACCOUNT_LENGTH] = {0};
     explicit_bzero(previousRewardAccount, SIZEOF(previousRewardAccount));
     bool isFirstWithdrawal = true;
 
@@ -1269,7 +1263,7 @@ static int validate_and_hash_withdrawals(tx_hash_builder_t* txHashBuilder, tx_ui
                 break;
         }
 
-        uint8_t reward_address[REWARD_ACCOUNT_LENGTH];
+        uint8_t reward_address[REWARD_ACCOUNT_LENGTH] = {0};
         size_t reward_addr_len = 0;
         switch (withdrawal->stakeCredential.type) {
             case EXT_CREDENTIAL_KEY_PATH:
@@ -1555,7 +1549,7 @@ static int validate_and_hash_required_signers(tx_hash_builder_t* txHashBuilder, 
                 break;
         }
 
-        uint8_t keyHash[ADDRESS_KEY_HASH_LENGTH];
+        uint8_t keyHash[ADDRESS_KEY_HASH_LENGTH] = {0};
         if (required_signer->type == REQUIRED_SIGNER_WITH_PATH) {
             keyPathToKeyHash(&required_signer->keyPath, keyHash, sizeof(keyHash));
         } else {
@@ -1768,7 +1762,7 @@ static int validate_and_hash_voting_procedures(tx_hash_builder_t* txHashBuilder,
 
     txHashBuilder_enterVotingProcedures(txHashBuilder);
 
-    uint8_t previous_voter_key[MAX_CBOR_VOTER_MAP_KEY_SIZE];
+    uint8_t previous_voter_key[MAX_CBOR_VOTER_MAP_KEY_SIZE] = {0};
     size_t previous_voter_key_len = 0;
     bool has_previous_voter_key = false;
 
@@ -1823,7 +1817,7 @@ static int validate_and_hash_voting_procedures(tx_hash_builder_t* txHashBuilder,
 
         voter_t voter_for_hash = _voterForTxHash(&voter_votes->voter);
 
-        uint8_t voter_key[MAX_CBOR_VOTER_MAP_KEY_SIZE];
+        uint8_t voter_key[MAX_CBOR_VOTER_MAP_KEY_SIZE] = {0};
         size_t voter_key_len = txHashBuilder_serializeVoterKey(
             &voter_for_hash,
             voter_key,
@@ -1847,7 +1841,7 @@ static int validate_and_hash_voting_procedures(tx_hash_builder_t* txHashBuilder,
                                &voter_for_hash,
                                voter_votes->numVotes);
 
-        uint8_t previous_vote_key[MAX_CBOR_GOV_ACTION_MAP_KEY_SIZE];
+        uint8_t previous_vote_key[MAX_CBOR_GOV_ACTION_MAP_KEY_SIZE] = {0};
         size_t previous_vote_key_len = 0;
         bool has_previous_vote_key = false;
         {
@@ -1856,7 +1850,7 @@ static int validate_and_hash_voting_procedures(tx_hash_builder_t* txHashBuilder,
                 vote_node_t *vote_node = (vote_node_t *) node2;
                 const vote_item_t *vote_data = &vote_node->vote_data;
 
-                uint8_t gov_action_key[MAX_CBOR_GOV_ACTION_MAP_KEY_SIZE];
+                uint8_t gov_action_key[MAX_CBOR_GOV_ACTION_MAP_KEY_SIZE] = {0};
                 size_t gov_action_key_len = txHashBuilder_serializeGovActionKey(
                         &vote_data->govActionId,
                         gov_action_key,

@@ -53,8 +53,8 @@ static void derive_address_return_review_choice(bool confirm) {
     if (confirm) {
         G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_APPROVED;
         derive_address_ctx_t *ctx = &G_context.derive_address_info;
-        LEDGER_ASSERT(ctx->address.size <= sizeof(ctx->address.buffer), "Address size too large");
-        io_send_response_pointer(ctx->address.buffer, ctx->address.size, SWO_SUCCESS);
+        LEDGER_ASSERT(ctx->address.length <= sizeof(ctx->address.buffer), "Address length too large");
+        io_send_response_pointer(ctx->address.buffer, ctx->address.length, SWO_SUCCESS);
         reset_app_context();
     } else {
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
@@ -196,11 +196,11 @@ static void ui_displayAddressReview(const char *title,
             return;
     }
 
-    LEDGER_ASSERT(ctx->address.size <= MAX_HUMAN_ADDRESS_LENGTH, "Address size too large");
+    LEDGER_ASSERT(ctx->address.length <= MAX_HUMAN_ADDRESS_LENGTH, "Address length too large");
 
     static char humanAddress[MAX_HUMAN_ADDRESS_LENGTH] = {0};
     format_address_human_readable(ctx->address.buffer,
-                                  ctx->address.size,
+                                  ctx->address.length,
                                   humanAddress,
                                   SIZEOF(humanAddress));
     // TODO: unusual-path warning presentation changed: old app showed a dedicated warning screen
@@ -229,9 +229,9 @@ void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warn
         case POLICY_HIDE: {
             // Silently approve and return address without UI
             derive_address_ctx_t *ctx = &G_context.derive_address_info;
-            LEDGER_ASSERT(ctx->address.size <= sizeof(ctx->address.buffer), "Address size too large");
+            LEDGER_ASSERT(ctx->address.length <= sizeof(ctx->address.buffer), "Address length too large");
             G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_APPROVED;
-            io_send_response_pointer(ctx->address.buffer, ctx->address.size, SWO_SUCCESS);
+            io_send_response_pointer(ctx->address.buffer, ctx->address.length, SWO_SUCCESS);
             reset_app_context();
             break;
         }

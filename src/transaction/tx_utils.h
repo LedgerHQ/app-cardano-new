@@ -26,6 +26,28 @@
  */
 bool violatesSingleAccountOrStoreIt(const bip44_path_t* path);
 
+/**
+ * Resolve a transaction output destination into raw address bytes.
+ *
+ * For third-party destinations, copies the provided raw bytes.
+ * For device-owned destinations, derives address bytes from params.
+ *
+ * @return true on success, false on invalid destination or conversion failure.
+ */
+bool tx_output_destination_to_address_bytes(const tx_output_destination_t* destination,
+                                            uint8_t* addressBuffer,
+                                            size_t addressBufferSize,
+                                            size_t* outAddressLength);
+
+/**
+ * Format a transaction output destination as a human-readable address string.
+ *
+ * @return true on success, false on conversion/format failure.
+ */
+bool format_tx_output_destination_human_readable(const tx_output_destination_t* destination,
+                                                 char* out,
+                                                 size_t outSize);
+
 typedef struct {
     uint32_t total_owners;
     uint32_t path_owners;

@@ -39,7 +39,7 @@ parser_status_e parse_output_destination(buffer_t* buf,
 
     switch (dest_type) {
         case DESTINATION_THIRD_PARTY: {
-            // Read address size
+            // Read address length
             uint16_t addr_size = 0;
             if (!buffer_read_u16(buf, &addr_size, BE)) {
                 return OUTPUTS_PARSING_ERROR;
@@ -47,7 +47,7 @@ parser_status_e parse_output_destination(buffer_t* buf,
             if (addr_size == 0 || addr_size > MAX_ADDRESS_LENGTH) {
                 return OUTPUT_ADDRESS_SIZE_ERROR;
             }
-            destination->address.size = addr_size;
+            destination->address.length = addr_size;
 
             // Store pointer to address in raw buffer instead of copying
             if (!buffer_read_bytes_ptr(buf, &destination->address.buffer, addr_size)) {
@@ -76,19 +76,21 @@ parser_status_e parse_output_destination(buffer_t* buf,
 }
 
 parser_status_e parse_output_format(buffer_t* buf,
-                                    tx_output_serialization_format_t* format) {
+                                    tx_output_serialization_format_t* format,
+                                    parser_status_e parseFailureStatus) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     LEDGER_ASSERT(format != NULL, "NULL format");
+    LEDGER_ASSERT(parseFailureStatus != PARSING_OK, "Invalid parse failure status");
 
     uint8_t output_format = 0;
     if (!buffer_read_u8(buf, &output_format)) {
-        return OUTPUTS_PARSING_ERROR;
+        return parseFailureStatus;
     }
 
     // Validate format is one of the supported values
     if (output_format != ARRAY_LEGACY && output_format != MAP_BABBAGE) {
         TRACE("Invalid output format: %u", output_format);
-        return OUTPUTS_PARSING_ERROR;
+        return parseFailureStatus;
     }
 
     *format = (tx_output_serialization_format_t) output_format;
@@ -97,13 +99,16 @@ parser_status_e parse_output_format(buffer_t* buf,
     return PARSING_OK;
 }
 
-parser_status_e parse_output_datum(buffer_t* buf, output_datum_t* datum) {
+parser_status_e parse_output_datum(buffer_t* buf,
+                                   output_datum_t* datum,
+                                   parser_status_e parseFailureStatus) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     LEDGER_ASSERT(datum != NULL, "NULL datum");
+    LEDGER_ASSERT(parseFailureStatus != PARSING_OK, "Invalid parse failure status");
 
     size_t offset_before = buf->offset;
     if (!buffer_read_flag_included(buf, &datum->hasDatum)) {
-        return OUTPUTS_PARSING_ERROR;
+        return parseFailureStatus;
     }
     TRACE("Datum present: %u, offset %u -> %u", datum->hasDatum, (unsigned int)offset_before, (unsigned int)buf->offset);
 
@@ -113,7 +118,7 @@ parser_status_e parse_output_datum(buffer_t* buf, output_datum_t* datum) {
 
     uint8_t datum_wire_type = 0;
     if (!buffer_read_u8(buf, &datum_wire_type)) {
-        return OUTPUTS_PARSING_ERROR;
+        return parseFailureStatus;
     }
     TRACE("Datum type: wire=%u", datum_wire_type);
 
@@ -122,7 +127,7 @@ parser_status_e parse_output_datum(buffer_t* buf, output_datum_t* datum) {
             datum->type = DATUM_HASH;
 
             if (!buffer_read_bytes_ptr(buf, &datum->hash, OUTPUT_DATUM_HASH_LENGTH)) {
-                return OUTPUTS_PARSING_ERROR;
+                return parseFailureStatus;
             }
             ASSERT(datum->hash != NULL);
             TRACE("Datum hash read");
@@ -135,12 +140,12 @@ parser_status_e parse_output_datum(buffer_t* buf, output_datum_t* datum) {
 
             uint16_t datum_size;
             if (!buffer_read_u16(buf, &datum_size, BE)) {
-                return OUTPUTS_PARSING_ERROR;
+                return parseFailureStatus;
             }
             datum->inline_datum.length = datum_size;
 
             if (!buffer_read_bytes_ptr(buf, &datum->inline_datum.buffer, datum_size)) {
-                return OUTPUTS_PARSING_ERROR;
+                return parseFailureStatus;
             }
             ASSERT(datum->inline_datum.buffer != NULL);
             TRACE("Inline datum read: %u bytes", datum_size);
@@ -149,20 +154,22 @@ parser_status_e parse_output_datum(buffer_t* buf, output_datum_t* datum) {
         }
 
         default:
-            return OUTPUTS_PARSING_ERROR;
+            return parseFailureStatus;
     }
 
     return PARSING_OK;
 }
 
 parser_status_e parse_output_ref_script(buffer_t* buf,
-                                        ref_script_t* refScript) {
+                                        ref_script_t* refScript,
+                                        parser_status_e parseFailureStatus) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     LEDGER_ASSERT(refScript != NULL, "NULL refScript");
+    LEDGER_ASSERT(parseFailureStatus != PARSING_OK, "Invalid parse failure status");
 
     size_t offset_before = buf->offset;
     if (!buffer_read_flag_included(buf, &refScript->hasRefScript)) {
-        return OUTPUTS_PARSING_ERROR;
+        return parseFailureStatus;
     }
     TRACE("Reference script present: %u, offset %u -> %u", refScript->hasRefScript, (unsigned int)offset_before, (unsigned int)buf->offset);
 
@@ -174,12 +181,12 @@ parser_status_e parse_output_ref_script(buffer_t* buf,
 
     uint16_t script_size;
     if (!buffer_read_u16(buf, &script_size, BE)) {
-        return OUTPUTS_PARSING_ERROR;
+        return parseFailureStatus;
     }
     refScript->size = script_size;
 
     if (!buffer_read_bytes_ptr(buf, &refScript->data, script_size)) {
-        return OUTPUTS_PARSING_ERROR;
+        return parseFailureStatus;
     }
     ASSERT(refScript->data != NULL);
     TRACE("Reference script read: %u bytes", script_size);

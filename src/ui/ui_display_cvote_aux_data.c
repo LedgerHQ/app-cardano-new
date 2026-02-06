@@ -32,6 +32,7 @@
 #include "nbgl_use_case.h"
 #include "securityPolicy.h"
 #include "tx_output_types.h"
+#include "tx_utils.h"
 #include "ui_constants.h"
 #include "ui_display_cvote_aux_data.h"
 #include "ui_formatters.h"
@@ -148,28 +149,9 @@ static bool format_cvote_reward_address(const tx_output_destination_t *destinati
                                         uint8_t network_id,
                                         char *out,
                                         size_t out_size) {
-    LEDGER_ASSERT(destination != NULL, "NULL destination");
-    LEDGER_ASSERT(out != NULL, "NULL output buffer");
     (void) network_id;
 
-    if (destination->type == DESTINATION_THIRD_PARTY) {
-        if (destination->address.size == 0 || destination->address.buffer == NULL) {
-            return false;
-        }
-        return format_address_human_readable(destination->address.buffer,
-                                             destination->address.size,
-                                             out,
-                                             out_size);
-    }
-
-    LEDGER_ASSERT(destination->params != NULL, "NULL CVote device-owned destination params");
-    uint8_t address_buffer[MAX_ADDRESS_LENGTH] = {0};
-    size_t address_size = deriveAddress(destination->params, address_buffer, SIZEOF(address_buffer));
-    if (address_size == 0 || address_size > MAX_ADDRESS_LENGTH) {
-        return false;
-    }
-
-    return format_address_human_readable(address_buffer, address_size, out, out_size);
+    return format_tx_output_destination_human_readable(destination, out, out_size);
 }
 
 static void cvote_add_vote_key_pair(const char *label,
