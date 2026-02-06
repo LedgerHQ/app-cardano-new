@@ -9,7 +9,6 @@
 #include "globals.h"
 #include "securityPolicy/securityPolicy.h"
 #include "apdu/dispatcher.h"
-#include "globals.h"
 
 #include <cmocka.h>
 #include "handler/derive_address.h"

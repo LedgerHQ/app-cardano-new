@@ -291,10 +291,18 @@ def _verify_ragger_test_coverage() -> None:
         # Check if the ragger test function name appears in unit tests
         # Some functions like test_derive_native_script_hash expand to test_derive_native_script_*
         # So we check for both exact match and prefix match (with underscore)
-        found = (func_name in unit_tests_content or
-                 f"{func_name}_" in unit_tests_content or
-                 func_name.rstrip("_hash") in unit_tests_content or
-                 func_name.rstrip("_rejects") in unit_tests_content)
+        func_name_without_hash = (
+            func_name[:-5] if func_name.endswith("_hash") else func_name
+        )
+        func_name_without_rejects = (
+            func_name[:-8] if func_name.endswith("_rejects") else func_name
+        )
+        found = (
+            func_name in unit_tests_content
+            or f"{func_name}_" in unit_tests_content
+            or func_name_without_hash in unit_tests_content
+            or func_name_without_rejects in unit_tests_content
+        )
         if found:
             covered_coverage.append(func_name)
         else:

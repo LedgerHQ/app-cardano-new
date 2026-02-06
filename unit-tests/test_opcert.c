@@ -70,12 +70,12 @@ static void run_opcert_fixture(const opcert_fixture_t *fixture) {
 }
 
 
-static void test_opCert_should_correctly_sign_operational_certificate(void **state) {
+static void test_opCert_should_correctly_sign_operational_certificate_0(void **state) {
     (void) state;
     run_opcert_fixture(&OPCERT_FIXTURES[0]);
 }
 
-static void test_opCert_should_correctly_sign_operational_certificate_with_warning(void **state) {
+static void test_opCert_should_correctly_sign_operational_certificate_with_warning_1(void **state) {
     (void) state;
     run_opcert_fixture(&OPCERT_FIXTURES[1]);
 }
@@ -86,8 +86,8 @@ static void test_opCert_should_correctly_sign_operational_certificate_with_warni
 
 int main(void) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_opCert_should_correctly_sign_operational_certificate),
-        cmocka_unit_test(test_opCert_should_correctly_sign_operational_certificate_with_warning),
+        cmocka_unit_test(test_opCert_should_correctly_sign_operational_certificate_0),
+        cmocka_unit_test(test_opCert_should_correctly_sign_operational_certificate_with_warning_1),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

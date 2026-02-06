@@ -94,7 +94,9 @@ def _build_test_functions(arrays: list[FixtureArrayDetails]) -> tuple[str, list[
                 uppercase=False,
                 handle_leading_digit=True,
             )
-            test_function_name = f"test_pubkey_{array_suffix}_{sanitized}"
+            test_function_name = (
+                f"test_pubkey_{array_suffix}_{sanitized}_{fixture.index}"
+            )
             test_functions.append(
                 f"static void {test_function_name}(void **state) {{\n"
                 f"    (void) state;\n"

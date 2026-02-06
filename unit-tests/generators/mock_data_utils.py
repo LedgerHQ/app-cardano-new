@@ -263,9 +263,6 @@ def regenerate_mock_data() -> None:
         base_indent = "    "
         field_indent = base_indent + "      "
         array_indent = field_indent + "    "
-        base_indent = "    "
-        field_indent = base_indent + "      "
-        array_indent = field_indent + "    "
 
         message_bytes = messages.get(message_name)
         if message_bytes is None:

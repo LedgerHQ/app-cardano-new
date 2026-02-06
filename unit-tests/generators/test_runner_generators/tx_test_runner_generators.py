@@ -192,7 +192,7 @@ def _generate_complete_test_file(
     )
 
     write_file_safe(test_path, complete_file)
-    print(f"Generated {test_c_file}: {len(fixtures)} tests")
+    print(f"Generated {test_c_file}: {len(test_names)} tests")
 
 
 def generate_tx_test_runners() -> None:

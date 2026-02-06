@@ -4,6 +4,11 @@ from pathlib import Path
 
 from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe, sanitize_c_identifier
 
+_REJECT_ARRAY_PATTERN = re.compile(
+    r"static\s+const\s+derive_address_fixture_t\s+DERIVE_ADDRESS_REJECT_FIXTURES\[\]\s*=\s*\{(.*?)\};",
+    re.DOTALL,
+)
+_NAME_PATTERN = re.compile(r'\.name\s*=\s*"([^"]+)"')
 
 
 def _extract_reject_fixture_names(header_path: Path) -> list[str]:
@@ -11,7 +16,11 @@ def _extract_reject_fixture_names(header_path: Path) -> list[str]:
         raise FileNotFoundError(f"Fixture header not found: {header_path}")
 
     header_content = read_file_safe(header_path)
-    fixture_names = re.findall(r'\.name\s*=\s*"([^"]+)"', header_content)
+    array_match = _REJECT_ARRAY_PATTERN.search(header_content)
+    if not array_match:
+        raise ValueError("DERIVE_ADDRESS_REJECT_FIXTURES array not found in header")
+
+    fixture_names = _NAME_PATTERN.findall(array_match.group(1))
 
     if not fixture_names:
         raise ValueError("No reject fixtures found in header")
@@ -31,7 +40,6 @@ def _build_test_file_header() -> str:
 #include "globals.h"
 #include "securityPolicy/securityPolicy.h"
 #include "apdu/dispatcher.h"
-#include "globals.h"
 
 #include <cmocka.h>
 #include "handler/derive_address.h"

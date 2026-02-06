@@ -103,7 +103,7 @@ def _build_test_functions(fixture_names: list[str]) -> tuple[str, list[str]]:
         prefix = "sign_opcert_"
         if sanitized.startswith(prefix):
             sanitized = sanitized[len(prefix):]
-        function_name = f"test_opCert_{sanitized}"
+        function_name = f"test_opCert_{sanitized}_{idx}"
         lines.extend([
             f"static void {function_name}(void **state) {{",
             f"    (void) state;",

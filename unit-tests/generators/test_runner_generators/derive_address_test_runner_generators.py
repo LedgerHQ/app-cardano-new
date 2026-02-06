@@ -239,7 +239,9 @@ def _build_test_file_header() -> str:
 
 """
 
-def _build_main_function(all_fixture_array_details: Sequence[str], test_c_file: str) -> str:
+def _build_main_function(
+    all_fixture_array_details: Sequence[FixtureArrayDetails], test_c_file: str
+) -> str:
     
     all_test_function_names = []
     all_test_function_definitions = []
@@ -254,7 +256,9 @@ def _build_main_function(all_fixture_array_details: Sequence[str], test_c_file: 
         for fixture in fixture_array_details.fixtures:
             # Build unique test name for THIS fixture
             sanitized_fixture_name = sanitize_c_identifier(fixture.name, uppercase=False, handle_leading_digit=True)
-            test_function_name = f"test_derive_address_{array_suffix}_{sanitized_fixture_name}"
+            test_function_name = (
+                f"test_derive_address_{array_suffix}_{sanitized_fixture_name}_{fixture.index}"
+            )
             
             # Add to list of all test names
             # Using list accumulation ensures no test is accidentally dropped

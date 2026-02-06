@@ -29,7 +29,7 @@ class TestCaseCategory:
     test_cases: list[Any]
 
 
-def _load_address_derivation_test_cases() -> list[Any]:
+def _load_address_derivation_test_cases() -> tuple[dict[str, list[Any]], dict[str, TestCaseCategory]]:
     """
     Load address derivation test cases from ragger standalone tests.
 
