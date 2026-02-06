@@ -71,7 +71,6 @@ bool format_decimal_amount(uint64_t amount, size_t places, char *out, size_t out
     LEDGER_ASSERT(places <= UINT8_MAX, "Decimal places exceed maximum value");
 
     char scratchBuffer[40] = {0};
-    explicit_bzero(scratchBuffer, SIZEOF(scratchBuffer));
     write_buffer_t scratch_buf = buffer_init_write(scratchBuffer, SIZEOF(scratchBuffer));
 
     // We print in reverse
@@ -154,7 +153,6 @@ bool format_ada_amount(uint64_t amount, char *out, size_t outSize) {
 #ifdef DEBUG
 void str_traceAdaAmount(const char* prefix, uint64_t amount) {
     char adaAmountStr[100] = {0};
-    explicit_bzero(adaAmountStr, SIZEOF(adaAmountStr));
 
     const size_t prefixLen = strlen(prefix);
     ASSERT(prefixLen <= 50);

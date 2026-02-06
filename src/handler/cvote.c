@@ -224,9 +224,7 @@ void finalize_sign_cvote(bool confirmed) {
                   "Response buffer size mismatch");
 
     io_send_response_pointer(response_buffer, SIZEOF(response_buffer), SWO_SUCCESS);
-
-    // Advance to final stage
-    G_context.state.cvote_state = VOTECAST_STAGE_NONE;
+    reset_app_context();
 }
 
 void handler_cvote(buffer_t *cdata, uint8_t p1) {

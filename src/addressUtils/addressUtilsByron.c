@@ -1,3 +1,5 @@
+#include <string.h>  // explicit_bzero
+
 #include "assert.h"
 #include "buffer_write.h"
 #include "addressUtilsByron.h"
@@ -149,6 +151,7 @@ size_t deriveRawAddress(const bip44_path_t* pathSpec,
         deriveExtendedPublicKey(pathSpec, &extPubKey);
 
         addressRootFromExtPubKey(&extPubKey, addressRoot, SIZEOF(addressRoot));
+        explicit_bzero(&extPubKey, SIZEOF(extPubKey));
     }
 
     return cborEncodePubkeyAddressInner(addressRoot,

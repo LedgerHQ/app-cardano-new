@@ -111,7 +111,6 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
     const char* exportPrefix = isUnusual ? "Export UNUSUAL" : "Export";
 
     char title[64] = {0};
-    explicit_bzero(title, sizeof(title));
     int written = snprintf(title, sizeof(title), "%s %s", exportPrefix, keyTypeLabel);
 
     LEDGER_ASSERT(written > 0, "snprintf UI title formatting failed");

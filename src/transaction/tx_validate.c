@@ -1231,7 +1231,6 @@ static int validate_and_hash_withdrawals(tx_hash_builder_t* txHashBuilder, tx_ui
     txHashBuilder_enterWithdrawals(txHashBuilder);
 
     uint8_t previousRewardAccount[REWARD_ACCOUNT_LENGTH] = {0};
-    explicit_bzero(previousRewardAccount, SIZEOF(previousRewardAccount));
     bool isFirstWithdrawal = true;
 
     flist_node_t *node = G_context.tx_info.transaction.withdrawals;

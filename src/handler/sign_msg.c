@@ -144,11 +144,12 @@ __noinline_due_to_stack__ void signMsg_handle_init(buffer_t *cdata) {
     blake2b_224_init(&ctx->msgHashCtx);
 
     // Derive and store witness public key (needed for response and possibly address field)
-    extendedPublicKey_t extPubKey;
+    extendedPublicKey_t extPubKey = {0};
     deriveExtendedPublicKey(&ctx->signingPath, &extPubKey);
     STATIC_ASSERT(SIZEOF(extPubKey.pubKey) == SIZEOF(ctx->witnessKey),
                   "wrong witness key size");
     memmove(ctx->witnessKey, extPubKey.pubKey, SIZEOF(extPubKey.pubKey));
+    explicit_bzero(&extPubKey, SIZEOF(extPubKey));
 
     // Initialize chunk tracking
     ctx->remainingBytes = ctx->msgLength;
@@ -488,9 +489,7 @@ void finalize_sign_msg(bool confirmed) {
     TRACE("Response size = %u", response_size);
 
     io_send_response_pointer(response_buffer, response_size, SWO_SUCCESS);
-
-    // Reset state
-    G_context.state.sign_msg_state = SIGN_MSG_STAGE_NONE;
+    reset_app_context();
 }
 
 // ============================== MAIN HANDLER ==============================

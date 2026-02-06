@@ -111,7 +111,6 @@ void finalize_sign_opcert(bool confirmed) {
     // assemble the opcert bytestring and sign it
     const parsed_opcert_t* opcert = &G_context.opcert_info.opcert;
     uint8_t opCertBodyBuffer[OP_CERT_BODY_LENGTH] = {0};
-    explicit_bzero(opCertBodyBuffer, SIZEOF(opCertBodyBuffer));
     {
         write_buffer_t buf = buffer_init_write(opCertBodyBuffer, SIZEOF(opCertBodyBuffer));
 

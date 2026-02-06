@@ -45,6 +45,7 @@ static void cvote_extract_pubkey(const cvote_credential_t *credential, uint8_t *
             extendedPublicKey_t derived_key = {0};
             deriveExtendedPublicKey(&credential->keyPath, &derived_key);
             memmove(out_pubkey, derived_key.pubKey, PUBLIC_KEY_LENGTH);
+            explicit_bzero(&derived_key, SIZEOF(derived_key));
             return;
         }
         default:
