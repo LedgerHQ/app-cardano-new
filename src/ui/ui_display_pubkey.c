@@ -40,10 +40,7 @@
 
 static void pubkey_review_choice(bool confirm) {
     // CLEANUP
-    if (G_context.pk_info.path_str != NULL) {
-        APP_MEM_FREE(G_context.pk_info.path_str);
-        G_context.pk_info.path_str = NULL;
-    }
+    APP_MEM_FREE_AND_NULL((void **) &G_context.pk_info.path_str);
 
     // FINALIZE
     finalize_pubkey_export(confirm);
@@ -97,10 +94,7 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
             LEDGER_ASSERT(is_silent_pubkey_export_allowed(), "Silent pubkey export not allowed");
             pk->silentExport = true;
             finalize_pubkey_export(true);
-            if (G_context.pk_info.path_str != NULL) {
-                APP_MEM_FREE(G_context.pk_info.path_str);
-                G_context.pk_info.path_str = NULL;
-            }
+            APP_MEM_FREE_AND_NULL((void **) &G_context.pk_info.path_str);
             return;
 
         default:

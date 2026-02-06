@@ -1007,10 +1007,7 @@ void tx_context_cleanup(void) {
     transaction_free_collateral_output(tx);
 
     // Free raw tx buffer
-    if (G_context.tx_info.raw_tx != NULL) {
-        APP_MEM_FREE(G_context.tx_info.raw_tx);
-        G_context.tx_info.raw_tx = NULL;
-    }
+    APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.raw_tx);
     G_context.tx_info.planned_ui_pairs = 0;
 }
 

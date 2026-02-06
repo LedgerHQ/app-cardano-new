@@ -40,10 +40,7 @@
 
 static void witness_review_choice(bool confirm) {
     // CLEANUP
-    if (G_context.tx_info.witness_path_str != NULL) {
-        APP_MEM_FREE(G_context.tx_info.witness_path_str);
-        G_context.tx_info.witness_path_str = NULL;
-    }
+    APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.witness_path_str);
 
     // FINALIZE
     finalize_witness(confirm);

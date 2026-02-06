@@ -67,12 +67,10 @@ void ui_free_pairs(void) {
                 APP_MEM_FREE((void *) g_pairs[i].value);
             }
         }
-        APP_MEM_FREE(g_pairs);
-        g_pairs = NULL;
+        APP_MEM_FREE_AND_NULL((void **) &g_pairs);
     }
     if (g_pairsList != NULL) {
-        APP_MEM_FREE(g_pairsList);
-        g_pairsList = NULL;
+        APP_MEM_FREE_AND_NULL((void **) &g_pairsList);
     }
     g_next_pair_index = 0;
 }
@@ -147,19 +145,13 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf) {
  */
 bool ui_pairs_init(uint8_t nbPairs) {
     // Allocate the pairsList memory
-    if (g_pairsList != NULL) {
-        APP_MEM_FREE(g_pairsList);
-        g_pairsList = NULL;
-    }
+    APP_MEM_FREE_AND_NULL((void **) &g_pairsList);
     if (!ui_allocate_zeroed((void **) &g_pairsList, sizeof(nbgl_contentTagValueList_t))) {
         goto error;
     }
 
     // Allocate the pairs memory (nbgl_contentTagValue_t for individual pairs, not List_t)
-    if (g_pairs != NULL) {
-        APP_MEM_FREE(g_pairs);
-        g_pairs = NULL;
-    }
+    APP_MEM_FREE_AND_NULL((void **) &g_pairs);
     if (!ui_allocate_zeroed((void **) &g_pairs, nbPairs * sizeof(nbgl_contentTagValue_t))) {
         goto error;
     }

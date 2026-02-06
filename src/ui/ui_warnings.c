@@ -189,6 +189,5 @@ void ui_free_warnings(void) {
         APP_MEM_FREE((void *) g_warning->info);
     }
 
-    APP_MEM_FREE(g_warning);
-    g_warning = NULL;
+    APP_MEM_FREE_AND_NULL((void **) &g_warning);
 }
