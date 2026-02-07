@@ -21,6 +21,7 @@
 #include "cvote/vote_cast_hash_builder.h"
 #include "cip8_types.h"
 #include "hash.h"
+#include "ui_constants.h"
 /**
  * State machine for transaction processing.
  * Tracks the progression through receiving, parsing, hashing, UI preparation, and approval.
@@ -102,7 +103,7 @@ typedef struct {
     uint16_t num_witnesses;
     uint16_t current_witness;
     bip44_path_t witness_path;
-    char *witness_path_str;
+    char witness_path_str[MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN];  // Static buffer for NBGL UI
     uint8_t witness_signature[ED25519_SIGNATURE_LENGTH];
 
     // CVote auxiliary data buffers and parsed data
@@ -156,7 +157,7 @@ typedef struct {
 typedef struct {
     bool silentExport;
     bip44_path_t path;
-    char *path_str;
+    char path_str[MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN];  // Static buffer for NBGL UI
     extendedPublicKey_t extPubKey;
 } pubkey_ctx_t;
 

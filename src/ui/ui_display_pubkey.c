@@ -39,9 +39,6 @@
 #include "cardano_settings.h"
 
 static void pubkey_review_choice(bool confirm) {
-    // CLEANUP
-    APP_MEM_FREE_AND_NULL((void **) &G_context.pk_info.path_str);
-
     // FINALIZE
     finalize_pubkey_export(confirm);
 
@@ -71,16 +68,10 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
 
     pubkey_ctx_t* pk = &G_context.pk_info;
 
-    // Allocate display buffers
-    G_context.pk_info.path_str = NULL;
-    if (!APP_MEM_CALLOC((void **) &G_context.pk_info.path_str,
-                        (uint16_t) (MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN))) {
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return;
-    }
+    // Format path into static buffer
     bool pathFormatted = format_bip44_path(&pk->path,
                                            G_context.pk_info.path_str,
-                                           MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN);
+                                           sizeof(G_context.pk_info.path_str));
     LEDGER_ASSERT(pathFormatted, "Unable to format public key path");
     LEDGER_ASSERT(strlen(G_context.pk_info.path_str) <= MAX_BIP44_PATH_STRING_LENGTH,
                   "Public key path ui string buffer too short");
@@ -94,7 +85,6 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
             LEDGER_ASSERT(is_silent_pubkey_export_allowed(), "Silent pubkey export not allowed");
             pk->silentExport = true;
             finalize_pubkey_export(true);
-            APP_MEM_FREE_AND_NULL((void **) &G_context.pk_info.path_str);
             return;
 
         default:

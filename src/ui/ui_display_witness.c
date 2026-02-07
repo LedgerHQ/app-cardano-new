@@ -39,9 +39,6 @@
 #include "sign_tx.h"
 
 static void witness_review_choice(bool confirm) {
-    // CLEANUP
-    APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.witness_path_str);
-
     // FINALIZE
     finalize_witness(confirm);
 
@@ -74,15 +71,6 @@ void ui_display_witness(const bip44_path_t* witnessPath,
         return;
     }
 
-    // Allocate display buffer for witness path
-    G_context.tx_info.witness_path_str = NULL;
-    if (!APP_MEM_CALLOC((void **) &G_context.tx_info.witness_path_str,
-                        (uint16_t) (MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN))) {
-        TRACE("Failed to allocate witness path string");
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return;
-    }
-
     bool isUnusual = warning_bits_has(warnings, WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH);
 
     if (securityPolicy != POLICY_SHOW) {
@@ -92,10 +80,10 @@ void ui_display_witness(const bip44_path_t* witnessPath,
 
     TRACE("isUnusual: %d", isUnusual);
 
-    // Format the witness path as a string
+    // Format the witness path into static buffer
     bool formatted = format_bip44_path(witnessPath,
                                        G_context.tx_info.witness_path_str,
-                                       MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN);
+                                       sizeof(G_context.tx_info.witness_path_str));
     LEDGER_ASSERT(formatted, "Unable to format witness path");
     LEDGER_ASSERT(strlen(G_context.tx_info.witness_path_str) <= MAX_BIP44_PATH_STRING_LENGTH,
                   "Witness path ui string buffer too short");
