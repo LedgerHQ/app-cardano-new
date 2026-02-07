@@ -105,7 +105,7 @@ void handler_sign_opcert(buffer_t *cdata) {
     g_last_called_ins = INS_SIGN_OPCERT;
 }
 
-void handler_cvote(buffer_t *cdata, uint8_t p1) {
+void handler_sign_cvote(buffer_t *cdata, uint8_t p1) {
     (void) cdata;
     (void) p1;
     g_last_called_ins = INS_SIGN_CVOTE;
@@ -205,4 +205,3 @@ int main(void) {
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
-

@@ -16,7 +16,7 @@ The application is written in C and runs on Ledger devices (Stax, Flex, Nano X, 
     - `sign_tx_aux_data.c`: Handles auxiliary data signing (metadata).
     - `sign_opcert.c`: Handles operational certificate signing.
     - `sign_msg.c`: CIP8 message signing.
-    - `cvote.c`: Catalyst voting (ballot signing).
+    - `sign_cvote.c`: Catalyst voting (ballot signing).
     - `derive_address.c`: Address derivation and display.
     - `derive_native_script_hash.c`: Native script hash derivation.
     - Other utility handlers: `get_version.c`, `get_app_name.c`, `get_serial.c`, `debug_settings.c` (debug builds only).

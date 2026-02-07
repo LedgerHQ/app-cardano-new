@@ -55,7 +55,7 @@ set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/cvote/vote_cast_hash_builder.c
     ${CARDANO_PATH}/src/crypto/crypto.c
     ${CARDANO_PATH}/src/deriveNativeScriptHash/derive_native_script_hash_builder.c
-    ${CARDANO_PATH}/src/handler/cvote.c
+    ${CARDANO_PATH}/src/handler/sign_cvote.c
     ${CARDANO_PATH}/src/handler/derive_address.c
     ${CARDANO_PATH}/src/handler/derive_native_script_hash.c
     ${CARDANO_PATH}/src/handler/get_app_name.c

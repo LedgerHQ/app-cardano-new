@@ -16,7 +16,7 @@
  * @param[in] p1
  *   P1 parameter value indicating stage (INIT, CHUNK, or CONFIRM)
  */
-void handler_cvote(buffer_t *cdata, uint8_t p1);
+void handler_sign_cvote(buffer_t *cdata, uint8_t p1);
 
 /**
  * Finalize cvote signing after user confirmation.

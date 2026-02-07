@@ -38,7 +38,7 @@
 #include "sign_opcert.h"
 #include "derive_address.h"
 #include "derive_native_script_hash.h"
-#include "cvote.h"
+#include "sign_cvote.h"
 #include "sign_msg.h"
 
 #ifdef DEBUG
@@ -249,7 +249,7 @@ void apdu_dispatcher(const command_t *cmd) {
                 case P1_CVOTE_INIT:
                 case P1_CVOTE_CHUNK:
                 case P1_CVOTE_CONFIRM:
-                    handler_cvote(&data_buffer, cmd->p1);
+                    handler_sign_cvote(&data_buffer, cmd->p1);
                     return;
                 default:
                     send_swo_and_reset(SWO_INCORRECT_P1_P2);

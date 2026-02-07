@@ -3,7 +3,7 @@
 
 #include "utils.h"
 #include "buffer.h"
-#include "cvote.h"
+#include "sign_cvote.h"
 #include "cardano_swo.h"
 #include "globals.h"
 #include "addressUtils/addressUtilsShelley.h"
@@ -11,7 +11,6 @@
 #include "utils/assert.h"
 #include "app_context.h"
 #include "io.h"
-#include "cvote.h"
 #include "cardano_parsers.h"
 #include "buffer_write.h"
 #include "cvote/vote_cast_hash_builder.h"
@@ -19,7 +18,7 @@
 #include "ui_cvote.h"
 #include "utils/buffer_helpers.h"
 
-static bool ensure_cvote_stage(cvote_stage_e required_stage) {
+static bool ensure_sign_cvote_stage(cvote_stage_e required_stage) {
     if (G_context.state.cvote_state != required_stage) {
         TRACE("Rejecting CVote command in stage %d (expected %d)",
               G_context.state.cvote_state,
@@ -31,7 +30,7 @@ static bool ensure_cvote_stage(cvote_stage_e required_stage) {
 }
 
 // ============================== INIT ==============================
-__noinline_due_to_stack__ void signCVote_handle_init(buffer_t *cdata) {
+__noinline_due_to_stack__ static void handle_sign_cvote_init_apdu(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
     LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STAGE_INIT, "Invalid cvote state");
 
@@ -108,7 +107,7 @@ __noinline_due_to_stack__ void signCVote_handle_init(buffer_t *cdata) {
 
 // ============================== VOTECAST CHUNK ==============================
 
-__noinline_due_to_stack__ void signCVote_handle_votecast_chunk(buffer_t *cdata) {
+__noinline_due_to_stack__ static void handle_sign_cvote_chunk_apdu(buffer_t *cdata) {
     LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STAGE_CHUNK, "Invalid cvote state");
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
     cvote_cxt_t *ctx = &G_context.cvote_info;
@@ -147,7 +146,7 @@ __noinline_due_to_stack__ void signCVote_handle_votecast_chunk(buffer_t *cdata) 
 }
 
 // ============================== CONFIRM ==============================
-__noinline_due_to_stack__ void signCVote_handle_confirm(buffer_t *cdata) {
+__noinline_due_to_stack__ static void handle_sign_cvote_confirm_apdu(buffer_t *cdata) {
     LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STAGE_CONFIRM, "Invalid cvote state");
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
 
@@ -226,7 +225,7 @@ void finalize_sign_cvote(bool confirmed) {
     reset_app_context();
 }
 
-void handler_cvote(buffer_t *cdata, uint8_t p1) {
+void handler_sign_cvote(buffer_t *cdata, uint8_t p1) {
     if (G_context.req_type != REQUEST_CVOTE) {
         explicit_bzero(&G_context, sizeof(G_context));
         G_context.state.cvote_state = VOTECAST_STAGE_NONE;
@@ -237,23 +236,23 @@ void handler_cvote(buffer_t *cdata, uint8_t p1) {
         case P1_CVOTE_INIT: {
             TRACE("P1_CVOTE_INIT");
             G_context.state.cvote_state = VOTECAST_STAGE_INIT;
-            signCVote_handle_init(cdata);
+            handle_sign_cvote_init_apdu(cdata);
             break;
         }
         case P1_CVOTE_CHUNK: {
             TRACE("P1_CVOTE_CHUNK");
-            if (!ensure_cvote_stage(VOTECAST_STAGE_CHUNK)) {
+            if (!ensure_sign_cvote_stage(VOTECAST_STAGE_CHUNK)) {
                 return;
             }
-            signCVote_handle_votecast_chunk(cdata);
+            handle_sign_cvote_chunk_apdu(cdata);
             break;
         }
         case P1_CVOTE_CONFIRM: {
             TRACE("P1_CVOTE_CONFIRM");
-            if (!ensure_cvote_stage(VOTECAST_STAGE_CONFIRM)) {
+            if (!ensure_sign_cvote_stage(VOTECAST_STAGE_CONFIRM)) {
                 return;
             }
-            signCVote_handle_confirm(cdata);
+            handle_sign_cvote_confirm_apdu(cdata);
             break;
         }
         default:
