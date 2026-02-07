@@ -76,6 +76,9 @@ typedef enum {
     SWO_SIGN_MSG_INVALID_ADDRESS_FIELD_TYPE = 0x6B6A,     // invalid address field type
     SWO_SIGN_MSG_CONFIRM_MUST_BE_EMPTY = 0x6B6B,          // confirm APDU must be empty
 
+    // Swap validation errors
+    SWO_SWAP_CHECKING_FAIL = 0x6001,   // swap parameter validation failed
+
     // TODO we might want to support non-canonical ordering,
     // TODO but checking for uniqueness is somewhat hard
     // TODO a quadratic algorithm with cbor serialization computed on demand is doable

@@ -154,6 +154,7 @@ security_policy_t policyForSignTxDonation(sign_tx_signingmode_t txSigningMode, u
 security_policy_t policyForSignTxDisplayTxHash(sign_tx_signingmode_t txSigningMode);
 
 security_policy_t policyForSignTxWitness(sign_tx_signingmode_t txSigningMode,
+                                         bool isSwap,
                                          const bip44_path_t* witnessPath,
                                          bool mintPresent,
                                          const bip44_path_t* poolOwnerPath,

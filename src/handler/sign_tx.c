@@ -49,6 +49,12 @@
 #include "tx_validate.h"
 #include "utils.h"
 
+#ifdef HAVE_SWAP
+#include "swap.h"
+#include "swap_error_code_helpers.h"
+#include "swap_lib.h"
+#endif
+
 static bool is_valid_tx_signing_mode(uint8_t tx_signing_mode) {
     switch (tx_signing_mode) {
         case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
@@ -345,9 +351,14 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     bool cvote_aux_data_expected = (includeAuxDataHash &&
                                     (G_context.tx_info.transaction.auxDataType == AUX_DATA_TYPE_CVOTE_REGISTRATION));
 
-    // Show spinner to indicate transaction processing
-    TRACE("Calling nbgl_useCaseSpinner(\"Processing\")");
-    nbgl_useCaseSpinner("Processing");
+    // Show spinner only in standalone mode; in swap mode UI must stay in Exchange app.
+#ifdef HAVE_SWAP
+    if (!G_called_from_swap)
+#endif
+    {
+        TRACE("Calling nbgl_useCaseSpinner(\"Processing\")");
+        nbgl_useCaseSpinner("Processing");
+    }
 
     if (cvote_aux_data_expected) {
         G_context.tx_info.cvote_aux_data.state = CVOTE_AUX_DATA_STATE_EXPECTING_INIT;
@@ -417,6 +428,8 @@ static void handle_tx_data_chunk(buffer_t *cdata, bool more) {
 void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_tx handler");
     TRACE_BUFFER_T(cdata);
+#ifdef HAVE_SWAP
+#endif
 
     switch (p1) {
         case P1_TX_INIT:
@@ -426,6 +439,16 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
                 send_swo_and_reset(SWO_BAD_STATE);
                 return;
             }
+#ifdef HAVE_SWAP
+            if (G_called_from_swap && G_swap_response_ready) {
+                // Safety against trying to make the app sign multiple TXs in swap mode
+                TRACE("Safety against double signing triggered");
+                swap_reject_and_exit(SWAP_EC_ERROR_GENERIC, SWAP_APP_CODE_MULTI_SIGN);
+            }
+            if (G_called_from_swap) {
+                TRACE("Swap mode transaction started");
+            }
+#endif
             LEDGER_ASSERT(G_context.req_type == REQUEST_NONE, "init while request active");
             LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_NONE, "init while tx state active");
             G_context.req_type = REQUEST_SIGN_TRANSACTION;
@@ -483,6 +506,52 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 
             G_context.state.tx_state = TX_STATE_HASHED;
 
+#ifdef HAVE_SWAP
+            if (G_called_from_swap) {
+                // Validate swap parameters against parsed transaction
+                // Check fee
+                if (!swap_check_fee_validity(G_context.tx_info.transaction.fee)) {
+                    swap_reject_and_exit(SWAP_EC_ERROR_WRONG_FEES, SWAP_APP_CODE_DEFAULT);
+                }
+
+                // Check outputs: exactly one THIRD_PARTY output must be present and it must
+                // match the destination + amount validated by Exchange.
+                size_t third_party_output_count = 0;
+                flist_node_t *node = G_context.tx_info.transaction.outputs;
+                while (node != NULL) {
+                    tx_output_node_t *outputNode = (tx_output_node_t *) node;
+                    parsed_tx_output_t *output = &outputNode->output_data;
+
+                    if (output->destination.type == DESTINATION_THIRD_PARTY) {
+                        third_party_output_count++;
+                        if (!swap_check_destination_validity(&output->destination)) {
+                            swap_reject_and_exit(SWAP_EC_ERROR_WRONG_DESTINATION,
+                                                 SWAP_APP_CODE_DEFAULT);
+                        }
+                        if (!swap_check_amount_validity(output->adaAmount)) {
+                            swap_reject_and_exit(SWAP_EC_ERROR_WRONG_AMOUNT,
+                                                 SWAP_APP_CODE_DEFAULT);
+                        }
+                    }
+                    node = node->next;
+                }
+
+                if (third_party_output_count != 1) {
+                    TRACE("Swap: expected exactly one THIRD_PARTY output, found %u",
+                          (unsigned int) third_party_output_count);
+                    swap_reject_and_exit(SWAP_EC_ERROR_WRONG_DESTINATION, SWAP_APP_CODE_DEFAULT);
+                }
+
+                // In swap mode, skip UI and auto-approve the transaction
+                G_context.state.tx_state = TX_STATE_APPROVED;
+                io_send_response_pointer(
+                    G_context.tx_info.tx_hash,
+                    sizeof(G_context.tx_info.tx_hash),
+                    SWO_SUCCESS);
+                return;
+            }
+#endif
+
             LEDGER_ASSERT(ui_plan.pair_count > 0, "Invalid UI plan");
             G_context.tx_info.planned_ui_pairs = ui_plan.pair_count;
 
@@ -515,10 +584,17 @@ void finalize_witness(bool confirm)
         TRACE("Witness rejected by user");
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
         return;
-        return;
     }
 
     // Witness confirmed - send signature back
+#ifdef HAVE_SWAP
+    if (G_called_from_swap &&
+        (G_context.tx_info.current_witness + 1 == G_context.tx_info.num_witnesses)) {
+        // The final witness response must return to Exchange app.
+        TRACE("Swap mode: final witness response will return to Exchange");
+        G_swap_response_ready = true;
+    }
+#endif
     io_send_response_pointer(
         G_context.tx_info.witness_signature,
         ED25519_SIGNATURE_LENGTH,
@@ -598,8 +674,14 @@ void handler_sign_tx_witness(buffer_t *cdata) {
 
     warning_bits_t witness_warnings = {0};
     warning_bits_init(&witness_warnings);
+#ifdef HAVE_SWAP
+    const bool isSwap = G_called_from_swap;
+#else
+    const bool isSwap = false;
+#endif
     security_policy_t policy = policyForSignTxWitness(
         G_context.tx_info.transaction.txSigningMode,
+        isSwap,
         &G_context.tx_info.witness_path,
         mintPresent,
         poolOwnerPath,
@@ -608,9 +690,21 @@ void handler_sign_tx_witness(buffer_t *cdata) {
 
     TRACE("Witness security policy: %d", (int) policy);
 
+#ifdef HAVE_SWAP
+    // Invariant: swap-validated params must only exist in swap invocation context.
+    if (swap_transaction_params_initialized() && !G_called_from_swap) {
+        LEDGER_ASSERT(false, "Swap params initialized outside swap context");
+    }
+#endif
+
     // Handle DENY policy
     if (policy == POLICY_DENY) {
         TRACE("Security policy DENY - rejecting witness");
+#ifdef HAVE_SWAP
+        if (G_called_from_swap) {
+            swap_reject_and_exit(SWAP_EC_ERROR_GENERIC, SWAP_APP_CODE_DENIED_WITNESS_POLICY);
+        }
+#endif
         send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
         return;
     }
@@ -632,10 +726,17 @@ void handler_sign_tx_witness(buffer_t *cdata) {
 
             // Handle UI state: if this was the last witness, return to main menu
             // Otherwise, the spinner from tx_review_choice will continue showing
+            // Note: In swap mode, finalize_witness calls os_lib_end() so this code
+            // is not reached, but we guard it anyway for safety.
             if (G_context.tx_info.current_witness == G_context.tx_info.num_witnesses) {
-                // All witnesses processed - return to main menu
-                TRACE("All POLICY_HIDE witnesses complete, returning to main menu");
-                ui_menu_main();
+#ifdef HAVE_SWAP
+                if (!G_called_from_swap)
+#endif
+                {
+                    // All witnesses processed - return to main menu
+                    TRACE("All POLICY_HIDE witnesses complete, returning to main menu");
+                    ui_menu_main();
+                }
             }
             return;
 

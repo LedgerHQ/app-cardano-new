@@ -1,0 +1,5 @@
+.test_dependencies/
+snapshots-tmp/
+__pycache__/
+venv/
+*.pyc

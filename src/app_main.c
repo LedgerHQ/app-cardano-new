@@ -31,6 +31,9 @@
 #include "mem.h"
 #include "utils.h"
 #include "app_context.h"
+#ifdef HAVE_SWAP
+#include "swap.h"
+#endif
 
 global_ctx_t G_context;
 
@@ -51,7 +54,12 @@ void app_main() {
 
     io_init();
 
-    ui_menu_main();
+#ifdef HAVE_SWAP
+    if (!G_called_from_swap)
+#endif
+    {
+        ui_menu_main();
+    }
 
     // Reset context
     reset_app_context();

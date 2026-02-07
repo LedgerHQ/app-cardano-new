@@ -45,6 +45,12 @@
 #include "debug_settings.h"
 #endif
 
+#ifdef HAVE_SWAP
+#include "swap.h"
+#include "swap_error_code_helpers.h"
+#include "swap_lib.h"
+#endif
+
 /**
  * Map request type to its expected instruction
  * Used to detect instruction interleaving attacks
@@ -72,6 +78,7 @@ static command_e req_type_to_instruction(request_type_e req_type) {
             return INS_GET_VERSION;  // Unreachable
     }
 }
+
 
 void apdu_dispatcher(const command_t *cmd) {
     LEDGER_ASSERT(cmd != NULL, "NULL cmd");
@@ -110,6 +117,19 @@ void apdu_dispatcher(const command_t *cmd) {
         // This is a new request, ensure we start with a clean context
         reset_app_context();
     }
+
+#ifdef HAVE_SWAP
+    // In swap mode, only allow a restricted set of instructions
+    if (G_called_from_swap) {
+        if (cmd->ins != INS_GET_VERSION &&
+            cmd->ins != INS_GET_PUBLIC_KEY &&
+            cmd->ins != INS_DERIVE_ADDRESS &&
+            cmd->ins != INS_SIGN_TX) {
+            TRACE("Instruction %d not allowed in swap mode", cmd->ins);
+            swap_reject_and_exit(SWAP_EC_ERROR_WRONG_METHOD, SWAP_APP_CODE_BAD_INS);
+        }
+    }
+#endif
 
     if (cmd->cla != CLA) {
         send_swo_and_reset(SWO_INVALID_CLA);

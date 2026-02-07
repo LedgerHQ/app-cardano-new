@@ -1790,21 +1790,27 @@ security_policy_t policyForSignTxVotingProcedure(sign_tx_signingmode_t txSigning
 }
 
 // ======================================= Treasury =======================================
+
 security_policy_t policyForSignTxTreasury(sign_tx_signingmode_t txSigningMode MARK_UNUSED,
                                           uint64_t treasury MARK_UNUSED) {
     SHOW();
 }
 
 // ======================================= Donation =======================================
+
 security_policy_t policyForSignTxDonation(sign_tx_signingmode_t txSigningMode MARK_UNUSED,
                                           uint64_t donation MARK_UNUSED) {
     SHOW();
 }
 
+// ======================================= Tx hash =======================================
+
 security_policy_t policyForSignTxDisplayTxHash(sign_tx_signingmode_t signingMode) {
     switch (signingMode) {
         case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
         case SIGN_TX_SIGNINGMODE_MULTISIG_TX:
+        case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
+        case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
             SHOW_IF(is_expert_mode());
             HIDE();
         case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
@@ -1983,16 +1989,48 @@ static inline security_policy_t _poolRegistrationOperatorWitnessPolicy(const bip
     }
 }
 
+static inline security_policy_t _swapWitnessPolicy(const sign_tx_signingmode_t txSigningMode,
+                                                   const bip44_path_t *path,
+                                                   warning_bits_t *warnings) {
+    LEDGER_ASSERT(path != NULL, "NULL path");
+    LEDGER_ASSERT(warnings != NULL, "NULL warnings");
+
+    // Swap flow must sign ordinary transactions only.
+    DENY_UNLESS(txSigningMode == SIGN_TX_SIGNINGMODE_ORDINARY_TX);
+
+    switch (bip44_classifyPath(path)) {
+        case PATH_ORDINARY_PAYMENT_KEY:
+            // Keep single-account invariant in swap mode as well.
+            DENY_IF(violatesSingleAccountOrStoreIt(path));
+            // Swap does not show witness UI, so unusual derivations must be denied.
+            DENY_UNLESS(bip44_isPathReasonable(path));
+            HIDE();
+            break;
+
+        default:
+            // In swap mode we only accept ordinary payment key witnesses.
+            // This rejects pool cold, staking, multisig, mint and governance paths.
+            DENY();
+            break;
+    }
+}
+
 // For each transaction witness
 // Note: witnesses reveal public key of an address and Ledger *does not* check
 // whether they correspond to previously declared inputs and certificates
 security_policy_t policyForSignTxWitness(sign_tx_signingmode_t txSigningMode,
+                                         bool isSwap,
                                          const bip44_path_t *witnessPath,
                                          bool mintPresent,
                                          const bip44_path_t *poolOwnerPath __attribute__((unused)),
                                          warning_bits_t *warnings) {
     LEDGER_ASSERT(witnessPath != NULL, "NULL witness path");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
+
+    if (isSwap) {
+        return _swapWitnessPolicy(txSigningMode, witnessPath, warnings);
+    }
+
     switch (txSigningMode) {
         case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
             return _ordinaryWitnessPolicy(witnessPath, mintPresent, warnings);
