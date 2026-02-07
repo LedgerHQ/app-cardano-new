@@ -169,7 +169,7 @@ def _deriveNativeScriptHash_addSimpleScript(device: Device,
 
         moves = []
         moves += [NavInsID.USE_CASE_REVIEW_TAP]
-        if device.type is DeviceType.STAX and navigator is not None:
+        if not device.is_nano:
             navigator.navigate(
                 moves, screen_change_before_first_instruction=False
             )
@@ -212,7 +212,7 @@ def _deriveScriptHash_startComplexScript(device: Device,
 
         moves = []
         moves += [NavInsID.USE_CASE_REVIEW_TAP]
-        if device.type is DeviceType.STAX and navigator is not None:
+        if not device.is_nano:
             navigator.navigate(
                 moves, screen_change_before_first_instruction=False
             )
@@ -256,7 +256,7 @@ def _deriveNativeScriptHash_finishWholeNativeScript(device: Device,
         """
         """
         moves = []
-        if device.type is DeviceType.STAX and navigator is not None:
+        if not device.is_nano:
             navigator.navigate(
                 moves, screen_change_before_first_instruction=False
             )
@@ -264,7 +264,7 @@ def _deriveNativeScriptHash_finishWholeNativeScript(device: Device,
         moves = []
         moves += [NavInsID.USE_CASE_REVIEW_TAP]
         moves += [NavInsID.USE_CASE_REVIEW_CONFIRM]
-        if device.type is DeviceType.STAX and navigator is not None:
+        if not device.is_nano:
             navigator.navigate(
                 moves, screen_change_before_first_instruction=False
             )
@@ -273,10 +273,7 @@ def _deriveNativeScriptHash_finishWholeNativeScript(device: Device,
     assert response and response.status == StatusWord.SWO_SUCCESS
     # Check the response
     script_hash = unpack_derive_native_script_hash_response(response.data)
-    if not (
-        device.type is DeviceType.STAX
-        and testCase.skip_expected_in_ragger
-    ):
+    if not testCase.skip_expected_in_ragger:
         assert script_hash.hex() == testCase.expected_in_unit_test.hash
     # Independently verify the hash by serializing the script to CBOR and
     # hashing it.  For PUBKEY_DEVICE_OWNED scripts the key hash is derived
