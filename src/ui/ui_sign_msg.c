@@ -127,7 +127,7 @@ void ui_display_sign_msg(security_policy_t securityPolicy) {
         }
         case CIP8_ADDRESS_FIELD_KEYHASH: {
             // Display key hash as hex
-            UI_ADD_FORMAT2(UI_STATIC_LABEL("Address field (keyhash)"),
+            UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Address field (keyhash)", "Addr field"),
                            2 * ADDRESS_KEY_HASH_LENGTH + 1,
                            format_hex_bytes,
                            ctx->addressField,
@@ -140,7 +140,7 @@ void ui_display_sign_msg(security_policy_t securityPolicy) {
     }
 
     // Field 4: Message length
-    UI_ADD_FORMAT1(UI_STATIC_LABEL("Message length"),
+    UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Message length", "Msg length"),
                    MAX_UINT64_STRING_LENGTH,
                    format_uint64,
                    ctx->msgLength);
@@ -148,18 +148,18 @@ void ui_display_sign_msg(security_policy_t securityPolicy) {
     // Field 5: Full message content (ASCII or hex)
     if (ctx->msgLength == 0) {
         if (ctx->isAscii) {
-            UI_ADD_STATIC(UI_STATIC_LABEL("Message (ASCII)"), UI_STATIC_LABEL("(empty)"));
+            UI_ADD_STATIC(UI_LABEL_BY_SCREEN("Message (ASCII)", "Msg (ASCII)"), UI_STATIC_LABEL("(empty)"));
         } else {
-            UI_ADD_STATIC(UI_STATIC_LABEL("Message (hex)"), UI_STATIC_LABEL("(empty)"));
+            UI_ADD_STATIC(UI_LABEL_BY_SCREEN("Message (hex)", "Msg (hex)"), UI_STATIC_LABEL("(empty)"));
         }
     } else if (ctx->isAscii) {
-        UI_ADD_FORMAT2(UI_STATIC_LABEL("Message (ASCII)"),
+        UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Message (ASCII)", "Msg (ASCII)"),
                        ctx->msgLength,
                        format_ascii_chunk,
                        ctx->msgBuffer,
                        ctx->msgLength);
     } else {
-        UI_ADD_FORMAT2(UI_STATIC_LABEL("Message (hex)"),
+        UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Message (hex)", "Msg (hex)"),
                        2 * ctx->msgLength + 1,
                        format_hex_bytes,
                        ctx->msgBuffer,
@@ -167,7 +167,7 @@ void ui_display_sign_msg(security_policy_t securityPolicy) {
     }
 
     // Field 6: Message hash (always computed)
-    UI_ADD_FORMAT2(UI_STATIC_LABEL("Message hash"),
+    UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Message hash", "Msg hash"),
                    2 * CIP8_MSG_HASH_LENGTH + 1,
                    format_hex_bytes,
                    ctx->msgHash,

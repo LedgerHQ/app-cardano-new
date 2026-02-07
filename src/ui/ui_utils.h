@@ -71,6 +71,12 @@ uint16_t ui_pairs_get_count(void);
 #define UI_STATIC_LABEL(label) (label)
 #endif
 
+#ifdef SCREEN_SIZE_WALLET
+#define UI_LABEL_BY_SCREEN(wallet_label, compact_label) UI_STATIC_LABEL(wallet_label)
+#else
+#define UI_LABEL_BY_SCREEN(wallet_label, compact_label) UI_STATIC_LABEL(compact_label)
+#endif
+
 /**
  * Add a label-value pair to the UI pairs list with optional shrinking
  *

@@ -77,26 +77,26 @@ void addVoterUIPairs(const ext_voter_t *voter) {
     START_COUNT();
     switch (voter->type) {
         case EXT_VOTER_COMMITTEE_HOT_KEY_PATH:
-            UI_ADD_FORMAT1(UI_STATIC_LABEL("Committee hot key"),
+            UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Committee hot key", "Cmte hot key"),
                            MAX_BIP44_PATH_STRING_LENGTH,
                            format_bip44_path,
                            &voter->keyPath);
             break;
         case EXT_VOTER_COMMITTEE_HOT_KEY_HASH:
             LEDGER_ASSERT(voter->keyHash != NULL, "NULL committee hot key hash voter");
-            UI_ADD_FORMAT3(UI_STATIC_LABEL("Committee hot key hash"),
+            UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Committee hot key hash", "Cmte hot key"),
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
-                           "cc_hot",
+                           "cc_hot_vkh",
                            voter->keyHash,
                            ADDRESS_KEY_HASH_LENGTH);
             break;
         case EXT_VOTER_COMMITTEE_HOT_SCRIPT_HASH:
             LEDGER_ASSERT(voter->scriptHash != NULL, "NULL committee hot script hash voter");
-            UI_ADD_FORMAT3(UI_STATIC_LABEL("Committee hot script hash"),
+            UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Committee hot script hash", "Cmte hot script"),
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
-                           "cc_hot",
+                           "cc_hot_script",
                            voter->scriptHash,
                            SCRIPT_HASH_LENGTH);
             break;
@@ -108,19 +108,19 @@ void addVoterUIPairs(const ext_voter_t *voter) {
             break;
         case EXT_VOTER_DREP_KEY_HASH:
             LEDGER_ASSERT(voter->keyHash != NULL, "NULL drep key hash voter");
-            UI_ADD_FORMAT3(UI_STATIC_LABEL("DRep key hash"),
+            UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("DRep key hash", "DRep key hash"),
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
-                           "drep",
+                           "drep_vkh",
                            voter->keyHash,
                            ADDRESS_KEY_HASH_LENGTH);
             break;
         case EXT_VOTER_DREP_SCRIPT_HASH:
             LEDGER_ASSERT(voter->scriptHash != NULL, "NULL drep script hash voter");
-            UI_ADD_FORMAT3(UI_STATIC_LABEL("DRep script hash"),
+            UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("DRep script hash", "DRep scrpt hash"),
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
-                           "drep",
+                           "drep_script",
                            voter->scriptHash,
                            SCRIPT_HASH_LENGTH);
             break;
@@ -132,7 +132,7 @@ void addVoterUIPairs(const ext_voter_t *voter) {
             break;
         case EXT_VOTER_STAKE_POOL_KEY_HASH:
             LEDGER_ASSERT(voter->keyHash != NULL, "NULL stake pool key hash voter");
-            UI_ADD_FORMAT3(UI_STATIC_LABEL("Stake pool key hash"),
+            UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Stake pool key hash", "Pool key hash"),
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
                            "pool",
@@ -157,12 +157,12 @@ void addDRepUIPairs(const ext_drep_t *drep, const char *label) {
         }
         case EXT_DREP_KEY_HASH: {
             LEDGER_ASSERT(drep->keyHash != NULL, "NULL drep key hash pointer");
-            UI_ADD_FORMAT3(label, MAX_BECH32_STRING_LENGTH, format_bech32, "drep", drep->keyHash, ADDRESS_KEY_HASH_LENGTH);
+            UI_ADD_FORMAT3(label, MAX_BECH32_STRING_LENGTH, format_bech32, "drep_vkh", drep->keyHash, ADDRESS_KEY_HASH_LENGTH);
             break;
         }
         case EXT_DREP_SCRIPT_HASH: {
             LEDGER_ASSERT(drep->scriptHash != NULL, "NULL drep script hash pointer");
-            UI_ADD_FORMAT3(label, MAX_BECH32_STRING_LENGTH, format_bech32, "drep", drep->scriptHash, SCRIPT_HASH_LENGTH);
+            UI_ADD_FORMAT3(label, MAX_BECH32_STRING_LENGTH, format_bech32, "drep_script", drep->scriptHash, SCRIPT_HASH_LENGTH);
             break;
         }
         case EXT_DREP_ABSTAIN:
@@ -181,7 +181,7 @@ static void addStakeCredentialUIPairs(const ext_credential_t* credential) {
         UI_STATIC_LABEL("Stake key"),
         UI_STATIC_LABEL("Stake key hash"),
         "stake_vkh",
-        UI_STATIC_LABEL("Stake script hash"),
+        UI_LABEL_BY_SCREEN("Stake script hash", "Stake script"),
         "script"
     );
 }
@@ -191,30 +191,30 @@ static void addDRepCredentialUIPairs(const ext_credential_t* credential) {
         credential,
         UI_STATIC_LABEL("DRep key"),
         UI_STATIC_LABEL("DRep key hash"),
-        "drep",
-        UI_STATIC_LABEL("DRep script hash"),
-        "drep"
+        "drep_vkh",
+        UI_LABEL_BY_SCREEN("DRep script hash", "DRep script"),
+        "drep_script"
     );
 }
 
 static void addCommitteeColdCredentialUIPairs(const ext_credential_t* credential) {
     addCredentialUIPairs(
         credential,
-        UI_STATIC_LABEL("Committee cold key"),
-        UI_STATIC_LABEL("Committee cold key hash"),
-        "cc_cold",
-        UI_STATIC_LABEL("Committee cold script hash"),
-        "cc_cold"
+        UI_LABEL_BY_SCREEN("Committee cold key", "Cmte cold key"),
+        UI_LABEL_BY_SCREEN("Committee cold key hash", "Cmte cold key"),
+        "cc_cold_vkh",
+        UI_LABEL_BY_SCREEN("Committee cold script hash", "Cmte cold script"),
+        "cc_cold_script"
     );
 }
 
 static void addCommitteeHotCredentialUIPairs(const ext_credential_t* credential) {
     addCredentialUIPairs(
         credential,
-        UI_STATIC_LABEL("Committee hot key"),
-        UI_STATIC_LABEL("Committee hot key hash"),
-        "cc_hot",
-        UI_STATIC_LABEL("Committee hot script hash"),
+        UI_LABEL_BY_SCREEN("Committee hot key", "Cmte hot key"),
+        UI_LABEL_BY_SCREEN("Committee hot key hash", "Cmte hot key"),
+        "cc_hot_vkh",
+        UI_LABEL_BY_SCREEN("Committee hot script hash", "Cmte hot script"),
         "cc_hot_script"
     );
 }
@@ -225,7 +225,7 @@ static void addVoterCredentialUIPairs(const ext_credential_t* credential) {
         UI_STATIC_LABEL("Voter"),
         UI_STATIC_LABEL("Voter hash"),
         "stake_vkh",
-        UI_STATIC_LABEL("Voter script hash"),
+        UI_LABEL_BY_SCREEN("Voter script hash", "Voter script"),
         "script"
     );
 }
@@ -255,7 +255,7 @@ static void addPoolRetirementUIPairs(const certificate_data_t* certificate_data)
                    pool_key_hash,
                    POOL_KEY_HASH_LENGTH);
 
-    UI_ADD_FORMAT1(UI_STATIC_LABEL("Retirement epoch"),
+    UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Retirement epoch", "Retire epoch"),
                    MAX_UINT64_STRING_LENGTH,
                    format_uint64,
                    certificate_data->retirementEpoch);
@@ -300,13 +300,13 @@ void addWithdrawalUIPairs(uint8_t networkId, const withdrawal_t *withdrawal) {
     LEDGER_ASSERT(withdrawal != NULL, "NULL withdrawal");
 
     START_COUNT();
-    UI_ADD_FORMAT1(UI_STATIC_LABEL("Withdrawal amount"), MAX_ADA_AMOUNT_STRING_LENGTH, format_ada_amount, withdrawal->amount);
+    UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Withdrawal amount", "Withdraw amount"), MAX_ADA_AMOUNT_STRING_LENGTH, format_ada_amount, withdrawal->amount);
 
     const ext_credential_t *credential = &withdrawal->stakeCredential;
 
     switch (credential->type) {
         case EXT_CREDENTIAL_KEY_PATH: {
-            UI_ADD_FORMAT1(UI_STATIC_LABEL("Withdrawal path"), MAX_BIP44_PATH_STRING_LENGTH, format_bip44_path, &credential->keyPath);
+            UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Withdrawal key path", "Withdraw key"), MAX_BIP44_PATH_STRING_LENGTH, format_bip44_path, &credential->keyPath);
             break;
         }
         case EXT_CREDENTIAL_KEY_HASH:
@@ -317,7 +317,7 @@ void addWithdrawalUIPairs(uint8_t networkId, const withdrawal_t *withdrawal) {
             LEDGER_ASSERT(false, "Unknown credential type");
     }
 
-    UI_ADD_FORMAT2(UI_STATIC_LABEL("Withdraw from"),
+    UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Withdraw from", "Withdraw"),
                    MAX_HUMAN_ADDRESS_LENGTH,
                    format_reward_account_from_credential,
                    networkId,
@@ -515,7 +515,7 @@ void addPaymentInfoUIPairs(const address_params_t* address_params) {
         case PAYMENT_PATH: {
             LEDGER_ASSERT(addressParams_getPaymentPartType(address_params) == PAYMENT_PART_KEY_PATH,
                           "Payment credential must be KEY_PATH");
-            UI_ADD_FORMAT1(UI_STATIC_LABEL("Payment key path"), MAX_BIP44_PATH_STRING_LENGTH, format_bip44_path, &address_params->paymentKeyPath);
+            UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Payment key path", "Pay path"), MAX_BIP44_PATH_STRING_LENGTH, format_bip44_path, &address_params->paymentKeyPath);
             break;
         }
 
@@ -524,7 +524,7 @@ void addPaymentInfoUIPairs(const address_params_t* address_params) {
                           "Payment credential must be SCRIPT_HASH");
             LEDGER_ASSERT(address_params->paymentScriptHash != NULL,
                           "NULL payment script hash");
-            UI_ADD_FORMAT3(UI_STATIC_LABEL("Payment script hash"), MAX_BECH32_STRING_LENGTH, format_bech32, "script", address_params->paymentScriptHash, SCRIPT_HASH_LENGTH);
+            UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Payment script hash", "Pay script"), MAX_BECH32_STRING_LENGTH, format_bech32, "script", address_params->paymentScriptHash, SCRIPT_HASH_LENGTH);
             break;
         }
 
@@ -541,7 +541,7 @@ void addStakingInfoUIPairs(const address_params_t* address_params) {
         case STAKING_PART_NONE: {
             switch (address_params->type) {
                 case BYRON:
-                    UI_ADD_STATIC(UI_STATIC_LABEL("Warning:"), UI_STATIC_LABEL("Legacy Byron address (no staking rewards)"));
+                    UI_ADD_STATIC(UI_STATIC_LABEL("Warning:"), UI_LABEL_BY_SCREEN("Legacy Byron address (no staking rewards)", "Byron (no staking)"));
                     break;
 
                 case ENTERPRISE_KEY:
@@ -567,7 +567,7 @@ void addStakingInfoUIPairs(const address_params_t* address_params) {
                           "Staking credential must be KEY_HASH");
             LEDGER_ASSERT(address_params->stakingKeyHash != NULL,
                           "NULL staking key hash");
-            UI_ADD_FORMAT3(UI_STATIC_LABEL("Stake key hash"), MAX_BECH32_STRING_LENGTH, format_bech32, "stake_vkh", address_params->stakingKeyHash, ADDRESS_KEY_HASH_LENGTH);
+            UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Stake key hash", "Stake key"), MAX_BECH32_STRING_LENGTH, format_bech32, "stake_vkh", address_params->stakingKeyHash, ADDRESS_KEY_HASH_LENGTH);
             break;
         }
 
@@ -576,12 +576,12 @@ void addStakingInfoUIPairs(const address_params_t* address_params) {
                           "Staking credential must be SCRIPT_HASH");
             LEDGER_ASSERT(address_params->stakingScriptHash != NULL,
                           "NULL staking script hash");
-            UI_ADD_FORMAT3(UI_STATIC_LABEL("Stake script hash"), MAX_BECH32_STRING_LENGTH, format_bech32, "script", address_params->stakingScriptHash, SCRIPT_HASH_LENGTH);
+            UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Stake script hash", "Stake hash"), MAX_BECH32_STRING_LENGTH, format_bech32, "script", address_params->stakingScriptHash, SCRIPT_HASH_LENGTH);
             break;
         }
 
         case STAKING_PART_BLOCKCHAIN_POINTER: {
-            UI_ADD_FORMAT1(UI_STATIC_LABEL("Stake key pointer"), MAX_BIP44_PATH_STRING_LENGTH, format_blockchain_pointer, address_params->stakingKeyBlockchainPointer);
+            UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Stake key pointer", "Stake ptr"), MAX_BIP44_PATH_STRING_LENGTH, format_blockchain_pointer, address_params->stakingKeyBlockchainPointer);
             break;
         }
 

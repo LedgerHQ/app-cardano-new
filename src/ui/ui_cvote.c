@@ -106,7 +106,7 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy) {
                    format_decimal_amount,
                    ctx->proposal_index,
                    0);
-    UI_ADD_FORMAT2(UI_STATIC_LABEL("Payload type tag"),
+    UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Payload type tag", "Payload tag"),
                    MAX_UINT64_STRING_LENGTH,
                    format_decimal_amount,
                    ctx->payload_type_tag,

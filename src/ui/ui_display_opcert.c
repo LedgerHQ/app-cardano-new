@@ -66,7 +66,7 @@ static ui_status_t format_opcert_fields(const parsed_opcert_t* opcert) {
     }
 
     // Format and add all opcert fields using unified macros
-    UI_ADD_FORMAT1(UI_STATIC_LABEL("Pool cold key path"),
+    UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Pool cold key path", "Pool cold key"),
                    MAX_BIP44_PATH_STRING_LENGTH,
                    format_bip44_path,
                    &opcert->poolColdKeyPath);

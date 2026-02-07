@@ -151,7 +151,7 @@ static void add_ui_and_free_output_tokens(const output_asset_group_t *group,
         output_token_t *token = &token_node->token_data;
 
         if (show_tokens) {
-            UI_ADD_FORMAT3(UI_STATIC_LABEL("Asset fingerprint"), MAX_TOKEN_FINGERPRINT_STRING_LENGTH, format_asset_fingerprint_bech32, group->policyId, token->assetName, token->assetNameLen);
+            UI_ADD_FORMAT3(UI_STATIC_LABEL("Fingerprint"), MAX_TOKEN_FINGERPRINT_STRING_LENGTH, format_asset_fingerprint_bech32, group->policyId, token->assetName, token->assetNameLen);
             UI_ADD_FORMAT4(UI_STATIC_LABEL("Token amount"), MAX_TOKEN_AMOUNT_OUTPUT_STRING_LENGTH, format_token_amount_output, group->policyId, token->assetName, token->assetNameLen, token->amount);
         }
 
@@ -436,7 +436,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
 
     if (reward_policy == POLICY_SHOW) {
         START_COUNT();
-        UI_ADD_FORMAT2(UI_STATIC_LABEL("Pool reward address"),
+        UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Pool reward address", "Reward addr"),
                        MAX_HUMAN_ADDRESS_LENGTH,
                        format_pool_reward_account,
                        G_context.tx_info.transaction.networkId,
@@ -458,7 +458,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
 
         if (owner_policy == POLICY_SHOW) {
             START_COUNT();
-            UI_ADD_FORMAT2(UI_STATIC_LABEL("Owner reward address"),
+            UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Owner reward address", "Owner addr"),
                            MAX_HUMAN_ADDRESS_LENGTH,
                            format_reward_account_from_credential,
                            G_context.tx_info.transaction.networkId,
@@ -602,16 +602,16 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
                         ),
                         "Empty pool metadata URL warning missing"
                     );
-                    UI_ADD_STATIC(UI_STATIC_LABEL("Pool metadata url"),
+                    UI_ADD_STATIC(UI_LABEL_BY_SCREEN("Pool metadata url", "Metadata url"),
                                   UI_STATIC_LABEL("(empty)"));
                 } else {
-                    UI_ADD_FORMAT2(UI_STATIC_LABEL("Pool metadata url"),
+                    UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Pool metadata url", "Metadata url"),
                                    MAX_POOL_METADATA_URL_LENGTH,
                                    format_url,
                                    certificate->poolRegistration.poolMetadata.url,
                                    certificate->poolRegistration.poolMetadata.urlSize);
                 }
-                UI_ADD_FORMAT2(UI_STATIC_LABEL("Pool metadata hash"),
+                UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Pool metadata hash", "Metadata hash"),
                                MAX_POOL_METADATA_HASH_STRING_LENGTH,
                                format_hex_bytes,
                                certificate->poolRegistration.poolMetadata.hash,
@@ -786,7 +786,7 @@ static void add_ui_and_free_aux_data_hash(transaction_t *tx) {
     LEDGER_ASSERT(policy != POLICY_DENY, "Aux data denied during UI");
     if (policy == POLICY_SHOW) {
         START_COUNT();
-        UI_ADD_FORMAT2(UI_STATIC_LABEL("Auxiliary data hash"), MAX_TX_HASH_DISPLAY_LENGTH, format_hex_bytes, tx->auxDataHash, AUX_DATA_HASH_LENGTH);
+        UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Auxiliary data hash", "Aux data hash"), MAX_TX_HASH_DISPLAY_LENGTH, format_hex_bytes, tx->auxDataHash, AUX_DATA_HASH_LENGTH);
         CHECK_COUNT(UI_PAIRS_AUXILIARY_DATA_HASH);
     }
 }
@@ -799,7 +799,7 @@ static void add_ui_and_free_validity_interval_start(transaction_t *tx) {
     LEDGER_ASSERT(validity_interval_start_policy != POLICY_DENY, "Validity interval start denied during UI");
     if (validity_interval_start_policy == POLICY_SHOW) {
         START_COUNT();
-        UI_ADD_FORMAT3(UI_STATIC_LABEL("Validity interval start"), MAX_VALIDITY_BOUNDARY_STRING_LENGTH, format_validity_boundary, tx->validityIntervalStart, tx->networkId, tx->protocolMagic);
+        UI_ADD_FORMAT3(UI_STATIC_LABEL("Valid from"), MAX_VALIDITY_BOUNDARY_STRING_LENGTH, format_validity_boundary, tx->validityIntervalStart, tx->networkId, tx->protocolMagic);
         CHECK_COUNT(UI_PAIRS_VALIDITY_INTERVAL_START);
     }
 }
@@ -839,7 +839,7 @@ static void add_ui_and_free_mint(transaction_t *tx) {
             mint_token_t *token = &token_node_entry->token;
 
             if (show_mint) {
-                UI_ADD_FORMAT3(UI_STATIC_LABEL("Mint fingerprint"), MAX_TOKEN_FINGERPRINT_STRING_LENGTH, format_asset_fingerprint_bech32, asset_group->policyId, token->assetName, token->assetNameLen);
+                UI_ADD_FORMAT3(UI_STATIC_LABEL("Fingerprint"), MAX_TOKEN_FINGERPRINT_STRING_LENGTH, format_asset_fingerprint_bech32, asset_group->policyId, token->assetName, token->assetNameLen);
                 UI_ADD_FORMAT4(UI_STATIC_LABEL("Mint amount"), MAX_MINT_AMOUNT_STRING_LENGTH, format_token_amount_mint, asset_group->policyId, token->assetName, token->assetNameLen, token->amount);
                 token_count++;
             }
@@ -870,7 +870,7 @@ static void add_ui_and_free_script_data_hash(transaction_t *tx) {
     LEDGER_ASSERT(policy != POLICY_DENY, "Script data hash denied during UI");
     if (policy == POLICY_SHOW) {
         START_COUNT();
-        UI_ADD_FORMAT3(UI_STATIC_LABEL("Script data hash"), MAX_BECH32_STRING_LENGTH, format_bech32, "script_data", tx->scriptDataHash, SCRIPT_DATA_HASH_LENGTH);
+        UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Script data hash", "Script hash"), MAX_BECH32_STRING_LENGTH, format_bech32, "script_data", tx->scriptDataHash, SCRIPT_DATA_HASH_LENGTH);
         CHECK_COUNT(UI_PAIRS_SCRIPT_DATA_HASH);
     }
 }
@@ -968,7 +968,7 @@ static void add_ui_and_free_collateral_output(transaction_t *tx) {
 
     if (collateral_policy == POLICY_SHOW) {
         START_COUNT();
-        UI_ADD_FORMAT1(UI_STATIC_LABEL("Collateral address"), MAX_HUMAN_ADDRESS_LENGTH, format_output_address, &collateral_desc);
+        UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Collateral address", "Coll address"), MAX_HUMAN_ADDRESS_LENGTH, format_output_address, &collateral_desc);
 
         // For device-owned collateral addresses, show payment and staking details
         if (collateral_desc.destination.type == DESTINATION_DEVICE_OWNED) {
@@ -977,7 +977,7 @@ static void add_ui_and_free_collateral_output(transaction_t *tx) {
         }
 
         if (collateral_ada_policy == POLICY_SHOW) {
-            UI_ADD_FORMAT1(UI_STATIC_LABEL("Collateral amount"), MAX_ADA_AMOUNT_STRING_LENGTH, format_ada_amount, collateral_desc.amount);
+            UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Collateral amount", "Coll amount"), MAX_ADA_AMOUNT_STRING_LENGTH, format_ada_amount, collateral_desc.amount);
         }
 
         uint16_t expected = UI_PAIRS_COLLATERAL_OUTPUT_ADDRESS;
@@ -1015,7 +1015,7 @@ static void add_ui_and_free_total_collateral(transaction_t *tx) {
     LEDGER_ASSERT(policy != POLICY_DENY, "Total collateral denied during UI");
     if (policy == POLICY_SHOW) {
         START_COUNT();
-        UI_ADD_FORMAT1(UI_STATIC_LABEL("Total collateral"), MAX_ADA_AMOUNT_STRING_LENGTH, format_ada_amount, tx->totalCollateral);
+        UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Total collateral", "Total coll"), MAX_ADA_AMOUNT_STRING_LENGTH, format_ada_amount, tx->totalCollateral);
         CHECK_COUNT(UI_PAIRS_TOTAL_COLLATERAL);
     }
 }
@@ -1061,8 +1061,8 @@ static void add_ui_and_free_voting_procedures(transaction_t *tx) {
 
             if (policy == POLICY_SHOW) {
                 START_COUNT();
-                UI_ADD_FORMAT2(UI_STATIC_LABEL("Gov action tx hash"), MAX_TX_HASH_DISPLAY_LENGTH, format_hex_bytes, vote_data->govActionId.txHash, TX_HASH_LENGTH);
-                UI_ADD_FORMAT1(UI_STATIC_LABEL("Gov action index"), MAX_UINT64_STRING_LENGTH, format_uint64, vote_data->govActionId.govActionIndex);
+                UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Gov action tx hash", "Action tx hash"), MAX_TX_HASH_DISPLAY_LENGTH, format_hex_bytes, vote_data->govActionId.txHash, TX_HASH_LENGTH);
+                UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Gov action index", "Action index"), MAX_UINT64_STRING_LENGTH, format_uint64, vote_data->govActionId.govActionIndex);
                 UI_ADD_FORMAT1(UI_STATIC_LABEL("Vote"), MAX_VOTE_OPTION_LENGTH, format_vote_option, vote_data->voteOption);
                 CHECK_COUNT(UI_PAIRS_VOTE);
 
@@ -1113,7 +1113,7 @@ static void add_ui_and_free_tx_hash(void) {
     LEDGER_ASSERT(policy != POLICY_DENY, "Transaction hash display denied during UI");
     if (policy == POLICY_SHOW) {
         START_COUNT();
-        UI_ADD_FORMAT2(UI_STATIC_LABEL("Transaction hash"),
+        UI_ADD_FORMAT2(UI_STATIC_LABEL("Tx hash"),
                        MAX_TX_HASH_DISPLAY_LENGTH,
                        format_hex_bytes,
                        G_context.tx_info.tx_hash,
