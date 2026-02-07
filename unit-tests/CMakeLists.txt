@@ -218,9 +218,6 @@ set(TEST_EXECUTABLES
     test_tx_prepare
     test_ui_utils
 )
-# add_executable(test_tokens test_tokens.c)  # TODO: legacy filename, use test_cardano_tokens instead
-# add_executable(test_tx_parser test_tx_parser.c)  # TODO: create this file
-# add_executable(test_tx_utils test_tx_utils.c)    # TODO: create this file
 
 # SDK libraries
 add_library(base58 SHARED $ENV{BOLOS_SDK}/lib_standard_app/base58.c)
@@ -584,24 +581,17 @@ add_executable(test_handler_state_machines
 target_link_libraries(test_handler_state_machines PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_handler_state_machines test_handler_state_machines)
 
-# target_link_libraries(test_tokens PUBLIC cmocka gcov tokens_lib bech32_lib hex_utils)  # TODO: when tokens_lib is ready
+add_executable(test_tx_parser
+    test_tx_parser.c
+)
+target_link_libraries(test_tx_parser PUBLIC cmocka gcov cardano_sign_tx_core)
+add_test(test_tx_parser test_tx_parser)
 
-# TODO: uncomment when test files are created
-# target_link_libraries(test_tx_parser PUBLIC
-#                       transaction_deserialize
-#                       transaction_serialize
-#                       buffer
-#                       bip32
-#                       cmocka
-#                       gcov
-#                       write
-#                       read
-#                       varint
-#                       transaction_utils)
-# target_link_libraries(test_tx_utils PUBLIC
-#                       cmocka
-#                       gcov
-#                       transaction_utils)
+add_executable(test_tx_utils
+    test_tx_utils.c
+)
+target_link_libraries(test_tx_utils PUBLIC cmocka gcov cardano_sign_tx_core)
+add_test(test_tx_utils test_tx_utils)
 
 # Register tests with CTest
 add_test(test_hex_utils test_hex_utils)
@@ -864,7 +854,3 @@ add_executable(test_native_script_state_machine
 )
 target_link_libraries(test_native_script_state_machine PUBLIC cmocka gcov cardano_derive_native_script_core)
 add_test(test_native_script_state_machine test_native_script_state_machine)
-
-# add_test(test_tokens test_tokens)  # TODO: uncomment when crypto dependencies are mocked
-# add_test(test_tx_parser test_tx_parser)  # TODO: uncomment when created
-# add_test(test_tx_utils test_tx_utils)    # TODO: uncomment when created
