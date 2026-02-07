@@ -67,11 +67,11 @@ typedef struct {
 bool buffer_read_cvote_credential(buffer_t *buf, cvote_credential_t *credential);
 
 // Parse CVote destination (device-owned params or third-party address pointer).
-// paramsStorage is populated and destination->params is set to point at it
-// when type == DESTINATION_DEVICE_OWNED.
+// For DESTINATION_DEVICE_OWNED, params are dynamically allocated and must be freed
+// or transferred to storage by the caller.
+// For DESTINATION_THIRD_PARTY, destination.address points to raw buffer.
 cvote_parser_status_t cvote_parse_destination(buffer_t *buf,
-                                              tx_output_destination_t *destination,
-                                              address_params_t *paramsStorage);
+                                              tx_output_destination_t *destination);
 
 // Parse CVote init from global context raw_cvote_init_data into cvote_aux_data structure
 // Credentials and addresses point into the persistent raw_cvote_init_data buffer

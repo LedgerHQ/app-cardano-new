@@ -21,13 +21,12 @@
 #include "addressUtilsShelley.h"
 #include "cardano_swo.h"
 #include "cardano_parsers.h"
+#include "app_mem_utils.h"
 
 parser_status_e parse_output_destination(buffer_t* buf,
-                                         tx_output_destination_t* destination,
-                                         address_params_t* paramsStorage) {
+                                         tx_output_destination_t* destination) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     LEDGER_ASSERT(destination != NULL, "NULL destination");
-    LEDGER_ASSERT(paramsStorage != NULL, "NULL paramsStorage");
 
     // Read destination type
     uint8_t dest_type = 0;
@@ -57,12 +56,20 @@ parser_status_e parse_output_destination(buffer_t* buf,
         }
 
         case DESTINATION_DEVICE_OWNED: {
-            // Parse address params into the caller-provided storage.
-            // Credential pointers within paramsStorage reference the persistent raw buffer.
-            if (!buffer_read_address_params(buf, paramsStorage)) {
+            // Dynamically allocate storage for address params
+            address_params_t* params = NULL;
+            if (!APP_MEM_CALLOC((void**)&params, sizeof(address_params_t))) {
+                TRACE("parse_output_destination: out of memory allocating address_params_t");
+                return OUT_OF_MEMORY_ERROR;
+            }
+
+            // Parse address params into the dynamically allocated storage.
+            // Credential pointers within params reference the persistent raw buffer.
+            if (!buffer_read_address_params(buf, params)) {
+                APP_MEM_FREE(params);
                 return OUTPUTS_PARSING_ERROR;
             }
-            *destination = tx_output_destination_make_device_owned(paramsStorage);
+            *destination = tx_output_destination_make_device_owned(params);
             break;
         }
 

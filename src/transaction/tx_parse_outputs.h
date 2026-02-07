@@ -21,13 +21,14 @@
  *     - address params (see buffer_read_address_params in addressUtilsShelley.h)
  *
  * @param[in,out] buf Buffer to read from
- * @param[out] destination Destination structure to populate (params pointer)
- * @param[out] paramsStorage Storage for address_params when type == DEVICE_OWNED
- * @return PARSING_OK on success, appropriate error code on failure
+ * @param[out] destination Destination structure to populate
+ *   - For DESTINATION_THIRD_PARTY: destination.address points to raw_tx buffer
+ *   - For DESTINATION_DEVICE_OWNED: destination.params points to dynamically allocated
+ *     address_params_t that must be freed by the caller
+ * @return PARSING_OK on success, OUT_OF_MEMORY_ERROR or appropriate error code on failure
  */
 parser_status_e parse_output_destination(buffer_t* buf,
-                                         tx_output_destination_t* destination,
-                                         address_params_t* paramsStorage);
+                                         tx_output_destination_t* destination);
 
 /**
  * Parse transaction output serialization format from buffer.

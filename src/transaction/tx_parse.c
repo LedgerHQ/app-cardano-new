@@ -140,6 +140,14 @@ static void free_output_item(tx_output_node_t *item) {
     if (item == NULL) {
         return;
     }
+
+    // Free dynamically allocated address_params_t for device-owned outputs
+    if (item->output_data.destination.type == DESTINATION_DEVICE_OWNED &&
+        item->output_data.destination.params != NULL) {
+        APP_MEM_FREE(item->output_data.destination.params);
+        item->output_data.destination.params = NULL;
+    }
+
     free_asset_groups(item->output_data.assetGroups);
     item->output_data.assetGroups = NULL;
     APP_MEM_FREE(item);
@@ -520,8 +528,7 @@ static parser_status_e parse_output_payload(buffer_t *output_buf,
     LEDGER_ASSERT(output != NULL, "NULL output");
 
     parser_status_e status = parse_output_destination(output_buf,
-                                                      &output->destination,
-                                                      &output->paramsStorage);
+                                                      &output->destination);
     if (status != PARSING_OK) {
         return parse_failure_status;
     }
@@ -1127,6 +1134,20 @@ static parser_status_e parse_tx_collateral_output(buffer_t *buf, transaction_t *
                                                   COLLATERAL_OUTPUT_PARSING_ERROR);
     if (status != PARSING_OK) {
         return status;
+    }
+
+    // If collateral output has device-owned address, transfer params to dedicated storage
+    if (tx->collateral_output.destination.type == DESTINATION_DEVICE_OWNED) {
+        LEDGER_ASSERT(tx->collateral_output.destination.params != NULL,
+                      "NULL params for device-owned collateral output");
+        // Copy params to dedicated storage
+        memmove(&tx->collateral_output_params_storage,
+                tx->collateral_output.destination.params,
+                sizeof(address_params_t));
+        // Free the dynamically allocated params
+        APP_MEM_FREE(tx->collateral_output.destination.params);
+        // Point to the dedicated storage
+        tx->collateral_output.destination.params = &tx->collateral_output_params_storage;
     }
 
     TRACE("Deserialize: Collateral output payload parsed");

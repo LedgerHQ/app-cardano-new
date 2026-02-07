@@ -117,9 +117,9 @@ typedef enum {
 
 typedef struct {
     tx_output_destination_t destination;
-    // Storage for device-owned address params.
-    // destination.params points here when type == DESTINATION_DEVICE_OWNED.
-    address_params_t paramsStorage;
+    // Note: For DESTINATION_DEVICE_OWNED, destination.params points to dynamically
+    // allocated memory that must be freed when the output is freed.
+    // For DESTINATION_THIRD_PARTY, destination.address points to the raw_tx buffer.
     uint64_t adaAmount;
     uint16_t numAssetGroups;
     flist_node_t* assetGroups;

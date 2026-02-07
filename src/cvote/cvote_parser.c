@@ -10,6 +10,7 @@
 #include "cardano_parsers.h"
 #include "tx_parse_outputs.h"
 #include "utils.h"
+#include "app_mem_utils.h"
 
 /**
  * Parse CVote credential
@@ -65,15 +66,11 @@ static cvote_parser_status_t _map_output_parser_status(parser_status_e status) {
 }
 
 cvote_parser_status_t cvote_parse_destination(buffer_t *buf,
-                                              tx_output_destination_t *destination,
-                                              address_params_t *paramsStorage) {
+                                              tx_output_destination_t *destination) {
     ASSERT(buf != NULL);
     ASSERT(destination != NULL);
-    ASSERT(paramsStorage != NULL);
 
-    explicit_bzero(paramsStorage, sizeof(*paramsStorage));
-
-    parser_status_e output_status = parse_output_destination(buf, destination, paramsStorage);
+    parser_status_e output_status = parse_output_destination(buf, destination);
     cvote_parser_status_t cvote_status = _map_output_parser_status(output_status);
     if (cvote_status != CVOTE_PARSER_OK) {
         TRACE("CVote destination parsing failed with output status %d", output_status);
@@ -81,9 +78,10 @@ cvote_parser_status_t cvote_parse_destination(buffer_t *buf,
     }
 
     if (destination->type == DESTINATION_DEVICE_OWNED) {
+        ASSERT(destination->params != NULL);
         TRACE("CVote destination type 0x%x, staking %d",
-              paramsStorage->type,
-              addressParams_getStakingPartType(paramsStorage));
+              destination->params->type,
+              addressParams_getStakingPartType(destination->params));
     } else {
         TRACE("CVote destination: third-party payload");
     }
@@ -137,10 +135,23 @@ cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
     }
 
     // Parse destination
-    cvote_parser_status_t dest_status = cvote_parse_destination(&parse_buf, &out_data->destination, &out_data->destinationParamsStorage);
+    cvote_parser_status_t dest_status = cvote_parse_destination(&parse_buf, &out_data->destination);
     if (dest_status != CVOTE_PARSER_OK) {
         TRACE("CVote init: failed to parse destination");
         return dest_status;
+    }
+
+    // If destination has device-owned params, transfer to dedicated storage
+    if (out_data->destination.type == DESTINATION_DEVICE_OWNED) {
+        ASSERT(out_data->destination.params != NULL);
+        // Copy params to dedicated storage
+        memmove(&out_data->destinationParamsStorage,
+                out_data->destination.params,
+                sizeof(address_params_t));
+        // Free the dynamically allocated params
+        APP_MEM_FREE(out_data->destination.params);
+        // Point to the dedicated storage
+        out_data->destination.params = &out_data->destinationParamsStorage;
     }
 
     // Parse nonce

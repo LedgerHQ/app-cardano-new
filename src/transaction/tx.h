@@ -181,6 +181,9 @@ typedef struct {
 
     bool includeCollateralOutput;       // key 16
     parsed_tx_output_t collateral_output;
+    // Storage for collateral output's device-owned params (if applicable).
+    // collateral_output.destination.params points here when type == DESTINATION_DEVICE_OWNED.
+    address_params_t collateral_output_params_storage;
 
     bool includeTotalCollateral;        // key 17
     uint64_t totalCollateral;
