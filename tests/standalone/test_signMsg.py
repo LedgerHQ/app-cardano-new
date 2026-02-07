@@ -43,7 +43,7 @@ def test_sign_message(device: Device,
 
     def review_msg() -> None:
         if device.is_nano:
-            if device.is_nanos:
+            if device.is_nano:
                 moves = [NavInsID.BOTH_CLICK, NavInsID.RIGHT_CLICK]
             else:
                 moves = testCase.nav.confirm

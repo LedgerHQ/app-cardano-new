@@ -69,21 +69,8 @@ def _cvote_init(device: Device,
         client (CommandSender): The command sender instance
         testCase (CVoteTestCase): The test case
     """
-    # TODO: check navigation
-    # if device.is_nano:
-    #     if device.is_nanos:
-    #         moves = [NavInsID.RIGHT_CLICK]
-    #         moves += [NavInsID.BOTH_CLICK] * 3
-    #     else:
-    #         moves = [NavInsID.BOTH_CLICK]
-    #         moves += [NavInsID.RIGHT_CLICK]
-    #         moves += [NavInsID.BOTH_CLICK] * 3
-    # else:
-    #     moves = [NavInsID.SWIPE_CENTER_TO_LEFT]
-
     with client.sign_cip36_init_async(testCase):
         pass
-        #navigator.navigate(moves)
 
     # Check the status (Asynchronous)
     response = client.get_async_response()
