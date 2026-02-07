@@ -25,7 +25,8 @@ typedef struct {
     cvote_credential_t staking_credential;  // CVote-specific credential (KEY_HASH = 32-byte pubkey)
     cvote_credential_t vote_credential;     // CVote-specific credential (KEY_HASH = 32-byte pubkey)
     tx_output_destination_t destination;     // Address params pointer or raw buffer pointer
-    address_params_t destinationParamsStorage; // Storage for device-owned destination params
+    // Note: For DESTINATION_DEVICE_OWNED, destination.params points to dynamically allocated
+    // memory. This is automatically freed by reset_app_context() via mem_utils_reset_app_heap().
     uint64_t nonce;
     uint64_t voting_purpose;
 

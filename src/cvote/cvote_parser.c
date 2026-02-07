@@ -141,19 +141,6 @@ cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
         return dest_status;
     }
 
-    // If destination has device-owned params, transfer to dedicated storage
-    if (out_data->destination.type == DESTINATION_DEVICE_OWNED) {
-        ASSERT(out_data->destination.params != NULL);
-        // Copy params to dedicated storage
-        memmove(&out_data->destinationParamsStorage,
-                out_data->destination.params,
-                sizeof(address_params_t));
-        // Free the dynamically allocated params
-        APP_MEM_FREE(out_data->destination.params);
-        // Point to the dedicated storage
-        out_data->destination.params = &out_data->destinationParamsStorage;
-    }
-
     // Parse nonce
     ASSERT_TYPE(out_data->nonce, uint64_t);
     if (!buffer_read_u64(&parse_buf, &out_data->nonce, BE)) {

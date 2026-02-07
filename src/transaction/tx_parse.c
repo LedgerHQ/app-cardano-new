@@ -1004,6 +1004,13 @@ void transaction_free_voting_procedures(transaction_t *tx) {
 void transaction_free_collateral_output(transaction_t *tx) {
     LEDGER_ASSERT(tx != NULL, "NULL tx");
 
+    // Free dynamically allocated address_params_t for device-owned outputs
+    if (tx->collateral_output.destination.type == DESTINATION_DEVICE_OWNED &&
+        tx->collateral_output.destination.params != NULL) {
+        APP_MEM_FREE(tx->collateral_output.destination.params);
+        tx->collateral_output.destination.params = NULL;
+    }
+
     free_asset_groups(tx->collateral_output.assetGroups);
     tx->collateral_output.assetGroups = NULL;
     tx->collateral_output.numAssetGroups = 0;
@@ -1134,20 +1141,6 @@ static parser_status_e parse_tx_collateral_output(buffer_t *buf, transaction_t *
                                                   COLLATERAL_OUTPUT_PARSING_ERROR);
     if (status != PARSING_OK) {
         return status;
-    }
-
-    // If collateral output has device-owned address, transfer params to dedicated storage
-    if (tx->collateral_output.destination.type == DESTINATION_DEVICE_OWNED) {
-        LEDGER_ASSERT(tx->collateral_output.destination.params != NULL,
-                      "NULL params for device-owned collateral output");
-        // Copy params to dedicated storage
-        memmove(&tx->collateral_output_params_storage,
-                tx->collateral_output.destination.params,
-                sizeof(address_params_t));
-        // Free the dynamically allocated params
-        APP_MEM_FREE(tx->collateral_output.destination.params);
-        // Point to the dedicated storage
-        tx->collateral_output.destination.params = &tx->collateral_output_params_storage;
     }
 
     TRACE("Deserialize: Collateral output payload parsed");
