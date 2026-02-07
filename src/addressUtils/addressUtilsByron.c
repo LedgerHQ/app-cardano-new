@@ -10,8 +10,8 @@
 #include "lcx_crc.h"
 #include "cardano_swo.h"
 #include "utils.h"
-#include "utils/assert.h"
-#include "utils/buffer_helpers.h"
+#include "assert.h"
+#include "buffer_helpers.h"
 
 #define BYRON_ADDRESS_CBOR_HASH_SIZE 32
 #define ADDRESS_ROOT_SIZE 28

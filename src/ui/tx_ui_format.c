@@ -59,9 +59,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "os.h"
-#include "glyphs.h"
-#include "nbgl_use_case.h"
 #include "cardano_swo.h"
 #include "globals.h"
 #include "format.h"
@@ -69,8 +66,6 @@
 #include "tx_output_types.h"
 #include "tx.h"
 #include "tx_ui_plan.h"
-#include "addressUtilsShelley.h"
-#include "bip44.h"
 #include "keyDerivation.h"
 #include "mem.h"
 #include "securityPolicy.h"

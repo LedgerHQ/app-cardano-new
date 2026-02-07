@@ -29,9 +29,9 @@
 #include "ui_utils.h"
 #include "ui_cvote.h"
 #include "ui_warnings.h"
-#include "ui/ui_formatters.h"
+#include "ui_formatters.h"
 #include "app_context.h"
-#include "handler/sign_cvote.h"
+#include "sign_cvote.h"
 
 /**
  * Cleanup dynamically allocated buffers and UI pairs

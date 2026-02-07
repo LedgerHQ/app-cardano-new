@@ -23,7 +23,7 @@
 #include "io.h"
 #include "ledger_assert.h"
 #include "buffer.h"
-#include "utils/buffer_helpers.h"
+#include "buffer_helpers.h"
 
 #include "debug_settings.h"
 #include "globals.h"

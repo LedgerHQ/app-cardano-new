@@ -6,7 +6,7 @@
 #include <string.h>
 
 #include "../src/parsers/cardano_parsers.h"  // for FLAG_INCLUDED_*
-#include "../src/transaction/tx_aux_data_types.h"
+#include "../src/transaction/tx.h"
 
 typedef struct {
     uint64_t options;

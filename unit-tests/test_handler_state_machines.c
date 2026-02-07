@@ -12,7 +12,7 @@
 #include "securityPolicy.h"
 #include "addressUtils/bip44.h"
 #include "cardano_swo.h"
-#include "memory/mem.h"
+#include "mem.h"
 
 #define TEST_HEAP_SIZE (23 * 1024)
 static uint8_t test_heap[TEST_HEAP_SIZE];

@@ -7,10 +7,9 @@
 #include "addressUtilsShelley.h"
 #include "bip44.h"
 #include "aux_data_hash_builder.h"
-#include "cip8_types.h"
+#include "messageSigning.h"
 #include "cvote_types.h"
 #include "securityPolicyType.h"
-#include "tx_aux_data_types.h"
 #include "tx_hash_builder.h"
 #include "tx.h"
 

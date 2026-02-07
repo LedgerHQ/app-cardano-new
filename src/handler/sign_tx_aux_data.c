@@ -30,7 +30,7 @@
 #include "io.h"
 #include "mem.h"
 #include "securityPolicy.h"
-#include "utils/buffer_helpers.h"
+#include "buffer_helpers.h"
 #include "sign_tx_aux_data.h"
 #include "tx.h"
 #include "tx_credential_types.h"

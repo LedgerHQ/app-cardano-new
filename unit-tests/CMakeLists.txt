@@ -174,7 +174,7 @@ add_executable(test_tx_prepare
     ../src/securityPolicy/securityPolicy.c
     ../src/securityPolicy/securityPolicy_privkey.c
     ../src/keyDerivation/keyDerivation.c
-    ../src/memory/mem.c
+    ../src/utils/mem.c
     $ENV{BOLOS_SDK}/lib_lists/lists.c
     ../src/cardano_tokens/cardano_tokens.c
     ../src/ui/ui_utils.c
@@ -191,7 +191,7 @@ add_executable(test_tx_prepare
 add_executable(test_ui_utils
     test_ui_utils.c
     ../src/ui/ui_utils.c
-    ../src/memory/mem.c
+    ../src/utils/mem.c
     ${UNIT_TEST_MEM_UTILS_STUB}
 )
 
@@ -266,7 +266,7 @@ target_link_libraries(cx_crc_support PUBLIC c)
 set(SIGN_TX_COMMON_SOURCES
     mock_sources/mock_globals.c
     $ENV{BOLOS_SDK}/lib_lists/lists.c
-    ../src/memory/mem.c
+    ../src/utils/mem.c
     ../src/handler/sign_tx.c
     ../src/handler/sign_tx_aux_data.c
     ../src/cvote/cvote_parser.c
@@ -634,7 +634,7 @@ set(DERIVE_ADDRESS_COMMON_SOURCES
     ../src/securityPolicy/securityPolicy.c
     ../src/securityPolicy/securityPolicy_privkey.c
     ../src/app_context.c
-    ../src/memory/mem.c
+    ../src/utils/mem.c
     ../src/ui/ui_utils.c
     ../src/ui/ui_warnings.c
     ${UNIT_TEST_MEM_UTILS_STUB}
@@ -692,7 +692,7 @@ set(PUBKEY_COMMON_SOURCES
     ../src/securityPolicy/securityPolicy.c
     ../src/securityPolicy/securityPolicy_privkey.c
     ../src/app_context.c
-    ../src/memory/mem.c
+    ../src/utils/mem.c
     ../src/ui/ui_utils.c
     ../src/ui/ui_warnings.c
     ${UNIT_TEST_MEM_UTILS_STUB}
@@ -728,7 +728,7 @@ set(SIGN_MSG_COMMON_SOURCES
     mock_sources/mock_globals.c
     ../src/app_context.c
     $ENV{BOLOS_SDK}/lib_lists/lists.c
-    ../src/memory/mem.c
+    ../src/utils/mem.c
     ../src/handler/sign_msg.c
     ../src/messageSigning/messageSigning.c
     ../src/keyDerivation/keyDerivation.c
@@ -799,7 +799,7 @@ set(DERIVE_NATIVE_SCRIPT_COMMON_SOURCES
     ../src/securityPolicy/securityPolicy.c
     ../src/securityPolicy/securityPolicy_privkey.c
     ../src/app_context.c
-    ../src/memory/mem.c
+    ../src/utils/mem.c
     ../src/ui/ui_utils.c
     ../src/ui/ui_warnings.c
     ${UNIT_TEST_MEM_UTILS_STUB}

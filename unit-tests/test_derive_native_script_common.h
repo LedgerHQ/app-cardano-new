@@ -16,7 +16,7 @@
 #include "handler/derive_address.h"
 #include "mock_crypto/crypto_mock_data.h"
 #include "blake2b.h"
-#include "memory/mem.h"
+#include "mem.h"
 
 #include "handler/derive_native_script_hash.h"
 

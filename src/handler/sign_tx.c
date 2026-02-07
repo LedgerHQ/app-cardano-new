@@ -18,7 +18,6 @@
 #include <stdbool.h>  // bool
 #include <stddef.h>   // size_t
 #include <stdint.h>   // uint*_t
-#include <stdio.h>    // snprintf
 #include <string.h>   // memset, explicit_bzero
 
 #include "app_context.h"
@@ -27,21 +26,16 @@
 #include "cardano_constants.h"
 #include "cardano_parsers.h"
 #include "cardano_swo.h"
-#include "cx.h"
 #include "globals.h"
 #include "messageSigning.h"
 #include "io.h"
-#include "keyDerivation.h"
 #include "mem.h"
 #include "menu.h"
 #include "nbgl_use_case.h"
 #include "securityPolicy.h"
 #include "ui_display_tx.h"
 #include "sign_tx.h"
-#include "ui_formatters.h"
-#include "ui_display_tx.h"
 #include "tx.h"
-#include "tx_aux_data_types.h"
 #include "tx_credential_types.h"
 #include "tx_output_types.h"
 #include "tx_parse.h"

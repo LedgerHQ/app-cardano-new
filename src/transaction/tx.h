@@ -7,8 +7,12 @@
 #include "cardano_constants.h"
 #include "lists.h"
 #include "bip44.h"
-#include "tx_aux_data_types.h"
 #include "tx_credential_types.h"
+
+typedef enum {
+    AUX_DATA_TYPE_ARBITRARY_HASH = 0,
+    AUX_DATA_TYPE_CVOTE_REGISTRATION = 1,
+} aux_data_type_t;
 #include "tx_certificate_types.h"
 #include "tx_output_types.h"
 #include "tx_voting_procedure_types.h"

@@ -6,7 +6,7 @@
 
 #include <cmocka.h>
 
-#include "memory/mem.h"
+#include "mem.h"
 #include "ui_utils.h"
 
 #define TEST_HEAP_SIZE (23 * 1024)

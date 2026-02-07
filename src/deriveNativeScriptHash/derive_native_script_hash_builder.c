@@ -1,5 +1,5 @@
 #include "cbor.h"
-#include "deriveNativeScriptHash/derive_native_script_hash_builder.h"
+#include "derive_native_script_hash_builder.h"
 #include "cardano_constants.h"
 
 #define TRACE_NATIVE_SCRIPT_HASH_BUILDER

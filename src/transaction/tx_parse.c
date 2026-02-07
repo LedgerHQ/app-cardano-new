@@ -19,7 +19,6 @@
 
 #include "cardano_swo.h"
 #include "app_context.h"
-#include "buffer_write.h"
 #include "cbor.h"
 #include "tx_parse.h"
 #include "cardano_parsers.h"
@@ -28,8 +27,6 @@
 #include "tx.h"
 #include "utils.h"
 #include "assert.h"
-#include "textUtils.h"
-#include "ui_formatters.h"
 #include "tx_constants.h"
 #include "tx_output_types.h"
 #include "globals.h"

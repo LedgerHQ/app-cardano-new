@@ -36,7 +36,6 @@
 #include "ui_display_pubkey.h"
 #include "dispatcher.h"
 #include "securityPolicy.h"
-#include "nbgl_use_case.h"
 #include "menu.h"
 
 void handler_get_public_key(buffer_t *cdata) {

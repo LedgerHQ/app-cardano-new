@@ -19,7 +19,7 @@
 #include "keyDerivation.h"
 #include "addressUtilsShelley.h"
 #include "cvote/vote_cast_hash_builder.h"
-#include "cip8_types.h"
+#include "messageSigning.h"
 #include "hash.h"
 #include "ui_constants.h"
 /**

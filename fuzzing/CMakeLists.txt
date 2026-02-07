@@ -67,7 +67,7 @@ set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/handler/sign_tx.c
     ${CARDANO_PATH}/src/handler/sign_tx_aux_data.c
     ${CARDANO_PATH}/src/keyDerivation/keyDerivation.c
-    ${CARDANO_PATH}/src/memory/mem.c
+    ${CARDANO_PATH}/src/utils/mem.c
     ${CARDANO_PATH}/src/messageSigning/messageSigning.c
     ${CARDANO_PATH}/src/opcert/opcert_parse.c
     ${CARDANO_PATH}/src/parsers/cardano_parsers.c

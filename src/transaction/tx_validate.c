@@ -14,7 +14,7 @@
 #include "addressUtilsShelley.h"
 #include "keyDerivation.h"
 #include "tx_output_types.h"
-#include "tx_aux_data_types.h"
+#include "tx.h"
 #include "tx_hash_builder.h"
 #include "tx_utils.h"
 #include "mem.h"

@@ -4,7 +4,7 @@
 
 #include "cardano_constants.h"
 #include "hash.h"
-#include "deriveNativeScriptHash/deriveNativeScriptHash_types.h"
+#include "deriveNativeScriptHash_types.h"
 
 void nativeScriptHashBuilder_init(native_script_hash_builder_t* builder);
 

@@ -27,13 +27,13 @@
 #include "io.h"
 #include "menu.h"
 #include "nbgl_use_case.h"
-#include "memory/mem.h"
+#include "mem.h"
 #include "securityPolicy.h"
-#include "ui/ui_formatters.h"
-#include "ui/ui_icons.h"
-#include "ui/ui_utils.h"
+#include "ui_formatters.h"
+#include "ui_icons.h"
+#include "ui_utils.h"
 #include "ui_display_native_script_hash.h"
-#include "utils/utils.h"
+#include "utils.h"
 
 void build_position_description(const derive_native_script_hash_ctx_t *ctx,
                                 uint8_t level,

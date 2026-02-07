@@ -5,13 +5,13 @@
 #include "derive_address.h"
 #include "cardano_swo.h"
 #include "globals.h"
-#include "addressUtils/addressUtilsShelley.h"
+#include "addressUtilsShelley.h"
 #include "securityPolicy.h"
-#include "utils/assert.h"
+#include "assert.h"
 #include "app_context.h"
 #include "io.h"
 #include "ui_display_address_derivation.h"
-#include "utils/buffer_helpers.h"
+#include "buffer_helpers.h"
 
 static void prepareResponse() {
     // Verify we're at the expected state: parameters validated by policy

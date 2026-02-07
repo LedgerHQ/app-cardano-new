@@ -10,7 +10,7 @@
 #include "globals.h"
 #include "handler/derive_native_script_hash.h"
 #include "cardano_swo.h"
-#include "memory/mem.h"
+#include "mem.h"
 #include "securityPolicy.h"
 
 #define TEST_HEAP_SIZE (23 * 1024)

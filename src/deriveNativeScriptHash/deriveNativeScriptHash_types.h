@@ -2,7 +2,7 @@
 
 #include <stdint.h>  // uint*_t
 #include "hash.h"
-#include "addressUtils/bip44.h"
+#include "bip44.h"
 
 #define MAX_SCRIPT_DEPTH 11
 

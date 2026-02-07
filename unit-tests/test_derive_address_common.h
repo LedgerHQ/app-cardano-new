@@ -16,7 +16,7 @@
 #include "hexUtils.h"
 #include "mock_crypto/crypto_mock_data.h"
 #include "blake2b.h"
-#include "memory/mem.h"
+#include "mem.h"
 #include "app_context.h"
 
 #include "test_fixture_types.h"

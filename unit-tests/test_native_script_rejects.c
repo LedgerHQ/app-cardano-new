@@ -17,7 +17,7 @@
 #include "hexUtils.h"
 #include "mock_crypto/crypto_mock_data.h"
 #include "blake2b.h"
-#include "memory/mem.h"
+#include "mem.h"
 
 #include "test_derive_native_script_reject_fixtures.h"
 #include "deriveNativeScriptHash/deriveNativeScriptHash_types.h"

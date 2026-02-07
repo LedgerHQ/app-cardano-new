@@ -2,8 +2,8 @@
 #include "utils.h"
 #include "cardano_swo.h"
 #include "read.h"
-#include "utils/assert.h"
-#include "utils/buffer_helpers.h"
+#include "assert.h"
+#include "buffer_helpers.h"
 
 enum {
     CARDANO_CHAIN_EXTERNAL = 0,

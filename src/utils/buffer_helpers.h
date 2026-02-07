@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #include "buffer.h"
-#include "utils/assert.h"
+#include "assert.h"
 
 static inline size_t buffer_total_size(const buffer_t *buffer) {
     return buffer != NULL ? buffer->size : 0;

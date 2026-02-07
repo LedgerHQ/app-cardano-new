@@ -6,9 +6,9 @@
 #include "sign_cvote.h"
 #include "cardano_swo.h"
 #include "globals.h"
-#include "addressUtils/addressUtilsShelley.h"
+#include "addressUtilsShelley.h"
 #include "securityPolicy.h"
-#include "utils/assert.h"
+#include "assert.h"
 #include "app_context.h"
 #include "io.h"
 #include "cardano_parsers.h"
@@ -16,7 +16,7 @@
 #include "cvote/vote_cast_hash_builder.h"
 #include "messageSigning.h"
 #include "ui_cvote.h"
-#include "utils/buffer_helpers.h"
+#include "buffer_helpers.h"
 
 static bool ensure_sign_cvote_stage(cvote_stage_e required_stage) {
     if (G_context.state.cvote_state != required_stage) {
