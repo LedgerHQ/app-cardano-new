@@ -570,6 +570,20 @@ add_executable(test_handler_rejects
 target_link_libraries(test_handler_rejects PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_handler_rejects test_handler_rejects)
 
+add_executable(test_dispatcher_interleaving
+    test_dispatcher_interleaving.c
+    mock_sources/mock_globals.c
+    ../src/apdu/dispatcher.c
+)
+target_link_libraries(test_dispatcher_interleaving PUBLIC cmocka gcov mock_printf)
+add_test(test_dispatcher_interleaving test_dispatcher_interleaving)
+
+add_executable(test_handler_state_machines
+    test_handler_state_machines.c
+)
+target_link_libraries(test_handler_state_machines PUBLIC cmocka gcov cardano_sign_tx_core)
+add_test(test_handler_state_machines test_handler_state_machines)
+
 # target_link_libraries(test_tokens PUBLIC cmocka gcov tokens_lib bech32_lib hex_utils)  # TODO: when tokens_lib is ready
 
 # TODO: uncomment when test files are created
@@ -838,6 +852,18 @@ add_executable(test_native_script_rejects
 )
 target_link_libraries(test_native_script_rejects PUBLIC cmocka gcov cardano_derive_native_script_core)
 add_test(test_native_script_rejects test_native_script_rejects)
+
+add_executable(test_handler_reset_semantics
+    test_handler_reset_semantics.c
+)
+target_link_libraries(test_handler_reset_semantics PUBLIC cmocka gcov cardano_derive_native_script_core)
+add_test(test_handler_reset_semantics test_handler_reset_semantics)
+
+add_executable(test_native_script_state_machine
+    test_native_script_state_machine.c
+)
+target_link_libraries(test_native_script_state_machine PUBLIC cmocka gcov cardano_derive_native_script_core)
+add_test(test_native_script_state_machine test_native_script_state_machine)
 
 # add_test(test_tokens test_tokens)  # TODO: uncomment when crypto dependencies are mocked
 # add_test(test_tx_parser test_tx_parser)  # TODO: uncomment when created

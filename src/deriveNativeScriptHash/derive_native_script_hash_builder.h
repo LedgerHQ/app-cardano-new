@@ -15,8 +15,8 @@ void nativeScriptHashBuilder_startComplexScript_any(native_script_hash_builder_t
                                                     uint32_t remainingScripts);
 
 void nativeScriptHashBuilder_startComplexScript_n_of_k(native_script_hash_builder_t* builder,
-                                                       uint32_t remainingScripts,
-                                                       uint32_t requiredScripts);
+                                                       uint32_t requiredScripts,
+                                                       uint32_t remainingScripts);
 
 void nativeScriptHashBuilder_addScript_pubkey(native_script_hash_builder_t* builder,
                                               const uint8_t* pubKeyHashBuffer,

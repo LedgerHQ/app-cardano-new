@@ -71,35 +71,33 @@ static void deriveNativeScriptHash_handleNofK(buffer_t *cdata) {
     return;
 }
 
-static inline bool isComplexScriptFinished() {
+static inline bool isCurrentComplexScriptComplete() {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     return ctx->level > 0 && ctx->complexScripts[ctx->level].remainingScripts == 0;
 }
 
-static inline int complexScriptFinished() {
+static inline void finishComplexScriptsAndPropagate() {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
-    while (isComplexScriptFinished()) {
+    while (isCurrentComplexScriptComplete()) {
         ASSERT(ctx->level > 0);
         ctx->level--;
         ASSERT(ctx->level < MAX_SCRIPT_DEPTH);
         ASSERT(ctx->complexScripts[ctx->level].remainingScripts > 0);
         ctx->complexScripts[ctx->level].remainingScripts--;
     }
-    return 0;
 }
 
-static inline int simpleScriptFinished() {
+static inline void finishSimpleScriptAndPropagate() {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     ASSERT(ctx->level < MAX_SCRIPT_DEPTH);
     ASSERT(ctx->complexScripts[ctx->level].remainingScripts > 0);
     ctx->complexScripts[ctx->level].remainingScripts--;
-    if (isComplexScriptFinished()) {
-        complexScriptFinished();
+    if (isCurrentComplexScriptComplete()) {
+        finishComplexScriptsAndPropagate();
     }
-    return 0;
 }
 
-static inline bool areMoreScriptsExpected() {
+static inline bool isScriptExpectedAtCurrentLevel() {
     // if the number of remaining scripts is not bigger than 0, then this request
     // is invalid in the current context, as Ledger was not expecting another
     // script to be parsed
@@ -129,7 +127,7 @@ static bool parse_native_script_pubkey_credential(buffer_t *buf, ext_credential_
 }
 
 // Simple native script handlers
-static void deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
+static bool deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
 
     // Parse pubkey credential (only KEY_PATH and KEY_HASH allowed, not SCRIPT_HASH)
@@ -137,12 +135,12 @@ static void deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
     if (!parse_native_script_pubkey_credential(cdata, &credential)) {
         TRACE("Failed to parse native script pubkey credential");
         send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_PUBKEY_CREDENTIAL);
-        return;
+        return false;
     }
     if (buffer_can_read(cdata, 1)) {
         TRACE("Pubkey APDU not fully consumed");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
+        return false;
     }
 
     // Derive or extract the pubkey hash
@@ -184,42 +182,42 @@ static void deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
     // Display to user
     ui_display_native_script_hash(policy);
     // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
-    return;
+    return true;
 }
 
-static void deriveNativeScriptHash_handleInvalidBefore(buffer_t *cdata) {
+static bool deriveNativeScriptHash_handleInvalidBefore(buffer_t *cdata) {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     bool read_timelock = buffer_read_u64(cdata, &ctx->scriptContent.timelock, BE);
     if (!read_timelock) {
         TRACE("Failed to read timelock");
         send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_TIMELOCK);
-        return;
+        return false;
     }
     if (buffer_can_read(cdata, 1)) {
         TRACE("Invalid before APDU not fully consumed");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
+        return false;
     }
     nativeScriptHashBuilder_addScript_invalidBefore(&ctx->hashBuilder, ctx->scriptContent.timelock);
     ctx->ui_scriptType = UI_SCRIPT_INVALID_BEFORE;
     security_policy_t policy = POLICY_SHOW;
     ui_display_native_script_hash(policy);
     // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
-    return;
+    return true;
 }
 
-static void deriveNativeScriptHash_handleInvalidHereafter(buffer_t *cdata) {
+static bool deriveNativeScriptHash_handleInvalidHereafter(buffer_t *cdata) {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     bool read_timelock = buffer_read_u64(cdata, &ctx->scriptContent.timelock, BE);
     if (!read_timelock) {
         TRACE("Failed to read timelock");
         send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_TIMELOCK);
-        return;
+        return false;
     }
     if (buffer_can_read(cdata, 1)) {
         TRACE("Invalid hereafter APDU not fully consumed");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
+        return false;
     }
     nativeScriptHashBuilder_addScript_invalidHereafter(&ctx->hashBuilder,
                                                        ctx->scriptContent.timelock);
@@ -227,7 +225,7 @@ static void deriveNativeScriptHash_handleInvalidHereafter(buffer_t *cdata) {
     security_policy_t policy = POLICY_SHOW;
     ui_display_native_script_hash(policy);
     // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
-    return;
+    return true;
 }
 
 // Finish native script handlers
@@ -253,7 +251,7 @@ int deriveNativeScriptHash_displayNativeScriptHash_policyId() {
 static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
 
-    if (!areMoreScriptsExpected()) {
+    if (!isScriptExpectedAtCurrentLevel()) {
         TRACE("More scripts expected");
         send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_NESTING);
         return;
@@ -309,8 +307,8 @@ static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
             return;
     }
 
-    if (isComplexScriptFinished()) {
-        complexScriptFinished();
+    if (isCurrentComplexScriptComplete()) {
+        finishComplexScriptsAndPropagate();
     }
 
     return;
@@ -318,7 +316,7 @@ static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
 
 // Simple script handler
 static void deriveNativeScriptHash_handleSimpleScript(buffer_t *cdata) {
-    if (!areMoreScriptsExpected()) {
+    if (!isScriptExpectedAtCurrentLevel()) {
         TRACE("More scripts expected");
         send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_NESTING);
         return;
@@ -332,16 +330,18 @@ static void deriveNativeScriptHash_handleSimpleScript(buffer_t *cdata) {
         return;
     }
 
+    bool parse_succeeded = false;
+
     // parse data
     switch (nativeScriptType) {
         case NATIVE_SCRIPT_PUBKEY:
-            deriveNativeScriptHash_handlePubkey(cdata);
+            parse_succeeded = deriveNativeScriptHash_handlePubkey(cdata);
             break;
         case NATIVE_SCRIPT_INVALID_BEFORE:
-            deriveNativeScriptHash_handleInvalidBefore(cdata);
+            parse_succeeded = deriveNativeScriptHash_handleInvalidBefore(cdata);
             break;
         case NATIVE_SCRIPT_INVALID_HEREAFTER:
-            deriveNativeScriptHash_handleInvalidHereafter(cdata);
+            parse_succeeded = deriveNativeScriptHash_handleInvalidHereafter(cdata);
             break;
         default:
             TRACE("Bad nativeScriptType");
@@ -349,7 +349,11 @@ static void deriveNativeScriptHash_handleSimpleScript(buffer_t *cdata) {
             return;
     }
 
-    simpleScriptFinished();
+    if (!parse_succeeded) {
+        return;
+    }
+
+    finishSimpleScriptAndPropagate();
     return;
 }
 
@@ -397,7 +401,6 @@ static void deriveNativeScriptHash_handleWholeNativeScriptFinish(buffer_t *cdata
             send_swo_and_reset(SWO_BAD_STATE);
             return;
     }
-    G_context.req_type = REQUEST_NONE;
     return;
 }
 
