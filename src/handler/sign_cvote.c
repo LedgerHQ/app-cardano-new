@@ -163,6 +163,11 @@ __noinline_due_to_stack__ static void handle_sign_cvote_confirm_apdu(buffer_t *c
     BIP44_PRINTF(&ctx->witness_path);
 
     // Ensure the entire APDU has been consumed
+    if (buffer_can_read(cdata, 1)) {
+        TRACE("CONFIRM APDU not fully consumed");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
     LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");
 
     // Check security policy for witness path

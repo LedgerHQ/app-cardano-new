@@ -404,15 +404,27 @@ static void deriveNativeScriptHash_handleWholeNativeScriptFinish(buffer_t *cdata
     return;
 }
 
+static void deriveNativeScriptHash_initRequest(void) {
+    // Handler entry invariant for request initialization
+    LEDGER_ASSERT(G_context.req_type == REQUEST_NONE,
+                  "native script hash init called while another request active");
+
+    G_context.req_type = REQUEST_DERIVE_NATIVE_SCRIPT_HASH;
+
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+    ctx->level = 0;
+    ctx->complexScripts[0].remainingScripts = 1;
+    ctx->complexScripts[0].totalScripts = 1;
+    ctx->ui_scriptType = UI_SCRIPT_INIT;
+    nativeScriptHashBuilder_init(&ctx->hashBuilder);
+}
+
 void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
 
     TRACE_BUFFER_T(cdata);
 
     if (G_context.req_type == REQUEST_NONE) {
-        G_context.req_type = REQUEST_DERIVE_NATIVE_SCRIPT_HASH;
-        derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
-        ctx->complexScripts[0].remainingScripts = 1;
-        nativeScriptHashBuilder_init(&ctx->hashBuilder);
+        deriveNativeScriptHash_initRequest();
         security_policy_t policy = POLICY_SHOW;
         ui_display_native_script_hash(policy);
         // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent

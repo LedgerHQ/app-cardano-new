@@ -33,15 +33,14 @@ static void prepareResponse() {
 }
 
 void handler_derive_address(buffer_t *cdata, uint8_t p1) {
-    if (G_context.req_type != REQUEST_NONE) {
-        TRACE("derive_address called while another request is active: %d", G_context.req_type);
-        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
-        return;
-    }
+    LEDGER_ASSERT(G_context.req_type == REQUEST_NONE,
+                  "derive_address called while another request active");
+
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handler");
+    TRACE_BUFFER_T(cdata);
 
     G_context.req_type = REQUEST_DERIVE_ADDRESS;
     G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_NONE;
-    TRACE_BUFFER_T(cdata);
 
     derive_address_ctx_t *ctx = &G_context.derive_address_info;
     bool is_parsed = buffer_read_address_params(cdata, &ctx->address_params);

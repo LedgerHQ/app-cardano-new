@@ -126,6 +126,11 @@ __noinline_due_to_stack__ void signMsg_handle_init(buffer_t *cdata) {
     }
 
     // Verify APDU fully consumed
+    if (buffer_can_read(cdata, 1)) {
+        TRACE("INIT APDU not fully consumed");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
     LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");
 
     // Check security policy
