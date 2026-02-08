@@ -17,7 +17,8 @@ void signRawMessageWithPath(const bip44_path_t* path,
     ASSERT(path->length <= ARRAY_LEN(path->path));
 
     // if the path is invalid, it's a bug in previous validation
-    ASSERT(policyForDerivePrivateKey(path) != POLICY_DENY);
+    LEDGER_ASSERT(policyForDerivePrivateKey(path) != POLICY_DENY,
+                  "Signing denied by private key derivation policy");
 
 #if !defined(FUZZING) || defined(TEST)
     TRACE("signing with path:");

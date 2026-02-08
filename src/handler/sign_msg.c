@@ -424,7 +424,8 @@ static void _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
     TRACE("Sig_structure size = %u", sigStructureSize);
     TRACE_BUFFER(sigStructure, sigStructureSize);
 
-    // Safety check: Sig_structure must not be exactly TX_HASH_LENGTH (32 bytes)
+    // CIP-8 has no app-level domain separation from tx witness signing, so we must sign
+    // full CBOR Sig_structure bytes; this check only rejects degenerate 32-byte ambiguity.
     LEDGER_ASSERT(sigStructureSize != TX_HASH_LENGTH,
                   "Sig_structure size equals TX_HASH_LENGTH");
 

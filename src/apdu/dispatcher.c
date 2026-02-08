@@ -193,7 +193,6 @@ void apdu_dispatcher(const command_t *cmd) {
                     send_swo_and_reset(SWO_INCORRECT_P1_P2);
                     return;
             }
-            return;
 
         case INS_DERIVE_NATIVE_SCRIPT_HASH:
             // P2 must be unused for native script hash APDUs
@@ -212,7 +211,6 @@ void apdu_dispatcher(const command_t *cmd) {
                     send_swo_and_reset(SWO_INCORRECT_P1_P2);
                     return;
             }
-            return;
 
         case INS_SIGN_TX:
             // Check if this is a witness APDU

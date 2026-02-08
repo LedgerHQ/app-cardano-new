@@ -1813,10 +1813,14 @@ security_policy_t policyForSignTxDisplayTxHash(sign_tx_signingmode_t signingMode
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
             SHOW_IF(is_expert_mode());
             HIDE();
+            break;
         case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
             SHOW();
+            break;
         default:
-            HIDE();
+            LEDGER_ASSERT(false, "Unknown tx signing mode for tx hash display policy");
+            DENY();
+            break;
     }
 }
 
@@ -2022,7 +2026,7 @@ security_policy_t policyForSignTxWitness(sign_tx_signingmode_t txSigningMode,
                                          bool isSwap,
                                          const bip44_path_t *witnessPath,
                                          bool mintPresent,
-                                         const bip44_path_t *poolOwnerPath __attribute__((unused)),
+                                         const bip44_path_t *poolOwnerPath,
                                          warning_bits_t *warnings) {
     LEDGER_ASSERT(witnessPath != NULL, "NULL witness path");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");

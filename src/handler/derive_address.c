@@ -33,6 +33,12 @@ static void prepareResponse() {
 }
 
 void handler_derive_address(buffer_t *cdata, uint8_t p1) {
+    if (G_context.req_type != REQUEST_NONE) {
+        TRACE("derive_address called while another request is active: %d", G_context.req_type);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return;
+    }
+
     G_context.req_type = REQUEST_DERIVE_ADDRESS;
     G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_NONE;
     TRACE_BUFFER_T(cdata);

@@ -172,6 +172,16 @@ static void free_vote_list(flist_node_t *vote_node) {
     }
 }
 
+static void free_voter_votes_item(voter_votes_node_t *voter_item) {
+    if (voter_item == NULL) {
+        return;
+    }
+
+    free_vote_list(voter_item->voter_votes_data.votes);
+    voter_item->voter_votes_data.votes = NULL;
+    APP_MEM_FREE(voter_item);
+}
+
 parser_status_e parse_tx(buffer_t *buf, transaction_t *tx) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     LEDGER_ASSERT(tx != NULL, "NULL tx");
@@ -1142,6 +1152,10 @@ static parser_status_e parse_tx_collateral_output(buffer_t *buf, transaction_t *
 }
 
 static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *tx) {
+    parser_status_e status = PARSING_OK;
+    voter_votes_node_t *voter_item = NULL;
+    vote_node_t *vote_item = NULL;
+
     // The voter list is defined as a canonical CBOR map keyed by voters. The
     // canonical ordering cannot be enforced here because the voter key encoding
     // depends on the credential type (paths would need to be hashed/derived),
@@ -1152,10 +1166,11 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
     // For each voter in the outer map
     for (uint16_t voter_idx = 0; voter_idx < tx->num_voters; voter_idx++) {
         // Allocate list node for this voter
-        voter_votes_node_t *voter_item = NULL;
+        voter_item = NULL;
         if (!APP_MEM_CALLOC((void **) &voter_item, (uint16_t) sizeof(*voter_item))) {
             TRACE("parse_tx_voting_procedures: out of memory allocating voter node");
-            return OUT_OF_MEMORY_ERROR;
+            status = OUT_OF_MEMORY_ERROR;
+            goto cleanup;
         }
 
         // Initialize votes list
@@ -1164,7 +1179,8 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
         // Parse voter (ext_voter_t)
         uint8_t voter_type_byte;
         if (!buffer_read_u8(buf, &voter_type_byte)) {
-            return VOTING_PROCEDURES_PARSING_ERROR;
+            status = VOTING_PROCEDURES_PARSING_ERROR;
+            goto cleanup;
         }
         voter_item->voter_votes_data.voter.type = (ext_voter_type_t) voter_type_byte;
 
@@ -1174,7 +1190,8 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
             case EXT_VOTER_DREP_KEY_PATH:
             case EXT_VOTER_STAKE_POOL_KEY_PATH:
                 if (!buffer_read_bip44_path(buf, &voter_item->voter_votes_data.voter.keyPath)) {
-                    return VOTING_PROCEDURES_PARSING_ERROR;
+                    status = VOTING_PROCEDURES_PARSING_ERROR;
+                    goto cleanup;
                 }
                 break;
 
@@ -1183,7 +1200,8 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
             case EXT_VOTER_STAKE_POOL_KEY_HASH:
                 if (!buffer_read_bytes_ptr(buf, &voter_item->voter_votes_data.voter.keyHash,
                                            ADDRESS_KEY_HASH_LENGTH)) {
-                    return VOTING_PROCEDURES_PARSING_ERROR;
+                    status = VOTING_PROCEDURES_PARSING_ERROR;
+                    goto cleanup;
                 }
                 break;
 
@@ -1191,42 +1209,49 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
             case EXT_VOTER_DREP_SCRIPT_HASH:
                 if (!buffer_read_bytes_ptr(buf, &voter_item->voter_votes_data.voter.scriptHash,
                                            SCRIPT_HASH_LENGTH)) {
-                    return VOTING_PROCEDURES_PARSING_ERROR;
+                    status = VOTING_PROCEDURES_PARSING_ERROR;
+                    goto cleanup;
                 }
                 break;
 
             default:
-                return VOTING_PROCEDURES_PARSING_ERROR;
+                status = VOTING_PROCEDURES_PARSING_ERROR;
+                goto cleanup;
         }
 
         ASSERT_TYPE(voter_item->voter_votes_data.numVotes, uint16_t);
         if (!buffer_read_u16(buf, &voter_item->voter_votes_data.numVotes, BE)) {
-            return VOTING_PROCEDURES_PARSING_ERROR;
+            status = VOTING_PROCEDURES_PARSING_ERROR;
+            goto cleanup;
         }
 
         // Parse each vote for this voter
         for (uint16_t vote_idx = 0; vote_idx < voter_item->voter_votes_data.numVotes; vote_idx++) {
             // Allocate list node for this vote
-            vote_node_t *vote_item = NULL;
+            vote_item = NULL;
             if (!APP_MEM_CALLOC((void **) &vote_item, (uint16_t) sizeof(*vote_item))) {
                 TRACE("parse_tx_voting_procedures: out of memory allocating vote node");
-                return OUT_OF_MEMORY_ERROR;
+                status = OUT_OF_MEMORY_ERROR;
+                goto cleanup;
             }
 
             // Parse gov_action_id (tx_hash + index)
             if (!buffer_read_bytes_ptr(buf, &vote_item->vote_data.govActionId.txHash, TX_HASH_LENGTH)) {
-                return VOTING_PROCEDURES_PARSING_ERROR;
+                status = VOTING_PROCEDURES_PARSING_ERROR;
+                goto cleanup;
             }
             ASSERT(vote_item->vote_data.govActionId.txHash != NULL);
 
             ASSERT_TYPE(vote_item->vote_data.govActionId.govActionIndex, uint32_t);
             if (!buffer_read_u32(buf, &vote_item->vote_data.govActionId.govActionIndex, BE)) {
-                return VOTING_PROCEDURES_PARSING_ERROR;
+                status = VOTING_PROCEDURES_PARSING_ERROR;
+                goto cleanup;
             }
             // Parse voting_procedure (vote + optional anchor)
             uint8_t vote_byte;
             if (!buffer_read_u8(buf, &vote_byte)) {
-                return VOTING_PROCEDURES_PARSING_ERROR;
+                status = VOTING_PROCEDURES_PARSING_ERROR;
+                goto cleanup;
             }
             switch (vote_byte) {
                 case VOTE_NO:
@@ -1235,24 +1260,36 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
                     vote_item->vote_data.voteOption = (vote_t) vote_byte;
                     break;
                 default:
-                    return VOTING_PROCEDURES_PARSING_ERROR;
+                    status = VOTING_PROCEDURES_PARSING_ERROR;
+                    goto cleanup;
             }
 
             if (!buffer_read_anchor(buf, &vote_item->vote_data.anchor)) {
-                return VOTING_PROCEDURES_PARSING_ERROR;
+                status = VOTING_PROCEDURES_PARSING_ERROR;
+                goto cleanup;
             }
 
             // Add vote to voter's vote list
             vote_item->flist_node.next = NULL;
             flist_push_back(&voter_item->voter_votes_data.votes, (flist_node_t *) vote_item);
+            vote_item = NULL;
         }
 
         // Add voter to transaction's voter list
         voter_item->flist_node.next = NULL;
         flist_push_back(&tx->voting_procedures, (flist_node_t *) voter_item);
+        voter_item = NULL;
     }
 
     return PARSING_OK;
+
+cleanup:
+    if (vote_item != NULL) {
+        APP_MEM_FREE(vote_item);
+    }
+    free_voter_votes_item(voter_item);
+    transaction_free_voting_procedures(tx);
+    return status;
 }
 
 // Reference inputs parsing is inline in parse_tx() since they use the same format as regular inputs

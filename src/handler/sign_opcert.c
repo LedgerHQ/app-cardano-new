@@ -83,8 +83,6 @@ void handler_sign_opcert(buffer_t *cdata) {
     TRACE("Security policy: %d", policy);
     if (policy == POLICY_DENY) {
         TRACE("Security policy DENY - rejecting operation");
-        TRACE("Calling nbgl_useCaseStatus(\"Operational certificate denied\", false, ui_menu_main)");
-        nbgl_useCaseStatus("Operational certificate denied", false, ui_menu_main);
         send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
         return;
     }

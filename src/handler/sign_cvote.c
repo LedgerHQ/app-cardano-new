@@ -236,6 +236,11 @@ void handler_sign_cvote(buffer_t *cdata, uint8_t p1) {
     switch (p1) {
         case P1_CVOTE_INIT: {
             TRACE("P1_CVOTE_INIT");
+            if (G_context.state.cvote_state != VOTECAST_STAGE_NONE) {
+                TRACE("Rejecting INIT in stage %d", G_context.state.cvote_state);
+                send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+                return;
+            }
             G_context.state.cvote_state = VOTECAST_STAGE_INIT;
             handle_sign_cvote_init_apdu(cdata);
             break;

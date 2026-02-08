@@ -54,7 +54,7 @@ static credential_t _credentialForTxHash(const ext_credential_t* credential) {
             memcpy(result.scriptHash, credential->scriptHash, SIZEOF(result.scriptHash));
             break;
         default:
-            ASSERT(false);
+            LEDGER_ASSERT(false, "Unknown ext credential type");
     }
 
     return result;
@@ -93,7 +93,7 @@ static drep_t _drepForTxHash(const ext_drep_t* ext_drep) {
             result.type = DREP_NO_CONFIDENCE;
             break;
         default:
-            ASSERT(false);
+            LEDGER_ASSERT(false, "Unknown ext drep type");
     }
 
     return result;
@@ -144,7 +144,7 @@ static voter_t _voterForTxHash(const ext_voter_t* ext_voter) {
             memcpy(voter.scriptHash, ext_voter->scriptHash, SIZEOF(voter.scriptHash));
             break;
         default:
-            ASSERT(false);
+            LEDGER_ASSERT(false, "Unknown ext voter type");
     }
 
     return voter;

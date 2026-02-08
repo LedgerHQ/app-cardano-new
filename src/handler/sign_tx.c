@@ -374,6 +374,8 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
  */
 static bool handle_tx_data_chunk(buffer_t *cdata) {
     TRACE("SWO_SUCCESS constant = 0x%04x", SWO_SUCCESS);
+    const size_t chunk_size = buffer_remaining(cdata);
+
     // Validate we're in the correct state for receiving chunks
     if (G_context.state.tx_state != TX_STATE_CHUNKS) {
         TRACE("Invalid state for chunk reception: expected TX_STATE_CHUNKS, got %d", G_context.state.tx_state);
@@ -393,9 +395,11 @@ static bool handle_tx_data_chunk(buffer_t *cdata) {
     }
 
     // Check if adding this chunk would exceed buffer
-    if (G_context.tx_info.raw_tx_len + cdata->size > TX_BUFFER_SIZE) {
-        TRACE("Transaction too large: current=%d, chunk=%d, max=%d",
-              G_context.tx_info.raw_tx_len, cdata->size, TX_BUFFER_SIZE);
+    if (G_context.tx_info.raw_tx_len + chunk_size > TX_BUFFER_SIZE) {
+        TRACE("Transaction too large: current=%u, chunk=%u, max=%u",
+              (unsigned) G_context.tx_info.raw_tx_len,
+              (unsigned) chunk_size,
+              (unsigned) TX_BUFFER_SIZE);
         send_swo_and_reset(SWO_INVALID_TX_LENGTH);
         return false;
     }
@@ -403,13 +407,13 @@ static bool handle_tx_data_chunk(buffer_t *cdata) {
     // Copy chunk data
     if (!buffer_move(cdata,
                      G_context.tx_info.raw_tx + G_context.tx_info.raw_tx_len,
-                     cdata->size)) {
+                     chunk_size)) {
         TRACE("Failed to copy transaction chunk");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return false;
     }
-    G_context.tx_info.raw_tx_len += cdata->size;
-    TRACE("Copied %u bytes, total: %u", (unsigned)cdata->size, (unsigned)G_context.tx_info.raw_tx_len);
+    G_context.tx_info.raw_tx_len += chunk_size;
+    TRACE("Copied %u bytes, total: %u", (unsigned) chunk_size, (unsigned) G_context.tx_info.raw_tx_len);
 
     return true;
 }
@@ -417,8 +421,6 @@ static bool handle_tx_data_chunk(buffer_t *cdata) {
 void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_tx handler");
     TRACE_BUFFER_T(cdata);
-#ifdef HAVE_SWAP
-#endif
 
     switch (p1) {
         case P1_TX_INIT:
@@ -438,8 +440,6 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
                 TRACE("Swap mode transaction started");
             }
 #endif
-            LEDGER_ASSERT(G_context.req_type == REQUEST_NONE, "init while request active");
-            LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_NONE, "init while tx state active");
             G_context.req_type = REQUEST_SIGN_TRANSACTION;
             G_context.state.tx_state = TX_STATE_NONE;
             handle_tx_init_apdu(cdata);
@@ -580,6 +580,15 @@ void finalize_witness(bool confirm)
         return;
     }
 
+    // Witness confirmed - sign transaction hash with the selected witness path
+    getWitness(&G_context.tx_info.witness_path,
+               G_context.tx_info.tx_hash,
+               SIZEOF(G_context.tx_info.tx_hash),
+               G_context.tx_info.witness_signature,
+               SIZEOF(G_context.tx_info.witness_signature));
+
+    TRACE_BUFFER(G_context.tx_info.witness_signature, ED25519_SIGNATURE_LENGTH);
+
     // Witness confirmed - send signature back
 #ifdef HAVE_SWAP
     if (G_called_from_swap &&
@@ -611,14 +620,12 @@ void handler_sign_tx_witness(buffer_t *cdata) {
         send_swo_and_reset(SWO_BAD_STATE);
         return;
     }
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "witness handler called with wrong request type");
 
     if (G_context.state.tx_state != TX_STATE_APPROVED) {
         TRACE("Bad state for witness signing: expected TX_STATE_APPROVED, got %d", G_context.state.tx_state);
         send_swo_and_reset(SWO_BAD_STATE);
         return;
     }
-    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_APPROVED, "witness handler called with wrong tx state");
 
     // Check that we haven't exceeded the expected number of witnesses
     if (G_context.tx_info.current_witness >= G_context.tx_info.num_witnesses) {
@@ -702,15 +709,6 @@ void handler_sign_tx_witness(buffer_t *cdata) {
         send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
         return;
     }
-
-    // Sign the transaction hash with the witness path
-    getWitness(&G_context.tx_info.witness_path,
-               G_context.tx_info.tx_hash,
-               sizeof(G_context.tx_info.tx_hash),
-               G_context.tx_info.witness_signature,
-               sizeof(G_context.tx_info.witness_signature));
-
-    TRACE_BUFFER(G_context.tx_info.witness_signature, ED25519_SIGNATURE_LENGTH);
 
     switch (policy) {
         case POLICY_HIDE:
