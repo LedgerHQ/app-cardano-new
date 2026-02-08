@@ -369,16 +369,16 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
 }
 
 /**
- * Helper: Accumulate transaction data chunks into buffer
- * Returns SWO_SUCCESS if more chunks expected, or falls through to parse if final chunk
+ * Helper: Accumulate transaction data chunks into buffer.
+ * Returns true on success. On failure, sends SW and resets context.
  */
-static void handle_tx_data_chunk(buffer_t *cdata, bool more) {
+static bool handle_tx_data_chunk(buffer_t *cdata) {
     TRACE("SWO_SUCCESS constant = 0x%04x", SWO_SUCCESS);
     // Validate we're in the correct state for receiving chunks
     if (G_context.state.tx_state != TX_STATE_CHUNKS) {
         TRACE("Invalid state for chunk reception: expected TX_STATE_CHUNKS, got %d", G_context.state.tx_state);
         send_swo_and_reset(SWO_BAD_STATE);
-        return;
+        return false;
     }
 
     // Allocate buffer on first data chunk
@@ -387,7 +387,7 @@ static void handle_tx_data_chunk(buffer_t *cdata, bool more) {
         if (!APP_MEM_CALLOC((void **) &G_context.tx_info.raw_tx, (uint16_t) TX_BUFFER_SIZE)) {
             TRACE("Failed to allocate %d byte transaction buffer!", TX_BUFFER_SIZE);
             send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-            return;
+            return false;
         }
         TRACE("Transaction buffer allocated: %d bytes at %p", TX_BUFFER_SIZE, G_context.tx_info.raw_tx);
     }
@@ -397,7 +397,7 @@ static void handle_tx_data_chunk(buffer_t *cdata, bool more) {
         TRACE("Transaction too large: current=%d, chunk=%d, max=%d",
               G_context.tx_info.raw_tx_len, cdata->size, TX_BUFFER_SIZE);
         send_swo_and_reset(SWO_INVALID_TX_LENGTH);
-        return;
+        return false;
     }
 
     // Copy chunk data
@@ -406,17 +406,12 @@ static void handle_tx_data_chunk(buffer_t *cdata, bool more) {
                      cdata->size)) {
         TRACE("Failed to copy transaction chunk");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
+        return false;
     }
     G_context.tx_info.raw_tx_len += cdata->size;
     TRACE("Copied %u bytes, total: %u", (unsigned)cdata->size, (unsigned)G_context.tx_info.raw_tx_len);
 
-    if (more) {
-        io_send_sw(SWO_SUCCESS);
-        return;
-    }
-
-    // Final chunk - will be handled by caller
+    return true;
 }
 
 void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
@@ -458,7 +453,10 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             }
 
             // More data chunks to follow
-            handle_tx_data_chunk(cdata, true);
+            if (!handle_tx_data_chunk(cdata)) {
+                return;
+            }
+            io_send_sw(SWO_SUCCESS);
             return;
 
         case P1_TX_CONFIRM:
@@ -469,7 +467,9 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             }
 
             // Final chunk
-            handle_tx_data_chunk(cdata, false);
+            if (!handle_tx_data_chunk(cdata)) {
+                return;
+            }
 
             // Parse and build hash
             LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_CHUNKS, "Bad state before parse");

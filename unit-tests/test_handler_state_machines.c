@@ -136,6 +136,28 @@ static void test_sign_tx_chunk_rejects_without_active_request(void **state) {
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
 
+static void test_sign_tx_confirm_stops_after_chunk_error(void **state) {
+    (void) state;
+    reset_test_context();
+
+    // Mimic an in-progress request with invalid chunk state:
+    // handle_tx_data_chunk() returns error and resets context.
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    G_context.state.tx_state = TX_STATE_NONE;
+
+    uint8_t chunk[1] = {0x00};
+    buffer_t confirm_buf = {
+        .ptr = chunk,
+        .size = sizeof(chunk),
+        .offset = 0,
+    };
+
+    handler_sign_tx(&confirm_buf, P1_TX_CONFIRM);
+    assert_int_equal(g_last_sw, SWO_BAD_STATE);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+    assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
+}
+
 static void test_sign_tx_witness_rejects_before_approved_state(void **state) {
     (void) state;
     reset_test_context();
@@ -172,8 +194,8 @@ int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_sign_tx_init_rejects_when_request_is_active),
         cmocka_unit_test(test_sign_tx_chunk_rejects_without_active_request),
+        cmocka_unit_test(test_sign_tx_confirm_stops_after_chunk_error),
         cmocka_unit_test(test_sign_tx_witness_rejects_before_approved_state),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
-
