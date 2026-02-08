@@ -408,19 +408,18 @@ void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
 
     TRACE_BUFFER_T(cdata);
 
-    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
-    if (G_context.req_type != REQUEST_DERIVE_NATIVE_SCRIPT_HASH) {
-        explicit_bzero(&G_context, sizeof(G_context));
-        ctx->level = 0;
-        ctx->complexScripts[ctx->level].remainingScripts = 1;
+    if (G_context.req_type == REQUEST_NONE) {
+        G_context.req_type = REQUEST_DERIVE_NATIVE_SCRIPT_HASH;
+        derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+        ctx->complexScripts[0].remainingScripts = 1;
         nativeScriptHashBuilder_init(&ctx->hashBuilder);
-        ctx->ui_scriptType = UI_SCRIPT_INIT;
         security_policy_t policy = POLICY_SHOW;
         ui_display_native_script_hash(policy);
         // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
+    } else if (G_context.req_type != REQUEST_DERIVE_NATIVE_SCRIPT_HASH) {
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return;
     }
-
-    G_context.req_type = REQUEST_DERIVE_NATIVE_SCRIPT_HASH;
 
     switch (script_type) {
         case P1_NATIVE_SCRIPT_START_COMPLEX:

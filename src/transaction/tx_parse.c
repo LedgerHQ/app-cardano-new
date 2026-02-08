@@ -876,17 +876,9 @@ void transaction_free_outputs(transaction_t *tx) {
 
     flist_node_t *output_node = tx->outputs;
     while (output_node != NULL) {
-        tx_output_node_t *item = (tx_output_node_t *) output_node;
         flist_node_t *next = output_node->next;
 
-        // Free asset groups and their tokens
-        free_asset_groups(item->output_data.assetGroups);
-
-        // Note: inline datum and reference script data are pointers into the raw_tx buffer,
-        // not separately allocated, so they do not need to be freed
-
-        // Free the list item itself
-        APP_MEM_FREE(output_node);
+        free_output_item((tx_output_node_t *) output_node);
         output_node = next;
     }
     tx->outputs = NULL;

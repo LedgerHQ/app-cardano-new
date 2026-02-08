@@ -494,11 +494,12 @@ void finalize_sign_msg(bool confirmed) {
 // ============================== MAIN HANDLER ==============================
 
 void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
-    if (G_context.req_type != REQUEST_SIGN_MSG) {
-        explicit_bzero(&G_context, sizeof(G_context));
-        G_context.state.sign_msg_state = SIGN_MSG_STAGE_NONE;
+    if (G_context.req_type == REQUEST_NONE) {
+        G_context.req_type = REQUEST_SIGN_MSG;
+    } else if (G_context.req_type != REQUEST_SIGN_MSG) {
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return;
     }
-    G_context.req_type = REQUEST_SIGN_MSG;
 
     switch (p1) {
         case P1_SIGN_MSG_INIT: {

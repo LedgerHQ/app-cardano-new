@@ -226,11 +226,12 @@ void finalize_sign_cvote(bool confirmed) {
 }
 
 void handler_sign_cvote(buffer_t *cdata, uint8_t p1) {
-    if (G_context.req_type != REQUEST_CVOTE) {
-        explicit_bzero(&G_context, sizeof(G_context));
-        G_context.state.cvote_state = VOTECAST_STAGE_NONE;
+    if (G_context.req_type == REQUEST_NONE) {
+        G_context.req_type = REQUEST_CVOTE;
+    } else if (G_context.req_type != REQUEST_CVOTE) {
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return;
     }
-    G_context.req_type = REQUEST_CVOTE;
 
     switch (p1) {
         case P1_CVOTE_INIT: {
