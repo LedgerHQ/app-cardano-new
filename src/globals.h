@@ -64,22 +64,22 @@ typedef enum {
  * Tracks the progression through initialization, reception, and confirmation phases.
  */
 typedef enum {
-    VOTECAST_STAGE_NONE = 0,
-    VOTECAST_STAGE_INIT,
-    VOTECAST_STAGE_CHUNK,
-    VOTECAST_STAGE_CONFIRM,
-} cvote_stage_e;
+    VOTECAST_STATE_NONE = 0,
+    VOTECAST_STATE_INIT,
+    VOTECAST_STATE_CHUNK,
+    VOTECAST_STATE_CONFIRM,
+} cvote_state_e;
 
 /**
  * State machine for CIP-8 message signing operation.
  * Tracks the progression through initialization, message chunk reception, and confirmation phases.
  */
 typedef enum {
-    SIGN_MSG_STAGE_NONE = 0,
-    SIGN_MSG_STAGE_INIT,
-    SIGN_MSG_STAGE_CHUNK,
-    SIGN_MSG_STAGE_CONFIRM,
-} sign_msg_stage_e;
+    SIGN_MSG_STATE_NONE = 0,
+    SIGN_MSG_STATE_INIT,
+    SIGN_MSG_STATE_CHUNK,
+    SIGN_MSG_STATE_CONFIRM,
+} sign_msg_state_e;
 
 /**
  * Tracks stored account metadata for the single-account security model.
@@ -234,8 +234,8 @@ typedef struct {
         tx_state_e tx_state;
         opcert_state_e opcert_state;
         derive_address_state_e derive_address_state;
-        cvote_stage_e cvote_state;
-        sign_msg_stage_e sign_msg_state;
+        cvote_state_e cvote_state;
+        sign_msg_state_e sign_msg_state;
     } state;
 
     union {

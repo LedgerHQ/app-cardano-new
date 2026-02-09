@@ -39,11 +39,11 @@
 #include "nbgl_use_case.h"
 #include "app_mem_utils.h"
 
-static bool ensure_sign_msg_stage(sign_msg_stage_e required_stage) {
-    if (G_context.state.sign_msg_state != required_stage) {
-        TRACE("Rejecting sign_msg command in stage %d (expected %d)",
+static bool ensure_sign_msg_state(sign_msg_state_e required_state) {
+    if (G_context.state.sign_msg_state != required_state) {
+        TRACE("Rejecting sign_msg command in state %d (expected %d)",
               G_context.state.sign_msg_state,
-              required_stage);
+              required_state);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return false;
     }
@@ -54,7 +54,7 @@ static bool ensure_sign_msg_stage(sign_msg_stage_e required_stage) {
 
 void signMsg_handle_init(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
-    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STAGE_INIT, "Invalid sign_msg state");
+    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_INIT, "Invalid sign_msg state");
 
     sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
 
@@ -179,9 +179,9 @@ void signMsg_handle_init(buffer_t *cdata) {
 
     // Transition: skip CHUNK stage for empty messages
     if (ctx->msgLength == 0) {
-        G_context.state.sign_msg_state = SIGN_MSG_STAGE_CONFIRM;
+        G_context.state.sign_msg_state = SIGN_MSG_STATE_CONFIRM;
     } else {
-        G_context.state.sign_msg_state = SIGN_MSG_STAGE_CHUNK;
+        G_context.state.sign_msg_state = SIGN_MSG_STATE_CHUNK;
     }
 
     io_send_sw(SWO_SUCCESS);
@@ -190,7 +190,7 @@ void signMsg_handle_init(buffer_t *cdata) {
 // ============================== CHUNK ==============================
 
 void signMsg_handle_chunk(buffer_t *cdata) {
-    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STAGE_CHUNK, "Invalid sign_msg state");
+    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CHUNK, "Invalid sign_msg state");
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
 
     sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
@@ -260,7 +260,7 @@ void signMsg_handle_chunk(buffer_t *cdata) {
 
     // Transition to CONFIRM if all bytes received
     if (ctx->remainingBytes == 0) {
-        G_context.state.sign_msg_state = SIGN_MSG_STAGE_CONFIRM;
+        G_context.state.sign_msg_state = SIGN_MSG_STATE_CONFIRM;
     }
 
     io_send_sw(SWO_SUCCESS);
@@ -443,7 +443,7 @@ static void _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
 }
 
 void signMsg_handle_confirm(buffer_t *cdata) {
-    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STAGE_CONFIRM,
+    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CONFIRM,
                   "Invalid sign_msg state");
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
 
@@ -467,7 +467,7 @@ void signMsg_handle_confirm(buffer_t *cdata) {
 void finalize_sign_msg(bool confirmed) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_MSG,
                   "finalize_sign_msg called without REQUEST_SIGN_MSG");
-    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STAGE_CONFIRM,
+    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CONFIRM,
                   "finalize_sign_msg called in wrong state: %d",
                   G_context.state.sign_msg_state);
 
@@ -513,18 +513,18 @@ void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
     switch (p1) {
         case P1_SIGN_MSG_INIT: {
             TRACE("P1_SIGN_MSG_INIT");
-            if (G_context.state.sign_msg_state != SIGN_MSG_STAGE_NONE) {
-                TRACE("Rejecting INIT in stage %d", G_context.state.sign_msg_state);
+            if (G_context.state.sign_msg_state != SIGN_MSG_STATE_NONE) {
+                TRACE("Rejecting INIT in state %d", G_context.state.sign_msg_state);
                 send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
                 return;
             }
-            G_context.state.sign_msg_state = SIGN_MSG_STAGE_INIT;
+            G_context.state.sign_msg_state = SIGN_MSG_STATE_INIT;
             signMsg_handle_init(cdata);
             break;
         }
         case P1_SIGN_MSG_CHUNK: {
             TRACE("P1_SIGN_MSG_CHUNK");
-            if (!ensure_sign_msg_stage(SIGN_MSG_STAGE_CHUNK)) {
+            if (!ensure_sign_msg_state(SIGN_MSG_STATE_CHUNK)) {
                 return;
             }
             signMsg_handle_chunk(cdata);
@@ -532,7 +532,7 @@ void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
         }
         case P1_SIGN_MSG_CONFIRM: {
             TRACE("P1_SIGN_MSG_CONFIRM");
-            if (!ensure_sign_msg_stage(SIGN_MSG_STAGE_CONFIRM)) {
+            if (!ensure_sign_msg_state(SIGN_MSG_STATE_CONFIRM)) {
                 return;
             }
             signMsg_handle_confirm(cdata);

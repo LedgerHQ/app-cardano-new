@@ -83,7 +83,7 @@ void ui_display_sign_msg(security_policy_t securityPolicy) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_MSG,
                   "ui_display_sign_msg called with wrong request type: %d",
                   G_context.req_type);
-    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STAGE_CONFIRM,
+    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CONFIRM,
                   "ui_display_sign_msg called in wrong state: %d",
                   G_context.state.sign_msg_state);
 

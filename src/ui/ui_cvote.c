@@ -66,7 +66,7 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_CVOTE,
                   "ui_display_cvote_confirm called with wrong request type: %d",
                   G_context.req_type);
-    LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STAGE_CONFIRM,
+    LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STATE_CONFIRM,
                   "ui_display_cvote_confirm called in wrong state: %d",
                   G_context.state.cvote_state);
 

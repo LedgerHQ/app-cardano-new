@@ -30,7 +30,7 @@ static inline void reset_sign_msg_test_state(void) {
     reset_app_context();
     g_last_sw = 0;
     g_last_response_len = 0;
-    G_context.state.sign_msg_state = SIGN_MSG_STAGE_NONE;
+    G_context.state.sign_msg_state = SIGN_MSG_STATE_NONE;
     G_context.req_type = REQUEST_NONE;
 }
 
