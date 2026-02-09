@@ -28,9 +28,6 @@
  * @param cdata
  * @param p1
  *   P1 parameter indicating chunk type (P1_TX_INIT, P1_TX_CHUNK, P1_TX_CONFIRM).
- *
- * @return zero or positive integer if success, negative integer otherwise.
- *
  */
 void handler_sign_tx(buffer_t *cdata, uint8_t p1);
 
@@ -41,9 +38,6 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1);
  *
  * @param[in,out] cdata
  *   Command data with witness BIP32 path.
- *
- * @return zero or positive integer if success, negative integer otherwise.
- *
  */
 void handler_sign_tx_witness(buffer_t *cdata);
 

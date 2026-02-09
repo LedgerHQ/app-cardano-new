@@ -128,16 +128,7 @@ def extract_apdu_payload(apdu: bytes) -> bytes:
     lc = apdu[4]
     payload_start = 5
 
-    if lc == 0:
-        if len(apdu) == payload_start:
-            payload_length = 0
-        elif len(apdu) >= payload_start + 2:
-            payload_length = (apdu[payload_start] << 8) | apdu[payload_start + 1]
-            payload_start += 2
-        else:
-            raise ValueError("Extended length header is truncated")
-    else:
-        payload_length = lc
+    payload_length = lc
 
     payload_end = payload_start + payload_length
     payload_bytes = apdu[payload_start:payload_end]

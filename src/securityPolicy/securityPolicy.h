@@ -51,7 +51,7 @@ security_policy_t policyForSignTxInit(sign_tx_signingmode_t txSigningMode,
 security_policy_t policyForSignTxInput(sign_tx_signingmode_t txSigningMode,
                                        const tx_input_t* input MARK_UNUSED);
 
-security_policy_t policyForSignTxOutputAddress(const tx_output_description_t* output,
+security_policy_t policyForSignTxOutput(const tx_output_description_t* output,
                                                sign_tx_signingmode_t txSigningMode,
                                                const uint8_t networkId,
                                                const uint32_t protocolMagic,

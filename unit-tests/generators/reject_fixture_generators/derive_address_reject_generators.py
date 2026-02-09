@@ -255,7 +255,7 @@ def _build_reject_fixtures_header() -> str:
         "//",
         "// These tests verify that the device properly rejects invalid address",
         "// derivation requests according to the security policy defined in",
-        "// src/securityPolicy.c",
+        "// src/securityPolicy/securityPolicy.c",
         "//",
         f"// Total rejection tests: {len(reject_test_cases)}",
         "",

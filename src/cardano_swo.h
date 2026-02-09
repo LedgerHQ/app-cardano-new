@@ -4,7 +4,7 @@
 #include <status_words.h>
 
 typedef enum {
-    // Cardano app-specific status words (0x6BXX range)
+    // Cardano app-specific status words (primarily 0x6BXX range)
     // ISO 7816-4 compliant: 0x6BXX is standard "proprietary" range for wrong parameters
     SWO_INVALID_TX_LENGTH = 0x6B00,
     SWO_TX_PARSING_FAIL = 0x6B01,

@@ -185,8 +185,9 @@ security_policy_t policyForGetExtendedPublicKey(const bip44_path_t *path,
     DENY();  // should not be reached
 }
 
-// common policy for DENY and WARN cases in returnDeriveAddress and showDeriveAddress
-// successPolicy is returned if no DENY or WARN applies
+// Common policy for returnDeriveAddress and showDeriveAddress:
+// enforce DENY rules and unusual-path escalation to SHOW.
+// successPolicy is returned if no DENY and no forced SHOW apply.
 static security_policy_t _policyForDeriveAddress(const address_params_t *address_params,
                                                  security_policy_t successPolicy,
                                                  warning_bits_t *warnings) {
@@ -720,7 +721,7 @@ static security_policy_t policyForSignTxOutputAddressParams(const tx_output_desc
     DENY();  // should not be reached
 }
 
-security_policy_t policyForSignTxOutputAddress(const tx_output_description_t *output,
+security_policy_t policyForSignTxOutput(const tx_output_description_t *output,
                                                sign_tx_signingmode_t txSigningMode,
                                                const uint8_t networkId,
                                                const uint32_t protocolMagic,

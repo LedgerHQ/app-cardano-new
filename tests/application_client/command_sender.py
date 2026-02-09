@@ -113,7 +113,7 @@ class CommandSender:
                 options: int = 0,
                 on_review: Optional[Callable[[], None]] = None,
                 on_cvote_review: Optional[Callable[[], None]] = None) -> bytes:
-        """Sign a transaction and return its hash plus the witness paths used.
+        """Sign a transaction and return the transaction hash bytes.
 
         This builds the init APDU from the transaction body, sends the raw chunks,
         and waits for the final response after the user approves the transaction.
@@ -339,7 +339,7 @@ class CommandSender:
 
     @contextmanager
     def sign_cip36_init_async(self, testCase: CVoteTestCase) -> Generator[None, None, None]:
-        """APDU CIP36 Vote - INIT step
+        """APDU CIP36 Vote - CHUNK step
 
         Args:
             testCase (CVoteTestCase): Test parameters

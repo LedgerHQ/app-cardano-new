@@ -3,7 +3,7 @@
 //
 // These tests verify that the device properly rejects invalid address
 // derivation requests according to the security policy defined in
-// src/securityPolicy.c
+// src/securityPolicy/securityPolicy.c
 //
 // Total rejection tests: 12
 

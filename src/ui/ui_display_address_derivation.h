@@ -7,7 +7,6 @@
  *
  * @param securityPolicy Security policy result
  * @param warnings Warning bits
- * @return 0 if success, negative integer otherwise
  */
 void ui_deriveAddress_handleDisplay(security_policy_t securityPolicy, warning_bits_t warnings);
 
@@ -16,6 +15,5 @@ void ui_deriveAddress_handleDisplay(security_policy_t securityPolicy, warning_bi
  *
  * @param securityPolicy Security policy result
  * @param warnings Warning bits
- * @return 0 if success, negative integer otherwise
  */
 void ui_deriveAddress_handleReturn(security_policy_t securityPolicy, warning_bits_t warnings);

@@ -24,7 +24,7 @@ def _load_native_script_test_cases() -> list[Any]:
     hash derivation requests.
 
     Returns:
-        List of ValidNativeScriptTestCase objects from ragger tests
+        List of InvalidScriptTestCase objects from ragger tests
     """
     _ensure_base58_module()
     _add_tests_to_sys_path()

@@ -227,7 +227,7 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
 
         security_policy_t datum_policy = POLICY_HIDE;
         security_policy_t ref_script_policy = POLICY_HIDE;
-        security_policy_t output_policy = policyForSignTxOutputAddress(
+        security_policy_t output_policy = policyForSignTxOutput(
             &output_desc,
             G_context.tx_info.transaction.txSigningMode,
             G_context.tx_info.transaction.networkId,

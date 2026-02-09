@@ -199,7 +199,7 @@ static void add_ui_and_free_outputs(transaction_t *tx) {
         output_desc.destination = output_node->output_data.destination;
 
         warning_bits_t output_warnings = 0;
-        security_policy_t policy = policyForSignTxOutputAddress(
+        security_policy_t policy = policyForSignTxOutput(
             &output_desc,
             tx->txSigningMode,
             tx->networkId,
