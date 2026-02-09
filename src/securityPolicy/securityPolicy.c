@@ -1230,7 +1230,10 @@ security_policy_t policyForSignTxStakePoolRegistrationInit(sign_tx_signingmode_t
                                                            uint32_t numPathOwners) {
     switch (txSigningMode) {
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
-            // there should be exactly one owner given by path for which we provide a witness
+            // Tightened vs old Shelley app:
+            // old flow accepted owner-mode certs with 0 path owners and only blocked witness later.
+            // In the unified parser we already know owner cardinality at cert-init time, so we
+            // enforce the intended invariant early: exactly one owner path for owner mode.
             DENY_IF(numOwners == 0);
             DENY_UNLESS(numPathOwners == 1);
             // In unified review, pool registration must always be visible.
@@ -1238,6 +1241,7 @@ security_policy_t policyForSignTxStakePoolRegistrationInit(sign_tx_signingmode_t
             break;
 
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
+            // Operator mode never witnesses pool owners; all owners must be hashes.
             DENY_UNLESS(numPathOwners == 0);
             // In unified review, pool registration must always be visible.
             SHOW();
@@ -2140,7 +2144,7 @@ security_policy_t policyForCVoteRegistrationPaymentDestination(
 
             // we don't know who owns the address
             // to possibly avoid this warning, send the address as parameters (see above)
-            // TODO(CVote): Add an explicit UI warning when the destination is third-party.
+            warning_bits_set(warnings, WARNING_BIT_CVOTE_PAYMENT_THIRD_PARTY);
             SHOW();
             break;
         }

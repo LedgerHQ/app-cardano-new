@@ -121,10 +121,17 @@ static void cvote_aux_data_review_streaming_continue(bool confirm) {
             return;
         }
 
-        // TODO: nbgl_useCaseReviewStreamingFinish does not support passing warnings
-        // NBGL API limitation: streaming finish only takes title and callback, no warning parameter
-        // Warnings are built but cannot be displayed in streaming mode
-        // This affects cases where streaming is used and warnings exist (e.g., unusual payment destination)
+        // TODO(CVote, NBGL): Streaming finalization cannot currently display warnings.
+        // nbgl_useCaseReviewStreamingFinish() accepts only title + callback and has no warning argument,
+        // unlike nbgl_useCaseAdvancedReview().
+        //
+        // Security impact: CVote warning bits (e.g. WARNING_BIT_CVOTE_PAYMENT_THIRD_PARTY) are collected
+        // but are not rendered to the user in streaming mode.
+        //
+        // Needed long-term fix:
+        // 1) Extend NBGL streaming API to support warning payloads on the final confirmation screen, or
+        // 2) Add an app-level workaround/hack that injects explicit warning review pages before
+        //    nbgl_useCaseReviewStreamingFinish().
         nbgl_useCaseReviewStreamingFinish("Confirm vote delegation",
                                           cvote_aux_data_review_choice);
         return;
