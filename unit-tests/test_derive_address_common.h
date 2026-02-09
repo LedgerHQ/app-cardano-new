@@ -64,7 +64,8 @@ int io_send_sw(uint16_t swo) {
 // ----------------------------------------------------------------------
 
 void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warnings) {
-     derive_address_ctx_t *ctx = &G_context.derive_address_info;
+    (void) warnings;
+    derive_address_ctx_t *ctx = &G_context.derive_address_info;
 // Validate state before proceeding (address must be prepared before UI display)
     switch (policy) {
         case POLICY_SHOW:
@@ -72,11 +73,7 @@ void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warn
             break;
         case POLICY_HIDE: {
             // Silently approve and return address without UI
-            derive_address_ctx_t *ctx = &G_context.derive_address_info;
-            LEDGER_ASSERT(ctx->address.length <= sizeof(ctx->address.buffer), "Address length too large");
-            G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_APPROVED;
-            io_send_response_pointer(ctx->address.buffer, ctx->address.length, SWO_SUCCESS);
-            reset_app_context();
+            finalize_derive_address(true);
             break;
         }
         default:
@@ -87,6 +84,7 @@ void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warn
 }
 
 void ui_deriveAddress_handleDisplay(security_policy_t policy, warning_bits_t warnings) {
+    (void) warnings;
     switch (policy) {
         case POLICY_SHOW:
             io_send_response_pointer(NULL, 0, SWO_SUCCESS);

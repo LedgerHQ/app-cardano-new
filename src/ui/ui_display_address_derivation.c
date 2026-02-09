@@ -34,6 +34,7 @@
  */
 static void derive_address_buffer_cleanup(void) {
     ui_free_pairs();
+    ui_free_warnings();
 }
 
 // Called when long press button is touched or when reject footer is touched

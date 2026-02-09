@@ -50,11 +50,13 @@ static void pubkey_review_choice(bool confirm) {
         ui_menu_main();
     } else {
         if (confirm) {
+            // Keep a custom status here: exporting a public key is not a signing operation,
+            // and nbgl_reviewStatusType_t has no "public key exported" equivalent.
             TRACE("Calling nbgl_useCaseStatus(\"Public key exported\", true, ui_menu_main)");
             nbgl_useCaseStatus("Public key exported", true, ui_menu_main);
         } else {
-            TRACE("Calling nbgl_useCaseStatus(\"Public key denied\", true, ui_menu_main)");
-            nbgl_useCaseStatus("Public key denied", true, ui_menu_main);
+            TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main)");
+            nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
         }
     }
 }

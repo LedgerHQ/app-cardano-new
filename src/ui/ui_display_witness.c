@@ -57,8 +57,8 @@ static void witness_review_choice(bool confirm) {
             nbgl_useCaseSpinner("Processing");
         }
     } else {
-        TRACE("Calling nbgl_useCaseStatus(\"Witness denied\", true, ui_menu_main)");
-        nbgl_useCaseStatus("Witness denied", true, ui_menu_main);
+        TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main)");
+        nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main);
     }
 }
 
