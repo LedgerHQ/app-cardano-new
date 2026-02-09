@@ -86,6 +86,16 @@ Interactive tests using the `ragger` framework that simulate the device UI and v
 - **`application_client/`**:
     - **`command_builder.py`**: Serializes transaction objects into APDU commands.
     - **`command_sender.py`**: Sends APDUs to the device and handles responses.
+- **Constant synchronization checks**:
+    - `tests/standalone/client_constants_check.py` verifies Python client constants against C headers.
+    - Covered mappings currently include:
+      - `CLA`, `INS_*`, `P1_*`, `P2_*` from `src/apdu/dispatcher.h`
+      - `MAX_SIGN_TX_CHUNK_SIZE` from `src/handler/sign_tx.h`
+      - `CVOTE_CREDENTIAL_*` from `src/cvote/cvote_types.h` (mapped to `application_client.command_builder.CVoteCredentialType`)
+    - These checks are executed by:
+      - `tests/standalone/test_client_constants.py`
+      - `tests/standalone/conftest.py` session fixture (`enforce_client_constants`)
+    - If any of these C constants change, update Python constants and extend the checks in `client_constants_check.py` in the same PR.
 - **`standalone/`**:
     - Contains actual test cases (e.g., `test_sign_tx.py`).
     - **`conftest.py`**: Configures the ragger environment.

@@ -12,6 +12,7 @@ import pytest
 
 from .client_constants_check import (
     assert_cla_constant_match,
+    assert_cvote_credential_constants_match,
     assert_ins_constants_match,
     assert_max_sign_tx_chunk_size_match,
     assert_p1_p2_constants_match,
@@ -39,6 +40,7 @@ def enforce_client_constants() -> None:
     assert_ins_constants_match()
     assert_p1_p2_constants_match()
     assert_cla_constant_match()
+    assert_cvote_credential_constants_match()
     assert_max_sign_tx_chunk_size_match()
 
 

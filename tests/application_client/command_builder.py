@@ -129,6 +129,11 @@ class P2Type(IntEnum):
     P2_AUX_DATA_DELEGATION = 0x37
 
 
+class CVoteCredentialType(IntEnum):
+    KEY = 0
+    KEY_PATH = 2
+
+
 def _credential_path_from_credential(credential: CredentialParams) -> Optional[str]:
     if credential.type.name == "KEY_PATH":
         return credential.keyValue
@@ -384,9 +389,6 @@ class CommandBuilder:
         data.extend(pack_derivation_path(test_case.opCert.path))
         return self._serialize(InsType.INS_SIGN_OPCERT, P1Type.P1_UNUSED, P2Type.P2_UNUSED, bytes(data))
 
-    def sign_opCert(self, test_case: OpCertTestCase) -> bytes:
-        return self.sign_opcert(test_case)
-
     def sign_cvote_init(self, testCase: CVoteTestCase) -> bytes:
         """APDU Builder for CIP36 Vote - INIT step
 
@@ -408,7 +410,7 @@ class CommandBuilder:
         data += bytes.fromhex(testCase.cVote.voteCastDataHex[:chunk_size])
         # Remove the data sent in this step
         testCase.cVote.voteCastDataHex = testCase.cVote.voteCastDataHex[chunk_size:]
-        return self._serialize(InsType.INS_SIGN_CVOTE, P1Type.P1_CVOTE_INIT, 0x00, data)
+        return self._serialize(InsType.INS_SIGN_CVOTE, P1Type.P1_CVOTE_INIT, P2Type.P2_UNUSED, data)
 
 
     def sign_cvote_chunk(self, testCase: CVoteTestCase) -> List[bytes]:
@@ -449,7 +451,7 @@ class CommandBuilder:
         # Serialization format:
         #    Witness path (1B for length + [0-5] x 4B)
         data = pack_derivation_path(testCase.cVote.witnessPath)
-        return self._serialize(InsType.INS_SIGN_CVOTE, P1Type.P1_CVOTE_CONFIRM, 0x00, data)
+        return self._serialize(InsType.INS_SIGN_CVOTE, P1Type.P1_CVOTE_CONFIRM, P2Type.P2_UNUSED, data)
 
 
     def sign_tx_init(self, params: TxInitParams) -> bytes:
@@ -506,7 +508,7 @@ class CommandBuilder:
         elif script.type in (NativeScriptType.INVALID_BEFORE, NativeScriptType.INVALID_HEREAFTER):
             assert isinstance(script.params, NativeScriptParamsInvalid)
             data += script.params.slot.to_bytes(8, "big")
-        return self._serialize(InsType.INS_DERIVE_NATIVE_SCRIPT_HASH, P1Type.P1_NATIVE_SCRIPT_ADD_SIMPLE, 0x00, data)
+        return self._serialize(InsType.INS_DERIVE_NATIVE_SCRIPT_HASH, P1Type.P1_NATIVE_SCRIPT_ADD_SIMPLE, P2Type.P2_UNUSED, data)
 
 
     def derive_script_add_complex(self, script: NativeScript) -> bytes:
@@ -519,12 +521,12 @@ class CommandBuilder:
             assert isinstance(script.params, NativeScriptParamsNofK)
             data += len(script.params.scripts).to_bytes(4, "big")
             data += script.params.requiredCount.to_bytes(4, "big")
-        return self._serialize(InsType.INS_DERIVE_NATIVE_SCRIPT_HASH, P1Type.P1_NATIVE_SCRIPT_START_COMPLEX, 0x00, data)
+        return self._serialize(InsType.INS_DERIVE_NATIVE_SCRIPT_HASH, P1Type.P1_NATIVE_SCRIPT_START_COMPLEX, P2Type.P2_UNUSED, data)
 
 
     def derive_script_finish(self, disp: NativeScriptHashDisplayFormat) -> bytes:
         data = disp.to_bytes(1, "big")
-        return self._serialize(InsType.INS_DERIVE_NATIVE_SCRIPT_HASH, P1Type.P1_NATIVE_SCRIPT_FINISH, 0x00, data)
+        return self._serialize(InsType.INS_DERIVE_NATIVE_SCRIPT_HASH, P1Type.P1_NATIVE_SCRIPT_FINISH, P2Type.P2_UNUSED, data)
 
     def build_tx_init_params(self,
                              tx: Transaction,
@@ -799,10 +801,10 @@ class CommandBuilder:
     def _serialize_cvote_key_or_path(self, key_or_path: str) -> bytes:
         data = bytearray()
         if key_or_path.startswith("m/"):
-            data.append(CredentialParamsType.KEY_PATH)
+            data.append(CVoteCredentialType.KEY_PATH)
             data.extend(pack_derivation_path(key_or_path))
         else:
-            data.append(CredentialParamsType.KEY_HASH)
+            data.append(CVoteCredentialType.KEY)
             data.extend(bytes.fromhex(key_or_path))
         return bytes(data)
 
@@ -857,16 +859,7 @@ class CommandBuilder:
         raise ValueError(f"Unsupported pool key type: {pool_key.type}")
 
     def _serialize_pool_key_reference(self, pool_key: PoolKey) -> bytes:
-        data = bytearray()
-        if pool_key.type == PoolKeyType.DEVICE_OWNED:
-            data.append(CredentialParamsType.KEY_PATH)
-            data.extend(pack_derivation_path(pool_key.key))
-        elif pool_key.type == PoolKeyType.THIRD_PARTY:
-            data.append(CredentialParamsType.KEY_HASH)
-            data.extend(bytes.fromhex(pool_key.key.lower()))
-        else:
-            raise ValueError(f"Unsupported pool key type: {pool_key.type}")
-        return bytes(data)
+        return self._serialize_credential_inline(self._pool_key_to_credential(pool_key))
 
     def _serialize_relay(self, relay: Relay) -> bytes:
         data = bytearray()
@@ -1068,7 +1061,7 @@ class CommandBuilder:
         if testCase.msgData.addressFieldType == MessageAddressFieldType.ADDRESS:
             data.extend(self._serialize_address_params(testCase.msgData.addressDesc))
 
-        return self._serialize(InsType.INS_SIGN_MSG, P1Type.P1_SIGN_MSG_INIT, 0x00, bytes(data))
+        return self._serialize(InsType.INS_SIGN_MSG, P1Type.P1_SIGN_MSG_INIT, P2Type.P2_UNUSED, bytes(data))
 
     def build_sign_msg_chunk_payloads(self, testCase) -> list[bytes]:
         messageBytes = bytes.fromhex(testCase.msgData.messageHex)
@@ -1097,7 +1090,7 @@ class CommandBuilder:
         apdus: list[bytes] = []
         for payload in payloads:
             apdus.append(
-                self._serialize(InsType.INS_SIGN_MSG, P1Type.P1_SIGN_MSG_CHUNK, 0x00, payload)
+                self._serialize(InsType.INS_SIGN_MSG, P1Type.P1_SIGN_MSG_CHUNK, P2Type.P2_UNUSED, payload)
             )
         return apdus
 
@@ -1107,4 +1100,4 @@ class CommandBuilder:
         Returns:
             Serial data APDU (empty payload)
         """
-        return self._serialize(InsType.INS_SIGN_MSG, P1Type.P1_SIGN_MSG_CONFIRM, 0x00, bytes())
+        return self._serialize(InsType.INS_SIGN_MSG, P1Type.P1_SIGN_MSG_CONFIRM, P2Type.P2_UNUSED, bytes())

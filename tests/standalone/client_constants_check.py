@@ -14,7 +14,7 @@ for extra_path in (ROOT, TESTS_ROOT):
     if str_extra not in sys.path:
         sys.path.insert(0, str_extra)
 
-from application_client.command_builder import CLA, InsType, P1Type, P2Type
+from application_client.command_builder import CLA, CVoteCredentialType, InsType, P1Type, P2Type
 from standalone.input_files.signTx import MAX_SIGN_TX_CHUNK_SIZE
 
 
@@ -41,6 +41,10 @@ def _dispatcher_header_path() -> Path:
 
 def _handler_sign_tx_path() -> Path:
     return Path(__file__).resolve().parents[2] / "src" / "handler" / "sign_tx.h"
+
+
+def _cvote_types_header_path() -> Path:
+    return Path(__file__).resolve().parents[2] / "src" / "cvote" / "cvote_types.h"
 
 
 def _assert_dispatcher_enum_prefix(prefix: str,
@@ -71,6 +75,11 @@ def assert_cla_constant_match() -> None:
     defines = _parse_defines(_dispatcher_header_path())
     if defines.get("CLA") != CLA:
         raise AssertionError(f"CLA mismatch: {defines.get('CLA')} != {CLA}")
+
+
+def assert_cvote_credential_constants_match() -> None:
+    cvote_values = _parse_enum(_cvote_types_header_path())
+    _assert_dispatcher_enum_prefix("CVOTE_CREDENTIAL_", CVoteCredentialType, cvote_values)
 
 
 def assert_max_sign_tx_chunk_size_match() -> None:

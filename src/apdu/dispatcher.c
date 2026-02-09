@@ -54,11 +54,13 @@
 /**
  * Map request type to its expected instruction
  * Used to detect instruction interleaving attacks
+ *
+ * Precondition: req_type != REQUEST_NONE
  */
 static command_e req_type_to_instruction(request_type_e req_type) {
+    LEDGER_ASSERT(req_type != REQUEST_NONE, "REQUEST_NONE does not map to an instruction");
+
     switch (req_type) {
-        case REQUEST_NONE:
-            return INS_GET_VERSION;  // Dummy value, should never be checked
         case REQUEST_EXPORT_PUBKEY:
             return INS_GET_PUBLIC_KEY;
         case REQUEST_SIGN_TRANSACTION:

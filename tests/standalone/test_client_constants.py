@@ -7,6 +7,7 @@ Ensures the Python test client defines the same command constants as the C app.
 
 from tests.standalone.client_constants_check import (
     assert_cla_constant_match,
+    assert_cvote_credential_constants_match,
     assert_ins_constants_match,
     assert_max_sign_tx_chunk_size_match,
     assert_p1_p2_constants_match,
@@ -27,3 +28,7 @@ def test_cla_constant_match_src():
 
 def test_max_sign_tx_chunk_size():
     assert_max_sign_tx_chunk_size_match()
+
+
+def test_cvote_credential_constants_match_src():
+    assert_cvote_credential_constants_match()
