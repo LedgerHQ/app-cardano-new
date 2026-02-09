@@ -130,8 +130,9 @@ class P2Type(IntEnum):
 
 
 class CVoteCredentialType(IntEnum):
-    KEY = 0
-    KEY_PATH = 2
+    # Canonical names match `src/cvote/cvote_types.h`.
+    CVOTE_CREDENTIAL_KEY = 0
+    CVOTE_CREDENTIAL_KEY_PATH = 2
 
 
 def _credential_path_from_credential(credential: CredentialParams) -> Optional[str]:
@@ -801,10 +802,10 @@ class CommandBuilder:
     def _serialize_cvote_key_or_path(self, key_or_path: str) -> bytes:
         data = bytearray()
         if key_or_path.startswith("m/"):
-            data.append(CVoteCredentialType.KEY_PATH)
+            data.append(CVoteCredentialType.CVOTE_CREDENTIAL_KEY_PATH)
             data.extend(pack_derivation_path(key_or_path))
         else:
-            data.append(CVoteCredentialType.KEY)
+            data.append(CVoteCredentialType.CVOTE_CREDENTIAL_KEY)
             data.extend(bytes.fromhex(key_or_path))
         return bytes(data)
 
