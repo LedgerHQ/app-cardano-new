@@ -466,8 +466,7 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
             break;
         }
         default: {
-            TRACE("Invalid UI step");
-            send_swo_and_reset(SWO_BAD_STATE);
+            LEDGER_ASSERT(false, "Invalid UI step");
             return;
         }
     }

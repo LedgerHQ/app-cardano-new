@@ -60,7 +60,7 @@ static void cvote_review_choice(bool confirm) {
 }
 
 void ui_display_cvote_confirm(security_policy_t securityPolicy) {
-    cvote_cxt_t *ctx = &G_context.cvote_info;
+    cvote_ctx_t *ctx = &G_context.cvote_info;
 
     TRACE("=== ui_display_cvote_confirm START ===");
 

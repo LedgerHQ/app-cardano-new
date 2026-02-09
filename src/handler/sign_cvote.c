@@ -34,7 +34,7 @@ __noinline_due_to_stack__ static void handle_sign_cvote_init_apdu(buffer_t *cdat
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
     LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STAGE_INIT, "Invalid cvote state");
 
-    cvote_cxt_t *ctx = &G_context.cvote_info;
+    cvote_ctx_t *ctx = &G_context.cvote_info;
 
     // Parse the total remaining votecast bytes from the 4-byte length field
     if (!buffer_read_u32(cdata, &ctx->remaining_votecast_bytes, BE)) {
@@ -44,7 +44,7 @@ __noinline_due_to_stack__ static void handle_sign_cvote_init_apdu(buffer_t *cdat
     }
     if (ctx->remaining_votecast_bytes == 0) {
         TRACE("Remaining votecast bytes is zero");
-        send_swo_and_reset(SWO_WRONG_LENGTH);
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     TRACE("Remaining votecast bytes = %u", ctx->remaining_votecast_bytes);
@@ -54,12 +54,12 @@ __noinline_due_to_stack__ static void handle_sign_cvote_init_apdu(buffer_t *cdat
     const uint8_t *votecast_chunk_ptr = buffer_current_ptr(cdata);
     if (votecast_chunk_size > ctx->remaining_votecast_bytes) {
         TRACE("APDU contains more data than specified in length field");
-        send_swo_and_reset(SWO_WRONG_LENGTH);
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     if (votecast_chunk_size > MAX_VOTECAST_CHUNK_SIZE) {
         TRACE("Votecast chunk too large");
-        send_swo_and_reset(SWO_WRONG_LENGTH);
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 
@@ -110,24 +110,24 @@ __noinline_due_to_stack__ static void handle_sign_cvote_init_apdu(buffer_t *cdat
 __noinline_due_to_stack__ static void handle_sign_cvote_chunk_apdu(buffer_t *cdata) {
     LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STAGE_CHUNK, "Invalid cvote state");
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
-    cvote_cxt_t *ctx = &G_context.cvote_info;
+    cvote_ctx_t *ctx = &G_context.cvote_info;
 
     const size_t chunkSize = cdata->size;
     TRACE("chunkSize = %u", chunkSize);
 
     if (chunkSize == 0) {
         TRACE("Empty chunk");
-        send_swo_and_reset(SWO_WRONG_LENGTH);
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     if (chunkSize > MAX_VOTECAST_CHUNK_SIZE) {
         TRACE("Chunk size too large");
-        send_swo_and_reset(SWO_WRONG_LENGTH);
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     if (chunkSize > ctx->remaining_votecast_bytes) {
         TRACE("Chunk size exceeds remaining bytes");
-        send_swo_and_reset(SWO_WRONG_LENGTH);
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 
@@ -150,7 +150,7 @@ __noinline_due_to_stack__ static void handle_sign_cvote_confirm_apdu(buffer_t *c
     LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STAGE_CONFIRM, "Invalid cvote state");
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
 
-    cvote_cxt_t *ctx = &G_context.cvote_info;
+    cvote_ctx_t *ctx = &G_context.cvote_info;
 
     // Parse witness path from CONFIRM APDU
     bool read_path = buffer_read_bip44_path(cdata, &ctx->witness_path);
@@ -198,7 +198,7 @@ void finalize_sign_cvote(bool confirmed) {
     }
 
     // User confirmed
-    cvote_cxt_t *ctx = &G_context.cvote_info;
+    cvote_ctx_t *ctx = &G_context.cvote_info;
 
     // Finalize the hash into a local buffer
     uint8_t votecast_hash[VOTECAST_HASH_LENGTH];

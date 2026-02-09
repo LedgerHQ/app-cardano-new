@@ -23,6 +23,7 @@ static void deriveNativeScriptHash_handleAll() {
         &ctx->hashBuilder,
         ctx->complexScripts[ctx->level].remainingScripts);
     ctx->ui_scriptType = UI_SCRIPT_ALL;
+    // No policy check needed: the device does not derive anything secret.
     security_policy_t policy = POLICY_SHOW;
     ui_display_native_script_hash(policy);
     // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
@@ -35,6 +36,7 @@ static void deriveNativeScriptHash_handleAny() {
         &ctx->hashBuilder,
         ctx->complexScripts[ctx->level].remainingScripts);
     ctx->ui_scriptType = UI_SCRIPT_ANY;
+    // No policy check needed: the device does not derive anything secret.
     security_policy_t policy = POLICY_SHOW;
     ui_display_native_script_hash(policy);
     // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
@@ -46,7 +48,7 @@ static void deriveNativeScriptHash_handleNofK(buffer_t *cdata) {
     bool read32 = buffer_read_u32(cdata, &ctx->scriptContent.requiredScripts, BE);
     if (read32 == false) {
         TRACE("Failed to read requiredScripts");
-        send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_TYPE);
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     if (buffer_can_read(cdata, 1)) {
@@ -65,6 +67,7 @@ static void deriveNativeScriptHash_handleNofK(buffer_t *cdata) {
         ctx->complexScripts[ctx->level].remainingScripts);
 
     ctx->ui_scriptType = UI_SCRIPT_N_OF_K;
+    // No policy check needed: the device does not derive anything secret.
     security_policy_t policy = POLICY_SHOW;
     ui_display_native_script_hash(policy);
     // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
@@ -172,6 +175,7 @@ static bool deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
         memmove(ctx->scriptContent.pubkeyHash, credential.keyHash, ADDRESS_KEY_HASH_LENGTH);
         ctx->ui_scriptType = UI_SCRIPT_PUBKEY_HASH;  // Tag the union immediately
         memmove(pubkeyHash, credential.keyHash, ADDRESS_KEY_HASH_LENGTH);
+        // No policy check needed: the device does not derive anything secret.
         policy = POLICY_SHOW;
     }
     
@@ -200,6 +204,7 @@ static bool deriveNativeScriptHash_handleInvalidBefore(buffer_t *cdata) {
     }
     nativeScriptHashBuilder_addScript_invalidBefore(&ctx->hashBuilder, ctx->scriptContent.timelock);
     ctx->ui_scriptType = UI_SCRIPT_INVALID_BEFORE;
+    // No policy check needed: the device does not derive anything secret.
     security_policy_t policy = POLICY_SHOW;
     ui_display_native_script_hash(policy);
     // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
@@ -222,6 +227,7 @@ static bool deriveNativeScriptHash_handleInvalidHereafter(buffer_t *cdata) {
     nativeScriptHashBuilder_addScript_invalidHereafter(&ctx->hashBuilder,
                                                        ctx->scriptContent.timelock);
     ctx->ui_scriptType = UI_SCRIPT_INVALID_HEREAFTER;
+    // No policy check needed: the device does not derive anything secret.
     security_policy_t policy = POLICY_SHOW;
     ui_display_native_script_hash(policy);
     // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
@@ -232,6 +238,7 @@ static bool deriveNativeScriptHash_handleInvalidHereafter(buffer_t *cdata) {
 int deriveNativeScriptHash_displayNativeScriptHash_bech32() {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     ctx->ui_scriptType = UI_SCRIPT_DISPLAY_BECH32;
+    // No policy check needed: the device does not derive anything secret.
     security_policy_t policy = POLICY_SHOW;
     ui_display_native_script_hash(policy);
     // waiting for NBGL callback derive_native_script_hash_review_ask_confirmation, so no APDU sent
@@ -241,6 +248,7 @@ int deriveNativeScriptHash_displayNativeScriptHash_bech32() {
 int deriveNativeScriptHash_displayNativeScriptHash_policyId() {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     ctx->ui_scriptType = UI_SCRIPT_DISPLAY_POLICY_ID;
+    // No policy check needed: the device does not derive anything secret.
     security_policy_t policy = POLICY_SHOW;
     ui_display_native_script_hash(policy);
     // waiting for NBGL callback derive_native_script_hash_review_ask_confirmation, so no APDU sent
@@ -278,7 +286,7 @@ static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
         buffer_read_u32(cdata, &ctx->complexScripts[ctx->level].remainingScripts, BE);
     if (!read_remainingScripts) {
         TRACE("Failed to read remainingScripts");
-        send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_TYPE);
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     ctx->complexScripts[ctx->level].totalScripts = ctx->complexScripts[ctx->level].remainingScripts;
@@ -371,7 +379,7 @@ static void deriveNativeScriptHash_handleWholeNativeScriptFinish(buffer_t *cdata
     bool read_displayFormat = buffer_read_u8(cdata, &displayFormat);
     if (!read_displayFormat) {
         TRACE("Failed to read read_displayFormat");
-        send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_TYPE);
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     if (buffer_can_read(cdata, 1)) {
@@ -398,7 +406,7 @@ static void deriveNativeScriptHash_handleWholeNativeScriptFinish(buffer_t *cdata
         }
         default:
             TRACE("Bad displayFormat");
-            send_swo_and_reset(SWO_BAD_STATE);
+            send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_DISPLAY_FORMAT);
             return;
     }
     return;
@@ -425,6 +433,7 @@ void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
 
     if (G_context.req_type == REQUEST_NONE) {
         deriveNativeScriptHash_initRequest();
+        // No policy check needed: the device does not derive anything secret.
         security_policy_t policy = POLICY_SHOW;
         ui_display_native_script_hash(policy);
         // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent

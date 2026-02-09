@@ -337,14 +337,14 @@ void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
 
     if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
         TRACE("AUX_DATA rejected: wrong request type %d", G_context.req_type);
-        send_swo_and_reset(SWO_BAD_STATE);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return;
     }
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "aux_data handler called with wrong request type");
 
     if (G_context.state.tx_state != TX_STATE_AUX_DATA) {
         TRACE("Bad state for AUX_DATA: expected TX_STATE_AUX_DATA, got %d", G_context.state.tx_state);
-        send_swo_and_reset(SWO_BAD_STATE);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return;
     }
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_AUX_DATA, "aux_data handler called with wrong tx state");
@@ -353,7 +353,7 @@ void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
         case P2_AUX_DATA_INIT:
             if (aux_data->state != CVOTE_AUX_DATA_STATE_EXPECTING_INIT) {
                 TRACE("P2_AUX_DATA_INIT in wrong state: %d", aux_data->state);
-                send_swo_and_reset(SWO_BAD_STATE);
+                send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
                 return;
             }
             handler_tx_aux_data_init(cdata);
@@ -361,7 +361,7 @@ void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
         case P2_AUX_DATA_DELEGATION:
             if (aux_data->state != CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS) {
                 TRACE("P2_AUX_DATA_DELEGATION in wrong state: %d", aux_data->state);
-                send_swo_and_reset(SWO_BAD_STATE);
+                send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
                 return;
             }
             handler_tx_aux_data_delegation(cdata);

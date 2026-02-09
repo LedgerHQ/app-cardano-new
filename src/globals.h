@@ -190,7 +190,7 @@ typedef struct {
     uint8_t payload_type_tag;
     bip44_path_t witness_path;
     uint8_t witness_signature[ED25519_SIGNATURE_LENGTH];
-} cvote_cxt_t;
+} cvote_ctx_t;
 
 // CIP-8 message signing constants
 #define CIP8_MSG_HASH_LENGTH 28
@@ -244,7 +244,7 @@ typedef struct {
         sign_opcert_ctx_t opcert_info;
         derive_address_ctx_t derive_address_info;
         derive_native_script_hash_ctx_t derive_native_script_hash_info;
-        cvote_cxt_t cvote_info;
+        cvote_ctx_t cvote_info;
         sign_msg_ctx_t sign_msg_info;
     };
 

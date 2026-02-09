@@ -48,7 +48,7 @@ static void tx_review_choice(bool confirm) {
 void ui_display_transaction(void) {
     if (G_context.req_type != REQUEST_SIGN_TRANSACTION || G_context.state.tx_state != TX_STATE_UI_PREPARED) {
         G_context.state.tx_state = TX_STATE_NONE;
-        send_swo_and_reset(SWO_BAD_STATE);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return;
     }
 

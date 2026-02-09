@@ -1157,7 +1157,7 @@ static int add_ui_strings_and_free_parsed_data(void) {
         case UI_STATUS_UNINITIALIZED:
         default:
             LEDGER_ASSERT(false, "Unexpected UI warning status");
-            return SWO_BAD_STATE;
+            return SWO_COMMAND_NOT_ALLOWED;
     }
 }
 
@@ -1171,8 +1171,8 @@ static int ui_build_pairs(void) {
 
 int ui_prepare_transaction_review(void) {
     if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
-        send_swo_and_reset(SWO_BAD_STATE);
-        return SWO_BAD_STATE;
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return SWO_COMMAND_NOT_ALLOWED;
     }
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_HASHED, "UI prep called too early");
     uint32_t pair_count = G_context.tx_info.planned_ui_pairs;
@@ -1226,7 +1226,7 @@ int ui_prepare_transaction_review(void) {
             LEDGER_ASSERT(false, "Unexpected UI warning status");
             ui_free_pairs();
             ui_free_warnings();
-            return SWO_BAD_STATE;
+            return SWO_COMMAND_NOT_ALLOWED;
     }
 
     // Validate that the actual number of pairs formatted matches the planned count

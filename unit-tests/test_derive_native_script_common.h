@@ -134,7 +134,7 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
         }
         default: {
             TRACE("Invalid UI step");
-            send_swo_and_reset(SWO_BAD_STATE);
+            send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
             return;
         }
     }

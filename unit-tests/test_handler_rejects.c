@@ -216,7 +216,7 @@ static void test_tx_init_rejected_when_active(void **state) {
         .offset = 0,
     };
     handler_sign_tx(&init_buf, P1_TX_INIT);
-    assert_int_equal(g_last_sw, SWO_BAD_STATE);
+    assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_witness_trailing_bytes(void **state) {
@@ -316,7 +316,7 @@ static void test_handler_state_during_active_request(void **state) {
     G_context.tx_info.current_witness = 0;
     G_context.tx_info.num_witnesses = 1;
     handler_sign_tx_witness(&witness_buf);
-    assert_int_equal(g_last_sw, SWO_BAD_STATE);
+    assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_opcert_signing_during_tx_signing(void **state) {
@@ -370,7 +370,7 @@ static void test_opcert_signing_during_tx_signing(void **state) {
 
     // This should fail because tx signing is already active
     handler_sign_tx(&init_buf, P1_TX_INIT);
-    assert_int_equal(g_last_sw, SWO_BAD_STATE);
+    assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_witness_extraction_with_wrong_state(void **state) {
@@ -405,7 +405,7 @@ static void test_witness_extraction_with_wrong_state(void **state) {
     };
     handler_sign_tx_witness(&witness_buf);
     // Should fail because tx_state is not APPROVED
-    assert_int_equal(g_last_sw, SWO_BAD_STATE);
+    assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_multiple_reinit_attempts(void **state) {
@@ -460,7 +460,7 @@ static void test_multiple_reinit_attempts(void **state) {
 
     init_buf.offset = 0;
     handler_sign_tx(&init_buf, P1_TX_INIT);
-    assert_int_equal(g_last_sw, SWO_BAD_STATE);
+    assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
 }
 
 int main(void) {

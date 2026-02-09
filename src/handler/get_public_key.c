@@ -66,10 +66,8 @@ void handler_get_public_key(buffer_t *cdata) {
     warning_bits_init(&warnings);
     security_policy_t policy = policyForGetExtendedPublicKey(&G_context.pk_info.path, &warnings);
     TRACE("Security policy: %d", (int) policy);
-    // maybe not here? TODO
     if (policy == POLICY_DENY) {
         TRACE("Security policy DENY - rejecting operation");
-        TRACE("Export of public key denied by security policy");
         send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
         return;
     }

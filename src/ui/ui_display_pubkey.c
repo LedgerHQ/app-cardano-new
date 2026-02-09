@@ -67,7 +67,7 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
 
     if (G_context.req_type != REQUEST_EXPORT_PUBKEY) {
         TRACE("Bad request type detected - returning error");
-        send_swo_and_reset(SWO_BAD_STATE);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return;
     }
 

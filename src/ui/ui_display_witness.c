@@ -70,7 +70,7 @@ void ui_display_witness(const bip44_path_t* witnessPath,
 
     if (G_context.state.tx_state != TX_STATE_APPROVED || G_context.req_type != REQUEST_SIGN_TRANSACTION) {
         TRACE("Bad state detected - returning error");
-        send_swo_and_reset(SWO_BAD_STATE);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return;
     }
 

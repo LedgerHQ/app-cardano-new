@@ -9,8 +9,6 @@ typedef enum {
     SWO_INVALID_TX_LENGTH = 0x6B00,
     SWO_TX_PARSING_FAIL = 0x6B01,
     SWO_WRONG_TX_INIT_APDU_DATA = 0x6B02,  // malformed TX INIT APDU structure
-    SWO_BAD_STATE = 0x6B03,
-    SWO_SIGNATURE_FAIL = 0x6B04,
     SWO_BIP44_PATH_PARSING_FAIL = 0x6B05,
     SWO_OPCERT_PARSING_FAIL_KES_KEY = 0x6B10,
     SWO_OPCERT_PARSING_FAIL_KES_PERIOD = 0x6B11,
@@ -24,6 +22,7 @@ typedef enum {
     SWO_NATIVE_SCRIPT_PARSING_FAIL_TIMELOCK = 0x6B44,           // timelock parsing
     SWO_NATIVE_SCRIPT_PARSING_FAIL_DEPTH_UNSUPPORTED = 0x6B45,  // supported depth exceeded
     SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_COUNT = 0x6B46,       // invalid script count/structure
+    SWO_NATIVE_SCRIPT_PARSING_FAIL_DISPLAY_FORMAT = 0x6B47,     // invalid display format value
     // Transaction body field parsing errors
     // Organized by CBOR key as per Cardano CDDL: error = 0x6B20 + CBOR_KEY
     SWO_TX_PARSING_FAIL_INPUTS = 0x6B20,              // key 0
@@ -32,7 +31,6 @@ typedef enum {
     SWO_TX_PARSING_FAIL_TTL = 0x6B23,                 // key 3
     SWO_TX_PARSING_FAIL_CERTIFICATES = 0x6B24,        // key 4
     SWO_TX_PARSING_FAIL_WITHDRAWALS = 0x6B25,         // key 5
-    SWO_TX_PARSING_FAIL_AUX_DATA_HASH = 0x6B27,       // key 7
     SWO_TX_PARSING_FAIL_VALIDITY_INTERVAL_START = 0x6B28,  // key 8
     SWO_TX_PARSING_FAIL_MINT = 0x6B29,                // key 9
     SWO_TX_PARSING_FAIL_SCRIPT_DATA_HASH = 0x6B2B,    // key 11
@@ -62,7 +60,7 @@ typedef enum {
     SWO_CVOTE_PARSING_FAIL_PROPOSAL_INDEX = 0x6B52, // failed to read proposal index
     SWO_CVOTE_PARSING_FAIL_PAYLOAD_TYPE_TAG = 0x6B53, // failed to read payload type tag
 
-    // Message signing (CIP-8) parsing errors (0x6B60-0x6B6F range)
+    // Message signing (CIP-8) parsing/validation errors (0x6B60-0x6B6F range)
     SWO_SIGN_MSG_PARSING_FAIL_MSG_LENGTH = 0x6B60,        // failed to parse message length
     SWO_SIGN_MSG_PARSING_FAIL_SIGNING_PATH = 0x6B61,      // failed to parse signing path
     SWO_SIGN_MSG_PARSING_FAIL_HASH_PAYLOAD = 0x6B62,      // failed to parse hash payload flag

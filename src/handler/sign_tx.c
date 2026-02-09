@@ -379,7 +379,7 @@ static bool handle_tx_data_chunk(buffer_t *cdata) {
     // Validate we're in the correct state for receiving chunks
     if (G_context.state.tx_state != TX_STATE_CHUNKS) {
         TRACE("Invalid state for chunk reception: expected TX_STATE_CHUNKS, got %d", G_context.state.tx_state);
-        send_swo_and_reset(SWO_BAD_STATE);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return false;
     }
 
@@ -427,7 +427,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             if (G_context.req_type != REQUEST_NONE ||
                 G_context.state.tx_state != TX_STATE_NONE) {
                 TRACE("TX init rejected: request already active");
-                send_swo_and_reset(SWO_BAD_STATE);
+                send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
                 return;
             }
 #ifdef HAVE_SWAP
@@ -448,7 +448,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
         case P1_TX_CHUNK:
             if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
                 TRACE("TX data chunk rejected: wrong request type %d", G_context.req_type);
-                send_swo_and_reset(SWO_BAD_STATE);
+                send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
                 return;
             }
 
@@ -462,7 +462,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
         case P1_TX_CONFIRM:
             if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
                 TRACE("TX final chunk rejected: wrong request type %d", G_context.req_type);
-                send_swo_and_reset(SWO_BAD_STATE);
+                send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
                 return;
             }
 
@@ -638,13 +638,13 @@ void handler_sign_tx_witness(buffer_t *cdata) {
     // Verify we're in correct state for witness signing
     if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
         TRACE("Bad request type for witness signing: %d", G_context.req_type);
-        send_swo_and_reset(SWO_BAD_STATE);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return;
     }
 
     if (G_context.state.tx_state != TX_STATE_APPROVED) {
         TRACE("Bad state for witness signing: expected TX_STATE_APPROVED, got %d", G_context.state.tx_state);
-        send_swo_and_reset(SWO_BAD_STATE);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return;
     }
 
@@ -654,7 +654,7 @@ void handler_sign_tx_witness(buffer_t *cdata) {
               G_context.tx_info.current_witness,
               G_context.tx_info.num_witnesses
         );
-        send_swo_and_reset(SWO_BAD_STATE);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return;
     }
 

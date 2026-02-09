@@ -115,7 +115,7 @@ static void test_sign_tx_init_rejects_when_request_is_active(void **state) {
     };
 
     handler_sign_tx(&init_buf, P1_TX_INIT);
-    assert_int_equal(g_last_sw, SWO_BAD_STATE);
+    assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
 }
@@ -132,7 +132,7 @@ static void test_sign_tx_chunk_rejects_without_active_request(void **state) {
     };
 
     handler_sign_tx(&chunk_buf, P1_TX_CHUNK);
-    assert_int_equal(g_last_sw, SWO_BAD_STATE);
+    assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
 
@@ -153,7 +153,7 @@ static void test_sign_tx_confirm_stops_after_chunk_error(void **state) {
     };
 
     handler_sign_tx(&confirm_buf, P1_TX_CONFIRM);
-    assert_int_equal(g_last_sw, SWO_BAD_STATE);
+    assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
 }
@@ -186,7 +186,7 @@ static void test_sign_tx_witness_rejects_before_approved_state(void **state) {
     };
 
     handler_sign_tx_witness(&witness_buf);
-    assert_int_equal(g_last_sw, SWO_BAD_STATE);
+    assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
 

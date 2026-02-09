@@ -61,7 +61,7 @@ def test_invalid_state(backend: BackendInterface) -> None:
                          p1=P1Type.P1_TX_CHUNK,  # Try to continue without init
                          p2=P2Type.P2_UNUSED,
                          data=b"abcde")
-    assert e.value.status == StatusWord.SWO_BAD_STATE
+    assert e.value.status == StatusWord.SWO_COMMAND_NOT_ALLOWED
 
     # Test 2: Try to send final chunk (P1_TX_CONFIRM) without initializing first
     with pytest.raises(ExceptionRAPDU) as e:
@@ -70,7 +70,7 @@ def test_invalid_state(backend: BackendInterface) -> None:
                          p1=P1Type.P1_TX_CONFIRM,
                          p2=P2Type.P2_UNUSED,
                          data=b"")
-    assert e.value.status == StatusWord.SWO_BAD_STATE
+    assert e.value.status == StatusWord.SWO_COMMAND_NOT_ALLOWED
 
     # Test 3: Try to sign witness (P1_TX_SIGN_WITNESS) before transaction is approved
     with pytest.raises(ExceptionRAPDU) as e:
@@ -79,4 +79,4 @@ def test_invalid_state(backend: BackendInterface) -> None:
                          p1=P1Type.P1_TX_SIGN_WITNESS,
                          p2=P2Type.P2_UNUSED,
                          data=b"")
-    assert e.value.status == StatusWord.SWO_BAD_STATE
+    assert e.value.status == StatusWord.SWO_COMMAND_NOT_ALLOWED

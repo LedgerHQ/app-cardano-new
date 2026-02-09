@@ -64,14 +64,14 @@ __noinline_due_to_stack__ void signMsg_handle_init(buffer_t *cdata) {
 
     if (!buffer_read_u32(cdata, &ctx->msgLength, BE)) {
         TRACE("Failed to read msgLength");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        send_swo_and_reset(SWO_SIGN_MSG_PARSING_FAIL_MSG_LENGTH);
         return;
     }
     TRACE("Message length = %u", ctx->msgLength);
 
     if (!buffer_read_bip44_path(cdata, &ctx->signingPath)) {
         TRACE("Failed to read signing path");
-        send_swo_and_reset(SWO_BIP44_PATH_PARSING_FAIL);
+        send_swo_and_reset(SWO_SIGN_MSG_PARSING_FAIL_SIGNING_PATH);
         return;
     }
     TRACE("Signing path:");
@@ -80,7 +80,7 @@ __noinline_due_to_stack__ void signMsg_handle_init(buffer_t *cdata) {
     uint8_t hashPayload_byte;
     if (!buffer_read_u8(cdata, &hashPayload_byte)) {
         TRACE("Failed to read hashPayload");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        send_swo_and_reset(SWO_SIGN_MSG_PARSING_FAIL_HASH_PAYLOAD);
         return;
     }
     ctx->hashPayload = (hashPayload_byte != 0);
@@ -89,7 +89,7 @@ __noinline_due_to_stack__ void signMsg_handle_init(buffer_t *cdata) {
     uint8_t isAscii_byte;
     if (!buffer_read_u8(cdata, &isAscii_byte)) {
         TRACE("Failed to read isAscii");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        send_swo_and_reset(SWO_SIGN_MSG_PARSING_FAIL_IS_ASCII);
         return;
     }
     ctx->isAscii = (isAscii_byte != 0);
@@ -98,7 +98,7 @@ __noinline_due_to_stack__ void signMsg_handle_init(buffer_t *cdata) {
     uint8_t addressFieldType_byte;
     if (!buffer_read_u8(cdata, &addressFieldType_byte)) {
         TRACE("Failed to read addressFieldType");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        send_swo_and_reset(SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_FIELD_TYPE);
         return;
     }
     ctx->addressFieldType = (cip8_address_field_type_t) addressFieldType_byte;
@@ -108,7 +108,7 @@ __noinline_due_to_stack__ void signMsg_handle_init(buffer_t *cdata) {
         case CIP8_ADDRESS_FIELD_ADDRESS:
             if (!buffer_read_address_params(cdata, &ctx->address_params)) {
                 TRACE("Failed to parse address params");
-                send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+                send_swo_and_reset(SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS);
                 return;
             }
             // Copy any hash pointers into context-owned storage: the INIT APDU buffer
@@ -121,7 +121,7 @@ __noinline_due_to_stack__ void signMsg_handle_init(buffer_t *cdata) {
             break;
         default:
             TRACE("Invalid address field type");
-            send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+            send_swo_and_reset(SWO_SIGN_MSG_INVALID_ADDRESS_FIELD_TYPE);
             return;
     }
 
@@ -199,7 +199,7 @@ __noinline_due_to_stack__ void signMsg_handle_chunk(buffer_t *cdata) {
     uint32_t chunkSize_u32;
     if (!buffer_read_u32(cdata, &chunkSize_u32, BE)) {
         TRACE("Failed to read chunk size");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        send_swo_and_reset(SWO_SIGN_MSG_PARSING_FAIL_CHUNK_SIZE);
         return;
     }
     TRACE("Chunk size = %u", chunkSize_u32);
@@ -207,7 +207,7 @@ __noinline_due_to_stack__ void signMsg_handle_chunk(buffer_t *cdata) {
     // Validate chunk size doesn't exceed remaining bytes
     if (chunkSize_u32 > ctx->remainingBytes) {
         TRACE("Chunk size exceeds remaining bytes");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        send_swo_and_reset(SWO_SIGN_MSG_INVALID_CHUNK_SIZE);
         return;
     }
 
@@ -217,14 +217,14 @@ __noinline_due_to_stack__ void signMsg_handle_chunk(buffer_t *cdata) {
         TRACE("Chunk size mismatch: expected %u, got %u",
               expectedChunkSize,
               chunkSize_u32);
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        send_swo_and_reset(SWO_SIGN_MSG_INVALID_CHUNK_SIZE);
         return;
     }
 
     // Validate buffer has enough data
     if (!buffer_can_read(cdata, chunkSize_u32)) {
         TRACE("Insufficient data in buffer");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        send_swo_and_reset(SWO_SIGN_MSG_PARSING_FAIL_CHUNK_DATA);
         return;
     }
 
@@ -238,7 +238,7 @@ __noinline_due_to_stack__ void signMsg_handle_chunk(buffer_t *cdata) {
         // Read chunk data directly into accumulated message buffer
         if (!buffer_read_bytes(cdata, ctx->msgBuffer + writeOffset, chunkSize_u32)) {
             TRACE("Failed to read chunk data");
-            send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+            send_swo_and_reset(SWO_SIGN_MSG_PARSING_FAIL_CHUNK_DATA);
             return;
         }
 
@@ -246,7 +246,7 @@ __noinline_due_to_stack__ void signMsg_handle_chunk(buffer_t *cdata) {
         if (ctx->isAscii) {
             if (!str_isUnambiguousAscii(ctx->msgBuffer + writeOffset, chunkSize_u32)) {
                 TRACE("ASCII validation failed");
-                send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+                send_swo_and_reset(SWO_SIGN_MSG_INVALID_ASCII);
                 return;
             }
         }
@@ -452,7 +452,7 @@ __noinline_due_to_stack__ void signMsg_handle_confirm(buffer_t *cdata) {
     // CONFIRM APDU must be empty
     if (buffer_can_read(cdata, 1)) {
         TRACE("CONFIRM APDU must be empty");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        send_swo_and_reset(SWO_SIGN_MSG_CONFIRM_MUST_BE_EMPTY);
         return;
     }
 
