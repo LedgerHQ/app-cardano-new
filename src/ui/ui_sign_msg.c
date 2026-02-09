@@ -94,6 +94,8 @@ void ui_display_sign_msg(security_policy_t securityPolicy) {
                   "ui_display_sign_msg called with wrong security policy: %d",
                   securityPolicy);
 
+    ui_reset_error_status();
+
     // Initialize pairs for display (6 fields)
     if (!ui_pairs_init(6)) {
         TRACE("Failed to initialize pairs");
@@ -172,6 +174,19 @@ void ui_display_sign_msg(security_policy_t securityPolicy) {
                    format_hex_bytes,
                    ctx->msgHash,
                    SIZEOF(ctx->msgHash));
+
+    ui_status_t format_status = ui_get_error_status();
+    switch (format_status) {
+        case UI_STATUS_SUCCESS:
+            break;
+        case UI_STATUS_OUT_OF_MEMORY:
+            send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+            return;
+        case UI_STATUS_UNINITIALIZED:
+        default:
+            LEDGER_ASSERT(false, "Unexpected UI status");
+            return;
+    }
 
     // Display review screen with skip button for long messages
     nbgl_useCaseAdvancedReview(TYPE_OPERATION | SKIPPABLE_OPERATION,

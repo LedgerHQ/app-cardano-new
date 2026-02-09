@@ -351,7 +351,8 @@ static size_t _createProtectedHeader(sign_msg_ctx_t *ctx,
 #define SIG_STRUCTURE_OVERHEAD 256
 
 // Helper: build Sig_structure and sign it
-static void _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
+// Returns false on allocation failures, true on success.
+static bool _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
     // Sig_structure = [
     //     context : "Signature1",
     //     body_protected : CBOR_encode(protectedHeader),
@@ -370,13 +371,11 @@ static void _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
     uint8_t *sigStructure = NULL;
     if (sigStructureMaxSize > UINT16_MAX) {
         TRACE("Sig_structure too large for allocation: %u", (unsigned) sigStructureMaxSize);
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return;
+        return false;
     }
     if (!APP_MEM_CALLOC((void **) &sigStructure, (uint16_t) sigStructureMaxSize)) {
         TRACE("Failed to allocate %u byte Sig_structure buffer", (unsigned) sigStructureMaxSize);
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return;
+        return false;
     }
 
     write_buffer_t buffer = buffer_init_write(sigStructure, sigStructureMaxSize);
@@ -440,6 +439,8 @@ static void _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
                            sigStructureSize,
                            ctx->signature,
                            SIZEOF(ctx->signature));
+
+    return true;
 }
 
 void signMsg_handle_confirm(buffer_t *cdata) {
@@ -457,7 +458,10 @@ void signMsg_handle_confirm(buffer_t *cdata) {
     }
 
     // Build Sig_structure and sign it
-    _buildAndSignSigStructure(ctx);
+    if (!_buildAndSignSigStructure(ctx)) {
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return;
+    }
 
     // Display UI for user confirmation
     ui_display_sign_msg(POLICY_SHOW);
