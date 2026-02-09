@@ -37,10 +37,20 @@
 #include "get_public_key.h"
 #include "ui_utils.h"
 #include "cardano_settings.h"
+#include "mem.h"
+
+#define PUBKEY_EXPORT_TITLE_BUFFER_SIZE 64
+#define PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE (PUBKEY_EXPORT_TITLE_BUFFER_SIZE + UI_BUFFER_SAFETY_MARGIN)
+
+static char *g_pubkey_export_choice_title = NULL;
+
+static void pubkey_review_cleanup(void) {
+    APP_MEM_FREE_AND_NULL((void **) &g_pubkey_export_choice_title);
+}
 
 static void pubkey_review_choice(bool confirm) {
     // CLEANUP
-    // No dynamically allocated UI buffers to release in this flow.
+    pubkey_review_cleanup();
 
     // FINALIZE
     finalize_pubkey_export(confirm);
@@ -103,15 +113,22 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
     const nbgl_icon_details_t* icon = isUnusual ? &WARNING_ICON : &ICON_APP_CARDANO;
     const char* exportPrefix = isUnusual ? "Export UNUSUAL" : "Export";
 
-    char title[64] = {0};
-    int written = snprintf(title, sizeof(title), "%s %s", exportPrefix, keyTypeLabel);
+    pubkey_review_cleanup();
+    LEDGER_ASSERT(APP_MEM_CALLOC((void **) &g_pubkey_export_choice_title, PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE),
+                  "Failed to allocate public key export title");
+
+    int written = snprintf(g_pubkey_export_choice_title,
+                           PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE,
+                           "%s %s",
+                           exportPrefix,
+                           keyTypeLabel);
 
     LEDGER_ASSERT(written > 0, "snprintf UI title formatting failed");
-    LEDGER_ASSERT((size_t)written + 1 < SIZEOF(title), "UI title truncated");
+    LEDGER_ASSERT((size_t) written + 1 < PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE, "UI title truncated");
     LEDGER_ASSERT(icon != NULL, "UI icon is NULL");
     nbgl_useCaseChoice(
                         icon,
-                        title,
+                        g_pubkey_export_choice_title,
                         G_context.pk_info.path_str,
                         "Export",
                         "Reject",
