@@ -19,14 +19,18 @@ and is built into a `fuzz_*` binary.
 
 Current harnesses:
 - `fuzz_all_handlers`
+- `fuzz_bip44_policy`
+- `fuzz_cvote_aux_parser`
 - `fuzz_deriveAddress`
 - `fuzz_deriveNativeScriptHash`
 - `fuzz_getAppName`
 - `fuzz_getPublicKeys`
 - `fuzz_getSerial`
 - `fuzz_getVersion`
+- `fuzz_native_script_hash_builder`
 - `fuzz_signOpCert`
 - `fuzz_signTx`
+- `fuzz_tx_parser_entrypoints`
 
 ## Building and Running Fuzzers (SDK Fuzzing Framework)
 

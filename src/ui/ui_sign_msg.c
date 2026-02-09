@@ -37,6 +37,7 @@
 #include "app_context.h"
 #include "sign_msg.h"
 #include "addressUtilsShelley.h"
+#include "ui_warnings.h"
 // no local mem allocations needed
 
 static bool format_ascii_chunk(const uint8_t *bytes, size_t size, char *out, size_t outSize) {

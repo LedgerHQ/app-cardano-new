@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -lt 1 || $# -gt 2 ]]; then
+  echo "Usage: $0 <timeout_seconds> [output_dir]"
+  echo "Example: $0 600 fuzzing/out-local"
+  exit 1
+fi
+
+timeout_seconds="$1"
+output_dir="${2:-fuzzing/out-local}"
+
+if ! [[ "$timeout_seconds" =~ ^[0-9]+$ ]] || [[ "$timeout_seconds" -le 0 ]]; then
+  echo "Error: timeout_seconds must be a positive integer"
+  exit 1
+fi
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd "$script_dir/.." && pwd)"
+build_dir="$repo_root/fuzzing/build"
+
+if [[ "$output_dir" = /* ]]; then
+  output_root="$output_dir"
+else
+  output_root="$repo_root/$output_dir"
+fi
+
+if [[ ! -d "$build_dir" ]]; then
+  echo "Error: build directory not found: $build_dir"
+  echo "Build first, e.g.:"
+  echo "  cmake -S fuzzing -B fuzzing/build -DBOLOS_SDK=/opt/ledger-secure-sdk -DTARGET=stax"
+  echo "  make --no-print-directory -C fuzzing/build -j1"
+  exit 1
+fi
+
+shopt -s nullglob
+fuzzers=("$build_dir"/fuzz_*)
+shopt -u nullglob
+
+if [[ ${#fuzzers[@]} -eq 0 ]]; then
+  echo "Error: no fuzzers found in $build_dir (expected fuzz_*)"
+  exit 1
+fi
+
+# Try requested output location first, then fallback to /tmp if not writable.
+if ! mkdir -p "$output_root/logs" "$output_root/artifacts" "$output_root/corpus" 2>/dev/null; then
+  fallback_root="/tmp/cardano-fuzz-out-$(id -u)"
+  echo "Warning: cannot write to '$output_root', falling back to '$fallback_root'"
+  output_root="$fallback_root"
+  mkdir -p "$output_root/logs" "$output_root/artifacts" "$output_root/corpus"
+fi
+
+echo "Running ${#fuzzers[@]} harnesses for ${timeout_seconds}s each"
+echo "Output directory: $output_root"
+
+# libFuzzer + LeakSanitizer can report teardown-only failures in some environments,
+# producing misleading crash artifacts (often for empty input).
+# Keep this overridable: if ASAN_OPTIONS already sets detect_leaks, respect it.
+asan_options="${ASAN_OPTIONS:-}"
+if [[ -z "$asan_options" ]]; then
+  asan_options="detect_leaks=0"
+elif [[ "$asan_options" != *detect_leaks=* ]]; then
+  asan_options="detect_leaks=0:$asan_options"
+fi
+
+for fuzzer in "${fuzzers[@]}"; do
+  name="$(basename "$fuzzer")"
+  corpus_dir="$output_root/corpus/$name"
+  artifact_dir="$output_root/artifacts/$name"
+  log_file="$output_root/logs/$name.log"
+
+  mkdir -p "$corpus_dir" "$artifact_dir"
+
+  echo "== $name =="
+  set +e
+  ASAN_OPTIONS="$asan_options" timeout "${timeout_seconds}s" "$fuzzer" \
+    -artifact_prefix="${artifact_dir}/" \
+    -max_total_time="$timeout_seconds" \
+    "$corpus_dir" \
+    >"$log_file" 2>&1
+  rc=$?
+  set -e
+
+  if [[ $rc -eq 124 ]]; then
+    echo "[$name] timed out as expected"
+  elif [[ $rc -eq 0 ]]; then
+    echo "[$name] finished cleanly"
+  else
+    echo "[$name] exited with code $rc (check $log_file)"
+  fi
+done
+
+echo "Done."

@@ -25,8 +25,10 @@
 #include "cardano_swo.h"
 #include "menu.h"
 #include "securityPolicy.h"
+#include "app_context.h"
 #include "derive_address.h"
 #include "ui_utils.h"
+#include "ui_warnings.h"
 #include "ui_display_address_derivation.h"
 #include "tx_ui_helpers.h"
 /**

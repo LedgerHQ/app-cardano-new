@@ -9,6 +9,7 @@
 #include "globals.h"
 #include "cardano_swo.h"
 #include "menu.h"
+#include "app_context.h"
 #include "tx_parse.h"
 #include "ui_utils.h"
 #include "ui_warnings.h"
