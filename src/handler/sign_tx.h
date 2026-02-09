@@ -48,6 +48,12 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1);
 void handler_sign_tx_witness(buffer_t *cdata);
 
 /**
+ * Finalize transaction review. Called after user approves/rejects transaction.
+ * On approval, sends transaction hash and moves to witness-signing flow.
+ */
+void finalize_sign_tx(bool confirmed);
+
+/**
  * Finalize witness signing. Called after user approves witness signature.
  * Sends the witness signature back to the client.
  */

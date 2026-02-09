@@ -50,14 +50,13 @@ typedef enum {
 
 /**
  * State machine for address derivation operation.
- * Tracks the progression through parsing, validation, derivation, and approval phases.
+ * Tracks the progression through parsing, validation, and derivation phases.
  */
 typedef enum {
     DERIVE_ADDRESS_STATE_NONE,        /// idle
     DERIVE_ADDRESS_STATE_PARSED,      /// parameters parsed, waiting for policy validation
     DERIVE_ADDRESS_STATE_VALIDATED,   /// parameters parsed, security policy validated
-    DERIVE_ADDRESS_STATE_PREPARED,    /// address derived and ready
-    DERIVE_ADDRESS_STATE_APPROVED     /// user approved or auto-approved
+    DERIVE_ADDRESS_STATE_PREPARED     /// address derived and ready
 } derive_address_state_e;
 
 /**
@@ -100,8 +99,8 @@ typedef struct {
     transaction_t transaction;
     uint8_t tx_hash[TX_HASH_LENGTH];
 
-    uint16_t num_witnesses;
-    uint16_t current_witness;
+    uint16_t num_witnesses;    /// Total witnesses requested by host; not decremented during signing.
+    uint16_t current_witness;  /// Number of witnesses already processed (also next witness index).
     bip44_path_t witness_path;
     char witness_path_str[MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN];  // Static buffer for NBGL UI
     uint8_t witness_signature[ED25519_SIGNATURE_LENGTH];
@@ -169,6 +168,7 @@ typedef struct {
 typedef struct {
     address_params_t address_params;
     address_params_hashes_storage_t hashStorage;
+    bool should_export_address;
     struct {
         uint8_t buffer[MAX_ADDRESS_LENGTH];
         size_t length;

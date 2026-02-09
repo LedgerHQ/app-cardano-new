@@ -569,6 +569,27 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
     }
 }
 
+void finalize_sign_tx(bool confirm) {
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION,
+                  "finalize_sign_tx called without REQUEST_SIGN_TRANSACTION");
+    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_UI_PREPARED,
+                  "finalize_sign_tx called in wrong state: %d", G_context.state.tx_state);
+
+    if (!confirm) {
+        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
+        return;
+    }
+
+    G_context.state.tx_state = TX_STATE_APPROVED;
+    G_context.tx_info.current_witness = 0;
+    io_send_response_pointer(G_context.tx_info.tx_hash, SIZEOF(G_context.tx_info.tx_hash), SWO_SUCCESS);
+
+    if (G_context.tx_info.num_witnesses == 0) {
+        // there are no witnesses, we are done with this tx
+        reset_app_context();
+    }
+}
+
 
 // All witnesses processed
 void finalize_witness(bool confirm)

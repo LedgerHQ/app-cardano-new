@@ -3,7 +3,6 @@
 #include "os.h"
 #include "glyphs.h"
 #include "nbgl_use_case.h"
-#include "io.h"
 #include "utils.h"
 
 #include "ui_icons.h"
@@ -14,7 +13,7 @@
 #include "ui_utils.h"
 #include "ui_warnings.h"
 #include "ui_display_tx.h"
-#include "app_context.h"
+#include "sign_tx.h"
 
 void tx_review_cleanup(void) {
     ui_free_pairs();
@@ -22,33 +21,28 @@ void tx_review_cleanup(void) {
 }
 
 static void tx_review_choice(bool confirm) {
+    const bool has_witnesses = (G_context.tx_info.num_witnesses > 0);
+
     // CLEANUP
     tx_review_cleanup();
 
-    if (confirm) {
-        // FINALIZE
-        G_context.state.tx_state = TX_STATE_APPROVED;
-        G_context.tx_info.current_witness = 0;
-        io_send_response_pointer(G_context.tx_info.tx_hash, sizeof(G_context.tx_info.tx_hash), SWO_SUCCESS);
+    // FINALIZE
+    finalize_sign_tx(confirm);
 
-        // SHOW STATUS
-        if (G_context.tx_info.num_witnesses > 0) {
+    // SHOW STATUS
+    if (confirm) {
+        if (has_witnesses) {
             TRACE("Calling nbgl_useCaseSpinner(\"Processing\")");
             nbgl_useCaseSpinner("Processing");
         } else {
-            reset_app_context();
             TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_SIGNED, ui_menu_main)");
             nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_SIGNED, ui_menu_main);
         }
-    } else {
-        // FINALIZE
-        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
-
-        // SHOW STATUS
-        TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main)");
-        nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main);
         return;
     }
+
+    TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main)");
+    nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main);
 }
 
 void ui_display_transaction(void) {

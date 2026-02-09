@@ -39,6 +39,9 @@
 #include "sign_tx.h"
 
 static void witness_review_choice(bool confirm) {
+    // CLEANUP
+    // No dynamically allocated UI buffers to release in this flow.
+
     // FINALIZE
     finalize_witness(confirm);
 

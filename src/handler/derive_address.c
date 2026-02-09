@@ -43,6 +43,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
     G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_NONE;
 
     derive_address_ctx_t *ctx = &G_context.derive_address_info;
+    ctx->should_export_address = false;
     bool is_parsed = buffer_read_address_params(cdata, &ctx->address_params);
     TRACE("Parsed address params: %d", is_parsed);
     if (!is_parsed) {
@@ -60,6 +61,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
     switch (p1) {
         case P1_ADDRESS_RETURN: {
             TRACE("ADDRESS_RETURN");
+            ctx->should_export_address = true;
             LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED,
                           "handleReturn called in wrong state: %d", G_context.state.derive_address_state);
             warning_bits_t warnings = 0;
@@ -79,6 +81,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
         }
         case P1_ADDRESS_DISPLAY: {
             TRACE("ADDRESS_DISPLAY");
+            ctx->should_export_address = false;
             LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED,
                           "handleDisplay called in wrong state: %d", G_context.state.derive_address_state);
             warning_bits_t warnings = 0;
@@ -102,4 +105,25 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
             break;
     }
     return;
+}
+
+void finalize_derive_address(bool confirm) {
+    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS,
+                  "finalize_derive_address called without REQUEST_DERIVE_ADDRESS");
+    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED,
+                  "finalize_derive_address called in wrong state: %d", G_context.state.derive_address_state);
+
+    if (!confirm) {
+        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
+        return;
+    }
+
+    derive_address_ctx_t *ctx = &G_context.derive_address_info;
+    if (ctx->should_export_address) {
+        LEDGER_ASSERT(ctx->address.length <= sizeof(ctx->address.buffer), "Address length too large");
+        io_send_response_pointer(ctx->address.buffer, ctx->address.length, SWO_SUCCESS);
+    } else {
+        io_send_response_pointer(NULL, 0, SWO_SUCCESS);
+    }
+    reset_app_context();
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdbool.h>
+
 #include "buffer.h"
 
 /**
@@ -19,3 +21,8 @@
  */
 void handler_derive_address(buffer_t *cdata, uint8_t display_type);
 
+/**
+ * Finalize derive-address flow after review decision.
+ * On approval, sends response based on derive-address operation mode.
+ */
+void finalize_derive_address(bool confirmed);

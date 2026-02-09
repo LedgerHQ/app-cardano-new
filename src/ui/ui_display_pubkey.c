@@ -39,6 +39,9 @@
 #include "cardano_settings.h"
 
 static void pubkey_review_choice(bool confirm) {
+    // CLEANUP
+    // No dynamically allocated UI buffers to release in this flow.
+
     // FINALIZE
     finalize_pubkey_export(confirm);
 
