@@ -32,16 +32,12 @@ static void tx_review_choice(bool confirm) {
     // SHOW STATUS
     if (confirm) {
         if (has_witnesses) {
-            TRACE("Calling nbgl_useCaseSpinner(\"Processing\")");
             nbgl_useCaseSpinner("Processing");
         } else {
-            TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_SIGNED, ui_menu_main)");
             nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_SIGNED, ui_menu_main);
         }
         return;
     }
-
-    TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main)");
     nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main);
 }
 
@@ -65,7 +61,6 @@ void ui_display_transaction(void) {
     }
 
     const nbgl_warning_t *warningPtr = ui_get_warnings();
-    TRACE("Calling nbgl_useCaseAdvancedReview(TYPE_TRANSACTION)");
     nbgl_useCaseAdvancedReview(TYPE_TRANSACTION,
                                g_pairsList,
                                &ICON_APP_CARDANO,

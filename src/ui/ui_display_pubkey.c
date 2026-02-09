@@ -52,10 +52,8 @@ static void pubkey_review_choice(bool confirm) {
         if (confirm) {
             // Keep a custom status here: exporting a public key is not a signing operation,
             // and nbgl_reviewStatusType_t has no "public key exported" equivalent.
-            TRACE("Calling nbgl_useCaseStatus(\"Public key exported\", true, ui_menu_main)");
             nbgl_useCaseStatus("Public key exported", true, ui_menu_main);
         } else {
-            TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main)");
             nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
         }
     }
@@ -111,8 +109,6 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
     LEDGER_ASSERT(written > 0, "snprintf UI title formatting failed");
     LEDGER_ASSERT((size_t)written + 1 < SIZEOF(title), "UI title truncated");
     LEDGER_ASSERT(icon != NULL, "UI icon is NULL");
-
-    TRACE("Calling nbgl_useCaseChoice(title=%s)", title);
     nbgl_useCaseChoice(
                         icon,
                         title,

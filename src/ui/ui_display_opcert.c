@@ -108,10 +108,8 @@ static void opcert_review_choice(bool confirm) {
     // SHOW STATUS
     // TODO: customize status screen for opcert signing?
     if (confirm) {
-        TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_SIGNED, ui_menu_main)");
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_SIGNED, ui_menu_main);
     } else {
-        TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main)");
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
     }
 }
@@ -171,8 +169,6 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
             return;
     }
     const nbgl_warning_t* warningPtr = ui_get_warnings();
-
-    TRACE("Calling nbgl_useCaseAdvancedReview(TYPE_OPERATION)");
     nbgl_useCaseAdvancedReview(TYPE_OPERATION,
                         g_pairsList,
                         &ICON_APP_CARDANO,

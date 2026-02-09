@@ -30,7 +30,7 @@ static bool ensure_sign_cvote_stage(cvote_stage_e required_stage) {
 }
 
 // ============================== INIT ==============================
-__noinline_due_to_stack__ static void handle_sign_cvote_init_apdu(buffer_t *cdata) {
+static void handle_sign_cvote_init_apdu(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
     LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STAGE_INIT, "Invalid cvote state");
 
@@ -107,7 +107,7 @@ __noinline_due_to_stack__ static void handle_sign_cvote_init_apdu(buffer_t *cdat
 
 // ============================== VOTECAST CHUNK ==============================
 
-__noinline_due_to_stack__ static void handle_sign_cvote_chunk_apdu(buffer_t *cdata) {
+static void handle_sign_cvote_chunk_apdu(buffer_t *cdata) {
     LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STAGE_CHUNK, "Invalid cvote state");
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
     cvote_ctx_t *ctx = &G_context.cvote_info;
@@ -146,7 +146,7 @@ __noinline_due_to_stack__ static void handle_sign_cvote_chunk_apdu(buffer_t *cda
 }
 
 // ============================== CONFIRM ==============================
-__noinline_due_to_stack__ static void handle_sign_cvote_confirm_apdu(buffer_t *cdata) {
+static void handle_sign_cvote_confirm_apdu(buffer_t *cdata) {
     LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STAGE_CONFIRM, "Invalid cvote state");
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
 
@@ -231,6 +231,9 @@ void finalize_sign_cvote(bool confirmed) {
 }
 
 void handler_sign_cvote(buffer_t *cdata, uint8_t p1) {
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_cvote handler");
+    TRACE_BUFFER_T(cdata);
+
     if (G_context.req_type == REQUEST_NONE) {
         G_context.req_type = REQUEST_CVOTE;
     } else if (G_context.req_type != REQUEST_CVOTE) {

@@ -481,7 +481,6 @@ void ui_cvote_aux_data_show_non_streaming_final_review(cvote_aux_data_t *aux_dat
     }
 
     const nbgl_warning_t *warningPtr = ui_get_warnings();
-    TRACE("Calling nbgl_useCaseAdvancedReview for CVote");
     nbgl_useCaseAdvancedReview(TYPE_OPERATION,
                                g_pairsList,
                                &ICON_APP_CARDANO,

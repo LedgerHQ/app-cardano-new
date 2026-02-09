@@ -57,6 +57,7 @@
 #define TRACE_BUFFER(BUF, SIZE) TRACE("%.*h", SIZE, BUF);
 
 static inline void trace_buffer_t_impl(const buffer_t *buffer) {
+    LEDGER_ASSERT(buffer != NULL, "TRACE_BUFFER_T NULL buffer");
     size_t remaining = buffer_remaining(buffer);
     if (remaining == 0) {
         TRACE("empty buffer (size=%u)", (unsigned)buffer_total_size(buffer));

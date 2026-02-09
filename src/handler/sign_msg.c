@@ -52,7 +52,7 @@ static bool ensure_sign_msg_stage(sign_msg_stage_e required_stage) {
 
 // ============================== INIT ==============================
 
-__noinline_due_to_stack__ void signMsg_handle_init(buffer_t *cdata) {
+void signMsg_handle_init(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
     LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STAGE_INIT, "Invalid sign_msg state");
 
@@ -189,7 +189,7 @@ __noinline_due_to_stack__ void signMsg_handle_init(buffer_t *cdata) {
 
 // ============================== CHUNK ==============================
 
-__noinline_due_to_stack__ void signMsg_handle_chunk(buffer_t *cdata) {
+void signMsg_handle_chunk(buffer_t *cdata) {
     LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STAGE_CHUNK, "Invalid sign_msg state");
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
 
@@ -442,7 +442,7 @@ static void _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
                            SIZEOF(ctx->signature));
 }
 
-__noinline_due_to_stack__ void signMsg_handle_confirm(buffer_t *cdata) {
+void signMsg_handle_confirm(buffer_t *cdata) {
     LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STAGE_CONFIRM,
                   "Invalid sign_msg state");
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
@@ -500,6 +500,9 @@ void finalize_sign_msg(bool confirmed) {
 // ============================== MAIN HANDLER ==============================
 
 void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_msg handler");
+    TRACE_BUFFER_T(cdata);
+
     if (G_context.req_type == REQUEST_NONE) {
         G_context.req_type = REQUEST_SIGN_MSG;
     } else if (G_context.req_type != REQUEST_SIGN_MSG) {

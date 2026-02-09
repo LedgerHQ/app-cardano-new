@@ -67,6 +67,7 @@ static bool is_valid_tx_signing_mode(uint8_t tx_signing_mode) {
  * Validates all transaction metadata and checks security policy
  */
 static void handle_tx_init_apdu(buffer_t *cdata) {
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handle_tx_init_apdu");
     G_context.tx_info.raw_tx = NULL;
     G_context.tx_info.raw_tx_len = 0;
     warning_bits_init(&G_context.tx_info.warning_bits);
@@ -373,6 +374,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
  * Returns true on success. On failure, sends SW and resets context.
  */
 static bool handle_tx_data_chunk(buffer_t *cdata) {
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handle_tx_data_chunk");
     TRACE("SWO_SUCCESS constant = 0x%04x", SWO_SUCCESS);
     const size_t chunk_size = buffer_remaining(cdata);
 

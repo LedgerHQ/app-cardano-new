@@ -44,6 +44,7 @@ static void deriveNativeScriptHash_handleAny() {
 }
 
 static void deriveNativeScriptHash_handleNofK(buffer_t *cdata) {
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to deriveNativeScriptHash_handleNofK");
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     bool read32 = buffer_read_u32(cdata, &ctx->scriptContent.requiredScripts, BE);
     if (read32 == false) {
@@ -131,6 +132,7 @@ static bool parse_native_script_pubkey_credential(buffer_t *buf, ext_credential_
 
 // Simple native script handlers
 static bool deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to deriveNativeScriptHash_handlePubkey");
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
 
     // Parse pubkey credential (only KEY_PATH and KEY_HASH allowed, not SCRIPT_HASH)
@@ -190,6 +192,7 @@ static bool deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
 }
 
 static bool deriveNativeScriptHash_handleInvalidBefore(buffer_t *cdata) {
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to deriveNativeScriptHash_handleInvalidBefore");
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     bool read_timelock = buffer_read_u64(cdata, &ctx->scriptContent.timelock, BE);
     if (!read_timelock) {
@@ -212,6 +215,7 @@ static bool deriveNativeScriptHash_handleInvalidBefore(buffer_t *cdata) {
 }
 
 static bool deriveNativeScriptHash_handleInvalidHereafter(buffer_t *cdata) {
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to deriveNativeScriptHash_handleInvalidHereafter");
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     bool read_timelock = buffer_read_u64(cdata, &ctx->scriptContent.timelock, BE);
     if (!read_timelock) {
@@ -257,6 +261,7 @@ int deriveNativeScriptHash_displayNativeScriptHash_policyId() {
 
 // Complex script start handler
 static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to deriveNativeScriptHash_handleComplexScriptStart");
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
 
     if (!isScriptExpectedAtCurrentLevel()) {
@@ -324,6 +329,7 @@ static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
 
 // Simple script handler
 static void deriveNativeScriptHash_handleSimpleScript(buffer_t *cdata) {
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to deriveNativeScriptHash_handleSimpleScript");
     if (!isScriptExpectedAtCurrentLevel()) {
         TRACE("More scripts expected");
         send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_NESTING);
@@ -366,6 +372,7 @@ static void deriveNativeScriptHash_handleSimpleScript(buffer_t *cdata) {
 }
 
 static void deriveNativeScriptHash_handleWholeNativeScriptFinish(buffer_t *cdata) {
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to deriveNativeScriptHash_handleWholeNativeScriptFinish");
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
 
     // we finish only if there are no more scripts to be processed
@@ -428,6 +435,7 @@ static void deriveNativeScriptHash_initRequest(void) {
 }
 
 void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handler_derive_native_script_hash");
 
     TRACE_BUFFER_T(cdata);
 

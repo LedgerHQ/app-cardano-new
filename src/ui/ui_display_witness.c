@@ -49,15 +49,12 @@ static void witness_review_choice(bool confirm) {
     if (confirm) {
         if (G_context.tx_info.current_witness == G_context.tx_info.num_witnesses) {
             // All witnesses processed - show final success status
-            TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_SIGNED, ui_menu_main)");
             nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_SIGNED, ui_menu_main);
         } else {
             // More witnesses to process - show spinner
-            TRACE("Calling nbgl_useCaseSpinner(\"Processing\")");
             nbgl_useCaseSpinner("Processing");
         }
     } else {
-        TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main)");
         nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main);
     }
 }
@@ -94,7 +91,6 @@ void ui_display_witness(const bip44_path_t* witnessPath,
     if (isUnusual) {
         // A mild warning about unusual path
         // No immediate threat, just to be aware that the witness key is unusual
-        TRACE("Calling nbgl_useCaseChoice(title=Sign with UNUSUAL key)");
         nbgl_useCaseChoice(
             &WARNING_ICON,
             "Sign with UNUSUAL key",
@@ -105,7 +101,6 @@ void ui_display_witness(const bip44_path_t* witnessPath,
         );
     } else {
         // Normal path display
-        TRACE("Calling nbgl_useCaseChoice(title=Witness)");
         nbgl_useCaseChoice(
             &ICON_APP_CARDANO,
             "Witness",

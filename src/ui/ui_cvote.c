@@ -51,10 +51,8 @@ static void cvote_review_choice(bool confirm) {
     // SHOW STATUS
     // TODO: customize status screen?
     if (confirm) {
-        TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_SIGNED, ui_menu_main)");
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_SIGNED, ui_menu_main);
     } else {
-        TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main)");
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
     }
 }
@@ -111,8 +109,6 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy) {
                    format_decimal_amount,
                    ctx->payload_type_tag,
                    0);
-
-    TRACE("Calling nbgl_useCaseAdvancedReview(TYPE_OPERATION)");
     nbgl_useCaseAdvancedReview(TYPE_OPERATION,
                                g_pairsList,
                                &ICON_APP_CARDANO,

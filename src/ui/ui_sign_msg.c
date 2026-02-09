@@ -68,10 +68,8 @@ static void sign_msg_review_choice(bool confirm) {
 
     // SHOW STATUS
     if (confirm) {
-        TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_SIGNED, ui_menu_main)");
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_SIGNED, ui_menu_main);
     } else {
-        TRACE("Calling nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main)");
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
     }
 }
@@ -175,7 +173,6 @@ void ui_display_sign_msg(security_policy_t securityPolicy) {
                    SIZEOF(ctx->msgHash));
 
     // Display review screen with skip button for long messages
-    TRACE("Calling nbgl_useCaseAdvancedReview(TYPE_OPERATION | SKIPPABLE_OPERATION)");
     nbgl_useCaseAdvancedReview(TYPE_OPERATION | SKIPPABLE_OPERATION,
                                g_pairsList,
                                &ICON_APP_CARDANO,

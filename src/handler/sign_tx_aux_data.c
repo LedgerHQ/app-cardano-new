@@ -156,6 +156,7 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
 }
 
 static void handler_tx_aux_data_init(buffer_t *cdata) {
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handler_tx_aux_data_init");
     cvote_aux_data_t *aux_data = &G_context.tx_info.cvote_aux_data;
 
     LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_EXPECTING_INIT,
@@ -239,6 +240,7 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
 }
 
 static void handler_tx_aux_data_delegation(buffer_t *cdata) {
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handler_tx_aux_data_delegation");
     cvote_aux_data_t *aux_data = &G_context.tx_info.cvote_aux_data;
 
     LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS,
