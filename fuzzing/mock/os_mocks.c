@@ -37,10 +37,6 @@ const internal_storage_t N_storage_real = {
     .initialized = 1
 };
 
-bool G_called_from_swap;
-bool G_swap_response_ready;
-bool G_swap_signing_return_value_address;
-
 int io_send_response_buffers(const buffer_t *buffer_list, size_t buffer_count, uint16_t swo) {
     (void) buffer_list;
     (void) buffer_count;
@@ -53,10 +49,8 @@ void nvm_write(void *dst_adr, void *src_adr, unsigned int src_len) {
 }
 
 bool swap_check_validity(uint64_t amount, tx_output_destination_t *destination) {
-    return true;
-}
-
-bool swap_check_fee_validity(uint64_t fee) {
+    (void) amount;
+    (void) destination;
     return true;
 }
 
@@ -68,14 +62,6 @@ unsigned int os_serial(unsigned char *serial, unsigned int maxlength) {
 void __attribute__((noreturn)) os_sched_exit(bolos_task_status_t exit_code) {
     (void) exit_code;
     siglongjmp(fuzz_exit_jump_ctx.jmp_buf, 1);
-}
-
-void os_longjmp(unsigned int exception) {
-    try_context_t *ctx = try_context_get();
-    if (ctx == NULL) {
-        abort();
-    }
-    longjmp(ctx->jmp_buf, exception);
 }
 
 try_context_t *current_context = NULL;
@@ -187,22 +173,4 @@ void assert_exit(bool confirm) {
 
 void __attribute__((noreturn)) app_exit(void) {
     siglongjmp(fuzz_exit_jump_ctx.jmp_buf, 1);
-}
-
-int bytes_to_lowercase_hex(char *out, size_t outl, const void *value, size_t len) {
-    const uint8_t *bytes = (const uint8_t *)value;
-
-    // Check if output buffer is large enough (2 chars per byte + null terminator)
-    if (outl < len * 2 + 1) {
-        return -1;
-    }
-
-    const char hex_digits[] = "0123456789abcdef";
-    for (size_t i = 0; i < len; i++) {
-        out[i * 2] = hex_digits[(bytes[i] >> 4) & 0x0F];
-        out[i * 2 + 1] = hex_digits[bytes[i] & 0x0F];
-    }
-    out[len * 2] = '\0';
-
-    return 0;
 }

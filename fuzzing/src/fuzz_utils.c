@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "globals.h"
-#include "memory/mem.h"
+#include "app_mem_utils.h"
 #include "ui_utils.h"
 
 #ifndef explicit_bzero

@@ -73,6 +73,7 @@ set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/parsers/cardano_parsers.c
     ${CARDANO_PATH}/src/securityPolicy/securityPolicy.c
     ${CARDANO_PATH}/src/securityPolicy/securityPolicy_privkey.c
+    ${CARDANO_PATH}/src/swap/swap_lib.c
     ${CARDANO_PATH}/src/transaction/tx_parse.c
     ${CARDANO_PATH}/src/transaction/tx_parse_certificates.c
     ${CARDANO_PATH}/src/transaction/tx_parse_outputs.c
@@ -129,6 +130,7 @@ target_include_directories(
          ${CARDANO_PATH}/src/opcert
          ${CARDANO_PATH}/src/parsers
          ${CARDANO_PATH}/src/securityPolicy
+         ${CARDANO_PATH}/src/swap
          ${CARDANO_PATH}/src/transaction
          ${CARDANO_PATH}/src/txHashBuilder
          ${CARDANO_PATH}/src/ui
