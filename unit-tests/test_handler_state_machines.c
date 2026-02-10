@@ -13,10 +13,23 @@
 #include "addressUtils/bip44.h"
 #include "cardano_swo.h"
 #include "mem.h"
+#include "app_context.h"
 
 #define TEST_HEAP_SIZE (23 * 1024)
 static uint8_t test_heap[TEST_HEAP_SIZE];
 static uint16_t g_last_sw = 0;
+
+static inline void run_sign_tx_apdu(buffer_t *buffer, uint8_t p1) {
+    apdu_response_begin(INS_SIGN_TX);
+    handler_sign_tx(buffer, p1);
+    apdu_response_assert_sent_or_deferred();
+}
+
+static inline void run_sign_tx_witness_apdu(buffer_t *buffer) {
+    apdu_response_begin(INS_SIGN_TX);
+    handler_sign_tx_witness(buffer);
+    apdu_response_assert_sent_or_deferred();
+}
 
 static inline bool test_mem_init(void) {
     return mem_utils_init(test_heap, sizeof(test_heap));
@@ -114,7 +127,7 @@ static void test_sign_tx_init_rejects_when_request_is_active(void **state) {
         .offset = 0,
     };
 
-    handler_sign_tx(&init_buf, P1_TX_INIT);
+    run_sign_tx_apdu(&init_buf, P1_TX_INIT);
     assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
@@ -131,7 +144,7 @@ static void test_sign_tx_chunk_rejects_without_active_request(void **state) {
         .offset = 0,
     };
 
-    handler_sign_tx(&chunk_buf, P1_TX_CHUNK);
+    run_sign_tx_apdu(&chunk_buf, P1_TX_CHUNK);
     assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
@@ -152,7 +165,7 @@ static void test_sign_tx_confirm_stops_after_chunk_error(void **state) {
         .offset = 0,
     };
 
-    handler_sign_tx(&confirm_buf, P1_TX_CONFIRM);
+    run_sign_tx_apdu(&confirm_buf, P1_TX_CONFIRM);
     assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
@@ -185,7 +198,7 @@ static void test_sign_tx_witness_rejects_before_approved_state(void **state) {
         .offset = 0,
     };
 
-    handler_sign_tx_witness(&witness_buf);
+    run_sign_tx_witness_apdu(&witness_buf);
     assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }

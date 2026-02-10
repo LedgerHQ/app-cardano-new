@@ -25,8 +25,8 @@ static void deriveNativeScriptHash_handleAll() {
     ctx->ui_scriptType = UI_SCRIPT_ALL;
     // No policy check needed: the device does not derive anything secret.
     security_policy_t policy = POLICY_SHOW;
+    apdu_response_deferred();
     ui_display_native_script_hash(policy);
-    // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
     return;
 }
 
@@ -38,8 +38,8 @@ static void deriveNativeScriptHash_handleAny() {
     ctx->ui_scriptType = UI_SCRIPT_ANY;
     // No policy check needed: the device does not derive anything secret.
     security_policy_t policy = POLICY_SHOW;
+    apdu_response_deferred();
     ui_display_native_script_hash(policy);
-    // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
     return;
 }
 
@@ -70,8 +70,8 @@ static void deriveNativeScriptHash_handleNofK(buffer_t *cdata) {
     ctx->ui_scriptType = UI_SCRIPT_N_OF_K;
     // No policy check needed: the device does not derive anything secret.
     security_policy_t policy = POLICY_SHOW;
+    apdu_response_deferred();
     ui_display_native_script_hash(policy);
-    // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
     return;
 }
 
@@ -183,8 +183,8 @@ static bool deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
     
 
     // Display to user
+    apdu_response_deferred();
     ui_display_native_script_hash(policy);
-    // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
     return true;
 }
 
@@ -206,8 +206,8 @@ static bool deriveNativeScriptHash_handleInvalidBefore(buffer_t *cdata) {
     ctx->ui_scriptType = UI_SCRIPT_INVALID_BEFORE;
     // No policy check needed: the device does not derive anything secret.
     security_policy_t policy = POLICY_SHOW;
+    apdu_response_deferred();
     ui_display_native_script_hash(policy);
-    // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
     return true;
 }
 
@@ -230,8 +230,8 @@ static bool deriveNativeScriptHash_handleInvalidHereafter(buffer_t *cdata) {
     ctx->ui_scriptType = UI_SCRIPT_INVALID_HEREAFTER;
     // No policy check needed: the device does not derive anything secret.
     security_policy_t policy = POLICY_SHOW;
+    apdu_response_deferred();
     ui_display_native_script_hash(policy);
-    // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
     return true;
 }
 
@@ -241,8 +241,8 @@ int deriveNativeScriptHash_displayNativeScriptHash_bech32() {
     ctx->ui_scriptType = UI_SCRIPT_DISPLAY_BECH32;
     // No policy check needed: the device does not derive anything secret.
     security_policy_t policy = POLICY_SHOW;
+    apdu_response_deferred();
     ui_display_native_script_hash(policy);
-    // waiting for NBGL callback derive_native_script_hash_review_ask_confirmation, so no APDU sent
     return 0;
 }
 
@@ -251,8 +251,8 @@ int deriveNativeScriptHash_displayNativeScriptHash_policyId() {
     ctx->ui_scriptType = UI_SCRIPT_DISPLAY_POLICY_ID;
     // No policy check needed: the device does not derive anything secret.
     security_policy_t policy = POLICY_SHOW;
+    apdu_response_deferred();
     ui_display_native_script_hash(policy);
-    // waiting for NBGL callback derive_native_script_hash_review_ask_confirmation, so no APDU sent
     return 0;
 }
 
@@ -439,8 +439,8 @@ void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
         deriveNativeScriptHash_initRequest();
         // No policy check needed: the device does not derive anything secret.
         security_policy_t policy = POLICY_SHOW;
+        apdu_response_deferred();
         ui_display_native_script_hash(policy);
-        // waiting for NBGL callback derive_native_script_hash_review_continue, so no APDU sent
     } else if (G_context.req_type != REQUEST_DERIVE_NATIVE_SCRIPT_HASH) {
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return;

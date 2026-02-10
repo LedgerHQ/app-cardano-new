@@ -70,8 +70,8 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
             }
             G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_VALIDATED;
             prepareResponse();
+            apdu_response_deferred();
             ui_deriveAddress_handleReturn(policy, warnings);
-            // waiting for NBGL callback derive_address_return_review_choice, so no APDU sent
             break;
         }
         case P1_ADDRESS_DISPLAY: {
@@ -88,8 +88,8 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
             }
             G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_VALIDATED;
             prepareResponse();
+            apdu_response_deferred();
             ui_deriveAddress_handleDisplay(policy, warnings);
-            // waiting for NBGL callback derive_address_display_review_choice, so no APDU sent
             break;
         }
         default:
@@ -112,9 +112,9 @@ void finalize_derive_address(bool confirm) {
     derive_address_ctx_t *ctx = &G_context.derive_address_info;
     if (ctx->should_export_address) {
         LEDGER_ASSERT(ctx->address.length <= sizeof(ctx->address.buffer), "Address length too large");
-        io_send_response_pointer(ctx->address.buffer, ctx->address.length, SWO_SUCCESS);
+        apdu_response_send_data(ctx->address.buffer, ctx->address.length, SWO_SUCCESS);
     } else {
-        io_send_response_pointer(NULL, 0, SWO_SUCCESS);
+        apdu_response_send_data(NULL, 0, SWO_SUCCESS);
     }
     reset_app_context();
 }

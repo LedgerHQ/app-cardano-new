@@ -37,6 +37,7 @@ def _build_file_header() -> str:
 #include "handler/sign_opcert.h"
 #include "opcert/opcert_types.h"
 #include "test_opcert_fixtures.h"
+#include "app_context.h"
 
 """
 
@@ -87,7 +88,9 @@ static void run_opcert_fixture(const opcert_fixture_t *fixture) {
     assert_non_null(fixture);
     reset_opcert_context();
     buffer_t data = {.ptr = fixture->payload, .size = fixture->payload_len, .offset = 0};
+    apdu_response_begin(INS_SIGN_OPCERT);
     handler_sign_opcert(&data);
+    apdu_response_assert_sent_or_deferred();
     assert_int_equal(g_last_sw, SWO_SUCCESS);
     assert_int_equal(g_last_response_len, ED25519_SIGNATURE_LENGTH);
 }

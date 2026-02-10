@@ -12,6 +12,7 @@
 #include "tx_constants.h"
 #include "cardano_swo.h"
 #include "mem.h"
+#include "app_context.h"
 
 #define TEST_HEAP_SIZE (23 * 1024)
 static uint8_t test_heap[TEST_HEAP_SIZE];
@@ -77,7 +78,9 @@ static void test_parse_error_mapping_fee(void **state) {
     (void) state;
     reset_test_context();
 
+    apdu_response_begin(INS_SIGN_TX);
     tx_handle_parse_error(FEE_PARSING_ERROR);
+    apdu_response_assert_sent_or_deferred();
     assert_int_equal(g_last_sw, SWO_TX_PARSING_FAIL_FEE);
 }
 
@@ -85,7 +88,9 @@ static void test_parse_error_mapping_buffer_not_fully_consumed(void **state) {
     (void) state;
     reset_test_context();
 
+    apdu_response_begin(INS_SIGN_TX);
     tx_handle_parse_error(TX_BUFFER_NOT_FULLY_CONSUMED_ERROR);
+    apdu_response_assert_sent_or_deferred();
     assert_int_equal(g_last_sw, SWO_TX_PARSING_FAIL_BUFFER_NOT_FULLY_CONSUMED);
 }
 

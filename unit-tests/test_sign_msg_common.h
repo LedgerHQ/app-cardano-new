@@ -104,7 +104,9 @@ static inline void run_fixture(const sign_msg_fixture_t *fixture) {
         .size = fixture->init_data_len,
         .offset = 0,
     };
+    apdu_response_begin(INS_SIGN_MSG);
     handler_sign_msg(&init_buffer, P1_SIGN_MSG_INIT);
+    apdu_response_assert_sent_or_deferred();
     assert_int_equal(g_last_sw, fixture->check_expected);
 
     for (size_t chunk_idx = 0; chunk_idx < fixture->chunk_count; chunk_idx++) {
@@ -114,7 +116,9 @@ static inline void run_fixture(const sign_msg_fixture_t *fixture) {
             .size = chunk->data_len,
             .offset = 0,
         };
+        apdu_response_begin(INS_SIGN_MSG);
         handler_sign_msg(&chunk_buffer, P1_SIGN_MSG_CHUNK);
+        apdu_response_assert_sent_or_deferred();
         assert_int_equal(g_last_sw, fixture->check_expected);
     }
 
@@ -123,7 +127,9 @@ static inline void run_fixture(const sign_msg_fixture_t *fixture) {
         .size = fixture->confirm_data_len,
         .offset = 0,
     };
+    apdu_response_begin(INS_SIGN_MSG);
     handler_sign_msg(&confirm_buffer, P1_SIGN_MSG_CONFIRM);
+    apdu_response_assert_sent_or_deferred();
     assert_int_equal(g_last_sw, fixture->check_expected);
 
     assert_true(g_last_response_len > 0);

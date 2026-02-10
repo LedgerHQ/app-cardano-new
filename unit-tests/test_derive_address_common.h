@@ -69,7 +69,7 @@ void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warn
 // Validate state before proceeding (address must be prepared before UI display)
     switch (policy) {
         case POLICY_SHOW:
-            io_send_response_pointer(ctx->address.buffer, ctx->address.length, SWO_SUCCESS);
+            apdu_response_send_data(ctx->address.buffer, ctx->address.length, SWO_SUCCESS);
             break;
         case POLICY_HIDE: {
             // Silently approve and return address without UI
@@ -87,7 +87,7 @@ void ui_deriveAddress_handleDisplay(security_policy_t policy, warning_bits_t war
     (void) warnings;
     switch (policy) {
         case POLICY_SHOW:
-            io_send_response_pointer(NULL, 0, SWO_SUCCESS);
+            apdu_response_send_data(NULL, 0, SWO_SUCCESS);
             break;
         default:
             LEDGER_ASSERT(false, "Invalid policy in ui_deriveAddress_handleDisplay: %d", policy);
@@ -111,7 +111,9 @@ static inline void run_fixture(const derive_address_fixture_t *fixture) {
         .offset = 0,
     };
     TRACE_BUFFER(buf.ptr, buf.size);
+    apdu_response_begin(INS_DERIVE_ADDRESS);
     handler_derive_address(&buf, fixture->p1);
+    apdu_response_assert_sent_or_deferred();
     assert_int_equal(g_last_sw, fixture->check_expected);
 
     if (fixture->expected_address != NULL && fixture->expected_address_len > 0) {

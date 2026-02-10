@@ -37,5 +37,5 @@ void handler_get_app_name(const buffer_t *data_buffer) {
 
     _Static_assert(APPNAME_LEN < MAX_APP_NAME_LENGTH, "APPNAME must be at most 64 characters!");
 
-    io_send_response_pointer(PIC(APPNAME), APPNAME_LEN, SWO_SUCCESS);
+    apdu_response_send_data(PIC(APPNAME), APPNAME_LEN, SWO_SUCCESS);
 }

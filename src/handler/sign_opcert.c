@@ -85,8 +85,8 @@ void handler_sign_opcert(buffer_t *cdata) {
     }
 
     G_context.state.opcert_state = OPCERT_STATE_VALIDATED;
+    apdu_response_deferred();
     ui_display_opcert(policy, warnings);
-    // waiting for NBGL callback opcert_review_choice, so no APDU sent
 }
 
 void finalize_sign_opcert(bool confirmed) {
@@ -123,7 +123,7 @@ void finalize_sign_opcert(bool confirmed) {
         G_context.opcert_info.signature, SIZEOF(G_context.opcert_info.signature)
     );
 
-    io_send_response_pointer(
+    apdu_response_send_data(
         G_context.opcert_info.signature,
         SIZEOF(G_context.opcert_info.signature),
         SWO_SUCCESS

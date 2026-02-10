@@ -23,6 +23,7 @@
 #include "deriveNativeScriptHash/deriveNativeScriptHash_types.h"
 #include "handler/derive_native_script_hash.h"
 #include "apdu/dispatcher.h"
+#include "app_context.h"
 // ----------------------------------------------------------------------
 // Constants
 // ----------------------------------------------------------------------
@@ -50,6 +51,12 @@ static inline void reset_context(void) {
     memset(&G_context, 0, sizeof(G_context));
 }
 
+static inline void run_derive_native_script_apdu(buffer_t *buffer, uint8_t p1) {
+    apdu_response_begin(INS_DERIVE_NATIVE_SCRIPT_HASH);
+    handler_derive_native_script_hash(buffer, p1);
+    apdu_response_assert_sent_or_deferred();
+}
+
 int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
     (void) buffer;
     (void) bufferLength;
@@ -60,11 +67,6 @@ int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_
 int io_send_sw(uint16_t swo) {
     g_last_sw = swo;
     return 0;
-}
-
-void send_swo_and_reset(uint16_t swo) {
-    TRACE("send_swo_and_reset swo=0x%04x", swo);
-    g_last_sw = swo;
 }
 
 static inline void write_u32_be(uint8_t *buffer, uint32_t value) {
@@ -107,7 +109,18 @@ static inline void build_complex_script_start_buffer(
 }
 
 void ui_display_native_script_hash(security_policy_t securityPolicy) {
-    (void) securityPolicy;
+    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+
+    if (securityPolicy == POLICY_DENY) {
+        send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
+        return;
+    }
+
+    if (ctx->ui_scriptType == UI_SCRIPT_INIT) {
+        return;
+    }
+
+    apdu_response_send_data(NULL, 0, SWO_SUCCESS);
 }
 
 // ----------------------------------------------------------------------
@@ -130,7 +143,7 @@ void run_recursive_fixture(const native_script_t *script, uint16_t expected_resp
                     .size = script->impl.simple.apdu_payload_length,
                     .offset = 0,
                 };
-                handler_derive_native_script_hash(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+                run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
                 if (g_last_sw != SWO_SUCCESS) {
                     assert_int_equal(g_last_sw, expected_response);
                 }
@@ -156,7 +169,7 @@ void run_recursive_fixture(const native_script_t *script, uint16_t expected_resp
                     .offset = 0,
                 };
 
-                handler_derive_native_script_hash(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+                run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
                 if (g_last_sw != SWO_SUCCESS) {
                     assert_int_equal(g_last_sw, expected_response);
                 }
@@ -189,7 +202,7 @@ void run_recursive_fixture(const native_script_t *script, uint16_t expected_resp
                 };
 
                 TRACE_BUFFER(buf.ptr, buf.size);
-                handler_derive_native_script_hash(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+                run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
                 if (g_last_sw != SWO_SUCCESS) {
                     assert_int_equal(g_last_sw, expected_response);
                 }
@@ -223,7 +236,7 @@ void run_recursive_fixture(const native_script_t *script, uint16_t expected_resp
                     .offset = 0,
                 };
 
-                handler_derive_native_script_hash(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+                run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
                 if (g_last_sw != SWO_SUCCESS) {
                     assert_int_equal(g_last_sw, expected_response);
                 }
@@ -267,7 +280,7 @@ static inline void run_fixture(const native_script_test_case_t *fixture) {
             .size = fixture->finish_apdu_payload_length,
             .offset = 0,
         };
-        handler_derive_native_script_hash(&buf, P1_NATIVE_SCRIPT_FINISH);
+        run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_FINISH);
 
         {
             assert_int_equal(g_last_sw, fixture->expected_response);

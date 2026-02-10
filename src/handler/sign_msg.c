@@ -235,7 +235,7 @@ void signMsg_handle_init(buffer_t *cdata) {
         G_context.state.sign_msg_state = SIGN_MSG_STATE_CHUNK;
     }
 
-    io_send_sw(SWO_SUCCESS);
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 // ============================== CHUNK ==============================
@@ -313,7 +313,7 @@ void signMsg_handle_chunk(buffer_t *cdata) {
         G_context.state.sign_msg_state = SIGN_MSG_STATE_CONFIRM;
     }
 
-    io_send_sw(SWO_SUCCESS);
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 // ============================== CONFIRM ==============================
@@ -488,8 +488,8 @@ void signMsg_handle_confirm(buffer_t *cdata) {
     }
 
     // Display UI for user confirmation
+    apdu_response_deferred();
     ui_display_sign_msg(POLICY_SHOW);
-    // waiting for NBGL callback sign_msg_review_choice, so no APDU sent
 }
 
 void finalize_sign_msg(bool confirmed) {
@@ -518,7 +518,7 @@ void finalize_sign_msg(bool confirmed) {
     const size_t response_size = buffer_written_size(&response);
     TRACE("Response size = %u", response_size);
 
-    io_send_response_pointer(response_buffer, response_size, SWO_SUCCESS);
+    apdu_response_send_data(response_buffer, response_size, SWO_SUCCESS);
     reset_app_context();
 }
 

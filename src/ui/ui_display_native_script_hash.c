@@ -127,7 +127,7 @@ static void derive_native_script_hash_review_continue(bool confirm) {
 
     // FINALIZE
     if (confirm) {
-        io_send_response_pointer(NULL, 0, SWO_SUCCESS);
+        apdu_response_send_data(NULL, 0, SWO_SUCCESS);
     } else {
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
     }
@@ -149,7 +149,7 @@ static void derive_native_script_hash_review_confirmation_output(bool confirm) {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     if (confirm) {
         TRACE("User confirmed");
-        io_send_response_pointer(ctx->scriptHashBuffer, SCRIPT_HASH_LENGTH, SWO_SUCCESS);
+        apdu_response_send_data(ctx->scriptHashBuffer, SCRIPT_HASH_LENGTH, SWO_SUCCESS);
     } else {
         TRACE("User rejected");
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);

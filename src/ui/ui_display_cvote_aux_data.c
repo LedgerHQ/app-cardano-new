@@ -148,7 +148,7 @@ static void cvote_aux_data_review_streaming_continue(bool confirm) {
         return;
     }
 
-    io_send_sw(SWO_SUCCESS);
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 static bool format_cvote_delegation_index(uint16_t delegation_index,
@@ -465,7 +465,11 @@ static bool cvote_streaming_show_next_page(cvote_aux_data_t *aux_data,
 void ui_cvote_aux_data_streaming_show_initial_page(cvote_aux_data_t *aux_data) {
     LEDGER_ASSERT(aux_data != NULL && aux_data->state == CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE, "Streaming initial page in wrong state: %d", aux_data->state);
     LEDGER_ASSERT(aux_data->ui_streaming.on, "Streaming initial page called with streaming disabled");
-    (void) cvote_streaming_show_next_page(aux_data, NULL, 0);
+    bool page_displayed = cvote_streaming_show_next_page(aux_data, NULL, 0);
+    if (!page_displayed) {
+        // Error APDU was already sent by cvote_streaming_show_next_page().
+        return;
+    }
 }
 
 void ui_cvote_aux_data_add_delegation_non_streaming(cvote_aux_data_t *aux_data,

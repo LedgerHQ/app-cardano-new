@@ -10,6 +10,7 @@
 #include "buffer.h"
 #include "cardano_swo.h"
 #include "globals.h"
+#include "app_context.h"
 #include "handler/get_public_key.h"
 #include "keyDerivation.h"
 #include "securityPolicy/securityPolicyType.h"
@@ -98,7 +99,9 @@ static inline void run_fixture(const pubkey_fixture_t *fixture) {
         .offset = 0,
     };
 
+    apdu_response_begin(INS_GET_PUBLIC_KEY);
     handler_get_public_key(&buf);
+    apdu_response_assert_sent_or_deferred();
     assert_int_equal(g_last_sw, fixture->check_expected);
 
     if (fixture->check_expected == SWO_SUCCESS) {

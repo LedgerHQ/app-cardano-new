@@ -74,7 +74,7 @@ void handler_debug_set_settings(const buffer_t *buf) {
         N_storage.silent_pubkey_export_enabled
     };
 
-    io_send_response_pointer(response, sizeof(response), SWO_SUCCESS);
+    apdu_response_send_data(response, sizeof(response), SWO_SUCCESS);
 }
 
 #endif  // DEBUG

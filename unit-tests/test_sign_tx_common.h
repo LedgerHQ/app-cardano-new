@@ -18,6 +18,7 @@
 #include "apdu/dispatcher.h"
 #include "ui_display_tx.h"
 #include "app_mem_utils.h"
+#include "app_context.h"
 
 #define TEST_HEAP_SIZE (23 * 1024)
 static uint8_t test_heap[TEST_HEAP_SIZE];
@@ -26,6 +27,19 @@ static inline bool test_mem_init(void) {
     return mem_utils_init(test_heap, sizeof(test_heap));
 }
 extern bool unit_test_expert_mode_enabled;
+
+static inline void run_sign_tx_apdu(buffer_t *buffer, uint8_t p1) {
+    apdu_response_begin(INS_SIGN_TX);
+    handler_sign_tx(buffer, p1);
+    apdu_response_assert_sent_or_deferred();
+}
+
+static inline void run_sign_tx_aux_data_apdu(buffer_t *buffer, uint8_t p2) {
+    apdu_response_begin(INS_SIGN_TX);
+    handler_sign_tx_aux_data(buffer, p2);
+    apdu_response_assert_sent_or_deferred();
+}
+
 static inline void reset_context(void) {
     memset(&G_context, 0, sizeof(G_context));
     g_last_response_len = 0;
@@ -51,7 +65,7 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
                                      size_t* response_len,
                                      uint16_t* response_sw) {
     assert_true(init_len > 0);
-    handler_sign_tx(&(buffer_t){.ptr = (uint8_t*)init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t){.ptr = (uint8_t*)init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
     assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
     if (include_aux_data_hash && aux_data_type == AUX_DATA_TYPE_CVOTE_REGISTRATION) {
         assert_int_equal(G_context.state.tx_state, TX_STATE_AUX_DATA);
@@ -70,7 +84,7 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
             .size = aux_data_init_payload_len,
             .offset = 0,
         };
-        handler_sign_tx_aux_data(&aux_init_buf, P2_AUX_DATA_INIT);
+        run_sign_tx_aux_data_apdu(&aux_init_buf, P2_AUX_DATA_INIT);
 
         for (size_t i = 0; i < aux_data_delegation_count; i++) {
             const aux_data_payload_t* delegation = &aux_data_delegations[i];
@@ -81,7 +95,7 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
                 .size = delegation->payload_len,
                 .offset = 0,
             };
-            handler_sign_tx_aux_data(&aux_reg_buf, P2_AUX_DATA_DELEGATION);
+            run_sign_tx_aux_data_apdu(&aux_reg_buf, P2_AUX_DATA_DELEGATION);
         }
 
         assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
@@ -92,7 +106,7 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
         .size = raw_tx_len,
         .offset = 0,
     };
-    handler_sign_tx(&tx_buf, P1_TX_CONFIRM);
+    run_sign_tx_apdu(&tx_buf, P1_TX_CONFIRM);
 
     uint8_t expected_cbor[100 * 1024];
     size_t cbor_len = hex_to_bytes(cbor_hex, expected_cbor, sizeof(expected_cbor));

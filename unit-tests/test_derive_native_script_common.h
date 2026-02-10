@@ -14,6 +14,7 @@
 
 #include <cmocka.h>
 #include "handler/derive_address.h"
+#include "app_context.h"
 #include "mock_crypto/crypto_mock_data.h"
 #include "blake2b.h"
 #include "mem.h"
@@ -44,6 +45,12 @@ static inline void reset_context(void) {
     memset(&G_context, 0, sizeof(G_context));
 }
 
+static inline void run_derive_native_script_apdu(buffer_t *buffer, uint8_t p1) {
+    apdu_response_begin(INS_DERIVE_NATIVE_SCRIPT_HASH);
+    handler_derive_native_script_hash(buffer, p1);
+    apdu_response_assert_sent_or_deferred();
+}
+
 int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
     LEDGER_ASSERT(bufferLength <= MAX_RESPONSE_BUFFER_SIZE, "Response buffer overflow");
 
@@ -64,11 +71,6 @@ int io_send_sw(uint16_t swo) {
     return 0;
 }
 
-int send_swo_and_reset(uint16_t swo) {
-    g_last_sw = swo;
-    return 0;
-}
-
 void ui_display_native_script_hash(security_policy_t securityPolicy);
 
 void ui_display_native_script_hash(security_policy_t securityPolicy) {
@@ -84,52 +86,51 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
     switch (ctx->ui_scriptType) {
         case UI_SCRIPT_INIT: {
             TRACE("UI_SCRIPT_INIT");
-            io_send_response_pointer(NULL, 0, SWO_SUCCESS);
             return;
         }
         case UI_SCRIPT_ALL: {
             TRACE("UI_SCRIPT_ALL");
-            io_send_response_pointer(NULL, 0, SWO_SUCCESS);
+            apdu_response_send_data(NULL, 0, SWO_SUCCESS);
             break;
         }
         case UI_SCRIPT_N_OF_K: {
             TRACE("UI_SCRIPT_N_OF_K");
-            io_send_response_pointer(NULL, 0, SWO_SUCCESS);
+            apdu_response_send_data(NULL, 0, SWO_SUCCESS);
             break;
         }
         case UI_SCRIPT_ANY: {
             TRACE("UI_SCRIPT_ANY");
-            io_send_response_pointer(NULL, 0, SWO_SUCCESS);
+            apdu_response_send_data(NULL, 0, SWO_SUCCESS);
             break;
         }
         case UI_SCRIPT_PUBKEY_PATH: {
             TRACE("UI_SCRIPT_PUBKEY_PATH");
-            io_send_response_pointer(NULL, 0, SWO_SUCCESS);
+            apdu_response_send_data(NULL, 0, SWO_SUCCESS);
             break;
         }
         case UI_SCRIPT_PUBKEY_HASH: {
             TRACE("UI_SCRIPT_PUBKEY_HASH");
-            io_send_response_pointer(NULL, 0, SWO_SUCCESS);
+            apdu_response_send_data(NULL, 0, SWO_SUCCESS);
             break;
         }
         case UI_SCRIPT_INVALID_BEFORE: {
             TRACE("UI_SCRIPT_INVALID_BEFORE");
-            io_send_response_pointer(NULL, 0, SWO_SUCCESS);
+            apdu_response_send_data(NULL, 0, SWO_SUCCESS);
             break;
         }
         case UI_SCRIPT_INVALID_HEREAFTER: {
             TRACE("UI_SCRIPT_INVALID_HEREAFTER");
-            io_send_response_pointer(NULL, 0, SWO_SUCCESS);
+            apdu_response_send_data(NULL, 0, SWO_SUCCESS);
             break;
         }
         case UI_SCRIPT_DISPLAY_BECH32: {
             TRACE("UI_SCRIPT_DISPLAY_BECH32");
-            io_send_response_pointer(ctx->scriptHashBuffer, SCRIPT_HASH_LENGTH, SWO_SUCCESS);
+            apdu_response_send_data(ctx->scriptHashBuffer, SCRIPT_HASH_LENGTH, SWO_SUCCESS);
             break;
         }
         case UI_SCRIPT_DISPLAY_POLICY_ID: {
             TRACE("UI_SCRIPT_DISPLAY_POLICY_ID");
-            io_send_response_pointer(ctx->scriptHashBuffer, SCRIPT_HASH_LENGTH, SWO_SUCCESS);
+            apdu_response_send_data(ctx->scriptHashBuffer, SCRIPT_HASH_LENGTH, SWO_SUCCESS);
             break;
         }
         default: {
@@ -197,7 +198,7 @@ void run_recursive_fixture(const native_script_t *script) {
                     .size = script->impl.simple.apdu_payload_length,
                     .offset = 0,
                 };
-                handler_derive_native_script_hash(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+                run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
                 assert_int_equal(g_last_sw, SWO_SUCCESS);
             } break;
             case NATIVE_SCRIPT_TYPE_ALL: {
@@ -220,8 +221,7 @@ void run_recursive_fixture(const native_script_t *script) {
                     .size = apdu_length,
                     .offset = 0,
                 };
-
-                handler_derive_native_script_hash(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+                run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
                 assert_int_equal(g_last_sw, SWO_SUCCESS);
 
                 for (size_t i = 0; i < script->impl.complex.params.all.scripts_count; i++) {
@@ -251,7 +251,7 @@ void run_recursive_fixture(const native_script_t *script) {
                 };
 
                 TRACE_BUFFER(buf.ptr, buf.size);
-                handler_derive_native_script_hash(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+                run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
                 assert_int_equal(g_last_sw, SWO_SUCCESS);
 
                 for (size_t i = 0; i < script->impl.complex.params.any.scripts_count; i++) {
@@ -278,8 +278,7 @@ void run_recursive_fixture(const native_script_t *script) {
                     .size = apdu_length,
                     .offset = 0,
                 };
-
-                handler_derive_native_script_hash(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+                run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
                 assert_int_equal(g_last_sw, SWO_SUCCESS);
 
                 for (size_t i = 0; i < script->impl.complex.params.n_of_k.scripts_count; i++) {
@@ -319,7 +318,7 @@ static inline void run_fixture(const native_script_test_case_t *fixture) {
         .size = fixture->finish_apdu_payload_length,
         .offset = 0,
     };
-    handler_derive_native_script_hash(&buf, P1_NATIVE_SCRIPT_FINISH);
+    run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_FINISH);
 
     // Compare derived hash with expected hash using buffer_equals
     assert_memory_equal(g_response_buffer, fixture->expected_hash, SCRIPT_HASH_LENGTH);

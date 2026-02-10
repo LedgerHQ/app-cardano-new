@@ -366,7 +366,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         TRACE("Transaction initialized, waiting for data chunks");
     }
 
-    io_send_sw(SWO_SUCCESS);
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 /**
@@ -458,7 +458,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             if (!handle_tx_data_chunk(cdata)) {
                 return;
             }
-            io_send_sw(SWO_SUCCESS);
+            apdu_response_send_sw(SWO_SUCCESS);
             return;
 
         case P1_TX_CONFIRM:
@@ -540,7 +540,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 
                 // In swap mode, skip UI and auto-approve the transaction
                 G_context.state.tx_state = TX_STATE_APPROVED;
-                io_send_response_pointer(
+                apdu_response_send_data(
                     G_context.tx_info.tx_hash,
                     sizeof(G_context.tx_info.tx_hash),
                     SWO_SUCCESS);
@@ -560,8 +560,8 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             }
 
             G_context.state.tx_state = TX_STATE_UI_PREPARED;
+            apdu_response_deferred();
             ui_display_transaction();
-            // waiting for NBGL callback tx_review_choice, so no APDU sent
             return;
 
         default:
@@ -582,7 +582,7 @@ void finalize_sign_tx(bool confirm) {
 
     G_context.state.tx_state = TX_STATE_APPROVED;
     G_context.tx_info.current_witness = 0;
-    io_send_response_pointer(G_context.tx_info.tx_hash, SIZEOF(G_context.tx_info.tx_hash), SWO_SUCCESS);
+    apdu_response_send_data(G_context.tx_info.tx_hash, SIZEOF(G_context.tx_info.tx_hash), SWO_SUCCESS);
 
     if (G_context.tx_info.num_witnesses == 0) {
         // there are no witnesses, we are done with this tx
@@ -619,7 +619,7 @@ void finalize_witness(bool confirm)
         G_swap_response_ready = true;
     }
 #endif
-    io_send_response_pointer(
+    apdu_response_send_data(
         G_context.tx_info.witness_signature,
         ED25519_SIGNATURE_LENGTH,
         SWO_SUCCESS
@@ -753,8 +753,8 @@ void handler_sign_tx_witness(buffer_t *cdata) {
             return;
 
         case POLICY_SHOW:
+            apdu_response_deferred();
             ui_display_witness(&G_context.tx_info.witness_path, policy, witness_warnings);
-            // waiting for NBGL callback witness_review_choice, so no APDU sent
             return;
 
         case POLICY_DENY:

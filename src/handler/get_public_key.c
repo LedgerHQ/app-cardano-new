@@ -73,8 +73,8 @@ void handler_get_public_key(buffer_t *cdata) {
 
     deriveExtendedPublicKey(&G_context.pk_info.path, &G_context.pk_info.extPubKey);
 
+    apdu_response_deferred();
     ui_display_pubkey(policy, warnings);
-    // waiting for NBGL callback pubkey_review_choice, so no APDU sent
 }
 
 void finalize_pubkey_export(bool confirmed) {
@@ -89,6 +89,8 @@ void finalize_pubkey_export(bool confirmed) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_EXPORT_PUBKEY, "Bad req_type");
 
     // Send the extended public key back to the client
-    io_send_response_pointer((uint8_t*) &G_context.pk_info.extPubKey, SIZEOF(G_context.pk_info.extPubKey), SWO_SUCCESS);
+    apdu_response_send_data((uint8_t*) &G_context.pk_info.extPubKey,
+                                     SIZEOF(G_context.pk_info.extPubKey),
+                                     SWO_SUCCESS);
     reset_app_context();
 }

@@ -79,7 +79,7 @@ void ui_menu_main(void) {
 }
 
 void ui_display_transaction(void) {
-    io_send_response_pointer(G_context.tx_info.tx_hash, sizeof(G_context.tx_info.tx_hash), SWO_SUCCESS);
+    apdu_response_send_data(G_context.tx_info.tx_hash, sizeof(G_context.tx_info.tx_hash), SWO_SUCCESS);
     G_context.state.tx_state = TX_STATE_APPROVED;
     G_context.req_type = REQUEST_NONE;
     tx_review_cleanup();

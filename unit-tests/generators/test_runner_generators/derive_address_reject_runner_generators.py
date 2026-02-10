@@ -44,6 +44,7 @@ def _build_test_file_header() -> str:
 #include <cmocka.h>
 #include "handler/derive_address.h"
 #include "hexUtils.h"
+#include "app_context.h"
 
 #include "blake2b.h"
 
@@ -99,7 +100,9 @@ static void run_reject_fixture(const derive_address_fixture_t *fixture) {
     };
     TRACE_BUFFER(buf.ptr, buf.size);
     TRACE("Running rejection fixture: %s", fixture->name);
+    apdu_response_begin(INS_DERIVE_ADDRESS);
     handler_derive_address(&buf, fixture->p1);
+    apdu_response_assert_sent_or_deferred();
     assert_int_equal(g_last_sw, fixture->check_expected);
 }
 

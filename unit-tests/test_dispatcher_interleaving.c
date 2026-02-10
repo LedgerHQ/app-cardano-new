@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include <cmocka.h>
 
@@ -11,14 +12,23 @@
 #include "buffer.h"
 #include "cardano_swo.h"
 #include "globals.h"
+#include "app_context.h"
 
 static uint16_t g_last_sw = 0;
 static uint8_t g_last_called_ins = 0;
+static bool g_apdu_response_active = false;
+static bool g_apdu_response_sent = false;
+static bool g_apdu_response_deferred = false;
+static bool g_get_serial_should_defer = false;
 
 static void reset_test_context(void) {
     memset(&G_context, 0, sizeof(G_context));
     g_last_sw = 0;
     g_last_called_ins = 0;
+    g_apdu_response_active = false;
+    g_apdu_response_sent = false;
+    g_apdu_response_deferred = false;
+    g_get_serial_should_defer = false;
 }
 
 // -------------------------------------------------------------------------
@@ -32,7 +42,7 @@ void reset_app_context(void) {
 
 void send_swo_and_reset(uint16_t swo) {
     reset_app_context();
-    g_last_sw = swo;
+    apdu_response_send_sw(swo);
 }
 
 int io_send_sw(uint16_t swo) {
@@ -47,6 +57,69 @@ int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_
     return 0;
 }
 
+void apdu_response_begin(command_e instruction) {
+    (void) instruction;
+    if (g_apdu_response_active) {
+        abort();
+    }
+    g_apdu_response_active = true;
+    g_apdu_response_sent = false;
+    g_apdu_response_deferred = false;
+}
+
+void apdu_response_deferred(void) {
+    if (!g_apdu_response_active || g_apdu_response_sent) {
+        abort();
+    }
+    g_apdu_response_deferred = true;
+}
+
+void apdu_response_assert_sent_or_deferred(void) {
+    if (!g_apdu_response_active) {
+        abort();
+    }
+    if (!g_apdu_response_sent && !g_apdu_response_deferred) {
+        abort();
+    }
+    if (g_apdu_response_sent) {
+        g_apdu_response_active = false;
+        g_apdu_response_sent = false;
+        g_apdu_response_deferred = false;
+    }
+}
+
+int apdu_response_send_sw(uint16_t swo) {
+    if (g_apdu_response_active) {
+        if (g_apdu_response_sent) {
+            abort();
+        }
+        g_apdu_response_sent = true;
+    }
+    int result = io_send_sw(swo);
+    if (g_apdu_response_active && g_apdu_response_deferred && g_apdu_response_sent) {
+        g_apdu_response_active = false;
+        g_apdu_response_sent = false;
+        g_apdu_response_deferred = false;
+    }
+    return result;
+}
+
+int apdu_response_send_data(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
+    if (g_apdu_response_active) {
+        if (g_apdu_response_sent) {
+            abort();
+        }
+        g_apdu_response_sent = true;
+    }
+    int result = io_send_response_pointer(buffer, bufferLength, swo);
+    if (g_apdu_response_active && g_apdu_response_deferred && g_apdu_response_sent) {
+        g_apdu_response_active = false;
+        g_apdu_response_sent = false;
+        g_apdu_response_deferred = false;
+    }
+    return result;
+}
+
 // -------------------------------------------------------------------------
 // Handler stubs used by dispatcher
 // -------------------------------------------------------------------------
@@ -54,73 +127,90 @@ int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_
 void handler_get_serial(buffer_t *cdata) {
     (void) cdata;
     g_last_called_ins = INS_GET_SERIAL;
+    if (g_get_serial_should_defer) {
+        apdu_response_deferred();
+        return;
+    }
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 void handler_get_version(buffer_t *cdata) {
     (void) cdata;
     g_last_called_ins = INS_GET_VERSION;
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 void handler_get_app_name(buffer_t *cdata) {
     (void) cdata;
     g_last_called_ins = INS_GET_APP_NAME;
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 void handler_get_public_key(buffer_t *cdata) {
     (void) cdata;
     g_last_called_ins = INS_GET_PUBLIC_KEY;
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 void handler_derive_address(buffer_t *cdata, uint8_t p1) {
     (void) cdata;
     (void) p1;
     g_last_called_ins = INS_DERIVE_ADDRESS;
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
     (void) cdata;
     (void) script_type;
     g_last_called_ins = INS_DERIVE_NATIVE_SCRIPT_HASH;
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
     (void) cdata;
     (void) p1;
     g_last_called_ins = INS_SIGN_TX;
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 void handler_sign_tx_witness(buffer_t *cdata) {
     (void) cdata;
     g_last_called_ins = INS_SIGN_TX;
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
     (void) cdata;
     (void) p2;
     g_last_called_ins = INS_SIGN_TX;
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 void handler_sign_opcert(buffer_t *cdata) {
     (void) cdata;
     g_last_called_ins = INS_SIGN_OPCERT;
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 void handler_sign_cvote(buffer_t *cdata, uint8_t p1) {
     (void) cdata;
     (void) p1;
     g_last_called_ins = INS_SIGN_CVOTE;
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
     (void) cdata;
     (void) p1;
     g_last_called_ins = INS_SIGN_MSG;
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 #ifdef DEBUG
 void handler_debug_set_settings(buffer_t *cdata) {
     (void) cdata;
     g_last_called_ins = INS_DEBUG_SET_SETTINGS;
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 #endif
 
@@ -193,15 +283,35 @@ static void test_interleaving_allows_expected_instruction(void **state) {
         command_t cmd = make_command(cases[i].ins, cases[i].p1, cases[i].p2);
         apdu_dispatcher(&cmd);
 
-        assert_int_equal(g_last_sw, 0);
+        assert_int_equal(g_last_sw, SWO_SUCCESS);
         assert_int_equal(g_last_called_ins, cases[i].ins);
     }
+}
+
+static void test_deferred_response_is_allowed(void **state) {
+    (void) state;
+
+    reset_test_context();
+    g_get_serial_should_defer = true;
+
+    command_t cmd = make_command(INS_GET_SERIAL, P1_UNUSED, P2_UNUSED);
+    apdu_dispatcher(&cmd);
+
+    assert_int_equal(g_last_called_ins, INS_GET_SERIAL);
+    assert_int_equal(g_last_sw, 0);
+    assert_true(g_apdu_response_active);
+    assert_true(g_apdu_response_deferred);
+
+    apdu_response_send_sw(SWO_SUCCESS);
+    assert_int_equal(g_last_sw, SWO_SUCCESS);
+    assert_false(g_apdu_response_active);
 }
 
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_interleaving_guard_blocks_other_instructions),
         cmocka_unit_test(test_interleaving_allows_expected_instruction),
+        cmocka_unit_test(test_deferred_response_is_allowed),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

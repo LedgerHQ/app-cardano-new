@@ -18,6 +18,7 @@
 #include "securityPolicy.h"
 #include "addressUtils/bip44.h"
 #include "app_mem_utils.h"
+#include "app_context.h"
 
 #define TEST_HEAP_SIZE (23 * 1024)
 static uint8_t test_heap[TEST_HEAP_SIZE];
@@ -25,6 +26,24 @@ static uint8_t test_heap[TEST_HEAP_SIZE];
 // P1 constants now defined in dispatcher.h (included via globals.h)
 
 static uint16_t g_last_sw = 0;
+
+static inline void run_sign_tx_apdu(buffer_t *buffer, uint8_t p1) {
+    apdu_response_begin(INS_SIGN_TX);
+    handler_sign_tx(buffer, p1);
+    apdu_response_assert_sent_or_deferred();
+}
+
+static inline void run_sign_tx_witness_apdu(buffer_t *buffer) {
+    apdu_response_begin(INS_SIGN_TX);
+    handler_sign_tx_witness(buffer);
+    apdu_response_assert_sent_or_deferred();
+}
+
+static inline void run_get_public_key_apdu(buffer_t *buffer) {
+    apdu_response_begin(INS_GET_PUBLIC_KEY);
+    handler_get_public_key(buffer);
+    apdu_response_assert_sent_or_deferred();
+}
 
 static void reset_context(void) {
     memset(&G_context, 0, sizeof(G_context));
@@ -152,7 +171,7 @@ static void test_tx_init_invalid_signing_mode(void **state) {
         .size = init_len,
         .offset = 0,
     };
-    handler_sign_tx(&init_buf, P1_TX_INIT);
+    run_sign_tx_apdu(&init_buf, P1_TX_INIT);
     assert_int_equal(g_last_sw, SWO_WRONG_TX_INIT_APDU_DATA);
 }
 
@@ -198,7 +217,7 @@ static void test_tx_init_trailing_bytes(void **state) {
         .size = init_len + 1,
         .offset = 0,
     };
-    handler_sign_tx(&init_buf, P1_TX_INIT);
+    run_sign_tx_apdu(&init_buf, P1_TX_INIT);
     assert_int_equal(g_last_sw, SWO_WRONG_DATA_LENGTH);
 }
 
@@ -215,7 +234,7 @@ static void test_tx_init_rejected_when_active(void **state) {
         .size = 0,
         .offset = 0,
     };
-    handler_sign_tx(&init_buf, P1_TX_INIT);
+    run_sign_tx_apdu(&init_buf, P1_TX_INIT);
     assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
 }
 
@@ -249,7 +268,7 @@ static void test_witness_trailing_bytes(void **state) {
         .size = path_len + 1,
         .offset = 0,
     };
-    handler_sign_tx_witness(&witness_buf);
+    run_sign_tx_witness_apdu(&witness_buf);
     assert_int_equal(g_last_sw, SWO_WRONG_DATA_LENGTH);
 }
 
@@ -276,7 +295,7 @@ static void test_get_public_key_trailing_bytes(void **state) {
         .size = path_len + 1,
         .offset = 0,
     };
-    handler_get_public_key(&pubkey_buf);
+    run_get_public_key_apdu(&pubkey_buf);
     assert_int_equal(g_last_sw, SWO_WRONG_DATA_LENGTH);
 }
 
@@ -315,7 +334,7 @@ static void test_handler_state_during_active_request(void **state) {
     G_context.state.tx_state = TX_STATE_NONE;
     G_context.tx_info.current_witness = 0;
     G_context.tx_info.num_witnesses = 1;
-    handler_sign_tx_witness(&witness_buf);
+    run_sign_tx_witness_apdu(&witness_buf);
     assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
 }
 
@@ -369,7 +388,7 @@ static void test_opcert_signing_during_tx_signing(void **state) {
     };
 
     // This should fail because tx signing is already active
-    handler_sign_tx(&init_buf, P1_TX_INIT);
+    run_sign_tx_apdu(&init_buf, P1_TX_INIT);
     assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
 }
 
@@ -403,7 +422,7 @@ static void test_witness_extraction_with_wrong_state(void **state) {
         .size = path_len,
         .offset = 0,
     };
-    handler_sign_tx_witness(&witness_buf);
+    run_sign_tx_witness_apdu(&witness_buf);
     // Should fail because tx_state is not APPROVED
     assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
 }
@@ -450,7 +469,7 @@ static void test_multiple_reinit_attempts(void **state) {
         .size = init_len,
         .offset = 0,
     };
-    handler_sign_tx(&init_buf, P1_TX_INIT);
+    run_sign_tx_apdu(&init_buf, P1_TX_INIT);
     assert_int_equal(g_last_sw, SWO_SUCCESS);
 
     // Second init attempt should fail
@@ -459,7 +478,7 @@ static void test_multiple_reinit_attempts(void **state) {
     G_context.state.tx_state = TX_STATE_NONE;
 
     init_buf.offset = 0;
-    handler_sign_tx(&init_buf, P1_TX_INIT);
+    run_sign_tx_apdu(&init_buf, P1_TX_INIT);
     assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
 }
 

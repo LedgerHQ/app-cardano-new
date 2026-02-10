@@ -17,6 +17,7 @@
 #include "securityPolicy/securityPolicy.h"
 #include "tx_utils.h"
 #include "tx_parse.h"
+#include "app_context.h"
 #include "hexUtils.h"
 #include "utils/utils.h"
 #include "ui_display_tx.h"
@@ -71,7 +72,7 @@ void ui_menu_main(void) {
 
 void ui_display_transaction(void) {
     // auto-approve to allow witness policies to be exercised
-    io_send_response_pointer(G_context.tx_info.tx_hash, sizeof(G_context.tx_info.tx_hash), SWO_SUCCESS);
+    apdu_response_send_data(G_context.tx_info.tx_hash, sizeof(G_context.tx_info.tx_hash), SWO_SUCCESS);
     G_context.state.tx_state = TX_STATE_APPROVED;
     G_context.tx_info.current_witness = 0;
     tx_review_cleanup();
@@ -88,6 +89,7 @@ void ui_display_witness(const bip44_path_t *path,
     (void) path;
     (void) policy;
     (void) warnings;
+    finalize_witness(true);
 }
 
 // ----------------------------------------------------------------------
@@ -97,6 +99,18 @@ void ui_display_witness(const bip44_path_t *path,
 static void reset_context(void) {
     memset(&G_context, 0, sizeof(G_context));
     g_last_sw = 0;
+}
+
+static inline void run_sign_tx_apdu(buffer_t *buffer, uint8_t p1) {
+    apdu_response_begin(INS_SIGN_TX);
+    handler_sign_tx(buffer, p1);
+    apdu_response_assert_sent_or_deferred();
+}
+
+static inline void run_sign_tx_witness_apdu(buffer_t *buffer) {
+    apdu_response_begin(INS_SIGN_TX);
+    handler_sign_tx_witness(buffer);
+    apdu_response_assert_sent_or_deferred();
 }
 
 typedef struct {
@@ -139,7 +153,7 @@ static void run_sign_tx_reject_fixture(const sign_tx_reject_fixture_t *fixture) 
     };
 
     g_last_sw = 0;
-    handler_sign_tx(&init_buf, P1_TX_INIT);
+    run_sign_tx_apdu(&init_buf, P1_TX_INIT);
 
     if (fixture->expect_init_failure) {
         assert_int_equal(g_last_sw, fixture->expected_sw);
@@ -164,9 +178,9 @@ static void run_sign_tx_reject_fixture(const sign_tx_reject_fixture_t *fixture) 
         };
         g_last_sw = 0;
         if (segment->p1 == P1_TX_SIGN_WITNESS) {
-            handler_sign_tx_witness(&chunk_buf);
+            run_sign_tx_witness_apdu(&chunk_buf);
         } else {
-            handler_sign_tx(&chunk_buf, segment->p1);
+            run_sign_tx_apdu(&chunk_buf, segment->p1);
         }
         if (g_last_sw != 0) {
             if (g_last_sw == SWO_SUCCESS) {

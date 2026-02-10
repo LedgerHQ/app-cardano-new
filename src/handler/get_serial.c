@@ -49,5 +49,5 @@ void handler_get_serial(const buffer_t *data_buffer) {
     // Verify we got the expected length
     LEDGER_ASSERT(len == SERIAL_LENGTH, "Bad serial len");
 
-    io_send_response_pointer(serial, SERIAL_LENGTH, SWO_SUCCESS);
+    apdu_response_send_data(serial, SERIAL_LENGTH, SWO_SUCCESS);
 }

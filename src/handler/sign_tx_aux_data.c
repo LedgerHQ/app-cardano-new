@@ -227,8 +227,8 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
     if (aux_data->ui_streaming.on) {
         LEDGER_ASSERT(aux_data->remaining_delegations > 0, "Streaming without delegations");
         aux_data->state = CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE;
+        apdu_response_deferred();
         ui_cvote_aux_data_streaming_show_initial_page(aux_data);
-        // waiting for NBGL callback cvote_aux_data_review_streaming_continue, so no APDU sent
         return;
     }
 
@@ -243,12 +243,12 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
         LEDGER_ASSERT(aux_data->remaining_delegations == 0, "Delegations remaining");
         G_context.state.tx_state = TX_STATE_CHUNKS;
         TRACE("CVote AUX_DATA ready for UI confirmation");
+        apdu_response_deferred();
         ui_cvote_aux_data_show_non_streaming_final_review(aux_data);
-        // waiting for NBGL callback cvote_aux_data_review_choice, so no APDU sent
         return;
     }
 
-    io_send_sw(SWO_SUCCESS);
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 static void handler_tx_aux_data_delegation(buffer_t *cdata) {
@@ -318,12 +318,12 @@ static void handler_tx_aux_data_delegation(buffer_t *cdata) {
         }
 
         if (chunk_complete) {
-            // Waiting for NBGL callback cvote_aux_data_review_streaming_continue, so no APDU sent
+            apdu_response_deferred();
             return;
         }
 
         // Chunk not complete, more delegations expected
-        io_send_sw(SWO_SUCCESS);
+        apdu_response_send_sw(SWO_SUCCESS);
     } else {
         // Non-streaming mode
         ui_cvote_aux_data_add_delegation_non_streaming(aux_data,
@@ -337,13 +337,13 @@ static void handler_tx_aux_data_delegation(buffer_t *cdata) {
             // Transition back to CHUNKS state - ready to receive transaction data
             G_context.state.tx_state = TX_STATE_CHUNKS;
 
+            apdu_response_deferred();
             ui_cvote_aux_data_show_non_streaming_final_review(aux_data);
-            // waiting for NBGL callback cvote_aux_data_review_choice, so no APDU sent
             return;
         }
 
         // More delegations expected, send success
-        io_send_sw(SWO_SUCCESS);
+        apdu_response_send_sw(SWO_SUCCESS);
     }
 }
 
@@ -408,7 +408,7 @@ void finalize_sign_tx_aux_data(bool confirmed) {
     G_context.tx_info.cvote_aux_data.state = CVOTE_AUX_DATA_STATE_NONE;
     G_context.state.tx_state = TX_STATE_CHUNKS;
 
-    io_send_response_pointer(G_context.tx_info.transaction.auxDataHash,
+    apdu_response_send_data(G_context.tx_info.transaction.auxDataHash,
                              AUX_DATA_HASH_LENGTH,
                              SWO_SUCCESS);
 }

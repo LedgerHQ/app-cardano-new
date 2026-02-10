@@ -102,7 +102,7 @@ static void handle_sign_cvote_init_apdu(buffer_t *cdata) {
         G_context.state.cvote_state = VOTECAST_STATE_CHUNK;
     }
 
-    io_send_sw(SWO_SUCCESS);
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 // ============================== VOTECAST CHUNK ==============================
@@ -142,7 +142,7 @@ static void handle_sign_cvote_chunk_apdu(buffer_t *cdata) {
     }
 
     TRACE("Remaining votecast bytes = %u", ctx->remaining_votecast_bytes);
-    io_send_sw(SWO_SUCCESS);
+    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 // ============================== CONFIRM ==============================
@@ -181,8 +181,8 @@ static void handle_sign_cvote_confirm_apdu(buffer_t *cdata) {
     }
 
     // Display UI (signature will be computed after user confirms)
+    apdu_response_deferred();
     ui_display_cvote_confirm(policy);
-    // waiting for NBGL callback cvote_review_choice, so no APDU sent
 }
 
 void finalize_sign_cvote(bool confirmed) {
@@ -222,7 +222,7 @@ void finalize_sign_cvote(bool confirmed) {
 
     LEDGER_ASSERT(buffer_written_size(&response) == SIZEOF(response_buffer), "Response size mismatch");
 
-    io_send_response_pointer(response_buffer, SIZEOF(response_buffer), SWO_SUCCESS);
+    apdu_response_send_data(response_buffer, SIZEOF(response_buffer), SWO_SUCCESS);
     reset_app_context();
 }
 

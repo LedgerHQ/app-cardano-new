@@ -84,6 +84,7 @@ static command_e req_type_to_instruction(request_type_e req_type) {
 
 void apdu_dispatcher(const command_t *cmd) {
     LEDGER_ASSERT(cmd != NULL, "NULL cmd");
+    apdu_response_begin(cmd->ins);
     TRACE("G_context.req_type: %d", G_context.req_type);
 
     // Log the appropriate state based on request type
@@ -112,6 +113,7 @@ void apdu_dispatcher(const command_t *cmd) {
                   G_context.req_type,
                   cmd->ins);
             send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+            apdu_response_assert_sent_or_deferred();
             return;
         }
         TRACE("Same instruction continuing: ins=%d", cmd->ins);
@@ -135,6 +137,7 @@ void apdu_dispatcher(const command_t *cmd) {
 
     if (cmd->cla != CLA) {
         send_swo_and_reset(SWO_INVALID_CLA);
+        apdu_response_assert_sent_or_deferred();
         return;
     }
 
@@ -145,43 +148,52 @@ void apdu_dispatcher(const command_t *cmd) {
         case INS_GET_SERIAL:
             if (cmd->p1 != P1_UNUSED || cmd->p2 != P2_UNUSED) {
                 send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                apdu_response_assert_sent_or_deferred();
                 return;
             }
 
             handler_get_serial(&data_buffer);
+            apdu_response_assert_sent_or_deferred();
             return;
 
         case INS_GET_VERSION:
             if (cmd->p1 != P1_UNUSED || cmd->p2 != P2_UNUSED) {
                 send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                apdu_response_assert_sent_or_deferred();
                 return;
             }
 
             handler_get_version(&data_buffer);
+            apdu_response_assert_sent_or_deferred();
             return;
 
         case INS_GET_APP_NAME:
             if (cmd->p1 != P1_UNUSED || cmd->p2 != P2_UNUSED) {
                 send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                apdu_response_assert_sent_or_deferred();
                 return;
             }
 
             handler_get_app_name(&data_buffer);
+            apdu_response_assert_sent_or_deferred();
             return;
 
         case INS_GET_PUBLIC_KEY: {
             if (cmd->p1 != P1_UNUSED || cmd->p2 != P2_UNUSED) {
                 send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                apdu_response_assert_sent_or_deferred();
                 return;
             }
 
             handler_get_public_key(&data_buffer);
+            apdu_response_assert_sent_or_deferred();
             return;
         }
 
         case INS_DERIVE_ADDRESS:
             if (cmd->p2 != P2_UNUSED) {
                 send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                apdu_response_assert_sent_or_deferred();
                 return;
             }
 
@@ -190,9 +202,11 @@ void apdu_dispatcher(const command_t *cmd) {
                 case P1_ADDRESS_RETURN:
                 case P1_ADDRESS_DISPLAY:
                     handler_derive_address(&data_buffer, cmd->p1);
+                    apdu_response_assert_sent_or_deferred();
                     return;
                 default:
                     send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                    apdu_response_assert_sent_or_deferred();
                     return;
             }
 
@@ -200,6 +214,7 @@ void apdu_dispatcher(const command_t *cmd) {
             // P2 must be unused for native script hash APDUs
             if (cmd->p2 != P2_UNUSED) {
                 send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                apdu_response_assert_sent_or_deferred();
                 return;
             }
             // Validate and dispatch based on P1 value
@@ -208,9 +223,11 @@ void apdu_dispatcher(const command_t *cmd) {
                 case P1_NATIVE_SCRIPT_ADD_SIMPLE:
                 case P1_NATIVE_SCRIPT_FINISH:
                     handler_derive_native_script_hash(&data_buffer, cmd->p1);
+                    apdu_response_assert_sent_or_deferred();
                     return;
                 default:
                     send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                    apdu_response_assert_sent_or_deferred();
                     return;
             }
 
@@ -219,10 +236,12 @@ void apdu_dispatcher(const command_t *cmd) {
             if (cmd->p1 == P1_TX_SIGN_WITNESS) {
                 if (cmd->p2 != P2_UNUSED) {
                     send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                    apdu_response_assert_sent_or_deferred();
                     return;
                 }
 
                 handler_sign_tx_witness(&data_buffer);
+                apdu_response_assert_sent_or_deferred();
                 return;
             }
 
@@ -230,10 +249,12 @@ void apdu_dispatcher(const command_t *cmd) {
             if (cmd->p1 == P1_TX_AUX_DATA) {
                 if (cmd->p2 != P2_AUX_DATA_INIT && cmd->p2 != P2_AUX_DATA_DELEGATION) {
                     send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                    apdu_response_assert_sent_or_deferred();
                     return;
                 }
 
                 handler_sign_tx_aux_data(&data_buffer, cmd->p2);
+                apdu_response_assert_sent_or_deferred();
                 return;
             }
 
@@ -242,19 +263,23 @@ void apdu_dispatcher(const command_t *cmd) {
             // P2 must be unused for transaction body APDUs
             if (cmd->p2 != P2_UNUSED) {
                 send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                apdu_response_assert_sent_or_deferred();
                 return;
             }
 
             handler_sign_tx(&data_buffer, cmd->p1);
+            apdu_response_assert_sent_or_deferred();
             return;
 
         case INS_SIGN_OPCERT: {
             if (cmd->p1 != P1_UNUSED || cmd->p2 != P2_UNUSED) {
                 send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                apdu_response_assert_sent_or_deferred();
                 return;
             }
 
             handler_sign_opcert(&data_buffer);
+            apdu_response_assert_sent_or_deferred();
             return;
         }
 
@@ -262,6 +287,7 @@ void apdu_dispatcher(const command_t *cmd) {
             // P2 must be unused for cvote
             if (cmd->p2 != P2_UNUSED) {
                 send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                apdu_response_assert_sent_or_deferred();
                 return;
             }
             // Validate and dispatch based on P1 value
@@ -270,9 +296,11 @@ void apdu_dispatcher(const command_t *cmd) {
                 case P1_CVOTE_CHUNK:
                 case P1_CVOTE_CONFIRM:
                     handler_sign_cvote(&data_buffer, cmd->p1);
+                    apdu_response_assert_sent_or_deferred();
                     return;
                 default:
                     send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                    apdu_response_assert_sent_or_deferred();
                     return;
             }
         }
@@ -281,6 +309,7 @@ void apdu_dispatcher(const command_t *cmd) {
             // P2 must be unused for message signing
             if (cmd->p2 != P2_UNUSED) {
                 send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                apdu_response_assert_sent_or_deferred();
                 return;
             }
             // Validate and dispatch based on P1 value
@@ -289,9 +318,11 @@ void apdu_dispatcher(const command_t *cmd) {
                 case P1_SIGN_MSG_CHUNK:
                 case P1_SIGN_MSG_CONFIRM:
                     handler_sign_msg(&data_buffer, cmd->p1);
+                    apdu_response_assert_sent_or_deferred();
                     return;
                 default:
                     send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                    apdu_response_assert_sent_or_deferred();
                     return;
             }
         }
@@ -301,16 +332,19 @@ void apdu_dispatcher(const command_t *cmd) {
             // Debug-only command to set app settings for testing
             if (cmd->p1 != P1_UNUSED || cmd->p2 != P2_UNUSED) {
                 send_swo_and_reset(SWO_INCORRECT_P1_P2);
+                apdu_response_assert_sent_or_deferred();
                 return;
             }
 
             handler_debug_set_settings(&data_buffer);
+            apdu_response_assert_sent_or_deferred();
             return;
         }
 #endif
 
         default:
             send_swo_and_reset(SWO_INVALID_INS);
+            apdu_response_assert_sent_or_deferred();
             return;
     }
 }

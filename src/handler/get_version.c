@@ -45,7 +45,7 @@ void handler_get_version(const buffer_t *data_buffer) {
     _Static_assert(PATCH_VERSION >= 0 && PATCH_VERSION <= UINT8_MAX,
                    "PATCH version must be between 0 and 255!");
 
-    io_send_response_pointer(
+    apdu_response_send_data(
         (const uint8_t *) &(uint8_t[APPVERSION_LEN]){(uint8_t) MAJOR_VERSION,
                                                      (uint8_t) MINOR_VERSION,
                                                      (uint8_t) PATCH_VERSION},
