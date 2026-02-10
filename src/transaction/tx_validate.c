@@ -2043,7 +2043,8 @@ int tx_validate_and_compute_hash(tx_ui_plan_t* plan) {
             LEDGER_ASSERT(false, "Unknown tx hash display policy");
     }
 
-    // TODO: implement streaming review flow and remove this assertion once we're handling overflow.
+    // TODO: until transaction UI streaming is implemented,
+    // TODO: exceeding UI_PAIR_LIMIT is treated as an unsupported internal invariant breach.
     LEDGER_ASSERT(plan->pair_count <= UI_PAIR_LIMIT, "Need streaming UI fallback");
 
     return SWO_SUCCESS;

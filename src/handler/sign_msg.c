@@ -39,6 +39,15 @@
 #include "nbgl_use_case.h"
 #include "app_mem_utils.h"
 
+// Overhead for Sig_structure CBOR encoding:
+// - 1 byte array(4) header
+// - 1 + 10 bytes "Signature1" text
+// - up to 3 + (MAX_ADDRESS_LENGTH + 32) bytes protectedHeader as bstr
+// - 1 byte empty external_aad
+// - up to 5 bytes payload bstr length header
+// Conservative fixed overhead (covers all CBOR tokens + protectedHeader).
+#define SIG_STRUCTURE_OVERHEAD 256
+
 static bool ensure_sign_msg_state(sign_msg_state_e required_state) {
     if (G_context.state.sign_msg_state != required_state) {
         TRACE("Rejecting sign_msg command in state %d (expected %d)",
@@ -47,6 +56,37 @@ static bool ensure_sign_msg_state(sign_msg_state_e required_state) {
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return false;
     }
+    return true;
+}
+
+static bool is_msg_length_valid_for_sign_msg_init(uint32_t message_length,
+                                                  bool hash_payload,
+                                                  bool is_ascii) {
+    // msgBuffer allocation in INIT uses uint16_t-sized APP_MEM_CALLOC.
+    if (message_length > UINT16_MAX) {
+        return false;
+    }
+
+    // Non-ASCII messages are displayed as hex in UI:
+    // max_len = 2 * message_length + 1.
+    // UI formatting allocates max_len + UI_BUFFER_SAFETY_MARGIN where safety margin is 2 bytes.
+    // Keep this guard in sync with UI_ADD_FORMAT2 allocation constraints.
+    if (!is_ascii) {
+        const size_t max_hex_display_length = 2 * (size_t) message_length + 1;
+        const size_t ui_hex_display_allocation_size = max_hex_display_length + 2;
+        if (ui_hex_display_allocation_size > UINT16_MAX) {
+            return false;
+        }
+    }
+
+    // Non-hashed payload uses raw message bytes as Sig_structure payload.
+    if (!hash_payload) {
+        const size_t sig_structure_max_size = SIG_STRUCTURE_OVERHEAD + (size_t) message_length;
+        if (sig_structure_max_size > UINT16_MAX) {
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -62,12 +102,19 @@ void signMsg_handle_init(buffer_t *cdata) {
     // [4 bytes: msgLength] [BIP44 path] [1 byte: hashPayload] [1 byte: isAscii]
     // [1 byte: addressFieldType] [address_params if addressFieldType == ADDRESS]
 
-    if (!buffer_read_u32(cdata, &ctx->msgLength, BE)) {
+    uint32_t msg_length_from_wire = 0;
+    if (!buffer_read_u32(cdata, &msg_length_from_wire, BE)) {
         TRACE("Failed to read msgLength");
         send_swo_and_reset(SWO_SIGN_MSG_PARSING_FAIL_MSG_LENGTH);
         return;
     }
-    TRACE("Message length = %u", ctx->msgLength);
+    TRACE("Message length = %u", msg_length_from_wire);
+    if (msg_length_from_wire > UINT16_MAX) {
+        TRACE("Message length out of uint16 range: %u", msg_length_from_wire);
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return;
+    }
+    ctx->msgLength = (uint16_t) msg_length_from_wire;
 
     if (!buffer_read_bip44_path(cdata, &ctx->signingPath)) {
         TRACE("Failed to read signing path");
@@ -125,6 +172,15 @@ void signMsg_handle_init(buffer_t *cdata) {
             return;
     }
 
+    if (!is_msg_length_valid_for_sign_msg_init(ctx->msgLength, ctx->hashPayload, ctx->isAscii)) {
+        TRACE("Message length rejected at INIT: len=%u hashPayload=%d isAscii=%d",
+              ctx->msgLength,
+              ctx->hashPayload,
+              ctx->isAscii);
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return;
+    }
+
     // Verify APDU fully consumed
     if (buffer_can_read(cdata, 1)) {
         TRACE("INIT APDU not fully consumed");
@@ -160,11 +216,6 @@ void signMsg_handle_init(buffer_t *cdata) {
 
     // Dynamically allocate message buffer to accumulate all chunks
     if (ctx->msgLength > 0) {
-        if (ctx->msgLength > UINT16_MAX) {
-            TRACE("Message too large for allocation: %u", ctx->msgLength);
-            send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-            return;
-        }
         if (!APP_MEM_CALLOC((void **) &ctx->msgBuffer, (uint16_t) ctx->msgLength)) {
             TRACE("Failed to allocate %u byte message buffer", ctx->msgLength);
             send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
@@ -340,15 +391,6 @@ static size_t _createProtectedHeader(sign_msg_ctx_t *ctx,
 
     return protectedHeaderSize;
 }
-
-// Overhead for Sig_structure CBOR encoding:
-// - 1 byte array(4) header
-// - 1 + 10 bytes "Signature1" text
-// - up to 3 + (MAX_ADDRESS_LENGTH + 32) bytes protectedHeader as bstr
-// - 1 byte empty external_aad
-// - up to 5 bytes payload bstr length header
-// Conservative fixed overhead (covers all CBOR tokens + protectedHeader):
-#define SIG_STRUCTURE_OVERHEAD 256
 
 // Helper: build Sig_structure and sign it
 // Returns false on allocation failures, true on success.

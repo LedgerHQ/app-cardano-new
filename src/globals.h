@@ -210,13 +210,13 @@ typedef struct {
     bool isAscii;
     bool hashPayload;
 
-    uint32_t msgLength;
-    uint32_t remainingBytes;
+    uint16_t msgLength;
+    uint16_t remainingBytes;
 
     // Dynamically allocated buffer accumulating all received chunks.
     // Allocated in INIT with size msgLength via APP_MEM_CALLOC.
     uint8_t *msgBuffer;
-    uint32_t msgBufferSize;
+    uint16_t msgBufferSize;
 
     blake2b_224_context_t msgHashCtx;
     uint8_t msgHash[CIP8_MSG_HASH_LENGTH];
