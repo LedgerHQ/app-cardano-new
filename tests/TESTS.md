@@ -1,7 +1,7 @@
-The `application_client` directory contains the minimalist python client for crafting and sending APDUs to the application.
-It is extracted in order to be able to be used in both tests setup.
+# Tests Overview
 
-The `standalone` directory contains the standalone tests of the application, when it is started from the Dashboard of the device (main use case).
-
-The `swap` directory contains the tests of the **SWAP** feature of the application, when it is started by the Exchange application through the `os_lib_call` API.
-This setup needs the Exchange and Ethereum binaries compiled.
+- `application_client/`: minimal shared Python APDU client used by test suites.
+- `standalone/`: ragger standalone tests (dashboard app mode). See `standalone/README.md`.
+- `swap/`: swap/library-mode tests (Exchange-driven). See `swap/README.md`.
+- Unit tests are in `../unit-tests/`. See `../unit-tests/README.md`.
+- Fuzzing docs are in `../fuzzing/FUZZING.md`.

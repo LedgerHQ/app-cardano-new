@@ -79,6 +79,21 @@ Detailed data flow and transaction-specific logic are documented in [tx.md](tx.m
 
 The app uses three complementary testing approaches for comprehensive validation:
 
+### Testing Docs
+
+- `unit-tests/README.md` for unit-test build/run/fixtures.
+- `tests/standalone/README.md` for ragger standalone tests.
+- `tests/swap/README.md` for swap/library-mode tests.
+- `fuzzing/FUZZING.md` for fuzzing harnesses and build/run.
+
+### Practical Workflow
+
+- When C code changes, run unit tests.
+- Run ragger and swap tests only when explicitly requested (they are slower and UI-dependent).
+- The primary app build is done via the VSCode Ledger plugin and is not automated here; use the unit-tests build path as a compile-health proxy.
+- After unit tests pass, verify fuzzing build as an additional compile-health check.
+- Compilation warnings are treated as failures to be fixed.
+
 ### 4.1. Functional Tests (`tests/standalone/`)
 
 Interactive tests using the `ragger` framework that simulate the device UI and verify end-to-end behavior. These test actual transactions, user interactions, and device responses.
@@ -118,7 +133,7 @@ pytest -v --tb=short tests/standalone/test_sign_tx.py --device stax
 - `--display`: Enables the Speculos graphical window to see the device screen during the test. By default, tests run in headless mode.
 - `--no-nav`: Disables automatic navigation. This is useful when you want to manually interact with the device via Speculos or debug a specific UI state.
 
-See [../tests/TESTS.md](../tests/TESTS.md) for more details.
+See [../tests/standalone/README.md](../tests/standalone/README.md) for setup and usage.
 
 ### 4.2. Unit Tests (`unit-tests/`)
 
@@ -128,7 +143,7 @@ C unit tests using the `cmocka` framework that test individual modules in isolat
 - **Fixtures**: `test_sign_tx_fixtures_*.h` contain large test vectors for different transaction eras. These fixtures are managed and regenerated using scripts.
 - **Mocking**: `test_sign_tx_common.h` and other mock files provide mocks for IO and UI, allowing logic to be tested in isolation.
 
-See [../unit-tests/UNIT-TESTS.md](../unit-tests/UNIT-TESTS.md) for setup, usage, and fixture management.
+See [../unit-tests/README.md](../unit-tests/README.md) for setup, usage, and fixture management.
 
 ### 4.3. Fuzzing (`fuzzing/`)
 

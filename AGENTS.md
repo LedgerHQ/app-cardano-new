@@ -46,7 +46,14 @@ For detailed analysis, see:
 - **Reference Apps:** `../../ledger/app-ethereum` (eth app) and `../../ledger/app-bitcoin-new` (btc app) for modern coding patterns.
 - **Client Libraries:** `../ledgerjs-cardano-shelley` and `../cardano-hw-interop-lib`.
 - **Testing:**
-    - [unit-tests/UNIT-TESTS.md](unit-tests/UNIT-TESTS.md): Setup and mock data management.
+    - [unit-tests/README.md](unit-tests/README.md): Unit tests setup, build, and fixture management.
+    - [tests/standalone/README.md](tests/standalone/README.md): Ragger standalone tests.
+    - [tests/swap/README.md](tests/swap/README.md): Swap/library-mode tests.
     - [fuzzing/FUZZING.md](fuzzing/FUZZING.md): Fuzzing harnesses and usage.
-    - [tests/standalone](tests/standalone): ragger UI tests, using [Python client](tests/application_client), see [tests/TESTS.md](tests/TESTS.md).
 
+## Testing Workflow
+- **When C code is modified:** run unit tests.
+- **Do not run ragger tests or swap tests unless explicitly requested.**
+- **Build process note:** the primary app build uses the VSCode Ledger plugin and is not automated here; use the unit-tests build process as a practical proxy for compile health.
+- **After unit tests pass:** check fuzzing build as an additional compile-health gate.
+- **Compilation warnings are not acceptable:** treat warnings as issues to fix.

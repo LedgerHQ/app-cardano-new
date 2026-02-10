@@ -1,39 +1,75 @@
-# Standalone Functional Tests
+# Standalone Functional Tests (Ragger)
 
-This directory contains the **standalone functional test suite** for the Ledger application.  
-It is intended to validate the application’s behavior in a **generic context**, when launched directly from the device's dashboard.
-
-These tests are written using:
-
-- [pytest](https://docs.pytest.org/en/stable/) — Python testing framework
-- [Ragger](https://github.com/LedgerHQ/ragger) — Ledger's open-source testing library for simulating device interactions
-
----
+This directory contains the standalone functional test suite for the app (launched from dashboard, not library mode).
 
 ## Purpose
 
-The standalone test suite ensures that:
+- Validate APDU flows end-to-end with device UI interaction.
+- Verify navigation and confirmation behavior.
+- Check user-visible behavior for normal and reject paths.
 
-- The application launches correctly from the dashboard
-- The main menu and navigation behave as expected
-- Core commands (e.g., `GET_VERSION`, `GET_PUBLIC_KEY`, `SIGN_TX`) function properly
-- User approval flows work under normal conditions
-- Errors are correctly reported and handled
+## Quick Start
 
-## Build Notes
+Install dependencies:
 
-- `test_sign_tx.py` uses a DEBUG-only settings APDU to toggle expert mode between runs. For production builds, remove those debug APDU calls and run only the standard UI flow.
+```bash
+pip install --extra-index-url https://test.pypi.org/simple/ -r requirements.txt
+sudo apt-get update && sudo apt-get install qemu-user-static
+```
 
----
+Run a simple test on Speculos:
 
-## Directory Structure
+```bash
+pytest -v --tb=short --device nanox --display
+```
+
+## Important Notes
+
+- `test_sign_tx.py` uses a DEBUG-only settings APDU to toggle expert mode between runs.
+- In this repository workflow, ragger tests are run only on explicit request.
+- Build the app first; if automated app build is unavailable, use the unit-tests build flow as a compile-health proxy.
+
+## Useful Options
+
+```text
+-v
+-s
+-k <pattern>
+--tb=short
+--device <nanox|nanosp|stax|flex|all>
+--backend <speculos>
+--display
+--golden_run
+--no-nav
+--timeout <seconds>
+--log_apdu_file <path>
+```
+
+Examples:
+
+```bash
+# Run one test by name fragment
+pytest tests/standalone/test_sign_tx.py --device nanosp -k "Byron" -v --tb=short
+
+# Debug navigation manually in Speculos (no automatic navigation)
+pytest tests/standalone/test_sign_tx.py --device nanosp --display --no-nav
+
+# Regenerate snapshots after intended UI changes
+pytest tests/standalone/test_sign_tx.py --device stax --golden_run
+
+# Increase timeout for slower scenarios (or faster timeout for tests with failing navigation)
+pytest tests/standalone/test_sign_tx.py --device nanosp --timeout 20
+```
+
+## Directory Layout
 
 ```text
 standalone/
-├── conftest.py              # Pytest fixtures and device setup
-├── test_*.py                # Functional test cases
-├── snapshots/               # Ragger UI snapshots
-├── snapshots-tmp/           # Temporary snapshot diffs (not tracked in git)
-├── requirements.txt         # Python dependencies
-└── utils.py                 # Local test helpers
+├── conftest.py
+├── input_files/
+├── test_*.py
+├── snapshots/
+├── snapshots-tmp/
+├── requirements.txt
+└── utils.py
 ```
