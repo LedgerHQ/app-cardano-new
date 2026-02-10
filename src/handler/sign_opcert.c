@@ -76,7 +76,6 @@ void handler_sign_opcert(buffer_t *cdata) {
 
     // Check security policy
     warning_bits_t warnings = 0;
-    warning_bits_init(&warnings);
     security_policy_t policy = policyForSignOpCert(&opcert->poolColdKeyPath, &warnings);
     TRACE("Security policy: %d", policy);
     if (policy == POLICY_DENY) {

@@ -21,6 +21,15 @@ typedef struct {
     const char* description;
 } warning_definition_t;
 
+static inline warning_bits_t warning_bits_mask_for(warning_bit_e bit) {
+    return ((warning_bits_t) 1) << bit;
+}
+
+static inline warning_bits_t warning_bits_except_mask(warning_bits_t warnings,
+                                                      warning_bits_t excluded_mask) {
+    return warnings & ~excluded_mask;
+}
+
 security_policy_t policyForDerivePrivateKey(const bip44_path_t* path);
 
 security_policy_t policyForGetExtendedPublicKey(const bip44_path_t* path, warning_bits_t* warnings);

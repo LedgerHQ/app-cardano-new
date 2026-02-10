@@ -62,8 +62,7 @@ void handler_get_public_key(buffer_t *cdata) {
     BIP44_PRINTF(&G_context.pk_info.path);
 
     // Check security policy
-    warning_bits_t warnings = {0};
-    warning_bits_init(&warnings);
+    warning_bits_t warnings = 0;
     security_policy_t policy = policyForGetExtendedPublicKey(&G_context.pk_info.path, &warnings);
     TRACE("Security policy: %d", (int) policy);
     if (policy == POLICY_DENY) {

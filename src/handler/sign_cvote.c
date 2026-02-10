@@ -172,7 +172,6 @@ static void handle_sign_cvote_confirm_apdu(buffer_t *cdata) {
 
     // Check security policy for witness path
     warning_bits_t warnings = 0;
-    warning_bits_init(&warnings);
     security_policy_t policy = policyForSignCVoteWitness(&ctx->witness_path, &warnings);
     TRACE("Policy: %d", (int) policy);
     if (policy == POLICY_DENY) {

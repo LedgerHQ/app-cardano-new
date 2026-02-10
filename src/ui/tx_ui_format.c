@@ -206,7 +206,8 @@ static void add_ui_and_free_outputs(transaction_t *tx) {
             tx->protocolMagic,
             &output_warnings
         );
-        LEDGER_ASSERT((output_warnings & ~G_context.tx_info.warning_bits) == 0,
+        LEDGER_ASSERT(warning_bits_except_mask(output_warnings,
+                                               G_context.tx_info.warning_bits) == 0,
                       "Output warnings mismatch");
         LEDGER_ASSERT(policy != POLICY_DENY, "Output denied during UI");
         if (policy == POLICY_SHOW) {
@@ -296,7 +297,8 @@ static void add_ui_and_free_fee(transaction_t *tx) {
     security_policy_t fee_policy =
         policyForSignTxFee(tx->txSigningMode, tx->fee, &fee_warnings);
     LEDGER_ASSERT(fee_policy != POLICY_DENY, "Fee security policy denied during UI");
-    LEDGER_ASSERT((fee_warnings & ~G_context.tx_info.warning_bits) == 0,
+    LEDGER_ASSERT(warning_bits_except_mask(fee_warnings,
+                                           G_context.tx_info.warning_bits) == 0,
                   "Fee warnings mismatch between validation and UI");
     if (fee_policy == POLICY_SHOW) {
         START_COUNT();
@@ -576,13 +578,13 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
         }
     } else {
         warning_bits_t metadata_warnings = 0;
-        warning_bits_init(&metadata_warnings);
         security_policy_t metadata_policy =
             policyForSignTxStakePoolRegistrationMetadata(
                 &certificate->poolRegistration.poolMetadata,
                 &metadata_warnings
             );
-        LEDGER_ASSERT((metadata_warnings & ~G_context.tx_info.warning_bits) == 0,
+        LEDGER_ASSERT(warning_bits_except_mask(metadata_warnings,
+                                               G_context.tx_info.warning_bits) == 0,
                       "Pool metadata warnings mismatch between validation and UI");
         LEDGER_ASSERT(metadata_policy != POLICY_DENY, "Metadata security policy denied");
 
@@ -756,7 +758,8 @@ static void add_ui_and_free_withdrawals(transaction_t *tx) {
             &withdrawal_node->withdrawal.stakeCredential,
             &withdrawal_warnings
         );
-        LEDGER_ASSERT((withdrawal_warnings & ~G_context.tx_info.warning_bits) == 0,
+        LEDGER_ASSERT(warning_bits_except_mask(withdrawal_warnings,
+                                               G_context.tx_info.warning_bits) == 0,
                       "Withdrawal warnings mismatch");
 
         LEDGER_ASSERT(policy != POLICY_DENY, "Withdrawal denied during UI");

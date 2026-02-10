@@ -70,8 +70,8 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handle_tx_init_apdu");
     G_context.tx_info.raw_tx = NULL;
     G_context.tx_info.raw_tx_len = 0;
-    warning_bits_init(&G_context.tx_info.warning_bits);
-    warning_bits_init(&G_context.tx_info.cvote_warning_bits);
+    G_context.tx_info.warning_bits = 0;
+    G_context.tx_info.cvote_warning_bits = 0;
     G_context.tx_info.planned_ui_pairs = 0;
     explicit_bzero(&G_context.tx_info.single_account_data, sizeof(single_account_data_t));
     explicit_bzero(&G_context.tx_info.pool_owner_path, sizeof(bip44_path_t));
@@ -696,8 +696,7 @@ void handler_sign_tx_witness(buffer_t *cdata) {
             break;
     }
 
-    warning_bits_t witness_warnings = {0};
-    warning_bits_init(&witness_warnings);
+    warning_bits_t witness_warnings = 0;
 #ifdef HAVE_SWAP
     const bool isSwap = G_called_from_swap;
 #else

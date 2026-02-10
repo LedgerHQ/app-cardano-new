@@ -163,7 +163,6 @@ static bool deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
 
         // Check security policy for device-owned keys
         warning_bits_t warnings = 0;
-        warning_bits_init(&warnings);
         policy = policyForDeriveNativeScriptHashDevicePubkey(&ctx->scriptContent.pubkeyPath, &warnings);
     } else {
         TRACE("Credential type - third-party key: use provided hash");

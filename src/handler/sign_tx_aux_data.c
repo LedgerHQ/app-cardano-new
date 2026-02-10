@@ -49,10 +49,19 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
     // 1. Vote key (only checked in CIP15 or CIP36 with no delegations)
     security_policy_t vote_key_policy;
     if (aux_data->remaining_delegations == 0) {
+        warning_bits_t vote_key_warnings = 0;
         vote_key_policy = policyForCVoteRegistrationVoteKey(
             &aux_data->vote_credential,
             aux_data->format,
-            &G_context.tx_info.cvote_warning_bits);
+            &vote_key_warnings);
+        LEDGER_ASSERT(warning_bits_except_mask(vote_key_warnings,
+                                               warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)) == 0,
+                      "Unexpected vote-key warning bits in init");
+        // CVote vote-key unusual derivation warning is rendered inline as a dedicated UI pair.
+        // Keep all other vote-key warnings in the global warning set for advanced review.
+        G_context.tx_info.cvote_warning_bits |=
+            warning_bits_except_mask(vote_key_warnings,
+                                     warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH));
     } else {
         vote_key_policy = POLICY_HIDE;  // Not used with delegations
     }
@@ -259,10 +268,19 @@ static void handler_tx_aux_data_delegation(buffer_t *cdata) {
     // Validate delegation credential against security policy BEFORE adding to hash
     // Per CIP-36, delegation vote keys can be device-owned (KEY_PATH) or third-party (KEY)
     // Device-owned paths must be valid CVote key paths (m/1694'/1815'/account'/0/address_index)
+    warning_bits_t delegation_warnings = 0;
     security_policy_t delegation_policy =
         policyForCVoteRegistrationVoteKey(&delegation_credential,
                                           aux_data->format,
-                                          &G_context.tx_info.cvote_warning_bits);
+                                          &delegation_warnings);
+    LEDGER_ASSERT(warning_bits_except_mask(delegation_warnings,
+                                           warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)) == 0,
+                  "Unexpected vote-key warning bits in delegation");
+    // CVote vote-key unusual derivation warning is rendered inline as a dedicated UI pair.
+    // Keep all other vote-key warnings in the global warning set for advanced review.
+    G_context.tx_info.cvote_warning_bits |=
+        warning_bits_except_mask(delegation_warnings,
+                                 warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH));
     if (delegation_policy == POLICY_DENY) {
         TRACE("CVote AUX_DATA delegation: vote key policy denied");
         send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);

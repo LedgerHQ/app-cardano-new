@@ -65,7 +65,6 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
             LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED,
                           "handleReturn called in wrong state: %d", G_context.state.derive_address_state);
             warning_bits_t warnings = 0;
-            warning_bits_init(&warnings);
             security_policy_t policy = policyForReturnDeriveAddress(&ctx->address_params, &warnings);
             TRACE("Policy: %d", (int) policy);
             if (policy == POLICY_DENY) {
@@ -85,7 +84,6 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
             LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED,
                           "handleDisplay called in wrong state: %d", G_context.state.derive_address_state);
             warning_bits_t warnings = 0;
-            warning_bits_init(&warnings);
             security_policy_t policy = policyForShowDeriveAddress(&ctx->address_params, &warnings);
             TRACE("Policy: %d", (int) policy);
             if (policy == POLICY_DENY) {

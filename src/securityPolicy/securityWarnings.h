@@ -55,10 +55,6 @@ static inline const char* warning_bit_name(warning_bit_e bit) {
     return name;
 }
 
-static inline void warning_bits_init(warning_bits_t* warnings) {
-    *warnings = 0;
-}
-
 #ifdef DEBUG
 static inline void _trace_warning_bit(warning_bit_e bit) {
     switch (bit) {

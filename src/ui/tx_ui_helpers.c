@@ -269,10 +269,10 @@ void addAnchorUIPairs(const anchor_t *anchor) {
     }
 
     warning_bits_t anchor_warnings = 0;
-    warning_bits_init(&anchor_warnings);
     security_policy_t anchor_policy = policyForSignTxAnchor(anchor, &anchor_warnings);
     LEDGER_ASSERT(anchor_policy != POLICY_DENY, "Anchor security policy denied");
-    LEDGER_ASSERT((anchor_warnings & ~G_context.tx_info.warning_bits) == 0,
+    LEDGER_ASSERT(warning_bits_except_mask(anchor_warnings,
+                                           G_context.tx_info.warning_bits) == 0,
                   "Anchor warnings mismatch between validation and UI");
 
     START_COUNT();
