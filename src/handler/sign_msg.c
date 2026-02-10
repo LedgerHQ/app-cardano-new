@@ -489,10 +489,14 @@ void finalize_sign_msg(bool confirmed) {
     uint8_t response_buffer[ED25519_SIGNATURE_LENGTH + PUBLIC_KEY_LENGTH + 4 + MAX_ADDRESS_LENGTH];
     write_buffer_t response = buffer_init_write(response_buffer, SIZEOF(response_buffer));
 
-    buffer_write_bytes(&response, ctx->signature, SIZEOF(ctx->signature));
-    buffer_write_bytes(&response, ctx->witnessKey, SIZEOF(ctx->witnessKey));
-    buffer_write_u32(&response, ctx->addressFieldSize, BE);
-    buffer_write_bytes(&response, ctx->addressField, ctx->addressFieldSize);
+    LEDGER_ASSERT(buffer_write_bytes(&response, ctx->signature, SIZEOF(ctx->signature)),
+                  "Failed to write signature to response");
+    LEDGER_ASSERT(buffer_write_bytes(&response, ctx->witnessKey, SIZEOF(ctx->witnessKey)),
+                  "Failed to write witness key to response");
+    LEDGER_ASSERT(buffer_write_u32(&response, ctx->addressFieldSize, BE),
+                  "Failed to write address field size to response");
+    LEDGER_ASSERT(buffer_write_bytes(&response, ctx->addressField, ctx->addressFieldSize),
+                  "Failed to write address field to response");
 
     const size_t response_size = buffer_written_size(&response);
     TRACE("Response size = %u", response_size);
