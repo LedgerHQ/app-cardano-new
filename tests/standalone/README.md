@@ -41,6 +41,7 @@ pytest -v --tb=short --device nanox --display
 --display
 --golden_run
 --no-nav
+--collect-only -q
 --timeout <seconds>
 --log_apdu_file <path>
 ```
@@ -59,6 +60,9 @@ pytest tests/standalone/test_sign_tx.py --device stax --golden_run
 
 # Increase timeout for slower scenarios (or faster timeout for tests with failing navigation)
 pytest tests/standalone/test_sign_tx.py --device nanosp --timeout 20
+
+# Only list selected tests without executing them
+pytest --device nanosp -k "menu or opcert" --collect-only -q
 ```
 
 ## Directory Layout

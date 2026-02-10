@@ -478,7 +478,6 @@ class SignTxTestCase:
     has_warning: bool = False
     has_aux_warning: bool = False  # Warnings in auxiliary data (CVote) review
     # TODO: Debug navigation
-    nano_skip: Optional[bool] = False
     works_in_ragger: bool = True  # Whether this test works in ragger (seed-dependent tests may not)
 
 
@@ -1820,7 +1819,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e882581d6114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241a006ca79302182a030a",
-        nano_skip=True,
     ),
     SignTxTestCase(
         name="Sign_tx_with_pointer_change_address",
@@ -2581,7 +2579,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048284108200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11382727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef84108200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a113f6",
-        nano_skip=True,
     ),
     SignTxTestCase(
         name="Sign_tx_with_DREP_DEREGISTRATION_certificate",
@@ -2605,7 +2602,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048183118200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a113",
-        nano_skip=True,
     ),
     SignTxTestCase(
         name="Sign_tx_with_DREP_UPDATE_certificates",
@@ -3421,7 +3417,6 @@ testsCatalystRegistration: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820d19f7cb4d48a6ae8d370c64d2a42fca1f61d6b2cf3d0c0c02801541811338deb",
         has_aux_warning=True,
-        nano_skip=True,
     ),
 ]
 
@@ -3448,7 +3443,6 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a0758201999b3bb9102b585c42616e40cf1290518d788f967ab4b3329dcb712ac933da0",
         has_aux_warning=True,
-        nano_skip=True,
     ),
     SignTxTestCase(
         name="Sign_tx_with_CIP36_registration_with_vote_key_path",
@@ -3472,7 +3466,6 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820d05698c555a117014a3b360a66931ec43bf18e2aa16560fc99dbd92dd7f6f6540807",
-        nano_skip=True,
     ),
     SignTxTestCase(
         name="Sign_tx_with_CIP36_registration_with_unusual_vote_key_path",
@@ -3497,7 +3490,6 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582077be323b8df4c6aa1bf2f180112f85ffe8d7f658bc8febdf7dbd5a07453a31cb0807",
         has_aux_warning=True,
-        nano_skip=True,
     ),
     SignTxTestCase(
         name="Sign_tx_with_CIP36_registration_with_thirdparty_payment_address",
@@ -3521,7 +3513,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582042e408fb03986a958be9e2cca01623a31e23f86f31172a5a9b84acdfce6f0e750807",
-        nano_skip=True,
+        has_aux_warning=True,
     ),
     SignTxTestCase(
         name="Sign_tx_with_CIP36_registration_with_voting_purpose",
@@ -3579,7 +3571,6 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820f0e62a047ef597d9fb1bfefb9cd3f4e77558c33510ca552484ee8b5c77bbdf650807",
-        nano_skip=True,
     ),
     SignTxTestCase(
         name="Sign_tx_with_CIP36_registration_with_many_delegations_streaming",
@@ -3611,7 +3602,6 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582092cc23c0ff5952db0243e891ef08d1360ed9a33c6970156dfe945dd4df284d980807",
-        nano_skip=True,
     ),  # TODO needs navigation fix
 ]
 
@@ -3654,7 +3644,6 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e1a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a",
-        nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
@@ -3664,7 +3653,6 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a007838625820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a",
-        nano_skip=True,
         has_warning=True,
     ),
     # tests the path where a warning about missing datum hash is shown on Ledger
@@ -3679,7 +3667,6 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a0078386202182a030a",
-        nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
@@ -3695,7 +3682,6 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0d818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc000f01",
-        nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
@@ -3711,7 +3697,6 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000f01",
-        nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
@@ -3733,7 +3718,6 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0e82581cfea6646c67fb467f8a5425e9c752e1e262b0420ba4b638f39514049a581c14c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11240f01",
-        nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
@@ -3786,7 +3770,6 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a048183028200581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb497305a1581de129fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd1903e80f01",
-        nano_skip=True,
         has_warning=True,
     ),
 ]
@@ -3804,7 +3787,6 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a00783862028201d818565579657420616e6f746865722063686f636f6c61746502182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-        nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
@@ -3819,7 +3801,6 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca793028201d8185901e012b8240c5470b47c159597b6f71d78c7fc99d1d8d911cb19b8f50211938ef361a22d30cd8f6354ec50e99a7d3cf3e06797ed4af3d358e01b2a957caa4010da328720b9fbe7a3a6d10209a13d2eb11933eb1bf2ab02713117e421b6dcc66297c41b95ad32d3457a0e6b44d8482385f311465964c3daff226acfb7bbda47011f1a6531db30e5b5977143c48f8b8eb739487f87dc13896f58529cfb48e415fc6123e708cdc3cb15cc1900ecf88c5fc9ff66d8ad6dae18c79e4a3c392a0df4d16ffa3e370f4dad8d8e9d171c5656bb317c78a2711057e7ae0beb1dc66ba01aa69d0c0db244e6742d7758ce8da00dfed6225d4aed4b01c42a0352688ed5803f3fd64873f11355305d9db309f4a2a6673cc408a06b8827a5edef7b0fd8742627fb8aa102a084b7db72fcb5c3d1bf437e2a936b738902a9c0258b462b9f2e9befd2c6bcfc036143bb34342b9124888a5b29fa5d60909c81319f034c11542b05ca3ff6c64c7642ff1e2b25fb60dc9bb6f5c914dd4149f31896955d4d204d822deddc46f852115a479edf7521cdf4ce596805875011855158fd303c33a2a7916a9cb7acaaf5aeca7e6efb75960e9597cd845bd9a93610bf1ab47ab0de943e8a96e26a24c4996f7b07fad437829fee5bc3496192608d4c04ac642cdec7bdbb8a948ad1d43402182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-        nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
@@ -3834,7 +3815,6 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a00783862028201d8185901305579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f7468657220637468657202182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-        nano_skip=True,
         has_warning=True,
     ),
     # reference script
@@ -3849,7 +3829,6 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a4005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18803d81854deadbeefdeadbeefdeadbeefdeadbeefdeadbeef02182a030a",
-        nano_skip=True,
     ),
     SignTxTestCase(
         name="Sign_tx_with_datum_hash_and_ref_script_240_B_in_output_in_Babbage_format",
@@ -3862,7 +3841,6 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a4005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18803d81858f04784392787cc567ac21d7b5346a4a89ae112b7ff7610e402284042aa4e6efca7956a53c3f5cb3ec6745f5e21150f2a77bd71a2adc3f8b9539e9bab41934b477f60a8b302584d1a619ed9b178b5ce6fcad31adc0d6fc17023ede474c09f29fdbfb290a5b30b5240fae5de71168036201772c0d272ae90220181f9bf8c3198e79fc2ae32b076abf4d0e10d3166923ce56994b25c00909e3faab8ef1358c136cd3b197488efc883a7c6cfa3ac63ca9cebc62121c6e22f594420c2abd54e78282adec20ee7dba0e6de65554adb8ee8314f23f86cf7cf0906d4b6c643966baf6c54240c19f4131374e298f38a626a4ad63e6102182a030a",
-        nano_skip=True,
     ),
     SignTxTestCase(
         name="Sign_tx_with_datum_hash_and_script_reference_304_B_in_output_as_map",
@@ -3875,7 +3853,6 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a4005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18803d818590130deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeaddeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeaddeadbeef02182a030a",
-        nano_skip=True,
     ),
     # various output combinations
     SignTxTestCase(
@@ -3889,7 +3866,6 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a007838620282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a",
-        nano_skip=True,
     ),
     SignTxTestCase(
         name="Sign_tx_with_a_complex_multiasset_output_Babbage",
@@ -3906,7 +3882,6 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000182a200583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff01821904d2a2581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a34003581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209015820000000000000000000000000000000000000000000000000000000000000000002581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a248456c204e69c3b16f1904d24874652474436f696e1a00783862a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0807",
-        nano_skip=True,
     ),
     # reference inputs
     SignTxTestCase(
@@ -3958,7 +3933,6 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7108258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca793",
-        nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
@@ -3975,7 +3949,6 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a1487564247542686911182f",
-        nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
@@ -3993,7 +3966,6 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a800818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a1487564247542686911182f1105",
-        nano_skip=True,
         has_warning=False,
     ),
     SignTxTestCase(
@@ -4047,7 +4019,6 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad848400190bb84436e44b9af68400190bb84436e44b9b500178ff2483e3a2330a34c4a5e576c2078301190bb86d616161612e626262622e636f6d82026d616161612e626262632e636f6d82782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
-        nano_skip=True,
     ),
     SignTxTestCase(
         name="Sign_tx_Witness_valid_single_path_owner_ipv4_relay_pool_registration",
@@ -4061,7 +4032,6 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c818400190bb84436e44b9af682782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
-        nano_skip=True,
     ),
     SignTxTestCase(
         name="Sign_tx_Witness_valid_multiple_mixed_owners_ipv4_relay_pool_registration",
@@ -4075,7 +4045,6 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad818400190bb84436e44b9af682782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
-        nano_skip=True,
     ),
     SignTxTestCase(
         name="Sign_tx_Witness_valid_multiple_mixed_owners_mixed_ipv4_single_host_relays_pool_registration",
@@ -4091,7 +4060,6 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad828400190bb84436e44b9af68301190bb86d616161612e626262622e636f6d82782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
-        nano_skip=True,
     ),
     SignTxTestCase(
         name="Sign_tx_Witness_valid_multiple_mixed_owners_mixed_ipv4_ipv6_relays_pool_registration",
@@ -4105,7 +4073,6 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad828400190fa04436e44b9af68400190bb84436e44b9b500178ff2483e3a2330a34c4a5e576c20782782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
-        nano_skip=True,
     ),
     SignTxTestCase(
         name="Sign_tx_Witness_valid_single_path_owner_no_relays_pool_registration",
@@ -4119,7 +4086,6 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8082782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
-        nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
@@ -4134,7 +4100,6 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c818400190bb84436e44b9af6f6",
-        nano_skip=True,
     ),
     SignTxTestCase(
         name="Sign_tx_Witness_pool_registration_without_outputs",
@@ -4148,7 +4113,6 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad848400190bb84436e44b9af68400190bb84436e44b9b500178ff2483e3a2330a34c4a5e576c2078301190bb86d616161612e626262622e636f6d82026d616161612e626262632e636f6d82782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
-        nano_skip=True,
     ),
 ]
 
@@ -4165,7 +4129,6 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad808082782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
-        nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
@@ -4182,7 +4145,6 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1eef1689a3970b7880dcf3cb4ca9f22453b3833824fea34105117c84081581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad8082782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
-        nano_skip=True,
         has_warning=True,
     ),
     SignTxTestCase(
@@ -4199,7 +4161,6 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad581c0bd5d796f5e54866a14300ec2a18d706f7461b8f0502cc2a182bc88d848400190bb84436e44b9af68400190bb84436e44b9b500178ff2483e3a2330a34c4a5e576c2078301190bb86d616161612e626262622e636f6d82026d616161612e626262632e636f6d82782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
-        nano_skip=True,
     ),
 ]
 
@@ -4244,7 +4205,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_INVALID_PROTOCOL_MAGIC,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Invalid_network_id",
@@ -4283,7 +4243,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_INVALID_NETWORK_ID,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_operator_too_few_certificates",
@@ -4322,7 +4281,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_owner_too_few_certificates",
@@ -4361,7 +4319,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_operator_too_many_certificates",
@@ -4439,7 +4396,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_owner_too_many_certificates",
@@ -4529,7 +4485,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_operator_too_many_withdrawals",
@@ -4597,7 +4552,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_owner_too_many_withdrawals",
@@ -4671,7 +4625,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_operator_mint_included",
@@ -4736,7 +4689,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_owner_mint_included",
@@ -4807,7 +4759,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Ordinary_tx_collateral_inputs_included",
@@ -4853,7 +4804,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Multisig_tx_collateral_inputs_included",
@@ -4899,7 +4849,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_operator_collateral_inputs_included",
@@ -4965,7 +4914,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_owner_collateral_inputs_included",
@@ -5037,7 +4985,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_operator_required_signers_included",
@@ -5101,7 +5048,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_owner_required_signers_included",
@@ -5171,7 +5117,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Ordinary_tx_collateral_output_included",
@@ -5222,7 +5167,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Multisig_tx_collateral_output_included",
@@ -5273,7 +5217,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_operator_collateral_output_included",
@@ -5344,7 +5287,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_owner_collateral_output_included",
@@ -5421,7 +5363,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Ordinary_tx_total_collateral_included",
@@ -5461,7 +5402,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Multisig_tx_total_collateral_included",
@@ -5501,7 +5441,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_operator_total_collateral_included",
@@ -5561,7 +5500,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_owner_total_collateral_included",
@@ -5627,7 +5565,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Ordinary_tx_reference_inputs_included",
@@ -5673,7 +5610,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Multisig_tx_reference_inputs_included",
@@ -5719,7 +5655,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_operator_reference_inputs_included",
@@ -5785,7 +5720,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_owner_reference_inputs_included",
@@ -5857,7 +5791,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
 ]
 
@@ -5908,7 +5841,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Reward_address_script",
@@ -5956,7 +5888,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="No_spending_path_Ordinary_Tx_1",
@@ -6004,7 +5935,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="No_spending_path_Ordinary_Tx_2",
@@ -6052,7 +5982,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_operator_spending_choice_not_path",
@@ -6100,7 +6029,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Multisig_unconditionally",
@@ -6148,7 +6076,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_owner_unconditionally",
@@ -6196,7 +6123,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
 ]
 
@@ -6258,7 +6184,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_in_Multisig_Tx",
@@ -6317,7 +6242,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_registration_in_Plutus_Tx",
@@ -6376,7 +6300,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_retirement_in_Multisig_Tx",
@@ -6426,7 +6349,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Stake_registration_in_Pool_Registration_Operator",
@@ -6475,7 +6397,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Stake_registration_in_Pool_Registration_Owner",
@@ -6518,7 +6439,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Stake_deregistration_in_Pool_Registration_Operator",
@@ -6567,7 +6487,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Stake_deregistration_in_Pool_Registration_Owner",
@@ -6610,7 +6529,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Stake_delegation_in_Pool_Registration_Operator",
@@ -6660,7 +6578,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Stake_delegation_in_Pool_Registration_Owner",
@@ -6704,7 +6621,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_retirement_in_Pool_Registration_Operator",
@@ -6754,7 +6670,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Pool_retirement_in_Pool_Registration_Owner",
@@ -6798,7 +6713,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
 ]
 
@@ -6850,7 +6764,6 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Non_staking_path_in_Ordinary_Tx",
@@ -6899,7 +6812,6 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Path_in_Multisig_Tx",
@@ -6948,7 +6860,6 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
 ]
 
@@ -7001,7 +6912,6 @@ certificateStakePoolRetirementRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
 ]
 
@@ -7046,7 +6956,6 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_WITHDRAWALS,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Seed-dependent: canonical ordering depends on derived reward addresses
     ),
     SignTxTestCase(
@@ -7095,7 +7004,6 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Non_staking_path_as_stake_credential_in_Ordinary_Tx",
@@ -7143,7 +7051,6 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Staking_path_as_stake_credential_in_Multisig_Tx",
@@ -7191,7 +7098,6 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Non_staking_path_as_stake_credential_in_Plutus_Tx",
@@ -7239,7 +7145,6 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
 ]
 
@@ -7281,7 +7186,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection happens after tx validation
     ),
     SignTxTestCase(
@@ -7321,7 +7225,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -7361,7 +7264,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -7401,7 +7303,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -7441,7 +7342,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -7481,7 +7381,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -7521,7 +7420,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -7561,7 +7459,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -7601,7 +7498,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -7641,7 +7537,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -7681,7 +7576,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -7721,7 +7615,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -7761,7 +7654,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -7827,7 +7719,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -7893,7 +7784,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -7959,7 +7849,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -8025,7 +7914,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -8091,7 +7979,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -8157,7 +8044,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -8217,7 +8103,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -8277,7 +8162,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -8337,7 +8221,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -8397,7 +8280,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -8457,7 +8339,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
 ]
@@ -8521,7 +8402,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -8571,7 +8451,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -8620,7 +8499,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -8691,7 +8569,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Change_output_and_withdrawal_account_mismatch",
@@ -8760,7 +8637,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Stake_deregistration_certificate_and_withdrawal_account_mismatch",
@@ -8818,7 +8694,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Byron_to_Shelley_transfer_input_account_mismatch",
@@ -8862,7 +8737,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -8911,7 +8785,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
 ]
@@ -8969,7 +8842,6 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Collateral_output_with_inline_datum",
@@ -9024,7 +8896,6 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Collateral_output_with_reference_script",
@@ -9076,7 +8947,6 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
 ]
 
@@ -9127,7 +8997,6 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Reject_tx_where_asset_groups_are_not_unique",
@@ -9175,7 +9044,6 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_alphabetical",
@@ -9222,7 +9090,6 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_length",
@@ -9269,7 +9136,6 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Reject_tx_where_tokens_within_an_asset_group_are_not_unique",
@@ -9316,7 +9182,6 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_policies",
@@ -9358,7 +9223,6 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_asset_names",
@@ -9396,7 +9260,6 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
 ]
 
@@ -9496,7 +9359,6 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -9594,7 +9456,6 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
         works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
@@ -9688,7 +9549,6 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Invalid_numerator_denominator_relationship",
@@ -9762,7 +9622,6 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
 ]
 
@@ -9839,7 +9698,6 @@ stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="Hash_sent_in_for_Pool_Registration_Operator_Tx",
@@ -9914,7 +9772,6 @@ stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
 ]
 
@@ -9991,7 +9848,6 @@ stakePoolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
 ]
 
@@ -10077,7 +9933,6 @@ invalidCertificates: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="pool_registration_with_no_owners",
@@ -10147,7 +10002,6 @@ invalidCertificates: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
 ]
 
@@ -10225,7 +10079,6 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="pool_metadata_invalid_url",
@@ -10300,7 +10153,6 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="pool_metadata_invalid_hash_length",
@@ -10375,7 +10227,6 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="pool_metadata_missing_hash",
@@ -10450,7 +10301,6 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
 ]
 
@@ -10528,7 +10378,6 @@ invalidRelayTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
     SignTxTestCase(
         name="MultiHost_missing_dns",
@@ -10601,6 +10450,5 @@ invalidRelayTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         has_warning=False,
         has_aux_warning=False,
-        nano_skip=False,
     ),
 ]

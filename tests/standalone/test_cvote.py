@@ -8,8 +8,8 @@ This module provides Ragger tests for CIP36 check
 import pytest
 
 from ragger.backend import BackendInterface
-from ledgered.devices import Device, DeviceType
-from ragger.navigator import Navigator, NavInsID
+from ledgered.devices import Device
+from ragger.navigator import Navigator
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
 from application_client.status_words import StatusWord
@@ -101,17 +101,11 @@ def _cvote_confirm(device: Device,
     """
 
     with client.sign_cip36_confirm_async(testCase):
-        if device.is_nano:
-            # TODO: Add proper navigation for nano devices
-            pass
-        else:
-            # Stax/Flex: Use scenario navigator for advanced review with blind signing warning
-            test_name = f"{testCase.name}/cvote_confirm"
-            scenario_navigator.review_approve_with_warning(test_name=test_name, custom_screen_text="Sign vote")
+        test_name = f"{testCase.name}/cvote_confirm"
+        scenario_navigator.review_approve_with_warning(test_name=test_name, custom_screen_text="Sign vote")
     # Check the status (Asynchronous)
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS
     votecast_hash, signature = unpack_sign_cip36_confirm_response(response.data)
 
     return votecast_hash, signature
-

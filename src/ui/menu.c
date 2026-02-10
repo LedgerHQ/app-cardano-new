@@ -69,6 +69,7 @@ static void controls_callback(int token, uint8_t index, int page) {
     UNUSED(index);
 
     initSettingPage = page;
+    TRACE("Menu controls_callback token=%d page=%d", token, page);
 
     uint8_t switch_value;
     switch (token) {
@@ -98,21 +99,32 @@ void ui_menu_main(void) {
     // Initialize switches data
     switches[EXPERT_MODE_ID].initState = (nbgl_state_t) N_storage.expert_mode_enabled;
     switches[EXPERT_MODE_ID].text = "Expert mode";
+#ifdef SCREEN_SIZE_WALLET
     switches[EXPERT_MODE_ID].subText = "Show expert details in transactions";
+#else
+    switches[EXPERT_MODE_ID].subText = "Show expert\ntx details";
+#endif
     switches[EXPERT_MODE_ID].token = EXPERT_MODE_TOKEN;
 #ifdef HAVE_PIEZO_SOUND
     switches[EXPERT_MODE_ID].tuneId = TUNE_TAP_CASUAL;
 #endif
 
     switches[SILENT_PUBKEY_EXPORT_ID].initState = (nbgl_state_t) N_storage.silent_pubkey_export_enabled;
+#ifdef SCREEN_SIZE_WALLET
     switches[SILENT_PUBKEY_EXPORT_ID].text = "Silent public key export";
     switches[SILENT_PUBKEY_EXPORT_ID].subText = "Allow usual public keys to be exported silently";
+#else
+    switches[SILENT_PUBKEY_EXPORT_ID].text = "Silent pubkeys";
+    switches[SILENT_PUBKEY_EXPORT_ID].subText = "Allow silent export\nof usual pubkeys";
+#endif
     switches[SILENT_PUBKEY_EXPORT_ID].token = SILENT_PUBKEY_EXPORT_TOKEN;
 #ifdef HAVE_PIEZO_SOUND
     switches[SILENT_PUBKEY_EXPORT_ID].tuneId = TUNE_TAP_CASUAL;
 #endif
 
-    TRACE("Calling nbgl_useCaseHomeAndSettings(APPNAME)");
+    TRACE("Calling nbgl_useCaseHomeAndSettings(APPNAME), expert=%d, silentPubkey=%d",
+          N_storage.expert_mode_enabled,
+          N_storage.silent_pubkey_export_enabled);
     nbgl_useCaseHomeAndSettings(APPNAME,
                                 &ICON_APP_HOME,
                                 NULL,

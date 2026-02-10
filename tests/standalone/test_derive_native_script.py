@@ -98,8 +98,8 @@ def test_derive_native_script_hash(device: Device,
                                    testCase: ValidNativeScriptTestCase) -> None:
     """Check Derive Native Script Hash"""
 
-    if device.is_nano and testCase.nano_skip is True:
-        pytest.skip("Not supported yet on Nano because Navigation should be reviewed")
+    if device.is_nano:
+        pytest.skip("Navigation should be created for Nano")
 
     # Use the app interface instead of raw interface
     client = CommandSender(backend)

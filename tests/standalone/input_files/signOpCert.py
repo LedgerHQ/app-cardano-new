@@ -21,7 +21,7 @@ class operationalCertificate:
 class OpCertTestCase:
     name: str
     opCert: operationalCertificate
-    warning: bool = False
+    has_warning: bool = False
     ledgerjs_name: Optional[str] = None
 
 
@@ -46,6 +46,6 @@ opCertTestCases = [
             42,
             "m/1853'/1815'/0'/1000001'",
         ),
-        warning=True,
+        has_warning=True,
     ),
 ]

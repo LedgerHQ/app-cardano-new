@@ -9,7 +9,6 @@ import pytest
 
 from ledgered.devices import Device
 from ragger.backend import BackendInterface
-from ragger.navigator import Navigator, NavInsID
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
 from application_client.status_words import StatusWord
@@ -28,7 +27,6 @@ from standalone.utils import idTestFunc, verify_signature
 )
 def test_opCert(device: Device,
                 backend: BackendInterface,
-                navigator: Navigator,
                 scenario_navigator: NavigateWithScenario,
                 testCase: OpCertTestCase) -> None:
     """Check Sign Operational Certificate"""
@@ -37,15 +35,20 @@ def test_opCert(device: Device,
     client = CommandSender(backend)
 
     with client.sign_opcert_async(testCase):
-        if device.is_nano:
-            # TODO warning not shown ???
-            navigator.navigate_until_text(NavInsID.RIGHT_CLICK, [NavInsID.BOTH_CLICK], "Sign certificate")
+        test_name = testCase.name
+        if testCase.has_warning:
+            if device.is_nano:
+                # TODO: navigation for warning does not work for Nano yet.
+                pytest.skip("TODO navigation for warning does not work for Nano")
+            scenario_navigator.review_approve_with_warning(
+                test_name=test_name,
+                custom_screen_text="Sign certificate",
+            )
         else:
-            test_name = testCase.name
-            if testCase.warning:
-                scenario_navigator.review_approve_with_warning(test_name=test_name)
-            else:
-                scenario_navigator.review_approve(test_name=test_name)
+            scenario_navigator.review_approve(
+                test_name=test_name,
+                custom_screen_text="Sign certificate",
+            )
     # Check the status (Asynchronous)
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS

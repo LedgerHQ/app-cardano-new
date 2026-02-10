@@ -63,17 +63,10 @@ def test_derive_address(
     # Byron and Shelley with confirmation require navigation
     test_name = f"{testCase.name}-{mode}"
     with client.derive_address_async(p1_type, testCase):
-        if device.is_nano:
-            navigator.navigate_until_text(
-                NavInsID.RIGHT_CLICK,
-                [NavInsID.BOTH_CLICK],
-                "Confirm"
-            )
-        else:
-            scenario_navigator.address_review_approve(
-                test_name=test_name,
-                do_comparison=True
-            )
+        scenario_navigator.address_review_approve(
+            test_name=test_name,
+            do_comparison=True
+        )
 
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS
