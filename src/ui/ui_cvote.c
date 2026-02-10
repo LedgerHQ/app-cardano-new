@@ -63,18 +63,12 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy) {
     TRACE("=== ui_display_cvote_confirm START ===");
 
     // Check state
-    LEDGER_ASSERT(G_context.req_type == REQUEST_CVOTE,
-                  "ui_display_cvote_confirm called with wrong request type: %d",
-                  G_context.req_type);
-    LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STATE_CONFIRM,
-                  "ui_display_cvote_confirm called in wrong state: %d",
-                  G_context.state.cvote_state);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_CVOTE, "ui_display_cvote_confirm called with wrong request type: %d", G_context.req_type);
+    LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STATE_CONFIRM, "ui_display_cvote_confirm called in wrong state: %d", G_context.state.cvote_state);
 
     // Check policy
     TRACE("securityPolicy: %d", securityPolicy);
-    LEDGER_ASSERT(securityPolicy == POLICY_SHOW,
-                  "ui_display_cvote_confirm called with wrong security policy: %d",
-                  securityPolicy);
+    LEDGER_ASSERT(securityPolicy == POLICY_SHOW, "ui_display_cvote_confirm called with wrong security policy: %d", securityPolicy);
 
     // Build warnings - only use SDK's blind signing warning
     // TODO it says "drain your wallet" --- but maybe this does not apply to votecast signing?...

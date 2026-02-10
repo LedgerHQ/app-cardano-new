@@ -15,10 +15,8 @@
 
 static void prepareResponse() {
     // Verify we're at the expected state: parameters validated by policy
-    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS,
-                  "prepareResponse called without REQUEST_DERIVE_ADDRESS");
-    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_VALIDATED,
-                  "prepareResponse called in wrong state: %d", G_context.state.derive_address_state);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS, "Bad req_type");
+    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_VALIDATED, "Bad derive_address state");
 
     derive_address_ctx_t *ctx = &G_context.derive_address_info;
     ctx->address.length =
@@ -33,8 +31,7 @@ static void prepareResponse() {
 }
 
 void handler_derive_address(buffer_t *cdata, uint8_t p1) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_NONE,
-                  "derive_address called while another request active");
+    LEDGER_ASSERT(G_context.req_type == REQUEST_NONE, "Request already active");
 
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handler");
     TRACE_BUFFER_T(cdata);
@@ -62,8 +59,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
         case P1_ADDRESS_RETURN: {
             TRACE("ADDRESS_RETURN");
             ctx->should_export_address = true;
-            LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED,
-                          "handleReturn called in wrong state: %d", G_context.state.derive_address_state);
+            LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED, "Bad derive_address state");
             warning_bits_t warnings = 0;
             security_policy_t policy = policyForReturnDeriveAddress(&ctx->address_params, &warnings);
             TRACE("Policy: %d", (int) policy);
@@ -81,8 +77,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
         case P1_ADDRESS_DISPLAY: {
             TRACE("ADDRESS_DISPLAY");
             ctx->should_export_address = false;
-            LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED,
-                          "handleDisplay called in wrong state: %d", G_context.state.derive_address_state);
+            LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED, "Bad derive_address state");
             warning_bits_t warnings = 0;
             security_policy_t policy = policyForShowDeriveAddress(&ctx->address_params, &warnings);
             TRACE("Policy: %d", (int) policy);
@@ -106,10 +101,8 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
 }
 
 void finalize_derive_address(bool confirm) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS,
-                  "finalize_derive_address called without REQUEST_DERIVE_ADDRESS");
-    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED,
-                  "finalize_derive_address called in wrong state: %d", G_context.state.derive_address_state);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS, "Bad req_type");
+    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED, "Bad derive_address state");
 
     if (!confirm) {
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);

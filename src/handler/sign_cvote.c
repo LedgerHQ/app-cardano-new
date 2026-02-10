@@ -186,10 +186,8 @@ static void handle_sign_cvote_confirm_apdu(buffer_t *cdata) {
 }
 
 void finalize_sign_cvote(bool confirmed) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_CVOTE,
-                  "finalize_sign_cvote called without REQUEST_CVOTE");
-    LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STATE_CONFIRM,
-                  "finalize_sign_cvote called in wrong state: %d", G_context.state.cvote_state);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_CVOTE, "Bad req_type");
+    LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STATE_CONFIRM, "Bad cvote state");
 
     if (!confirmed) {
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
@@ -222,8 +220,7 @@ void finalize_sign_cvote(bool confirmed) {
     buffer_write_bytes(&response, votecast_hash, SIZEOF(votecast_hash));
     buffer_write_bytes(&response, ctx->witness_signature, SIZEOF(ctx->witness_signature));
 
-    LEDGER_ASSERT(buffer_written_size(&response) == SIZEOF(response_buffer),
-                  "Response buffer size mismatch");
+    LEDGER_ASSERT(buffer_written_size(&response) == SIZEOF(response_buffer), "Response size mismatch");
 
     io_send_response_pointer(response_buffer, SIZEOF(response_buffer), SWO_SUCCESS);
     reset_app_context();

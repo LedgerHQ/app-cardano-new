@@ -46,10 +46,8 @@ void addCredentialUIPairs(const ext_credential_t *credential,
     LEDGER_ASSERT(keyPathLabel != NULL && keyPathLabel[0] != '\0', "Invalid keyPathLabel");
     LEDGER_ASSERT(keyHashLabel != NULL && keyHashLabel[0] != '\0', "Invalid keyHashLabel");
     LEDGER_ASSERT(keyHashPrefix != NULL && keyHashPrefix[0] != '\0', "Invalid keyHashPrefix");
-    LEDGER_ASSERT(scriptHashLabel != NULL && scriptHashLabel[0] != '\0',
-                  "Invalid scriptHashLabel");
-    LEDGER_ASSERT(scriptHashPrefix != NULL && scriptHashPrefix[0] != '\0',
-                  "Invalid scriptHashPrefix");
+    LEDGER_ASSERT(scriptHashLabel != NULL && scriptHashLabel[0] != '\0', "Invalid scriptHashLabel");
+    LEDGER_ASSERT(scriptHashPrefix != NULL && scriptHashPrefix[0] != '\0', "Invalid scriptHashPrefix");
 
     START_COUNT();
     switch (credential->type) {
@@ -271,19 +269,11 @@ void addAnchorUIPairs(const anchor_t *anchor) {
     warning_bits_t anchor_warnings = 0;
     security_policy_t anchor_policy = policyForSignTxAnchor(anchor, &anchor_warnings);
     LEDGER_ASSERT(anchor_policy != POLICY_DENY, "Anchor security policy denied");
-    LEDGER_ASSERT(warning_bits_except_mask(anchor_warnings,
-                                           G_context.tx_info.warning_bits) == 0,
-                  "Anchor warnings mismatch between validation and UI");
+    LEDGER_ASSERT(warning_bits_except_mask(anchor_warnings, G_context.tx_info.warning_bits) == 0, "Anchor warnings mismatch between validation and UI");
 
     START_COUNT();
     if (anchor->urlLength == 0) {
-        LEDGER_ASSERT(
-            warning_bits_has(
-                G_context.tx_info.warning_bits,
-                WARNING_BIT_EMPTY_ANCHOR_URL
-            ),
-            "Empty anchor URL warning missing"
-        );
+        LEDGER_ASSERT( warning_bits_has( G_context.tx_info.warning_bits, WARNING_BIT_EMPTY_ANCHOR_URL ), "Empty anchor URL warning missing" );
         UI_ADD_STATIC(UI_STATIC_LABEL("Anchor URL"), UI_STATIC_LABEL("(empty)"));
     } else {
         UI_ADD_FORMAT2(UI_STATIC_LABEL("Anchor URL"),
@@ -396,8 +386,7 @@ void addCertificateUIPairs(const certificate_data_t* certificate_data) {
 
         case CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION: {
             addStakeCredentialUIPairs(&certificate_data->stakeCredential);
-            LEDGER_ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL,
-                          "Missing combined delegation pool hash");
+            LEDGER_ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL, "Missing combined delegation pool hash");
             UI_ADD_FORMAT3(UI_STATIC_LABEL("Pool"),
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
@@ -411,8 +400,7 @@ void addCertificateUIPairs(const certificate_data_t* certificate_data) {
 
         case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL: {
             addStakeCredentialUIPairs(&certificate_data->stakeCredential);
-            LEDGER_ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL,
-                          "Missing combined delegation pool hash");
+            LEDGER_ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL, "Missing combined delegation pool hash");
             UI_ADD_FORMAT3(UI_STATIC_LABEL("Pool"),
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
@@ -440,8 +428,7 @@ void addCertificateUIPairs(const certificate_data_t* certificate_data) {
 
         case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP: {
             addStakeCredentialUIPairs(&certificate_data->stakeCredential);
-            LEDGER_ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL,
-                          "Missing combined delegation pool hash");
+            LEDGER_ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL, "Missing combined delegation pool hash");
             UI_ADD_FORMAT3(UI_STATIC_LABEL("Pool"),
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
@@ -513,17 +500,14 @@ void addPaymentInfoUIPairs(const address_params_t* address_params) {
     START_COUNT();
     switch (determinePaymentChoice(address_params->type)) {
         case PAYMENT_PATH: {
-            LEDGER_ASSERT(addressParams_getPaymentPartType(address_params) == PAYMENT_PART_KEY_PATH,
-                          "Payment credential must be KEY_PATH");
+            LEDGER_ASSERT(addressParams_getPaymentPartType(address_params) == PAYMENT_PART_KEY_PATH, "Payment credential must be KEY_PATH");
             UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Payment key path", "Pay path"), MAX_BIP44_PATH_STRING_LENGTH, format_bip44_path, &address_params->paymentKeyPath);
             break;
         }
 
         case PAYMENT_SCRIPT_HASH: {
-            LEDGER_ASSERT(addressParams_getPaymentPartType(address_params) == PAYMENT_PART_SCRIPT_HASH,
-                          "Payment credential must be SCRIPT_HASH");
-            LEDGER_ASSERT(address_params->paymentScriptHash != NULL,
-                          "NULL payment script hash");
+            LEDGER_ASSERT(addressParams_getPaymentPartType(address_params) == PAYMENT_PART_SCRIPT_HASH, "Payment credential must be SCRIPT_HASH");
+            LEDGER_ASSERT(address_params->paymentScriptHash != NULL, "NULL payment script hash");
             UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Payment script hash", "Pay script"), MAX_BECH32_STRING_LENGTH, format_bech32, "script", address_params->paymentScriptHash, SCRIPT_HASH_LENGTH);
             break;
         }
@@ -550,32 +534,27 @@ void addStakingInfoUIPairs(const address_params_t* address_params) {
                     break;
 
                 default:
-                    ASSERT(false);
+                    LEDGER_ASSERT(false, "Invalid payment choice");
             }
             break;
         }
 
         case STAKING_PART_KEY_PATH: {
-            LEDGER_ASSERT(addressParams_getStakingPartType(address_params) == STAKING_PART_KEY_PATH,
-                          "Staking credential must be KEY_PATH");
+            LEDGER_ASSERT(addressParams_getStakingPartType(address_params) == STAKING_PART_KEY_PATH, "Staking credential must be KEY_PATH");
             UI_ADD_FORMAT1(UI_STATIC_LABEL("Staking path"), MAX_BIP44_PATH_STRING_LENGTH, format_bip44_path, &address_params->stakingKeyPath);
             break;
         }
 
         case STAKING_PART_KEY_HASH: {
-            LEDGER_ASSERT(addressParams_getStakingPartType(address_params) == STAKING_PART_KEY_HASH,
-                          "Staking credential must be KEY_HASH");
-            LEDGER_ASSERT(address_params->stakingKeyHash != NULL,
-                          "NULL staking key hash");
+            LEDGER_ASSERT(addressParams_getStakingPartType(address_params) == STAKING_PART_KEY_HASH, "Staking credential must be KEY_HASH");
+            LEDGER_ASSERT(address_params->stakingKeyHash != NULL, "NULL staking key hash");
             UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Stake key hash", "Stake key"), MAX_BECH32_STRING_LENGTH, format_bech32, "stake_vkh", address_params->stakingKeyHash, ADDRESS_KEY_HASH_LENGTH);
             break;
         }
 
         case STAKING_PART_SCRIPT_HASH: {
-            LEDGER_ASSERT(addressParams_getStakingPartType(address_params) == STAKING_PART_SCRIPT_HASH,
-                          "Staking credential must be SCRIPT_HASH");
-            LEDGER_ASSERT(address_params->stakingScriptHash != NULL,
-                          "NULL staking script hash");
+            LEDGER_ASSERT(addressParams_getStakingPartType(address_params) == STAKING_PART_SCRIPT_HASH, "Staking credential must be SCRIPT_HASH");
+            LEDGER_ASSERT(address_params->stakingScriptHash != NULL, "NULL staking script hash");
             UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Stake script hash", "Stake hash"), MAX_BECH32_STRING_LENGTH, format_bech32, "script", address_params->stakingScriptHash, SCRIPT_HASH_LENGTH);
             break;
         }

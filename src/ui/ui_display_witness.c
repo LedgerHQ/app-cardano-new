@@ -85,8 +85,7 @@ void ui_display_witness(const bip44_path_t* witnessPath,
                                        G_context.tx_info.witness_path_str,
                                        sizeof(G_context.tx_info.witness_path_str));
     LEDGER_ASSERT(formatted, "Unable to format witness path");
-    LEDGER_ASSERT(strlen(G_context.tx_info.witness_path_str) <= MAX_BIP44_PATH_STRING_LENGTH,
-                  "Witness path ui string buffer too short");
+    LEDGER_ASSERT(strlen(G_context.tx_info.witness_path_str) <= MAX_BIP44_PATH_STRING_LENGTH, "Witness path ui string buffer too short");
 
     if (isUnusual) {
         // A mild warning about unusual path

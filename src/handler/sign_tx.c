@@ -572,10 +572,8 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 }
 
 void finalize_sign_tx(bool confirm) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION,
-                  "finalize_sign_tx called without REQUEST_SIGN_TRANSACTION");
-    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_UI_PREPARED,
-                  "finalize_sign_tx called in wrong state: %d", G_context.state.tx_state);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
+    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_UI_PREPARED, "Bad tx_state");
 
     if (!confirm) {
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);

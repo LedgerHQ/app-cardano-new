@@ -21,8 +21,8 @@
  * Script hashes (type 1) are NOT allowed per CIP-36 spec.
  */
 bool buffer_read_cvote_credential(buffer_t *buf, cvote_credential_t *credential) {
-    ASSERT(buf != NULL);
-    ASSERT(credential != NULL);
+    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    LEDGER_ASSERT(credential != NULL, "NULL credential");
 
     uint8_t cred_type = 0;
     if (!buffer_read_u8(buf, &cred_type)) {
@@ -45,7 +45,7 @@ bool buffer_read_cvote_credential(buffer_t *buf, cvote_credential_t *credential)
                 TRACE("Failed to read CVote public key");
                 return false;
             }
-            ASSERT(credential->publicKey != NULL);
+            LEDGER_ASSERT(credential->publicKey != NULL, "NULL public key");
             break;
         default:
             TRACE("Invalid CVote credential type: %u (only 0=KEY, 2=KEY_PATH allowed)", cred_type);
@@ -67,8 +67,8 @@ static cvote_parser_status_t _map_output_parser_status(parser_status_e status) {
 
 cvote_parser_status_t cvote_parse_destination(buffer_t *buf,
                                               tx_output_destination_t *destination) {
-    ASSERT(buf != NULL);
-    ASSERT(destination != NULL);
+    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    LEDGER_ASSERT(destination != NULL, "NULL destination");
 
     parser_status_e output_status = parse_output_destination(buf, destination);
     cvote_parser_status_t cvote_status = _map_output_parser_status(output_status);
@@ -78,7 +78,7 @@ cvote_parser_status_t cvote_parse_destination(buffer_t *buf,
     }
 
     if (destination->type == DESTINATION_DEVICE_OWNED) {
-        ASSERT(destination->params != NULL);
+        LEDGER_ASSERT(destination->params != NULL, "NULL destination params");
         TRACE("CVote destination type 0x%x, staking %d",
               destination->params->type,
               addressParams_getStakingPartType(destination->params));
@@ -90,8 +90,8 @@ cvote_parser_status_t cvote_parse_destination(buffer_t *buf,
 }
 
 cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
-    ASSERT(out_data != NULL);
-    ASSERT(G_context.tx_info.raw_cvote_init_data != NULL);
+    LEDGER_ASSERT(out_data != NULL, "NULL out_data");
+    LEDGER_ASSERT(G_context.tx_info.raw_cvote_init_data != NULL, "NULL raw_cvote_init_data");
 
     if (G_context.tx_info.raw_cvote_init_data_len < 3) {
         TRACE("CVote init payload too short: %u bytes", (unsigned)G_context.tx_info.raw_cvote_init_data_len);

@@ -86,8 +86,7 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
                                            G_context.pk_info.path_str,
                                            sizeof(G_context.pk_info.path_str));
     LEDGER_ASSERT(pathFormatted, "Unable to format public key path");
-    LEDGER_ASSERT(strlen(G_context.pk_info.path_str) <= MAX_BIP44_PATH_STRING_LENGTH,
-                  "Public key path ui string buffer too short");
+    LEDGER_ASSERT(strlen(G_context.pk_info.path_str) <= MAX_BIP44_PATH_STRING_LENGTH, "Public key path ui string buffer too short");
 
     switch (securityPolicy) {
         case POLICY_SHOW:
@@ -114,8 +113,7 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
     const char* exportPrefix = isUnusual ? "Export UNUSUAL" : "Export";
 
     pubkey_review_cleanup();
-    LEDGER_ASSERT(APP_MEM_CALLOC((void **) &g_pubkey_export_choice_title, PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE),
-                  "Failed to allocate public key export title");
+    LEDGER_ASSERT(APP_MEM_CALLOC((void **) &g_pubkey_export_choice_title, PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE), "Failed to allocate public key export title");
 
     int written = snprintf(g_pubkey_export_choice_title,
                            PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE,

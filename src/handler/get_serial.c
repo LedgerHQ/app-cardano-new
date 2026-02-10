@@ -33,7 +33,7 @@
 #define SERIAL_LENGTH 7
 
 void handler_get_serial(const buffer_t *data_buffer) {
-    ASSERT(data_buffer != NULL);
+    LEDGER_ASSERT(data_buffer != NULL, "NULL data_buffer");
 
     // Verify no data is present
     if (buffer_can_read(data_buffer, 1)) {
@@ -47,7 +47,7 @@ void handler_get_serial(const buffer_t *data_buffer) {
     size_t len = os_serial(serial, SERIAL_LENGTH);
 
     // Verify we got the expected length
-    ASSERT(len == SERIAL_LENGTH);
+    LEDGER_ASSERT(len == SERIAL_LENGTH, "Bad serial len");
 
     io_send_response_pointer(serial, SERIAL_LENGTH, SWO_SUCCESS);
 }

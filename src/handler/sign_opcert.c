@@ -90,10 +90,8 @@ void handler_sign_opcert(buffer_t *cdata) {
 }
 
 void finalize_sign_opcert(bool confirmed) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_OPCERT,
-                  "finalize_sign_opcert called without REQUEST_SIGN_OPCERT");
-    LEDGER_ASSERT(G_context.state.opcert_state == OPCERT_STATE_VALIDATED,
-                  "finalize_sign_opcert called in wrong state: %d", G_context.state.opcert_state);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_OPCERT, "Bad req_type");
+    LEDGER_ASSERT(G_context.state.opcert_state == OPCERT_STATE_VALIDATED, "Bad opcert state");
 
     if (!confirmed) {
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
@@ -110,17 +108,15 @@ void finalize_sign_opcert(bool confirmed) {
         write_buffer_t buf = buffer_init_write(opCertBodyBuffer, SIZEOF(opCertBodyBuffer));
 
         // Buffer is exactly sized - failure is programming error
-        ASSERT(buffer_write_bytes(&buf,
-                                  (const uint8_t*) opcert->kesPublicKey,
-                                  KES_PUBLIC_KEY_LENGTH));
-        ASSERT(buffer_write_u64(&buf, opcert->issueCounter, BE));
-        ASSERT(buffer_write_u64(&buf, opcert->kesPeriod, BE));
+        LEDGER_ASSERT(buffer_write_bytes(&buf, (const uint8_t*) opcert->kesPublicKey, KES_PUBLIC_KEY_LENGTH), "Write KES pubkey failed");
+        LEDGER_ASSERT(buffer_write_u64(&buf, opcert->issueCounter, BE), "Write issueCounter failed");
+        LEDGER_ASSERT(buffer_write_u64(&buf, opcert->kesPeriod, BE), "Write kesPeriod failed");
 
-        ASSERT(buffer_written_size(&buf) == OP_CERT_BODY_LENGTH);
+        LEDGER_ASSERT(buffer_written_size(&buf) == OP_CERT_BODY_LENGTH, "Bad body length");
         TRACE_BUFFER(opCertBodyBuffer, SIZEOF(opCertBodyBuffer));
     }
 
-    ASSERT(bip44_isPoolColdKeyPath(&opcert->poolColdKeyPath));
+    LEDGER_ASSERT(bip44_isPoolColdKeyPath(&opcert->poolColdKeyPath), "Bad pool cold path");
     signRawMessageWithPath(
         &opcert->poolColdKeyPath,
         opCertBodyBuffer, SIZEOF(opCertBodyBuffer),

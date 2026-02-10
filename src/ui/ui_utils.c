@@ -36,8 +36,7 @@ void ui_reset_error_status(void) {
  * Asserts if status was never initialized
  */
 ui_status_t ui_get_error_status(void) {
-    LEDGER_ASSERT(g_ui_error_status != UI_STATUS_UNINITIALIZED,
-                  "UI error status not initialized - must call ui_reset_error_status first");
+    LEDGER_ASSERT(g_ui_error_status != UI_STATUS_UNINITIALIZED, "UI error status not initialized - must call ui_reset_error_status first");
     return g_ui_error_status;
 }
 
@@ -46,13 +45,10 @@ ui_status_t ui_get_error_status(void) {
  * Cannot change from error state back to success
  */
 void ui_set_error_status(ui_status_t status) {
-    LEDGER_ASSERT(status != UI_STATUS_UNINITIALIZED,
-                  "Cannot set UI status to UNINITIALIZED");
-    LEDGER_ASSERT(g_ui_error_status != UI_STATUS_UNINITIALIZED,
-                  "UI error status not initialized - must call ui_reset_error_status first");
+    LEDGER_ASSERT(status != UI_STATUS_UNINITIALIZED, "Cannot set UI status to UNINITIALIZED");
+    LEDGER_ASSERT(g_ui_error_status != UI_STATUS_UNINITIALIZED, "UI error status not initialized - must call ui_reset_error_status first");
     // Once error is set, cannot change back to success
-    LEDGER_ASSERT(g_ui_error_status == UI_STATUS_SUCCESS || status != UI_STATUS_SUCCESS,
-                  "Cannot change UI error status from error back to success");
+    LEDGER_ASSERT(g_ui_error_status == UI_STATUS_SUCCESS || status != UI_STATUS_SUCCESS, "Cannot change UI error status from error back to success");
     g_ui_error_status = status;
 }
 

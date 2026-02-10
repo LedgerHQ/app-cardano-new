@@ -155,13 +155,13 @@ void str_traceAdaAmount(const char* prefix, uint64_t amount) {
     char adaAmountStr[100] = {0};
 
     const size_t prefixLen = strlen(prefix);
-    ASSERT(prefixLen <= 50);
+    LEDGER_ASSERT(prefixLen <= 50, "Prefix too long");
     int written = snprintf(adaAmountStr, SIZEOF(adaAmountStr), "%s", prefix);
     LEDGER_ASSERT(written > 0, "snprintf prefix failed");
     LEDGER_ASSERT((size_t)written == prefixLen, "snprintf prefix length mismatch");
 
     bool formatted = format_ada_amount(amount, adaAmountStr + prefixLen, SIZEOF(adaAmountStr) - prefixLen);
-    ASSERT(formatted);
+    LEDGER_ASSERT(formatted, "Format failed");
     TRACE("%s", adaAmountStr);
 }
 #endif  // DEBUG

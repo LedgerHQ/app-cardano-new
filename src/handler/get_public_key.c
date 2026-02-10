@@ -86,7 +86,7 @@ void finalize_pubkey_export(bool confirmed) {
         return;
     }
 
-    ASSERT(G_context.req_type == REQUEST_EXPORT_PUBKEY);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_EXPORT_PUBKEY, "Bad req_type");
 
     // Send the extended public key back to the client
     io_send_response_pointer((uint8_t*) &G_context.pk_info.extPubKey, SIZEOF(G_context.pk_info.extPubKey), SWO_SUCCESS);

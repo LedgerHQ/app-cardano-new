@@ -29,7 +29,7 @@
 #include "app_context.h"
 
 void handler_get_version(const buffer_t *data_buffer) {
-    ASSERT(data_buffer != NULL);
+    LEDGER_ASSERT(data_buffer != NULL, "NULL data_buffer");
 
     // Verify no data is present
     if (buffer_can_read(data_buffer, 1)) {

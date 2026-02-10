@@ -37,14 +37,25 @@
 #include "ui_display_cvote_aux_data.h"
 #include "utils.h"
 
+// CVote AUX-DATA state machine (handler + UI callback transitions):
+// EXPECTING_INIT
+//   -> RECEIVING_DELEGATIONS      (non-streaming init with delegations)
+//   -> STREAMING_INITIAL_PAGE     (streaming init with delegations)
+//   -> ALL_DATA_RECEIVED          (non-streaming init with zero delegations)
+// STREAMING_INITIAL_PAGE
+//   -> RECEIVING_DELEGATIONS      (after initial page callback)
+// RECEIVING_DELEGATIONS
+//   -> ALL_DATA_RECEIVED          (after last delegation APDU)
+// ALL_DATA_RECEIVED
+//   -> NONE                       (after user confirm/reject callback)
+
 // Validate CVote aux data against security policies
 // Returns false if any policy denies, true if all policies allow
 static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
     LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
 
     // Assert that CVote warnings are initially empty and TX warnings haven't leaked in
-    LEDGER_ASSERT(warning_bits_is_empty(&G_context.tx_info.cvote_warning_bits),
-                  "CVote warning bits should be empty before validation");
+    LEDGER_ASSERT(warning_bits_is_empty(&G_context.tx_info.cvote_warning_bits), "Non-empty cvote_warning_bits");
 
     // 1. Vote key (only checked in CIP15 or CIP36 with no delegations)
     security_policy_t vote_key_policy;
@@ -54,14 +65,8 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
             &aux_data->vote_credential,
             aux_data->format,
             &vote_key_warnings);
-        LEDGER_ASSERT(warning_bits_except_mask(vote_key_warnings,
-                                               warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)) == 0,
-                      "Unexpected vote-key warning bits in init");
+        LEDGER_ASSERT(warning_bits_except_mask(vote_key_warnings, warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)) == 0, "Unexpected vote-key warnings");
         // CVote vote-key unusual derivation warning is rendered inline as a dedicated UI pair.
-        // Keep all other vote-key warnings in the global warning set for advanced review.
-        G_context.tx_info.cvote_warning_bits |=
-            warning_bits_except_mask(vote_key_warnings,
-                                     warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH));
     } else {
         vote_key_policy = POLICY_HIDE;  // Not used with delegations
     }
@@ -165,12 +170,14 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
 }
 
 static void handler_tx_aux_data_init(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handler_tx_aux_data_init");
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
+    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_AUX_DATA, "Bad tx_state");
     cvote_aux_data_t *aux_data = &G_context.tx_info.cvote_aux_data;
 
-    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_EXPECTING_INIT,
-                  "P2_AUX_DATA_INIT received in wrong state: %d",
-                  aux_data->state);
+    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_EXPECTING_INIT, "Bad aux state");
+    LEDGER_ASSERT(G_context.tx_info.raw_cvote_init_data == NULL, "Stale raw init ptr");
+    LEDGER_ASSERT(G_context.tx_info.raw_cvote_init_data_len == 0, "Stale raw init len");
 
     // Allocate persistent buffer for CVote init data
     const size_t init_payload_len = buffer_remaining(cdata);
@@ -218,8 +225,7 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
     ui_cvote_aux_data_init_vars(aux_data);
 
     if (aux_data->ui_streaming.on) {
-        LEDGER_ASSERT(aux_data->remaining_delegations > 0,
-                      "Streaming enabled with zero delegations");
+        LEDGER_ASSERT(aux_data->remaining_delegations > 0, "Streaming without delegations");
         aux_data->state = CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE;
         ui_cvote_aux_data_streaming_show_initial_page(aux_data);
         // waiting for NBGL callback cvote_aux_data_review_streaming_continue, so no APDU sent
@@ -234,11 +240,8 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
 
     // Non-streaming with zero delegations: show final review immediately
     if (aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED) {
-        LEDGER_ASSERT(aux_data->remaining_delegations == 0,
-                      "ALL_DATA_RECEIVED with delegations remaining: %u",
-                      aux_data->remaining_delegations);
-
-        aux_data->state = CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED;
+        LEDGER_ASSERT(aux_data->remaining_delegations == 0, "Delegations remaining");
+        G_context.state.tx_state = TX_STATE_CHUNKS;
         TRACE("CVote AUX_DATA ready for UI confirmation");
         ui_cvote_aux_data_show_non_streaming_final_review(aux_data);
         // waiting for NBGL callback cvote_aux_data_review_choice, so no APDU sent
@@ -249,12 +252,13 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
 }
 
 static void handler_tx_aux_data_delegation(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handler_tx_aux_data_delegation");
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
+    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_AUX_DATA, "Bad tx_state");
     cvote_aux_data_t *aux_data = &G_context.tx_info.cvote_aux_data;
 
-    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS,
-                  "P2_AUX_DATA_DELEGATION received in wrong state: %d",
-                  aux_data->state);
+    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS, "Bad aux state");
+    LEDGER_ASSERT(aux_data->remaining_delegations > 0, "No delegations remaining");
 
     TRACE("CVote AUX_DATA delegation received, payload_len=%u",
           cdata->size);
@@ -273,14 +277,8 @@ static void handler_tx_aux_data_delegation(buffer_t *cdata) {
         policyForCVoteRegistrationVoteKey(&delegation_credential,
                                           aux_data->format,
                                           &delegation_warnings);
-    LEDGER_ASSERT(warning_bits_except_mask(delegation_warnings,
-                                           warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)) == 0,
-                  "Unexpected vote-key warning bits in delegation");
+    LEDGER_ASSERT(warning_bits_except_mask(delegation_warnings, warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)) == 0, "Unexpected delegation warnings");
     // CVote vote-key unusual derivation warning is rendered inline as a dedicated UI pair.
-    // Keep all other vote-key warnings in the global warning set for advanced review.
-    G_context.tx_info.cvote_warning_bits |=
-        warning_bits_except_mask(delegation_warnings,
-                                 warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH));
     if (delegation_policy == POLICY_DENY) {
         TRACE("CVote AUX_DATA delegation: vote key policy denied");
         send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
@@ -350,7 +348,7 @@ static void handler_tx_aux_data_delegation(buffer_t *cdata) {
 }
 
 void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_tx_aux_data handler");
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
     TRACE_BUFFER_T(cdata);
 
     cvote_aux_data_t *aux_data = &G_context.tx_info.cvote_aux_data;
@@ -360,14 +358,12 @@ void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return;
     }
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "aux_data handler called with wrong request type");
 
     if (G_context.state.tx_state != TX_STATE_AUX_DATA) {
         TRACE("Bad state for AUX_DATA: expected TX_STATE_AUX_DATA, got %d", G_context.state.tx_state);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return;
     }
-    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_AUX_DATA, "aux_data handler called with wrong tx state");
 
     switch (p2) {
         case P2_AUX_DATA_INIT:
@@ -391,4 +387,28 @@ void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
             send_swo_and_reset(SWO_INCORRECT_P1_P2);
             return;
     }
+}
+
+void finalize_sign_tx_aux_data(bool confirmed) {
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
+    LEDGER_ASSERT(G_context.tx_info.cvote_aux_data.state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED, "Bad aux state");
+    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_AUX_DATA || G_context.state.tx_state == TX_STATE_CHUNKS, "Bad tx_state");
+
+    if (!confirmed) {
+        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
+        return;
+    }
+
+    cvote_hash_finalize();
+
+    // CVote init buffer is no longer needed once aux-data hash is finalized.
+    APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.raw_cvote_init_data);
+    G_context.tx_info.raw_cvote_init_data_len = 0;
+
+    G_context.tx_info.cvote_aux_data.state = CVOTE_AUX_DATA_STATE_NONE;
+    G_context.state.tx_state = TX_STATE_CHUNKS;
+
+    io_send_response_pointer(G_context.tx_info.transaction.auxDataHash,
+                             AUX_DATA_HASH_LENGTH,
+                             SWO_SUCCESS);
 }

@@ -81,18 +81,12 @@ void ui_display_sign_msg(security_policy_t securityPolicy) {
     TRACE("=== ui_display_sign_msg START ===");
 
     // Check state
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_MSG,
-                  "ui_display_sign_msg called with wrong request type: %d",
-                  G_context.req_type);
-    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CONFIRM,
-                  "ui_display_sign_msg called in wrong state: %d",
-                  G_context.state.sign_msg_state);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_MSG, "ui_display_sign_msg called with wrong request type: %d", G_context.req_type);
+    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CONFIRM, "ui_display_sign_msg called in wrong state: %d", G_context.state.sign_msg_state);
 
     // Check policy
     TRACE("securityPolicy: %d", securityPolicy);
-    LEDGER_ASSERT(securityPolicy == POLICY_SHOW,
-                  "ui_display_sign_msg called with wrong security policy: %d",
-                  securityPolicy);
+    LEDGER_ASSERT(securityPolicy == POLICY_SHOW, "ui_display_sign_msg called with wrong security policy: %d", securityPolicy);
 
     ui_reset_error_status();
 

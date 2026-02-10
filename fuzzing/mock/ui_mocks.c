@@ -9,10 +9,6 @@
 
 // Mock icon definitions for fuzzing
 const nbgl_icon_details_t C_cardano_64;
-const nbgl_icon_details_t C_Warning_64px;
-const nbgl_icon_details_t C_Warning_32px;
-const nbgl_icon_details_t C_Info_Circle_64px;
-const nbgl_icon_details_t C_Important_Circle_64px;
 
 // Device-specific mock icons
 const nbgl_icon_details_t C_icon_ada_stax;
@@ -190,6 +186,20 @@ void nbgl_useCaseReviewStreamingStart(nbgl_operationType_t operationType,
     UNUSED(icon);
     UNUSED(reviewTitle);
     UNUSED(reviewSubTitle);
+    UNUSED(choiceCallback);
+}
+
+void nbgl_useCaseAdvancedReviewStreamingStart(nbgl_operationType_t operationType,
+                                              const nbgl_icon_details_t *icon,
+                                              const char *reviewTitle,
+                                              const char *reviewSubTitle,
+                                              const nbgl_warning_t *warning,
+                                              nbgl_choiceCallback_t choiceCallback) {
+    UNUSED(operationType);
+    UNUSED(icon);
+    UNUSED(reviewTitle);
+    UNUSED(reviewSubTitle);
+    UNUSED(warning);
     UNUSED(choiceCallback);
 }
 

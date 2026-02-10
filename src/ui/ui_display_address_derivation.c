@@ -42,11 +42,8 @@ static void derive_address_buffer_cleanup(void) {
 // Called when long press button is touched or when reject footer is touched
 static void derive_address_return_review_choice(bool confirm) {
     TRACE("confirmed = %d", confirm);
-    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS,
-                  "derive_address_return_review_choice called without REQUEST_DERIVE_ADDRESS");
-    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED,
-                  "derive_address_return_review_choice called in wrong state: %d",
-                  G_context.state.derive_address_state);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS, "derive_address_return_review_choice called without REQUEST_DERIVE_ADDRESS");
+    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED, "derive_address_return_review_choice called in wrong state: %d", G_context.state.derive_address_state);
 
     // CLEANUP
     derive_address_buffer_cleanup();
@@ -65,11 +62,8 @@ static void derive_address_return_review_choice(bool confirm) {
 // Called when long press button is touched or when reject footer is touched
 static void derive_address_display_review_choice(bool confirm) {
     TRACE("confirmed = %d", confirm);
-    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS,
-                  "derive_address_display_review_choice called without REQUEST_DERIVE_ADDRESS");
-    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED,
-                  "derive_address_display_review_choice called in wrong state: %d",
-                  G_context.state.derive_address_state);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS, "derive_address_display_review_choice called without REQUEST_DERIVE_ADDRESS");
+    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED, "derive_address_display_review_choice called in wrong state: %d", G_context.state.derive_address_state);
 
     // CLEANUP
     derive_address_buffer_cleanup();
@@ -198,10 +192,8 @@ static void ui_displayAddressReview(const char *title,
 
 void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warnings) {
     // Validate state before proceeding (address must be prepared before UI display)
-    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS,
-                  "ui_deriveAddress_handleReturn called with wrong request type: %d", G_context.req_type);
-    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED,
-                  "ui_deriveAddress_handleReturn called in wrong state: %d", G_context.state.derive_address_state);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS, "ui_deriveAddress_handleReturn called with wrong request type: %d", G_context.req_type);
+    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED, "ui_deriveAddress_handleReturn called in wrong state: %d", G_context.state.derive_address_state);
 
     switch (policy) {
         case POLICY_SHOW:
@@ -223,10 +215,8 @@ void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warn
 
 void ui_deriveAddress_handleDisplay(security_policy_t policy, warning_bits_t warnings) {
     // Validate state before proceeding (address must be prepared before UI display)
-    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS,
-                  "ui_deriveAddress_handleDisplay called with wrong request type: %d", G_context.req_type);
-    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED,
-                  "ui_deriveAddress_handleDisplay called in wrong state: %d", G_context.state.derive_address_state);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS, "ui_deriveAddress_handleDisplay called with wrong request type: %d", G_context.req_type);
+    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED, "ui_deriveAddress_handleDisplay called in wrong state: %d", G_context.state.derive_address_state);
 
     switch (policy) {
         case POLICY_SHOW:

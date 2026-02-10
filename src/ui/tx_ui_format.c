@@ -206,9 +206,7 @@ static void add_ui_and_free_outputs(transaction_t *tx) {
             tx->protocolMagic,
             &output_warnings
         );
-        LEDGER_ASSERT(warning_bits_except_mask(output_warnings,
-                                               G_context.tx_info.warning_bits) == 0,
-                      "Output warnings mismatch");
+                LEDGER_ASSERT(warning_bits_except_mask(output_warnings, G_context.tx_info.warning_bits) == 0, "Output warnings mismatch");
         LEDGER_ASSERT(policy != POLICY_DENY, "Output denied during UI");
         if (policy == POLICY_SHOW) {
             TRACE("Formatting output #%u", output_num);
@@ -297,9 +295,7 @@ static void add_ui_and_free_fee(transaction_t *tx) {
     security_policy_t fee_policy =
         policyForSignTxFee(tx->txSigningMode, tx->fee, &fee_warnings);
     LEDGER_ASSERT(fee_policy != POLICY_DENY, "Fee security policy denied during UI");
-    LEDGER_ASSERT(warning_bits_except_mask(fee_warnings,
-                                           G_context.tx_info.warning_bits) == 0,
-                  "Fee warnings mismatch between validation and UI");
+        LEDGER_ASSERT(warning_bits_except_mask(fee_warnings, G_context.tx_info.warning_bits) == 0, "Fee warnings mismatch between validation and UI");
     if (fee_policy == POLICY_SHOW) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Fee"), MAX_ADA_AMOUNT_STRING_LENGTH, format_ada_amount, tx->fee);
@@ -325,9 +321,7 @@ static bool should_show_pool_registration(
     sign_tx_signingmode_t txSigningMode,
     pool_owner_counts_t *pool_owner_counts) {
     LEDGER_ASSERT(pool_owner_counts != NULL, "NULL pool owner counts");
-    LEDGER_ASSERT(certificate != NULL &&
-                      certificate->type == CERTIFICATE_STAKE_POOL_REGISTRATION,
-                  "Expected stake pool registration certificate");
+        LEDGER_ASSERT(certificate != NULL && certificate->type == CERTIFICATE_STAKE_POOL_REGISTRATION, "Expected stake pool registration certificate");
 
     *pool_owner_counts = count_pool_owner_nodes(
         certificate->poolRegistration.poolOwners
@@ -583,22 +577,14 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
                 &certificate->poolRegistration.poolMetadata,
                 &metadata_warnings
             );
-        LEDGER_ASSERT(warning_bits_except_mask(metadata_warnings,
-                                               G_context.tx_info.warning_bits) == 0,
-                      "Pool metadata warnings mismatch between validation and UI");
+        LEDGER_ASSERT(warning_bits_except_mask(metadata_warnings, G_context.tx_info.warning_bits) == 0, "Pool metadata warnings mismatch between validation and UI");
         LEDGER_ASSERT(metadata_policy != POLICY_DENY, "Metadata security policy denied");
 
         if (metadata_policy == POLICY_SHOW) {
             {
                 START_COUNT();
                 if (certificate->poolRegistration.poolMetadata.urlSize == 0) {
-                    LEDGER_ASSERT(
-                        warning_bits_has(
-                            G_context.tx_info.warning_bits,
-                            WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL
-                        ),
-                        "Empty pool metadata URL warning missing"
-                    );
+                    LEDGER_ASSERT(warning_bits_has(G_context.tx_info.warning_bits, WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL), "Empty pool metadata URL warning missing");
                     UI_ADD_STATIC(UI_LABEL_BY_SCREEN("Pool metadata url", "Metadata url"),
                                   UI_STATIC_LABEL("(empty)"));
                 } else {
@@ -758,9 +744,7 @@ static void add_ui_and_free_withdrawals(transaction_t *tx) {
             &withdrawal_node->withdrawal.stakeCredential,
             &withdrawal_warnings
         );
-        LEDGER_ASSERT(warning_bits_except_mask(withdrawal_warnings,
-                                               G_context.tx_info.warning_bits) == 0,
-                      "Withdrawal warnings mismatch");
+                LEDGER_ASSERT(warning_bits_except_mask(withdrawal_warnings, G_context.tx_info.warning_bits) == 0, "Withdrawal warnings mismatch");
 
         LEDGER_ASSERT(policy != POLICY_DENY, "Withdrawal denied during UI");
         if (policy == POLICY_SHOW) {
@@ -1213,8 +1197,7 @@ int ui_prepare_transaction_review(void) {
 
     // Assert that CVote warnings haven't leaked into transaction warnings
     // Check that tx warning_bits doesn't contain any CVote-specific warnings
-    LEDGER_ASSERT(!warning_bits_has_any_cvote(G_context.tx_info.warning_bits),
-                  "CVote warning leaked into transaction warnings");
+        LEDGER_ASSERT(!warning_bits_has_any_cvote(G_context.tx_info.warning_bits), "CVote warning leaked into transaction warnings");
 
     ui_status_t warning_status = ui_build_warnings(G_context.tx_info.warning_bits);
     switch (warning_status) {
@@ -1235,8 +1218,7 @@ int ui_prepare_transaction_review(void) {
     // Validate that the actual number of pairs formatted matches the planned count
     TRACE("UI pair count mismatch check: planned=%u formatted=%u",
           (unsigned int) pair_count, ui_pairs_get_count());
-    LEDGER_ASSERT(ui_pairs_get_count() == (uint16_t) pair_count,
-                  "UI pair count mismatch");
+        LEDGER_ASSERT(ui_pairs_get_count() == (uint16_t) pair_count, "UI pair count mismatch");
 
     return SWO_SUCCESS;
 }

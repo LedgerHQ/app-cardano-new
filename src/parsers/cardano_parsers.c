@@ -125,7 +125,7 @@ bool buffer_read_anchor(buffer_t *buf, anchor_t *anchor) {
         TRACE("Failed to read URL");
         return false;
     }
-    ASSERT(anchor->url != NULL);
+    LEDGER_ASSERT(anchor->url != NULL, "NULL anchor url");
     if (!str_isPrintableAsciiWithoutSpaces(anchor->url, anchor->urlLength)) {
         TRACE("Anchor URL contains non-printable ASCII or spaces");
         return false;
@@ -134,7 +134,7 @@ bool buffer_read_anchor(buffer_t *buf, anchor_t *anchor) {
         TRACE("Failed to read anchor hash");
         return false;
     }
-    ASSERT(anchor->hash != NULL);
+    LEDGER_ASSERT(anchor->hash != NULL, "NULL anchor hash");
 
     return true;
 }
@@ -278,7 +278,7 @@ static bool _parse_credential_data(buffer_t *buf,
                 TRACE("Failed to read key hash");
                 return false;
             }
-            ASSERT(credential->keyHash != NULL);
+            LEDGER_ASSERT(credential->keyHash != NULL, "NULL keyHash");
             break;
         }
         case EXT_CREDENTIAL_SCRIPT_HASH: {
@@ -286,7 +286,7 @@ static bool _parse_credential_data(buffer_t *buf,
                 TRACE("Failed to read script hash");
                 return false;
             }
-            ASSERT(credential->scriptHash != NULL);
+            LEDGER_ASSERT(credential->scriptHash != NULL, "NULL scriptHash");
             break;
         }
         default:

@@ -3489,7 +3489,6 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582077be323b8df4c6aa1bf2f180112f85ffe8d7f658bc8febdf7dbd5a07453a31cb0807",
-        has_aux_warning=True,
     ),
     SignTxTestCase(
         name="Sign_tx_with_CIP36_registration_with_thirdparty_payment_address",

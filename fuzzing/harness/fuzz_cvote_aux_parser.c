@@ -25,7 +25,6 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
             cvote_aux_data_t aux_data = {0};
             if (cvote_parse_aux_data_init(&aux_data) == CVOTE_PARSER_OK) {
                 warning_bits_t warnings = 0;
-                warning_bits_init(&warnings);
                 (void) policyForCVoteRegistrationVoteKey(&aux_data.vote_credential,
                                                          aux_data.format,
                                                          &warnings);

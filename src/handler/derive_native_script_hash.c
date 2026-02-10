@@ -83,18 +83,18 @@ static inline bool isCurrentComplexScriptComplete() {
 static inline void finishComplexScriptsAndPropagate() {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     while (isCurrentComplexScriptComplete()) {
-        ASSERT(ctx->level > 0);
+        LEDGER_ASSERT(ctx->level > 0, "Bad script level");
         ctx->level--;
-        ASSERT(ctx->level < MAX_SCRIPT_DEPTH);
-        ASSERT(ctx->complexScripts[ctx->level].remainingScripts > 0);
+        LEDGER_ASSERT(ctx->level < MAX_SCRIPT_DEPTH, "Depth overflow");
+        LEDGER_ASSERT(ctx->complexScripts[ctx->level].remainingScripts > 0, "Bad script count");
         ctx->complexScripts[ctx->level].remainingScripts--;
     }
 }
 
 static inline void finishSimpleScriptAndPropagate() {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
-    ASSERT(ctx->level < MAX_SCRIPT_DEPTH);
-    ASSERT(ctx->complexScripts[ctx->level].remainingScripts > 0);
+    LEDGER_ASSERT(ctx->level < MAX_SCRIPT_DEPTH, "Depth overflow");
+    LEDGER_ASSERT(ctx->complexScripts[ctx->level].remainingScripts > 0, "Bad script count");
     ctx->complexScripts[ctx->level].remainingScripts--;
     if (isCurrentComplexScriptComplete()) {
         finishComplexScriptsAndPropagate();
@@ -167,10 +167,8 @@ static bool deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
     } else {
         TRACE("Credential type - third-party key: use provided hash");
         // Third-party key: use provided hash
-        LEDGER_ASSERT(credential.type == EXT_CREDENTIAL_KEY_HASH,
-                      "Expected KEY_HASH credential type");
-        LEDGER_ASSERT(SIZEOF(ctx->scriptContent.pubkeyHash) == ADDRESS_KEY_HASH_LENGTH,
-                      "incorrect key hash size in script");
+        LEDGER_ASSERT(credential.type == EXT_CREDENTIAL_KEY_HASH, "Expected KEY_HASH credential");
+        LEDGER_ASSERT(SIZEOF(ctx->scriptContent.pubkeyHash) == ADDRESS_KEY_HASH_LENGTH, "Bad key hash size");
 
         // Copy hash to context for UI display and to local buffer
         memmove(ctx->scriptContent.pubkeyHash, credential.keyHash, ADDRESS_KEY_HASH_LENGTH);
@@ -420,8 +418,7 @@ static void deriveNativeScriptHash_handleWholeNativeScriptFinish(buffer_t *cdata
 
 static void deriveNativeScriptHash_initRequest(void) {
     // Handler entry invariant for request initialization
-    LEDGER_ASSERT(G_context.req_type == REQUEST_NONE,
-                  "native script hash init called while another request active");
+    LEDGER_ASSERT(G_context.req_type == REQUEST_NONE, "Request already active");
 
     G_context.req_type = REQUEST_DERIVE_NATIVE_SCRIPT_HASH;
 

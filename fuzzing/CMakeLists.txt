@@ -178,7 +178,7 @@ foreach(HARNESS_FILE ${FUZZ_HARNESSES})
 
   add_executable(${HARNESS_NAME} ${HARNESS_FILE})
   target_compile_definitions(${HARNESS_NAME} PUBLIC FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION=1)
-  target_link_libraries(${HARNESS_NAME} PUBLIC secure_sdk code_lib)
+  target_link_libraries(${HARNESS_NAME} PUBLIC code_lib)
   target_compile_options(${HARNESS_NAME} PUBLIC -fno-sanitize=alignment)
   target_link_options(${HARNESS_NAME} PUBLIC -fno-sanitize=alignment)
 endforeach()

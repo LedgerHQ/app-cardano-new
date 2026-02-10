@@ -44,7 +44,6 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     // Security policy entry points tied to path validation.
     warning_bits_t warnings = 0;
-    warning_bits_init(&warnings);
     (void) policyForDerivePrivateKey(&primary_path);
     (void) policyForGetExtendedPublicKey(&primary_path, &warnings);
     (void) policyForSignCVoteWitness(&primary_path, &warnings);
