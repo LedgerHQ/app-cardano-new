@@ -549,6 +549,10 @@ add_executable(test_security_policy_certificates test_security_policy_certificat
 target_link_libraries(test_security_policy_certificates PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_security_policy_certificates test_security_policy_certificates)
 
+add_executable(test_security_policy_collateral test_security_policy_collateral.c)
+target_link_libraries(test_security_policy_collateral PUBLIC cmocka gcov cardano_sign_tx_core)
+add_test(test_security_policy_collateral test_security_policy_collateral)
+
 foreach(target IN LISTS TEST_EXECUTABLES)
     target_link_libraries(${target} PUBLIC mock_printf)
 endforeach()

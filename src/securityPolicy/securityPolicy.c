@@ -895,6 +895,8 @@ security_policy_t policyForSignTxCollateralOutputAdaAmount(security_policy_t out
                                                            bool isTotalCollateralPresent) {
     // WARNING: policies for collateral inputs, collateral return output and total collateral are
     // interdependent
+    LEDGER_ASSERT(outputPolicy != POLICY_DENY,
+                  "Collateral ADA sub-policy called with DENY output policy");
 
     if (outputPolicy == POLICY_HIDE) {
         // output not shown, so none of its elements should be shown
@@ -911,6 +913,9 @@ security_policy_t policyForSignTxCollateralOutputTokens(security_policy_t output
                                                         const tx_output_description_t *output) {
     // WARNING: policies for collateral inputs, collateral return output and total collateral are
     // interdependent
+    LEDGER_ASSERT(output != NULL, "NULL output");
+    LEDGER_ASSERT(outputPolicy != POLICY_DENY,
+                  "Collateral token sub-policy called with DENY output policy");
 
     if (outputPolicy == POLICY_HIDE) {
         // output not shown, so none of its elements should be shown
@@ -2224,8 +2229,8 @@ static const warning_definition_t WARNING_DEFINITIONS[WARNING_BIT_COUNT] = {
     },
     [WARNING_BIT_COLLATERAL_OUTPUT_WARNING] = {
         .bit = WARNING_BIT_COLLATERAL_OUTPUT_WARNING,
-        .title = "Tokens in collateral input/output",
-        .description = "Collateral return output includes tokens",
+        .title = "Tokens in third-party collateral output",
+        .description = "Collateral return output to third-party address includes tokens",
     },
     [WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH] = {
         .bit = WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,

@@ -1597,17 +1597,6 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
         G_context.tx_info.transaction.includeTotalCollateral
     );
 
-    security_policy_t collateral_ada_policy =
-        policyForSignTxCollateralOutputAdaAmount(
-            collateral_policy,
-            G_context.tx_info.transaction.includeTotalCollateral
-        );
-    security_policy_t collateral_tokens_policy =
-        policyForSignTxCollateralOutputTokens(
-            collateral_policy,
-            &collateral_desc
-        );
-
     if (collateral_policy == POLICY_SHOW &&
         collateral_desc.numAssetGroups > 0) {
         warning_bits_set(&G_context.tx_info.warning_bits, WARNING_BIT_COLLATERAL_OUTPUT_WARNING);
@@ -1618,6 +1607,16 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
             TRACE("Collateral output security policy denied");
             return SWO_SECURITY_CONDITION_NOT_SATISFIED;
         case POLICY_SHOW: {
+            security_policy_t collateral_ada_policy =
+                policyForSignTxCollateralOutputAdaAmount(
+                    collateral_policy,
+                    G_context.tx_info.transaction.includeTotalCollateral
+                );
+            security_policy_t collateral_tokens_policy =
+                policyForSignTxCollateralOutputTokens(
+                    collateral_policy,
+                    &collateral_desc
+                );
             plan->pair_count += UI_PAIRS_COLLATERAL_OUTPUT_ADDRESS;
             if (G_context.tx_info.transaction.collateral_output.destination.type == DESTINATION_DEVICE_OWNED) {
                 plan->pair_count += UI_PAIRS_COLLATERAL_OUTPUT_DEVICE_OWNED;
