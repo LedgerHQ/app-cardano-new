@@ -1,3 +1,6 @@
+/* SPDX-FileCopyrightText: 2025-2026 Vacuumlabs */
+/* SPDX-License-Identifier: Apache-2.0 */
+
 // Hash mock implementations for unit testing
 // Uses reference implementations of Blake2b and SHA3-256
 

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025-2026 Vacuumlabs
+# SPDX-License-Identifier: Apache-2.0
+
 # Run this python script inside the Ledger docker image
 
 # This script will build the Ethereum and Exchange application that are needed for the Swap test setup

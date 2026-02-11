@@ -32,6 +32,19 @@ For detailed analysis, see:
 - **Do NOT remove original comments** explaining crucial details without confirmation.
 - **Do NOT perform git operations** (modifications/writes).
 
+### License Comment Policy
+- **Preserve attribution:** Apache-2.0 requires preserving copyright/attribution notices from upstream code.
+- **Do not imply false authorship:** If code is Ledger-derived, keep Ledger as original work.
+- **Use file-by-file classification:**
+  - **Vacuumlabs-only:** files created in this repo (Cardano-specific original work) use Vacuumlabs copyright.
+  - **Copied from Ledger/boilerplate/eth (unmodified):** keep original upstream copyright/license header.
+  - **Copied + modified:** keep original upstream attribution and add Vacuumlabs in a separate `Modifications` block.
+  - **Copied from old app (`../app-cardano`):** treat as Vacuumlabs-only unless there is evidence the specific part is Ledger-origin; ambiguous cases require confirmation.
+- **Third-party code:** never replace third-party license blocks (e.g., ISC/MIT). Keep them intact; only append minimal modification note if needed.
+- **Header text stability:** keep established file title wording when present (e.g., `Ledger App Cardano.`), change only ownership/license lines unless explicitly requested.
+- **Ambiguous provenance:** do not auto-rewrite; prepare a numbered decision list for human confirmation first.
+- **Repository-level notices:** keep `LICENSE.md` Apache-2.0; maintain a `NOTICE` file with third-party components and attributions when distributing.
+
 ## Instructions for Reviewing Agent
 
 - **Security focus:** Be thorough and paranoid about security and correctness. Unless a security policy allows HIDE, all data must be displayed or confirmed by human app users.

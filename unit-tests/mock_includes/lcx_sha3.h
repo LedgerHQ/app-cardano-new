@@ -1,3 +1,6 @@
+/* SPDX-FileCopyrightText: 2025-2026 Vacuumlabs */
+/* SPDX-License-Identifier: Apache-2.0 */
+
 #ifndef LCX_SHA3_H
 #define LCX_SHA3_H
 

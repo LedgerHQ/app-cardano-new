@@ -1,3 +1,6 @@
+/* SPDX-FileCopyrightText: 2025-2026 Vacuumlabs */
+/* SPDX-License-Identifier: Apache-2.0 */
+
 #include "ui_display_cvote_aux_data.h"
 #include "app_context.h"
 #include "cardano_swo.h"

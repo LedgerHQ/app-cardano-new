@@ -1,3 +1,6 @@
+/* SPDX-FileCopyrightText: 2025-2026 Vacuumlabs */
+/* SPDX-License-Identifier: Apache-2.0 */
+
 #include "buffer_write.h"
 #include "buffer.h" // for buffer_* functions from SDK
 #include "write.h"  // for write_u16_be, write_u32_be, write_u64_be, write_u16_le, write_u32_le, write_u64_le

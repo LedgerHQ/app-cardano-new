@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025-2026 Vacuumlabs
+# SPDX-License-Identifier: Apache-2.0
+
 from ragger.utils import create_currency_config
 from ledger_app_clients.exchange.cal_helper import CurrencyConfiguration
 

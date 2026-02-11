@@ -1,3 +1,6 @@
+/* SPDX-FileCopyrightText: 2025-2026 Vacuumlabs */
+/* SPDX-License-Identifier: Apache-2.0 */
+
 #ifndef H_CARDANO_APP_NATIVE_SCRIPT_HASH_BUILDER
 #define H_CARDANO_APP_NATIVE_SCRIPT_HASH_BUILDER
 

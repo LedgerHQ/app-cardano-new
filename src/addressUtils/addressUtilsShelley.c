@@ -1,3 +1,6 @@
+/* SPDX-FileCopyrightText: 2025-2026 Vacuumlabs */
+/* SPDX-License-Identifier: Apache-2.0 */
+
 #include "buffer_write.h"
 #include "cardano_parsers.h"
 #include "keyDerivation.h"

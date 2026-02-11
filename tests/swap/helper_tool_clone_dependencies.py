@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025-2026 Vacuumlabs
+# SPDX-License-Identifier: Apache-2.0
+
 # This script will clone the Ethereum and Exchange application that are needed for the Swap test setup
 # Run the helper script helper_tool_build_dependencies.py after to build and dispatch them in the correct location
 

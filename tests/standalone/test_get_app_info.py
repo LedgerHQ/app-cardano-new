@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # SPDX-FileCopyrightText: 2024 Ledger SAS
-# SPDX-License-Identifier: LicenseRef-LEDGER
+# SPDX-FileCopyrightText: 2025-2026 Vacuumlabs
+# SPDX-License-Identifier: Apache-2.0
+
 """
 This module provides Ragger tests for application metadata APDUs.
 Tests app-level information commands: GET_APP_NAME, GET_VERSION, GET_SERIAL.

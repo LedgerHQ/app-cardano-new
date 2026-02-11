@@ -1,3 +1,6 @@
+/* SPDX-FileCopyrightText: 2025-2026 Vacuumlabs */
+/* SPDX-License-Identifier: Apache-2.0 */
+
 // BLAKE2b reference implementation adapted for unit tests
 // Based on public-domain code from https://github.com/BLAKE2/BLAKE2
 

@@ -1,3 +1,6 @@
+/* SPDX-FileCopyrightText: 2025-2026 Vacuumlabs */
+/* SPDX-License-Identifier: Apache-2.0 */
+
 #include "securityPolicy.h"
 
 security_policy_t policyForDerivePrivateKey(const bip44_path_t* path) {

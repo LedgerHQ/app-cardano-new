@@ -1,3 +1,6 @@
+/* SPDX-FileCopyrightText: 2025-2026 Vacuumlabs */
+/* SPDX-License-Identifier: Apache-2.0 */
+
 #include "cbor.h"
 #include "derive_native_script_hash_builder.h"
 #include "cardano_constants.h"

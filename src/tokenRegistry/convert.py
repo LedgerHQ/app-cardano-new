@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025-2026 Vacuumlabs
+# SPDX-License-Identifier: Apache-2.0
+
 # converts entries from Cardano Token Registry (json) into code in C used in the app
 
 import json

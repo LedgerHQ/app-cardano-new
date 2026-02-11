@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2025-2026 Vacuumlabs
+# SPDX-License-Identifier: Apache-2.0
+
 from ledgered.devices import DeviceType, Device
 from ragger.navigator import Navigator, NavInsID, NavIns
 
