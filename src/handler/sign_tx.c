@@ -158,7 +158,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         if (!buffer_read_u8(cdata, &auxDataTypeByte)) {
             TRACE("TX init: missing aux data type");
             send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
-        return;
+            return;
         }
 
         if (auxDataTypeByte == AUX_DATA_TYPE_ARBITRARY_HASH) {
@@ -168,7 +168,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
                                    AUX_DATA_HASH_LENGTH)) {
                 TRACE("TX init: missing aux data hash bytes");
                 send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
-        return;
+                return;
             }
         } else if (auxDataTypeByte == AUX_DATA_TYPE_CVOTE_REGISTRATION) {
             G_context.tx_info.transaction.auxDataType = AUX_DATA_TYPE_CVOTE_REGISTRATION;
@@ -177,7 +177,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         } else {
             TRACE("TX init: unsupported aux data type %u", auxDataTypeByte);
             send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
-        return;
+            return;
         }
     } else {
         G_context.tx_info.transaction.auxDataType = AUX_DATA_TYPE_ARBITRARY_HASH;
@@ -282,7 +282,6 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
-    LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");
 
     TRACE("TX Mode=%d, Network: ID=%d, Magic=%u, Inputs=%u, Outputs=%u, Withdrawals=%u, Mint=%u, includeTTL=%d, includeVIS=%d, Witnesses=%u",
         G_context.tx_info.transaction.txSigningMode,
@@ -361,7 +360,6 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
  */
 static bool handle_tx_data_chunk(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handle_tx_data_chunk");
-    TRACE("SWO_SUCCESS constant = 0x%04x", SWO_SUCCESS);
     const size_t chunk_size = buffer_remaining(cdata);
 
     // Validate we're in the correct state for receiving chunks
@@ -656,7 +654,6 @@ void handler_sign_tx_witness(buffer_t *cdata) {
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
-    LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");
 
     TRACE("Witness %d: path length=%d",
            G_context.tx_info.current_witness,
@@ -741,11 +738,6 @@ void handler_sign_tx_witness(buffer_t *cdata) {
         case POLICY_SHOW:
             apdu_response_deferred();
             ui_display_witness(&G_context.tx_info.witness_path, policy, witness_warnings);
-            return;
-
-        case POLICY_DENY:
-            // Already handled earlier in function - should never reach here
-            LEDGER_ASSERT(false, "POLICY_DENY should be handled before signing");
             return;
 
         default:

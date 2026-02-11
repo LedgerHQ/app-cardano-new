@@ -30,7 +30,7 @@ void build_position_description(const derive_native_script_hash_ctx_t *ctx,
     char *end = out + out_len;
 
     LEDGER_ASSERT(level >= 1, "Invalid level %d", level);
-    LEDGER_ASSERT(level < MAX_SCRIPT_DEPTH, "Excedeed max script depth");
+    LEDGER_ASSERT(level < MAX_SCRIPT_DEPTH, "Exceeded max script depth");
 
     // Levels
     for (size_t i = 1; i <= level; i++) {
@@ -38,14 +38,14 @@ void build_position_description(const derive_native_script_hash_ctx_t *ctx,
             ctx->complexScripts[i].totalScripts - ctx->complexScripts[i].remainingScripts + 1;
         STATIC_ASSERT(!IS_SIGNED(position), "signed type for %u");
         snprintf(ptr, end - ptr, "%u.", position);
-        LEDGER_ASSERT(strlen(out) + 1 < out_len, "Excedeed output size");
+        LEDGER_ASSERT(strlen(out) + 1 < out_len, "Exceeded output size");
         ptr += strlen(ptr);
     }
 
     // Remove trailing '.'
-    LEDGER_ASSERT(ptr > out, "Excedeed output size");
+    LEDGER_ASSERT(ptr > out, "Exceeded output size");
     *(ptr - 1) = '\0';
-    LEDGER_ASSERT(strlen(out) + 1 < out_len, "Excedeed output size");
+    LEDGER_ASSERT(strlen(out) + 1 < out_len, "Exceeded output size");
     return;
 }
 
@@ -209,7 +209,7 @@ void display_complex_script_content(ui_native_script_type scriptType) {
             expectedPairs = UI_PAIRS_SCRIPT_TYPE + UI_PAIRS_CONTENT;
             break;
         case UI_SCRIPT_N_OF_K:
-            script_label = "N out K";
+            script_label = "N of K";
             expectedPairs = UI_PAIRS_SCRIPT_TYPE + UI_PAIRS_REQUIREMENT + UI_PAIRS_CONTENT;
             break;
         default:

@@ -139,20 +139,18 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
     }
 }
 
-static inline void run_fixture(const tx_fixture_t *fixture) {
-    reset_context();
-    assert_true(test_mem_init());
-
-    uint8_t init_raw[512];
-    uint8_t aux_data_hash[AUX_DATA_HASH_LENGTH] = {0};
-    size_t aux_hash_len = 0;
-    if (fixture->include_aux_data_hash && fixture->aux_data_type == AUX_DATA_TYPE_ARBITRARY_HASH) {
-        assert_non_null(fixture->aux_data_hash_hex);
-        aux_hash_len = hex_to_bytes(fixture->aux_data_hash_hex, aux_data_hash, sizeof(aux_data_hash));
-        assert_int_equal(aux_hash_len, AUX_DATA_HASH_LENGTH);
-    }
-
-    init_apdu_params_t params = {
+/**
+ * Build init_apdu_params_t from a test fixture and optional pre-decoded aux data hash.
+ * Caller is responsible for decoding aux_data_hash_hex and passing the result.
+ */
+static inline init_apdu_params_t build_init_params_from_fixture(
+    const tx_fixture_t *fixture,
+    const uint8_t *aux_data_hash,
+    size_t aux_hash_len
+) {
+    bool has_arbitrary_aux = fixture->include_aux_data_hash &&
+                             fixture->aux_data_type == AUX_DATA_TYPE_ARBITRARY_HASH;
+    return (init_apdu_params_t) {
         .options = fixture->options,
         .networkId = fixture->network_id,
         .protocolMagic = fixture->protocol_magic,
@@ -164,10 +162,8 @@ static inline void run_fixture(const tx_fixture_t *fixture) {
         .numWithdrawals = fixture->num_withdrawals,
         .includeAuxData = fixture->include_aux_data_hash,
         .auxDataType = fixture->aux_data_type,
-        .auxDataHash = (fixture->include_aux_data_hash &&
-                        fixture->aux_data_type == AUX_DATA_TYPE_ARBITRARY_HASH) ? aux_data_hash : NULL,
-        .auxDataHashLen = (fixture->include_aux_data_hash &&
-                           fixture->aux_data_type == AUX_DATA_TYPE_ARBITRARY_HASH) ? aux_hash_len : 0,
+        .auxDataHash = has_arbitrary_aux ? aux_data_hash : NULL,
+        .auxDataHashLen = has_arbitrary_aux ? aux_hash_len : 0,
         .includeScriptDataHash = fixture->include_script_data_hash,
         .includeValidityIntervalStart = fixture->include_validity_interval_start,
         .numMintAssetGroups = fixture->num_mint_asset_groups,
@@ -182,6 +178,22 @@ static inline void run_fixture(const tx_fixture_t *fixture) {
         .includeDonation = fixture->include_donation,
         .numWitnesses = fixture->num_witnesses,
     };
+}
+
+static inline void run_fixture(const tx_fixture_t *fixture) {
+    reset_context();
+    assert_true(test_mem_init());
+
+    uint8_t init_raw[512];
+    uint8_t aux_data_hash[AUX_DATA_HASH_LENGTH] = {0};
+    size_t aux_hash_len = 0;
+    if (fixture->include_aux_data_hash && fixture->aux_data_type == AUX_DATA_TYPE_ARBITRARY_HASH) {
+        assert_non_null(fixture->aux_data_hash_hex);
+        aux_hash_len = hex_to_bytes(fixture->aux_data_hash_hex, aux_data_hash, sizeof(aux_data_hash));
+        assert_int_equal(aux_hash_len, AUX_DATA_HASH_LENGTH);
+    }
+
+    init_apdu_params_t params = build_init_params_from_fixture(fixture, aux_data_hash, aux_hash_len);
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 
@@ -249,36 +261,7 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
         assert_int_equal(aux_hash_len, AUX_DATA_HASH_LENGTH);
     }
 
-    init_apdu_params_t params = {
-        .options = fixture->options,
-        .networkId = fixture->network_id,
-        .protocolMagic = fixture->protocol_magic,
-        .signingMode = fixture->signing_mode,
-        .numInputs = fixture->num_inputs,
-        .numOutputs = fixture->num_outputs,
-        .includeTtl = fixture->include_ttl,
-        .numCertificates = fixture->num_certificates,
-        .numWithdrawals = fixture->num_withdrawals,
-        .includeAuxData = fixture->include_aux_data_hash,
-        .auxDataType = fixture->aux_data_type,
-        .auxDataHash = (fixture->include_aux_data_hash &&
-                        fixture->aux_data_type == AUX_DATA_TYPE_ARBITRARY_HASH) ? aux_data_hash : NULL,
-        .auxDataHashLen = (fixture->include_aux_data_hash &&
-                           fixture->aux_data_type == AUX_DATA_TYPE_ARBITRARY_HASH) ? aux_hash_len : 0,
-        .includeScriptDataHash = fixture->include_script_data_hash,
-        .includeValidityIntervalStart = fixture->include_validity_interval_start,
-        .numMintAssetGroups = fixture->num_mint_asset_groups,
-        .numCollateralInputs = fixture->num_collateral_inputs,
-        .numRequiredSigners = fixture->num_required_signers,
-        .includeNetworkId = fixture->include_network_id,
-        .includeCollateralOutput = fixture->include_collateral_output,
-        .includeTotalCollateral = fixture->include_total_collateral,
-        .numReferenceInputs = fixture->num_reference_inputs,
-        .numVoters = fixture->num_voters,
-        .includeTreasury = fixture->include_treasury,
-        .includeDonation = fixture->include_donation,
-        .numWitnesses = fixture->num_witnesses,
-    };
+    init_apdu_params_t params = build_init_params_from_fixture(fixture, aux_data_hash, aux_hash_len);
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 
