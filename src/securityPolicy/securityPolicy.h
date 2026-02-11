@@ -41,23 +41,7 @@ security_policy_t policyForReturnDeriveAddress(const address_params_t* address_p
 security_policy_t policyForDeriveNativeScriptHashDevicePubkey(const bip44_path_t *path, warning_bits_t* warnings);
 security_policy_t policyForShowDeriveAddress(const address_params_t* address_params, warning_bits_t* warnings);
 
-security_policy_t policyForSignTxInit(sign_tx_signingmode_t txSigningMode,
-                                      uint32_t networkId,
-                                      uint32_t protocolMagic,
-                                      uint16_t numOutputs,
-                                      uint16_t numCertificates,
-                                      uint16_t numWithdrawals,
-                                      bool includeMint,
-                                      bool includeScriptDataHash,
-                                      uint16_t numCollateralInputs,
-                                      uint16_t numRequiredSigners,
-                                      bool includeNetworkId,
-                                      bool includeCollateralOutput,
-                                      bool includeTotalCollateral,
-                                      uint16_t numReferenceInputs,
-                                      uint16_t numVotingProcedures,
-                                      bool includeTreasury,
-                                      bool includeDonation,
+security_policy_t policyForSignTxInit(const tx_params_t* txParams,
                                       warning_bits_t* warnings);
 
 security_policy_t policyForSignTxInput(sign_tx_signingmode_t txSigningMode,

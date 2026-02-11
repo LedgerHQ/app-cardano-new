@@ -246,7 +246,7 @@ static bool cvote_add_initial_pairs(cvote_aux_data_t *aux_data) {
                        MAX_HUMAN_ADDRESS_LENGTH,
                        format_cvote_reward_address,
                        &aux_data->destination,
-                       G_context.tx_info.transaction.networkId);
+                       G_context.tx_info.tx_params.networkId);
     }
 
     if (aux_data->ui_show.nonce) {

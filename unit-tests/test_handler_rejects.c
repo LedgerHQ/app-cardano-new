@@ -213,8 +213,8 @@ static void test_witness_trailing_bytes(void **state) {
     G_context.state.tx_state = TX_STATE_APPROVED;
     G_context.tx_info.current_witness = 0;
     G_context.tx_info.num_witnesses = 1;
-    G_context.tx_info.transaction.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
-    G_context.tx_info.transaction.num_mint_asset_groups = 0;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.num_mint_asset_groups = 0;
 
     uint32_t path[] = {
         harden(PURPOSE_SHELLEY),
@@ -368,8 +368,8 @@ static void test_witness_extraction_with_wrong_state(void **state) {
     G_context.state.tx_state = TX_STATE_NONE;  // Not approved, should be TX_STATE_APPROVED
     G_context.tx_info.current_witness = 0;
     G_context.tx_info.num_witnesses = 1;
-    G_context.tx_info.transaction.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
-    G_context.tx_info.transaction.num_mint_asset_groups = 0;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.num_mint_asset_groups = 0;
 
     uint32_t path[] = {
         harden(PURPOSE_SHELLEY),

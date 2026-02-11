@@ -181,13 +181,13 @@ static void _hashOutputTopLevel(tx_hash_builder_t* txHashBuilder,
 
 static int validate_and_hash_inputs(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
     txHashBuilder_enterInputs(txHashBuilder);
-    flist_node_t *node = G_context.tx_info.transaction.inputs;
+    flist_node_t *node = G_context.tx_info.tx_body.inputs;
     while (node != NULL) {
         tx_input_node_t *input_node = (tx_input_node_t *) node;
         const tx_input_t *input = &input_node->input;
 
         security_policy_t input_policy = policyForSignTxInput(
-            G_context.tx_info.transaction.txSigningMode,
+            G_context.tx_info.tx_params.txSigningMode,
             input
         );
 
@@ -212,7 +212,7 @@ static int validate_and_hash_inputs(tx_hash_builder_t* txHashBuilder, tx_ui_plan
 
 static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
     txHashBuilder_enterOutputs(txHashBuilder);
-    flist_node_t *node = G_context.tx_info.transaction.outputs;
+    flist_node_t *node = G_context.tx_info.tx_body.outputs;
     while (node != NULL) {
         tx_output_node_t *output_node = (tx_output_node_t *) node;
         const tx_output_destination_t *output_destination = &output_node->output_data.destination;
@@ -231,9 +231,9 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
         security_policy_t ref_script_policy = POLICY_HIDE;
         security_policy_t output_policy = policyForSignTxOutput(
             &output_desc,
-            G_context.tx_info.transaction.txSigningMode,
-            G_context.tx_info.transaction.networkId,
-            G_context.tx_info.transaction.protocolMagic,
+            G_context.tx_info.tx_params.txSigningMode,
+            G_context.tx_info.tx_params.networkId,
+            G_context.tx_info.tx_params.protocolMagic,
             &G_context.tx_info.warning_bits
         );
 
@@ -359,8 +359,8 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
 
 static int validate_and_hash_fee(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
     security_policy_t fee_policy = policyForSignTxFee(
-        G_context.tx_info.transaction.txSigningMode,
-        G_context.tx_info.transaction.fee,
+        G_context.tx_info.tx_params.txSigningMode,
+        G_context.tx_info.tx_body.fee,
         &G_context.tx_info.warning_bits
     );
 
@@ -377,16 +377,16 @@ static int validate_and_hash_fee(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t*
             break;
     }
 
-    txHashBuilder_addFee(txHashBuilder, G_context.tx_info.transaction.fee);
+    txHashBuilder_addFee(txHashBuilder, G_context.tx_info.tx_body.fee);
     return SWO_SUCCESS;
 }
 
 static int validate_and_hash_ttl(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
-    if (!G_context.tx_info.transaction.includeTtl) {
+    if (!G_context.tx_info.tx_params.includeTtl) {
         return SWO_SUCCESS;
     }
 
-    security_policy_t ttl_policy = policyForSignTxTtl(G_context.tx_info.transaction.ttl);
+    security_policy_t ttl_policy = policyForSignTxTtl(G_context.tx_info.tx_body.ttl);
     switch (ttl_policy) {
         case POLICY_DENY:
             return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -400,17 +400,17 @@ static int validate_and_hash_ttl(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t*
             break;
     }
 
-    txHashBuilder_addTtl(txHashBuilder, G_context.tx_info.transaction.ttl);
+    txHashBuilder_addTtl(txHashBuilder, G_context.tx_info.tx_body.ttl);
     return SWO_SUCCESS;
 }
 
 static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
-    if (G_context.tx_info.transaction.num_certificates == 0) {
+    if (G_context.tx_info.tx_params.num_certificates == 0) {
         return SWO_SUCCESS;
     }
 
     txHashBuilder_enterCertificates(txHashBuilder);
-    flist_node_t *node = G_context.tx_info.transaction.certificates;
+    flist_node_t *node = G_context.tx_info.tx_body.certificates;
     while (node != NULL) {
         tx_certificate_node_t *certificate_node = (tx_certificate_node_t *) node;
         const certificate_data_t *certificate = &certificate_node->certificate;
@@ -422,7 +422,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
             case CERTIFICATE_STAKE_REGISTRATION_CONWAY:
             case CERTIFICATE_STAKE_DEREGISTRATION_CONWAY: {
                 cert_policy = policyForSignTxCertificateStaking(
-                    G_context.tx_info.transaction.txSigningMode,
+                    G_context.tx_info.tx_params.txSigningMode,
                     certificate->type,
                     &certificate->stakeCredential
                 );
@@ -458,7 +458,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
             }
             case CERTIFICATE_STAKE_DELEGATION: {
                 cert_policy = policyForSignTxCertificateStaking(
-                    G_context.tx_info.transaction.txSigningMode,
+                    G_context.tx_info.tx_params.txSigningMode,
                     certificate->type,
                     &certificate->stakeCredential
                 );
@@ -478,7 +478,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
             }
             case CERTIFICATE_VOTE_DELEGATION: {
                 cert_policy = policyForSignTxCertificateVoteDelegation(
-                    G_context.tx_info.transaction.txSigningMode,
+                    G_context.tx_info.tx_params.txSigningMode,
                     &certificate->stakeCredential,
                     &certificate->drep
                 );
@@ -498,7 +498,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
             }
             case CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION: {
                 cert_policy = policyForSignTxCertificateStakePoolAndDRepDelegation(
-                    G_context.tx_info.transaction.txSigningMode,
+                    G_context.tx_info.tx_params.txSigningMode,
                     &certificate->stakeCredential,
                     &certificate->drep
                 );
@@ -518,7 +518,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
             }
             case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL: {
                 cert_policy = policyForSignTxCertificateAccountRegistrationDelegationToStakePool(
-                    G_context.tx_info.transaction.txSigningMode,
+                    G_context.tx_info.tx_params.txSigningMode,
                     &certificate->stakeCredential
                 );
                 switch (cert_policy) {
@@ -537,7 +537,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
             }
             case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP: {
                 cert_policy = policyForSignTxCertificateAccountRegistrationDelegationToDRep(
-                    G_context.tx_info.transaction.txSigningMode,
+                    G_context.tx_info.tx_params.txSigningMode,
                     &certificate->stakeCredential,
                     &certificate->drep
                 );
@@ -557,7 +557,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
             }
             case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP: {
                 cert_policy = policyForSignTxCertificateStakePoolAndDRepDelegation(
-                    G_context.tx_info.transaction.txSigningMode,
+                    G_context.tx_info.tx_params.txSigningMode,
                     &certificate->stakeCredential,
                     &certificate->drep
                 );
@@ -577,7 +577,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
             }
             case CERTIFICATE_AUTHORIZE_COMMITTEE_HOT: {
                 cert_policy = policyForSignTxCertificateCommitteeAuth(
-                    G_context.tx_info.transaction.txSigningMode,
+                    G_context.tx_info.tx_params.txSigningMode,
                     &certificate->coldCredential,
                     &certificate->hotCredential
                 );
@@ -597,7 +597,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
             }
             case CERTIFICATE_RESIGN_COMMITTEE_COLD: {
                 cert_policy = policyForSignTxCertificateCommitteeResign(
-                    G_context.tx_info.transaction.txSigningMode,
+                    G_context.tx_info.tx_params.txSigningMode,
                     &certificate->coldCredential
                 );
                 switch (cert_policy) {
@@ -636,7 +636,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
             case CERTIFICATE_DREP_DEREGISTRATION:
             case CERTIFICATE_DREP_UPDATE: {
                 cert_policy = policyForSignTxCertificateDRep(
-                    G_context.tx_info.transaction.txSigningMode,
+                    G_context.tx_info.tx_params.txSigningMode,
                     &certificate->dRepCredential
                 );
                 switch (cert_policy) {
@@ -698,7 +698,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
             case CERTIFICATE_STAKE_POOL_REGISTRATION: {
                 pool_owner_counts_t owner_counts =
                     count_pool_owner_nodes(certificate->poolRegistration.poolOwners);
-                switch (G_context.tx_info.transaction.txSigningMode) {
+                switch (G_context.tx_info.tx_params.txSigningMode) {
                     case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
                         LEDGER_ASSERT(!G_context.tx_info.pool_owner_path_present,
                                       "Multiple pool registrations in owner mode");
@@ -716,7 +716,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                         break;
                 }
                 cert_policy = policyForSignTxStakePoolRegistrationInit(
-                    G_context.tx_info.transaction.txSigningMode,
+                    G_context.tx_info.tx_params.txSigningMode,
                     certificate->poolRegistration.numPoolOwners,
                     owner_counts.path_owners
                 );
@@ -732,7 +732,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
 
                         // Pool ID (bech32 encoded pool keyhash)
                         security_policy_t pool_id_policy = policyForSignTxStakePoolRegistrationPoolId(
-                            G_context.tx_info.transaction.txSigningMode,
+                            G_context.tx_info.tx_params.txSigningMode,
                             &certificate->poolId
                         );
                         switch (pool_id_policy) {
@@ -750,7 +750,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
 
                         // VRF Key Hash (verification key for pool's VRF)
                         security_policy_t vrf_policy = policyForSignTxStakePoolRegistrationVrfKey(
-                            G_context.tx_info.transaction.txSigningMode
+                            G_context.tx_info.tx_params.txSigningMode
                         );
                         switch (vrf_policy) {
                             case POLICY_DENY:
@@ -770,8 +770,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
 
                         // Reward Account (where pool rewards are distributed to)
                         security_policy_t reward_policy = policyForSignTxStakePoolRegistrationRewardAccount(
-                            G_context.tx_info.transaction.txSigningMode,
-                            G_context.tx_info.transaction.networkId,
+                            G_context.tx_info.tx_params.txSigningMode,
+                            G_context.tx_info.tx_params.networkId,
                             &certificate->poolRegistration.rewardAccount
                         );
                         switch (reward_policy) {
@@ -796,7 +796,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                                     &owner_node->certificate.stakeCredential;
 
                                 security_policy_t owner_policy = policyForSignTxStakePoolRegistrationOwner(
-                                    G_context.tx_info.transaction.txSigningMode,
+                                    G_context.tx_info.tx_params.txSigningMode,
                                     owner_credential
                                 );
                                 switch (owner_policy) {
@@ -833,7 +833,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                                 const pool_relay_t *relay = (const pool_relay_t *) &relay_node->certificate;
 
                                 security_policy_t relay_policy = policyForSignTxStakePoolRegistrationRelay(
-                                    G_context.tx_info.transaction.txSigningMode,
+                                    G_context.tx_info.tx_params.txSigningMode,
                                     relay
                                 );
                                 switch (relay_policy) {
@@ -939,7 +939,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
             }
             case CERTIFICATE_STAKE_POOL_RETIREMENT: {
                 cert_policy = policyForSignTxCertificateStakePoolRetirement(
-                    G_context.tx_info.transaction.txSigningMode,
+                    G_context.tx_info.tx_params.txSigningMode,
                     &certificate->poolCredential,
                     certificate->retirementEpoch
                 );
@@ -1062,7 +1062,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 uint8_t rewardAccountBuf[REWARD_ACCOUNT_LENGTH] = {0};
                 poolRewardAccountToBuffer(
                     &poolReg->rewardAccount,
-                    G_context.tx_info.transaction.networkId,
+                    G_context.tx_info.tx_params.networkId,
                     rewardAccountBuf
                 );
                 txHashBuilder_poolRegistrationCertificate_rewardAccount(
@@ -1228,7 +1228,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
 }
 
 static int validate_and_hash_withdrawals(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
-    if (G_context.tx_info.transaction.num_withdrawals == 0) {
+    if (G_context.tx_info.tx_params.num_withdrawals == 0) {
         return SWO_SUCCESS;
     }
 
@@ -1237,13 +1237,13 @@ static int validate_and_hash_withdrawals(tx_hash_builder_t* txHashBuilder, tx_ui
     uint8_t previousRewardAccount[REWARD_ACCOUNT_LENGTH] = {0};
     bool isFirstWithdrawal = true;
 
-    flist_node_t *node = G_context.tx_info.transaction.withdrawals;
+    flist_node_t *node = G_context.tx_info.tx_body.withdrawals;
     while (node != NULL) {
         tx_withdrawal_node_t *withdrawal_node = (tx_withdrawal_node_t *) node;
         const withdrawal_t *withdrawal = &withdrawal_node->withdrawal;
 
         security_policy_t withdrawal_policy = policyForSignTxWithdrawal(
-            G_context.tx_info.transaction.txSigningMode,
+            G_context.tx_info.tx_params.txSigningMode,
             &withdrawal->stakeCredential,
             &G_context.tx_info.warning_bits
         );
@@ -1272,14 +1272,14 @@ static int validate_and_hash_withdrawals(tx_hash_builder_t* txHashBuilder, tx_ui
             case EXT_CREDENTIAL_KEY_PATH:
                 reward_addr_len = constructRewardAddressFromKeyPath(
                     &withdrawal->stakeCredential.keyPath,
-                    G_context.tx_info.transaction.networkId,
+                    G_context.tx_info.tx_params.networkId,
                     reward_address,
                     sizeof(reward_address)
                 );
                 break;
             case EXT_CREDENTIAL_KEY_HASH:
                 reward_addr_len = constructRewardAddressFromHash(
-                    G_context.tx_info.transaction.networkId,
+                    G_context.tx_info.tx_params.networkId,
                     REWARD_HASH_SOURCE_KEY,
                     withdrawal->stakeCredential.keyHash,
                     ADDRESS_KEY_HASH_LENGTH,
@@ -1289,7 +1289,7 @@ static int validate_and_hash_withdrawals(tx_hash_builder_t* txHashBuilder, tx_ui
                 break;
             case EXT_CREDENTIAL_SCRIPT_HASH:
                 reward_addr_len = constructRewardAddressFromHash(
-                    G_context.tx_info.transaction.networkId,
+                    G_context.tx_info.tx_params.networkId,
                     REWARD_HASH_SOURCE_SCRIPT,
                     withdrawal->stakeCredential.scriptHash,
                     SCRIPT_HASH_LENGTH,
@@ -1330,12 +1330,12 @@ static int validate_and_hash_withdrawals(tx_hash_builder_t* txHashBuilder, tx_ui
 }
 
 static int validate_and_hash_aux_data_hash(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
-    if (!G_context.tx_info.transaction.includeAuxDataHash) {
+    if (!G_context.tx_info.tx_params.includeAuxDataHash) {
         return SWO_SUCCESS;
     }
 
     security_policy_t aux_policy =
-        policyForSignTxAuxData(G_context.tx_info.transaction.auxDataType);
+        policyForSignTxAuxData(G_context.tx_info.tx_params.auxDataType);
     switch (aux_policy) {
         case POLICY_DENY:
             return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -1350,13 +1350,13 @@ static int validate_and_hash_aux_data_hash(tx_hash_builder_t* txHashBuilder, tx_
     }
 
     txHashBuilder_addAuxData(txHashBuilder,
-                             G_context.tx_info.transaction.auxDataHash,
+                             G_context.tx_info.tx_params.auxDataHash,
                              AUX_DATA_HASH_LENGTH);
     return SWO_SUCCESS;
 }
 
 static int validate_and_hash_validity_interval_start(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
-    if (!G_context.tx_info.transaction.includeValidityIntervalStart) {
+    if (!G_context.tx_info.tx_params.includeValidityIntervalStart) {
         return SWO_SUCCESS;
     }
 
@@ -1376,25 +1376,25 @@ static int validate_and_hash_validity_interval_start(tx_hash_builder_t* txHashBu
 
     txHashBuilder_addValidityIntervalStart(
         txHashBuilder,
-        G_context.tx_info.transaction.validityIntervalStart
+        G_context.tx_info.tx_body.validityIntervalStart
     );
     return SWO_SUCCESS;
 }
 
 static int validate_and_hash_mint(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
-    if (G_context.tx_info.transaction.num_mint_asset_groups == 0) {
+    if (G_context.tx_info.tx_params.num_mint_asset_groups == 0) {
         return SWO_SUCCESS;
     }
 
     security_policy_t mint_policy =
-        policyForSignTxMintInit(G_context.tx_info.transaction.txSigningMode);
+        policyForSignTxMintInit(G_context.tx_info.tx_params.txSigningMode);
     switch (mint_policy) {
         case POLICY_DENY:
             return SWO_SECURITY_CONDITION_NOT_SATISFIED;
         case POLICY_SHOW: {
             plan->pair_count += UI_PAIRS_MINT_SUMMARY;
             uint16_t asset_group_count = 0;
-            flist_node_t *node = G_context.tx_info.transaction.mint_asset_groups;
+            flist_node_t *node = G_context.tx_info.tx_body.mint_asset_groups;
             while (node != NULL) {
                 mint_asset_group_node_t *asset_group_node =
                     (mint_asset_group_node_t *) node;
@@ -1413,7 +1413,7 @@ static int validate_and_hash_mint(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t
                 asset_group_count++;
                 node = node->next;
             }
-            LEDGER_ASSERT(asset_group_count == G_context.tx_info.transaction.num_mint_asset_groups,
+            LEDGER_ASSERT(asset_group_count == G_context.tx_info.tx_params.num_mint_asset_groups,
                           "Mint asset group count mismatch");
             break;
         }
@@ -1426,9 +1426,9 @@ static int validate_and_hash_mint(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t
 
     txHashBuilder_enterMint(txHashBuilder);
     txHashBuilder_addMint_topLevelData(txHashBuilder,
-                                       G_context.tx_info.transaction.num_mint_asset_groups);
+                                       G_context.tx_info.tx_params.num_mint_asset_groups);
 
-    flist_node_t *node = G_context.tx_info.transaction.mint_asset_groups;
+    flist_node_t *node = G_context.tx_info.tx_body.mint_asset_groups;
     while (node != NULL) {
         mint_asset_group_node_t *asset_group_node = (mint_asset_group_node_t *) node;
         const mint_asset_group_t *asset_group = &asset_group_node->asset_group;
@@ -1456,12 +1456,12 @@ static int validate_and_hash_mint(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t
 }
 
 static int validate_and_hash_script_data_hash(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
-    if (!G_context.tx_info.transaction.includeScriptDataHash) {
+    if (!G_context.tx_info.tx_params.includeScriptDataHash) {
         return SWO_SUCCESS;
     }
 
     security_policy_t policy = policyForSignTxScriptDataHash(
-        G_context.tx_info.transaction.txSigningMode
+        G_context.tx_info.tx_params.txSigningMode
     );
 
     switch (policy) {
@@ -1479,25 +1479,25 @@ static int validate_and_hash_script_data_hash(tx_hash_builder_t* txHashBuilder, 
     }
 
     txHashBuilder_addScriptDataHash(txHashBuilder,
-                                    G_context.tx_info.transaction.scriptDataHash,
+                                    G_context.tx_info.tx_body.scriptDataHash,
                                     SCRIPT_DATA_HASH_LENGTH);
     return SWO_SUCCESS;
 }
 
 static int validate_and_hash_collateral_inputs(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
-    if (G_context.tx_info.transaction.num_collateral_inputs == 0) {
+    if (G_context.tx_info.tx_params.num_collateral_inputs == 0) {
         return SWO_SUCCESS;
     }
 
     txHashBuilder_enterCollateralInputs(txHashBuilder);
-    flist_node_t *node = G_context.tx_info.transaction.collateral_inputs;
+    flist_node_t *node = G_context.tx_info.tx_body.collateral_inputs;
     while (node != NULL) {
         tx_collateral_input_node_t *input_node = (tx_collateral_input_node_t *) node;
         const tx_input_t *input = &input_node->input;
 
         security_policy_t collateral_input_policy = policyForSignTxCollateralInput(
-            G_context.tx_info.transaction.txSigningMode,
-            G_context.tx_info.transaction.includeTotalCollateral,
+            G_context.tx_info.tx_params.txSigningMode,
+            G_context.tx_info.tx_params.includeTotalCollateral,
             input
         );
 
@@ -1523,18 +1523,18 @@ static int validate_and_hash_collateral_inputs(tx_hash_builder_t* txHashBuilder,
 }
 
 static int validate_and_hash_required_signers(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
-    if (G_context.tx_info.transaction.num_required_signers == 0) {
+    if (G_context.tx_info.tx_params.num_required_signers == 0) {
         return SWO_SUCCESS;
     }
 
     txHashBuilder_enterRequiredSigners(txHashBuilder);
-    flist_node_t *node = G_context.tx_info.transaction.required_signers;
+    flist_node_t *node = G_context.tx_info.tx_body.required_signers;
     while (node != NULL) {
         tx_required_signer_node_t *signer_node = (tx_required_signer_node_t *) node;
         required_signer_t *required_signer = &signer_node->required_signer;
 
         security_policy_t signer_policy = policyForSignTxRequiredSigner(
-            G_context.tx_info.transaction.txSigningMode,
+            G_context.tx_info.tx_params.txSigningMode,
             required_signer
         );
 
@@ -1569,34 +1569,34 @@ static int validate_and_hash_required_signers(tx_hash_builder_t* txHashBuilder, 
 }
 
 static int validate_and_hash_network_id(tx_hash_builder_t* txHashBuilder) {
-    if (!G_context.tx_info.transaction.includeNetworkId) {
+    if (!G_context.tx_info.tx_params.includeNetworkId) {
         return SWO_SUCCESS;
     }
 
-    txHashBuilder_addNetworkId(txHashBuilder, G_context.tx_info.transaction.networkId);
+    txHashBuilder_addNetworkId(txHashBuilder, G_context.tx_info.tx_params.networkId);
     return SWO_SUCCESS;
 }
 
 static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
-    if (!G_context.tx_info.transaction.includeCollateralOutput) {
+    if (!G_context.tx_info.tx_params.includeCollateralOutput) {
         return SWO_SUCCESS;
     }
 
     tx_output_description_t collateral_desc = {0};
-    collateral_desc.format = G_context.tx_info.transaction.collateral_output.format;
-    collateral_desc.amount = G_context.tx_info.transaction.collateral_output.adaAmount;
-    collateral_desc.numAssetGroups = G_context.tx_info.transaction.collateral_output.numAssetGroups;
-    collateral_desc.includeDatum = G_context.tx_info.transaction.collateral_output.datum.hasDatum;
-    collateral_desc.includeRefScript = G_context.tx_info.transaction.collateral_output.refScript.hasRefScript;
+    collateral_desc.format = G_context.tx_info.tx_body.collateral_output.format;
+    collateral_desc.amount = G_context.tx_info.tx_body.collateral_output.adaAmount;
+    collateral_desc.numAssetGroups = G_context.tx_info.tx_body.collateral_output.numAssetGroups;
+    collateral_desc.includeDatum = G_context.tx_info.tx_body.collateral_output.datum.hasDatum;
+    collateral_desc.includeRefScript = G_context.tx_info.tx_body.collateral_output.refScript.hasRefScript;
 
-    collateral_desc.destination = G_context.tx_info.transaction.collateral_output.destination;
+    collateral_desc.destination = G_context.tx_info.tx_body.collateral_output.destination;
 
     security_policy_t collateral_policy = policyForSignTxCollateralOutputAddress(
         &collateral_desc,
-        G_context.tx_info.transaction.txSigningMode,
-        G_context.tx_info.transaction.networkId,
-        G_context.tx_info.transaction.protocolMagic,
-        G_context.tx_info.transaction.includeTotalCollateral
+        G_context.tx_info.tx_params.txSigningMode,
+        G_context.tx_info.tx_params.networkId,
+        G_context.tx_info.tx_params.protocolMagic,
+        G_context.tx_info.tx_params.includeTotalCollateral
     );
 
     if (collateral_policy == POLICY_SHOW &&
@@ -1612,7 +1612,7 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
             security_policy_t collateral_ada_policy =
                 policyForSignTxCollateralOutputAdaAmount(
                     collateral_policy,
-                    G_context.tx_info.transaction.includeTotalCollateral
+                    G_context.tx_info.tx_params.includeTotalCollateral
                 );
             security_policy_t collateral_tokens_policy =
                 policyForSignTxCollateralOutputTokens(
@@ -1620,17 +1620,17 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
                     &collateral_desc
                 );
             plan->pair_count += UI_PAIRS_COLLATERAL_OUTPUT_ADDRESS;
-            if (G_context.tx_info.transaction.collateral_output.destination.type == DESTINATION_DEVICE_OWNED) {
+            if (G_context.tx_info.tx_body.collateral_output.destination.type == DESTINATION_DEVICE_OWNED) {
                 plan->pair_count += UI_PAIRS_COLLATERAL_OUTPUT_DEVICE_OWNED;
             }
             if (collateral_ada_policy == POLICY_SHOW) {
                 plan->pair_count += UI_PAIRS_COLLATERAL_OUTPUT_AMOUNT;
             }
             if (collateral_tokens_policy == POLICY_SHOW &&
-                G_context.tx_info.transaction.collateral_output.assetGroups != NULL) {
+                G_context.tx_info.tx_body.collateral_output.assetGroups != NULL) {
                 uint16_t collateral_group_count = 0;
                 flist_node_t *node2 =
-                    G_context.tx_info.transaction.collateral_output.assetGroups;
+                    G_context.tx_info.tx_body.collateral_output.assetGroups;
                 while (node2 != NULL) {
                     output_asset_group_node_t *asset_group_node =
                         (output_asset_group_node_t *) node2;
@@ -1650,7 +1650,7 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
                     node2 = node2->next;
                 }
                 LEDGER_ASSERT(collateral_group_count ==
-                              G_context.tx_info.transaction.collateral_output.numAssetGroups,
+                              G_context.tx_info.tx_body.collateral_output.numAssetGroups,
                               "Collateral asset group count mismatch");
             }
             break;
@@ -1665,7 +1665,7 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
     _hashOutputTopLevel(txHashBuilder, &collateral_desc, true);
 
     uint16_t collateral_group_count = 0;
-    flist_node_t *node2 = G_context.tx_info.transaction.collateral_output.assetGroups;
+    flist_node_t *node2 = G_context.tx_info.tx_body.collateral_output.assetGroups;
     while (node2 != NULL) {
         output_asset_group_node_t *asset_group_node =
             (output_asset_group_node_t *) node2;
@@ -1689,14 +1689,14 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
         node2 = node2->next;
     }
     LEDGER_ASSERT(collateral_group_count ==
-                  G_context.tx_info.transaction.collateral_output.numAssetGroups,
+                  G_context.tx_info.tx_body.collateral_output.numAssetGroups,
                   "Collateral asset group count mismatch");
 
     return SWO_SUCCESS;
 }
 
 static int validate_and_hash_total_collateral(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
-    if (!G_context.tx_info.transaction.includeTotalCollateral) {
+    if (!G_context.tx_info.tx_params.includeTotalCollateral) {
         return SWO_SUCCESS;
     }
 
@@ -1716,23 +1716,23 @@ static int validate_and_hash_total_collateral(tx_hash_builder_t* txHashBuilder, 
             break;
     }
 
-    txHashBuilder_addTotalCollateral(txHashBuilder, G_context.tx_info.transaction.totalCollateral);
+    txHashBuilder_addTotalCollateral(txHashBuilder, G_context.tx_info.tx_body.totalCollateral);
     return SWO_SUCCESS;
 }
 
 static int validate_and_hash_reference_inputs(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
-    if (G_context.tx_info.transaction.num_reference_inputs == 0) {
+    if (G_context.tx_info.tx_params.num_reference_inputs == 0) {
         return SWO_SUCCESS;
     }
 
     txHashBuilder_enterReferenceInputs(txHashBuilder);
-    flist_node_t *node = G_context.tx_info.transaction.reference_inputs;
+    flist_node_t *node = G_context.tx_info.tx_body.reference_inputs;
     while (node != NULL) {
         tx_input_node_t *input_node = (tx_input_node_t *) node;
         const tx_input_t *input = &input_node->input;
 
         security_policy_t reference_input_policy = policyForSignTxReferenceInput(
-            G_context.tx_info.transaction.txSigningMode,
+            G_context.tx_info.tx_params.txSigningMode,
             input
         );
 
@@ -1758,7 +1758,7 @@ static int validate_and_hash_reference_inputs(tx_hash_builder_t* txHashBuilder, 
 }
 
 static int validate_and_hash_voting_procedures(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
-    if (G_context.tx_info.transaction.num_voters == 0) {
+    if (G_context.tx_info.tx_params.num_voters == 0) {
         return SWO_SUCCESS;
     }
 
@@ -1768,13 +1768,13 @@ static int validate_and_hash_voting_procedures(tx_hash_builder_t* txHashBuilder,
     size_t previous_voter_key_len = 0;
     bool has_previous_voter_key = false;
 
-    flist_node_t *node = G_context.tx_info.transaction.voting_procedures;
+    flist_node_t *node = G_context.tx_info.tx_body.voting_procedures;
     while (node != NULL) {
         voter_votes_node_t *voter_node = (voter_votes_node_t *) node;
         voter_votes_t *voter_votes = &voter_node->voter_votes_data;
 
         security_policy_t voter_policy = policyForSignTxVotingProcedure(
-            G_context.tx_info.transaction.txSigningMode,
+            G_context.tx_info.tx_params.txSigningMode,
             &voter_votes->voter
         );
 
@@ -1893,13 +1893,13 @@ static int validate_and_hash_voting_procedures(tx_hash_builder_t* txHashBuilder,
 }
 
 static int validate_and_hash_treasury(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
-    if (!G_context.tx_info.transaction.includeTreasury) {
+    if (!G_context.tx_info.tx_params.includeTreasury) {
         return SWO_SUCCESS;
     }
 
     security_policy_t treasury_policy = policyForSignTxTreasury(
-        G_context.tx_info.transaction.txSigningMode,
-        G_context.tx_info.transaction.treasury
+        G_context.tx_info.tx_params.txSigningMode,
+        G_context.tx_info.tx_body.treasury
     );
     switch (treasury_policy) {
         case POLICY_DENY:
@@ -1914,18 +1914,18 @@ static int validate_and_hash_treasury(tx_hash_builder_t* txHashBuilder, tx_ui_pl
             break;
     }
 
-    txHashBuilder_addTreasury(txHashBuilder, G_context.tx_info.transaction.treasury);
+    txHashBuilder_addTreasury(txHashBuilder, G_context.tx_info.tx_body.treasury);
     return SWO_SUCCESS;
 }
 
 static int validate_and_hash_donation(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
-    if (!G_context.tx_info.transaction.includeDonation) {
+    if (!G_context.tx_info.tx_params.includeDonation) {
         return SWO_SUCCESS;
     }
 
     security_policy_t donation_policy = policyForSignTxDonation(
-        G_context.tx_info.transaction.txSigningMode,
-        G_context.tx_info.transaction.donation
+        G_context.tx_info.tx_params.txSigningMode,
+        G_context.tx_info.tx_body.donation
     );
     switch (donation_policy) {
         case POLICY_DENY:
@@ -1940,7 +1940,7 @@ static int validate_and_hash_donation(tx_hash_builder_t* txHashBuilder, tx_ui_pl
             break;
     }
 
-    txHashBuilder_addDonation(txHashBuilder, G_context.tx_info.transaction.donation);
+    txHashBuilder_addDonation(txHashBuilder, G_context.tx_info.tx_body.donation);
     return SWO_SUCCESS;
 }
 
@@ -1965,25 +1965,25 @@ int tx_validate_and_compute_hash(tx_ui_plan_t* plan) {
     explicit_bzero(&txHashBuilder, sizeof(txHashBuilder));
 
     txHashBuilder_init(&txHashBuilder,
-                      G_context.tx_info.transaction.tagCborSets,
-                      G_context.tx_info.transaction.num_inputs,
-                      G_context.tx_info.transaction.num_outputs,
-                      G_context.tx_info.transaction.includeTtl,
-                      G_context.tx_info.transaction.num_certificates,
-                      G_context.tx_info.transaction.num_withdrawals,
-                      G_context.tx_info.transaction.includeAuxDataHash,
-                      G_context.tx_info.transaction.includeValidityIntervalStart,
-                      G_context.tx_info.transaction.num_mint_asset_groups > 0,
-                      G_context.tx_info.transaction.includeScriptDataHash,
-                      G_context.tx_info.transaction.num_collateral_inputs,
-                      G_context.tx_info.transaction.num_required_signers,
-                      G_context.tx_info.transaction.includeNetworkId,
-                      G_context.tx_info.transaction.includeCollateralOutput,
-                      G_context.tx_info.transaction.includeTotalCollateral,
-                      G_context.tx_info.transaction.num_reference_inputs,
-                      G_context.tx_info.transaction.num_voters,
-                      G_context.tx_info.transaction.includeTreasury,
-                      G_context.tx_info.transaction.includeDonation);
+                      G_context.tx_info.tx_params.tagCborSets,
+                      G_context.tx_info.tx_params.num_inputs,
+                      G_context.tx_info.tx_params.num_outputs,
+                      G_context.tx_info.tx_params.includeTtl,
+                      G_context.tx_info.tx_params.num_certificates,
+                      G_context.tx_info.tx_params.num_withdrawals,
+                      G_context.tx_info.tx_params.includeAuxDataHash,
+                      G_context.tx_info.tx_params.includeValidityIntervalStart,
+                      G_context.tx_info.tx_params.num_mint_asset_groups > 0,
+                      G_context.tx_info.tx_params.includeScriptDataHash,
+                      G_context.tx_info.tx_params.num_collateral_inputs,
+                      G_context.tx_info.tx_params.num_required_signers,
+                      G_context.tx_info.tx_params.includeNetworkId,
+                      G_context.tx_info.tx_params.includeCollateralOutput,
+                      G_context.tx_info.tx_params.includeTotalCollateral,
+                      G_context.tx_info.tx_params.num_reference_inputs,
+                      G_context.tx_info.tx_params.num_voters,
+                      G_context.tx_info.tx_params.includeTreasury,
+                      G_context.tx_info.tx_params.includeDonation);
 
     int status = validate_and_hash_inputs(&txHashBuilder, plan);
     if (status != SWO_SUCCESS) return status;
@@ -2032,7 +2032,7 @@ int tx_validate_and_compute_hash(tx_ui_plan_t* plan) {
     TRACE_BUFFER(G_context.tx_info.tx_hash, sizeof(G_context.tx_info.tx_hash));
 
     security_policy_t tx_hash_policy =
-        policyForSignTxDisplayTxHash(G_context.tx_info.transaction.txSigningMode);
+        policyForSignTxDisplayTxHash(G_context.tx_info.tx_params.txSigningMode);
     switch (tx_hash_policy) {
         case POLICY_SHOW:
             plan->pair_count += UI_PAIRS_TX_HASH;

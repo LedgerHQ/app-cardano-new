@@ -99,7 +99,8 @@ typedef struct {
 typedef struct {
     uint8_t *raw_tx;
     size_t raw_tx_len;
-    transaction_t transaction;
+    tx_params_t tx_params;
+    tx_parsed_body_t tx_body;
     uint8_t tx_hash[TX_HASH_LENGTH];
 
     uint16_t num_witnesses;    /// Total witnesses requested by host; not decremented during signing.

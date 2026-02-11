@@ -92,11 +92,11 @@ static bool format_input_with_index(const tx_input_t *input, char *out, size_t o
     return true;
 }
 
-static void add_ui_and_free_inputs(transaction_t *tx) {
-    flist_node_t *node = tx->inputs;
+static void add_ui_and_free_inputs(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    flist_node_t *node = tx_body->inputs;
     while (node != NULL) {
         tx_input_node_t *input_node = (tx_input_node_t *) node;
-        security_policy_t input_policy = policyForSignTxInput(tx->txSigningMode, &input_node->input);
+        security_policy_t input_policy = policyForSignTxInput(tx_params->txSigningMode, &input_node->input);
         LEDGER_ASSERT(input_policy != POLICY_DENY, "Input denied during UI");
 
         if (input_policy == POLICY_SHOW) {
@@ -108,7 +108,7 @@ static void add_ui_and_free_inputs(transaction_t *tx) {
         node = node->next;
         APP_MEM_FREE(input_node); // only after next is assigned
     }
-    tx->inputs = NULL;
+    tx_body->inputs = NULL;
 }
 
 
@@ -167,10 +167,10 @@ static bool format_output_address(const tx_output_description_t *output_desc, ch
 }
 
 // Keep this in lockstep with tx_validate.c output pair-counting rules.
-static void add_ui_and_free_outputs(transaction_t *tx) {
+static void add_ui_and_free_outputs(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
     uint16_t output_num = 1;
-    flist_node_t *node = tx->outputs;
-    TRACE("Formatting %u outputs", tx->num_outputs);
+    flist_node_t *node = tx_body->outputs;
+    TRACE("Formatting %u outputs", tx_params->num_outputs);
     while (node != NULL) {
         tx_output_node_t *output_node = (tx_output_node_t *) node;
 
@@ -187,9 +187,9 @@ static void add_ui_and_free_outputs(transaction_t *tx) {
         warning_bits_t output_warnings = 0;
         security_policy_t policy = policyForSignTxOutput(
             &output_desc,
-            tx->txSigningMode,
-            tx->networkId,
-            tx->protocolMagic,
+            tx_params->txSigningMode,
+            tx_params->networkId,
+            tx_params->protocolMagic,
             &output_warnings
         );
                 LEDGER_ASSERT(warning_bits_except_mask(output_warnings, G_context.tx_info.warning_bits) == 0, "Output warnings mismatch");
@@ -273,31 +273,31 @@ static void add_ui_and_free_outputs(transaction_t *tx) {
         node = node->next;
         APP_MEM_FREE(output_node);
     }
-    tx->outputs = NULL;
+    tx_body->outputs = NULL;
 }
 
-static void add_ui_and_free_fee(transaction_t *tx) {
+static void add_ui_and_free_fee(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
     warning_bits_t fee_warnings = 0;
     security_policy_t fee_policy =
-        policyForSignTxFee(tx->txSigningMode, tx->fee, &fee_warnings);
+        policyForSignTxFee(tx_params->txSigningMode, tx_body->fee, &fee_warnings);
     LEDGER_ASSERT(fee_policy != POLICY_DENY, "Fee security policy denied during UI");
         LEDGER_ASSERT(warning_bits_except_mask(fee_warnings, G_context.tx_info.warning_bits) == 0, "Fee warnings mismatch between validation and UI");
     if (fee_policy == POLICY_SHOW) {
         START_COUNT();
-        UI_ADD_FORMAT1(UI_STATIC_LABEL("Fee"), MAX_ADA_AMOUNT_STRING_LENGTH, format_ada_amount, tx->fee);
+        UI_ADD_FORMAT1(UI_STATIC_LABEL("Fee"), MAX_ADA_AMOUNT_STRING_LENGTH, format_ada_amount, tx_body->fee);
         CHECK_COUNT(UI_PAIRS_FEE);
     }
 }
 
-static void add_ui_and_free_ttl(transaction_t *tx) {
-    if (!tx->includeTtl) {
+static void add_ui_and_free_ttl(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    if (!tx_params->includeTtl) {
         return;
     }
-    security_policy_t ttl_policy = policyForSignTxTtl(tx->ttl);
+    security_policy_t ttl_policy = policyForSignTxTtl(tx_body->ttl);
     LEDGER_ASSERT(ttl_policy != POLICY_DENY, "TTL denied during UI");
     if (ttl_policy == POLICY_SHOW) {
         START_COUNT();
-        UI_ADD_FORMAT3(UI_STATIC_LABEL("TTL"), MAX_VALIDITY_BOUNDARY_STRING_LENGTH, format_validity_boundary, tx->ttl, tx->networkId, tx->protocolMagic);
+        UI_ADD_FORMAT3(UI_STATIC_LABEL("TTL"), MAX_VALIDITY_BOUNDARY_STRING_LENGTH, format_validity_boundary, tx_body->ttl, tx_params->networkId, tx_params->protocolMagic);
         CHECK_COUNT(UI_PAIRS_TTL);
     }
 }
@@ -406,7 +406,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
 
     security_policy_t reward_policy = policyForSignTxStakePoolRegistrationRewardAccount(
         txSigningMode,
-        G_context.tx_info.transaction.networkId,
+        G_context.tx_info.tx_params.networkId,
         &certificate->poolRegistration.rewardAccount
     );
     LEDGER_ASSERT(reward_policy != POLICY_DENY, "Reward account security policy denied");
@@ -416,7 +416,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
         UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Pool reward address", "Reward addr"),
                        MAX_HUMAN_ADDRESS_LENGTH,
                        format_pool_reward_account,
-                       G_context.tx_info.transaction.networkId,
+                       G_context.tx_info.tx_params.networkId,
                        &certificate->poolRegistration.rewardAccount);
         CHECK_COUNT(UI_PAIRS_POOL_REWARD_ACCOUNT);
     }
@@ -428,7 +428,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
         ext_credential_t* owner_credential = &owner_item->certificate.stakeCredential;
 
         security_policy_t owner_policy = policyForSignTxStakePoolRegistrationOwner(
-            G_context.tx_info.transaction.txSigningMode,
+            G_context.tx_info.tx_params.txSigningMode,
             owner_credential
         );
         LEDGER_ASSERT(owner_policy != POLICY_DENY, "Pool owner security policy denied");
@@ -438,7 +438,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
             UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Owner reward address", "Owner addr"),
                            MAX_HUMAN_ADDRESS_LENGTH,
                            format_reward_account_from_credential,
-                           G_context.tx_info.transaction.networkId,
+                           G_context.tx_info.tx_params.networkId,
                            owner_credential);
             CHECK_COUNT(UI_PAIRS_POOL_OWNER);
         }
@@ -465,7 +465,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
         pool_relay_t* relay = (pool_relay_t*) &relay_item->certificate;
 
         security_policy_t relay_policy = policyForSignTxStakePoolRegistrationRelay(
-            G_context.tx_info.transaction.txSigningMode,
+            G_context.tx_info.tx_params.txSigningMode,
             relay
         );
         LEDGER_ASSERT(relay_policy != POLICY_DENY, "Relay security policy denied");
@@ -696,37 +696,37 @@ static bool should_show_certificate(
     return policy == POLICY_SHOW;
 }
 
-static void add_ui_and_free_certificates(transaction_t *tx) {
-    flist_node_t *node = tx->certificates;
-    TRACE("Formatting %u certificates", tx->num_certificates);
+static void add_ui_and_free_certificates(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    flist_node_t *node = tx_body->certificates;
+    TRACE("Formatting %u certificates", tx_params->num_certificates);
     while (node != NULL) {
         tx_certificate_node_t *certificate_node = (tx_certificate_node_t *) node;
         const certificate_data_t *certificate = &certificate_node->certificate;
         if (certificate->type == CERTIFICATE_STAKE_POOL_REGISTRATION) {
             // treated separately
-            add_ui_and_free_certificate_pool_registration(certificate, tx->txSigningMode);
+            add_ui_and_free_certificate_pool_registration(certificate, tx_params->txSigningMode);
         } else if (should_show_certificate(
                        certificate->type,
                        certificate,
-                       tx->txSigningMode)) {
+                       tx_params->txSigningMode)) {
             addCertificateUIPairs(certificate);
         }
 
         node = node->next;
         APP_MEM_FREE(certificate_node);
     }
-    tx->certificates = NULL;
+    tx_body->certificates = NULL;
 }
 
-static void add_ui_and_free_withdrawals(transaction_t *tx) {
-    flist_node_t *node = tx->withdrawals;
-    TRACE("Formatting %u withdrawals", tx->num_withdrawals);
+static void add_ui_and_free_withdrawals(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    flist_node_t *node = tx_body->withdrawals;
+    TRACE("Formatting %u withdrawals", tx_params->num_withdrawals);
     while (node != NULL) {
         tx_withdrawal_node_t *withdrawal_node = (tx_withdrawal_node_t *) node;
 
         warning_bits_t withdrawal_warnings = 0;
         security_policy_t policy = policyForSignTxWithdrawal(
-            tx->txSigningMode,
+            tx_params->txSigningMode,
             &withdrawal_node->withdrawal.stakeCredential,
             &withdrawal_warnings
         );
@@ -735,7 +735,7 @@ static void add_ui_and_free_withdrawals(transaction_t *tx) {
         LEDGER_ASSERT(policy != POLICY_DENY, "Withdrawal denied during UI");
         if (policy == POLICY_SHOW) {
             addWithdrawalUIPairs(
-                G_context.tx_info.transaction.networkId,
+                G_context.tx_info.tx_params.networkId,
                 &withdrawal_node->withdrawal
             );
         }
@@ -743,31 +743,31 @@ static void add_ui_and_free_withdrawals(transaction_t *tx) {
         node = node->next;
         APP_MEM_FREE(withdrawal_node);
     }
-    tx->withdrawals = NULL;
+    tx_body->withdrawals = NULL;
 }
 
-static void add_ui_and_free_aux_data_hash(transaction_t *tx) {
-    if (!tx->includeAuxDataHash) {
+static void add_ui_and_free_aux_data_hash(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    if (!tx_params->includeAuxDataHash) {
         return;
     }
-    security_policy_t policy = policyForSignTxAuxData(tx->auxDataType);
+    security_policy_t policy = policyForSignTxAuxData(tx_params->auxDataType);
     LEDGER_ASSERT(policy != POLICY_DENY, "Aux data denied during UI");
     if (policy == POLICY_SHOW) {
         START_COUNT();
-        UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Auxiliary data hash", "Aux data hash"), MAX_TX_HASH_DISPLAY_LENGTH, format_hex_bytes, tx->auxDataHash, AUX_DATA_HASH_LENGTH);
+        UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Auxiliary data hash", "Aux data hash"), MAX_TX_HASH_DISPLAY_LENGTH, format_hex_bytes, tx_params->auxDataHash, AUX_DATA_HASH_LENGTH);
         CHECK_COUNT(UI_PAIRS_AUXILIARY_DATA_HASH);
     }
 }
 
-static void add_ui_and_free_validity_interval_start(transaction_t *tx) {
-    if (!tx->includeValidityIntervalStart) {
+static void add_ui_and_free_validity_interval_start(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    if (!tx_params->includeValidityIntervalStart) {
         return;
     }
     security_policy_t validity_interval_start_policy = policyForSignTxValidityIntervalStart();
     LEDGER_ASSERT(validity_interval_start_policy != POLICY_DENY, "Validity interval start denied during UI");
     if (validity_interval_start_policy == POLICY_SHOW) {
         START_COUNT();
-        UI_ADD_FORMAT3(UI_STATIC_LABEL("Valid from"), MAX_VALIDITY_BOUNDARY_STRING_LENGTH, format_validity_boundary, tx->validityIntervalStart, tx->networkId, tx->protocolMagic);
+        UI_ADD_FORMAT3(UI_STATIC_LABEL("Valid from"), MAX_VALIDITY_BOUNDARY_STRING_LENGTH, format_validity_boundary, tx_body->validityIntervalStart, tx_params->networkId, tx_params->protocolMagic);
         CHECK_COUNT(UI_PAIRS_VALIDITY_INTERVAL_START);
     }
 }
@@ -780,22 +780,22 @@ static bool format_mint_summary(uint16_t num_groups, char *out, size_t outSize) 
     return (size_t)written + 1 < outSize;
 }
 
-static void add_ui_and_free_mint(transaction_t *tx) {
-    if (tx->mint_asset_groups == NULL) {
+static void add_ui_and_free_mint(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    if (tx_body->mint_asset_groups == NULL) {
         return;
     }
 
-    security_policy_t mint_policy = policyForSignTxMintInit(tx->txSigningMode);
+    security_policy_t mint_policy = policyForSignTxMintInit(tx_params->txSigningMode);
     LEDGER_ASSERT(mint_policy != POLICY_DENY, "Mint denied during UI");
     const bool show_mint = (mint_policy == POLICY_SHOW);
 
     START_COUNT();
     if (show_mint) {
-        UI_ADD_FORMAT1(UI_STATIC_LABEL("Mint"), MAX_MINT_SUMMARY_STRING_LENGTH, format_mint_summary, tx->num_mint_asset_groups);
+        UI_ADD_FORMAT1(UI_STATIC_LABEL("Mint"), MAX_MINT_SUMMARY_STRING_LENGTH, format_mint_summary, tx_params->num_mint_asset_groups);
     }
 
     uint16_t token_count = 0;
-    flist_node_t *node = tx->mint_asset_groups;
+    flist_node_t *node = tx_body->mint_asset_groups;
     while (node != NULL) {
         mint_asset_group_node_t *asset_group_node = (mint_asset_group_node_t *) node;
         mint_asset_group_t *asset_group = &asset_group_node->asset_group;
@@ -821,7 +821,7 @@ static void add_ui_and_free_mint(transaction_t *tx) {
         APP_MEM_FREE(asset_group_node);
     }
 
-    tx->mint_asset_groups = NULL;
+    tx_body->mint_asset_groups = NULL;
 
     if (show_mint) {
         // Count: 1 summary + (2 * num_tokens)
@@ -830,27 +830,27 @@ static void add_ui_and_free_mint(transaction_t *tx) {
     }
 }
 
-static void add_ui_and_free_script_data_hash(transaction_t *tx) {
-    if (!tx->includeScriptDataHash) {
+static void add_ui_and_free_script_data_hash(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    if (!tx_params->includeScriptDataHash) {
         return;
     }
-    security_policy_t policy = policyForSignTxScriptDataHash(tx->txSigningMode);
+    security_policy_t policy = policyForSignTxScriptDataHash(tx_params->txSigningMode);
     LEDGER_ASSERT(policy != POLICY_DENY, "Script data hash denied during UI");
     if (policy == POLICY_SHOW) {
         START_COUNT();
-        UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Script data hash", "Script hash"), MAX_BECH32_STRING_LENGTH, format_bech32, "script_data", tx->scriptDataHash, SCRIPT_DATA_HASH_LENGTH);
+        UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Script data hash", "Script hash"), MAX_BECH32_STRING_LENGTH, format_bech32, "script_data", tx_body->scriptDataHash, SCRIPT_DATA_HASH_LENGTH);
         CHECK_COUNT(UI_PAIRS_SCRIPT_DATA_HASH);
     }
 }
 
-static void add_ui_and_free_collateral_inputs(transaction_t *tx) {
-    flist_node_t *node = tx->collateral_inputs;
+static void add_ui_and_free_collateral_inputs(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    flist_node_t *node = tx_body->collateral_inputs;
     while (node != NULL) {
         tx_collateral_input_node_t *collateral_input_node = (tx_collateral_input_node_t *) node;
 
         security_policy_t collateral_input_policy = policyForSignTxCollateralInput(
-            tx->txSigningMode,
-            tx->includeTotalCollateral,
+            tx_params->txSigningMode,
+            tx_params->includeTotalCollateral,
             &collateral_input_node->input);
         LEDGER_ASSERT(collateral_input_policy != POLICY_DENY, "Collateral input policy denied during UI");
 
@@ -863,16 +863,16 @@ static void add_ui_and_free_collateral_inputs(transaction_t *tx) {
         node = node->next;
         APP_MEM_FREE(collateral_input_node);
     }
-    tx->collateral_inputs = NULL;
+    tx_body->collateral_inputs = NULL;
 }
 
-static void add_ui_and_free_required_signers(transaction_t *tx) {
-    flist_node_t *node = tx->required_signers;
+static void add_ui_and_free_required_signers(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    flist_node_t *node = tx_body->required_signers;
     while (node != NULL) {
         tx_required_signer_node_t *required_signer_node = (tx_required_signer_node_t *) node;
         required_signer_t *required_signer = &required_signer_node->required_signer;
 
-        security_policy_t policy = policyForSignTxRequiredSigner(tx->txSigningMode, required_signer);
+        security_policy_t policy = policyForSignTxRequiredSigner(tx_params->txSigningMode, required_signer);
         LEDGER_ASSERT(policy != POLICY_DENY, "Required signer denied during UI");
 
         if (policy == POLICY_SHOW) {
@@ -895,35 +895,35 @@ static void add_ui_and_free_required_signers(transaction_t *tx) {
         node = node->next;
         APP_MEM_FREE(required_signer_node); // only after next is assigned
     }
-    tx->required_signers = NULL;
+    tx_body->required_signers = NULL;
 }
 
 // Keep this in lockstep with tx_validate.c collateral-output pair-counting rules.
-static void add_ui_and_free_collateral_output(transaction_t *tx) {
-    if (!tx->includeCollateralOutput) {
+static void add_ui_and_free_collateral_output(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    if (!tx_params->includeCollateralOutput) {
         return;
     }
     tx_output_description_t collateral_desc = {
-        .format = tx->collateral_output.format,
-        .amount = tx->collateral_output.adaAmount,
-        .numAssetGroups = tx->collateral_output.numAssetGroups,
-        .includeDatum = tx->collateral_output.datum.hasDatum,
-        .includeRefScript = tx->collateral_output.refScript.hasRefScript,
+        .format = tx_body->collateral_output.format,
+        .amount = tx_body->collateral_output.adaAmount,
+        .numAssetGroups = tx_body->collateral_output.numAssetGroups,
+        .includeDatum = tx_body->collateral_output.datum.hasDatum,
+        .includeRefScript = tx_body->collateral_output.refScript.hasRefScript,
     };
 
-    collateral_desc.destination = tx->collateral_output.destination;
+    collateral_desc.destination = tx_body->collateral_output.destination;
 
     security_policy_t collateral_policy = policyForSignTxCollateralOutputAddress(
         &collateral_desc,
-        tx->txSigningMode,
-        tx->networkId,
-        tx->protocolMagic,
-        tx->includeTotalCollateral
+        tx_params->txSigningMode,
+        tx_params->networkId,
+        tx_params->protocolMagic,
+        tx_params->includeTotalCollateral
     );
     LEDGER_ASSERT(collateral_policy != POLICY_DENY, "Collateral output denied during UI");
 
     security_policy_t collateral_ada_policy =
-        policyForSignTxCollateralOutputAdaAmount(collateral_policy, tx->includeTotalCollateral);
+        policyForSignTxCollateralOutputAdaAmount(collateral_policy, tx_params->includeTotalCollateral);
     LEDGER_ASSERT(collateral_ada_policy != POLICY_DENY, "Collateral ADA policy denied during UI");
     security_policy_t collateral_tokens_policy =
         policyForSignTxCollateralOutputTokens(collateral_policy, &collateral_desc);
@@ -932,7 +932,7 @@ static void add_ui_and_free_collateral_output(transaction_t *tx) {
         (collateral_policy == POLICY_SHOW) && (collateral_tokens_policy == POLICY_SHOW);
     TRACE("Collateral output: policy=%d ada_policy=%d tokens_policy=%d numAssets=%u",
           collateral_policy, collateral_ada_policy, collateral_tokens_policy,
-          (unsigned)tx->collateral_output.numAssetGroups);
+          (unsigned)tx_body->collateral_output.numAssetGroups);
 
     if (collateral_policy == POLICY_SHOW) {
         START_COUNT();
@@ -958,43 +958,43 @@ static void add_ui_and_free_collateral_output(transaction_t *tx) {
         CHECK_COUNT(expected);
     }
 
-    uint16_t token_count = (show_collateral_tokens && tx->collateral_output.assetGroups != NULL)
-        ? count_output_tokens(tx->collateral_output.assetGroups)
+    uint16_t token_count = (show_collateral_tokens && tx_body->collateral_output.assetGroups != NULL)
+        ? count_output_tokens(tx_body->collateral_output.assetGroups)
         : 0;
 
     START_COUNT();
     add_ui_and_free_output_asset_groups(
-        tx->collateral_output.assetGroups,
-        tx->collateral_output.numAssetGroups,
+        tx_body->collateral_output.assetGroups,
+        tx_body->collateral_output.numAssetGroups,
         show_collateral_tokens);
 
     if (token_count > 0) {
         CHECK_COUNT(UI_PAIRS_TOKEN * token_count);
     }
 
-    tx->collateral_output.assetGroups = NULL;
+    tx_body->collateral_output.assetGroups = NULL;
 }
 
-static void add_ui_and_free_total_collateral(transaction_t *tx) {
-    if (!tx->includeTotalCollateral) {
+static void add_ui_and_free_total_collateral(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    if (!tx_params->includeTotalCollateral) {
         return;
     }
     security_policy_t policy = policyForSignTxTotalCollateral();
     LEDGER_ASSERT(policy != POLICY_DENY, "Total collateral denied during UI");
     if (policy == POLICY_SHOW) {
         START_COUNT();
-        UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Total collateral", "Total coll"), MAX_ADA_AMOUNT_STRING_LENGTH, format_ada_amount, tx->totalCollateral);
+        UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Total collateral", "Total coll"), MAX_ADA_AMOUNT_STRING_LENGTH, format_ada_amount, tx_body->totalCollateral);
         CHECK_COUNT(UI_PAIRS_TOTAL_COLLATERAL);
     }
 }
 
-static void add_ui_and_free_reference_inputs(transaction_t *tx) {
-    flist_node_t *node = tx->reference_inputs;
+static void add_ui_and_free_reference_inputs(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    flist_node_t *node = tx_body->reference_inputs;
     while (node != NULL) {
         tx_input_node_t *ref_input_node = (tx_input_node_t *) node;
 
         security_policy_t reference_input_policy = policyForSignTxReferenceInput(
-            tx->txSigningMode,
+            tx_params->txSigningMode,
             &ref_input_node->input);
         LEDGER_ASSERT(reference_input_policy != POLICY_DENY, "Reference input denied during UI");
 
@@ -1007,15 +1007,15 @@ static void add_ui_and_free_reference_inputs(transaction_t *tx) {
         node = node->next;
         APP_MEM_FREE(ref_input_node);
     }
-    tx->reference_inputs = NULL;
+    tx_body->reference_inputs = NULL;
 }
 
-static void add_ui_and_free_voting_procedures(transaction_t *tx) {
-    flist_node_t *node = tx->voting_procedures;
+static void add_ui_and_free_voting_procedures(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    flist_node_t *node = tx_body->voting_procedures;
     while (node != NULL) {
         voter_votes_node_t *voter_node = (voter_votes_node_t *) node;
 
-        security_policy_t policy = policyForSignTxVotingProcedure(tx->txSigningMode, &voter_node->voter_votes_data.voter);
+        security_policy_t policy = policyForSignTxVotingProcedure(tx_params->txSigningMode, &voter_node->voter_votes_data.voter);
         LEDGER_ASSERT(policy != POLICY_DENY, "Voting procedure denied during UI");
 
         if (policy == POLICY_SHOW) {
@@ -1045,39 +1045,39 @@ static void add_ui_and_free_voting_procedures(transaction_t *tx) {
         node = node->next;
         APP_MEM_FREE(voter_node);
     }
-    tx->voting_procedures = NULL;
+    tx_body->voting_procedures = NULL;
 }
 
-static void add_ui_and_free_treasury(transaction_t *tx) {
-    if (!tx->includeTreasury) {
+static void add_ui_and_free_treasury(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    if (!tx_params->includeTreasury) {
         return;
     }
-    security_policy_t policy = policyForSignTxTreasury(tx->txSigningMode, tx->treasury);
+    security_policy_t policy = policyForSignTxTreasury(tx_params->txSigningMode, tx_body->treasury);
     LEDGER_ASSERT(policy != POLICY_DENY, "Treasury denied during UI");
 
     if (policy == POLICY_SHOW) {
         START_COUNT();
-        UI_ADD_FORMAT1(UI_STATIC_LABEL("Treasury"), MAX_ADA_AMOUNT_STRING_LENGTH, format_ada_amount, tx->treasury);
+        UI_ADD_FORMAT1(UI_STATIC_LABEL("Treasury"), MAX_ADA_AMOUNT_STRING_LENGTH, format_ada_amount, tx_body->treasury);
         CHECK_COUNT(UI_PAIRS_TREASURY);
     }
 }
 
-static void add_ui_and_free_donation(transaction_t *tx) {
-    if (!tx->includeDonation) {
+static void add_ui_and_free_donation(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    if (!tx_params->includeDonation) {
         return;
     }
-    security_policy_t policy = policyForSignTxDonation(tx->txSigningMode, tx->donation);
+    security_policy_t policy = policyForSignTxDonation(tx_params->txSigningMode, tx_body->donation);
     LEDGER_ASSERT(policy != POLICY_DENY, "Donation denied during UI");
 
     if (policy == POLICY_SHOW) {
         START_COUNT();
-        UI_ADD_FORMAT1(UI_STATIC_LABEL("Donation"), MAX_ADA_AMOUNT_STRING_LENGTH, format_ada_amount, tx->donation);
+        UI_ADD_FORMAT1(UI_STATIC_LABEL("Donation"), MAX_ADA_AMOUNT_STRING_LENGTH, format_ada_amount, tx_body->donation);
         CHECK_COUNT(UI_PAIRS_DONATION);
     }
 }
 
 static void add_ui_and_free_tx_hash(void) {
-    security_policy_t policy = policyForSignTxDisplayTxHash(G_context.tx_info.transaction.txSigningMode);
+    security_policy_t policy = policyForSignTxDisplayTxHash(G_context.tx_info.tx_params.txSigningMode);
     LEDGER_ASSERT(policy != POLICY_DENY, "Transaction hash display denied during UI");
     if (policy == POLICY_SHOW) {
         START_COUNT();
@@ -1092,31 +1092,32 @@ static void add_ui_and_free_tx_hash(void) {
 
 static int add_ui_strings_and_free_parsed_data(void) {
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_HASHED, "String formatting invoked too early");
-    transaction_t *tx = &G_context.tx_info.transaction;
+    tx_params_t *tx_params = &G_context.tx_info.tx_params;
+    tx_parsed_body_t *tx_body = &G_context.tx_info.tx_body;
 
     // Initialize error status before formatting
     ui_reset_error_status();
 
     TRACE("UI formatting starting");
 
-    add_ui_and_free_inputs(tx);
-    add_ui_and_free_outputs(tx);
-    add_ui_and_free_fee(tx);
-    add_ui_and_free_ttl(tx);
-    add_ui_and_free_certificates(tx);
-    add_ui_and_free_withdrawals(tx);
-    add_ui_and_free_aux_data_hash(tx);
-    add_ui_and_free_validity_interval_start(tx);
-    add_ui_and_free_mint(tx);
-    add_ui_and_free_script_data_hash(tx);
-    add_ui_and_free_collateral_inputs(tx);
-    add_ui_and_free_required_signers(tx);
-    add_ui_and_free_collateral_output(tx);
-    add_ui_and_free_total_collateral(tx);
-    add_ui_and_free_reference_inputs(tx);
-    add_ui_and_free_voting_procedures(tx);
-    add_ui_and_free_treasury(tx);
-    add_ui_and_free_donation(tx);
+    add_ui_and_free_inputs(tx_params, tx_body);
+    add_ui_and_free_outputs(tx_params, tx_body);
+    add_ui_and_free_fee(tx_params, tx_body);
+    add_ui_and_free_ttl(tx_params, tx_body);
+    add_ui_and_free_certificates(tx_params, tx_body);
+    add_ui_and_free_withdrawals(tx_params, tx_body);
+    add_ui_and_free_aux_data_hash(tx_params, tx_body);
+    add_ui_and_free_validity_interval_start(tx_params, tx_body);
+    add_ui_and_free_mint(tx_params, tx_body);
+    add_ui_and_free_script_data_hash(tx_params, tx_body);
+    add_ui_and_free_collateral_inputs(tx_params, tx_body);
+    add_ui_and_free_required_signers(tx_params, tx_body);
+    add_ui_and_free_collateral_output(tx_params, tx_body);
+    add_ui_and_free_total_collateral(tx_params, tx_body);
+    add_ui_and_free_reference_inputs(tx_params, tx_body);
+    add_ui_and_free_voting_procedures(tx_params, tx_body);
+    add_ui_and_free_treasury(tx_params, tx_body);
+    add_ui_and_free_donation(tx_params, tx_body);
     add_ui_and_free_tx_hash();
 
     TRACE("UI formatting complete: actual_pairs=%u planned_pairs=%u",

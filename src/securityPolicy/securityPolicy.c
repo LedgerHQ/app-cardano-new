@@ -373,69 +373,55 @@ static inline void set_network_unusual_warning(warning_bits_t *warnings,
 }
 
 // Initiate transaction signing
-security_policy_t policyForSignTxInit(sign_tx_signingmode_t txSigningMode,
-                                      uint32_t networkId,
-                                      uint32_t protocolMagic,
-                                      uint16_t numOutputs,
-                                      uint16_t numCertificates,
-                                      uint16_t numWithdrawals,
-                                      bool includeMint,
-                                      bool includeScriptDataHash,
-                                      uint16_t numCollateralInputs,
-                                      uint16_t numRequiredSigners,
-                                      bool includeNetworkId,
-                                      bool includeCollateralOutput,
-                                      bool includeTotalCollateral,
-                                      uint16_t numReferenceInputs,
-                                      uint16_t numVotingProcedures,
-                                      bool includeTreasury,
-                                      bool includeDonation,
+security_policy_t policyForSignTxInit(const tx_params_t *txParams,
                                       warning_bits_t *warnings) {
+    LEDGER_ASSERT(txParams != NULL, "NULL txParams");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
-    DENY_UNLESS(isValidNetworkId(networkId));
+    DENY_UNLESS(isValidNetworkId(txParams->networkId));
     // Deny shelley mainnet with weird byron protocol magic
-    DENY_IF(networkId == MAINNET_NETWORK_ID && protocolMagic != MAINNET_PROTOCOL_MAGIC);
+    DENY_IF(txParams->networkId == MAINNET_NETWORK_ID &&
+            txParams->protocolMagic != MAINNET_PROTOCOL_MAGIC);
     // Note: testnets can still use byron mainnet protocol magic so we can't deny the opposite
     // direction
 
     // certain combinations of tx body elements are forbidden
     // mostly because of potential cross-witnessing
-    switch (txSigningMode) {
+    switch (txParams->txSigningMode) {
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
             // necessary to avoid intermingling witnesses from several certs
-            DENY_UNLESS(numCertificates == 1);
+            DENY_UNLESS(txParams->num_certificates == 1);
 
             // witnesses for owners and withdrawals are the same
             // we forbid withdrawals so that users cannot be tricked into witnessing
             // something unintentionally (e.g. an owner given by the stake key hash)
-            DENY_UNLESS(numWithdrawals == 0);
+            DENY_UNLESS(txParams->num_withdrawals == 0);
 
             // mint must not be combined with pool registration certificates
-            DENY_IF(includeMint);
+            DENY_IF(txParams->num_mint_asset_groups > 0);
 
             // no Plutus elements for pool registrations
-            DENY_IF(includeScriptDataHash);
-            DENY_IF(numCollateralInputs > 0);
-            DENY_IF(numRequiredSigners > 0);
-            DENY_IF(includeCollateralOutput);
-            DENY_IF(includeTotalCollateral);
-            DENY_IF(numReferenceInputs > 0);
+            DENY_IF(txParams->includeScriptDataHash);
+            DENY_IF(txParams->num_collateral_inputs > 0);
+            DENY_IF(txParams->num_required_signers > 0);
+            DENY_IF(txParams->includeCollateralOutput);
+            DENY_IF(txParams->includeTotalCollateral);
+            DENY_IF(txParams->num_reference_inputs > 0);
 
             // no voting, treasuries, donations for pool registrations
             // we don't need them and we want to avoid overlap in witnesses
-            DENY_IF(numVotingProcedures > 0);
-            DENY_IF(includeTreasury);
-            DENY_IF(includeDonation);
+            DENY_IF(txParams->num_voters > 0);
+            DENY_IF(txParams->includeTreasury);
+            DENY_IF(txParams->includeDonation);
             break;
 
         case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
         case SIGN_TX_SIGNINGMODE_MULTISIG_TX:
             // collateral inputs are allowed only in PLUTUS_TX
-            DENY_IF(numCollateralInputs > 0);
-            DENY_IF(includeCollateralOutput);
-            DENY_IF(includeTotalCollateral);
-            DENY_IF(numReferenceInputs > 0);
+            DENY_IF(txParams->num_collateral_inputs > 0);
+            DENY_IF(txParams->includeCollateralOutput);
+            DENY_IF(txParams->includeTotalCollateral);
+            DENY_IF(txParams->num_reference_inputs > 0);
             break;
 
         case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
@@ -448,14 +434,26 @@ security_policy_t policyForSignTxInit(sign_tx_signingmode_t txSigningMode,
     // warnings are collected here; UI machine decides which screens to show
     set_network_not_verifiable_warning(
         warnings,
-        includeNetworkId,
-        numOutputs,
-        numWithdrawals,
-        txSigningMode);
-    set_network_unusual_warning(warnings, networkId, protocolMagic);
-    set_missing_collateral_warning(warnings, txSigningMode, numCollateralInputs);
-    set_unknown_collateral_warning(warnings, txSigningMode, includeTotalCollateral);
-    set_missing_script_data_hash_warning(warnings, txSigningMode, includeScriptDataHash);
+        txParams->includeNetworkId,
+        txParams->num_outputs,
+        txParams->num_withdrawals,
+        txParams->txSigningMode);
+    set_network_unusual_warning(
+        warnings,
+        txParams->networkId,
+        txParams->protocolMagic);
+    set_missing_collateral_warning(
+        warnings,
+        txParams->txSigningMode,
+        txParams->num_collateral_inputs);
+    set_unknown_collateral_warning(
+        warnings,
+        txParams->txSigningMode,
+        txParams->includeTotalCollateral);
+    set_missing_script_data_hash_warning(
+        warnings,
+        txParams->txSigningMode,
+        txParams->includeScriptDataHash);
 
     SHOW();
 }

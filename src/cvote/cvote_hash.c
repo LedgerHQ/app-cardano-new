@@ -189,7 +189,7 @@ void cvote_hash_finalize(void) {
     cvote_append_registration_signature(aux_data);
 
     auxDataHashBuilder_finalize(&aux_data->hash_builder,
-                                G_context.tx_info.transaction.auxDataHash,
+                                G_context.tx_info.tx_params.auxDataHash,
                                 AUX_DATA_HASH_LENGTH);
     aux_data->hash_finalized = true;
 }

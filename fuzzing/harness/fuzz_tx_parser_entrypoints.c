@@ -30,35 +30,36 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     switch (mode) {
         case 0: {
             // Fuzz full transaction parsing with bounded counts.
-            transaction_t transaction = {0};
+            tx_params_t tx_params = {0};
+            tx_parsed_body_t tx_body = {0};
             if (size < 10) {
                 return 0;
             }
 
-            transaction.num_inputs = data[0] & 0x07;
-            transaction.num_outputs = data[1] & 0x07;
-            transaction.num_certificates = data[2] & 0x03;
-            transaction.num_withdrawals = data[3] & 0x03;
-            transaction.num_mint_asset_groups = data[4] & 0x03;
-            transaction.num_collateral_inputs = data[5] & 0x03;
-            transaction.num_required_signers = data[6] & 0x03;
-            transaction.num_reference_inputs = data[7] & 0x03;
-            transaction.num_voters = data[8] & 0x03;
+            tx_params.num_inputs = data[0] & 0x07;
+            tx_params.num_outputs = data[1] & 0x07;
+            tx_params.num_certificates = data[2] & 0x03;
+            tx_params.num_withdrawals = data[3] & 0x03;
+            tx_params.num_mint_asset_groups = data[4] & 0x03;
+            tx_params.num_collateral_inputs = data[5] & 0x03;
+            tx_params.num_required_signers = data[6] & 0x03;
+            tx_params.num_reference_inputs = data[7] & 0x03;
+            tx_params.num_voters = data[8] & 0x03;
 
             const uint8_t flags = data[9];
-            transaction.includeTtl = (flags & 0x01) != 0;
-            transaction.includeValidityIntervalStart = (flags & 0x02) != 0;
-            transaction.includeScriptDataHash = (flags & 0x04) != 0;
-            transaction.includeCollateralOutput = (flags & 0x08) != 0;
-            transaction.includeTotalCollateral = (flags & 0x10) != 0;
-            transaction.includeTreasury = (flags & 0x20) != 0;
-            transaction.includeDonation = (flags & 0x40) != 0;
+            tx_params.includeTtl = (flags & 0x01) != 0;
+            tx_params.includeValidityIntervalStart = (flags & 0x02) != 0;
+            tx_params.includeScriptDataHash = (flags & 0x04) != 0;
+            tx_params.includeCollateralOutput = (flags & 0x08) != 0;
+            tx_params.includeTotalCollateral = (flags & 0x10) != 0;
+            tx_params.includeTreasury = (flags & 0x20) != 0;
+            tx_params.includeDonation = (flags & 0x40) != 0;
 
             parse_buffer.ptr = data + 10;
             parse_buffer.size = size - 10;
             parse_buffer.offset = 0;
 
-            (void) parse_tx(&parse_buffer, &transaction);
+            (void) parse_tx(&parse_buffer, &tx_params, &tx_body);
             break;
         }
         case 1: {

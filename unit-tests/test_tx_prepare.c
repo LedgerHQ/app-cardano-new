@@ -28,8 +28,8 @@ static void test_compute_tx_hash_and_plan_ui_counts_ttl(void **state) {
     (void) state;
     reset_context();
 
-    G_context.tx_info.transaction.includeTtl = true;
-    G_context.tx_info.transaction.ttl = 123;
+    G_context.tx_info.tx_params.includeTtl = true;
+    G_context.tx_info.tx_body.ttl = 123;
 
     tx_ui_plan_t plan = {0};
     int result = tx_validate_and_compute_hash(&plan);

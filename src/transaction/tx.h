@@ -61,6 +61,35 @@ typedef enum {
     SIGN_TX_SIGNINGMODE_PLUTUS_TX = 7,
 } sign_tx_signingmode_t;
 
+// Transaction parameters parsed from SIGN_TX INIT APDU.
+// These are known before tx body parsing starts.
+typedef struct {
+    sign_tx_signingmode_t txSigningMode;
+    uint8_t networkId;
+    uint32_t protocolMagic;
+    bool tagCborSets;
+    uint16_t num_inputs;
+    uint16_t num_outputs;
+    bool includeTtl;
+    uint16_t num_certificates;
+    uint16_t num_withdrawals;
+    bool includeAuxDataHash;
+    aux_data_type_t auxDataType;
+    uint8_t auxDataHash[AUX_DATA_HASH_LENGTH];
+    bool includeValidityIntervalStart;
+    uint16_t num_mint_asset_groups;
+    bool includeScriptDataHash;
+    uint16_t num_collateral_inputs;
+    uint16_t num_required_signers;
+    bool includeNetworkId;
+    bool includeCollateralOutput;
+    bool includeTotalCollateral;
+    uint16_t num_reference_inputs;
+    uint16_t num_voters;
+    bool includeTreasury;
+    bool includeDonation;
+} tx_params_t;
+
 typedef enum {
     TX_OPTIONS_TAG_CBOR_SETS = 1,  // Whether to tag CBOR sets in transaction hash
 } tx_options_e;
@@ -138,71 +167,27 @@ typedef struct {
 } tx_certificate_node_t;
 
 typedef struct {
-    // signing / network metadata
-    sign_tx_signingmode_t txSigningMode;
-    uint8_t networkId;
-    uint32_t protocolMagic;
-    bool tagCborSets;
-
     // Note: We use linked lists (via flist) for parsed transaction items because
     // the memory allocated to list nodes may be gradually reused/reallocated for UI
     // string formatting during processing. Arrays would prevent this reallocation.
-
     // CBOR key order (matches transaction_body CDDL)
-    uint16_t num_inputs;                // key 0
-    flist_node_t* inputs;
-
-    uint16_t num_outputs;               // key 1
-    flist_node_t* outputs;
-
-    uint64_t fee;                       // key 2
-
-    bool includeTtl;                    // key 3
-    uint64_t ttl;
-
-    uint16_t num_certificates;          // key 4
-    flist_node_t* certificates;
-
-    uint16_t num_withdrawals;           // key 5
-    flist_node_t* withdrawals;
-
-    bool includeValidityIntervalStart;  // key 8
-    uint64_t validityIntervalStart;
-
-    uint16_t num_mint_asset_groups;     // key 9 (mint)
-    flist_node_t* mint_asset_groups;
-    bool includeAuxDataHash;
-    aux_data_type_t auxDataType;
-    uint8_t auxDataHash[AUX_DATA_HASH_LENGTH];
-
-    bool includeScriptDataHash;         // key 11
-    const uint8_t* scriptDataHash;
-
-    uint16_t num_collateral_inputs;     // key 13
-    flist_node_t* collateral_inputs;
-
-    uint16_t num_required_signers;      // key 14
-    flist_node_t* required_signers;
-
-    bool includeNetworkId;              // key 15
-
-    bool includeCollateralOutput;       // key 16
-    parsed_tx_output_t collateral_output;
+    flist_node_t* inputs;                    // key 0
+    flist_node_t* outputs;                   // key 1
+    uint64_t fee;                            // key 2
+    uint64_t ttl;                            // key 3
+    flist_node_t* certificates;              // key 4
+    flist_node_t* withdrawals;               // key 5
+    uint64_t validityIntervalStart;          // key 8
+    flist_node_t* mint_asset_groups;         // key 9
+    const uint8_t* scriptDataHash;           // key 11
+    flist_node_t* collateral_inputs;         // key 13
+    flist_node_t* required_signers;          // key 14
+    parsed_tx_output_t collateral_output; // key 16
     // Note: For DESTINATION_DEVICE_OWNED, collateral_output.destination.params points to
     // dynamically allocated memory that must be freed when the collateral output is freed.
-
-    bool includeTotalCollateral;        // key 17
-    uint64_t totalCollateral;
-
-    uint16_t num_reference_inputs;      // key 18
-    flist_node_t* reference_inputs;
-
-    uint16_t num_voters;                 // key 19
-    flist_node_t* voting_procedures;
-
-    bool includeTreasury;                // key 21
-    uint64_t treasury;
-
-    bool includeDonation;                // key 22
-    uint64_t donation;
-} transaction_t;
+    uint64_t totalCollateral;                 // key 17
+    flist_node_t* reference_inputs;           // key 18
+    flist_node_t* voting_procedures;          // key 19
+    uint64_t treasury;                        // key 21
+    uint64_t donation;                        // key 22
+} tx_parsed_body_t;

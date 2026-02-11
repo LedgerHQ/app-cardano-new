@@ -59,8 +59,11 @@ static void handle_sign_cvote_init_apdu(buffer_t *cdata) {
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
-    if (votecast_chunk_size > MAX_VOTECAST_CHUNK_SIZE) {
-        TRACE("Votecast chunk too large");
+    const size_t expected_votecast_chunk_size = MIN(ctx->remaining_votecast_bytes, MAX_VOTECAST_CHUNK_SIZE);
+    if (votecast_chunk_size != expected_votecast_chunk_size) {
+        TRACE("Invalid initial votecast chunk size: expected=%u got=%u",
+              (unsigned) expected_votecast_chunk_size,
+              (unsigned) votecast_chunk_size);
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
@@ -114,30 +117,23 @@ static void handle_sign_cvote_chunk_apdu(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
     cvote_ctx_t *ctx = &G_context.cvote_info;
 
-    const size_t chunkSize = cdata->size;
-    TRACE("chunkSize = %u", chunkSize);
+    const size_t chunk_size = buffer_remaining(cdata);
+    TRACE("chunk_size = %u", (unsigned) chunk_size);
 
-    if (chunkSize == 0) {
-        TRACE("Empty chunk");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
-    }
-    if (chunkSize > MAX_VOTECAST_CHUNK_SIZE) {
-        TRACE("Chunk size too large");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
-    }
-    if (chunkSize > ctx->remaining_votecast_bytes) {
-        TRACE("Chunk size exceeds remaining bytes");
+    const size_t expected_chunk_size = MIN(ctx->remaining_votecast_bytes, MAX_VOTECAST_CHUNK_SIZE);
+    if (chunk_size != expected_chunk_size) {
+        TRACE("Invalid votecast chunk size: expected=%u got=%u",
+              (unsigned) expected_chunk_size,
+              (unsigned) chunk_size);
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 
     vote_cast_hash_builder_chunk(&ctx->votecast_hash_builder,
                                  buffer_current_ptr(cdata),
-                                 chunkSize);
+                                 chunk_size);
 
-    ctx->remaining_votecast_bytes -= chunkSize;
+    ctx->remaining_votecast_bytes -= chunk_size;
 
     if (ctx->remaining_votecast_bytes == 0) {
         G_context.state.cvote_state = VOTECAST_STATE_CONFIRM;

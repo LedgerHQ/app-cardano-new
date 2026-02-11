@@ -95,7 +95,7 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
     // 3. Payment destination
     security_policy_t destination_policy = policyForCVoteRegistrationPaymentDestination(
         &aux_data->destination,
-        G_context.tx_info.transaction.networkId,
+        G_context.tx_info.tx_params.networkId,
         &G_context.tx_info.cvote_warning_bits);
 
     switch (destination_policy) {
@@ -394,7 +394,7 @@ void finalize_sign_tx_aux_data(bool confirmed) {
     G_context.tx_info.cvote_aux_data.state = CVOTE_AUX_DATA_STATE_NONE;
     G_context.state.tx_state = TX_STATE_CHUNKS;
 
-    apdu_response_send_data(G_context.tx_info.transaction.auxDataHash,
+    apdu_response_send_data(G_context.tx_info.tx_params.auxDataHash,
                              AUX_DATA_HASH_LENGTH,
                              SWO_SUCCESS);
 }

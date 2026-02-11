@@ -53,11 +53,12 @@ static void test_parse_tx_fails_on_missing_fee(void **state) {
         .size = 0,
         .offset = 0,
     };
-    transaction_t tx = {0};
-    tx.num_inputs = 0;
-    tx.num_outputs = 0;
+    tx_params_t tx_params = {0};
+    tx_parsed_body_t tx_body = {0};
+    tx_params.num_inputs = 0;
+    tx_params.num_outputs = 0;
 
-    parser_status_e status = parse_tx(&buf, &tx);
+    parser_status_e status = parse_tx(&buf, &tx_params, &tx_body);
     assert_int_equal(status, FEE_PARSING_ERROR);
 }
 
@@ -71,9 +72,10 @@ static void test_parse_tx_rejects_oversized_buffer(void **state) {
         .size = TX_BUFFER_SIZE + 1,
         .offset = 0,
     };
-    transaction_t tx = {0};
+    tx_params_t tx_params = {0};
+    tx_parsed_body_t tx_body = {0};
 
-    parser_status_e status = parse_tx(&buf, &tx);
+    parser_status_e status = parse_tx(&buf, &tx_params, &tx_body);
     assert_int_equal(status, TX_SIZE_TOO_LARGE_ERROR);
 }
 

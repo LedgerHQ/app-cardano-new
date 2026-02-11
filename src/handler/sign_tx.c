@@ -54,6 +54,7 @@ static bool is_valid_tx_signing_mode(uint8_t tx_signing_mode) {
  */
 static void handle_tx_init_apdu(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handle_tx_init_apdu");
+    tx_params_t *tx_params = &G_context.tx_info.tx_params;
     G_context.tx_info.raw_tx = NULL;
     G_context.tx_info.raw_tx_len = 0;
     G_context.tx_info.warning_bits = 0;
@@ -77,27 +78,27 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
-    G_context.tx_info.transaction.tagCborSets = tagCborSets;
+    tx_params->tagCborSets = tagCborSets;
 
     // Read network parameters and signing mode
-    if (!buffer_read_u8(cdata, &G_context.tx_info.transaction.networkId) ||
-        !buffer_read_u32(cdata, &G_context.tx_info.transaction.protocolMagic, BE)) {
+    if (!buffer_read_u8(cdata, &tx_params->networkId) ||
+        !buffer_read_u32(cdata, &tx_params->protocolMagic, BE)) {
         TRACE("TX init: missing network parameters");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 
     // Validate network ID immediately - return specific error code
-    if (!isValidNetworkId(G_context.tx_info.transaction.networkId)) {
-        TRACE("TX init: invalid network id %u", G_context.tx_info.transaction.networkId);
+    if (!isValidNetworkId(tx_params->networkId)) {
+        TRACE("TX init: invalid network id %u", tx_params->networkId);
         send_swo_and_reset(SWO_INVALID_NETWORK_ID);
         return;
     }
 
     // Validate mainnet protocol magic - return specific error code
-    if (G_context.tx_info.transaction.networkId == MAINNET_NETWORK_ID &&
-        G_context.tx_info.transaction.protocolMagic != MAINNET_PROTOCOL_MAGIC) {
-        TRACE("TX init: invalid mainnet protocol magic %u", G_context.tx_info.transaction.protocolMagic);
+    if (tx_params->networkId == MAINNET_NETWORK_ID &&
+        tx_params->protocolMagic != MAINNET_PROTOCOL_MAGIC) {
+        TRACE("TX init: invalid mainnet protocol magic %u", tx_params->protocolMagic);
         send_swo_and_reset(SWO_INVALID_PROTOCOL_MAGIC);
         return;
     }
@@ -113,33 +114,32 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
         return;
     }
-    G_context.tx_info.transaction.txSigningMode = (sign_tx_signingmode_t) txSigningMode;
+    tx_params->txSigningMode = (sign_tx_signingmode_t) txSigningMode;
 
     // Read transaction structure counts (fields 0-1: inputs and outputs, always present)
-    if (!buffer_read_u16(cdata, &G_context.tx_info.transaction.num_inputs, BE) ||
-        !buffer_read_u16(cdata, &G_context.tx_info.transaction.num_outputs, BE)) {
+    if (!buffer_read_u16(cdata, &tx_params->num_inputs, BE) ||
+        !buffer_read_u16(cdata, &tx_params->num_outputs, BE)) {
         TRACE("TX init: missing inputs/outputs counts");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 
     // Field 3 (TTL) - optional
-    if (!buffer_read_flag_included(cdata, &G_context.tx_info.transaction.includeTtl)) {
+    if (!buffer_read_flag_included(cdata, &tx_params->includeTtl)) {
         TRACE("TX init: invalid TTL inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
 
     // Field 4 (certificates) - optional
-    if (!buffer_read_u16(cdata, &G_context.tx_info.transaction.num_certificates, BE)) {
+    if (!buffer_read_u16(cdata, &tx_params->num_certificates, BE)) {
         TRACE("TX init: missing certificates count");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
-    TRACE(">>>INIT: num_certificates=%u", G_context.tx_info.transaction.num_certificates);
 
     // Field 5 (withdrawals) - optional
-    if (!buffer_read_u16(cdata, &G_context.tx_info.transaction.num_withdrawals, BE)) {
+    if (!buffer_read_u16(cdata, &tx_params->num_withdrawals, BE)) {
         TRACE("TX init: missing withdrawals count");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
@@ -152,7 +152,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
-    G_context.tx_info.transaction.includeAuxDataHash = includeAuxDataHash;
+    tx_params->includeAuxDataHash = includeAuxDataHash;
     if (includeAuxDataHash) {
         uint8_t auxDataTypeByte = 0;
         if (!buffer_read_u8(cdata, &auxDataTypeByte)) {
@@ -162,17 +162,17 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         }
 
         if (auxDataTypeByte == AUX_DATA_TYPE_ARBITRARY_HASH) {
-            G_context.tx_info.transaction.auxDataType = AUX_DATA_TYPE_ARBITRARY_HASH;
+            tx_params->auxDataType = AUX_DATA_TYPE_ARBITRARY_HASH;
             if (!buffer_read_bytes(cdata,
-                                   G_context.tx_info.transaction.auxDataHash,
+                                   tx_params->auxDataHash,
                                    AUX_DATA_HASH_LENGTH)) {
                 TRACE("TX init: missing aux data hash bytes");
                 send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
                 return;
             }
         } else if (auxDataTypeByte == AUX_DATA_TYPE_CVOTE_REGISTRATION) {
-            G_context.tx_info.transaction.auxDataType = AUX_DATA_TYPE_CVOTE_REGISTRATION;
-            explicit_bzero(G_context.tx_info.transaction.auxDataHash,
+            tx_params->auxDataType = AUX_DATA_TYPE_CVOTE_REGISTRATION;
+            explicit_bzero(tx_params->auxDataHash,
                            AUX_DATA_HASH_LENGTH);
         } else {
             TRACE("TX init: unsupported aux data type %u", auxDataTypeByte);
@@ -180,20 +180,20 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
             return;
         }
     } else {
-        G_context.tx_info.transaction.auxDataType = AUX_DATA_TYPE_ARBITRARY_HASH;
-        explicit_bzero(G_context.tx_info.transaction.auxDataHash,
+        tx_params->auxDataType = AUX_DATA_TYPE_ARBITRARY_HASH;
+        explicit_bzero(tx_params->auxDataHash,
                        AUX_DATA_HASH_LENGTH);
     }
 
     // Field 8 (validity interval start) - optional
-    if (!buffer_read_flag_included(cdata, &G_context.tx_info.transaction.includeValidityIntervalStart)) {
+    if (!buffer_read_flag_included(cdata, &tx_params->includeValidityIntervalStart)) {
         TRACE("TX init: invalid validity interval start inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
 
     // Field 9 (mint) - optional
-    if (!buffer_read_u16(cdata, &G_context.tx_info.transaction.num_mint_asset_groups, BE)) {
+    if (!buffer_read_u16(cdata, &tx_params->num_mint_asset_groups, BE)) {
         TRACE("TX init: missing mint asset group count");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
@@ -206,66 +206,66 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
-    G_context.tx_info.transaction.includeScriptDataHash = includeScriptDataHash;
+    tx_params->includeScriptDataHash = includeScriptDataHash;
 
     // Field 13 (collateral inputs)
-    if (!buffer_read_u16(cdata, &G_context.tx_info.transaction.num_collateral_inputs, BE)) {
+    if (!buffer_read_u16(cdata, &tx_params->num_collateral_inputs, BE)) {
         TRACE("TX init: missing collateral inputs count");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 
     // Field 14 (required signers)
-    if (!buffer_read_u16(cdata, &G_context.tx_info.transaction.num_required_signers, BE)) {
+    if (!buffer_read_u16(cdata, &tx_params->num_required_signers, BE)) {
         TRACE("TX init: missing required signers count");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 
     // Field 15 (network ID)
-    if (!buffer_read_flag_included(cdata, &G_context.tx_info.transaction.includeNetworkId)) {
+    if (!buffer_read_flag_included(cdata, &tx_params->includeNetworkId)) {
         TRACE("TX init: invalid network id inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
 
     // Field 16 (collateral output)
-    if (!buffer_read_flag_included(cdata, &G_context.tx_info.transaction.includeCollateralOutput)) {
+    if (!buffer_read_flag_included(cdata, &tx_params->includeCollateralOutput)) {
         TRACE("TX init: invalid collateral output inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
 
     // Field 17 (total collateral)
-    if (!buffer_read_flag_included(cdata, &G_context.tx_info.transaction.includeTotalCollateral)) {
+    if (!buffer_read_flag_included(cdata, &tx_params->includeTotalCollateral)) {
         TRACE("TX init: invalid total collateral inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
 
     // Field 18 (reference inputs)
-    if (!buffer_read_u16(cdata, &G_context.tx_info.transaction.num_reference_inputs, BE)) {
+    if (!buffer_read_u16(cdata, &tx_params->num_reference_inputs, BE)) {
         TRACE("TX init: missing reference inputs count");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 
     // Field 19 (voting procedures)
-    if (!buffer_read_u16(cdata, &G_context.tx_info.transaction.num_voters, BE)) {
+    if (!buffer_read_u16(cdata, &tx_params->num_voters, BE)) {
         TRACE("TX init: missing voters count");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 
     // Field 21 (treasury) - optional
-    if (!buffer_read_flag_included(cdata, &G_context.tx_info.transaction.includeTreasury)) {
+    if (!buffer_read_flag_included(cdata, &tx_params->includeTreasury)) {
         TRACE("TX init: invalid treasury inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
 
     // Field 22 (donation) - optional
-    if (!buffer_read_flag_included(cdata, &G_context.tx_info.transaction.includeDonation)) {
+    if (!buffer_read_flag_included(cdata, &tx_params->includeDonation)) {
         TRACE("TX init: invalid donation inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
@@ -283,40 +283,23 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         return;
     }
 
-    TRACE("TX Mode=%d, Network: ID=%d, Magic=%u, Inputs=%u, Outputs=%u, Withdrawals=%u, Mint=%u, includeTTL=%d, includeVIS=%d, Witnesses=%u",
-        G_context.tx_info.transaction.txSigningMode,
-        G_context.tx_info.transaction.networkId,
-        G_context.tx_info.transaction.protocolMagic,
-        G_context.tx_info.transaction.num_inputs,
-        G_context.tx_info.transaction.num_outputs,
-        G_context.tx_info.transaction.num_withdrawals,
-        G_context.tx_info.transaction.num_mint_asset_groups,
-        G_context.tx_info.transaction.includeTtl,
-        G_context.tx_info.transaction.includeValidityIntervalStart,
+    TRACE("TX Mode=%d, Network: ID=%d, Magic=%u, Inputs=%u, Outputs=%u, Certificates=%u, Withdrawals=%u, Mint=%u, includeTTL=%d, includeVIS=%d, Witnesses=%u",
+        tx_params->txSigningMode,
+        tx_params->networkId,
+        tx_params->protocolMagic,
+        tx_params->num_inputs,
+        tx_params->num_outputs,
+        tx_params->num_certificates,
+        tx_params->num_withdrawals,
+        tx_params->num_mint_asset_groups,
+        tx_params->includeTtl,
+        tx_params->includeValidityIntervalStart,
         G_context.tx_info.num_witnesses
     );
 
     // Check security policy
-    bool includeMint = (G_context.tx_info.transaction.num_mint_asset_groups > 0);
-
     security_policy_t init_policy = policyForSignTxInit(
-        G_context.tx_info.transaction.txSigningMode,
-        G_context.tx_info.transaction.networkId,
-        G_context.tx_info.transaction.protocolMagic,
-        G_context.tx_info.transaction.num_outputs,
-        G_context.tx_info.transaction.num_certificates,
-        G_context.tx_info.transaction.num_withdrawals,
-        includeMint,
-        G_context.tx_info.transaction.includeScriptDataHash,
-        G_context.tx_info.transaction.num_collateral_inputs,
-        G_context.tx_info.transaction.num_required_signers,
-        G_context.tx_info.transaction.includeNetworkId,
-        G_context.tx_info.transaction.includeCollateralOutput,
-        G_context.tx_info.transaction.includeTotalCollateral,
-        G_context.tx_info.transaction.num_reference_inputs,
-        G_context.tx_info.transaction.num_voters,
-        G_context.tx_info.transaction.includeTreasury,
-        G_context.tx_info.transaction.includeDonation,
+        tx_params,
         &G_context.tx_info.warning_bits);
 
     TRACE("Transaction init security policy: %d", (int) init_policy);
@@ -329,7 +312,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
 
     // Determine if CVote auxiliary data is expected
     bool cvote_aux_data_expected = (includeAuxDataHash &&
-                                    (G_context.tx_info.transaction.auxDataType == AUX_DATA_TYPE_CVOTE_REGISTRATION));
+                                    (tx_params->auxDataType == AUX_DATA_TYPE_CVOTE_REGISTRATION));
 
     // Show spinner only in standalone mode; in swap mode UI must stay in Exchange app.
 #ifdef HAVE_SWAP
@@ -358,7 +341,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
  * Helper: Accumulate transaction data chunks into buffer.
  * Returns true on success. On failure, sends SW and resets context.
  */
-static bool handle_tx_data_chunk(buffer_t *cdata) {
+static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handle_tx_data_chunk");
     const size_t chunk_size = buffer_remaining(cdata);
 
@@ -367,6 +350,24 @@ static bool handle_tx_data_chunk(buffer_t *cdata) {
         TRACE("Invalid state for chunk reception: expected TX_STATE_CHUNKS, got %d", G_context.state.tx_state);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return false;
+    }
+
+    if (is_final_chunk) {
+        if (chunk_size == 0 || chunk_size > MAX_SIGN_TX_CHUNK_SIZE) {
+            TRACE("Invalid final tx chunk size: chunk=%u, allowed=[1,%u]",
+                  (unsigned) chunk_size,
+                  (unsigned) MAX_SIGN_TX_CHUNK_SIZE);
+            send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+            return false;
+        }
+    } else {
+        if (chunk_size != MAX_SIGN_TX_CHUNK_SIZE) {
+            TRACE("Invalid non-final tx chunk size: chunk=%u, expected=%u",
+                  (unsigned) chunk_size,
+                  (unsigned) MAX_SIGN_TX_CHUNK_SIZE);
+            send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+            return false;
+        }
     }
 
     // Allocate buffer on first data chunk
@@ -439,7 +440,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             }
 
             // More data chunks to follow
-            if (!handle_tx_data_chunk(cdata)) {
+            if (!handle_tx_data_chunk(cdata, false)) {
                 return;
             }
             apdu_response_send_sw(SWO_SUCCESS);
@@ -453,7 +454,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             }
 
             // Final chunk
-            if (!handle_tx_data_chunk(cdata)) {
+            if (!handle_tx_data_chunk(cdata, true)) {
                 return;
             }
 
@@ -469,7 +470,10 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
                 .offset = 0
             };
 
-            parser_status_e parse_status = parse_tx(&buf, &G_context.tx_info.transaction);
+            parser_status_e parse_status = parse_tx(
+                &buf,
+                &G_context.tx_info.tx_params,
+                &G_context.tx_info.tx_body);
             if (parse_status != PARSING_OK) {
                 tx_handle_parse_error(parse_status);
                 return;
@@ -490,14 +494,14 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             if (G_called_from_swap) {
                 // Validate swap parameters against parsed transaction
                 // Check fee
-                if (!swap_check_fee_validity(G_context.tx_info.transaction.fee)) {
+                if (!swap_check_fee_validity(G_context.tx_info.tx_body.fee)) {
                     swap_reject_and_exit(SWAP_EC_ERROR_WRONG_FEES, SWAP_APP_CODE_DEFAULT);
                 }
 
                 // Check outputs: exactly one THIRD_PARTY output must be present and it must
                 // match the destination + amount validated by Exchange.
                 size_t third_party_output_count = 0;
-                flist_node_t *node = G_context.tx_info.transaction.outputs;
+                flist_node_t *node = G_context.tx_info.tx_body.outputs;
                 while (node != NULL) {
                     tx_output_node_t *outputNode = (tx_output_node_t *) node;
                     parsed_tx_output_t *output = &outputNode->output_data;
@@ -522,7 +526,9 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
                     swap_reject_and_exit(SWAP_EC_ERROR_WRONG_DESTINATION, SWAP_APP_CODE_DEFAULT);
                 }
 
-                // In swap mode, skip UI and auto-approve the transaction
+                // In swap mode there is no interactive transaction review, so we intentionally
+                // skip TX_STATE_UI_PREPARED and transition directly to TX_STATE_APPROVED.
+                // Consequently, finalize_sign_tx() is not used in this flow.
                 G_context.state.tx_state = TX_STATE_APPROVED;
                 apdu_response_send_data(
                     G_context.tx_info.tx_hash,
@@ -578,6 +584,9 @@ void finalize_sign_tx(bool confirm) {
 // All witnesses processed
 void finalize_witness(bool confirm)
 {
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
+    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_APPROVED, "Bad tx_state");
+
     if (!confirm) {
         // Reject entire signing operation - no more witnesses will be processed
         TRACE("Witness rejected by user");
@@ -598,7 +607,9 @@ void finalize_witness(bool confirm)
 #ifdef HAVE_SWAP
     if (G_called_from_swap &&
         (G_context.tx_info.current_witness + 1 == G_context.tx_info.num_witnesses)) {
-        // The final witness response must return to Exchange app.
+        // Must be set before apdu_response_send_data(): the SDK IO send path checks
+        // G_swap_response_ready while transmitting the response and calls os_lib_end()
+        // immediately to return control to Exchange.
         TRACE("Swap mode: final witness response will return to Exchange");
         G_swap_response_ready = true;
     }
@@ -608,6 +619,8 @@ void finalize_witness(bool confirm)
         ED25519_SIGNATURE_LENGTH,
         SWO_SUCCESS
     );
+    // apdu_response_send_data() must consume/copy response bytes before returning,
+    // so clearing G_context afterwards does not affect the just-sent signature.
     G_context.tx_info.current_witness++;
     if (G_context.tx_info.current_witness == G_context.tx_info.num_witnesses) {
         // All witnesses processed - reset context to prevent further APDUs for this tx
@@ -661,11 +674,11 @@ void handler_sign_tx_witness(buffer_t *cdata) {
 
     // Check security policy for witness signing
     // Determine if mint is present in the transaction
-    bool mintPresent = (G_context.tx_info.transaction.num_mint_asset_groups > 0);
+    bool mintPresent = (G_context.tx_info.tx_params.num_mint_asset_groups > 0);
 
     // Get pool owner path if this is a pool registration
     const bip44_path_t* poolOwnerPath = NULL;
-    switch (G_context.tx_info.transaction.txSigningMode) {
+    switch (G_context.tx_info.tx_params.txSigningMode) {
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
             if (G_context.tx_info.pool_owner_path_present) {
                 poolOwnerPath = &G_context.tx_info.pool_owner_path;
@@ -684,7 +697,7 @@ void handler_sign_tx_witness(buffer_t *cdata) {
     const bool isSwap = false;
 #endif
     security_policy_t policy = policyForSignTxWitness(
-        G_context.tx_info.transaction.txSigningMode,
+        G_context.tx_info.tx_params.txSigningMode,
         isSwap,
         &G_context.tx_info.witness_path,
         mintPresent,

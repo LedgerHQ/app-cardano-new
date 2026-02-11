@@ -19,15 +19,15 @@
 #include "globals.h"
 
 static parser_status_e parse_input_item(buffer_t *buf, flist_node_t **list_head, parser_status_e error_on_failure);
-static parser_status_e parse_tx_inputs(buffer_t *buf, transaction_t *tx);
-static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx);
-static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx);
-static parser_status_e parse_tx_certificates(buffer_t *buf, transaction_t *tx);
-static parser_status_e parse_tx_withdrawals(buffer_t *buf, transaction_t *tx);
-static parser_status_e parse_tx_collateral_inputs(buffer_t *buf, transaction_t *tx);
-static parser_status_e parse_tx_required_signers(buffer_t *buf, transaction_t *tx);
-static parser_status_e parse_tx_collateral_output(buffer_t *buf, transaction_t *tx);
-static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *tx);
+static parser_status_e parse_tx_inputs(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body);
+static parser_status_e parse_tx_outputs(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body);
+static parser_status_e parse_tx_mint_groups(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body);
+static parser_status_e parse_tx_certificates(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body);
+static parser_status_e parse_tx_withdrawals(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body);
+static parser_status_e parse_tx_collateral_inputs(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body);
+static parser_status_e parse_tx_required_signers(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body);
+static parser_status_e parse_tx_collateral_output(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body);
+static parser_status_e parse_tx_voting_procedures(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body);
 
 static uint16_t _map_parser_status_to_swo(parser_status_e status) {
     switch (status) {
@@ -169,52 +169,53 @@ static void free_voter_votes_item(voter_votes_node_t *voter_item) {
     APP_MEM_FREE(voter_item);
 }
 
-parser_status_e parse_tx(buffer_t *buf, transaction_t *tx) {
+parser_status_e parse_tx(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(tx != NULL, "NULL tx");
+    LEDGER_ASSERT(tx_params != NULL, "NULL tx_params");
+    LEDGER_ASSERT(tx_body != NULL, "NULL tx_body");
 
     if (buf->size > TX_BUFFER_SIZE) {
         return TX_SIZE_TOO_LARGE_ERROR;
     }
 
     // Initialize lists
-    tx->inputs = NULL;
-    tx->outputs = NULL;
-    tx->withdrawals = NULL;
-    tx->certificates = NULL;
-    tx->mint_asset_groups = NULL;
+    tx_body->inputs = NULL;
+    tx_body->outputs = NULL;
+    tx_body->withdrawals = NULL;
+    tx_body->certificates = NULL;
+    tx_body->mint_asset_groups = NULL;
 
     parser_status_e status;
 
     // key 0: inputs
-    status = parse_tx_inputs(buf, tx);
+    status = parse_tx_inputs(buf, tx_params, tx_body);
     if (status != PARSING_OK) {
         return status;
     }
 
     // key 1: outputs
-    status = parse_tx_outputs(buf, tx);
+    status = parse_tx_outputs(buf, tx_params, tx_body);
     if (status != PARSING_OK) {
         return status;
     }
 
     // key 2: fee
-    ASSERT_TYPE(tx->fee, uint64_t);
-    if (!buffer_read_u64(buf, &tx->fee, BE)) {
+    ASSERT_TYPE(tx_body->fee, uint64_t);
+    if (!buffer_read_u64(buf, &tx_body->fee, BE)) {
         return FEE_PARSING_ERROR;
     }
 
     // key 3: ttl (optional)
-    if (tx->includeTtl) {
-        ASSERT_TYPE(tx->ttl, uint64_t);
-        if (!buffer_read_u64(buf, &tx->ttl, BE)) {
+    if (tx_params->includeTtl) {
+        ASSERT_TYPE(tx_body->ttl, uint64_t);
+        if (!buffer_read_u64(buf, &tx_body->ttl, BE)) {
             return TTL_PARSING_ERROR;
         }
     }
 
     // key 4: certificates
-    TRACE("About to parse %u certificates", tx->num_certificates);
-    status = parse_tx_certificates(buf, tx);
+    TRACE("About to parse %u certificates", tx_params->num_certificates);
+    status = parse_tx_certificates(buf, tx_params, tx_body);
     if (status != PARSING_OK) {
         TRACE("Certificate parsing failed with status=%d", status);
         return status;
@@ -222,43 +223,43 @@ parser_status_e parse_tx(buffer_t *buf, transaction_t *tx) {
     TRACE("Successfully parsed all certificates");
 
     // key 5: withdrawals
-    status = parse_tx_withdrawals(buf, tx);
+    status = parse_tx_withdrawals(buf, tx_params, tx_body);
     if (status != PARSING_OK) {
         return status;
     }
 
     // key 8: validity_interval_start
-    if (tx->includeValidityIntervalStart) {
-        ASSERT_TYPE(tx->validityIntervalStart, uint64_t);
-        if (!buffer_read_u64(buf, &tx->validityIntervalStart, BE)) {
+    if (tx_params->includeValidityIntervalStart) {
+        ASSERT_TYPE(tx_body->validityIntervalStart, uint64_t);
+        if (!buffer_read_u64(buf, &tx_body->validityIntervalStart, BE)) {
             return VALIDITY_INTERVAL_START_PARSING_ERROR;
         }
     }
 
     // key 9: mint
-    status = parse_tx_mint_groups(buf, tx);
+    status = parse_tx_mint_groups(buf, tx_params, tx_body);
     if (status != PARSING_OK) {
         return status;
     }
 
     // key 11: script data hash
-    if (tx->includeScriptDataHash) {
-        if (!buffer_read_bytes_ptr(buf, &tx->scriptDataHash, SCRIPT_DATA_HASH_LENGTH)) {
+    if (tx_params->includeScriptDataHash) {
+        if (!buffer_read_bytes_ptr(buf, &tx_body->scriptDataHash, SCRIPT_DATA_HASH_LENGTH)) {
             return SCRIPT_DATA_HASH_PARSING_ERROR;
         }
     }
 
     // key 13: collateral inputs
-    if (tx->num_collateral_inputs > 0) {
-        status = parse_tx_collateral_inputs(buf, tx);
+    if (tx_params->num_collateral_inputs > 0) {
+        status = parse_tx_collateral_inputs(buf, tx_params, tx_body);
         if (status != PARSING_OK) {
             return status;
         }
     }
 
     // key 14: required signers
-    if (tx->num_required_signers > 0) {
-        status = parse_tx_required_signers(buf, tx);
+    if (tx_params->num_required_signers > 0) {
+        status = parse_tx_required_signers(buf, tx_params, tx_body);
         if (status != PARSING_OK) {
             return status;
         }
@@ -267,25 +268,25 @@ parser_status_e parse_tx(buffer_t *buf, transaction_t *tx) {
     // key 15: network ID - nothing to parse, just a flag (already in init APDU)
 
     // key 16: collateral output
-    if (tx->includeCollateralOutput) {
-        status = parse_tx_collateral_output(buf, tx);
+    if (tx_params->includeCollateralOutput) {
+        status = parse_tx_collateral_output(buf, tx_params, tx_body);
         if (status != PARSING_OK) {
             return status;
         }
     }
 
     // key 17: total collateral
-    if (tx->includeTotalCollateral) {
-        ASSERT_TYPE(tx->totalCollateral, uint64_t);
-        if (!buffer_read_u64(buf, &tx->totalCollateral, BE)) {
+    if (tx_params->includeTotalCollateral) {
+        ASSERT_TYPE(tx_body->totalCollateral, uint64_t);
+        if (!buffer_read_u64(buf, &tx_body->totalCollateral, BE)) {
             return TOTAL_COLLATERAL_PARSING_ERROR;
         }
     }
 
     // key 18: reference inputs (parsed same as regular inputs)
-    if (tx->num_reference_inputs > 0) {
-        for (uint16_t i = 0; i < tx->num_reference_inputs; i++) {
-            status = parse_input_item(buf, &tx->reference_inputs, REFERENCE_INPUTS_PARSING_ERROR);
+    if (tx_params->num_reference_inputs > 0) {
+        for (uint16_t i = 0; i < tx_params->num_reference_inputs; i++) {
+            status = parse_input_item(buf, &tx_body->reference_inputs, REFERENCE_INPUTS_PARSING_ERROR);
             if (status != PARSING_OK) {
                 return status;
             }
@@ -293,25 +294,25 @@ parser_status_e parse_tx(buffer_t *buf, transaction_t *tx) {
     }
 
     // key 19: voting procedures
-    if (tx->num_voters > 0) {
-        status = parse_tx_voting_procedures(buf, tx);
+    if (tx_params->num_voters > 0) {
+        status = parse_tx_voting_procedures(buf, tx_params, tx_body);
         if (status != PARSING_OK) {
             return status;
         }
     }
 
     // key 21: treasury (optional)
-    if (tx->includeTreasury) {
-        ASSERT_TYPE(tx->treasury, uint64_t);
-        if (!buffer_read_u64(buf, &tx->treasury, BE)) {
+    if (tx_params->includeTreasury) {
+        ASSERT_TYPE(tx_body->treasury, uint64_t);
+        if (!buffer_read_u64(buf, &tx_body->treasury, BE)) {
             return TREASURY_PARSING_ERROR;
         }
     }
 
     // key 22: donation (optional)
-    if (tx->includeDonation) {
-        ASSERT_TYPE(tx->donation, uint64_t);
-        if (!buffer_read_u64(buf, &tx->donation, BE)) {
+    if (tx_params->includeDonation) {
+        ASSERT_TYPE(tx_body->donation, uint64_t);
+        if (!buffer_read_u64(buf, &tx_body->donation, BE)) {
             return DONATION_PARSING_ERROR;
         }
     }
@@ -358,9 +359,9 @@ static parser_status_e parse_input_item(buffer_t *buf, flist_node_t **list_head,
     return PARSING_OK;
 }
 
-static parser_status_e parse_tx_inputs(buffer_t *buf, transaction_t *tx) {
-    for (uint16_t i = 0; i < tx->num_inputs; i++) {
-        parser_status_e status = parse_input_item(buf, &tx->inputs, INPUTS_PARSING_ERROR);
+static parser_status_e parse_tx_inputs(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    for (uint16_t i = 0; i < tx_params->num_inputs; i++) {
+        parser_status_e status = parse_input_item(buf, &tx_body->inputs, INPUTS_PARSING_ERROR);
         if (status != PARSING_OK) {
             return status;
         }
@@ -572,8 +573,8 @@ static parser_status_e parse_output_payload(buffer_t *output_buf,
     return PARSING_OK;
 }
 
-static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
-    for (uint16_t i = 0; i < tx->num_outputs; i++) {
+static parser_status_e parse_tx_outputs(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    for (uint16_t i = 0; i < tx_params->num_outputs; i++) {
         uint16_t output_len;
         if (!buffer_read_u16(buf, &output_len, BE)) {
             return OUTPUTS_PARSING_ERROR;
@@ -618,16 +619,16 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, transaction_t *tx) {
               (unsigned int) buffer_current_offset(buf));
 
         item->flist_node.next = NULL;
-        flist_push_back(&tx->outputs, (flist_node_t *) item);
+        flist_push_back(&tx_body->outputs, (flist_node_t *) item);
     }
     return PARSING_OK;
 }
 
-static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx) {
+static parser_status_e parse_tx_mint_groups(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
     const uint8_t* previous_policy_id = NULL;
     bool has_previous_policy = false;
 
-    for (uint16_t ag = 0; ag < tx->num_mint_asset_groups; ag++) {
+    for (uint16_t ag = 0; ag < tx_params->num_mint_asset_groups; ag++) {
         mint_asset_group_node_t *item = NULL;
         if (!APP_MEM_CALLOC((void **) &item, (uint16_t) sizeof(*item))) {
             TRACE("parse_tx_mint_groups: out of memory allocating mint asset group");
@@ -724,18 +725,18 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx) {
         }
 
         item->flist_node.next = NULL;
-        flist_push_back(&tx->mint_asset_groups, (flist_node_t *) item);
+        flist_push_back(&tx_body->mint_asset_groups, (flist_node_t *) item);
     }
     return PARSING_OK;
 }
 
 /// Parse certificate data structure supporting multiple certificate types
-static parser_status_e parse_tx_certificates(buffer_t *buf, transaction_t *tx) {
+static parser_status_e parse_tx_certificates(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
     TRACE("parse_tx_certificates: num_certificates=%u buf->offset=%u buf->size=%u",
-          tx->num_certificates,
+          tx_params->num_certificates,
           (unsigned int) buffer_current_offset(buf),
           (unsigned int) buffer_total_size(buf));
-    for (uint16_t i = 0; i < tx->num_certificates; i++) {
+    for (uint16_t i = 0; i < tx_params->num_certificates; i++) {
         tx_certificate_node_t *item = NULL;
         if (!APP_MEM_CALLOC((void **) &item, (uint16_t) sizeof(*item))) {
             TRACE("OUT OF MEMORY");
@@ -827,18 +828,18 @@ static parser_status_e parse_tx_certificates(buffer_t *buf, transaction_t *tx) {
         }
 
         item->flist_node.next = NULL;
-        flist_push_back(&tx->certificates, (flist_node_t *) item);
+        flist_push_back(&tx_body->certificates, (flist_node_t *) item);
     }
     return PARSING_OK;
 }
 
-static parser_status_e parse_tx_withdrawals(buffer_t *buf, transaction_t *tx) {
+static parser_status_e parse_tx_withdrawals(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
     // Withdrawals are serialized as a canonical CBOR map keyed by reward accounts.
     // Building those addresses here would require deriving them before the security
     // policies run, so the canonical-order enforcement for withdrawals is postponed
     // to the later planning stage where the derived reward addresses are already
     // exposed to policy checks.
-    for (uint16_t i = 0; i < tx->num_withdrawals; i++) {
+    for (uint16_t i = 0; i < tx_params->num_withdrawals; i++) {
         tx_withdrawal_node_t *item = NULL;
         if (!APP_MEM_CALLOC((void **) &item, (uint16_t) sizeof(*item))) {
             TRACE("parse_tx_withdrawals: out of memory allocating withdrawal node");
@@ -861,30 +862,30 @@ static parser_status_e parse_tx_withdrawals(buffer_t *buf, transaction_t *tx) {
         TRACE("Deserialize: Withdrawal %u, type=%u", i, item->withdrawal.stakeCredential.type);
 
         item->flist_node.next = NULL;
-        flist_push_back(&tx->withdrawals, (flist_node_t *) item);
+        flist_push_back(&tx_body->withdrawals, (flist_node_t *) item);
     }
     return PARSING_OK;
 }
 
 /// Clean up dynamically allocated memory in transaction outputs (including list items)
-void transaction_free_outputs(transaction_t *tx) {
-    LEDGER_ASSERT(tx != NULL, "NULL tx");
+void transaction_free_outputs(tx_parsed_body_t *tx_body) {
+    LEDGER_ASSERT(tx_body != NULL, "NULL tx_body");
 
-    flist_node_t *output_node = tx->outputs;
+    flist_node_t *output_node = tx_body->outputs;
     while (output_node != NULL) {
         flist_node_t *next = output_node->next;
 
         free_output_item((tx_output_node_t *) output_node);
         output_node = next;
     }
-    tx->outputs = NULL;
+    tx_body->outputs = NULL;
 }
 
 /// Clean up dynamically allocated memory in transaction certificates (including list items)
-void transaction_free_certificates(transaction_t *tx) {
-    LEDGER_ASSERT(tx != NULL, "NULL tx");
+void transaction_free_certificates(tx_parsed_body_t *tx_body) {
+    LEDGER_ASSERT(tx_body != NULL, "NULL tx_body");
 
-    flist_node_t *certificate_node = tx->certificates;
+    flist_node_t *certificate_node = tx_body->certificates;
     while (certificate_node != NULL) {
         // Certificate items don't have additional allocated memory
         // (credential data is stored inline in the union)
@@ -892,13 +893,13 @@ void transaction_free_certificates(transaction_t *tx) {
         APP_MEM_FREE(certificate_node);
         certificate_node = next;
     }
-    tx->certificates = NULL;
+    tx_body->certificates = NULL;
 }
 
-void transaction_free_withdrawals(transaction_t *tx) {
-    LEDGER_ASSERT(tx != NULL, "NULL tx");
+void transaction_free_withdrawals(tx_parsed_body_t *tx_body) {
+    LEDGER_ASSERT(tx_body != NULL, "NULL tx_body");
 
-    flist_node_t *withdrawal_node = tx->withdrawals;
+    flist_node_t *withdrawal_node = tx_body->withdrawals;
     while (withdrawal_node != NULL) {
         // Withdrawal items don't have additional allocated memory
         // (credential data is stored inline in the union)
@@ -906,14 +907,14 @@ void transaction_free_withdrawals(transaction_t *tx) {
         APP_MEM_FREE(withdrawal_node);
         withdrawal_node = next;
     }
-    tx->withdrawals = NULL;
+    tx_body->withdrawals = NULL;
 }
 
 /// Clean up dynamically allocated memory in transaction mint (including list items)
-void transaction_free_mint(transaction_t *tx) {
-    LEDGER_ASSERT(tx != NULL, "NULL tx");
+void transaction_free_mint(tx_parsed_body_t *tx_body) {
+    LEDGER_ASSERT(tx_body != NULL, "NULL tx_body");
 
-    flist_node_t *mint_node = tx->mint_asset_groups;
+    flist_node_t *mint_node = tx_body->mint_asset_groups;
     while (mint_node != NULL) {
         mint_asset_group_node_t *item = (mint_asset_group_node_t *) mint_node;
         flist_node_t *next = mint_node->next;
@@ -930,52 +931,52 @@ void transaction_free_mint(transaction_t *tx) {
         APP_MEM_FREE(mint_node);
         mint_node = next;
     }
-    tx->mint_asset_groups = NULL;
+    tx_body->mint_asset_groups = NULL;
 }
 
 /// Clean up collateral inputs (same structure as regular inputs)
-void transaction_free_collateral_inputs(transaction_t *tx) {
-    LEDGER_ASSERT(tx != NULL, "NULL tx");
+void transaction_free_collateral_inputs(tx_parsed_body_t *tx_body) {
+    LEDGER_ASSERT(tx_body != NULL, "NULL tx_body");
 
-    flist_node_t *input_node = tx->collateral_inputs;
+    flist_node_t *input_node = tx_body->collateral_inputs;
     while (input_node != NULL) {
         flist_node_t *next = input_node->next;
         APP_MEM_FREE(input_node);
         input_node = next;
     }
-    tx->collateral_inputs = NULL;
+    tx_body->collateral_inputs = NULL;
 }
 
 /// Clean up required signers
-void transaction_free_required_signers(transaction_t *tx) {
-    LEDGER_ASSERT(tx != NULL, "NULL tx");
+void transaction_free_required_signers(tx_parsed_body_t *tx_body) {
+    LEDGER_ASSERT(tx_body != NULL, "NULL tx_body");
 
-    flist_node_t *signer_node = tx->required_signers;
+    flist_node_t *signer_node = tx_body->required_signers;
     while (signer_node != NULL) {
         flist_node_t *next = signer_node->next;
         APP_MEM_FREE(signer_node);
         signer_node = next;
     }
-    tx->required_signers = NULL;
+    tx_body->required_signers = NULL;
 }
 
 /// Clean up reference inputs (same structure as regular inputs)
-void transaction_free_reference_inputs(transaction_t *tx) {
-    LEDGER_ASSERT(tx != NULL, "NULL tx");
+void transaction_free_reference_inputs(tx_parsed_body_t *tx_body) {
+    LEDGER_ASSERT(tx_body != NULL, "NULL tx_body");
 
-    flist_node_t *input_node = tx->reference_inputs;
+    flist_node_t *input_node = tx_body->reference_inputs;
     while (input_node != NULL) {
         flist_node_t *next = input_node->next;
         APP_MEM_FREE(input_node);
         input_node = next;
     }
-    tx->reference_inputs = NULL;
+    tx_body->reference_inputs = NULL;
 }
 
-void transaction_free_voting_procedures(transaction_t *tx) {
-    LEDGER_ASSERT(tx != NULL, "NULL tx");
+void transaction_free_voting_procedures(tx_parsed_body_t *tx_body) {
+    LEDGER_ASSERT(tx_body != NULL, "NULL tx_body");
 
-    flist_node_t *voter_node = tx->voting_procedures;
+    flist_node_t *voter_node = tx_body->voting_procedures;
     while (voter_node != NULL) {
         voter_votes_node_t *voter_item = (voter_votes_node_t *) voter_node;
         flist_node_t *next = voter_node->next;
@@ -983,66 +984,66 @@ void transaction_free_voting_procedures(transaction_t *tx) {
         APP_MEM_FREE(voter_node);
         voter_node = next;
     }
-    tx->voting_procedures = NULL;
+    tx_body->voting_procedures = NULL;
 }
 
-void transaction_free_collateral_output(transaction_t *tx) {
-    LEDGER_ASSERT(tx != NULL, "NULL tx");
+void transaction_free_collateral_output(tx_parsed_body_t *tx_body) {
+    LEDGER_ASSERT(tx_body != NULL, "NULL tx_body");
 
     // Free dynamically allocated address_params_t for device-owned outputs
-    if (tx->collateral_output.destination.type == DESTINATION_DEVICE_OWNED &&
-        tx->collateral_output.destination.params != NULL) {
-        APP_MEM_FREE(tx->collateral_output.destination.params);
-        tx->collateral_output.destination.params = NULL;
+    if (tx_body->collateral_output.destination.type == DESTINATION_DEVICE_OWNED &&
+        tx_body->collateral_output.destination.params != NULL) {
+        APP_MEM_FREE(tx_body->collateral_output.destination.params);
+        tx_body->collateral_output.destination.params = NULL;
     }
 
-    free_asset_groups(tx->collateral_output.assetGroups);
-    tx->collateral_output.assetGroups = NULL;
-    tx->collateral_output.numAssetGroups = 0;
+    free_asset_groups(tx_body->collateral_output.assetGroups);
+    tx_body->collateral_output.assetGroups = NULL;
+    tx_body->collateral_output.numAssetGroups = 0;
 }
 
 /**
  * Cleanup transaction lists by freeing all allocated memory
  */
 void tx_context_cleanup(void) {
-    transaction_t *tx = &G_context.tx_info.transaction;
+    tx_parsed_body_t *tx_body = &G_context.tx_info.tx_body;
 
     // Free in CBOR key order (matches transaction_body CDDL)
     // key 0: inputs
-    flist_node_t *input_node = tx->inputs;
+    flist_node_t *input_node = tx_body->inputs;
     while (input_node != NULL) {
         flist_node_t *next = input_node->next;
         APP_MEM_FREE(input_node);
         input_node = next;
     }
-    tx->inputs = NULL;
+    tx_body->inputs = NULL;
 
     // key 1: outputs
-    transaction_free_outputs(tx);
+    transaction_free_outputs(tx_body);
 
     // key 4: certificates
-    transaction_free_certificates(tx);
+    transaction_free_certificates(tx_body);
 
     // key 5: withdrawals
-    transaction_free_withdrawals(tx);
+    transaction_free_withdrawals(tx_body);
 
     // key 9: mint
-    transaction_free_mint(tx);
+    transaction_free_mint(tx_body);
 
     // key 13: collateral inputs
-    transaction_free_collateral_inputs(tx);
+    transaction_free_collateral_inputs(tx_body);
 
     // key 14: required signers
-    transaction_free_required_signers(tx);
+    transaction_free_required_signers(tx_body);
 
     // key 18: reference inputs
-    transaction_free_reference_inputs(tx);
+    transaction_free_reference_inputs(tx_body);
 
     // key 19: voting procedures
-    transaction_free_voting_procedures(tx);
+    transaction_free_voting_procedures(tx_body);
 
     // key 16: collateral output
-    transaction_free_collateral_output(tx);
+    transaction_free_collateral_output(tx_body);
 
     // Free raw tx buffer
     APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.raw_tx);
@@ -1051,9 +1052,9 @@ void tx_context_cleanup(void) {
 
 // ================== Parsing functions for elements 13-18 ==================
 
-static parser_status_e parse_tx_collateral_inputs(buffer_t *buf, transaction_t *tx) {
-    for (uint16_t i = 0; i < tx->num_collateral_inputs; i++) {
-        parser_status_e status = parse_input_item(buf, &tx->collateral_inputs, COLLATERAL_INPUTS_PARSING_ERROR);
+static parser_status_e parse_tx_collateral_inputs(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    for (uint16_t i = 0; i < tx_params->num_collateral_inputs; i++) {
+        parser_status_e status = parse_input_item(buf, &tx_body->collateral_inputs, COLLATERAL_INPUTS_PARSING_ERROR);
         if (status != PARSING_OK) {
             return status;
         }
@@ -1061,8 +1062,8 @@ static parser_status_e parse_tx_collateral_inputs(buffer_t *buf, transaction_t *
     return PARSING_OK;
 }
 
-static parser_status_e parse_tx_required_signers(buffer_t *buf, transaction_t *tx) {
-    for (uint16_t i = 0; i < tx->num_required_signers; i++) {
+static parser_status_e parse_tx_required_signers(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+    for (uint16_t i = 0; i < tx_params->num_required_signers; i++) {
         tx_required_signer_node_t *item = NULL;
         if (!APP_MEM_CALLOC((void **) &item, (uint16_t) sizeof(*item))) {
             TRACE("parse_tx_required_signers: out of memory allocating signer node");
@@ -1100,12 +1101,12 @@ static parser_status_e parse_tx_required_signers(buffer_t *buf, transaction_t *t
         }
 
         item->flist_node.next = NULL;
-        flist_push_back(&tx->required_signers, (flist_node_t *) item);
+        flist_push_back(&tx_body->required_signers, (flist_node_t *) item);
     }
     return PARSING_OK;
 }
 
-static parser_status_e parse_tx_collateral_output(buffer_t *buf, transaction_t *tx) {
+static parser_status_e parse_tx_collateral_output(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
     uint16_t output_len;
     if (!buffer_read_u16(buf, &output_len, BE)) {
         return COLLATERAL_OUTPUT_PARSING_ERROR;
@@ -1122,7 +1123,7 @@ static parser_status_e parse_tx_collateral_output(buffer_t *buf, transaction_t *
     };
 
     parser_status_e status = parse_output_payload(&output_buf,
-                                                  &tx->collateral_output,
+                                                  &tx_body->collateral_output,
                                                   COLLATERAL_OUTPUT_PARSING_ERROR);
     if (status != PARSING_OK) {
         return status;
@@ -1137,7 +1138,7 @@ static parser_status_e parse_tx_collateral_output(buffer_t *buf, transaction_t *
     return PARSING_OK;
 }
 
-static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *tx) {
+static parser_status_e parse_tx_voting_procedures(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
     parser_status_e status = PARSING_OK;
     voter_votes_node_t *voter_item = NULL;
     vote_node_t *vote_item = NULL;
@@ -1150,7 +1151,7 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
     // tx_validate_and_compute_hash) after policy checks have already derived
     // the voter keys.
     // For each voter in the outer map
-    for (uint16_t voter_idx = 0; voter_idx < tx->num_voters; voter_idx++) {
+    for (uint16_t voter_idx = 0; voter_idx < tx_params->num_voters; voter_idx++) {
         // Allocate list node for this voter
         voter_item = NULL;
         if (!APP_MEM_CALLOC((void **) &voter_item, (uint16_t) sizeof(*voter_item))) {
@@ -1263,7 +1264,7 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, transaction_t *
 
         // Add voter to transaction's voter list
         voter_item->flist_node.next = NULL;
-        flist_push_back(&tx->voting_procedures, (flist_node_t *) voter_item);
+        flist_push_back(&tx_body->voting_procedures, (flist_node_t *) voter_item);
         voter_item = NULL;
     }
 
@@ -1274,7 +1275,7 @@ cleanup:
         APP_MEM_FREE(vote_item);
     }
     free_voter_votes_item(voter_item);
-    transaction_free_voting_procedures(tx);
+    transaction_free_voting_procedures(tx_body);
     return status;
 }
 

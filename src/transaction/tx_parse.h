@@ -50,22 +50,24 @@ typedef enum {
  *
  * @param[in, out] buf
  *   Pointer to buffer with serialized transaction.
- * @param[out]     tx
- *   Pointer to transaction structure (caller-owned). Populated with pointers to
+ * @param[in]      tx_params
+ *   Pointer to transaction init parameters parsed from INIT APDU.
+ * @param[out]     tx_body
+ *   Pointer to parsed tx body structure (caller-owned). Populated with pointers to
  *   allocated element lists on success, or partially populated on error.
  *
  * @return PARSING_OK if success, error status otherwise.
  *
  * @see tx_context_cleanup
  */
-parser_status_e parse_tx(buffer_t *buf, transaction_t *tx);
+parser_status_e parse_tx(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body);
 
 void tx_handle_parse_error(parser_status_e status);
 
 /**
  * Cleanup all dynamically allocated structures in transaction.
  *
- * Operates on G_context.tx_info.transaction. Frees all allocated transaction elements
+ * Operates on G_context.tx_info.tx_body. Frees all allocated transaction elements
  * (inputs, outputs, withdrawals, certificates, etc.) and their nested allocations (asset groups/tokens,
  * inline datums, reference scripts). Safe to call multiple times or on partially-initialized
  * transactions.

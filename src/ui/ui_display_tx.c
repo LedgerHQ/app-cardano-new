@@ -52,7 +52,7 @@ void ui_display_transaction(void) {
     }
 
     const char *review_subtitle = NULL;
-    switch (G_context.tx_info.transaction.txSigningMode) {
+    switch (G_context.tx_info.tx_params.txSigningMode) {
         case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
             review_subtitle = "Plutus execution";
             break;

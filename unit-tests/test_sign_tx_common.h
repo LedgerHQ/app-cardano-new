@@ -39,6 +39,30 @@ static inline void run_sign_tx_apdu(buffer_t *buffer, uint8_t p1) {
     apdu_response_assert_sent_or_deferred();
 }
 
+static inline void run_sign_tx_body_chunked(const uint8_t* raw_tx, size_t raw_tx_len) {
+    assert_non_null(raw_tx);
+    assert_true(raw_tx_len > 0);
+
+    size_t tx_offset = 0;
+    while (tx_offset < raw_tx_len) {
+        size_t remaining_bytes = raw_tx_len - tx_offset;
+        size_t current_chunk_size = (remaining_bytes > MAX_SIGN_TX_CHUNK_SIZE)
+            ? MAX_SIGN_TX_CHUNK_SIZE
+            : remaining_bytes;
+        uint8_t p1 = (tx_offset + current_chunk_size < raw_tx_len)
+            ? P1_TX_CHUNK
+            : P1_TX_CONFIRM;
+
+        buffer_t tx_chunk_buffer = {
+            .ptr = (uint8_t*) raw_tx + tx_offset,
+            .size = current_chunk_size,
+            .offset = 0,
+        };
+        run_sign_tx_apdu(&tx_chunk_buffer, p1);
+        tx_offset += current_chunk_size;
+    }
+}
+
 static inline void run_sign_tx_aux_data_apdu(buffer_t *buffer, uint8_t p2) {
     apdu_response_begin(INS_SIGN_TX);
     handler_sign_tx_aux_data(buffer, p2);
@@ -78,8 +102,8 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
         assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
     }
     assert_int_equal(G_context.tx_info.num_witnesses, num_witnesses);
-    assert_int_equal(G_context.tx_info.transaction.includeTtl, include_ttl);
-    assert_int_equal(G_context.tx_info.transaction.includeValidityIntervalStart, include_validity_interval_start);
+    assert_int_equal(G_context.tx_info.tx_params.includeTtl, include_ttl);
+    assert_int_equal(G_context.tx_info.tx_params.includeValidityIntervalStart, include_validity_interval_start);
 
     if (include_aux_data_hash && aux_data_type == AUX_DATA_TYPE_CVOTE_REGISTRATION) {
         assert_non_null(aux_data_init_payload);
@@ -106,12 +130,7 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
         assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
     }
 
-    buffer_t tx_buf = {
-        .ptr = (uint8_t*) raw_tx,
-        .size = raw_tx_len,
-        .offset = 0,
-    };
-    run_sign_tx_apdu(&tx_buf, P1_TX_CONFIRM);
+    run_sign_tx_body_chunked(raw_tx, raw_tx_len);
 
     uint8_t expected_cbor[100 * 1024];
     size_t cbor_len = hex_to_bytes(cbor_hex, expected_cbor, sizeof(expected_cbor));
@@ -314,14 +333,7 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
         nbgl_mock_set_final_decisions(final_decisions, ARRAY_LEN(final_decisions));
     }
 
-    {
-        buffer_t tx_buf = {
-            .ptr = (uint8_t *) fixture->raw_tx,
-            .size = fixture->raw_tx_len,
-            .offset = 0,
-        };
-        run_sign_tx_apdu(&tx_buf, P1_TX_CONFIRM);
-    }
+    run_sign_tx_body_chunked(fixture->raw_tx, fixture->raw_tx_len);
 
 reject_assertions:
     assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
