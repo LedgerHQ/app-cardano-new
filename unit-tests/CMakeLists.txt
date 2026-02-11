@@ -63,6 +63,7 @@ include_directories(../src/keyDerivation)
 include_directories(../src/handler)
 include_directories(../src/cvote)
 include_directories(../src/tokenRegistry)
+include_directories(../src/swap)
 include_directories($ENV{BOLOS_SDK}/lib_standard_app)
 include_directories($ENV{BOLOS_SDK}/include)
 include_directories($ENV{BOLOS_SDK}/lib_alloc)
@@ -327,6 +328,14 @@ add_library(cardano_sign_tx_core STATIC ${SIGN_TX_COMMON_SOURCES})
 target_link_libraries(cardano_sign_tx_core PUBLIC ${SIGN_TX_COMMON_LIBS})
 target_compile_definitions(cardano_sign_tx_core PRIVATE TRACE_TX_HASH_BUILDER)
 
+set(SIGN_TX_COMMON_SOURCES_SWAP
+    ${SIGN_TX_COMMON_SOURCES}
+    mock_sources/swap_test_stubs.c
+)
+add_library(cardano_sign_tx_core_swap STATIC ${SIGN_TX_COMMON_SOURCES_SWAP})
+target_link_libraries(cardano_sign_tx_core_swap PUBLIC ${SIGN_TX_COMMON_LIBS})
+target_compile_definitions(cardano_sign_tx_core_swap PRIVATE TRACE_TX_HASH_BUILDER HAVE_SWAP)
+
 # Crypto reference implementations
 add_library(blake2b_lib SHARED libs/blake2b.c)
 target_link_libraries(blake2b_lib PUBLIC c)
@@ -588,6 +597,18 @@ add_executable(test_handler_state_machines
 )
 target_link_libraries(test_handler_state_machines PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_handler_state_machines test_handler_state_machines)
+
+add_executable(test_handler_sign_tx_additional
+    test_handler_sign_tx_additional.c
+)
+target_link_libraries(test_handler_sign_tx_additional PUBLIC cmocka gcov cardano_sign_tx_core)
+add_test(test_handler_sign_tx_additional test_handler_sign_tx_additional)
+
+add_executable(test_handler_sign_tx_swap
+    test_handler_sign_tx_swap.c
+)
+target_link_libraries(test_handler_sign_tx_swap PUBLIC cmocka gcov cardano_sign_tx_core_swap)
+add_test(test_handler_sign_tx_swap test_handler_sign_tx_swap)
 
 add_executable(test_tx_parser
     test_tx_parser.c

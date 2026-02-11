@@ -308,6 +308,14 @@ def _count_unit_tests_by_command() -> tuple[dict[str, int], int, str]:
     )
     for path in tx_test_files:
         _add_file_counts(path, "sign_tx")
+    # Additional hand-written sign-tx suites that are not generated from fixtures.
+    for extra_sign_tx_file in (
+        "test_handler_sign_tx_additional.c",
+        "test_handler_sign_tx_swap.c",
+    ):
+        extra_path = UNIT_TESTS_DIR / extra_sign_tx_file
+        if extra_path.exists():
+            _add_file_counts(extra_path, "sign_tx")
     # Keep sign-tx deny runner out of cmocka-based counting (counted via fixtures),
     # but include its source for function-name coverage matching.
     _add_file_content_only(UNIT_TESTS_DIR / "test_sign_tx_deny_tests.c")

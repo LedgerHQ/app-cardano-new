@@ -13,6 +13,7 @@
 #include "handler/sign_tx_aux_data.h"
 #include "hexUtils.h"
 #include "tx.h"
+#include "tx_parse.h"
 #include "blake2b.h"
 #include "globals.h"
 #include "cardano_settings.h"
@@ -36,6 +37,12 @@ extern bool unit_test_expert_mode_enabled;
 static inline void run_sign_tx_apdu(buffer_t *buffer, uint8_t p1) {
     apdu_response_begin(INS_SIGN_TX);
     handler_sign_tx(buffer, p1);
+    apdu_response_assert_sent_or_deferred();
+}
+
+static inline void run_sign_tx_witness_apdu(buffer_t *buffer) {
+    apdu_response_begin(INS_SIGN_TX);
+    handler_sign_tx_witness(buffer);
     apdu_response_assert_sent_or_deferred();
 }
 
