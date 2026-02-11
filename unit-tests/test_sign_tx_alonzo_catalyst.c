@@ -29,6 +29,7 @@
 #include "blake2b.h"
 #include "init_apdu.h"
 #include "io_capture.h"
+#include "apdu_finalization_check.h"
 
 #include "test_sign_tx_fixtures_alonzo_catalyst.h"
 
@@ -127,5 +128,5 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_catalyst_registration_metadata_with_stake_address_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_catalyst_registration_metadata_with_stake_address_reject_aux_expert_on),
     };
-    return _cmocka_run_group_tests("test_sign_tx_alonzo_catalyst", tests, ARRAY_LEN(tests), NULL, NULL);
+    return _cmocka_run_group_tests("test_sign_tx_alonzo_catalyst", tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);
 }

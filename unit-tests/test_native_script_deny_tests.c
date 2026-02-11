@@ -27,102 +27,18 @@
 #include "handler/derive_native_script_hash.h"
 #include "apdu/dispatcher.h"
 #include "app_context.h"
-// ----------------------------------------------------------------------
-// Constants
-// ----------------------------------------------------------------------
-
-static uint16_t g_last_sw = 0;
-
-#define MAX_RESPONSE_BUFFER_SIZE 28
-static uint8_t g_response_buffer[MAX_RESPONSE_BUFFER_SIZE];
-static size_t g_response_buffer_length = 0;
+#include "test_native_script_utils.h"
+#include "apdu_finalization_check.h"
 
 // ----------------------------------------------------------------------
-// Simple mocks for IO and UI plumbing so we can drive the handler
+// UI mock for deny tests
 // ----------------------------------------------------------------------
 
-void ui_display_native_script_hash(security_policy_t securityPolicy);
-
-#define TEST_HEAP_SIZE (23 * 1024)
-static uint8_t test_heap[TEST_HEAP_SIZE];
-
-static inline bool test_mem_init(void) {
-    return mem_utils_init(test_heap, sizeof(test_heap));
-}
-extern bool app_mem_init(void);
-static inline void reset_context(void) {
-    memset(&G_context, 0, sizeof(G_context));
+void ui_start_native_script_streaming(void) {
+    apdu_response_send_data(NULL, 0, SWO_SUCCESS);
 }
 
-static inline void run_derive_native_script_apdu(buffer_t *buffer, uint8_t p1) {
-    apdu_response_begin(INS_DERIVE_NATIVE_SCRIPT_HASH);
-    handler_derive_native_script_hash(buffer, p1);
-    apdu_response_assert_sent_or_deferred();
-}
-
-int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
-    (void) buffer;
-    (void) bufferLength;
-    g_last_sw = swo;
-    return 0;
-}
-
-int io_send_sw(uint16_t swo) {
-    g_last_sw = swo;
-    return 0;
-}
-
-static inline void write_u32_be(uint8_t *buffer, uint32_t value) {
-    buffer[0] = (value >> 24) & 0xFF;
-    buffer[1] = (value >> 16) & 0xFF;
-    buffer[2] = (value >> 8) & 0xFF;
-    buffer[3] = value & 0xFF;
-}
-
-// Construct APDU buffer for complex script start
-// Format: [script_type: 1 byte][children_count: 4 bytes BE]
-// For N_OF_K, add: [required_count: 4 bytes BE]
-static inline void build_complex_script_start_buffer(
-    uint8_t *buffer,
-    size_t *buffer_length,
-    uint8_t script_type,
-    uint32_t children_count,
-    uint32_t required_count  // Only used for N_OF_K
-) {
-    LEDGER_ASSERT(script_type == NATIVE_SCRIPT_ALL || script_type == NATIVE_SCRIPT_ANY ||
-                      script_type == NATIVE_SCRIPT_N_OF_K,
-                  "Invalid complex script type");
-
-    size_t offset = 0;
-
-    // Byte 0: script type
-    buffer[offset++] = script_type;
-
-    // Bytes 1-4: children count (big-endian)
-    write_u32_be(&buffer[offset], children_count);
-    offset += 4;
-
-    // Bytes 5-8: required count (only for N_OF_K)
-    if (script_type == NATIVE_SCRIPT_N_OF_K) {
-        write_u32_be(&buffer[offset], required_count);
-        offset += 4;
-    }
-
-    *buffer_length = offset;
-}
-
-void ui_display_native_script_hash(security_policy_t securityPolicy) {
-    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
-
-    if (securityPolicy == POLICY_DENY) {
-        send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
-        return;
-    }
-
-    if (ctx->ui_scriptType == UI_SCRIPT_INIT) {
-        return;
-    }
-
+void ui_display_native_script_hash(void) {
     apdu_response_send_data(NULL, 0, SWO_SUCCESS);
 }
 
@@ -130,7 +46,8 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
 // Fixture runner
 // ----------------------------------------------------------------------
 
-void run_recursive_fixture(const native_script_t *script, uint16_t expected_response) {
+// Recursive fixture runner for deny tests
+void run_recursive_fixture_deny(const native_script_t *script, uint16_t expected_response) {
     if (script == NULL) {
         TRACE("  NULL script!");
     } else {
@@ -140,20 +57,18 @@ void run_recursive_fixture(const native_script_t *script, uint16_t expected_resp
             case NATIVE_SCRIPT_TYPE_INVALID_BEFORE:
             case NATIVE_SCRIPT_TYPE_PUBKEY_DEVICE_OWNED:
             case NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY: {
-                g_last_sw = 0;
                 buffer_t buf = {
                     .ptr = script->impl.simple.apdu_payload,
                     .size = script->impl.simple.apdu_payload_length,
                     .offset = 0,
                 };
                 run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
-                if (g_last_sw != SWO_SUCCESS) {
-                    assert_int_equal(g_last_sw, expected_response);
+                if (get_last_sw() != SWO_SUCCESS) {
+                    assert_int_equal(get_last_sw(), expected_response);
                 }
             } break;
             case NATIVE_SCRIPT_TYPE_ALL: {
                 TRACE("  ALL");
-                g_last_sw = 0;
 
                 uint8_t apdu_buffer[64] = {0};
                 size_t apdu_length = 0;
@@ -165,7 +80,6 @@ void run_recursive_fixture(const native_script_t *script, uint16_t expected_resp
                     0  // required_count unused for ALL
                 );
 
-                // Create buffer_t for handler
                 buffer_t buf = {
                     .ptr = apdu_buffer,
                     .size = apdu_length,
@@ -173,19 +87,18 @@ void run_recursive_fixture(const native_script_t *script, uint16_t expected_resp
                 };
 
                 run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
-                if (g_last_sw != SWO_SUCCESS) {
-                    assert_int_equal(g_last_sw, expected_response);
+                if (get_last_sw() != SWO_SUCCESS) {
+                    assert_int_equal(get_last_sw(), expected_response);
                 }
 
                 for (size_t i = 0; i < script->impl.complex.params.all.scripts_count; i++) {
-                    run_recursive_fixture(script->impl.complex.params.all.scripts[i],
+                    run_recursive_fixture_deny(script->impl.complex.params.all.scripts[i],
                                           expected_response);
                 }
                 break;
             }
             case NATIVE_SCRIPT_TYPE_ANY: {
                 TRACE("  ANY");
-                g_last_sw = 0;
 
                 uint8_t apdu_buffer[64] = {0};
                 size_t apdu_length = 0;
@@ -197,7 +110,6 @@ void run_recursive_fixture(const native_script_t *script, uint16_t expected_resp
                     0  // required_count unused for ANY
                 );
 
-                // Create buffer_t for handler
                 buffer_t buf = {
                     .ptr = apdu_buffer,
                     .size = apdu_length,
@@ -206,19 +118,18 @@ void run_recursive_fixture(const native_script_t *script, uint16_t expected_resp
 
                 TRACE_BUFFER(buf.ptr, buf.size);
                 run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
-                if (g_last_sw != SWO_SUCCESS) {
-                    assert_int_equal(g_last_sw, expected_response);
+                if (get_last_sw() != SWO_SUCCESS) {
+                    assert_int_equal(get_last_sw(), expected_response);
                 }
 
                 for (size_t i = 0; i < script->impl.complex.params.any.scripts_count; i++) {
-                    run_recursive_fixture(script->impl.complex.params.any.scripts[i],
+                    run_recursive_fixture_deny(script->impl.complex.params.any.scripts[i],
                                           expected_response);
                 }
                 break;
             }
             case NATIVE_SCRIPT_TYPE_N_OF_K: {
                 TRACE("  N_OF_K");
-                g_last_sw = 0;
 
                 uint8_t apdu_buffer[64] = {0};
                 size_t apdu_length = 0;
@@ -232,7 +143,6 @@ void run_recursive_fixture(const native_script_t *script, uint16_t expected_resp
                     (uint32_t) script->impl.complex.params.n_of_k.scripts_count,
                     (uint32_t) script->impl.complex.params.n_of_k.required_count);
 
-                // Create buffer_t for handler
                 buffer_t buf = {
                     .ptr = apdu_buffer,
                     .size = apdu_length,
@@ -240,12 +150,12 @@ void run_recursive_fixture(const native_script_t *script, uint16_t expected_resp
                 };
 
                 run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
-                if (g_last_sw != SWO_SUCCESS) {
-                    assert_int_equal(g_last_sw, expected_response);
+                if (get_last_sw() != SWO_SUCCESS) {
+                    assert_int_equal(get_last_sw(), expected_response);
                 }
 
                 for (size_t i = 0; i < script->impl.complex.params.n_of_k.scripts_count; i++) {
-                    run_recursive_fixture(script->impl.complex.params.n_of_k.scripts[i],
+                    run_recursive_fixture_deny(script->impl.complex.params.n_of_k.scripts[i],
                                           expected_response);
                 }
                 break;
@@ -260,34 +170,28 @@ void run_recursive_fixture(const native_script_t *script, uint16_t expected_resp
 static inline void run_fixture(const native_script_test_case_t *fixture) {
     reset_context();
     assert_true(test_mem_init());
-
-    // Initialize response buffer to zero
-    memset(g_response_buffer, 0, sizeof(g_response_buffer));
-    g_response_buffer_length = 0;
-    g_last_sw = 0;
+    reset_response_buffer();
 
     // Check not null
     TRACE("Running derive address fixture: %s", fixture->name);
-
     assert_true(fixture->root_script != NULL);
+
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
 
     TRACE("Expected response: 0x%04X", fixture->expected_response);
     // Send all scripts recursively
-    run_recursive_fixture(fixture->root_script, fixture->expected_response);
+    run_recursive_fixture_deny(fixture->root_script, fixture->expected_response);
 
-    // Send finish APDU
-    if (g_last_sw == SWO_SUCCESS){
-        // Create buffer_t for handler
+    // Send finish APDU if last operation succeeded
+    if (get_last_sw() == SWO_SUCCESS){
         buffer_t buf = {
             .ptr = fixture->finish_apdu_payload,
             .size = fixture->finish_apdu_payload_length,
             .offset = 0,
         };
         run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_FINISH);
-
-        {
-            assert_int_equal(g_last_sw, fixture->expected_response);
-        }
+        assert_int_equal(get_last_sw(), fixture->expected_response);
     }
 }
 
@@ -316,7 +220,7 @@ int main(void) {
                                          tests,
                                          NATIVE_SCRIPT_FIXTURES_COUNT,
                                          NULL,
-                                         NULL);
+                                         assert_no_pending_apdu_response);
     free(tests);
     return result;
 }

@@ -15,6 +15,9 @@
 #include "cardano_swo.h"
 #include "mem.h"
 #include "securityPolicy.h"
+#include "apdu/dispatcher.h"
+#include "app_context.h"
+#include "apdu_finalization_check.h"
 
 #define TEST_HEAP_SIZE (23 * 1024)
 static uint8_t test_heap[TEST_HEAP_SIZE];
@@ -42,17 +45,21 @@ int io_send_sw(uint16_t swo) {
     return 0;
 }
 
+// Mock UI functions
+void ui_start_native_script_streaming(void) {
+    apdu_response_send_data(NULL, 0, SWO_SUCCESS);
+}
+
 // Drive native script steps forward without ragger/NBGL interaction.
 // For final hash display we intentionally do nothing to model "waiting for final confirmation".
-void ui_display_native_script_hash(security_policy_t securityPolicy) {
-    (void) securityPolicy;
+void ui_display_native_script_hash(void) {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     switch (ctx->ui_scriptType) {
         case UI_SCRIPT_DISPLAY_BECH32:
         case UI_SCRIPT_DISPLAY_POLICY_ID:
             return;
         default:
-            io_send_response_pointer(NULL, 0, SWO_SUCCESS);
+            apdu_response_send_data(NULL, 0, SWO_SUCCESS);
             return;
     }
 }
@@ -60,6 +67,16 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
 static void test_finish_must_keep_request_lock_until_user_confirmation(void **state) {
     (void) state;
     reset_test_context();
+
+    buffer_t init_buf = {
+        .ptr = NULL,
+        .size = 0,
+        .offset = 0,
+    };
+    apdu_response_begin(INS_DERIVE_NATIVE_SCRIPT_HASH);
+    handler_derive_native_script_hash(&init_buf, P1_NATIVE_SCRIPT_INIT);
+    apdu_response_assert_sent_or_deferred();
+    assert_int_equal(g_last_sw, SWO_SUCCESS);
 
     // Add one simple valid script: [type=PUBKEY, cred=KEY_HASH, 28-byte hash]
     uint8_t simple_payload[1 + 1 + ADDRESS_KEY_HASH_LENGTH] = {0};
@@ -73,7 +90,9 @@ static void test_finish_must_keep_request_lock_until_user_confirmation(void **st
         .size = sizeof(simple_payload),
         .offset = 0,
     };
+    apdu_response_begin(INS_DERIVE_NATIVE_SCRIPT_HASH);
     handler_derive_native_script_hash(&simple_buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+    apdu_response_assert_sent_or_deferred();
     assert_int_equal(g_last_sw, SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_DERIVE_NATIVE_SCRIPT_HASH);
 
@@ -83,16 +102,30 @@ static void test_finish_must_keep_request_lock_until_user_confirmation(void **st
         .size = sizeof(finish_payload),
         .offset = 0,
     };
+    apdu_response_begin(INS_DERIVE_NATIVE_SCRIPT_HASH);
     handler_derive_native_script_hash(&finish_buf, P1_NATIVE_SCRIPT_FINISH);
+    apdu_response_assert_sent_or_deferred();
 
     // Expected invariant: request lock remains active while waiting for final confirmation.
-    // Current implementation clears req_type too early; this test is meant to catch that.
     assert_int_equal(G_context.req_type, REQUEST_DERIVE_NATIVE_SCRIPT_HASH);
+
+    // Close deferred APDU response to keep the next test isolated.
+    send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
 }
 
 static void test_simple_parse_failure_must_not_reach_postparse_state_mutation(void **state) {
     (void) state;
     reset_test_context();
+
+    buffer_t init_buf = {
+        .ptr = NULL,
+        .size = 0,
+        .offset = 0,
+    };
+    apdu_response_begin(INS_DERIVE_NATIVE_SCRIPT_HASH);
+    handler_derive_native_script_hash(&init_buf, P1_NATIVE_SCRIPT_INIT);
+    apdu_response_assert_sent_or_deferred();
+    assert_int_equal(g_last_sw, SWO_SUCCESS);
 
     // Invalid device-owned key path fixture from reject vectors.
     uint8_t invalid_payload[27] = {
@@ -107,8 +140,9 @@ static void test_simple_parse_failure_must_not_reach_postparse_state_mutation(vo
     };
 
     // This should produce a rejection SW and clean reset only.
-    // Current code continues into simpleScriptFinished() and hits ASSERT after reset.
+    apdu_response_begin(INS_DERIVE_NATIVE_SCRIPT_HASH);
     handler_derive_native_script_hash(&invalid_buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+    apdu_response_assert_sent_or_deferred();
     assert_int_equal(g_last_sw, SWO_NATIVE_SCRIPT_PARSING_FAIL_PUBKEY_CREDENTIAL);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
@@ -118,6 +152,5 @@ int main(void) {
         cmocka_unit_test(test_finish_must_keep_request_lock_until_user_confirmation),
         cmocka_unit_test(test_simple_parse_failure_must_not_reach_postparse_state_mutation),
     };
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }
-

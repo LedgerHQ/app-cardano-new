@@ -15,6 +15,7 @@
 #include <cmocka.h>
 
 #include "test_address_derivation_fixtures.h"
+#include "apdu_finalization_check.h"
 
 // ======================================================================
 // Address Derivation Tests (Auto-Generated)
@@ -555,5 +556,5 @@ int main(void) {
         cmocka_unit_test(test_derive_address_shelley_show_with_confirm_derive_address_shelley_testnet_reward_multidelegation_unusual_index_13),
         cmocka_unit_test(test_derive_address_shelley_show_with_confirm_derive_address_shelley_fakenet_reward_unusual_account_14),
     };
-    return _cmocka_run_group_tests("test_derive_address", tests, ARRAY_LEN(tests), NULL, NULL);
+    return _cmocka_run_group_tests("test_derive_address", tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);
 }

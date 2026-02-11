@@ -23,6 +23,8 @@ static bool g_reject_next_final_decision_enabled = false;
 static bool g_reject_next_final_decision_consumed = false;
 static nbgl_opType_t g_reject_next_operation_type = TYPE_TRANSACTION;
 static nbgl_operationType_t g_last_streaming_operation_type = TYPE_TRANSACTION;
+static bool g_streaming_start_auto_complete = false;
+static bool g_streaming_start_confirm = true;
 
 void nbgl_mock_reset(void) {
     g_final_decision_count = 0;
@@ -31,6 +33,8 @@ void nbgl_mock_reset(void) {
     g_reject_next_final_decision_consumed = false;
     g_reject_next_operation_type = TYPE_TRANSACTION;
     g_last_streaming_operation_type = TYPE_TRANSACTION;
+    g_streaming_start_auto_complete = false;
+    g_streaming_start_confirm = true;
 }
 
 void nbgl_mock_set_final_decisions(const bool *decisions, size_t decision_count) {
@@ -56,6 +60,11 @@ void nbgl_mock_reject_next_final_decision_for_operation(nbgl_opType_t operation_
     g_reject_next_final_decision_enabled = true;
     g_reject_next_final_decision_consumed = false;
     g_reject_next_operation_type = operation_type;
+}
+
+void nbgl_mock_set_streaming_start_auto_complete(bool enabled, bool confirm) {
+    g_streaming_start_auto_complete = enabled;
+    g_streaming_start_confirm = confirm;
 }
 
 static nbgl_opType_t nbgl_mock_operation_base_type(nbgl_operationType_t operation_type) {
@@ -200,7 +209,9 @@ void nbgl_useCaseReviewStreamingStart(nbgl_operationType_t       operationType,
     (void) icon;
     (void) reviewTitle;
     (void) reviewSubTitle;
-    (void) choiceCallback;
+    if (g_streaming_start_auto_complete && choiceCallback != NULL) {
+        choiceCallback(g_streaming_start_confirm);
+    }
 }
 
 void nbgl_useCaseAdvancedReviewStreamingStart(nbgl_operationType_t       operationType,
@@ -215,7 +226,9 @@ void nbgl_useCaseAdvancedReviewStreamingStart(nbgl_operationType_t       operati
     (void) reviewTitle;
     (void) reviewSubTitle;
     (void) warning;
-    (void) choiceCallback;
+    if (g_streaming_start_auto_complete && choiceCallback != NULL) {
+        choiceCallback(g_streaming_start_confirm);
+    }
 }
 
 void nbgl_useCaseReviewStreamingContinue(const nbgl_contentTagValueList_t *tagValueList,

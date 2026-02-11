@@ -11,7 +11,6 @@ typedef enum {
 } display_format;
 
 typedef enum {
-    UI_SCRIPT_INIT,
     UI_SCRIPT_PUBKEY_PATH,  // aka DEVICE_OWNED
     UI_SCRIPT_PUBKEY_HASH,  // aka THIRD_PARTY
     UI_SCRIPT_ALL,

@@ -60,6 +60,7 @@ def _build_test_file_header() -> str:
 
 #include "test_derive_native_script_fixtures.h"
 #include "test_derive_native_script_common.h"
+#include "apdu_finalization_check.h"
 
 // ======================================================================
 // Native Script Hash Derivation Tests (Auto-Generated)
@@ -131,7 +132,7 @@ def _build_main_function(test_function_names: list[str]) -> str:
     
     main_lines.extend([
         "    };",
-        "    return cmocka_run_group_tests(tests, NULL, NULL);",
+        "    return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);",
         "}",
         "",
     ])

@@ -26,10 +26,8 @@ static void deriveNativeScriptHash_handleAll() {
         &ctx->hashBuilder,
         ctx->complexScripts[ctx->level].remainingScripts);
     ctx->ui_scriptType = UI_SCRIPT_ALL;
-    // No policy check needed: the device does not derive anything secret.
-    security_policy_t policy = POLICY_SHOW;
     apdu_response_deferred();
-    ui_display_native_script_hash(policy);
+    ui_display_native_script_hash();
     return;
 }
 
@@ -39,10 +37,8 @@ static void deriveNativeScriptHash_handleAny() {
         &ctx->hashBuilder,
         ctx->complexScripts[ctx->level].remainingScripts);
     ctx->ui_scriptType = UI_SCRIPT_ANY;
-    // No policy check needed: the device does not derive anything secret.
-    security_policy_t policy = POLICY_SHOW;
     apdu_response_deferred();
-    ui_display_native_script_hash(policy);
+    ui_display_native_script_hash();
     return;
 }
 
@@ -71,10 +67,8 @@ static void deriveNativeScriptHash_handleNofK(buffer_t *cdata) {
         ctx->complexScripts[ctx->level].remainingScripts);
 
     ctx->ui_scriptType = UI_SCRIPT_N_OF_K;
-    // No policy check needed: the device does not derive anything secret.
-    security_policy_t policy = POLICY_SHOW;
     apdu_response_deferred();
-    ui_display_native_script_hash(policy);
+    ui_display_native_script_hash();
     return;
 }
 
@@ -88,7 +82,6 @@ static inline void finishComplexScriptsAndPropagate() {
     while (isCurrentComplexScriptComplete()) {
         LEDGER_ASSERT(ctx->level > 0, "Bad script level");
         ctx->level--;
-        LEDGER_ASSERT(ctx->level < MAX_SCRIPT_DEPTH, "Depth overflow");
         LEDGER_ASSERT(ctx->complexScripts[ctx->level].remainingScripts > 0, "Bad script count");
         ctx->complexScripts[ctx->level].remainingScripts--;
     }
@@ -153,32 +146,51 @@ static bool deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
 
     // Derive or extract the pubkey hash
     uint8_t pubkeyHash[ADDRESS_KEY_HASH_LENGTH] = {0};
-    security_policy_t policy;
+    switch (credential.type) {
+        case EXT_CREDENTIAL_KEY_PATH: {
+            TRACE("Credential type - device-owned key: derive hash from path");
+            // Device-owned key: derive hash from path
+            ctx->scriptContent.pubkeyPath = credential.keyPath;
+            ctx->ui_scriptType = UI_SCRIPT_PUBKEY_PATH;  // Tag the union immediately
 
-    if (credential.type == EXT_CREDENTIAL_KEY_PATH) {
-        TRACE("Credential type - device-owned key: derive hash from path");
-        // Device-owned key: derive hash from path
-        ctx->scriptContent.pubkeyPath = credential.keyPath;
-        ctx->ui_scriptType = UI_SCRIPT_PUBKEY_PATH;  // Tag the union immediately
+            // Check security policy for device-owned keys
+            warning_bits_t warnings = 0;
+            const security_policy_t policy =
+                policyForDeriveNativeScriptHashDevicePubkey(&ctx->scriptContent.pubkeyPath,
+                                                            &warnings);
+            LEDGER_ASSERT(warnings == 0, "Warnings not implemented in native script hash UI");
+            switch (policy) {
+                case POLICY_DENY:
+                    TRACE("Security condition not satisfied");
+                    send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
+                    return false;
+                case POLICY_SHOW:
+                    // Derive hash only after policy check to avoid asserts on denied paths.
+                    keyPathToKeyHash(
+                        &ctx->scriptContent.pubkeyPath, pubkeyHash, ADDRESS_KEY_HASH_LENGTH);
+                    break;
+                case POLICY_HIDE:
+                    LEDGER_ASSERT(false, "POLICY_HIDE not supported for native script device pubkey");
+                    break;
+                default:
+                    LEDGER_ASSERT(false, "Invalid policy value: %d", policy);
+            }
+            break;
+        }
+        case EXT_CREDENTIAL_KEY_HASH:
+            TRACE("Credential type - third-party key: use provided hash");
+            // Third-party key: use provided hash
+            LEDGER_ASSERT(SIZEOF(ctx->scriptContent.pubkeyHash) == ADDRESS_KEY_HASH_LENGTH,
+                          "Bad key hash size");
 
-        // Derive hash from the path stored in union
-        keyPathToKeyHash(&ctx->scriptContent.pubkeyPath, pubkeyHash, ADDRESS_KEY_HASH_LENGTH);
-
-        // Check security policy for device-owned keys
-        warning_bits_t warnings = 0;
-        policy = policyForDeriveNativeScriptHashDevicePubkey(&ctx->scriptContent.pubkeyPath, &warnings);
-    } else {
-        TRACE("Credential type - third-party key: use provided hash");
-        // Third-party key: use provided hash
-        LEDGER_ASSERT(credential.type == EXT_CREDENTIAL_KEY_HASH, "Expected KEY_HASH credential");
-        LEDGER_ASSERT(SIZEOF(ctx->scriptContent.pubkeyHash) == ADDRESS_KEY_HASH_LENGTH, "Bad key hash size");
-
-        // Copy hash to context for UI display and to local buffer
-        memmove(ctx->scriptContent.pubkeyHash, credential.keyHash, ADDRESS_KEY_HASH_LENGTH);
-        ctx->ui_scriptType = UI_SCRIPT_PUBKEY_HASH;  // Tag the union immediately
-        memmove(pubkeyHash, credential.keyHash, ADDRESS_KEY_HASH_LENGTH);
-        // No policy check needed: the device does not derive anything secret.
-        policy = POLICY_SHOW;
+            // Copy hash to context for UI display and to local buffer
+            memmove(ctx->scriptContent.pubkeyHash, credential.keyHash, ADDRESS_KEY_HASH_LENGTH);
+            ctx->ui_scriptType = UI_SCRIPT_PUBKEY_HASH;  // Tag the union immediately
+            memmove(pubkeyHash, credential.keyHash, ADDRESS_KEY_HASH_LENGTH);
+            break;
+        default:
+            LEDGER_ASSERT(false, "Unexpected credential type: %d", credential.type);
+            return false;
     }
     
     // Add pubkey hash to script hash builder (single call for both paths)
@@ -187,7 +199,7 @@ static bool deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
 
     // Display to user
     apdu_response_deferred();
-    ui_display_native_script_hash(policy);
+    ui_display_native_script_hash();
     return true;
 }
 
@@ -207,10 +219,8 @@ static bool deriveNativeScriptHash_handleInvalidBefore(buffer_t *cdata) {
     }
     nativeScriptHashBuilder_addScript_invalidBefore(&ctx->hashBuilder, ctx->scriptContent.timelock);
     ctx->ui_scriptType = UI_SCRIPT_INVALID_BEFORE;
-    // No policy check needed: the device does not derive anything secret.
-    security_policy_t policy = POLICY_SHOW;
     apdu_response_deferred();
-    ui_display_native_script_hash(policy);
+    ui_display_native_script_hash();
     return true;
 }
 
@@ -231,32 +241,24 @@ static bool deriveNativeScriptHash_handleInvalidHereafter(buffer_t *cdata) {
     nativeScriptHashBuilder_addScript_invalidHereafter(&ctx->hashBuilder,
                                                        ctx->scriptContent.timelock);
     ctx->ui_scriptType = UI_SCRIPT_INVALID_HEREAFTER;
-    // No policy check needed: the device does not derive anything secret.
-    security_policy_t policy = POLICY_SHOW;
     apdu_response_deferred();
-    ui_display_native_script_hash(policy);
+    ui_display_native_script_hash();
     return true;
 }
 
 // Finish native script handlers
-int deriveNativeScriptHash_displayNativeScriptHash_bech32() {
+static void deriveNativeScriptHash_displayNativeScriptHash_bech32() {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     ctx->ui_scriptType = UI_SCRIPT_DISPLAY_BECH32;
-    // No policy check needed: the device does not derive anything secret.
-    security_policy_t policy = POLICY_SHOW;
     apdu_response_deferred();
-    ui_display_native_script_hash(policy);
-    return 0;
+    ui_display_native_script_hash();
 }
 
-int deriveNativeScriptHash_displayNativeScriptHash_policyId() {
+static void deriveNativeScriptHash_displayNativeScriptHash_policyId() {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     ctx->ui_scriptType = UI_SCRIPT_DISPLAY_POLICY_ID;
-    // No policy check needed: the device does not derive anything secret.
-    security_policy_t policy = POLICY_SHOW;
     apdu_response_deferred();
-    ui_display_native_script_hash(policy);
-    return 0;
+    ui_display_native_script_hash();
 }
 
 // Complex script start handler
@@ -419,18 +421,33 @@ static void deriveNativeScriptHash_handleWholeNativeScriptFinish(buffer_t *cdata
     return;
 }
 
-static void deriveNativeScriptHash_initRequest(void) {
-    // Handler entry invariant for request initialization
-    LEDGER_ASSERT(G_context.req_type == REQUEST_NONE, "Request already active");
+static void deriveNativeScriptHash_handleInit(buffer_t *cdata) {
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
 
+    // Init APDU should have no payload
+    if (buffer_can_read(cdata, 1)) {
+        TRACE("Init APDU should be empty");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+
+    // Init entry invariant: no active request
+    if (G_context.req_type != REQUEST_NONE) {
+        TRACE("Request already active");
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return;
+    }
+
+    // Set up request state
     G_context.req_type = REQUEST_DERIVE_NATIVE_SCRIPT_HASH;
-
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     ctx->level = 0;
     ctx->complexScripts[0].remainingScripts = 1;
     ctx->complexScripts[0].totalScripts = 1;
-    ctx->ui_scriptType = UI_SCRIPT_INIT;
     nativeScriptHashBuilder_init(&ctx->hashBuilder);
+
+    apdu_response_deferred();
+    ui_start_native_script_streaming();
 }
 
 void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
@@ -438,30 +455,37 @@ void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
 
     TRACE_BUFFER_T(cdata);
 
-    if (G_context.req_type == REQUEST_NONE) {
-        deriveNativeScriptHash_initRequest();
-        // No policy check needed: the device does not derive anything secret.
-        security_policy_t policy = POLICY_SHOW;
-        apdu_response_deferred();
-        ui_display_native_script_hash(policy);
-    } else if (G_context.req_type != REQUEST_DERIVE_NATIVE_SCRIPT_HASH) {
-        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
-        return;
-    }
-
     switch (script_type) {
+        case P1_NATIVE_SCRIPT_INIT:
+            deriveNativeScriptHash_handleInit(cdata);
+            break;
         case P1_NATIVE_SCRIPT_START_COMPLEX:
-            deriveNativeScriptHash_handleComplexScriptStart(cdata);
-            break;
         case P1_NATIVE_SCRIPT_ADD_SIMPLE:
-            deriveNativeScriptHash_handleSimpleScript(cdata);
-            break;
         case P1_NATIVE_SCRIPT_FINISH:
-            deriveNativeScriptHash_handleWholeNativeScriptFinish(cdata);
+            // All script/finish APDUs require active request
+            if (G_context.req_type != REQUEST_DERIVE_NATIVE_SCRIPT_HASH) {
+                TRACE("No active derive native script hash request");
+                send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+                return;
+            }
+            switch (script_type) {
+                case P1_NATIVE_SCRIPT_START_COMPLEX:
+                    deriveNativeScriptHash_handleComplexScriptStart(cdata);
+                    break;
+                case P1_NATIVE_SCRIPT_ADD_SIMPLE:
+                    deriveNativeScriptHash_handleSimpleScript(cdata);
+                    break;
+                case P1_NATIVE_SCRIPT_FINISH:
+                    deriveNativeScriptHash_handleWholeNativeScriptFinish(cdata);
+                    break;
+                default:
+                    LEDGER_ASSERT(false, "Invalid native script type: %d", script_type);
+                    break;
+            }
             break;
         default:
-            TRACE("Bad script type");
-            LEDGER_ASSERT(false, "script type should be handled before");
+            TRACE("Bad script type: %d", script_type);
+            send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
             break;
     }
     return;

@@ -14,7 +14,6 @@
 #include "menu.h"
 #include "nbgl_use_case.h"
 #include "mem.h"
-#include "securityPolicy.h"
 #include "ui_formatters.h"
 #include "ui_icons.h"
 #include "ui_utils.h"
@@ -53,10 +52,15 @@ bool is_required_position(const derive_native_script_hash_ctx_t *ctx) {
     if (ctx->level == 0) {
         return false;  // No position at root level for simple scripts
     }
-    if (ctx->level == 1 &&
-        (ctx->ui_scriptType == UI_SCRIPT_ALL || ctx->ui_scriptType == UI_SCRIPT_N_OF_K ||
-         ctx->ui_scriptType == UI_SCRIPT_ANY)) {
-        return false;  // No position at root level for complex scripts
+    if (ctx->level == 1) {
+        switch (ctx->ui_scriptType) {
+            case UI_SCRIPT_ALL:
+            case UI_SCRIPT_N_OF_K:
+            case UI_SCRIPT_ANY:
+                return false;  // No position at root level for complex scripts
+            default:
+                break;
+        }
     }
     return true;
 }
@@ -67,12 +71,17 @@ bool format_position(derive_native_script_hash_ctx_t *ctx,
     uint8_t level = ctx->level;
 
     // Complex scripts show position of parent level
-    if (ctx->ui_scriptType == UI_SCRIPT_ALL || ctx->ui_scriptType == UI_SCRIPT_N_OF_K ||
-        ctx->ui_scriptType == UI_SCRIPT_ANY) {
-        if (ctx->level <= 1) {
-            return false;  // No position to show at root level
-        }
-        level = ctx->level - 1;
+    switch (ctx->ui_scriptType) {
+        case UI_SCRIPT_ALL:
+        case UI_SCRIPT_N_OF_K:
+        case UI_SCRIPT_ANY:
+            if (ctx->level <= 1) {
+                return false;  // No position to show at root level
+            }
+            level = ctx->level - 1;
+            break;
+        default:
+            break;
     }
 
     build_position_description(ctx, level, position_description, position_descriptionLen);
@@ -123,6 +132,15 @@ static void derive_native_script_hash_review_continue(bool confirm) {
     }
 }
 
+void ui_start_native_script_streaming(void) {
+    // Start NBGL streaming with title screen
+    nbgl_useCaseReviewStreamingStart(TYPE_OPERATION,
+                                     &ICON_APP_CARDANO,
+                                     "Review Script",
+                                     NULL,
+                                     derive_native_script_hash_review_continue);
+}
+
 static void derive_native_script_hash_review_confirmation_output(bool confirm) {
     // CLEANUP
     derive_native_script_hash_buffer_cleanup();
@@ -132,6 +150,8 @@ static void derive_native_script_hash_review_confirmation_output(bool confirm) {
                   "Wrong req_type in finalize: %d",
                   G_context.req_type);
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
+    LEDGER_ASSERT(ctx->hashBuilder.state == NATIVE_SCRIPT_HASH_BUILDER_FINISHED,
+                  "Hash builder not in finished state");
     if (confirm) {
         TRACE("User confirmed");
         LEDGER_ASSERT(ctx->scriptHashBuffer != NULL || SCRIPT_HASH_LENGTH == 0,
@@ -235,12 +255,16 @@ void display_complex_script_content(ui_native_script_type scriptType) {
                        ctx);
     }
     UI_ADD_STATIC(UI_STATIC_LABEL("Script type"), script_label);
-    if (scriptType == UI_SCRIPT_N_OF_K) {
-        UI_ADD_FORMAT2(UI_STATIC_LABEL("Requirement"),
-                       MAX_NESTED_SCRIPTS_DESCRIPTION_LENGTH,
-                       format_required_signatures,
-                       ctx->scriptContent.requiredScripts,
-                       ctx->complexScripts[ctx->level].remainingScripts);
+    switch (scriptType) {
+        case UI_SCRIPT_N_OF_K:
+            UI_ADD_FORMAT2(UI_STATIC_LABEL("Requirement"),
+                           MAX_NESTED_SCRIPTS_DESCRIPTION_LENGTH,
+                           format_required_signatures,
+                           ctx->scriptContent.requiredScripts,
+                           ctx->complexScripts[ctx->level].remainingScripts);
+            break;
+        default:
+            break;
     }
     UI_ADD_FORMAT1(UI_STATIC_LABEL("Content"),
                    MAX_NESTED_SCRIPTS_DESCRIPTION_LENGTH,
@@ -251,26 +275,10 @@ void display_complex_script_content(ui_native_script_type scriptType) {
     nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_review_continue);
 }
 
-void ui_display_native_script_hash(security_policy_t securityPolicy) {
+void ui_display_native_script_hash(void) {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
 
-    TRACE("securityPolicy: %d", securityPolicy);
-    if (securityPolicy == POLICY_DENY) {
-        TRACE("Security condition not satisfied");
-        send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
-        return;
-    }
-
     switch (ctx->ui_scriptType) {
-        case UI_SCRIPT_INIT: {
-            // NOTE: first screen is advanced by NBGL flow after the initial review callback.
-            nbgl_useCaseReviewStreamingStart(TYPE_OPERATION,
-                                             &ICON_APP_CARDANO,
-                                             "Review Script",
-                                             NULL,
-                                             derive_native_script_hash_review_continue);
-            break;
-        }
         case UI_SCRIPT_ALL: {
             TRACE("UI_SCRIPT_ALL");
             display_complex_script_content(UI_SCRIPT_ALL);
@@ -312,8 +320,7 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
                            &ctx->scriptContent.pubkeyPath);
             CHECK_COUNT(expectedPairs);
 
-            nbgl_useCaseReviewStreamingContinue(g_pairsList,
-                                                derive_native_script_hash_review_continue);
+            nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_review_continue);
             break;
         }
         case UI_SCRIPT_PUBKEY_HASH: {
@@ -344,8 +351,7 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
                            ADDRESS_KEY_HASH_LENGTH);
             CHECK_COUNT(expectedPairs);
 
-            nbgl_useCaseReviewStreamingContinue(g_pairsList,
-                                                derive_native_script_hash_review_continue);
+            nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_review_continue);
             break;
         }
         case UI_SCRIPT_INVALID_BEFORE: {
@@ -375,8 +381,7 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
                            0);
             CHECK_COUNT(expectedPairs);
 
-            nbgl_useCaseReviewStreamingContinue(g_pairsList,
-                                                derive_native_script_hash_review_continue);
+            nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_review_continue);
             break;
         }
         case UI_SCRIPT_INVALID_HEREAFTER: {
@@ -406,8 +411,7 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
                            0);
             CHECK_COUNT(expectedPairs);
 
-            nbgl_useCaseReviewStreamingContinue(g_pairsList,
-                                                derive_native_script_hash_review_continue);
+            nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_review_continue);
             break;
         }
         case UI_SCRIPT_DISPLAY_BECH32: {

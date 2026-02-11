@@ -16,6 +16,7 @@
 
 #include "test_pubkey_fixtures_deny.h"
 #include "test_pubkey_common.h"
+#include "apdu_finalization_check.h"
 
 // ======================================================================
 // Public Key Export Deny Tests (Auto-Generated)
@@ -107,5 +108,5 @@ int main(void) {
         cmocka_unit_test(test_pubkey_deny_12_export_pubkey_invalid_pool_cold_usecase),
     };
 
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }

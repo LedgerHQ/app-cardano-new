@@ -22,6 +22,7 @@
 #include "addressUtils/bip44.h"
 #include "app_mem_utils.h"
 #include "app_context.h"
+#include "apdu_finalization_check.h"
 
 #define TEST_HEAP_SIZE (23 * 1024)
 static uint8_t test_heap[TEST_HEAP_SIZE];
@@ -461,5 +462,5 @@ int main(void) {
         cmocka_unit_test(test_multiple_reinit_attempts),
     };
 
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }

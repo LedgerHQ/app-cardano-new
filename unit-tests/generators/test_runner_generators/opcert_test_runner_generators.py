@@ -42,6 +42,7 @@ def _build_file_header() -> str:
 #include "app_context.h"
 #include "apdu/dispatcher.h"
 #include "mem.h"
+#include "apdu_finalization_check.h"
 
 """
 
@@ -121,7 +122,7 @@ def _build_main(function_names: list[str]) -> str:
         lines.append(f"        cmocka_unit_test({name}),")
     lines.extend([
         "    };",
-        "    return cmocka_run_group_tests(tests, NULL, NULL);",
+        "    return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);",
         "}",
     ])
     return "\n".join(lines)

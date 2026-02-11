@@ -825,6 +825,7 @@ set(DERIVE_NATIVE_SCRIPT_COMMON_SOURCES
     mock_sources/nbgl_mock.c
     mock_sources/hex_stub.c
     mock_sources/io_stub.c
+    test_native_script_utils.c
 )
 set(DERIVE_NATIVE_SCRIPT_COMMON_LIBS
     hex_utils
@@ -872,3 +873,15 @@ add_executable(test_native_script_state_machine
 )
 target_link_libraries(test_native_script_state_machine PUBLIC cmocka gcov cardano_derive_native_script_core)
 add_test(test_native_script_state_machine test_native_script_state_machine)
+
+add_executable(test_native_script_additional_deny_tests
+    test_native_script_additional_deny_tests.c
+)
+target_link_libraries(test_native_script_additional_deny_tests PUBLIC cmocka gcov cardano_derive_native_script_core)
+add_test(test_native_script_additional_deny_tests test_native_script_additional_deny_tests)
+
+add_executable(test_native_script_init_ui_completion
+    test_native_script_init_ui_completion.c
+)
+target_link_libraries(test_native_script_init_ui_completion PUBLIC cmocka gcov cardano_derive_native_script_core)
+add_test(test_native_script_init_ui_completion test_native_script_init_ui_completion)

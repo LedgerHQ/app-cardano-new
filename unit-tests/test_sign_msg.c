@@ -16,6 +16,7 @@
 
 #include "test_sign_msg_fixtures.h"
 #include "test_sign_msg_common.h"
+#include "apdu_finalization_check.h"
 
 // ======================================================================
 // CIP-8 Message Signing Tests (Auto-Generated)
@@ -124,5 +125,5 @@ int main(void) {
         cmocka_unit_test(test_sign_message_sign_msg_257_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_14),
         cmocka_unit_test(test_sign_message_sign_msg_1000_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_15),
     };
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }

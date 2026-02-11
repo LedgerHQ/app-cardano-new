@@ -158,7 +158,7 @@ def _build_main_function(test_names: Sequence[str], test_c_file: str) -> str:
         f"        {registrations},\n"
         "    };\n"
         f'    return _cmocka_run_group_tests("{Path(test_c_file).stem}", '
-        "tests, ARRAY_LEN(tests), NULL, NULL);\n"
+        "tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);\n"
         "}\n"
     )
 
@@ -206,6 +206,7 @@ def _build_boilerplate(fixture_file: str) -> str:
         "#include \"blake2b.h\"\n"
         "#include \"init_apdu.h\"\n"
         "#include \"io_capture.h\"\n"
+        "#include \"apdu_finalization_check.h\"\n"
         "\n"
         f"#include \"{fixture_file}\"\n"
         "\n"

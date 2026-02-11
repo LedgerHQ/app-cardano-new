@@ -239,6 +239,7 @@ def _build_test_file_header() -> str:
 #include <cmocka.h>
 
 #include "test_address_derivation_fixtures.h"
+#include "apdu_finalization_check.h"
 
 """
 
@@ -296,7 +297,7 @@ def _build_main_function(
         f"        {test_registrations},\n"
         "    };\n"
         f'    return _cmocka_run_group_tests("{Path(test_c_file).stem}", '
-        "tests, ARRAY_LEN(tests), NULL, NULL);\n"
+        "tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);\n"
         "}\n"
     )
 

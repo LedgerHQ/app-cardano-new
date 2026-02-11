@@ -21,6 +21,7 @@
 #include "tx_utils.h"
 #include "tx_parse.h"
 #include "app_context.h"
+#include "apdu_finalization_check.h"
 #include "hexUtils.h"
 #include "utils/utils.h"
 #include "ui_display_tx.h"
@@ -179,7 +180,7 @@ int main(void) {
         }
     }
 
-    int result = cmocka_run_group_tests(tests, NULL, NULL);
+    int result = cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 
     if (skipped_count > 0) {
         print_message("\n");

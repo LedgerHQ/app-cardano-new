@@ -77,6 +77,7 @@ def _build_test_file_header() -> str:
 
 #include \"test_pubkey_fixtures.h\"
 #include \"test_pubkey_common.h\"
+#include \"apdu_finalization_check.h\"
 
 // ======================================================================
 // Public Key Export Tests (Auto-Generated)
@@ -121,7 +122,7 @@ def _build_main_function(test_function_names: list[str]) -> str:
         "    const struct CMUnitTest tests[] = {\n"
         f"        {registrations},\n"
         "    };\n"
-        "    return cmocka_run_group_tests(tests, NULL, NULL);\n"
+        "    return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);\n"
         "}\n"
     )
 

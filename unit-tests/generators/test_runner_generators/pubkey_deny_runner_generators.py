@@ -44,6 +44,7 @@ def _build_test_file_header() -> str:
 
 #include \"test_pubkey_fixtures_deny.h\"
 #include \"test_pubkey_common.h\"
+#include \"apdu_finalization_check.h\"
 
 // ======================================================================
 // Public Key Export Deny Tests (Auto-Generated)
@@ -81,7 +82,7 @@ def _build_main_function(test_function_names: list[str]) -> str:
         "    const struct CMUnitTest tests[] = {\n"
         f"        {registrations},\n"
         "    };\n\n"
-        "    return cmocka_run_group_tests(tests, NULL, NULL);\n"
+        "    return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);\n"
         "}\n"
     )
 

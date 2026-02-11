@@ -17,6 +17,7 @@
 #include "cardano_swo.h"
 #include "mem.h"
 #include "app_context.h"
+#include "apdu_finalization_check.h"
 
 #define TEST_HEAP_SIZE (23 * 1024)
 static uint8_t test_heap[TEST_HEAP_SIZE];
@@ -177,5 +178,5 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_confirm_stops_after_chunk_error),
         cmocka_unit_test(test_sign_tx_witness_rejects_before_approved_state),
     };
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }

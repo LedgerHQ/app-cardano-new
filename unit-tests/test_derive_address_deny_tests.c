@@ -26,6 +26,7 @@
 
 #include "test_address_derivation_fixtures_deny.h"
 #include "test_fixture_types.h"
+#include "apdu_finalization_check.h"
 
 // ----------------------------------------------------------------------
 // Constants
@@ -159,5 +160,5 @@ int main(void) {
         cmocka_unit_test(test_derive_address_deny_11_derive_address_enterprise_with_wrong_spending_path),
     };
 
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }

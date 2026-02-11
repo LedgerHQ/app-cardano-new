@@ -15,6 +15,9 @@
 #include "cardano_swo.h"
 #include "mem.h"
 #include "securityPolicy.h"
+#include "apdu/dispatcher.h"
+#include "app_context.h"
+#include "apdu_finalization_check.h"
 
 #define TEST_HEAP_SIZE (23 * 1024)
 static uint8_t test_heap[TEST_HEAP_SIZE];
@@ -60,13 +63,26 @@ void ui_menu_main(void) {
 void ui_display_transaction(void) {
 }
 
-void ui_display_native_script_hash(security_policy_t securityPolicy) {
-    (void) securityPolicy;
+void ui_display_native_script_hash(void) {
+}
+
+void ui_start_native_script_streaming(void) {
+    apdu_response_send_data(NULL, 0, SWO_SUCCESS);
 }
 
 static void test_native_script_finish_before_script_completion_resets_context(void **state) {
     (void) state;
     reset_test_context();
+
+    buffer_t init_buf = {
+        .ptr = NULL,
+        .size = 0,
+        .offset = 0,
+    };
+    apdu_response_begin(INS_DERIVE_NATIVE_SCRIPT_HASH);
+    handler_derive_native_script_hash(&init_buf, P1_NATIVE_SCRIPT_INIT);
+    apdu_response_assert_sent_or_deferred();
+    assert_int_equal(g_last_sw, SWO_SUCCESS);
 
     uint8_t finish_payload[1] = {DISPLAY_NATIVE_SCRIPT_HASH_BECH32};
     buffer_t finish_buf = {
@@ -75,7 +91,9 @@ static void test_native_script_finish_before_script_completion_resets_context(vo
         .offset = 0,
     };
 
+    apdu_response_begin(INS_DERIVE_NATIVE_SCRIPT_HASH);
     handler_derive_native_script_hash(&finish_buf, P1_NATIVE_SCRIPT_FINISH);
+    apdu_response_assert_sent_or_deferred();
 
     assert_int_equal(g_last_sw, SWO_NATIVE_SCRIPT_PARSING_FAIL_NESTING);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
@@ -85,5 +103,5 @@ int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_native_script_finish_before_script_completion_resets_context),
     };
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }

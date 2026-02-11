@@ -206,6 +206,7 @@ void apdu_dispatcher(const command_t *cmd) {
             }
             // Validate and dispatch based on P1 value
             switch (cmd->p1) {
+                case P1_NATIVE_SCRIPT_INIT:
                 case P1_NATIVE_SCRIPT_START_COMPLEX:
                 case P1_NATIVE_SCRIPT_ADD_SIMPLE:
                 case P1_NATIVE_SCRIPT_FINISH:

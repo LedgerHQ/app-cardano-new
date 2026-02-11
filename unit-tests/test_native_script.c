@@ -16,6 +16,7 @@
 
 #include "test_derive_native_script_fixtures.h"
 #include "test_derive_native_script_common.h"
+#include "apdu_finalization_check.h"
 
 // ======================================================================
 // Native Script Hash Derivation Tests (Auto-Generated)
@@ -123,5 +124,5 @@ int main(void) {
         cmocka_unit_test(test_derive_native_script_nested_native_scripts_2_14),
         cmocka_unit_test(test_derive_native_script_nested_native_scripts_3_15),
     };
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }

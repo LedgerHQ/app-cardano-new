@@ -3,10 +3,14 @@
 
 #pragma once
 
-#include "securityPolicy.h"
 /**
- * Display native script hash
- *
- * @param securityPolicy Security policy result
+ * Start NBGL streaming UI for native script hash derivation.
+ * Called once on init APDU to show title screen.
  */
-void ui_display_native_script_hash(security_policy_t securityPolicy);
+void ui_start_native_script_streaming(void);
+
+/**
+ * Display native script content during streaming.
+ * Called for each script APDU to show script details.
+ */
+void ui_display_native_script_hash(void);

@@ -310,11 +310,17 @@ static void test_deferred_response_is_allowed(void **state) {
     assert_false(g_apdu_response_active);
 }
 
+static int assert_no_pending_deferred_response(void **state) {
+    (void) state;
+    assert_false(g_apdu_response_active && g_apdu_response_deferred && !g_apdu_response_sent);
+    return 0;
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_interleaving_guard_blocks_other_instructions),
         cmocka_unit_test(test_interleaving_allows_expected_instruction),
         cmocka_unit_test(test_deferred_response_is_allowed),
     };
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    return cmocka_run_group_tests(tests, NULL, assert_no_pending_deferred_response);
 }

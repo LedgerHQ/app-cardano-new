@@ -16,6 +16,7 @@
 
 #include "test_pubkey_fixtures.h"
 #include "test_pubkey_common.h"
+#include "apdu_finalization_check.h"
 
 // ======================================================================
 // Public Key Export Tests (Auto-Generated)
@@ -244,5 +245,5 @@ int main(void) {
         cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_cvote_keys_path_2_7),
         cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_cvote_keys_path_1_8),
     };
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }

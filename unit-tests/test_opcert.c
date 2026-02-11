@@ -25,6 +25,7 @@
 #include "app_context.h"
 #include "apdu/dispatcher.h"
 #include "mem.h"
+#include "apdu_finalization_check.h"
 
 
 static uint16_t g_last_sw = 0;
@@ -85,5 +86,5 @@ int main(void) {
         cmocka_unit_test(test_opCert_should_correctly_sign_operational_certificate_0),
         cmocka_unit_test(test_opCert_should_correctly_sign_operational_certificate_with_warning_1),
     };
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }
