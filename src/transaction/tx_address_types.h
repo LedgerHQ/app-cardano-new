@@ -18,6 +18,4 @@ typedef struct {
         bip44_path_t path;
         const uint8_t* hashBuffer;
     };
-// TODO maybe we do not need this type and it could be replaced by credential
-// TODO since network id is stored globally for tx, but it might affect public API in ledgerjs
 } pool_reward_account_t;

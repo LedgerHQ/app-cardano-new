@@ -2172,11 +2172,6 @@ security_policy_t policyForCVoteRegistrationVotingPurpose() {
     HIDE();
 }
 
-security_policy_t policyForCVoteRegistrationConfirm() {
-    // TODO(CVote): Implement full CVote registration UI flow and warnings.
-    SHOW();
-}
-
 // ======================================= Operational certificate =======================================
 
 security_policy_t policyForSignOpCert(const bip44_path_t *poolColdKeyPath,

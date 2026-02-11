@@ -182,7 +182,6 @@ security_policy_t policyForCVoteRegistrationPaymentDestination(
     warning_bits_t* warnings);
 security_policy_t policyForCVoteRegistrationNonce();
 security_policy_t policyForCVoteRegistrationVotingPurpose();
-security_policy_t policyForCVoteRegistrationConfirm();
 
 security_policy_t policyForSignOpCert(const bip44_path_t* poolColdKeyPathSpec,
                                       warning_bits_t* warnings);

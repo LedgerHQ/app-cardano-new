@@ -91,7 +91,6 @@ static void opcert_review_choice(bool confirm) {
     finalize_sign_opcert(confirm);
 
     // SHOW STATUS
-    // TODO: customize status screen for opcert signing?
     if (confirm) {
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_SIGNED, ui_menu_main);
     } else {
