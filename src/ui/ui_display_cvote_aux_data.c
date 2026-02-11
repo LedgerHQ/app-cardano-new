@@ -398,78 +398,69 @@ void ui_cvote_aux_data_init_vars(cvote_aux_data_t *aux_data) {
     aux_data->ui_streaming.on = (total_pair_count > MAX_UI_PAIRS);
 }
 
-static bool cvote_streaming_show_next_page(cvote_aux_data_t *aux_data,
-                                           const cvote_credential_t *credential,
-                                           uint32_t weight) {
-    LEDGER_ASSERT(aux_data != NULL && aux_data->ui_streaming.on, "Called with streaming disabled");
-
-    switch (aux_data->state) {
-        case CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE: {
-            LEDGER_ASSERT(credential == NULL, "Initial streaming page cannot carry delegation payload");
-            uint16_t initial_pairs = cvote_initial_pairs_count(aux_data);
-            LEDGER_ASSERT(initial_pairs > 0, "No initial pairs for streaming page");
-
-            TRACE("CVote streaming initial page: initial_pairs=%u, max_pairs=%u",
-                  initial_pairs,
-                  MAX_UI_PAIRS);
-
-            ui_reset_error_status();
-            if (!ui_pairs_init(initial_pairs)) {
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-                return false;
-            }
-
-            if (!cvote_add_initial_pairs(aux_data)) {
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-                return false;
-            }
-
-            LEDGER_ASSERT(!aux_data->ui_streaming.review_started, "Streaming review should start exactly once from initial page");
-            if (!cvote_start_streaming_review(aux_data)) {
-                return false;
-            }
-
-            // Initial page is now ready; next APDU accepted by the state machine is delegation.
-            aux_data->state = CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS;
-            cvote_streaming_display_current_page();
-            return true;
-        }
-
-        case CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS: {
-            LEDGER_ASSERT(credential != NULL, "Delegation payload missing in streaming loop");
-            LEDGER_ASSERT(aux_data->ui_streaming.review_started, "Streaming review must be started before delegation pages");
-
-            // Initialize pairs for this delegation page
-            if (!cvote_init_pairs_for_streaming_page(aux_data)) {
-                return true; // Error already sent
-            }
-
-            if (!cvote_add_delegation_pairs(aux_data, credential, weight)) {
-                // Policy DENY sends error inside cvote_add_delegation_pairs
-                // If we get here and it failed, it's a memory issue
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-                return true;
-            }
-
-            // Display this delegation immediately.
-            cvote_streaming_display_current_page();
-            return true; // Chunk displayed, waiting for callback
-        }
-
-        default:
-            LEDGER_ASSERT(false, "Unexpected state in CVote streaming page flow: %d", aux_data->state);
-            return false;
-    }
-}
-
 void ui_cvote_aux_data_streaming_show_initial_page(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL && aux_data->state == CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE, "Streaming initial page in wrong state: %d", aux_data->state);
-    LEDGER_ASSERT(aux_data->ui_streaming.on, "Streaming initial page called with streaming disabled");
-    bool page_displayed = cvote_streaming_show_next_page(aux_data, NULL, 0);
-    if (!page_displayed) {
-        // Error APDU was already sent by cvote_streaming_show_next_page().
+    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
+    LEDGER_ASSERT(aux_data->ui_streaming.on, "Called with streaming disabled");
+    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE,
+                  "Initial streaming page in wrong state: %d",
+                  aux_data->state);
+
+    uint16_t initial_pairs = cvote_initial_pairs_count(aux_data);
+    LEDGER_ASSERT(initial_pairs > 0, "No initial pairs for streaming page");
+
+    TRACE("CVote streaming initial page: initial_pairs=%u, max_pairs=%u",
+          initial_pairs,
+          MAX_UI_PAIRS);
+
+    ui_reset_error_status();
+    if (!ui_pairs_init(initial_pairs)) {
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
     }
+
+    if (!cvote_add_initial_pairs(aux_data)) {
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return;
+    }
+
+    LEDGER_ASSERT(!aux_data->ui_streaming.review_started,
+                  "Streaming review should start exactly once from initial page");
+    if (!cvote_start_streaming_review(aux_data)) {
+        return;
+    }
+
+    // Initial page is now ready; next APDU accepted by the state machine is delegation.
+    aux_data->state = CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS;
+    cvote_streaming_display_current_page();
+}
+
+bool ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
+                                                const cvote_credential_t *credential,
+                                                uint32_t weight) {
+    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
+    LEDGER_ASSERT(aux_data->ui_streaming.on, "Called with streaming disabled");
+    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS,
+                  "Streaming delegation page in wrong state: %d",
+                  aux_data->state);
+    LEDGER_ASSERT(credential != NULL, "Delegation payload missing in streaming loop");
+    LEDGER_ASSERT(aux_data->ui_streaming.review_started,
+                  "Streaming review must be started before delegation pages");
+
+    // Initialize pairs for this delegation page
+    if (!cvote_init_pairs_for_streaming_page(aux_data)) {
+        return true; // Error already sent
+    }
+
+    if (!cvote_add_delegation_pairs(aux_data, credential, weight)) {
+        // Policy DENY sends error inside cvote_add_delegation_pairs
+        // If we get here and it failed, it's a memory issue
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return true;
+    }
+
+    // Display this delegation immediately.
+    cvote_streaming_display_current_page();
+    return true; // Chunk displayed, waiting for callback
 }
 
 void ui_cvote_aux_data_add_delegation_non_streaming(cvote_aux_data_t *aux_data,
@@ -485,15 +476,6 @@ void ui_cvote_aux_data_add_delegation_non_streaming(cvote_aux_data_t *aux_data,
         // If we get here and it failed, it's a memory issue
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
     }
-}
-
-bool ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
-                                                  const cvote_credential_t *credential,
-                                                  uint32_t weight) {
-    LEDGER_ASSERT(credential != NULL, "NULL credential");
-    LEDGER_ASSERT(aux_data != NULL && aux_data->ui_streaming.on, "Streaming delegation called with streaming disabled");
-    LEDGER_ASSERT(aux_data != NULL && aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS, "ui_cvote_aux_data_add_delegation_streaming called in wrong state: %d", aux_data->state);
-    return cvote_streaming_show_next_page(aux_data, credential, weight);
 }
 
 void ui_cvote_aux_data_show_non_streaming_final_review(cvote_aux_data_t *aux_data) {
