@@ -128,24 +128,28 @@ static void derive_native_script_hash_review_confirmation_output(bool confirm) {
     derive_native_script_hash_buffer_cleanup();
 
     // FINALIZE
+    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_NATIVE_SCRIPT_HASH,
+                  "Wrong req_type in finalize: %d",
+                  G_context.req_type);
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     if (confirm) {
         TRACE("User confirmed");
+        LEDGER_ASSERT(ctx->scriptHashBuffer != NULL || SCRIPT_HASH_LENGTH == 0,
+                      "NULL response data with non-zero size");
         apdu_response_send_data(ctx->scriptHashBuffer, SCRIPT_HASH_LENGTH, SWO_SUCCESS);
     } else {
         TRACE("User rejected");
-        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
+        apdu_response_send_sw(SWO_CONDITIONS_NOT_SATISFIED);
     }
+    reset_app_context();
 
     // SHOW STATUS
     if (confirm) {
         TRACE("User confirmed");
         nbgl_useCaseStatus("Confirm native script hash", true, ui_menu_main);
-        reset_app_context();
     } else {
         TRACE("User rejected");
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
-        // send_swo_and_reset already called reset_app_context
     }
 }
 
