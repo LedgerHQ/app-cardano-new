@@ -6,7 +6,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe, sanitize_c_identifier
+from common import read_file_safe, write_file_safe, sanitize_c_identifier
+from paths import GENERATED_PUBKEY_DIR
 
 
 _FIXTURE_ARRAY_PATTERN = re.compile(
@@ -128,8 +129,8 @@ def _build_main_function(test_function_names: list[str]) -> str:
 
 
 def generate_pubkey_test_runners() -> None:
-    fixture_header_path = UNIT_TESTS_DIR / "test_pubkey_fixtures.h"
-    test_c_file = UNIT_TESTS_DIR / "test_pubkey.c"
+    fixture_header_path = GENERATED_PUBKEY_DIR / "test_pubkey_fixtures.h"
+    test_c_file = GENERATED_PUBKEY_DIR / "test_pubkey.c"
 
     arrays = _extract_all_fixture_arrays(fixture_header_path)
     test_functions_section, test_function_names = _build_test_functions(arrays)

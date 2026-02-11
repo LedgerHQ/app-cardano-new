@@ -9,8 +9,8 @@ from common import (
     read_file_safe,
     write_file_safe,
     sanitize_c_identifier,
-    UNIT_TESTS_DIR,
 )
+from paths import GENERATED_SIGN_TX_DIR
 
 
 # ======================================================================
@@ -227,8 +227,8 @@ def _build_boilerplate(fixture_file: str) -> str:
 def _generate_complete_test_file(
     era: str, fixture_file: str, test_c_file: str, era_upper: str
 ) -> None:
-    fixture_path = UNIT_TESTS_DIR / fixture_file
-    test_path = UNIT_TESTS_DIR / test_c_file
+    fixture_path = GENERATED_SIGN_TX_DIR / fixture_file
+    test_path = GENERATED_SIGN_TX_DIR / test_c_file
 
     if not fixture_path.exists():
         raise FileNotFoundError(f"Missing fixture header: {fixture_path}")

@@ -6,7 +6,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Sequence
 
-from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe, sanitize_c_identifier
+from common import read_file_safe, write_file_safe, sanitize_c_identifier
+from paths import GENERATED_DERIVE_ADDRESS_DIR
 
 
 # ======================================================================
@@ -306,8 +307,8 @@ def generate_address_derivation_test_runners() -> None:
     Generate address derivation test runner files.
     
     """
-    fixture_header_path = UNIT_TESTS_DIR / "test_derive_address_fixtures.h"
-    test_c_file = UNIT_TESTS_DIR / "test_derive_address.c"
+    fixture_header_path = GENERATED_DERIVE_ADDRESS_DIR / "test_derive_address_fixtures.h"
+    test_c_file = GENERATED_DERIVE_ADDRESS_DIR / "test_derive_address.c"
     
     # Example: Access specific fixture data
     all_fixture_array_details = extract_all_fixture_array_details(fixture_header_path)

@@ -9,9 +9,9 @@ from common import (
     _add_tests_to_sys_path,
     format_bytes_as_c_array,
 )
-from paths import UNIT_TESTS_DIR
+from paths import GENERATED_PUBKEY_DIR
 
-GENERATED_DENY_HEADER = UNIT_TESTS_DIR / "test_pubkey_fixtures_deny.h"
+GENERATED_DENY_HEADER = GENERATED_PUBKEY_DIR / "test_pubkey_fixtures_deny.h"
 
 
 # ==============================================================================

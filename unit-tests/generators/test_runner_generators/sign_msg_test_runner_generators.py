@@ -5,11 +5,11 @@ from pathlib import Path
 from typing import List
 
 from common import (
-    UNIT_TESTS_DIR,
     read_file_safe,
     sanitize_c_identifier,
     write_file_safe,
 )
+from paths import GENERATED_SIGN_MSG_DIR
 
 
 _FIXTURE_ARRAY_PATTERN = re.compile(
@@ -87,8 +87,8 @@ def _build_main_function(test_names: List[str]) -> str:
 
 
 def generate_sign_msg_test_runners() -> None:
-    fixture_header = UNIT_TESTS_DIR / "test_sign_msg_fixtures.h"
-    test_c_file = UNIT_TESTS_DIR / "test_sign_msg.c"
+    fixture_header = GENERATED_SIGN_MSG_DIR / "test_sign_msg_fixtures.h"
+    test_c_file = GENERATED_SIGN_MSG_DIR / "test_sign_msg.c"
 
     header_content = read_file_safe(fixture_header)
     fixture_names = _extract_fixture_names(header_content)

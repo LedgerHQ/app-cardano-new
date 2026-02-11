@@ -15,7 +15,17 @@ from collections import defaultdict
 from pathlib import Path
 
 from common import UNIT_TESTS_DIR
-from paths import REPO_ROOT
+from paths import (
+    REPO_ROOT,
+    GENERATED_DIR,
+    GENERATED_SIGN_TX_DIR,
+    GENERATED_SIGN_MSG_DIR,
+    GENERATED_CVOTE_DIR,
+    GENERATED_OPCERT_DIR,
+    GENERATED_PUBKEY_DIR,
+    GENERATED_DERIVE_ADDRESS_DIR,
+    GENERATED_NATIVE_SCRIPT_DIR,
+)
 from mock_data_utils import regenerate_mock_data
 
 
@@ -106,7 +116,7 @@ def _log_stage(message: str) -> None:
 
 def _count_sign_tx_deny_fixtures() -> int:
     """Return the number of fixtures in sign_tx deny suite to account for per-test coverage."""
-    fixtures_file = UNIT_TESTS_DIR / "test_sign_tx_fixtures_deny.h"
+    fixtures_file = GENERATED_SIGN_TX_DIR / "test_sign_tx_fixtures_deny.h"
     if not fixtures_file.exists():
         return 0
 
@@ -146,7 +156,7 @@ def _count_sign_tx_fine_grained_entries_from_fixtures() -> int:
     total_entries = 0
     fixture_headers = sorted(
         p
-        for p in UNIT_TESTS_DIR.glob("test_sign_tx_fixtures_*.h")
+        for p in GENERATED_SIGN_TX_DIR.glob("test_sign_tx_fixtures_*.h")
         if p.name != "test_sign_tx_fixtures_deny.h"
     )
 
@@ -204,6 +214,7 @@ _GENERATED_BY_SCRIPT = "unit-tests/generators/generate_unit_tests_from_ragger.py
 def _normalize_generated_output_headers() -> None:
     """Ensure generated unit-test outputs carry SPDX and generator provenance comments."""
     generated_paths = sorted(UNIT_TESTS_DIR.glob("test_*.[ch]"))
+    generated_paths.extend(sorted(GENERATED_DIR.rglob("test_*.[ch]")))
     generated_paths.append(UNIT_TESTS_DIR / "mock_crypto" / "crypto_mock_data.h")
 
     spdx_line_pattern = re.compile(r"^\s*(//|/\*)\s*SPDX-(FileCopyrightText|License-Identifier):")
@@ -304,7 +315,7 @@ def _count_unit_tests_by_command() -> tuple[dict[str, int], int, str]:
         command_file_contents.append(content)
 
     tx_test_files = sorted(
-        p for p in UNIT_TESTS_DIR.glob("test_sign_tx_*.c") if p.name != "test_sign_tx_deny_tests.c"
+        p for p in GENERATED_SIGN_TX_DIR.glob("test_sign_tx_*.c") if p.name != "test_sign_tx_deny_tests.c"
     )
     for path in tx_test_files:
         _add_file_counts(path, "sign_tx")
@@ -312,25 +323,40 @@ def _count_unit_tests_by_command() -> tuple[dict[str, int], int, str]:
     for extra_sign_tx_file in (
         "test_handler_sign_tx_additional.c",
         "test_handler_sign_tx_swap.c",
+        "test_sign_tx_witness_nbgl_reject.c",
     ):
         extra_path = UNIT_TESTS_DIR / extra_sign_tx_file
         if extra_path.exists():
             _add_file_counts(extra_path, "sign_tx")
     # Keep sign-tx deny runner out of cmocka-based counting (counted via fixtures),
     # but include its source for function-name coverage matching.
-    _add_file_content_only(UNIT_TESTS_DIR / "test_sign_tx_deny_tests.c")
+    _add_file_content_only(GENERATED_SIGN_TX_DIR / "test_sign_tx_deny_tests.c")
 
     unit_file_map = {
-        "sign_msg": ["test_sign_msg.c"],
-        "sign_cvote": ["test_cvote.c"],
-        "sign_opcert": ["test_opcert.c"],
-        "pubkey_export": ["test_pubkey.c", "test_pubkey_deny_tests.c"],
-        "derive_address": ["test_derive_address.c", "test_derive_address_deny_tests.c"],
-        "derive_native_script": ["test_native_script.c", "test_native_script_deny_tests.c"],
+        "sign_msg": [GENERATED_SIGN_MSG_DIR / "test_sign_msg.c"],
+        "sign_cvote": [GENERATED_CVOTE_DIR / "test_cvote.c", UNIT_TESTS_DIR / "test_sign_cvote_nbgl_reject.c"],
+        "sign_opcert": [GENERATED_OPCERT_DIR / "test_opcert.c", UNIT_TESTS_DIR / "test_sign_opcert_nbgl_reject.c"],
+        "pubkey_export": [
+            GENERATED_PUBKEY_DIR / "test_pubkey.c",
+            GENERATED_PUBKEY_DIR / "test_pubkey_deny_tests.c",
+            UNIT_TESTS_DIR / "test_pubkey_nbgl_reject.c",
+        ],
+        "derive_address": [
+            GENERATED_DERIVE_ADDRESS_DIR / "test_derive_address.c",
+            GENERATED_DERIVE_ADDRESS_DIR / "test_derive_address_deny_tests.c",
+            UNIT_TESTS_DIR / "test_derive_address_nbgl_reject.c",
+        ],
+        "derive_native_script": [
+            GENERATED_NATIVE_SCRIPT_DIR / "test_native_script.c",
+            GENERATED_NATIVE_SCRIPT_DIR / "test_native_script_deny_tests.c",
+        ],
     }
-    for command, filenames in unit_file_map.items():
-        for filename in filenames:
-            _add_file_counts(UNIT_TESTS_DIR / filename, command)
+    extra_sign_msg_file = UNIT_TESTS_DIR / "test_sign_msg_nbgl_reject.c"
+    if extra_sign_msg_file.exists():
+        _add_file_counts(extra_sign_msg_file, "sign_msg")
+    for command, file_paths in unit_file_map.items():
+        for file_path in file_paths:
+            _add_file_counts(file_path, command)
 
     combined_content = "\n".join(command_file_contents)
     return command_counts, total_funcs, combined_content
@@ -471,16 +497,16 @@ def _verify_ragger_test_coverage() -> None:
         unmapped_total = sum(unmapped_counts.values())
         unmapped_details = ", ".join(f"{name}({count})" for name, count in sorted(unmapped_counts.items()))
         print(f"  Unmapped pytest modules ({unmapped_total} cases): {unmapped_details}")
-    mismatched_commands = []
+    insufficient_commands = []
     for command in _COMMAND_ORDER:
         ragger_count = comparable_ragger_command_counts.get(command, 0)
         unit_count = unit_command_counts.get(command, 0)
-        if ragger_count != unit_count:
-            mismatched_commands.append(
+        if unit_count < ragger_count:
+            insufficient_commands.append(
                 f"{_COMMAND_DISPLAY_NAMES[command]} (Ragger {ragger_count}, Unit {unit_count})"
             )
-    if mismatched_commands:
-        print(f"  ERROR: per-command mismatches detected: {', '.join(mismatched_commands)}")
+    if insufficient_commands:
+        print(f"  ERROR: insufficient per-command coverage detected: {', '.join(insufficient_commands)}")
     print(f"  Found {len(ragger_test_funcs)} unique ragger test functions to cover")
     print(f"  Coverage: {len(covered_coverage)} functions covered, {len(missing_coverage)} missing")
 

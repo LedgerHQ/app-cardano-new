@@ -11,9 +11,9 @@ from common import (
     _add_tests_to_sys_path,
     format_bytes_as_c_array,
 )
-from paths import UNIT_TESTS_DIR
+from paths import GENERATED_PUBKEY_DIR, UNIT_TESTS_DIR
 
-FIXTURES_FILE = UNIT_TESTS_DIR / "test_pubkey_fixtures.h"
+FIXTURES_FILE = GENERATED_PUBKEY_DIR / "test_pubkey_fixtures.h"
 MOCK_DATA_FILE = UNIT_TESTS_DIR / "mock_crypto" / "crypto_mock_data.h"
 
 

@@ -11,9 +11,9 @@ from common import (
     extract_apdu_payload,
     format_bytes_as_c_array,
 )
-from paths import UNIT_TESTS_DIR
+from paths import GENERATED_DERIVE_ADDRESS_DIR
 
-GENERATED_DENY_HEADER = UNIT_TESTS_DIR / "test_address_derivation_fixtures_deny.h"
+GENERATED_DENY_HEADER = GENERATED_DERIVE_ADDRESS_DIR / "test_address_derivation_fixtures_deny.h"
 
 # ==============================================================================
 # Step 1: Load Rejection Test Cases from Ragger Tests

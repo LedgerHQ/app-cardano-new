@@ -12,9 +12,9 @@ from common import (
     sanitize_c_identifier,
     format_bytes_as_c_array,
 )
-from paths import UNIT_TESTS_DIR
+from paths import GENERATED_OPCERT_DIR
 
-FIXTURES_FILE = UNIT_TESTS_DIR / "test_opcert_fixtures.h"
+FIXTURES_FILE = GENERATED_OPCERT_DIR / "test_opcert_fixtures.h"
 
 
 def _load_opcert_test_cases() -> Sequence[object]:

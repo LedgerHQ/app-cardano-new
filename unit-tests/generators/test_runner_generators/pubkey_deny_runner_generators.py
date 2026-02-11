@@ -4,7 +4,8 @@ import re
 from pathlib import Path
 
 
-from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe, sanitize_c_identifier
+from common import read_file_safe, write_file_safe, sanitize_c_identifier
+from paths import GENERATED_PUBKEY_DIR
 
 _DENY_ARRAY_PATTERN = re.compile(
     r"static\s+const\s+pubkey_fixture_t\s+PUBKEY_DENY_FIXTURES\[\]\s*=\s*\{(.*?)\};",
@@ -88,8 +89,8 @@ def _build_main_function(test_function_names: list[str]) -> str:
 
 
 def generate_pubkey_deny_test_runners() -> None:
-    fixture_header_path = UNIT_TESTS_DIR / "test_pubkey_fixtures_deny.h"
-    test_c_file = UNIT_TESTS_DIR / "test_pubkey_deny_tests.c"
+    fixture_header_path = GENERATED_PUBKEY_DIR / "test_pubkey_fixtures_deny.h"
+    test_c_file = GENERATED_PUBKEY_DIR / "test_pubkey_deny_tests.c"
 
     fixture_names = _extract_deny_fixture_names(fixture_header_path)
     test_functions_section, test_function_names = _build_test_functions(fixture_names)

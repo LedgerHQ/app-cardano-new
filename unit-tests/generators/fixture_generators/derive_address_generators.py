@@ -13,9 +13,9 @@ from common import (
     extract_apdu_payload,
     format_bytes_as_c_array,
 )
-from paths import UNIT_TESTS_DIR
+from paths import GENERATED_DERIVE_ADDRESS_DIR
 
-FIXTURES_FILE = UNIT_TESTS_DIR / "test_derive_address_fixtures.h"
+FIXTURES_FILE = GENERATED_DERIVE_ADDRESS_DIR / "test_derive_address_fixtures.h"
 
 # ==============================================================================
 # Step 1: Load Test Cases from Ragger Tests

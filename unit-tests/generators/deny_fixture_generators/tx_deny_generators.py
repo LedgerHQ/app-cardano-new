@@ -8,7 +8,7 @@ from common import (
     write_file_safe,
     _add_tests_to_sys_path,
 )
-from paths import UNIT_TESTS_DIR
+from paths import GENERATED_SIGN_TX_DIR
 
 SET_ORDER = [
     "transactionInitRejectTestCases",
@@ -52,7 +52,7 @@ SET_PREFIX = {
     "invalidRelayTestCases": "REJECT_RELAY",
 }
 
-GENERATED_DENY_HEADER = UNIT_TESTS_DIR / "test_sign_tx_fixtures_deny.h"
+GENERATED_DENY_HEADER = GENERATED_SIGN_TX_DIR / "test_sign_tx_fixtures_deny.h"
 
 
 def _build_deny_fixtures() -> str:

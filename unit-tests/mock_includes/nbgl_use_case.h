@@ -75,6 +75,16 @@ typedef enum {
     BAR_LIST_WARNING = 1,
 } nbgl_warning_type_e;
 
+typedef enum {
+    W3C_ISSUE_WARN = 0,
+    W3C_RISK_DETECTED_WARN,
+    W3C_THREAT_DETECTED_WARN,
+    W3C_NO_THREAT_WARN,
+    BLIND_SIGNING_WARN,
+    GATED_SIGNING_WARN,
+    NB_WARNING_TYPES
+} nbgl_predefined_warning_t;
+
 typedef struct {
     const nbgl_icon_details_t *icon;
     const char *title;

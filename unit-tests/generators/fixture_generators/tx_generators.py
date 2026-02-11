@@ -8,12 +8,12 @@ from typing import Any, Sequence
 from common import (
     _ensure_base58_module,
     _add_tests_to_sys_path,
-    UNIT_TESTS_DIR,
     write_file_safe,
     sanitize_c_identifier,
     extract_apdu_payload,
     format_bytes_as_c_array,
 )
+from paths import GENERATED_SIGN_TX_DIR
 
 
 # ======================================================================
@@ -334,7 +334,7 @@ def _generate_fixtures_for_era(
     header_lines.append("")
 
     header_content = "\n".join(header_lines)
-    output_file = UNIT_TESTS_DIR / f"test_sign_tx_fixtures_{era_key.lower()}.h"
+    output_file = GENERATED_SIGN_TX_DIR / f"test_sign_tx_fixtures_{era_key.lower()}.h"
     write_file_safe(output_file, header_content)
 
     fixture_count = _count_fixture_structs(header_content)

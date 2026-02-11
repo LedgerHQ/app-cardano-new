@@ -586,6 +586,9 @@ void finalize_witness(bool confirm)
 {
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_APPROVED, "Bad tx_state");
+    LEDGER_ASSERT(G_context.tx_info.num_witnesses > 0, "No witnesses expected");
+    LEDGER_ASSERT(G_context.tx_info.current_witness < G_context.tx_info.num_witnesses,
+                  "Witness index out of range");
 
     if (!confirm) {
         // Reject entire signing operation - no more witnesses will be processed

@@ -11,9 +11,9 @@ from common import (
     format_bytes_as_c_array,
     extract_apdu_payload,
 )
-from paths import UNIT_TESTS_DIR
+from paths import GENERATED_SIGN_MSG_DIR
 
-FIXTURES_FILE = UNIT_TESTS_DIR / "test_sign_msg_fixtures.h"
+FIXTURES_FILE = GENERATED_SIGN_MSG_DIR / "test_sign_msg_fixtures.h"
 
 
 # ==============================================================================

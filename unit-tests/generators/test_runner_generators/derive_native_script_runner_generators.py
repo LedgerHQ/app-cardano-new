@@ -4,7 +4,8 @@ import re
 from pathlib import Path
 
 
-from common import UNIT_TESTS_DIR, read_file_safe, write_file_safe, sanitize_c_identifier
+from common import read_file_safe, write_file_safe, sanitize_c_identifier
+from paths import GENERATED_NATIVE_SCRIPT_DIR
 
 
 # ======================================================================
@@ -148,8 +149,8 @@ def generate_native_script_test_runners() -> None:
     and creates the corresponding test_derive_native_script.c runner file.
     """
     
-    fixture_header_path = UNIT_TESTS_DIR / "test_derive_native_script_fixtures.h"
-    test_c_file = UNIT_TESTS_DIR / "test_native_script.c"
+    fixture_header_path = GENERATED_NATIVE_SCRIPT_DIR / "test_derive_native_script_fixtures.h"
+    test_c_file = GENERATED_NATIVE_SCRIPT_DIR / "test_native_script.c"
 
     if not fixture_header_path.exists():
         raise FileNotFoundError(

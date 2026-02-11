@@ -5,7 +5,18 @@ import sys
 import types
 from pathlib import Path
 
-from paths import REPO_ROOT, UNIT_TESTS_DIR
+from paths import (
+    REPO_ROOT,
+    UNIT_TESTS_DIR,
+    GENERATED_DIR,
+    GENERATED_SIGN_TX_DIR,
+    GENERATED_SIGN_MSG_DIR,
+    GENERATED_PUBKEY_DIR,
+    GENERATED_DERIVE_ADDRESS_DIR,
+    GENERATED_NATIVE_SCRIPT_DIR,
+    GENERATED_CVOTE_DIR,
+    GENERATED_OPCERT_DIR,
+)
 
 
 def read_file_safe(file_path: Path) -> str:

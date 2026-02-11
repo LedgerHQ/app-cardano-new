@@ -9,14 +9,14 @@ from common import (
     _ensure_base58_module,
     _add_tests_to_sys_path,
 )
-from paths import UNIT_TESTS_DIR
+from paths import GENERATED_NATIVE_SCRIPT_DIR
 from native_script_codegen import (
     generate_native_script_tree_recursive,
     generate_simple_script_fixture,
     generate_finish_apdu_payload,
 )
 
-FIXTURES_FILE = UNIT_TESTS_DIR / "test_derive_native_script_fixtures.h"
+FIXTURES_FILE = GENERATED_NATIVE_SCRIPT_DIR / "test_derive_native_script_fixtures.h"
 
 def _load_native_script_test_cases() -> list[Any]:
     """

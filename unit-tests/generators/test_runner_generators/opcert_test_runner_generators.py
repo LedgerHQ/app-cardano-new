@@ -6,10 +6,10 @@ import re
 from pathlib import Path
 
 from common import read_file_safe, write_file_safe, sanitize_c_identifier
-from paths import UNIT_TESTS_DIR
+from paths import GENERATED_OPCERT_DIR
 
-FIXTURE_HEADER = UNIT_TESTS_DIR / "test_opcert_fixtures.h"
-TEST_FILE = UNIT_TESTS_DIR / "test_opcert.c"
+FIXTURE_HEADER = GENERATED_OPCERT_DIR / "test_opcert_fixtures.h"
+TEST_FILE = GENERATED_OPCERT_DIR / "test_opcert.c"
 
 _NAME_PATTERN = re.compile(r'\.name\s*=\s*"([^"]+)"')
 
