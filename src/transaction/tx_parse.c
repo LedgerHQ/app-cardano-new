@@ -699,9 +699,8 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, transaction_t *tx) {
                 return MINT_PARSING_ERROR;
             }
 
-            // Store pointer to asset name in raw buffer instead of copying
-            // Note: assetNameLen can be 0 for empty asset names, which is valid
-            // TODO is empty asset name valid?
+            // Store pointer to asset name in raw buffer instead of copying.
+            // Empty asset names are valid (`asset_name` is CBOR bytes in Cardano CDDL).
             if (!buffer_read_bytes_ptr(buf, &token->assetName, token->assetNameLen)) {
                 APP_MEM_FREE(token_item);
                 free_mint_item(item);

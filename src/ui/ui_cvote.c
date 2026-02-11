@@ -49,7 +49,6 @@ static void cvote_review_choice(bool confirm) {
     finalize_sign_cvote(confirm);
 
     // SHOW STATUS
-    // TODO: customize status screen?
     if (confirm) {
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_SIGNED, ui_menu_main);
     } else {

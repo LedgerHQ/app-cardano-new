@@ -131,8 +131,6 @@ bool format_ada_amount(uint64_t amount, char *out, size_t outSize) {
 
     explicit_bzero(out, outSize);
 
-    // TODO: Consider using format_fpu64 directly instead of format_decimal_amount
-    // for consistency with other formatting code
     bool formatted = format_decimal_amount(amount, 6, out, outSize);
     LEDGER_ASSERT(formatted, "Decimal amount formatting failed");
     const size_t rawSize = strlen(out);

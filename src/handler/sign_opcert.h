@@ -2,8 +2,6 @@
 
 #include "buffer.h"
 
-// TODO comments
-
 void handler_sign_opcert(buffer_t *cdata);
 
 /**

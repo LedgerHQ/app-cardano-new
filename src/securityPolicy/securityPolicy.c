@@ -2083,9 +2083,6 @@ security_policy_t policyForCVoteRegistrationVoteKey(const cvote_credential_t* cr
             SHOW();
         }
         case CVOTE_CREDENTIAL_KEY_PATH: {
-            // Encourage people to use the new format,
-            // so that we can drop support for CIP15 sooner
-            // TODO drop CIP15 support?
             DENY_UNLESS(format == CIP36);
 
             DENY_UNLESS(bip44_classifyPath(&credential->keyPath) == PATH_CVOTE_KEY);

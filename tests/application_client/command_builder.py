@@ -121,9 +121,6 @@ class P1Type(IntEnum):
 # Matches `src/apdu/dispatcher.h::p2_e`
 class P2Type(IntEnum):
     P2_UNUSED = 0x00
-    # Transaction-related P2 values (0x1x range)
-    P2_TX_MORE = 0x10
-    P2_TX_LAST = 0x11
     # CVote auxiliary data P2 values (0x3x range)
     P2_AUX_DATA_INIT = 0x36
     P2_AUX_DATA_DELEGATION = 0x37

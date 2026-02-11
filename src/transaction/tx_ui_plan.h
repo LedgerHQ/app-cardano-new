@@ -92,13 +92,4 @@
  */
 typedef struct {
     uint32_t pair_count;  /// Number of nbgl_contentTagValue pairs required for display
-
-    // TODO: Detect and track transaction elements with excessive length
-    // Some transaction elements are not length-limited by CDDL (e.g., metadata URLs,
-    // DNS names in relays, inline datums, reference scripts). We should:
-    // - Track whether any element exceeds reasonable display limits during validation
-    // - Set a flag or store max element size encountered
-    // - Use this during UI formatting to decide between full display vs truncation/streaming
-    // - Consider if we need to enforce hard limits for security (DoS via huge fields)
-    bool has_excessive_length_element;  // TODO: Implement detection during validation
 } tx_ui_plan_t;

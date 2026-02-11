@@ -20,6 +20,7 @@
 
 #include "os.h"
 #include "ux.h"
+#include "main_std_app.h"
 #include "parser.h"  // command_t, apdu_parser
 
 #include "globals.h"
@@ -42,7 +43,7 @@ const internal_storage_t N_storage_real;
 /**
  * Handle APDU command received and send back APDU response using handlers.
  */
-void app_main() {
+void app_main(void) {
     // Length of APDU command received in G_io_apdu_buffer
     int input_len = 0;
     // Structured APDU command
@@ -74,30 +75,48 @@ void app_main() {
     }
 
     for (;;) {
-        // Receive command bytes in G_io_apdu_buffer
-        if ((input_len = io_recv_command()) < 0) {
-            TRACE("io_recv_command failure");
-            return;
+        BEGIN_TRY {
+            TRY {
+                // Receive command bytes in G_io_apdu_buffer
+                input_len = io_recv_command();
+                if (input_len < 0) {
+                    TRACE("io_recv_command failure: %d", input_len);
+                    THROW(EXCEPTION_IO_RESET);
+                }
+
+                // Parse APDU command from G_io_apdu_buffer
+                if (!apdu_parser(&cmd, G_io_apdu_buffer, input_len)) {
+                    TRACE("BAD LENGTH:");
+                    TRACE_BUFFER(G_io_apdu_buffer, input_len);
+                    apdu_response_begin((command_e) 0);
+                    send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+                    continue;
+                }
+
+                TRACE("CLA=%02X | INS=%02X | P1=%02X | P2=%02X | Lc=%02X | CData=",
+                      cmd.cla,
+                      cmd.ins,
+                      cmd.p1,
+                      cmd.p2,
+                      cmd.lc);
+                TRACE_BUFFER(cmd.data, cmd.lc);
+
+                // Dispatch structured APDU command to handler
+                apdu_dispatcher(&cmd);
+            }
+            CATCH(EXCEPTION_IO_RESET) {
+                TRACE("EXCEPTION_IO_RESET");
+                CLOSE_TRY;
+                app_exit();
+            }
+            CATCH_OTHER(exception) {
+                TRACE("Unhandled exception in app_main loop: 0x%04X", exception);
+                CLOSE_TRY;
+                reset_app_context();
+            }
+            FINALLY {
+            }
         }
-
-        // Parse APDU command from G_io_apdu_buffer
-        if (!apdu_parser(&cmd, G_io_apdu_buffer, input_len)) {
-            TRACE("BAD LENGTH:");
-            TRACE_BUFFER(G_io_apdu_buffer, input_len);
-            apdu_response_begin((command_e) 0);
-            send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-            continue;
-        }
-
-        TRACE("CLA=%02X | INS=%02X | P1=%02X | P2=%02X | Lc=%02X | CData=",
-              cmd.cla,
-              cmd.ins,
-              cmd.p1,
-              cmd.p2,
-              cmd.lc);
-        TRACE_BUFFER(cmd.data, cmd.lc);
-
-        // Dispatch structured APDU command to handler
-        apdu_dispatcher(&cmd);
+        END_TRY;
     }
 }

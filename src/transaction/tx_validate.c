@@ -207,7 +207,6 @@ static int validate_and_hash_inputs(tx_hash_builder_t* txHashBuilder, tx_ui_plan
     return SWO_SUCCESS;
 }
 
-// TODO clean up needed
 static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t* plan) {
     txHashBuilder_enterOutputs(txHashBuilder);
     flist_node_t *node = G_context.tx_info.transaction.outputs;
@@ -1958,7 +1957,6 @@ int tx_validate_and_compute_hash(tx_ui_plan_t* plan) {
 
     G_context.tx_info.pool_owner_path_present = false;
     plan->pair_count = 0;
-    plan->has_excessive_length_element = false;  // TODO: Implement detection during validation
 
     tx_hash_builder_t txHashBuilder;
     explicit_bzero(&txHashBuilder, sizeof(txHashBuilder));

@@ -83,16 +83,12 @@ typedef enum {
 
 /**
  * Parameter 2 (P2) values for APDU commands.
- * Organized hierarchically: 0x1x for transactions, 0x3x for CVote auxiliary data.
+ * Organized hierarchically: 0x3x for CVote auxiliary data.
  *
  * Matches `tests/application_client/command_builder.py::P2Type`.
  */
 typedef enum {
     P2_UNUSED = 0x00,
-
-    // Transaction-related P2 values (0x1x range)
-    P2_TX_MORE = 0x10,  // More chunks to follow
-    P2_TX_LAST = 0x11,  // Last chunk
 
     // CVote auxiliary data P2 values (0x3x range)
     P2_AUX_DATA_INIT = 0x36,        // Initialize auxiliary data

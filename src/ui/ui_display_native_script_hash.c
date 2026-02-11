@@ -164,7 +164,6 @@ static void derive_native_script_hash_review_confirmation_output(bool confirm) {
         TRACE("User rejected");
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
         // send_swo_and_reset already called reset_app_context
-        // TODO we should call reset_app_context anyway? compare with other such functions
     }
 }
 
@@ -278,8 +277,7 @@ void ui_display_native_script_hash(security_policy_t securityPolicy) {
 
     switch (ctx->ui_scriptType) {
         case UI_SCRIPT_INIT: {
-            // TODO: mismatch with previous app: first screen is passed automatically without user
-            // intervention just after a call to function nbgl_useCaseReviewStreamingContinue
+            // NOTE: first screen is advanced by NBGL flow after the initial review callback.
             nbgl_useCaseReviewStreamingStart(TYPE_OPERATION,
                                              &ICON_APP_CARDANO,
                                              "Review Script",
