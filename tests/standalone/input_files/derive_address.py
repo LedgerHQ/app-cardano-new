@@ -85,7 +85,7 @@ byronTestCases = [
     ),
 ]
 
-rejectTestCases = [
+denyTestCases = [
     DeriveAddressTestCase(
         name="Derive_address_path_too_short",
         ledgerjs_name="path too short",

@@ -10,7 +10,7 @@ from application_client.command_sender import CommandSender
 from application_client.status_words import StatusWord
 from application_client.response_unpacker import unpack_get_pubkey_response
 
-from standalone.input_files.pubkey import PubKeyTestCase, rejectTestCases, testsByron, testsShelleyUsual, testsShelleyUnusual, testsMultisig, testsColdKeys, testsCVoteKeysUsual, testsCVoteKeysUnusual, testsDRepKeys, testsCommitteeColdKeys, testsCommitteeHotKeys, testsMintKeys, testsSilentExport
+from standalone.input_files.pubkey import PubKeyTestCase, denyTestCases, testsByron, testsShelleyUsual, testsShelleyUnusual, testsMultisig, testsColdKeys, testsCVoteKeysUsual, testsCVoteKeysUnusual, testsDRepKeys, testsCommitteeColdKeys, testsCommitteeHotKeys, testsMintKeys, testsSilentExport
 
 from standalone.utils import idTestFunc, get_device_pubkey
 
@@ -80,12 +80,12 @@ def test_pubkey_without_confirmation(backend: BackendInterface, testCase: PubKey
 
 @pytest.mark.parametrize(
     "testCase",
-    rejectTestCases,
+    denyTestCases,
     ids=idTestFunc
 )
-def test_pubkey_reject(backend: BackendInterface,
+def test_pubkey_deny(backend: BackendInterface,
                        testCase: PubKeyTestCase) -> None:
-    """Check Reject Public Key"""
+    """Check deny behavior for invalid public-key export inputs."""
 
     # Use the app interface instead of raw interface
     client = CommandSender(backend)

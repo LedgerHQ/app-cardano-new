@@ -38,6 +38,8 @@ def _build_file_header() -> str:
 #include "opcert/opcert_types.h"
 #include "test_opcert_fixtures.h"
 #include "app_context.h"
+#include "apdu/dispatcher.h"
+#include "mem.h"
 
 """
 
@@ -46,6 +48,9 @@ def _build_helpers() -> str:
     return """static uint16_t g_last_sw = 0;
 static uint8_t g_last_response[ED25519_SIGNATURE_LENGTH];
 static size_t g_last_response_len = 0;
+
+#define TEST_HEAP_SIZE (23 * 1024)
+static uint8_t test_heap[TEST_HEAP_SIZE];
 
 int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
     assert_true(bufferLength <= sizeof(g_last_response));
@@ -60,28 +65,11 @@ int io_send_sw(uint16_t swo) {
     return 0;
 }
 
-void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings) {
-    (void)securityPolicy;
-    (void)warnings;
-    finalize_sign_opcert(true);
-}
-
-void ui_menu_main(void) {
-    // no-op stub used by nbgl_useCaseStatus callbacks
-}
-
-void nbgl_useCaseStatus(const char *text, bool success, void (*callback)(void)) {
-    (void)text;
-    (void)success;
-    if (callback != NULL) {
-        callback();
-    }
-}
-
 void reset_opcert_context(void) {
     memset(&G_context, 0, sizeof(G_context));
     g_last_sw = 0;
     g_last_response_len = 0;
+    mem_utils_init(test_heap, sizeof(test_heap));
 }
 
 static void run_opcert_fixture(const opcert_fixture_t *fixture) {

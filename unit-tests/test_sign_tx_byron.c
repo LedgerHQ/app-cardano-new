@@ -1,4 +1,5 @@
-// Unit tests for Byron era transaction signing
+// Unit tests for transaction signing (auto-generated)
+// DO NOT EDIT - regenerate using generators/generate_unit_tests_from_ragger.py
 
 #include <stdarg.h>
 #include <stddef.h>
@@ -21,85 +22,25 @@
 #include "hexUtils.h"
 #include "utils/utils.h"
 #include "blake2b.h"
-#include "cardano_constants.h"
 #include "init_apdu.h"
+#include "io_capture.h"
 
 #include "test_sign_tx_fixtures_byron.h"
-
-// Macro for array length if not already defined
-#ifndef ARRAY_LEN
-#define ARRAY_LEN(arr) (sizeof(arr) / sizeof((arr)[0]))
-#endif
-
-// ======================================================================
-// Simple mocks for IO and UI plumbing
-// ======================================================================
-
-static uint8_t g_last_response[TX_HASH_LENGTH];
-static size_t g_last_response_len = 0;
-static uint16_t g_last_response_sw = 0;
 
 #include "test_sign_tx_common.h"
 #include "app_mem_utils.h"
 
-int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
-    assert_true(bufferLength <= sizeof(g_last_response));
-    memcpy(g_last_response, buffer, bufferLength);
-    g_last_response_len = bufferLength;
-    g_last_response_sw = swo;
-    return 0;
-}
-
-void nbgl_useCaseSpinner(const char *text) {
-    (void) text;
-}
-
-void nbgl_useCaseStatus(const char *text, bool success, void (*callback)(void)) {
-    (void) text;
-    (void) success;
-    if (callback != NULL) {
-        callback();
-    }
-}
-
-typedef enum {
-    STATUS_TYPE_TRANSACTION_SIGNED = 0,
-    STATUS_TYPE_TRANSACTION_REJECTED = 1,
-} nbgl_reviewStatusType_t;
-
-void nbgl_useCaseReviewStatus(nbgl_reviewStatusType_t reviewStatusType, void (*callback)(void)) {
-    (void) reviewStatusType;
-    if (callback != NULL) {
-        callback();
-    }
-}
-
-void ui_menu_main(void) {
-    // no-op
-}
-
-void ui_display_transaction(void) {
-    apdu_response_send_data(G_context.tx_info.tx_hash, sizeof(G_context.tx_info.tx_hash), SWO_SUCCESS);
-    G_context.state.tx_state = TX_STATE_APPROVED;
-    G_context.req_type = REQUEST_NONE;
-    tx_review_cleanup();
-}
-
-void ui_display_witness(const bip44_path_t *witnessPath,
-                       security_policy_t securityPolicy,
-                       warning_bits_t warnings) {
-    (void) witnessPath;
-    (void) securityPolicy;
-    (void) warnings;
-    finalize_witness(true);
-    return;
-}
-
-#define TEST_HEAP_SIZE (23 * 1024)
-static uint8_t test_heap[TEST_HEAP_SIZE];
+// ======================================================================
+// UI code: using REAL ui_display_*.c with mocked NBGL
+// ======================================================================
+// The real UI code from ../src/ui/ui_display_tx.c and ui_display_witness.c
+// is included in cardano_sign_tx_core library. It calls NBGL functions which
+// are mocked in mock_sources/nbgl_mock.c to auto-approve for testing.
+// This way we test the actual UI formatting, tag-value pair generation,
+// and state management logic.
 
 // ======================================================================
-// Byron Era Tests
+// BYRON Era Tests
 // ======================================================================
 
 static void test_sign_tx_with_thirdparty_byron_mainnet_output_expert_off(void **state) {
@@ -107,9 +48,19 @@ static void test_sign_tx_with_thirdparty_byron_mainnet_output_expert_off(void **
     run_fixture_with_expert_mode(&FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_MAINNET_OUTPUT, false);
 }
 
+static void test_sign_tx_with_thirdparty_byron_mainnet_output_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_MAINNET_OUTPUT, false);
+}
+
 static void test_sign_tx_with_thirdparty_byron_mainnet_output_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_MAINNET_OUTPUT, true);
+}
+
+static void test_sign_tx_with_thirdparty_byron_mainnet_output_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_MAINNET_OUTPUT, true);
 }
 
 static void test_sign_tx_with_thirdparty_byron_daedalus_mainnet_output_expert_off(void **state) {
@@ -117,9 +68,19 @@ static void test_sign_tx_with_thirdparty_byron_daedalus_mainnet_output_expert_of
     run_fixture_with_expert_mode(&FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_DAEDALUS_MAINNET_OUTPUT, false);
 }
 
+static void test_sign_tx_with_thirdparty_byron_daedalus_mainnet_output_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_DAEDALUS_MAINNET_OUTPUT, false);
+}
+
 static void test_sign_tx_with_thirdparty_byron_daedalus_mainnet_output_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_DAEDALUS_MAINNET_OUTPUT, true);
+}
+
+static void test_sign_tx_with_thirdparty_byron_daedalus_mainnet_output_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_DAEDALUS_MAINNET_OUTPUT, true);
 }
 
 static void test_sign_tx_with_thirdparty_byron_testnet_output_expert_off(void **state) {
@@ -127,9 +88,19 @@ static void test_sign_tx_with_thirdparty_byron_testnet_output_expert_off(void **
     run_fixture_with_expert_mode(&FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_TESTNET_OUTPUT, false);
 }
 
+static void test_sign_tx_with_thirdparty_byron_testnet_output_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_TESTNET_OUTPUT, false);
+}
+
 static void test_sign_tx_with_thirdparty_byron_testnet_output_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_TESTNET_OUTPUT, true);
+}
+
+static void test_sign_tx_with_thirdparty_byron_testnet_output_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_TESTNET_OUTPUT, true);
 }
 
 // ======================================================================
@@ -139,11 +110,17 @@ static void test_sign_tx_with_thirdparty_byron_testnet_output_expert_on(void **s
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_sign_tx_with_thirdparty_byron_mainnet_output_expert_off),
+        cmocka_unit_test(test_sign_tx_with_thirdparty_byron_mainnet_output_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_thirdparty_byron_mainnet_output_expert_on),
+        cmocka_unit_test(test_sign_tx_with_thirdparty_byron_mainnet_output_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_thirdparty_byron_daedalus_mainnet_output_expert_off),
+        cmocka_unit_test(test_sign_tx_with_thirdparty_byron_daedalus_mainnet_output_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_thirdparty_byron_daedalus_mainnet_output_expert_on),
+        cmocka_unit_test(test_sign_tx_with_thirdparty_byron_daedalus_mainnet_output_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_thirdparty_byron_testnet_output_expert_off),
+        cmocka_unit_test(test_sign_tx_with_thirdparty_byron_testnet_output_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_thirdparty_byron_testnet_output_expert_on),
+        cmocka_unit_test(test_sign_tx_with_thirdparty_byron_testnet_output_reject_tx_expert_on),
     };
     return _cmocka_run_group_tests("test_sign_tx_byron", tests, ARRAY_LEN(tests), NULL, NULL);
 }

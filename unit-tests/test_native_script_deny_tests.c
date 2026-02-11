@@ -19,7 +19,7 @@
 #include "blake2b.h"
 #include "mem.h"
 
-#include "test_derive_native_script_reject_fixtures.h"
+#include "test_derive_native_script_deny_fixtures.h"
 #include "deriveNativeScriptHash/deriveNativeScriptHash_types.h"
 #include "handler/derive_native_script_hash.h"
 #include "apdu/dispatcher.h"
@@ -288,7 +288,7 @@ static inline void run_fixture(const native_script_test_case_t *fixture) {
     }
 }
 
-// Test function that iterates through all rejection fixtures
+// Test function that iterates through all deny fixtures
 static void test_native_script_fixture(void **state) {
     const native_script_test_case_t *fixture = *state;
     TRACE("Starting fixture: %s", fixture->name);
@@ -296,7 +296,7 @@ static void test_native_script_fixture(void **state) {
 }
 
 int main(void) {
-    TRACE("Starting test_native_script_rejects");
+    TRACE("Starting test_native_script_deny_tests");
 
     struct CMUnitTest *tests = calloc(NATIVE_SCRIPT_FIXTURES_COUNT, sizeof(*tests));
     if (tests == NULL) {
@@ -309,7 +309,7 @@ int main(void) {
         tests[i].initial_state = (void *)&NATIVE_SCRIPT_FIXTURES[i];
     }
 
-    int result = _cmocka_run_group_tests("native_script_rejects",
+    int result = _cmocka_run_group_tests("native_script_deny_tests",
                                          tests,
                                          NATIVE_SCRIPT_FIXTURES_COUNT,
                                          NULL,

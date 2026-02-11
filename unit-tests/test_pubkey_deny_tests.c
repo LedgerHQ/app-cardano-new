@@ -1,0 +1,106 @@
+// Unit tests for public key export deny tests (auto-generated)
+
+#include <stdarg.h>
+#include <stddef.h>
+#include <setjmp.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+
+#include <cmocka.h>
+
+#include "test_pubkey_fixtures_deny.h"
+#include "test_pubkey_common.h"
+
+// ======================================================================
+// Public Key Export Deny Tests (Auto-Generated)
+// ======================================================================
+
+static void test_pubkey_deny_0_export_pubkey_path_shorter_than_3_indexes(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_DENY_FIXTURES[0]);
+}
+
+static void test_pubkey_deny_1_export_pubkey_path_not_matching_cold_key_structure(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_DENY_FIXTURES[1]);
+}
+
+static void test_pubkey_deny_2_export_pubkey_invalid_vote_key_path_1(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_DENY_FIXTURES[2]);
+}
+
+static void test_pubkey_deny_3_export_pubkey_invalid_vote_key_path_2(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_DENY_FIXTURES[3]);
+}
+
+static void test_pubkey_deny_4_export_pubkey_invalid_vote_key_path_3(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_DENY_FIXTURES[4]);
+}
+
+static void test_pubkey_deny_5_export_pubkey_invalid_multisig_account_not_hardened(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_DENY_FIXTURES[5]);
+}
+
+static void test_pubkey_deny_6_export_pubkey_invalid_multisig_chain(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_DENY_FIXTURES[6]);
+}
+
+static void test_pubkey_deny_7_export_pubkey_invalid_multisig_address_hardened(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_DENY_FIXTURES[7]);
+}
+
+static void test_pubkey_deny_8_export_pubkey_invalid_mint_policy_not_hardened(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_DENY_FIXTURES[8]);
+}
+
+static void test_pubkey_deny_9_export_pubkey_invalid_drep_chain(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_DENY_FIXTURES[9]);
+}
+
+static void test_pubkey_deny_10_export_pubkey_invalid_committee_cold_address_hardened(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_DENY_FIXTURES[10]);
+}
+
+static void test_pubkey_deny_11_export_pubkey_invalid_committee_hot_account_not_hardened(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_DENY_FIXTURES[11]);
+}
+
+static void test_pubkey_deny_12_export_pubkey_invalid_pool_cold_usecase(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_DENY_FIXTURES[12]);
+}
+
+// ======================================================================
+// Main
+// ======================================================================
+
+int main(void) {
+    const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_pubkey_deny_0_export_pubkey_path_shorter_than_3_indexes),
+        cmocka_unit_test(test_pubkey_deny_1_export_pubkey_path_not_matching_cold_key_structure),
+        cmocka_unit_test(test_pubkey_deny_2_export_pubkey_invalid_vote_key_path_1),
+        cmocka_unit_test(test_pubkey_deny_3_export_pubkey_invalid_vote_key_path_2),
+        cmocka_unit_test(test_pubkey_deny_4_export_pubkey_invalid_vote_key_path_3),
+        cmocka_unit_test(test_pubkey_deny_5_export_pubkey_invalid_multisig_account_not_hardened),
+        cmocka_unit_test(test_pubkey_deny_6_export_pubkey_invalid_multisig_chain),
+        cmocka_unit_test(test_pubkey_deny_7_export_pubkey_invalid_multisig_address_hardened),
+        cmocka_unit_test(test_pubkey_deny_8_export_pubkey_invalid_mint_policy_not_hardened),
+        cmocka_unit_test(test_pubkey_deny_9_export_pubkey_invalid_drep_chain),
+        cmocka_unit_test(test_pubkey_deny_10_export_pubkey_invalid_committee_cold_address_hardened),
+        cmocka_unit_test(test_pubkey_deny_11_export_pubkey_invalid_committee_hot_account_not_hardened),
+        cmocka_unit_test(test_pubkey_deny_12_export_pubkey_invalid_pool_cold_usecase),
+    };
+
+    return cmocka_run_group_tests(tests, NULL, NULL);
+}

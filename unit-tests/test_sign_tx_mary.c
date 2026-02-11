@@ -1,4 +1,5 @@
-// Unit tests for Mary era transaction signing (multiasset/tokens)
+// Unit tests for transaction signing (auto-generated)
+// DO NOT EDIT - regenerate using generators/generate_unit_tests_from_ragger.py
 
 #include <stdarg.h>
 #include <stddef.h>
@@ -13,6 +14,7 @@
 #include "handler/sign_tx.h"
 #include "buffer.h"
 #include "cardano_swo.h"
+#include "cardano_constants.h"
 #include "globals.h"
 #include "tx.h"
 #include "tx_parse.h"
@@ -20,75 +22,25 @@
 #include "hexUtils.h"
 #include "utils/utils.h"
 #include "blake2b.h"
-#include "cardano_constants.h"
 #include "init_apdu.h"
+#include "io_capture.h"
 
 #include "test_sign_tx_fixtures_mary.h"
-
-// ----------------------------------------------------------------------
-// Simple mocks for IO and UI plumbing
-// ----------------------------------------------------------------------
-
-static uint8_t g_last_response[TX_HASH_LENGTH];
-static size_t g_last_response_len = 0;
-static uint16_t g_last_response_sw = 0;
 
 #include "test_sign_tx_common.h"
 #include "app_mem_utils.h"
 
-int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
-    assert_true(bufferLength <= sizeof(g_last_response));
-    memcpy(g_last_response, buffer, bufferLength);
-    g_last_response_len = bufferLength;
-    g_last_response_sw = swo;
-    return 0;
-}
-
-void nbgl_useCaseSpinner(const char *text) {
-    (void) text;
-}
-
-void nbgl_useCaseStatus(const char *text, bool success, void (*callback)(void)) {
-    (void) text;
-    (void) success;
-    if (callback != NULL) {
-        callback();
-    }
-}
-
-typedef enum {
-    STATUS_TYPE_TRANSACTION_SIGNED = 0,
-    STATUS_TYPE_TRANSACTION_REJECTED = 1,
-} nbgl_reviewStatusType_t;
-
-void nbgl_useCaseReviewStatus(nbgl_reviewStatusType_t reviewStatusType, void (*callback)(void)) {
-    (void) reviewStatusType;
-    if (callback != NULL) {
-        callback();
-    }
-}
-
-void ui_menu_main(void) {
-    // no-op
-}
-
-// Display helper that immediately approves the transaction
-void ui_display_transaction(void) {
-    apdu_response_send_data(G_context.tx_info.tx_hash, sizeof(G_context.tx_info.tx_hash), SWO_SUCCESS);
-    G_context.state.tx_state = TX_STATE_APPROVED;
-    G_context.req_type = REQUEST_NONE;
-}
-void ui_display_witness(const bip44_path_t *witnessPath,
-                        security_policy_t securityPolicy,
-                        warning_bits_t warnings) {
-    (void) witnessPath;
-    (void) securityPolicy;
-    (void) warnings;
-    finalize_witness(true);
-}
+// ======================================================================
+// UI code: using REAL ui_display_*.c with mocked NBGL
+// ======================================================================
+// The real UI code from ../src/ui/ui_display_tx.c and ui_display_witness.c
+// is included in cardano_sign_tx_core library. It calls NBGL functions which
+// are mocked in mock_sources/nbgl_mock.c to auto-approve for testing.
+// This way we test the actual UI formatting, tag-value pair generation,
+// and state management logic.
 
 // ======================================================================
-// Mary Era Tests
+// MARY Era Tests
 // ======================================================================
 
 static void test_sign_tx_with_a_multiasset_output_expert_off(void **state) {
@@ -96,9 +48,19 @@ static void test_sign_tx_with_a_multiasset_output_expert_off(void **state) {
     run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_OUTPUT, false);
 }
 
+static void test_sign_tx_with_a_multiasset_output_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_OUTPUT, false);
+}
+
 static void test_sign_tx_with_a_multiasset_output_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_OUTPUT, true);
+}
+
+static void test_sign_tx_with_a_multiasset_output_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_OUTPUT, true);
 }
 
 static void test_sign_tx_with_a_complex_multiasset_output_expert_off(void **state) {
@@ -106,9 +68,19 @@ static void test_sign_tx_with_a_complex_multiasset_output_expert_off(void **stat
     run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT, false);
 }
 
+static void test_sign_tx_with_a_complex_multiasset_output_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT, false);
+}
+
 static void test_sign_tx_with_a_complex_multiasset_output_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT, true);
+}
+
+static void test_sign_tx_with_a_complex_multiasset_output_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT, true);
 }
 
 static void test_sign_tx_with_big_numbers_expert_off(void **state) {
@@ -116,9 +88,19 @@ static void test_sign_tx_with_big_numbers_expert_off(void **state) {
     run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_BIG_NUMBERS, false);
 }
 
+static void test_sign_tx_with_big_numbers_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_BIG_NUMBERS, false);
+}
+
 static void test_sign_tx_with_big_numbers_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_BIG_NUMBERS, true);
+}
+
+static void test_sign_tx_with_big_numbers_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_BIG_NUMBERS, true);
 }
 
 static void test_sign_tx_with_a_multiasset_change_output_expert_off(void **state) {
@@ -126,9 +108,19 @@ static void test_sign_tx_with_a_multiasset_change_output_expert_off(void **state
     run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT, false);
 }
 
+static void test_sign_tx_with_a_multiasset_change_output_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT, false);
+}
+
 static void test_sign_tx_with_a_multiasset_change_output_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT, true);
+}
+
+static void test_sign_tx_with_a_multiasset_change_output_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT, true);
 }
 
 static void test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_expert_off(void **state) {
@@ -136,9 +128,19 @@ static void test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_expert_of
     run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START, false);
 }
 
+static void test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START, false);
+}
+
 static void test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START, true);
+}
+
+static void test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START, true);
 }
 
 static void test_sign_tx_with_output_with_decimal_places_expert_off(void **state) {
@@ -146,9 +148,19 @@ static void test_sign_tx_with_output_with_decimal_places_expert_off(void **state
     run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES, false);
 }
 
+static void test_sign_tx_with_output_with_decimal_places_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES, false);
+}
+
 static void test_sign_tx_with_output_with_decimal_places_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES, true);
+}
+
+static void test_sign_tx_with_output_with_decimal_places_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES, true);
 }
 
 static void test_sign_tx_with_mint_fields_with_various_amounts_expert_off(void **state) {
@@ -156,9 +168,19 @@ static void test_sign_tx_with_mint_fields_with_various_amounts_expert_off(void *
     run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS, false);
 }
 
+static void test_sign_tx_with_mint_fields_with_various_amounts_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS, false);
+}
+
 static void test_sign_tx_with_mint_fields_with_various_amounts_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS, true);
+}
+
+static void test_sign_tx_with_mint_fields_with_various_amounts_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS, true);
 }
 
 static void test_sign_tx_with_mint_with_decimal_places_expert_off(void **state) {
@@ -166,9 +188,19 @@ static void test_sign_tx_with_mint_with_decimal_places_expert_off(void **state) 
     run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES, false);
 }
 
+static void test_sign_tx_with_mint_with_decimal_places_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES, false);
+}
+
 static void test_sign_tx_with_mint_with_decimal_places_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES, true);
+}
+
+static void test_sign_tx_with_mint_with_decimal_places_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES, true);
 }
 
 static void test_sign_tx_with_mint_fields_among_other_fields_expert_off(void **state) {
@@ -176,9 +208,19 @@ static void test_sign_tx_with_mint_fields_among_other_fields_expert_off(void **s
     run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS, false);
 }
 
+static void test_sign_tx_with_mint_fields_among_other_fields_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS, false);
+}
+
 static void test_sign_tx_with_mint_fields_among_other_fields_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS, true);
+}
+
+static void test_sign_tx_with_mint_fields_among_other_fields_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS, true);
 }
 
 // ======================================================================
@@ -188,23 +230,41 @@ static void test_sign_tx_with_mint_fields_among_other_fields_expert_on(void **st
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_sign_tx_with_a_multiasset_output_expert_off),
+        cmocka_unit_test(test_sign_tx_with_a_multiasset_output_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_a_multiasset_output_expert_on),
+        cmocka_unit_test(test_sign_tx_with_a_multiasset_output_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_a_complex_multiasset_output_expert_off),
+        cmocka_unit_test(test_sign_tx_with_a_complex_multiasset_output_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_a_complex_multiasset_output_expert_on),
+        cmocka_unit_test(test_sign_tx_with_a_complex_multiasset_output_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_big_numbers_expert_off),
+        cmocka_unit_test(test_sign_tx_with_big_numbers_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_big_numbers_expert_on),
+        cmocka_unit_test(test_sign_tx_with_big_numbers_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_a_multiasset_change_output_expert_off),
+        cmocka_unit_test(test_sign_tx_with_a_multiasset_change_output_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_a_multiasset_change_output_expert_on),
+        cmocka_unit_test(test_sign_tx_with_a_multiasset_change_output_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_expert_off),
+        cmocka_unit_test(test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_expert_on),
+        cmocka_unit_test(test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_output_with_decimal_places_expert_off),
+        cmocka_unit_test(test_sign_tx_with_output_with_decimal_places_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_output_with_decimal_places_expert_on),
+        cmocka_unit_test(test_sign_tx_with_output_with_decimal_places_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_mint_fields_with_various_amounts_expert_off),
+        cmocka_unit_test(test_sign_tx_with_mint_fields_with_various_amounts_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_mint_fields_with_various_amounts_expert_on),
+        cmocka_unit_test(test_sign_tx_with_mint_fields_with_various_amounts_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_mint_with_decimal_places_expert_off),
+        cmocka_unit_test(test_sign_tx_with_mint_with_decimal_places_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_mint_with_decimal_places_expert_on),
+        cmocka_unit_test(test_sign_tx_with_mint_with_decimal_places_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_mint_fields_among_other_fields_expert_off),
+        cmocka_unit_test(test_sign_tx_with_mint_fields_among_other_fields_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_mint_fields_among_other_fields_expert_on),
+        cmocka_unit_test(test_sign_tx_with_mint_fields_among_other_fields_reject_tx_expert_on),
     };
     return _cmocka_run_group_tests("test_sign_tx_mary", tests, ARRAY_LEN(tests), NULL, NULL);
 }

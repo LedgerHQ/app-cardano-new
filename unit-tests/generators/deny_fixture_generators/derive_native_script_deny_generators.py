@@ -14,7 +14,7 @@ from native_script_codegen import (
     generate_finish_apdu_payload,
 )
     
-FIXTURES_FILE = UNIT_TESTS_DIR / "test_derive_native_script_reject_fixtures.h"
+FIXTURES_FILE = UNIT_TESTS_DIR / "test_derive_native_script_deny_fixtures.h"
 
 def _load_native_script_test_cases() -> list[Any]:
     """
@@ -159,7 +159,7 @@ def _build_fixtures() -> str:
     return "\n".join(header_lines)
 
 
-def generate_derive_native_script_reject_fixtures() -> None:
+def generate_derive_native_script_deny_fixtures() -> None:
     """
     Generate native script hash derivation test fixture header.
 

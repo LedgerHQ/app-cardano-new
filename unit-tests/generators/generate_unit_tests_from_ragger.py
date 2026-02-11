@@ -16,14 +16,20 @@ from paths import REPO_ROOT
 from mock_data_utils import regenerate_mock_data
 
 
-# Match reject fixtures array for counting individual reject cases
-_SIGN_TX_REJECT_FIXTURES_PATTERN = re.compile(
-    r"static const sign_tx_reject_fixture_t SIGN_TX_REJECT_FIXTURES\[\]\s*=\s*\{(.*?)\n\};",
+# Match deny fixtures array for counting individual deny cases
+_SIGN_TX_DENY_FIXTURES_PATTERN = re.compile(
+    r"static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES\[\]\s*=\s*\{(.*?)\n\};",
     flags=re.DOTALL,
 )
 
-# Match individual reject fixture entries inside the array
-_SIGN_TX_REJECT_ENTRY_PATTERN = re.compile(r"\.name\s*=")
+# Match individual deny fixture entries inside the array
+_SIGN_TX_DENY_ENTRY_PATTERN = re.compile(r"\.name\s*=")
+_TX_FIXTURE_PATTERN = re.compile(
+    r"static const tx_fixture_t (FIXTURE_[A-Z0-9_]+)\s*=\s*\{(.*?)\};",
+    flags=re.DOTALL,
+)
+_TX_AUX_INCLUDED_PATTERN = re.compile(r"\.include_aux_data_hash\s*=\s*(true|false)")
+_TX_AUX_TYPE_PATTERN = re.compile(r"\.aux_data_type\s*=\s*([A-Z0-9_]+|\d+)")
 
 # Import fixture generators
 from fixture_generators.tx_generators import (
@@ -47,20 +53,20 @@ from fixture_generators.opcert_generators import (
     generate_opcert_fixtures,
 )
 
-# Import reject generators
-from reject_fixture_generators.tx_reject_generators import (
-    generate_tx_reject_fixtures,
+# Import deny generators
+from deny_fixture_generators.tx_deny_generators import (
+    generate_tx_deny_fixtures,
 )
 
-from reject_fixture_generators.derive_address_reject_generators import (
-    generate_address_derivation_reject_fixtures,
+from deny_fixture_generators.derive_address_deny_generators import (
+    generate_address_derivation_deny_fixtures,
 )
 
-from reject_fixture_generators.derive_native_script_reject_generators import (
-    generate_derive_native_script_reject_fixtures,
+from deny_fixture_generators.derive_native_script_deny_generators import (
+    generate_derive_native_script_deny_fixtures,
 )
-from reject_fixture_generators.pubkey_reject_generators import (
-    generate_pubkey_reject_fixtures,
+from deny_fixture_generators.pubkey_deny_generators import (
+    generate_pubkey_deny_fixtures,
 )
 
 # Import test runners
@@ -75,14 +81,14 @@ from test_runner_generators.derive_address_test_runner_generators import (
 from test_runner_generators.derive_native_script_runner_generators import (
     generate_native_script_test_runners,
 )
-from test_runner_generators.derive_address_reject_runner_generators import (
-    generate_address_derivation_reject_test_runners,
+from test_runner_generators.derive_address_deny_runner_generators import (
+    generate_address_derivation_deny_test_runners,
 )
 from test_runner_generators.pubkey_test_runner_generators import (
     generate_pubkey_test_runners,
 )
-from test_runner_generators.pubkey_reject_runner_generators import (
-    generate_pubkey_reject_test_runners,
+from test_runner_generators.pubkey_deny_runner_generators import (
+    generate_pubkey_deny_test_runners,
 )
 from test_runner_generators.sign_msg_test_runner_generators import (
     generate_sign_msg_test_runners,
@@ -95,9 +101,9 @@ def _log_stage(message: str) -> None:
     print(f"\n--- {message} ---")
 
 
-def _count_sign_tx_reject_fixtures() -> int:
-    """Return the number of fixtures in sign_tx reject suite to account for per-test coverage."""
-    fixtures_file = UNIT_TESTS_DIR / "test_sign_tx_fixtures_rejects.h"
+def _count_sign_tx_deny_fixtures() -> int:
+    """Return the number of fixtures in sign_tx deny suite to account for per-test coverage."""
+    fixtures_file = UNIT_TESTS_DIR / "test_sign_tx_fixtures_deny.h"
     if not fixtures_file.exists():
         return 0
 
@@ -106,12 +112,55 @@ def _count_sign_tx_reject_fixtures() -> int:
     except OSError:
         return 0
 
-    match = _SIGN_TX_REJECT_FIXTURES_PATTERN.search(content)
+    match = _SIGN_TX_DENY_FIXTURES_PATTERN.search(content)
     if not match:
         return 0
 
     fixture_body = match.group(1)
-    return len(_SIGN_TX_REJECT_ENTRY_PATTERN.findall(fixture_body))
+    return len(_SIGN_TX_DENY_ENTRY_PATTERN.findall(fixture_body))
+
+
+def _fixture_has_cvote_aux_data(fixture_body: str) -> bool:
+    aux_included_match = _TX_AUX_INCLUDED_PATTERN.search(fixture_body)
+    aux_type_match = _TX_AUX_TYPE_PATTERN.search(fixture_body)
+    if aux_included_match is None or aux_type_match is None:
+        return False
+
+    include_aux_data = aux_included_match.group(1) == "true"
+    aux_type_token = aux_type_match.group(1)
+    return include_aux_data and aux_type_token in {"1", "AUX_DATA_TYPE_CVOTE_REGISTRATION"}
+
+
+def _count_sign_tx_fine_grained_entries_from_fixtures() -> int:
+    """
+    Count fine-grained sign-tx entries from fixture headers on disk.
+
+    This mirrors tx runner generation granularity:
+    - 4 entries per tx fixture (approve/reject-tx x expert-off/on)
+    - +2 entries when fixture has CIP36 aux data (reject-aux x expert-off/on)
+    - plus deny fixtures from SIGN_TX_DENY_FIXTURES
+    """
+    total_entries = 0
+    fixture_headers = sorted(
+        p
+        for p in UNIT_TESTS_DIR.glob("test_sign_tx_fixtures_*.h")
+        if p.name != "test_sign_tx_fixtures_deny.h"
+    )
+
+    for fixture_header_path in fixture_headers:
+        try:
+            header_content = fixture_header_path.read_text(encoding="utf-8")
+        except OSError:
+            continue
+
+        for fixture_match in _TX_FIXTURE_PATTERN.finditer(header_content):
+            fixture_body = fixture_match.group(2)
+            total_entries += 4
+            if _fixture_has_cvote_aux_data(fixture_body):
+                total_entries += 2
+
+    total_entries += _count_sign_tx_deny_fixtures()
+    return total_entries
 
 
 _COMMAND_ORDER = [
@@ -147,6 +196,14 @@ _RAGGER_FILE_TO_COMMAND = {
 _CMOCKA_TEST_PATTERN = re.compile(r"cmocka_unit_test\(\s*([^)]+?)\s*\)")
 
 
+def _candidate_function_names_for_coverage_match(function_name: str) -> set[str]:
+    """Return function-name variants used when matching generated unit tests."""
+    candidate_names = {function_name}
+    if function_name.endswith("_hash"):
+        candidate_names.add(function_name[:-5])
+    return candidate_names
+
+
 def _extract_cmocka_test_names(file_path: Path) -> tuple[list[str], str]:
     """Return cmocka-registered test names plus the raw file content for coverage checks."""
     try:
@@ -164,10 +221,20 @@ def _count_unit_tests_by_command() -> tuple[dict[str, int], int, str]:
 
     The count is based on cmocka_unit_test() registrations so the reporting stays
     independent of the generator output formatting.
+    IMPORTANT: this reads test sources from disk and does not depend on in-memory
+    generation-phase counters/state from earlier steps in this script.
     """
     command_counts: dict[str, int] = {command: 0 for command in _COMMAND_ORDER}
     total_funcs = 0
     command_file_contents: list[str] = []
+
+    def _add_file_content_only(path: Path) -> None:
+        if not path.exists():
+            raise FileNotFoundError(f"Unit test source missing: {path}")
+        try:
+            command_file_contents.append(path.read_text(encoding="utf-8"))
+        except OSError as exc:
+            raise OSError(f"Failed reading {path}") from exc
 
     def _add_file_counts(path: Path, command: str) -> None:
         nonlocal total_funcs
@@ -179,18 +246,21 @@ def _count_unit_tests_by_command() -> tuple[dict[str, int], int, str]:
         command_file_contents.append(content)
 
     tx_test_files = sorted(
-        p for p in UNIT_TESTS_DIR.glob("test_sign_tx_*.c") if p.name != "test_sign_tx_rejects.c"
+        p for p in UNIT_TESTS_DIR.glob("test_sign_tx_*.c") if p.name != "test_sign_tx_deny_tests.c"
     )
     for path in tx_test_files:
         _add_file_counts(path, "sign_tx")
+    # Keep sign-tx deny runner out of cmocka-based counting (counted via fixtures),
+    # but include its source for function-name coverage matching.
+    _add_file_content_only(UNIT_TESTS_DIR / "test_sign_tx_deny_tests.c")
 
     unit_file_map = {
         "sign_msg": ["test_sign_msg.c"],
         "sign_cvote": ["test_cvote.c"],
         "sign_opcert": ["test_opcert.c"],
-        "pubkey_export": ["test_pubkey.c", "test_pubkey_rejects.c"],
-        "derive_address": ["test_derive_address.c", "test_derive_address_rejects.c"],
-        "derive_native_script": ["test_native_script.c", "test_native_script_rejects.c"],
+        "pubkey_export": ["test_pubkey.c", "test_pubkey_deny_tests.c"],
+        "derive_address": ["test_derive_address.c", "test_derive_address_deny_tests.c"],
+        "derive_native_script": ["test_native_script.c", "test_native_script_deny_tests.c"],
     }
     for command, filenames in unit_file_map.items():
         for filename in filenames:
@@ -247,6 +317,7 @@ def _verify_ragger_test_coverage() -> None:
         sys.exit(1)
 
     ragger_command_counts = {command: 0 for command in _COMMAND_ORDER}
+    comparable_ragger_command_counts = {command: 0 for command in _COMMAND_ORDER}
     skip_counts: dict[str, int] = defaultdict(int)
     unmapped_counts: dict[str, int] = defaultdict(int)
 
@@ -271,58 +342,61 @@ def _verify_ragger_test_coverage() -> None:
         command = _RAGGER_FILE_TO_COMMAND.get(module_name)
         if command:
             ragger_command_counts[command] += 1
+            comparable_ragger_command_counts[command] += 1
         else:
             unmapped_counts[module_name] += 1
         func_name = func_part.split("[", 1)[0]
         if func_name and func_name not in skip_test_funcs:
             ragger_test_funcs.add(func_name)
 
+    # Coverage/counting is intentionally filesystem-based and independent from
+    # generation-phase bookkeeping; it scans current unit-test files on disk.
     unit_command_counts, total_unit_test_funcs, unit_tests_content = _count_unit_tests_by_command()
-    reject_fixture_count = _count_sign_tx_reject_fixtures()
-    if reject_fixture_count:
-        unit_command_counts["sign_tx"] += reject_fixture_count
-    expanded_unit_test_count = total_unit_test_funcs + reject_fixture_count
+    deny_fixture_count = _count_sign_tx_deny_fixtures()
+    if deny_fixture_count:
+        unit_command_counts["sign_tx"] += deny_fixture_count
+    expanded_unit_test_count = total_unit_test_funcs + deny_fixture_count
+    # For sign_tx, compare against fine-grained expected entries (same granularity
+    # as generated unit tests), not raw pytest parameterized-case count.
+    comparable_ragger_command_counts["sign_tx"] = _count_sign_tx_fine_grained_entries_from_fixtures()
 
     # Extract unique test function names from ragger tests
     # Format: test_file.py::test_func_name[param] -> extract test_func_name
     missing_coverage = []
     covered_coverage = []
     for func_name in sorted(ragger_test_funcs):
-        # Check if the ragger test function name appears in unit tests
-        # Some functions like test_derive_native_script_hash expand to test_derive_native_script_*
-        # So we check for both exact match and prefix match (with underscore)
-        func_name_without_hash = (
-            func_name[:-5] if func_name.endswith("_hash") else func_name
-        )
-        func_name_without_rejects = (
-            func_name[:-8] if func_name.endswith("_rejects") else func_name
-        )
-        found = (
-            func_name in unit_tests_content
-            or f"{func_name}_" in unit_tests_content
-            or func_name_without_hash in unit_tests_content
-            or func_name_without_rejects in unit_tests_content
+        # Some ragger tests expand into indexed unit tests. Match both the exact
+        # function name and generated prefixes while treating reject/deny as aliases.
+        candidate_function_names = _candidate_function_names_for_coverage_match(func_name)
+        found = any(
+            candidate_name in unit_tests_content or f"{candidate_name}_" in unit_tests_content
+            for candidate_name in candidate_function_names
         )
         if found:
             covered_coverage.append(func_name)
         else:
             missing_coverage.append(func_name)
 
-    reject_note = ""
-    if reject_fixture_count:
-        reject_note = (f", includes {reject_fixture_count} fixtures sampled through "
-                       f"`SIGN_TX_REJECT_FIXTURES`")
+    deny_note = ""
+    if deny_fixture_count:
+        deny_note = (f", includes {deny_fixture_count} fixtures sampled through "
+                     f"`SIGN_TX_DENY_FIXTURES`")
     print(f"\nRagger test coverage check:")
     print(f"  Ragger: {total_ragger_test_cases} total test cases from {len(ragger_tests)} parameterized variants")
     print(f"  Unit tests: {expanded_unit_test_count} total test entries "
-          f"({total_unit_test_funcs} generated functions{reject_note})")
+          f"({total_unit_test_funcs} generated functions{deny_note})")
     print(f"  Command breakdown:")
     for command in _COMMAND_ORDER:
-        ragger_count = ragger_command_counts.get(command, 0)
+        ragger_count = comparable_ragger_command_counts.get(command, 0)
         unit_count = unit_command_counts.get(command, 0)
         delta = unit_count - ragger_count
         delta_note = f" (Δ {delta:+d})" if delta else ""
         print(f"    - {_COMMAND_DISPLAY_NAMES[command]}: {ragger_count} Ragger -> {unit_count} unit entries{delta_note}")
+    if comparable_ragger_command_counts["sign_tx"] != ragger_command_counts["sign_tx"]:
+        print(
+            "  Note: Sign Transaction uses fine-grained fixture-based counting for comparison "
+            f"(raw pytest cases: {ragger_command_counts['sign_tx']})."
+        )
     if skip_counts:
         skip_total = sum(skip_counts.values())
         skip_details = ", ".join(f"{name}({count})" for name, count in sorted(skip_counts.items()))
@@ -333,7 +407,7 @@ def _verify_ragger_test_coverage() -> None:
         print(f"  Unmapped pytest modules ({unmapped_total} cases): {unmapped_details}")
     mismatched_commands = []
     for command in _COMMAND_ORDER:
-        ragger_count = ragger_command_counts.get(command, 0)
+        ragger_count = comparable_ragger_command_counts.get(command, 0)
         unit_count = unit_command_counts.get(command, 0)
         if ragger_count != unit_count:
             mismatched_commands.append(
@@ -364,6 +438,11 @@ def _verify_ragger_test_coverage() -> None:
                     if "::" in case:
                         _, test_case = case.split("::", 1)
                         print(f"      - {test_case}")
+        print("\n" + "=" * 88)
+        print("COVERAGE FAILURE: missing unit-test coverage for one or more ragger test functions.")
+        print("The generator run is unsuccessful until all missing functions above are covered.")
+        print("=" * 88)
+        sys.exit(1)
     else:
         print(f"\n  OK All ragger test functions have unit test coverage")
 
@@ -386,19 +465,20 @@ def run_all() -> None:
     generate_tx_test_runners()
     generate_address_derivation_test_runners()
     generate_native_script_test_runners()
-    generate_address_derivation_reject_test_runners()
+    generate_address_derivation_deny_test_runners()
     generate_pubkey_test_runners()
     generate_sign_msg_test_runners()
     generate_opcert_test_runners()
-    _log_stage("Generating reject fixtures")
-    generate_tx_reject_fixtures()
-    generate_address_derivation_reject_fixtures()
-    generate_derive_native_script_reject_fixtures()
-    generate_pubkey_reject_fixtures()
-    generate_pubkey_reject_test_runners()
+    _log_stage("Generating deny fixtures")
+    generate_tx_deny_fixtures()
+    generate_address_derivation_deny_fixtures()
+    generate_derive_native_script_deny_fixtures()
+    generate_pubkey_deny_fixtures()
+    generate_pubkey_deny_test_runners()
     _log_stage("Regenerating mock data")
     regenerate_mock_data()
     _log_stage("Verifying Ragger coverage")
+    # Final coverage/counting is an independent read-back from files on disk.
     _verify_ragger_test_coverage()
 
 
@@ -412,7 +492,7 @@ def main() -> None:
     subparsers.add_parser(
         "generate-test-runners", help="Regenerate test_sign_tx_*.c files."
     )
-    subparsers.add_parser("rejects", help="Generate reject fixture headers.")
+    subparsers.add_parser("deny_tests", help="Generate deny fixture headers.")
     subparsers.add_parser("mock-data", help="Regenerate mocks/crypto_mock_data.h.")
 
     args = parser.parse_args()
@@ -434,18 +514,17 @@ def main() -> None:
         generate_tx_test_runners()
         generate_address_derivation_test_runners()
         generate_native_script_test_runners()
-        generate_address_derivation_reject_test_runners()
+        generate_address_derivation_deny_test_runners()
         generate_pubkey_test_runners()
         generate_sign_msg_test_runners()
         generate_opcert_test_runners()
-        generate_pubkey_reject_fixtures()
-        generate_pubkey_reject_test_runners()
-    elif args.command == "rejects":
-        _log_stage("Generating reject fixtures")
-        generate_tx_reject_fixtures()
-        generate_address_derivation_reject_fixtures()
-        generate_derive_native_script_reject_fixtures()
-        generate_pubkey_reject_fixtures()
+        generate_pubkey_deny_test_runners()
+    elif args.command == "deny_tests":
+        _log_stage("Generating deny fixtures")
+        generate_tx_deny_fixtures()
+        generate_address_derivation_deny_fixtures()
+        generate_derive_native_script_deny_fixtures()
+        generate_pubkey_deny_fixtures()
     elif args.command == "mock-data":
         _log_stage("Regenerating mock data")
         regenerate_mock_data()

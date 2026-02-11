@@ -53,43 +53,7 @@ int io_send_sw(uint16_t swo) {
     return 0;
 }
 
-void nbgl_useCaseSpinner(const char *text) {
-    (void) text;
-}
-
-void nbgl_useCaseStatus(const char *text, bool success, void (*callback)(void)) {
-    (void) text;
-    (void) success;
-    if (callback != NULL) {
-        callback();
-    }
-}
-
-typedef enum {
-    STATUS_TYPE_TRANSACTION_SIGNED = 0,
-    STATUS_TYPE_TRANSACTION_REJECTED = 1,
-} nbgl_reviewStatusType_t;
-
-void nbgl_useCaseReviewStatus(nbgl_reviewStatusType_t reviewStatusType, void (*callback)(void)) {
-    (void) reviewStatusType;
-    if (callback != NULL) {
-        callback();
-    }
-}
-
-void ui_menu_main(void) {
-}
-
-void ui_display_transaction(void) {
-}
-
-void ui_display_witness(const bip44_path_t *path,
-                        security_policy_t policy,
-                        warning_bits_t warnings) {
-    (void) path;
-    (void) policy;
-    (void) warnings;
-}
+// NBGL and UI mocks provided by cardano_sign_tx_core (nbgl_mock.c + real UI files)
 
 static uint32_t harden(uint32_t value) {
     return value | HARDENED_BIP32;

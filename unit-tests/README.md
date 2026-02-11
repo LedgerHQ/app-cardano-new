@@ -81,7 +81,7 @@ The default command runs all generators in order (fixtures, generate-test-runner
 Notes:
 -- `unit-tests/generators/generate_unit_tests_from_ragger.py` produces `unit-tests/test_sign_tx_fixtures_*.h` from
   `tests/standalone/input_files/signTx.py`, rewrites each `unit-tests/test_sign_tx_*.c`
-  with `tx_fixture_t` + `run_fixture_with_expert_mode`, and emits `unit-tests/test_sign_tx_fixtures_rejects.h`.
+  with `tx_fixture_t` + `run_fixture_with_expert_mode`, and emits `unit-tests/test_sign_tx_fixtures_deny.h`.
 - APDU fixtures use the app's binary schema (presence flags + length-prefixed ASCII for relays/metadata);
   they are not CBOR byte dumps. CBOR fixtures remain the source of truth for tx body/hash validation.
 

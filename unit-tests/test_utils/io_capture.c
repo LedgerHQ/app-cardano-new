@@ -1,0 +1,32 @@
+#include "io_capture.h"
+
+#include <string.h>
+
+#include "assert.h"
+
+uint8_t g_last_response[IO_CAPTURE_MAX_RESPONSE_SIZE];
+size_t g_last_response_len = 0;
+uint16_t g_last_response_sw = 0;
+
+void io_capture_reset(void) {
+    g_last_response_len = 0;
+    g_last_response_sw = 0;
+}
+
+__attribute__((weak)) int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
+    LEDGER_ASSERT(bufferLength <= sizeof(g_last_response), "Response buffer overflow");
+
+    if (buffer != NULL && bufferLength > 0) {
+        memcpy(g_last_response, buffer, bufferLength);
+    }
+
+    g_last_response_len = bufferLength;
+    g_last_response_sw = swo;
+    return 0;
+}
+
+__attribute__((weak)) int io_send_sw(uint16_t swo) {
+    g_last_response_len = 0;
+    g_last_response_sw = swo;
+    return 0;
+}

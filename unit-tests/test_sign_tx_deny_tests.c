@@ -22,15 +22,12 @@
 #include "utils/utils.h"
 #include "ui_display_tx.h"
 
-typedef enum {
-    STATUS_TYPE_TRANSACTION_SIGNED = 0,
-    STATUS_TYPE_TRANSACTION_REJECTED = 1,
-} nbgl_reviewStatusType_t;
-
 // P1 constants now defined in dispatcher.h (included via globals.h)
 
 // ----------------------------------------------------------------------
-// Simple mocks for IO and UI plumbing so we can drive the handler
+// Simple mocks for IO plumbing so we can drive the handler
+// UI mocks (NBGL functions, ui_display_*, ui_menu_main) are provided by
+// the cardano_sign_tx_core library which includes nbgl_mock.c
 // ----------------------------------------------------------------------
 
 static uint16_t g_last_sw = 0;
@@ -45,51 +42,6 @@ int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_
 int io_send_sw(uint16_t swo) {
     g_last_sw = swo;
     return 0;
-}
-
-void nbgl_useCaseSpinner(const char *text) {
-    (void) text;
-}
-
-void nbgl_useCaseStatus(const char *text, bool success, void (*callback)(void)) {
-    (void) text;
-    (void) success;
-    if (callback != NULL) {
-        callback();
-    }
-}
-
-void nbgl_useCaseReviewStatus(nbgl_reviewStatusType_t reviewStatusType, void (*callback)(void)) {
-    (void) reviewStatusType;
-    if (callback != NULL) {
-        callback();
-    }
-}
-
-void ui_menu_main(void) {
-    // no-op
-}
-
-void ui_display_transaction(void) {
-    // auto-approve to allow witness policies to be exercised
-    apdu_response_send_data(G_context.tx_info.tx_hash, sizeof(G_context.tx_info.tx_hash), SWO_SUCCESS);
-    G_context.state.tx_state = TX_STATE_APPROVED;
-    G_context.tx_info.current_witness = 0;
-    tx_review_cleanup();
-    if (G_context.tx_info.num_witnesses == 0) {
-        tx_context_cleanup();
-        G_context.state.tx_state = TX_STATE_NONE;
-        G_context.req_type = REQUEST_NONE;
-    }
-}
-
-void ui_display_witness(const bip44_path_t *path,
-                       security_policy_t policy,
-                       warning_bits_t warnings) {
-    (void) path;
-    (void) policy;
-    (void) warnings;
-    finalize_witness(true);
 }
 
 // ----------------------------------------------------------------------
@@ -127,9 +79,9 @@ typedef struct {
     uint16_t expected_sw;
     bool expect_init_failure;
     const char *skip_reason;
-} sign_tx_reject_fixture_t;
+} sign_tx_deny_fixture_t;
 
-#include "test_sign_tx_fixtures_rejects.h"
+#include "test_sign_tx_fixtures_deny.h"
 #include "app_mem_utils.h"
 
 #define TEST_HEAP_SIZE (23 * 1024)
@@ -140,7 +92,7 @@ static uint8_t test_heap[TEST_HEAP_SIZE];
 // Fixture runner
 // ----------------------------------------------------------------------
 
-static void run_sign_tx_reject_fixture(const sign_tx_reject_fixture_t *fixture) {
+static void run_sign_tx_deny_fixture(const sign_tx_deny_fixture_t *fixture) {
     reset_context();
     assert_true(mem_utils_init(test_heap, sizeof(test_heap)));
 
@@ -197,29 +149,29 @@ static void run_sign_tx_reject_fixture(const sign_tx_reject_fixture_t *fixture) 
     tx_context_cleanup();
 }
 
-static void test_sign_tx_reject_fixture(void **state) {
-    const sign_tx_reject_fixture_t *fixture = (const sign_tx_reject_fixture_t *) *state;
+static void test_sign_tx_deny_fixture(void **state) {
+    const sign_tx_deny_fixture_t *fixture = (const sign_tx_deny_fixture_t *) *state;
     assert_non_null(fixture);
     if (fixture->skip_reason != NULL) {
         print_message("[SKIP] %s: %s\n", fixture->name, fixture->skip_reason);
         skip();
         return;
     }
-    run_sign_tx_reject_fixture(fixture);
+    run_sign_tx_deny_fixture(fixture);
 }
 
 int main(void) {
-    const size_t test_count = ARRAY_LEN(SIGN_TX_REJECT_FIXTURES);
-    struct CMUnitTest tests[ARRAY_LEN(SIGN_TX_REJECT_FIXTURES)];
+    const size_t test_count = ARRAY_LEN(SIGN_TX_DENY_FIXTURES);
+    struct CMUnitTest tests[ARRAY_LEN(SIGN_TX_DENY_FIXTURES)];
     size_t skipped_count = 0;
 
     for (size_t i = 0; i < test_count; i++) {
         tests[i] = (struct CMUnitTest) {
-            .name = SIGN_TX_REJECT_FIXTURES[i].name,
-            .test_func = test_sign_tx_reject_fixture,
-            .initial_state = (void *) &SIGN_TX_REJECT_FIXTURES[i],
+            .name = SIGN_TX_DENY_FIXTURES[i].name,
+            .test_func = test_sign_tx_deny_fixture,
+            .initial_state = (void *) &SIGN_TX_DENY_FIXTURES[i],
         };
-        if (SIGN_TX_REJECT_FIXTURES[i].skip_reason != NULL) {
+        if (SIGN_TX_DENY_FIXTURES[i].skip_reason != NULL) {
             skipped_count++;
         }
     }

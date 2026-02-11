@@ -24,7 +24,7 @@ from standalone.input_files.derive_address import byronTestCases
 from standalone.input_files.derive_address import (
     shelleyTestCasesNoConfirm,
     shelleyTestCasesWithConfirm,
-    rejectTestCases,
+    denyTestCases,
 )
 from standalone.utils import idTestFunc, derive_address
 
@@ -80,12 +80,12 @@ def test_derive_address(
 
 @pytest.mark.parametrize(
     "testCase",
-    rejectTestCases,
+    denyTestCases,
     ids=idTestFunc
 )
-def test_derive_address_reject(backend: BackendInterface,
+def test_derive_address_deny(backend: BackendInterface,
                                testCase: DeriveAddressTestCase) -> None:
-    """Check Reject Derive Address"""
+    """Check deny behavior for invalid derive-address inputs."""
 
     client = CommandSender(backend)
 

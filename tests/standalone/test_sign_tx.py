@@ -239,8 +239,8 @@ def test_sign_tx(device: Device,
         raise AssertionError(f"Test FAILED in {mode_label}: {testCase.name}") from e
 
 
-# Collect all reject test cases
-all_reject_test_cases = (
+# Collect all deny test cases
+all_deny_test_cases = (
     transactionInitRejectTestCases +
     addressParamsRejectTestCases +
     certificateRejectTestCases +
@@ -262,10 +262,10 @@ all_reject_test_cases = (
 
 @pytest.mark.parametrize(
     "testCase",
-    all_reject_test_cases,
+    all_deny_test_cases,
     ids=idTestFunc
 )
-def test_sign_tx_reject(backend: BackendInterface,
+def test_sign_tx_deny(backend: BackendInterface,
                         testCase: SignTxTestCase) -> None:
     """Test that invalid transaction parameters are correctly rejected"""
 

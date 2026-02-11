@@ -1,4 +1,5 @@
-// Unit tests for Shelley era transaction signing
+// Unit tests for transaction signing (auto-generated)
+// DO NOT EDIT - regenerate using generators/generate_unit_tests_from_ragger.py
 
 #include <stdarg.h>
 #include <stddef.h>
@@ -21,84 +22,25 @@
 #include "hexUtils.h"
 #include "utils/utils.h"
 #include "blake2b.h"
-#include "cardano_constants.h"
 #include "init_apdu.h"
+#include "io_capture.h"
 
 #include "test_sign_tx_fixtures_shelley.h"
-
-// ======================================================================
-// Simple mocks for IO and UI plumbing
-// ======================================================================
-
-static uint8_t g_last_response[TX_HASH_LENGTH];
-static size_t g_last_response_len = 0;
-static uint16_t g_last_response_sw = 0;
 
 #include "test_sign_tx_common.h"
 #include "app_mem_utils.h"
 
-int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
-    assert_true(bufferLength <= sizeof(g_last_response));
-    memcpy(g_last_response, buffer, bufferLength);
-    g_last_response_len = bufferLength;
-    g_last_response_sw = swo;
-    return 0;
-}
-
-void nbgl_useCaseSpinner(const char *text) {
-    (void) text;
-}
-
-void nbgl_useCaseStatus(const char *text, bool success, void (*callback)(void)) {
-    (void) text;
-    (void) success;
-    if (callback != NULL) {
-        callback();
-    }
-}
-
-typedef enum {
-    STATUS_TYPE_TRANSACTION_SIGNED = 0,
-    STATUS_TYPE_TRANSACTION_REJECTED = 1,
-} nbgl_reviewStatusType_t;
-
-void nbgl_useCaseReviewStatus(nbgl_reviewStatusType_t reviewStatusType, void (*callback)(void)) {
-    (void) reviewStatusType;
-    if (callback != NULL) {
-        callback();
-    }
-}
-
-void ui_menu_main(void) {
-    // no-op
-}
-
-void ui_display_transaction(void) {
-    apdu_response_send_data(G_context.tx_info.tx_hash, sizeof(G_context.tx_info.tx_hash), SWO_SUCCESS);
-    G_context.state.tx_state = TX_STATE_APPROVED;
-    G_context.req_type = REQUEST_NONE;
-    tx_review_cleanup();
-}
-
-void ui_display_witness(const bip44_path_t *witnessPath,
-                       security_policy_t securityPolicy,
-                       warning_bits_t warnings) {
-    (void) witnessPath;
-    (void) securityPolicy;
-    (void) warnings;
-    finalize_witness(true);
-    return;
-}
-
-#define TEST_HEAP_SIZE (23 * 1024)
-static uint8_t test_heap[TEST_HEAP_SIZE];
+// ======================================================================
+// UI code: using REAL ui_display_*.c with mocked NBGL
+// ======================================================================
+// The real UI code from ../src/ui/ui_display_tx.c and ui_display_witness.c
+// is included in cardano_sign_tx_core library. It calls NBGL functions which
+// are mocked in mock_sources/nbgl_mock.c to auto-approve for testing.
+// This way we test the actual UI formatting, tag-value pair generation,
+// and state management logic.
 
 // ======================================================================
-// Helper functions
-// ======================================================================
-
-// ======================================================================
-// Shelley Era Tests
+// SHELLEY Era Tests
 // ======================================================================
 
 static void test_sign_tx_without_outputs_expert_off(void **state) {
@@ -106,9 +48,19 @@ static void test_sign_tx_without_outputs_expert_off(void **state) {
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITHOUT_OUTPUTS, false);
 }
 
+static void test_sign_tx_without_outputs_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITHOUT_OUTPUTS, false);
+}
+
 static void test_sign_tx_without_outputs_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITHOUT_OUTPUTS, true);
+}
+
+static void test_sign_tx_without_outputs_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITHOUT_OUTPUTS, true);
 }
 
 static void test_sign_tx_with_258_tag_on_inputs_expert_off(void **state) {
@@ -116,9 +68,19 @@ static void test_sign_tx_with_258_tag_on_inputs_expert_off(void **state) {
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_258_TAG_ON_INPUTS, false);
 }
 
+static void test_sign_tx_with_258_tag_on_inputs_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_258_TAG_ON_INPUTS, false);
+}
+
 static void test_sign_tx_with_258_tag_on_inputs_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_258_TAG_ON_INPUTS, true);
+}
+
+static void test_sign_tx_with_258_tag_on_inputs_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_258_TAG_ON_INPUTS, true);
 }
 
 static void test_sign_tx_without_change_address_expert_off(void **state) {
@@ -126,9 +88,19 @@ static void test_sign_tx_without_change_address_expert_off(void **state) {
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITHOUT_CHANGE_ADDRESS, false);
 }
 
+static void test_sign_tx_without_change_address_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITHOUT_CHANGE_ADDRESS, false);
+}
+
 static void test_sign_tx_without_change_address_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITHOUT_CHANGE_ADDRESS, true);
+}
+
+static void test_sign_tx_without_change_address_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITHOUT_CHANGE_ADDRESS, true);
 }
 
 static void test_sign_tx_with_change_base_address_with_staking_path_expert_off(void **state) {
@@ -136,9 +108,19 @@ static void test_sign_tx_with_change_base_address_with_staking_path_expert_off(v
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_PATH, false);
 }
 
+static void test_sign_tx_with_change_base_address_with_staking_path_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_PATH, false);
+}
+
 static void test_sign_tx_with_change_base_address_with_staking_path_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_PATH, true);
+}
+
+static void test_sign_tx_with_change_base_address_with_staking_path_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_PATH, true);
 }
 
 static void test_sign_tx_with_change_base_address_with_staking_key_hash_expert_off(void **state) {
@@ -146,9 +128,19 @@ static void test_sign_tx_with_change_base_address_with_staking_key_hash_expert_o
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_KEY_HASH, false);
 }
 
+static void test_sign_tx_with_change_base_address_with_staking_key_hash_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_KEY_HASH, false);
+}
+
 static void test_sign_tx_with_change_base_address_with_staking_key_hash_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_KEY_HASH, true);
+}
+
+static void test_sign_tx_with_change_base_address_with_staking_key_hash_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_KEY_HASH, true);
 }
 
 static void test_sign_tx_with_enterprise_change_address_expert_off(void **state) {
@@ -156,9 +148,19 @@ static void test_sign_tx_with_enterprise_change_address_expert_off(void **state)
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_ENTERPRISE_CHANGE_ADDRESS, false);
 }
 
+static void test_sign_tx_with_enterprise_change_address_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_ENTERPRISE_CHANGE_ADDRESS, false);
+}
+
 static void test_sign_tx_with_enterprise_change_address_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_ENTERPRISE_CHANGE_ADDRESS, true);
+}
+
+static void test_sign_tx_with_enterprise_change_address_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_ENTERPRISE_CHANGE_ADDRESS, true);
 }
 
 static void test_sign_tx_with_pointer_change_address_expert_off(void **state) {
@@ -166,9 +168,19 @@ static void test_sign_tx_with_pointer_change_address_expert_off(void **state) {
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_POINTER_CHANGE_ADDRESS, false);
 }
 
+static void test_sign_tx_with_pointer_change_address_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_POINTER_CHANGE_ADDRESS, false);
+}
+
 static void test_sign_tx_with_pointer_change_address_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_POINTER_CHANGE_ADDRESS, true);
+}
+
+static void test_sign_tx_with_pointer_change_address_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_POINTER_CHANGE_ADDRESS, true);
 }
 
 static void test_sign_tx_with_nonreasonable_account_and_address_expert_off(void **state) {
@@ -176,9 +188,19 @@ static void test_sign_tx_with_nonreasonable_account_and_address_expert_off(void 
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_NONREASONABLE_ACCOUNT_AND_ADDRESS, false);
 }
 
+static void test_sign_tx_with_nonreasonable_account_and_address_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_NONREASONABLE_ACCOUNT_AND_ADDRESS, false);
+}
+
 static void test_sign_tx_with_nonreasonable_account_and_address_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_NONREASONABLE_ACCOUNT_AND_ADDRESS, true);
+}
+
+static void test_sign_tx_with_nonreasonable_account_and_address_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_NONREASONABLE_ACCOUNT_AND_ADDRESS, true);
 }
 
 static void test_sign_tx_with_path_based_withdrawal_expert_off(void **state) {
@@ -186,9 +208,19 @@ static void test_sign_tx_with_path_based_withdrawal_expert_off(void **state) {
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL, false);
 }
 
+static void test_sign_tx_with_path_based_withdrawal_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL, false);
+}
+
 static void test_sign_tx_with_path_based_withdrawal_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL, true);
+}
+
+static void test_sign_tx_with_path_based_withdrawal_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL, true);
 }
 
 static void test_sign_tx_with_auxiliary_data_hash_expert_off(void **state) {
@@ -196,9 +228,19 @@ static void test_sign_tx_with_auxiliary_data_hash_expert_off(void **state) {
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_AUXILIARY_DATA_HASH, false);
 }
 
+static void test_sign_tx_with_auxiliary_data_hash_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_AUXILIARY_DATA_HASH, false);
+}
+
 static void test_sign_tx_with_auxiliary_data_hash_expert_on(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_AUXILIARY_DATA_HASH, true);
+}
+
+static void test_sign_tx_with_auxiliary_data_hash_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_AUXILIARY_DATA_HASH, true);
 }
 
 // ======================================================================
@@ -208,25 +250,45 @@ static void test_sign_tx_with_auxiliary_data_hash_expert_on(void **state) {
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_sign_tx_without_outputs_expert_off),
+        cmocka_unit_test(test_sign_tx_without_outputs_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_without_outputs_expert_on),
+        cmocka_unit_test(test_sign_tx_without_outputs_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_258_tag_on_inputs_expert_off),
+        cmocka_unit_test(test_sign_tx_with_258_tag_on_inputs_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_258_tag_on_inputs_expert_on),
+        cmocka_unit_test(test_sign_tx_with_258_tag_on_inputs_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_without_change_address_expert_off),
+        cmocka_unit_test(test_sign_tx_without_change_address_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_without_change_address_expert_on),
+        cmocka_unit_test(test_sign_tx_without_change_address_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_change_base_address_with_staking_path_expert_off),
+        cmocka_unit_test(test_sign_tx_with_change_base_address_with_staking_path_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_change_base_address_with_staking_path_expert_on),
+        cmocka_unit_test(test_sign_tx_with_change_base_address_with_staking_path_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_change_base_address_with_staking_key_hash_expert_off),
+        cmocka_unit_test(test_sign_tx_with_change_base_address_with_staking_key_hash_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_change_base_address_with_staking_key_hash_expert_on),
+        cmocka_unit_test(test_sign_tx_with_change_base_address_with_staking_key_hash_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_enterprise_change_address_expert_off),
+        cmocka_unit_test(test_sign_tx_with_enterprise_change_address_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_enterprise_change_address_expert_on),
+        cmocka_unit_test(test_sign_tx_with_enterprise_change_address_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_pointer_change_address_expert_off),
+        cmocka_unit_test(test_sign_tx_with_pointer_change_address_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_pointer_change_address_expert_on),
+        cmocka_unit_test(test_sign_tx_with_pointer_change_address_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_nonreasonable_account_and_address_expert_off),
+        cmocka_unit_test(test_sign_tx_with_nonreasonable_account_and_address_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_nonreasonable_account_and_address_expert_on),
+        cmocka_unit_test(test_sign_tx_with_nonreasonable_account_and_address_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_path_based_withdrawal_expert_off),
+        cmocka_unit_test(test_sign_tx_with_path_based_withdrawal_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_path_based_withdrawal_expert_on),
+        cmocka_unit_test(test_sign_tx_with_path_based_withdrawal_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_auxiliary_data_hash_expert_off),
+        cmocka_unit_test(test_sign_tx_with_auxiliary_data_hash_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_auxiliary_data_hash_expert_on),
+        cmocka_unit_test(test_sign_tx_with_auxiliary_data_hash_reject_tx_expert_on),
     };
     return _cmocka_run_group_tests("test_sign_tx_shelley", tests, ARRAY_LEN(tests), NULL, NULL);
 }

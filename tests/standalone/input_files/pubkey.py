@@ -136,7 +136,7 @@ testsSilentExport = [
     if _is_silent_export_path(test_case.path)
 ]
 
-rejectTestCases = [
+denyTestCases = [
     PubKeyTestCase(name="Export_pubkey_path_shorter_than_3_indexes", ledgerjs_name="path shorter than 3 indexes", path="m/44'/1815'"),
     PubKeyTestCase(name="Export_pubkey_path_not_matching_cold_key_structure", ledgerjs_name="path not matching cold key structure", path="m/1853'/1900'/0'/0/0"),
     PubKeyTestCase(name="Export_pubkey_invalid_vote_key_path_1", ledgerjs_name="invalid vote key path 1", path="m/1694'/1815'/0'/1/0"),

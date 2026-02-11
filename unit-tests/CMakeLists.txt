@@ -38,6 +38,7 @@ add_compile_definitions(UNIT_TEST)
 add_compile_definitions(DEBUG)
 add_compile_definitions(FUZZING)
 add_compile_definitions(TRACE_AUX_DATA_HASH_BUILDER)
+add_compile_definitions(TARGET_NANOX)
 
 # IMPORTANT: mock_includes MUST come first so our SDK mocks override Ledger SDK headers
 # (We use real headers from ../src for app-specific code like utils.h, assert.h, etc.)
@@ -186,7 +187,7 @@ add_executable(test_tx_prepare
     ${UNIT_TEST_MEM_UTILS_STUB}
     mock_sources/glyphs_mock.c
     mock_sources/hex_stub.c
-    mock_sources/io_stub.c
+    test_utils/io_capture.c
 )
 add_executable(test_ui_utils
     test_ui_utils.c
@@ -295,9 +296,12 @@ set(SIGN_TX_COMMON_SOURCES
     ${UNIT_TEST_MEM_UTILS_STUB}
     mock_sources/glyphs_mock.c
     mock_sources/hex_stub.c
-    mock_sources/io_stub.c
-    mock_sources/ui_display_tx_stub.c
+    test_utils/io_capture.c
+    # Real UI display code - calls NBGL functions mocked in nbgl_mock.c
+    ../src/ui/ui_display_tx.c
+    ../src/ui/ui_display_witness.c
     mock_sources/ui_display_cvote_aux_data_stub.c
+    mock_sources/nbgl_mock.c
 )
 set(SIGN_TX_COMMON_LIBS
     text_utils
@@ -557,12 +561,12 @@ foreach(target IN LISTS TEST_EXECUTABLES)
     target_link_libraries(${target} PUBLIC mock_printf)
 endforeach()
 
-add_executable(test_sign_tx_rejects
-    test_sign_tx_rejects.c
+add_executable(test_sign_tx_deny_tests
+    test_sign_tx_deny_tests.c
 )
-target_link_libraries(test_sign_tx_rejects PUBLIC cmocka gcov cardano_sign_tx_core)
+target_link_libraries(test_sign_tx_deny_tests PUBLIC cmocka gcov cardano_sign_tx_core)
 target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
-add_test(test_sign_tx_rejects test_sign_tx_rejects)
+add_test(test_sign_tx_deny_tests test_sign_tx_deny_tests)
 
 add_executable(test_handler_rejects
     test_handler_rejects.c
@@ -621,6 +625,7 @@ add_executable(test_opcert
     test_utils/hexUtils.c
     ../src/handler/sign_opcert.c
     ../src/opcert/opcert_parse.c
+    ../src/ui/ui_display_opcert.c
 )
 target_link_libraries(test_opcert PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_opcert test_opcert)
@@ -641,11 +646,14 @@ set(DERIVE_ADDRESS_COMMON_SOURCES
     ../src/utils/mem.c
     ../src/ui/ui_utils.c
     ../src/ui/ui_warnings.c
+    ../src/ui/ui_formatters.c
+    ../src/ui/tx_ui_helpers.c
+    ../src/ui/ui_display_address_derivation.c
     ${UNIT_TEST_MEM_UTILS_STUB}
     mock_sources/glyphs_mock.c
-    mock_sources/ui_display_tx_stub.c
+    mock_sources/nbgl_mock.c
     mock_sources/hex_stub.c
-    mock_sources/io_stub.c
+    test_utils/io_capture.c
 )
 # Common libraries for address derivation tests
 set(DERIVE_ADDRESS_COMMON_LIBS
@@ -671,12 +679,12 @@ set(DERIVE_ADDRESS_COMMON_LIBS
 # Create a static library for address derivation core (reusable across tests)
 add_library(cardano_derive_address_core STATIC ${DERIVE_ADDRESS_COMMON_SOURCES})
 target_link_libraries(cardano_derive_address_core PUBLIC ${DERIVE_ADDRESS_COMMON_LIBS})
-add_executable(test_derive_address_rejects
-    test_derive_address_rejects.c
+add_executable(test_derive_address_deny_tests
+    test_derive_address_deny_tests.c
 )
-target_link_libraries(test_derive_address_rejects PUBLIC cmocka gcov cardano_derive_address_core)
+target_link_libraries(test_derive_address_deny_tests PUBLIC cmocka gcov cardano_derive_address_core)
 target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
-add_test(test_derive_address_rejects test_derive_address_rejects)
+add_test(test_derive_address_deny_tests test_derive_address_deny_tests)
 
 add_executable(test_derive_address
     test_derive_address.c
@@ -699,11 +707,12 @@ set(PUBKEY_COMMON_SOURCES
     ../src/utils/mem.c
     ../src/ui/ui_utils.c
     ../src/ui/ui_warnings.c
+    ../src/ui/ui_display_pubkey.c
     ${UNIT_TEST_MEM_UTILS_STUB}
     mock_sources/glyphs_mock.c
-    mock_sources/ui_display_tx_stub.c
+    mock_sources/nbgl_mock.c
     mock_sources/hex_stub.c
-    mock_sources/io_stub.c
+    test_utils/io_capture.c
 )
 set(PUBKEY_COMMON_LIBS
     hex_utils
@@ -748,11 +757,14 @@ set(SIGN_MSG_COMMON_SOURCES
     ../src/utils/textUtils.c
     ../src/ui/ui_utils.c
     ../src/ui/ui_warnings.c
+    ../src/ui/ui_formatters.c
+    ../src/ui/ui_sign_msg.c
     ../src/transaction/tx_utils.c
     ${UNIT_TEST_MEM_UTILS_STUB}
     mock_sources/glyphs_mock.c
+    mock_sources/nbgl_mock.c
     mock_sources/hex_stub.c
-    mock_sources/io_stub.c
+    test_utils/io_capture.c
 )
 set(SIGN_MSG_COMMON_LIBS
     text_utils
@@ -784,14 +796,14 @@ add_executable(test_pubkey
 target_link_libraries(test_pubkey PUBLIC cmocka gcov cardano_pubkey_core)
 add_test(test_pubkey test_pubkey)
 
-add_executable(test_pubkey_rejects
-    test_pubkey_rejects.c
+add_executable(test_pubkey_deny_tests
+    test_pubkey_deny_tests.c
 )
-target_link_libraries(test_pubkey_rejects PUBLIC cmocka gcov cardano_pubkey_core)
-add_test(test_pubkey_rejects test_pubkey_rejects)
+target_link_libraries(test_pubkey_deny_tests PUBLIC cmocka gcov cardano_pubkey_core)
+add_test(test_pubkey_deny_tests test_pubkey_deny_tests)
 
 set(DERIVE_NATIVE_SCRIPT_COMMON_SOURCES
-   mock_sources/mock_globals.c
+    mock_sources/mock_globals.c
     ../src/deriveNativeScriptHash/derive_native_script_hash_builder.c
     ../src/handler/derive_native_script_hash.c
     ../src/keyDerivation/keyDerivation.c
@@ -806,9 +818,11 @@ set(DERIVE_NATIVE_SCRIPT_COMMON_SOURCES
     ../src/utils/mem.c
     ../src/ui/ui_utils.c
     ../src/ui/ui_warnings.c
+    ../src/ui/ui_formatters.c
+    ../src/ui/ui_display_native_script_hash.c
     ${UNIT_TEST_MEM_UTILS_STUB}
     mock_sources/glyphs_mock.c
-    mock_sources/ui_display_tx_stub.c
+    mock_sources/nbgl_mock.c
     mock_sources/hex_stub.c
     mock_sources/io_stub.c
 )
@@ -841,11 +855,11 @@ target_link_libraries(test_native_script PUBLIC cmocka gcov cardano_derive_nativ
 target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
 add_test(test_native_script test_native_script)
 
-add_executable(test_native_script_rejects
-    test_native_script_rejects.c
+add_executable(test_native_script_deny_tests
+    test_native_script_deny_tests.c
 )
-target_link_libraries(test_native_script_rejects PUBLIC cmocka gcov cardano_derive_native_script_core)
-add_test(test_native_script_rejects test_native_script_rejects)
+target_link_libraries(test_native_script_deny_tests PUBLIC cmocka gcov cardano_derive_native_script_core)
+add_test(test_native_script_deny_tests test_native_script_deny_tests)
 
 add_executable(test_handler_reset_semantics
     test_handler_reset_semantics.c

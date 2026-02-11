@@ -21,6 +21,8 @@ _FIXTURE_PATTERN = re.compile(
 
 # Match .name fields within fixture bodies
 _NAME_FIELD_PATTERN = re.compile(r'\.name\s*=\s*"([^"]+)"')
+_AUX_INCLUDED_PATTERN = re.compile(r"\.include_aux_data_hash\s*=\s*(true|false)")
+_AUX_TYPE_PATTERN = re.compile(r"\.aux_data_type\s*=\s*([A-Z0-9_]+|\d+)")
 
 
 ERA_COMMENT_OVERRIDES = {
@@ -76,12 +78,23 @@ ERA_TEST_FILE_MAP: dict[str, tuple[str, str, str]] = {
 
 
 
+def _fixture_has_cvote_aux_data(fixture_body: str) -> bool:
+    aux_included_match = _AUX_INCLUDED_PATTERN.search(fixture_body)
+    aux_type_match = _AUX_TYPE_PATTERN.search(fixture_body)
+    if aux_included_match is None or aux_type_match is None:
+        return False
+
+    include_aux_data = aux_included_match.group(1) == "true"
+    aux_type_token = aux_type_match.group(1)
+    return include_aux_data and aux_type_token in {"1", "AUX_DATA_TYPE_CVOTE_REGISTRATION"}
+
+
 def _build_test_functions(
-    fixtures: Sequence[tuple[str, str]],
+    fixtures: Sequence[tuple[str, str, bool]],
 ) -> tuple[list[str], list[str]]:
     functions: list[str] = []
     names: list[str] = []
-    for fixture_name, display_name in fixtures:
+    for fixture_name, display_name, has_cvote_aux_data in fixtures:
         func_suffix = sanitize_c_identifier(display_name, uppercase=False)
         if not func_suffix:
             raise ValueError(f"Unable to sanitize fixture name {display_name}")
@@ -99,6 +112,33 @@ def _build_test_functions(
                 )
             )
             names.append(function_name)
+
+            reject_tx_function_name = f"{test_name}_reject_tx_{suffix}"
+            functions.append(
+                "static void {function_name}(void **state) {{\n"
+                "    (void) state;\n"
+                "    run_fixture_reject_tx_with_expert_mode(&{fixture_name}, {expert_flag});\n"
+                "}}".format(
+                    function_name=reject_tx_function_name,
+                    fixture_name=fixture_name,
+                    expert_flag=expert_flag,
+                )
+            )
+            names.append(reject_tx_function_name)
+
+            if has_cvote_aux_data:
+                reject_aux_function_name = f"{test_name}_reject_aux_{suffix}"
+                functions.append(
+                    "static void {function_name}(void **state) {{\n"
+                    "    (void) state;\n"
+                    "    run_fixture_reject_aux_with_expert_mode(&{fixture_name}, {expert_flag});\n"
+                    "}}".format(
+                        function_name=reject_aux_function_name,
+                        fixture_name=fixture_name,
+                        expert_flag=expert_flag,
+                    )
+                )
+                names.append(reject_aux_function_name)
     return functions, names
 
 
@@ -120,9 +160,9 @@ def _build_main_function(test_names: Sequence[str], test_c_file: str) -> str:
     )
 
 
-def _extract_fixtures_from_header(fixture_path: Path) -> list[tuple[str, str]]:
+def _extract_fixtures_from_header(fixture_path: Path) -> list[tuple[str, str, bool]]:
     content = read_file_safe(fixture_path)
-    fixtures: list[tuple[str, str]] = []
+    fixtures: list[tuple[str, str, bool]] = []
     for match in _FIXTURE_PATTERN.finditer(content):
         fixture_name = match.group(1)
         body = match.group(2)
@@ -130,8 +170,54 @@ def _extract_fixtures_from_header(fixture_path: Path) -> list[tuple[str, str]]:
         if not name_match:
             continue
         display_name = name_match.group(1)
-        fixtures.append((fixture_name, display_name))
+        fixtures.append((fixture_name, display_name, _fixture_has_cvote_aux_data(body)))
     return fixtures
+
+
+def _build_boilerplate(fixture_file: str) -> str:
+    """Generate the standard boilerplate for sign_tx test files."""
+    return (
+        "// Unit tests for transaction signing (auto-generated)\n"
+        "// DO NOT EDIT - regenerate using generators/generate_unit_tests_from_ragger.py\n"
+        "\n"
+        "#include <stdarg.h>\n"
+        "#include <stddef.h>\n"
+        "#include <setjmp.h>\n"
+        "#include <stdint.h>\n"
+        "#include <stdbool.h>\n"
+        "#include <string.h>\n"
+        "\n"
+        "#include <cmocka.h>\n"
+        "\n"
+        "#include \"apdu/dispatcher.h\"\n"
+        "#include \"handler/sign_tx.h\"\n"
+        "#include \"buffer.h\"\n"
+        "#include \"cardano_swo.h\"\n"
+        "#include \"cardano_constants.h\"\n"
+        "#include \"globals.h\"\n"
+        "#include \"tx.h\"\n"
+        "#include \"tx_parse.h\"\n"
+        "#include \"securityPolicy/securityPolicy.h\"\n"
+        "#include \"hexUtils.h\"\n"
+        "#include \"utils/utils.h\"\n"
+        "#include \"blake2b.h\"\n"
+        "#include \"init_apdu.h\"\n"
+        "#include \"io_capture.h\"\n"
+        "\n"
+        f"#include \"{fixture_file}\"\n"
+        "\n"
+        "#include \"test_sign_tx_common.h\"\n"
+        "#include \"app_mem_utils.h\"\n"
+        "\n"
+        "// ======================================================================\n"
+        "// UI code: using REAL ui_display_*.c with mocked NBGL\n"
+        "// ======================================================================\n"
+        "// The real UI code from ../src/ui/ui_display_tx.c and ui_display_witness.c\n"
+        "// is included in cardano_sign_tx_core library. It calls NBGL functions which\n"
+        "// are mocked in mock_sources/nbgl_mock.c to auto-approve for testing.\n"
+        "// This way we test the actual UI formatting, tag-value pair generation,\n"
+        "// and state management logic.\n"
+    )
 
 
 def _generate_complete_test_file(
@@ -143,36 +229,24 @@ def _generate_complete_test_file(
     if not fixture_path.exists():
         raise FileNotFoundError(f"Missing fixture header: {fixture_path}")
 
-    existing = read_file_safe(test_path)
-
-    era_block_match = re.search(
-        r"^// =+\n// ([^\n]+ Era Tests)\n// =+\n", existing, re.MULTILINE
-    )
-    if era_block_match:
-        boilerplate = existing[: era_block_match.start()]
-        era_heading = era_block_match.group(1)
-    else:
-        placeholder_match = re.search(
-            r"^// Placeholder test - actual tests are generated from fixtures",
-            existing,
-            re.MULTILINE,
-        )
-        if not placeholder_match:
-            raise ValueError(f"Could not find test section marker in {test_c_file}")
-        boilerplate = existing[: placeholder_match.start()]
-        era_heading = ERA_COMMENT_OVERRIDES.get(era, f"{era_upper} Era Tests")
+    era_heading = ERA_COMMENT_OVERRIDES.get(era, f"{era_upper} Era Tests")
 
     fixtures = _extract_fixtures_from_header(fixture_path)
     if not fixtures:
         raise ValueError(f"No fixtures found in {fixture_file}")
 
     test_functions, test_names = _build_test_functions(fixtures)
-    expected_test_count = len(fixtures) * 2
+    expected_test_count = 0
+    for _, _, has_cvote_aux_data in fixtures:
+        expected_test_count += 4
+        if has_cvote_aux_data:
+            expected_test_count += 2
     if len(test_names) != expected_test_count:
         raise ValueError(
             f"Test count mismatch for {test_c_file}: expected {expected_test_count}, got {len(test_names)}"
         )
 
+    boilerplate = _build_boilerplate(fixture_file)
     tests_block = "\n\n".join(test_functions)
     main_block = _build_main_function(test_names, test_c_file)
 

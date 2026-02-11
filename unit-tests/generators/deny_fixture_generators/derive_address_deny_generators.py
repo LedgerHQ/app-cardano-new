@@ -10,14 +10,14 @@ from common import (
 )
 from paths import UNIT_TESTS_DIR
 
-GENERATED_REJECT_HEADER = UNIT_TESTS_DIR / "test_address_derivation_fixtures_rejects.h"
+GENERATED_DENY_HEADER = UNIT_TESTS_DIR / "test_address_derivation_fixtures_deny.h"
 
 # ==============================================================================
 # Step 1: Load Rejection Test Cases from Ragger Tests
 # ==============================================================================
 
 
-def _load_address_derivation_reject_test_cases() -> list[Any]:
+def _load_address_derivation_deny_test_cases() -> list[Any]:
     """
     Load address derivation rejection test cases from ragger standalone tests.
 
@@ -33,10 +33,10 @@ def _load_address_derivation_reject_test_cases() -> list[Any]:
 
     # Import rejection test cases from ragger standalone input files
     from standalone.input_files.derive_address import (  # type: ignore
-        rejectTestCases,
+        denyTestCases,
     )
 
-    return rejectTestCases
+    return denyTestCases
 
 
 # ==============================================================================
@@ -194,10 +194,10 @@ def _generate_fixture_code_for_reject_test_case(
     code_lines.append(
         "// ----------------------------------------------------------------------"
     )
-    code_lines.append(f"// Reject Test {test_number}: {test_case.name}")
-    code_lines.append(f"// Expected rejection: {rejection_reason}")
+    code_lines.append(f"// Deny Test {test_number}: {test_case.name}")
+    code_lines.append(f"// Expected deny SW: {rejection_reason}")
     code_lines.append(f"// Address Type: {test_case.addrType.name}")
-    code_lines.append(f"// Source: tests/standalone/input_files/derive_address.py > reject tests > {test_case.name}")
+    code_lines.append(f"// Source: tests/standalone/input_files/derive_address.py > deny tests > {test_case.name}")
     code_lines.append(f"// Spending: {test_case.spendingValue}")
     if test_case.stakingValue:
         code_lines.append(f"// Staking: {test_case.stakingValue}")
@@ -235,7 +235,7 @@ def _generate_fixture_code_for_reject_test_case(
 # ==============================================================================
 
 
-def _build_reject_fixtures_header() -> str:
+def _build_deny_fixtures_header() -> str:
     """
     Generate complete C header file content for address derivation rejection fixtures.
 
@@ -243,21 +243,21 @@ def _build_reject_fixtures_header() -> str:
         Complete C header file content as string
     """
     # Load rejection test cases from ragger tests
-    reject_test_cases = _load_address_derivation_reject_test_cases()
+    deny_test_cases = _load_address_derivation_deny_test_cases()
 
-    print(f"Generating rejection fixtures for {len(reject_test_cases)} test cases...")
+    print(f"Generating deny fixtures for {len(deny_test_cases)} test cases...")
     print()
 
     # Start building header content
     header_lines = [
-        "// Auto-generated address derivation rejection test fixtures",
+        "// Auto-generated address derivation deny-test fixtures",
         "// Generated from ragger standalone test cases",
         "//",
-        "// These tests verify that the device properly rejects invalid address",
+        "// These tests verify that the device properly denies invalid address",
         "// derivation requests according to the security policy defined in",
         "// src/securityPolicy/securityPolicy.c",
         "//",
-        f"// Total rejection tests: {len(reject_test_cases)}",
+        f"// Total deny tests: {len(deny_test_cases)}",
         "",
         "#pragma once",
         "",
@@ -275,8 +275,8 @@ def _build_reject_fixtures_header() -> str:
     ]
 
     # Generate fixture code for each rejection test case
-    for test_number, test_case in enumerate(reject_test_cases, start=1):
-        print(f"  [{test_number}/{len(reject_test_cases)}] {test_case.name}")
+    for test_number, test_case in enumerate(deny_test_cases, start=1):
+        print(f"  [{test_number}/{len(deny_test_cases)}] {test_case.name}")
 
         fixture_code = _generate_fixture_code_for_reject_test_case(
             test_case,
@@ -285,10 +285,10 @@ def _build_reject_fixtures_header() -> str:
         header_lines.extend(fixture_code)
 
     header_lines.append(
-        "static const derive_address_fixture_t DERIVE_ADDRESS_REJECT_FIXTURES[] = {"
+        "static const derive_address_fixture_t DERIVE_ADDRESS_DENY_FIXTURES[] = {"
     )
 
-    for test_number, test_case in enumerate(reject_test_cases, start=1):
+    for test_number, test_case in enumerate(deny_test_cases, start=1):
         # Generate fixture struct
         # Extract just the payload (skip the 5-byte APDU header: CLA, INS, P1, P2, Lc)
         safe_test_name = sanitize_c_identifier(test_case.name)
@@ -299,7 +299,7 @@ def _build_reject_fixtures_header() -> str:
         rejection_reason = _get_expected_rejection_reason(test_case)
 
         # Add source traceability comment
-        header_lines.append(f"// Source: tests/standalone/input_files/derive_address.py > reject tests > {test_case.name}")
+        header_lines.append(f"// Source: tests/standalone/input_files/derive_address.py > deny tests > {test_case.name}")
         header_lines.append("{")
 
         header_lines.append(f'    .name = "{test_case.name}",')
@@ -314,11 +314,11 @@ def _build_reject_fixtures_header() -> str:
 
 
     header_lines.append(
-        f"#define DERIVE_ADDRESS_REJECT_FIXTURE_COUNT {len(reject_test_cases)}"
+        f"#define DERIVE_ADDRESS_DENY_FIXTURE_COUNT {len(deny_test_cases)}"
     )
     
     print()
-    print(f"Generated {len(reject_test_cases)} rejection test fixtures")
+    print(f"Generated {len(deny_test_cases)} deny test fixtures")
 
     return "\n".join(header_lines)
 
@@ -328,19 +328,19 @@ def _build_reject_fixtures_header() -> str:
 # ==============================================================================
 
 
-def generate_address_derivation_reject_fixtures() -> None:
+def generate_address_derivation_deny_fixtures() -> None:
     """
-    Generate address derivation rejection test fixture header.
+    Generate address derivation deny-test fixture header.
 
     This is the main entry point called from generate_unit_tests_from_ragger.py.
-    Creates a single header file with all rejection test fixtures.
+    Creates a single header file with all deny test fixtures.
 
-    The generated fixtures test that the device properly rejects invalid
+    The generated fixtures test that the device properly denies invalid
     address derivation requests according to securityPolicy.c validation rules.
     """
 
     # Build header file content
-    header_content = _build_reject_fixtures_header()
+    header_content = _build_deny_fixtures_header()
     # Write to file
-    write_file_safe(GENERATED_REJECT_HEADER, header_content)
-    print(f"Generated {GENERATED_REJECT_HEADER}")
+    write_file_safe(GENERATED_DENY_HEADER, header_content)
+    print(f"Generated {GENERATED_DENY_HEADER}")

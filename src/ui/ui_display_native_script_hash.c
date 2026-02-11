@@ -43,10 +43,6 @@ void build_position_description(const derive_native_script_hash_ctx_t *ctx,
     char *ptr = out;
     char *end = out + out_len;
 
-    // Position prefix
-    snprintf(ptr, end - ptr, "");
-    ptr += strlen(ptr);
-
     LEDGER_ASSERT(level >= 1, "Invalid level %d", level);
     LEDGER_ASSERT(level < MAX_SCRIPT_DEPTH, "Excedeed max script depth");
 
