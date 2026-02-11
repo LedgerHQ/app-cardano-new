@@ -10,6 +10,7 @@
 #include "cardano_swo.h"
 #include "utils.h"
 #include "assert.h"
+#include "ui_warnings.h"
 
 nbgl_contentTagValue_t *g_pairs = NULL;
 nbgl_contentTagValueList_t *g_pairsList = NULL;
@@ -72,6 +73,11 @@ void ui_free_pairs(void) {
         APP_MEM_FREE_AND_NULL((void **) &g_pairsList);
     }
     g_next_pair_index = 0;
+}
+
+void ui_all_cleanup(void) {
+    ui_free_pairs();
+    ui_free_warnings();
 }
 
 uint16_t ui_pairs_get_count(void) {

@@ -15,6 +15,10 @@
 #define TEST_HEAP_SIZE (23 * 1024)
 static uint8_t test_heap[TEST_HEAP_SIZE];
 
+// test_ui_utils links ui_utils.c in isolation and does not exercise warning paths.
+void ui_free_warnings(void) {
+}
+
 static void test_ui_pairs_add_static_label_stores_value(void **state) {
     (void) state;
     assert_true(mem_utils_init(test_heap, sizeof(test_heap)));

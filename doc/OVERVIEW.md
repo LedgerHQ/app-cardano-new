@@ -33,7 +33,7 @@ The application is written in C and runs on Ledger devices (Stax, Flex, Nano X, 
     - `ui_warnings.c`: Warning display logic.
     - `menu.c`: Main menu UI.
     - **UI callback convention**: Review callbacks should follow `cleanup -> finalize -> status`.
-      - Cleanup must always call both `ui_free_pairs()` and `ui_free_warnings()` to keep handlers robust if warnings are added later.
+      - Cleanup must always call `ui_all_cleanup()` to keep handlers robust if warnings are added later.
       - Finalization should be delegated to handler-level `finalize_*()` functions rather than performing APDU response/state reset inline in UI modules.
 - **`securityPolicy/`**: Enforces security rules for every operation, especially validating BIP44 paths and ensuring that transaction components are safe to sign.
 - **`addressUtils/`**: Utilities for Cardano address manipulation (Shelley, Byron, Bech32).

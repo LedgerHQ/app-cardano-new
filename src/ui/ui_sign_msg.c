@@ -41,8 +41,7 @@ static bool format_ascii_chunk(const uint8_t *bytes, size_t size, char *out, siz
  * Cleanup dynamically allocated buffers and UI pairs
  */
 static void sign_msg_buffer_cleanup(void) {
-    ui_free_pairs();
-    ui_free_warnings();
+    ui_all_cleanup();
 }
 
 static void sign_msg_review_choice(bool confirm) {

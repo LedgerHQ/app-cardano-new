@@ -21,8 +21,7 @@
  * Cleanup dynamically allocated buffers
  */
 static void derive_address_buffer_cleanup(void) {
-    ui_free_pairs();
-    ui_free_warnings();
+    ui_all_cleanup();
 }
 
 // Called when long press button is touched or when reject footer is touched

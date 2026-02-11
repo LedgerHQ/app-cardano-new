@@ -69,8 +69,7 @@ static void cvote_streaming_display_current_page(void) {
 }
 
 static void cvote_aux_data_review_cleanup(void) {
-    ui_free_pairs();
-    ui_free_warnings();
+    ui_all_cleanup();
 }
 
 static bool cvote_start_streaming_review(cvote_aux_data_t *aux_data) {

@@ -20,8 +20,7 @@
 #include "sign_tx.h"
 
 void tx_review_cleanup(void) {
-    ui_free_pairs();
-    ui_free_warnings();
+    ui_all_cleanup();
 }
 
 static void tx_review_choice(bool confirm) {

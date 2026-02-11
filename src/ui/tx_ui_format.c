@@ -1171,8 +1171,7 @@ int ui_prepare_transaction_review(void) {
     TRACE("UI build status=0x%04x actual_pairs=%u planned_pairs=%u",
           status, ui_pairs_get_count(), pair_count);
     if (status != SWO_SUCCESS) {
-        ui_free_pairs();
-        ui_free_warnings();
+        ui_all_cleanup();
         if (status_requires_streaming(status)) {
             // TODO we can add range to ui_build_pairs, but then maybe deallocation should be done more carefully
             // TODO so that the range can be applied on subsequent runs of ui_build_pairs
@@ -1190,14 +1189,12 @@ int ui_prepare_transaction_review(void) {
         case UI_STATUS_SUCCESS:
             break;
         case UI_STATUS_OUT_OF_MEMORY:
-            ui_free_pairs();
-            ui_free_warnings();
+            ui_all_cleanup();
             return SWO_INSUFFICIENT_MEMORY;
         case UI_STATUS_UNINITIALIZED:
         default:
             LEDGER_ASSERT(false, "Unexpected UI warning status");
-            ui_free_pairs();
-            ui_free_warnings();
+            ui_all_cleanup();
             return SWO_COMMAND_NOT_ALLOWED;
     }
 

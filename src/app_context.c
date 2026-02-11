@@ -80,8 +80,7 @@ int apdu_response_send_data(const uint8_t *buffer, size_t bufferLength, uint16_t
 void reset_app_context(void) {
     TRACE("reset_app_context");
 
-    ui_free_pairs();
-    ui_free_warnings();
+    ui_all_cleanup();
 
     // Reset the SDK allocator to wipe all transient memory
     LEDGER_ASSERT(mem_utils_reset_app_heap(), "Failed to reset memory allocator");

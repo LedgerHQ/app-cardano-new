@@ -33,8 +33,7 @@
  * Cleanup dynamically allocated buffers and UI pairs
  */
 static void opcert_buffer_cleanup(void) {
-    ui_free_pairs();
-    ui_free_warnings();
+    ui_all_cleanup();
 }
 
 /**
