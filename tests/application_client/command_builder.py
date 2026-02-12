@@ -108,10 +108,11 @@ class P1Type(IntEnum):
     # Address derivation P1 values (0x2x range)
     P1_ADDRESS_RETURN = 0x20
     P1_ADDRESS_DISPLAY = 0x21
-    # Native script hash derivation P1 values (0x4x range)
-    P1_NATIVE_SCRIPT_START_COMPLEX = 0x40
-    P1_NATIVE_SCRIPT_ADD_SIMPLE = 0x41
-    P1_NATIVE_SCRIPT_FINISH = 0x42
+    # Native script hash derivation P1 values
+    P1_NATIVE_SCRIPT_INIT = 0x40
+    P1_NATIVE_SCRIPT_START_COMPLEX = 0x41
+    P1_NATIVE_SCRIPT_ADD_SIMPLE = 0x42
+    P1_NATIVE_SCRIPT_FINISH = 0x43
     # Cvote P1 values (0x5x range)
     P1_CVOTE_INIT = 0x50
     P1_CVOTE_CHUNK = 0x51
@@ -509,6 +510,14 @@ class CommandBuilder:
             assert isinstance(script.params, NativeScriptParamsInvalid)
             data += script.params.slot.to_bytes(8, "big")
         return self._serialize(InsType.INS_DERIVE_NATIVE_SCRIPT_HASH, P1Type.P1_NATIVE_SCRIPT_ADD_SIMPLE, P2Type.P2_UNUSED, data)
+
+    def derive_script_init(self) -> bytes:
+        return self._serialize(
+            InsType.INS_DERIVE_NATIVE_SCRIPT_HASH,
+            P1Type.P1_NATIVE_SCRIPT_INIT,
+            P2Type.P2_UNUSED,
+            bytes(),
+        )
 
 
     def derive_script_add_complex(self, script: NativeScript) -> bytes:

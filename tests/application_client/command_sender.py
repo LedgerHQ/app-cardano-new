@@ -310,6 +310,12 @@ class CommandSender:
         with self._exchange_async(self._cmd_builder.derive_script_add_simple(script)):
             yield
 
+    @contextmanager
+    def derive_script_init_async(self) -> Generator[None, None, None]:
+        """APDU NATIVE SCRIPT HASH - INIT step"""
+        with self._exchange_async(self._cmd_builder.derive_script_init()):
+            yield
+
 
     @contextmanager
     def derive_script_add_complex_async(self, script: NativeScript) -> Generator[None, None, None]:

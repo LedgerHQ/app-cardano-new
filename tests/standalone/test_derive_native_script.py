@@ -106,9 +106,22 @@ def test_derive_native_script_hash(device: Device,
     # Use the app interface instead of raw interface
     client = CommandSender(backend)
 
+    _deriveNativeScriptHash_init(device, navigator, client)
     _deriveNativeScriptHash_addScript(device, navigator, client, testCase.script, False)
 
     _deriveNativeScriptHash_finishWholeNativeScript(device, navigator, scenario_navigator, client, testCase)
+
+def _deriveNativeScriptHash_init(device: Device,
+                                 navigator: Navigator,
+                                 client: CommandSender) -> None:
+    with client.derive_script_init_async():
+        if not device.is_nano:
+            navigator.navigate(
+                [NavInsID.USE_CASE_REVIEW_TAP], screen_change_before_first_instruction=False
+            )
+
+    response = client.get_async_response()
+    assert response and response.status == StatusWord.SWO_SUCCESS
 
 
 def _deriveNativeScriptHash_addScript(device: Device,

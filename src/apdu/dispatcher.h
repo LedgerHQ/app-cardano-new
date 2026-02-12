@@ -69,10 +69,10 @@ typedef enum {
     // (No multi-step parameters needed for opcert)
 
     // Native script hash derivation P1 values (0x4x range)
-    P1_NATIVE_SCRIPT_INIT = 0x01,           // Initialize: start request and UI streaming
-    P1_NATIVE_SCRIPT_START_COMPLEX = 0x02,  // Start a complex script (ALL/ANY/N-of-K)
-    P1_NATIVE_SCRIPT_ADD_SIMPLE = 0x03,     // Add a simple script (pubkey/timelock)
-    P1_NATIVE_SCRIPT_FINISH = 0x04,         // Finish script tree and compute hash
+    P1_NATIVE_SCRIPT_INIT = 0x40,           // Initialize: start request and UI streaming
+    P1_NATIVE_SCRIPT_START_COMPLEX = 0x41,  // Start a complex script (ALL/ANY/N-of-K)
+    P1_NATIVE_SCRIPT_ADD_SIMPLE = 0x42,     // Add a simple script (pubkey/timelock)
+    P1_NATIVE_SCRIPT_FINISH = 0x43,         // Finish script tree and compute hash
 
     // Cvote P1 values (0x5x range)
     P1_CVOTE_INIT = 0x50,     // Initialize votecast signing
