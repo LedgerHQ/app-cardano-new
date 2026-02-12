@@ -133,7 +133,7 @@ static void add_ui_and_free_output_tokens(const output_asset_group_t *group,
 
         if (show_tokens) {
             UI_ADD_FORMAT3(UI_STATIC_LABEL("Fingerprint"), MAX_TOKEN_FINGERPRINT_STRING_LENGTH, format_asset_fingerprint_bech32, group->policyId, token->assetName, token->assetNameLen);
-            UI_ADD_FORMAT4(UI_STATIC_LABEL("Token amount"), MAX_TOKEN_AMOUNT_OUTPUT_STRING_LENGTH, format_token_amount_output, group->policyId, token->assetName, token->assetNameLen, token->amount);
+            UI_ADD_FORMAT4(UI_STATIC_LABEL("Token amount"), MAX_TOKEN_AMOUNT_STRING_LENGTH, format_token_amount_output, group->policyId, token->assetName, token->assetNameLen, token->amount);
         }
 
         node = node->next;
@@ -808,7 +808,7 @@ static void add_ui_and_free_mint(tx_params_t *tx_params, tx_parsed_body_t *tx_bo
 
             if (show_mint) {
                 UI_ADD_FORMAT3(UI_STATIC_LABEL("Fingerprint"), MAX_TOKEN_FINGERPRINT_STRING_LENGTH, format_asset_fingerprint_bech32, asset_group->policyId, token->assetName, token->assetNameLen);
-                UI_ADD_FORMAT4(UI_STATIC_LABEL("Mint amount"), MAX_MINT_AMOUNT_STRING_LENGTH, format_token_amount_mint, asset_group->policyId, token->assetName, token->assetNameLen, token->amount);
+                UI_ADD_FORMAT4(UI_STATIC_LABEL("Mint amount"), MAX_TOKEN_AMOUNT_STRING_LENGTH, format_token_amount_mint, asset_group->policyId, token->assetName, token->assetNameLen, token->amount);
                 token_count++;
             }
 

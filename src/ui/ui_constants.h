@@ -28,8 +28,7 @@
 #define ASSET_FINGERPRINT_BASE32_LENGTH 32      // ceil(8/5 * 20)
 #define MAX_TOKEN_FINGERPRINT_STRING_LENGTH \
     (ASSET_FINGERPRINT_HRP_LENGTH + 1 + 6 + ASSET_FINGERPRINT_BASE32_LENGTH + 1)
-#define MAX_TOKEN_AMOUNT_OUTPUT_STRING_LENGTH 70  // TODO: confirm length rationale vs token registry tickers
-#define MAX_MINT_AMOUNT_STRING_LENGTH 71        // 70 + 1 for leading sign; TODO: confirm length rationale
+#define MAX_TOKEN_AMOUNT_STRING_LENGTH 100
 #define MAX_WARNING_MESSAGE_LENGTH 128       // For warning/error message text
 #define MAX_TX_HASH_DISPLAY_LENGTH 65        // For transaction hash hex display (32 bytes + null)
 #define MAX_POOL_METADATA_HASH_STRING_LENGTH (2 * POOL_METADATA_HASH_LENGTH + 1)
