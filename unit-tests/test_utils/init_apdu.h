@@ -38,6 +38,7 @@ typedef struct {
     bool includeTreasury;
     bool includeDonation;
     uint16_t numWitnesses;
+    uint16_t rawTxTotalLength;  // Total expected raw transaction length
 } init_apdu_params_t;
 
 static inline uint8_t _flag_included(bool include) {
@@ -109,6 +110,7 @@ static inline size_t build_init_apdu(const init_apdu_params_t* params,
     _append_u8(out, &pos, _flag_included(params->includeTreasury));
     _append_u8(out, &pos, _flag_included(params->includeDonation));
     _append_u16_be(out, &pos, params->numWitnesses);
+    _append_u16_be(out, &pos, params->rawTxTotalLength);
 
     (void) out_size;
     return pos;

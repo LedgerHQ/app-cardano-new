@@ -174,7 +174,7 @@ parser_status_e parse_tx(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_
     LEDGER_ASSERT(tx_params != NULL, "NULL tx_params");
     LEDGER_ASSERT(tx_body != NULL, "NULL tx_body");
 
-    if (buf->size > TX_BUFFER_SIZE) {
+    if (buf->size > MAX_TX_BUFFER_SIZE) {
         return TX_SIZE_TOO_LARGE_ERROR;
     }
 

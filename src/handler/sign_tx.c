@@ -56,7 +56,8 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handle_tx_init_apdu");
     tx_params_t *tx_params = &G_context.tx_info.tx_params;
     G_context.tx_info.raw_tx = NULL;
-    G_context.tx_info.raw_tx_len = 0;
+    G_context.tx_info.raw_tx_current_length = 0;
+    G_context.tx_info.raw_tx_total_length = 0;  // Will be set from APDU data
     G_context.tx_info.warning_bits = 0;
     G_context.tx_info.cvote_warning_bits = 0;
     G_context.tx_info.planned_ui_pairs = 0;
@@ -277,13 +278,35 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
+
+    // Read raw transaction buffer size (advertised by client)
+    if (!buffer_read_u16(cdata, &G_context.tx_info.raw_tx_total_length, BE)) {
+        TRACE("TX init: missing raw_tx_total_length");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return;
+    }
+
+    // Validate raw buffer size is within limits
+    if (G_context.tx_info.raw_tx_total_length == 0) {
+        TRACE("TX init: raw_tx_total_length cannot be zero");
+        send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
+        return;
+    }
+    if (G_context.tx_info.raw_tx_total_length > MAX_TX_BUFFER_SIZE) {
+        TRACE("TX init: raw_tx_total_length %u exceeds maximum %u",
+              G_context.tx_info.raw_tx_total_length,
+              MAX_TX_BUFFER_SIZE);
+        send_swo_and_reset(SWO_INVALID_TX_LENGTH);
+        return;
+    }
+
     if (buffer_can_read(cdata, 1)) {
         TRACE("TX init APDU not fully consumed");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 
-    TRACE("TX Mode=%d, Network: ID=%d, Magic=%u, Inputs=%u, Outputs=%u, Certificates=%u, Withdrawals=%u, Mint=%u, includeTTL=%d, includeVIS=%d, Witnesses=%u",
+    TRACE("TX Mode=%d, Network: ID=%d, Magic=%u, Inputs=%u, Outputs=%u, Certificates=%u, Withdrawals=%u, Mint=%u, includeTTL=%d, includeVIS=%d, Witnesses=%u, RawTotalLength=%u",
         tx_params->txSigningMode,
         tx_params->networkId,
         tx_params->protocolMagic,
@@ -294,7 +317,8 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         tx_params->num_mint_asset_groups,
         tx_params->includeTtl,
         tx_params->includeValidityIntervalStart,
-        G_context.tx_info.num_witnesses
+        G_context.tx_info.num_witnesses,
+        G_context.tx_info.raw_tx_total_length
     );
 
     // Check security policy
@@ -370,37 +394,38 @@ static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
         }
     }
 
-    // Allocate buffer on first data chunk
+    // Allocate buffer on first data chunk (using advertised size from client)
     if (G_context.tx_info.raw_tx == NULL) {
-        TRACE("Allocating transaction buffer: %d bytes", TX_BUFFER_SIZE);
-        if (!APP_MEM_CALLOC((void **) &G_context.tx_info.raw_tx, (uint16_t) TX_BUFFER_SIZE)) {
-            TRACE("Failed to allocate %d byte transaction buffer!", TX_BUFFER_SIZE);
+        uint16_t alloc_size = G_context.tx_info.raw_tx_total_length;
+        TRACE("Allocating transaction buffer: %u bytes (advertised by client)", alloc_size);
+        if (!APP_MEM_CALLOC((void **) &G_context.tx_info.raw_tx, alloc_size)) {
+            TRACE("Failed to allocate %u byte transaction buffer!", alloc_size);
             send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
             return false;
         }
-        TRACE("Transaction buffer allocated: %d bytes at %p", TX_BUFFER_SIZE, G_context.tx_info.raw_tx);
+        TRACE("Transaction buffer allocated: %u bytes at %p", alloc_size, G_context.tx_info.raw_tx);
     }
 
-    // Check if adding this chunk would exceed buffer
-    if (G_context.tx_info.raw_tx_len + chunk_size > TX_BUFFER_SIZE) {
-        TRACE("Transaction too large: current=%u, chunk=%u, max=%u",
-              (unsigned) G_context.tx_info.raw_tx_len,
+    // Check if adding this chunk would exceed advertised buffer size
+    if (G_context.tx_info.raw_tx_current_length + chunk_size > G_context.tx_info.raw_tx_total_length) {
+        TRACE("Transaction chunk exceeds advertised size: current=%u, chunk=%u, total=%u",
+              (unsigned) G_context.tx_info.raw_tx_current_length,
               (unsigned) chunk_size,
-              (unsigned) TX_BUFFER_SIZE);
+              (unsigned) G_context.tx_info.raw_tx_total_length);
         send_swo_and_reset(SWO_INVALID_TX_LENGTH);
         return false;
     }
 
     // Copy chunk data
     if (!buffer_move(cdata,
-                     G_context.tx_info.raw_tx + G_context.tx_info.raw_tx_len,
+                     G_context.tx_info.raw_tx + G_context.tx_info.raw_tx_current_length,
                      chunk_size)) {
         TRACE("Failed to copy transaction chunk");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return false;
     }
-    G_context.tx_info.raw_tx_len += chunk_size;
-    TRACE("Copied %u bytes, total: %u", (unsigned) chunk_size, (unsigned) G_context.tx_info.raw_tx_len);
+    G_context.tx_info.raw_tx_current_length += chunk_size;
+    TRACE("Copied %u bytes, total: %u", (unsigned) chunk_size, (unsigned) G_context.tx_info.raw_tx_current_length);
 
     return true;
 }
@@ -458,6 +483,15 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
                 return;
             }
 
+            // Verify received length matches advertised length
+            if (G_context.tx_info.raw_tx_current_length != G_context.tx_info.raw_tx_total_length) {
+                TRACE("TX length mismatch: received=%u, advertised=%u",
+                      (unsigned) G_context.tx_info.raw_tx_current_length,
+                      (unsigned) G_context.tx_info.raw_tx_total_length);
+                send_swo_and_reset(SWO_INVALID_TX_LENGTH);
+                return;
+            }
+
             // Parse and build hash
             LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_CHUNKS, "Bad state before parse");
             G_context.state.tx_state = TX_STATE_RECEIVED;
@@ -466,7 +500,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 
             buffer_t buf = {
                 .ptr = G_context.tx_info.raw_tx,
-                .size = G_context.tx_info.raw_tx_len,
+                .size = G_context.tx_info.raw_tx_current_length,
                 .offset = 0
             };
 

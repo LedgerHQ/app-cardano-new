@@ -69,7 +69,7 @@ static void test_parse_tx_rejects_oversized_buffer(void **state) {
     uint8_t one_byte = 0;
     buffer_t buf = {
         .ptr = &one_byte,
-        .size = TX_BUFFER_SIZE + 1,
+        .size = MAX_TX_BUFFER_SIZE + 1,
         .offset = 0,
     };
     tx_params_t tx_params = {0};

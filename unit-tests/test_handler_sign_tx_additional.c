@@ -119,6 +119,7 @@ static void test_sign_tx_zero_witnesses_auto_resets_context(void **state) {
     uint8_t init_raw[512];
     init_apdu_params_t params = build_init_params_from_fixture(fixture, NULL, 0);
     params.numWitnesses = 0;
+    params.rawTxTotalLength = (uint16_t)fixture->raw_tx_len;
     const size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 

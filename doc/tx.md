@@ -104,3 +104,17 @@ Security policies enforce critical constraints:
 - **Path validations**: All BIP44 paths must pass security policy checks before use.
 
 For detailed rationale behind specific policy decisions, see the `doc/spec_*.md` files.
+
+---
+
+## Raw Transaction Buffer
+
+The Ledger application uses a custom non-CBOR serialization format for transaction data sent via APDUs. This differs from the canonical CBOR encoding used on-chain.
+
+For detailed information about:
+- Raw format vs CBOR encoding differences
+- Worst-case buffer size calculations
+- Dynamic allocation optimization
+- Protocol specification
+
+See **[doc/tx_raw_buffer.md](tx_raw_buffer.md)**.

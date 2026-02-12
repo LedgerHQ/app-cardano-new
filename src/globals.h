@@ -98,7 +98,8 @@ typedef struct {
  */
 typedef struct {
     uint8_t *raw_tx;
-    size_t raw_tx_len;
+    size_t raw_tx_current_length;     /// Actual received length so far
+    uint16_t raw_tx_total_length;     /// Advertised size from client (total expected)
     tx_params_t tx_params;
     tx_parsed_body_t tx_body;
     uint8_t tx_hash[TX_HASH_LENGTH];

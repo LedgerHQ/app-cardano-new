@@ -20,9 +20,11 @@
  * - HEAP_HEADER_SIZE (~160 bytes for heap metadata)
  * - Chunk headers (4-8 bytes per allocation)
  * - Alignment requirements (8-byte alignment)
+ *
+ * MAX_TX_BUFFER_SIZE is the validation limit for raw transactions (21 KB).
+ * Actual allocation is determined by client-provided raw_tx_total_length in INIT APDU.
+ * See doc/tx.md "Appendix" and doc/tx_raw_buffer.md for details.
  */
-// TODO max cardano tx size is 16K, but our format of non-serialized (not CBOR) tx might be bigger or smaller, needs to be checked
-// up to 19K is possible to alloc, but we want this minimal
 #include "tx_constants.h"
 /**
  * Handler for SIGN_TX command. If successfully parse BIP32 path

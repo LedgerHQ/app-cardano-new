@@ -289,6 +289,7 @@ class TxInitParams:
     include_treasury: bool
     include_donation: bool
     num_witnesses: int
+    raw_tx_total_length: int  # Size of raw transaction buffer (calculated by client)
 
 
 class CommandBuilder:
@@ -489,6 +490,7 @@ class CommandBuilder:
         data.append(FLAG_INCLUDED_YES if params.include_treasury else FLAG_INCLUDED_NO)
         data.append(FLAG_INCLUDED_YES if params.include_donation else FLAG_INCLUDED_NO)
         data.extend(params.num_witnesses.to_bytes(2, "big"))
+        data.extend(params.raw_tx_total_length.to_bytes(2, "big"))
         return self._serialize(InsType.INS_SIGN_TX, P1Type.P1_TX_INIT, P2Type.P2_UNUSED, bytes(data))
 
     def derive_script_add_simple(self, script: NativeScript) -> bytes:
@@ -554,6 +556,10 @@ class CommandBuilder:
             elif tx.auxiliaryData.type == TxAuxiliaryDataType.CIP36_REGISTRATION:
                 aux_data_type = TxAuxiliaryDataType.CIP36_REGISTRATION
 
+        # Calculate raw transaction buffer size
+        raw_tx_data = self._serialize_transaction_unpacked_raw(tx)
+        raw_tx_total_length = len(raw_tx_data)
+
         return TxInitParams(
             options=options,
             network_id=tx.network.networkId,
@@ -580,6 +586,7 @@ class CommandBuilder:
             include_treasury=getattr(tx, "treasury", None) is not None,
             include_donation=getattr(tx, "donation", None) is not None,
             num_witnesses=len(witness_paths),
+            raw_tx_total_length=raw_tx_total_length,
         )
 
     def sign_tx_aux_data_init(self, tx: Transaction, aux_params: TxAuxiliaryDataCIP36) -> bytes:

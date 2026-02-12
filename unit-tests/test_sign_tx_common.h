@@ -204,6 +204,7 @@ static inline init_apdu_params_t build_init_params_from_fixture(
         .includeTreasury = fixture->include_treasury,
         .includeDonation = fixture->include_donation,
         .numWitnesses = fixture->num_witnesses,
+        .rawTxTotalLength = (uint16_t)fixture->raw_tx_len,
     };
 }
 

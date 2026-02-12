@@ -33,7 +33,8 @@
 
 // Any buffer claiming to be longer than this is a bug
 // (keep in sync with maximum raw tx buffer size)
-#define BUFFER_SIZE_PARANOIA (17 * 1024 + 1)
+// Must be > MAX_TX_BUFFER_SIZE (21 KB) from tx_constants.h
+#define BUFFER_SIZE_PARANOIA (21 * 1024 + 1)
 
 #define ITERATE(it, arr) for (__typeof__(&(arr[0])) it = BEGIN(arr); it < END(arr); it++)
 

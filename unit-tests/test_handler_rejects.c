@@ -129,6 +129,7 @@ static void test_tx_init_invalid_signing_mode(void **state) {
         .includeTreasury = false,
         .includeDonation = false,
         .numWitnesses = 0,
+        .rawTxTotalLength = 100,  // Non-zero value for valid INIT
     };
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
@@ -174,6 +175,7 @@ static void test_tx_init_trailing_bytes(void **state) {
         .includeTreasury = false,
         .includeDonation = false,
         .numWitnesses = 0,
+        .rawTxTotalLength = 100,  // Non-zero value for valid INIT
     };
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
@@ -344,6 +346,7 @@ static void test_opcert_signing_during_tx_signing(void **state) {
         .includeTreasury = false,
         .includeDonation = false,
         .numWitnesses = 0,
+        .rawTxTotalLength = 100,  // Non-zero value for valid INIT
     };
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
@@ -427,6 +430,7 @@ static void test_multiple_reinit_attempts(void **state) {
         .includeTreasury = false,
         .includeDonation = false,
         .numWitnesses = 0,
+        .rawTxTotalLength = 100,  // Non-zero value for valid INIT
     };
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
