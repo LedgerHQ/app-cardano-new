@@ -1106,7 +1106,7 @@ static parser_status_e parse_tx_required_signers(buffer_t *buf, const tx_params_
     return PARSING_OK;
 }
 
-static parser_status_e parse_tx_collateral_output(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+static parser_status_e parse_tx_collateral_output(buffer_t *buf, const tx_params_t *tx_params MARK_UNUSED, tx_parsed_body_t *tx_body) {
     uint16_t output_len;
     if (!buffer_read_u16(buf, &output_len, BE)) {
         return COLLATERAL_OUTPUT_PARSING_ERROR;

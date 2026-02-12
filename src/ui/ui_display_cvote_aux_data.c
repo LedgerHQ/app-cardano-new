@@ -325,8 +325,11 @@ static bool cvote_add_delegation_pairs(cvote_aux_data_t *aux_data,
 }
 
 static bool cvote_init_pairs_for_streaming_page(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
-    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS || aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED, "Streaming delegation page in wrong state: %d", aux_data->state);
+    LEDGER_ASSERT(aux_data != NULL &&
+                  (aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS ||
+                   aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED),
+                  "Streaming delegation page in wrong state: %d",
+                  aux_data != NULL ? aux_data->state : -1);
 
     uint16_t pair_count = CVOTE_DELEGATION_UI_PAIRS_MAX;
 
@@ -348,7 +351,11 @@ static bool cvote_init_pairs_for_streaming_page(cvote_aux_data_t *aux_data) {
 
 bool ui_cvote_aux_data_init_non_streaming(cvote_aux_data_t *aux_data) {
     LEDGER_ASSERT(aux_data != NULL && !aux_data->ui_streaming.on, "Called with streaming enabled");
-    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS || aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED, "Non-streaming CVote UI init in wrong state: %d", aux_data->state);
+    LEDGER_ASSERT(aux_data != NULL &&
+                  (aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS ||
+                   aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED),
+                  "Non-streaming CVote UI init in wrong state: %d",
+                  aux_data != NULL ? aux_data->state : -1);
 
     uint16_t total_pair_count = cvote_initial_pairs_count(aux_data) +
                                 (aux_data->remaining_delegations * CVOTE_DELEGATION_UI_PAIRS_MAX);
@@ -384,11 +391,11 @@ void ui_cvote_aux_data_init_vars(cvote_aux_data_t *aux_data) {
 }
 
 void ui_cvote_aux_data_streaming_show_initial_page(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
-    LEDGER_ASSERT(aux_data->ui_streaming.on, "Called with streaming disabled");
-    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE,
+    LEDGER_ASSERT(aux_data != NULL && aux_data->ui_streaming.on, "Called with streaming disabled");
+    LEDGER_ASSERT(aux_data != NULL &&
+                  aux_data->state == CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE,
                   "Initial streaming page in wrong state: %d",
-                  aux_data->state);
+                  aux_data != NULL ? aux_data->state : -1);
 
     uint16_t initial_pairs = cvote_initial_pairs_count(aux_data);
     LEDGER_ASSERT(initial_pairs > 0, "No initial pairs for streaming page");
@@ -422,13 +429,14 @@ void ui_cvote_aux_data_streaming_show_initial_page(cvote_aux_data_t *aux_data) {
 void ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
                                                 const cvote_credential_t *credential,
                                                 uint32_t weight) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
-    LEDGER_ASSERT(aux_data->ui_streaming.on, "Called with streaming disabled");
-    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS || aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED,
+    LEDGER_ASSERT(aux_data != NULL && aux_data->ui_streaming.on, "Called with streaming disabled");
+    LEDGER_ASSERT(aux_data != NULL &&
+                  (aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS ||
+                   aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED),
                   "Streaming delegation page in wrong state: %d",
-                  aux_data->state);
+                  aux_data != NULL ? aux_data->state : -1);
     LEDGER_ASSERT(credential != NULL, "Delegation payload missing in streaming loop");
-    LEDGER_ASSERT(aux_data->ui_streaming.review_started,
+    LEDGER_ASSERT(aux_data != NULL && aux_data->ui_streaming.review_started,
                   "Streaming review must be started before delegation pages");
 
     // Initialize pairs for this delegation page

@@ -746,7 +746,7 @@ static void add_ui_and_free_withdrawals(tx_params_t *tx_params, tx_parsed_body_t
     tx_body->withdrawals = NULL;
 }
 
-static void add_ui_and_free_aux_data_hash(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
+static void add_ui_and_free_aux_data_hash(tx_params_t *tx_params, tx_parsed_body_t *tx_body MARK_UNUSED) {
     if (!tx_params->includeAuxDataHash) {
         return;
     }

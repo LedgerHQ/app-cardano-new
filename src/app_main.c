@@ -97,6 +97,7 @@ void app_main(void) {
                 app_exit();
             }
             CATCH_OTHER(exception) {
+                (void) exception;
                 TRACE("Unhandled exception in app_main loop: 0x%04X", exception);
                 CLOSE_TRY;
                 reset_app_context();
