@@ -41,7 +41,7 @@ static void cvote_review_choice(bool confirm) {
     }
 }
 
-void ui_display_cvote_confirm(security_policy_t securityPolicy) {
+void ui_display_cvote_confirm(security_policy_t securityPolicy, warning_bits_t warnings) {
     cvote_ctx_t *ctx = &G_context.cvote_info;
 
     TRACE("=== ui_display_cvote_confirm START ===");
@@ -54,9 +54,7 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy) {
     TRACE("securityPolicy: %d", securityPolicy);
     LEDGER_ASSERT(securityPolicy == POLICY_SHOW, "ui_display_cvote_confirm called with wrong security policy: %d", securityPolicy);
 
-    // Build warnings - only use SDK's blind signing warning
-    // TODO it says "drain your wallet" --- but maybe this does not apply to votecast signing?...
-    ui_status_t warning_status = ui_build_predefined_warning(1u << BLIND_SIGNING_WARN);
+    ui_status_t warning_status = ui_build_warnings(warnings);
     if (warning_status != UI_STATUS_SUCCESS) {
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;

@@ -2250,6 +2250,11 @@ static const warning_definition_t WARNING_DEFINITIONS[WARNING_BIT_COUNT] = {
         .title = "Non-standard voting reward address",
         .description = "Device-owned voting reward address uses an unusual derivation",
     },
+    [WARNING_BIT_CVOTE_WITNESS_NOT_FULLY_VERIFIABLE] = {
+        .bit = WARNING_BIT_CVOTE_WITNESS_NOT_FULLY_VERIFIABLE,
+        .title = "Limited vote verification",
+        .description = "Device cannot analyze vote consequences and does not display all details",
+    },
     [WARNING_BIT_POOL_REGISTRATION_NO_OWNERS] = {
         .bit = WARNING_BIT_POOL_REGISTRATION_NO_OWNERS,
         .title = "No pool owners",
@@ -2300,6 +2305,7 @@ size_t warning_bits_to_definitions(warning_bits_t warnings,
 security_policy_t policyForSignCVoteWitness(const bip44_path_t *path, warning_bits_t *warnings) {
     LEDGER_ASSERT(path != NULL, "NULL path");
     LEDGER_ASSERT(warnings != NULL, "NULL warnings");
+    warning_bits_set(warnings, WARNING_BIT_CVOTE_WITNESS_NOT_FULLY_VERIFIABLE);
 
     switch (bip44_classifyPath(path)) {
         case PATH_CVOTE_KEY:

@@ -17,6 +17,7 @@ typedef enum {
     WARNING_BIT_OUTPUT_MISSING_DATUM,
     WARNING_BIT_CVOTE_PAYMENT_THIRD_PARTY,
     WARNING_BIT_CVOTE_PAYMENT_NONSTANDARD_OWNED,
+    WARNING_BIT_CVOTE_WITNESS_NOT_FULLY_VERIFIABLE,
     WARNING_BIT_POOL_REGISTRATION_NO_OWNERS,
     WARNING_BIT_POOL_REGISTRATION_NO_RELAYS,
     WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL,
@@ -39,6 +40,7 @@ static inline const char* warning_bit_name(warning_bit_e bit) {
         [WARNING_BIT_OUTPUT_MISSING_DATUM] = "WARNING_BIT_OUTPUT_MISSING_DATUM",
         [WARNING_BIT_CVOTE_PAYMENT_THIRD_PARTY] = "WARNING_BIT_CVOTE_PAYMENT_THIRD_PARTY",
         [WARNING_BIT_CVOTE_PAYMENT_NONSTANDARD_OWNED] = "WARNING_BIT_CVOTE_PAYMENT_NONSTANDARD_OWNED",
+        [WARNING_BIT_CVOTE_WITNESS_NOT_FULLY_VERIFIABLE] = "WARNING_BIT_CVOTE_WITNESS_NOT_FULLY_VERIFIABLE",
         [WARNING_BIT_POOL_REGISTRATION_NO_OWNERS] = "WARNING_BIT_POOL_REGISTRATION_NO_OWNERS",
         [WARNING_BIT_POOL_REGISTRATION_NO_RELAYS] = "WARNING_BIT_POOL_REGISTRATION_NO_RELAYS",
         [WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL] = "WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL",
@@ -81,6 +83,8 @@ static inline void _trace_warning_bit(warning_bit_e bit) {
             TRACE("Warning: CVOTE_PAYMENT_THIRD_PARTY"); break;
         case WARNING_BIT_CVOTE_PAYMENT_NONSTANDARD_OWNED:
             TRACE("Warning: CVOTE_PAYMENT_NONSTANDARD_OWNED"); break;
+        case WARNING_BIT_CVOTE_WITNESS_NOT_FULLY_VERIFIABLE:
+            TRACE("Warning: CVOTE_WITNESS_NOT_FULLY_VERIFIABLE"); break;
         case WARNING_BIT_POOL_REGISTRATION_NO_OWNERS:
             TRACE("Warning: POOL_REGISTRATION_NO_OWNERS"); break;
         case WARNING_BIT_POOL_REGISTRATION_NO_RELAYS:
@@ -112,13 +116,13 @@ static inline bool warning_bits_is_empty(const warning_bits_t* warnings) {
     return *warnings == 0;
 }
 
-// Mask for all CVote-specific warnings
-#define CVOTE_WARNING_BITS_MASK \
+// Mask for CVote registration (AUX_DATA) warnings.
+#define CVOTE_AUX_DATA_WARNING_BITS_MASK \
     (((warning_bits_t)1 << WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH) | \
      ((warning_bits_t)1 << WARNING_BIT_CVOTE_PAYMENT_THIRD_PARTY) | \
      ((warning_bits_t)1 << WARNING_BIT_CVOTE_PAYMENT_NONSTANDARD_OWNED))
 
-// Check if warning_bits contains any CVote-specific warnings
-static inline bool warning_bits_has_any_cvote(warning_bits_t warnings) {
-    return (warnings & CVOTE_WARNING_BITS_MASK) != 0;
+// Check if warning_bits contains any CVote AUX_DATA-specific warnings.
+static inline bool warning_bits_has_any_cvote_aux_data(warning_bits_t warnings) {
+    return (warnings & CVOTE_AUX_DATA_WARNING_BITS_MASK) != 0;
 }

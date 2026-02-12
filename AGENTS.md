@@ -55,7 +55,7 @@ For detailed analysis, see:
 - **Instruction Interleaving:** Confirm that handlers correctly guard against instruction interleaving attacks.
 
 ## Additional Resources
-- **BOLOS SDK:** `../../ledger/ledger-secure-sdk` (underlying library).
+- **BOLOS SDK:** `/opt/ledger-secure-sdk` (underlying library).
 - **Reference Apps:** `../../ledger/app-ethereum` (eth app) and `../../ledger/app-bitcoin-new` (btc app) for modern coding patterns.
 - **Client Libraries:** `../ledgerjs-cardano-shelley` and `../cardano-hw-interop-lib`.
 - **Testing:**

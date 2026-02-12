@@ -180,7 +180,7 @@ static void handle_sign_cvote_confirm_apdu(buffer_t *cdata) {
 
     // Display UI (signature will be computed after user confirms)
     apdu_response_deferred();
-    ui_display_cvote_confirm(policy);
+    ui_display_cvote_confirm(policy, warnings);
 }
 
 void finalize_sign_cvote(bool confirmed) {

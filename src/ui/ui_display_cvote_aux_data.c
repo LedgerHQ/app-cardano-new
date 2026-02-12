@@ -76,7 +76,7 @@ static bool cvote_start_streaming_review(cvote_aux_data_t *aux_data) {
     LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
     LEDGER_ASSERT(aux_data != NULL && !aux_data->ui_streaming.review_started, "Streaming review already started");
 
-    LEDGER_ASSERT(warning_bits_except_mask(G_context.tx_info.cvote_warning_bits, CVOTE_WARNING_BITS_MASK) == 0, "Transaction warnings leaked into CVote warning bits - cvote_warning_bits should only contain CVote-specific warnings");
+    LEDGER_ASSERT(warning_bits_except_mask(G_context.tx_info.cvote_warning_bits, CVOTE_AUX_DATA_WARNING_BITS_MASK) == 0, "Transaction warnings leaked into CVote warning bits - cvote_warning_bits should only contain CVote AUX_DATA warnings");
 
     // Build warnings known at start of streaming flow.
     // Warnings for specific delegations are added via cvote_add_vote_key_path_warning_pair.
@@ -476,7 +476,7 @@ void ui_cvote_aux_data_show_non_streaming_final_review(cvote_aux_data_t *aux_dat
 
     LEDGER_ASSERT(warning_bits_is_empty(&G_context.tx_info.warning_bits), "Transaction warning_bits should be empty during CVote review - TX processing should not set warnings yet");
 
-    LEDGER_ASSERT(warning_bits_except_mask(G_context.tx_info.cvote_warning_bits, CVOTE_WARNING_BITS_MASK) == 0, "Transaction warnings leaked into CVote warning bits - cvote_warning_bits should only contain CVote-specific warnings");
+    LEDGER_ASSERT(warning_bits_except_mask(G_context.tx_info.cvote_warning_bits, CVOTE_AUX_DATA_WARNING_BITS_MASK) == 0, "Transaction warnings leaked into CVote warning bits - cvote_warning_bits should only contain CVote AUX_DATA warnings");
 
     // Build CVote-specific warnings for display
     ui_status_t warning_status = ui_build_warnings(G_context.tx_info.cvote_warning_bits);
