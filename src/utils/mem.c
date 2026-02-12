@@ -14,9 +14,13 @@
 #include "mem.h"
 #include "app_mem_utils.h"
 #include "os_print.h"
+#include "os.h"
 
-// TODO 24 * 1024 does not compile for Nano X
+#if defined(TARGET_NANOX)
 #define SIZE_MEM_BUFFER (23 * 1024)
+#else
+#define SIZE_MEM_BUFFER (25 * 1024)
+#endif
 
 static uint8_t mem_buffer[SIZE_MEM_BUFFER] __attribute__((aligned(sizeof(intmax_t))));
 void *app_mem_get_buffer(void) {

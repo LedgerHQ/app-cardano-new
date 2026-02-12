@@ -5,16 +5,17 @@
     "ledgerDevTools.appSettings": {
         "selectedUseCase": "debug",
         "selectedDevice": "Stax",
-        "selectedVariant": "BOL",
+        "selectedVariant": "cardano_ada",
         "testsList": [
             "test_app_mainmenu",
             "test_cvote",
             "test_derive_address",
-            "test_derive_address_reject",
+            "test_derive_address_deny",
             "test_derive_native_script_hash",
             "test_bad_cla",
             "test_bad_ins",
             "test_wrong_p1p2",
+            "test_sign_tx_rejects_nonzero_legacy_p2_values",
             "test_wrong_data_length",
             "test_invalid_state",
             "test_get_app_name",
@@ -24,14 +25,15 @@
             "test_opCert",
             "test_pubkey_confirm",
             "test_pubkey_without_confirmation",
-            "test_pubkey_reject",
+            "test_pubkey_deny",
             "test_sign_message",
             "test_sign_tx",
-            "test_sign_tx_reject",
+            "test_sign_tx_deny",
             "test_ins_constants_match_src",
             "test_p1_p2_constants_match_src",
             "test_cla_constant_match_src",
-            "test_max_sign_tx_chunk_size"
+            "test_max_sign_tx_chunk_size",
+            "test_cvote_credential_constants_match_src"
         ]
     }
 }
