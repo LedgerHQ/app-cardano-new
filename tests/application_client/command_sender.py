@@ -41,7 +41,7 @@ class CommandSender:
 
 
     @contextmanager
-    def _exchange_async(self, payload: bytes) -> Generator[None, None, None]:
+    def _exchange_async(self, payload: bytes) -> Generator[bool, None, None]:
         """Asynchronous APDU exchange with response
 
         Args:
@@ -51,8 +51,8 @@ class CommandSender:
             Generator
         """
 
-        with self.backend.exchange_async_raw(payload):
-            yield
+        with self.backend.exchange_async_raw(payload) as has_data_available:
+            yield has_data_available
 
 
     def get_async_response(self) -> Optional[RAPDU]:
@@ -96,7 +96,7 @@ class CommandSender:
 
 
     @contextmanager
-    def sign_tx_witness_async(self, path: str) -> Generator[None, None, None]:
+    def sign_tx_witness_async(self, path: str) -> Generator[bool, None, None]:
         """APDU Sign TX Witness
 
         Args:
@@ -106,8 +106,8 @@ class CommandSender:
             Generator
         """
 
-        with self._exchange_async(self._cmd_builder.sign_tx_witness(path)):
-            yield
+        with self._exchange_async(self._cmd_builder.sign_tx_witness(path)) as has_data_available:
+            yield has_data_available
 
     def sign_tx(self,
                 tx: Transaction,
@@ -136,8 +136,8 @@ class CommandSender:
 
         self._send_tx_aux_data_if_present(tx, on_cvote_review)
 
-        with self.sign_tx_send_chunks_async(tx):
-            if on_review is not None:
+        with self.sign_tx_send_chunks_async(tx) as has_data_available:
+            if on_review is not None and not has_data_available:
                 on_review()
 
         response = self.get_async_response()
@@ -192,7 +192,7 @@ class CommandSender:
                 raise AssertionError(f"AUX_DATA init failed: {hex(response.status)}")
 
     @contextmanager
-    def sign_tx_send_chunks_async(self, tx) -> Generator[None, None, None]:
+    def sign_tx_send_chunks_async(self, tx) -> Generator[bool, None, None]:
         """Serialize transaction into chunks and send them.
 
         Sends all intermediate chunks synchronously, then the final chunk asynchronously
@@ -213,8 +213,8 @@ class CommandSender:
                 raise AssertionError(f"Intermediate chunk failed: {hex(response.status)}")
 
         # Send final chunk asynchronously (for UI navigation)
-        with self._exchange_async(chunks[-1]):
-            yield
+        with self._exchange_async(chunks[-1]) as has_data_available:
+            yield has_data_available
 
     def sign_tx_witness(self, path: str) -> RAPDU:
         """APDU Sign TX Witness (synchronous)

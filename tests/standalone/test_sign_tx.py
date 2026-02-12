@@ -269,19 +269,87 @@ all_deny_test_cases = (
     ids=idTestFunc
 )
 def test_sign_tx_deny(backend: BackendInterface,
+                        scenario_navigator: NavigateWithScenario,
                         testCase: SignTxTestCase) -> None:
     """Test that invalid transaction parameters are correctly rejected"""
 
-    if not testCase.works_in_ragger:
-        pytest.skip("This test is seed-dependent and does not work with ragger's seed")
+    if testCase.unsuitable_in_ragger_reason is not None:
+        pytest.skip(f"Unsuitable in ragger: {testCase.unsuitable_in_ragger_reason}")
 
     client = CommandSender(backend)
 
-    with pytest.raises(ExceptionRAPDU) as err:
+    def _requires_warning_navigation() -> bool:
+        if testCase.has_warning:
+            return True
+
+        if testCase.signingMode == TransactionSigningMode.PLUTUS_TRANSACTION:
+            return True
+
+        for certificate in testCase.tx.certificates:
+            cert_params = getattr(certificate, "params", None)
+            if cert_params is None:
+                continue
+            if hasattr(cert_params, "poolOwners") and len(cert_params.poolOwners) == 0:
+                return True
+            if hasattr(cert_params, "relays") and len(cert_params.relays) == 0:
+                return True
+        return False
+
+    def review_tx() -> None:
+        if testCase.deny_before_review:
+            return
+
+        if _requires_warning_navigation():
+            scenario_navigator.review_approve_with_warning(
+                test_name=f"{testCase.name}-deny/review",
+                do_comparison=False,
+            )
+        else:
+            scenario_navigator.review_approve(
+                test_name=f"{testCase.name}-deny/review",
+                do_comparison=False,
+            )
+
+    # Phase 1: try to observe expected failure during init/chunk/review.
+    try:
         client.sign_tx(
             tx=testCase.tx,
             signing_mode=testCase.signingMode,
             additional_witness_paths=testCase.additionalWitnessPaths,
             options=testCase.options,
+            on_review=review_tx,
         )
-    assert err.value.status == testCase.expected_sw
+    except ExceptionRAPDU as err:
+        assert err.status == testCase.expected_sw
+        return
+
+    # Phase 2: tx body passed; expected denial must happen in witness phase.
+    witness_paths = gather_witness_paths(
+        testCase.tx,
+        testCase.signingMode,
+        testCase.additionalWitnessPaths or [],
+    )
+    if len(witness_paths) == 0:
+        raise AssertionError("Transaction unexpectedly succeeded but no witness paths were found")
+
+    witness_paths_to_try = (
+        [testCase.additionalWitnessPaths[-1]]
+        if len(testCase.additionalWitnessPaths) > 0
+        else list(reversed(witness_paths))
+    )
+
+    deny_observed = False
+    for witness_path in witness_paths_to_try:
+        try:
+            client.sign_tx_witness(witness_path)
+        except ExceptionRAPDU as err:
+            if err.status == testCase.expected_sw:
+                deny_observed = True
+                break
+            raise
+
+        # Witness succeeded, continue searching for the deny-driving path.
+        # Successful witnesses here are expected to be POLICY_HIDE paths.
+        continue
+
+    assert deny_observed, "Expected witness-level DENY was not observed"

@@ -480,7 +480,8 @@ class SignTxTestCase:
     has_warning: bool = False
     has_aux_warning: bool = False  # Warnings in auxiliary data (CVote) review
     # TODO: Debug navigation
-    works_in_ragger: bool = True  # Whether this test works in ragger (seed-dependent tests may not)
+    unsuitable_in_ragger_reason: Optional[str] = None  # If set, explains why this vector is unsuitable for direct ragger execution
+    deny_before_review: bool = False  # For deny tests that fail before review UI is displayed
 
 
 # pylint: disable=line-too-long
@@ -4337,7 +4338,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         options=False,
         additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
+        has_warning=True,
         has_aux_warning=False,
     ),
     SignTxTestCase(
@@ -4375,7 +4376,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         options=False,
         additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
+        has_warning=True,
         has_aux_warning=False,
     ),
     SignTxTestCase(
@@ -4860,7 +4861,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         options=False,
         additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
+        has_warning=True,
         has_aux_warning=False,
     ),
     SignTxTestCase(
@@ -6968,7 +6969,7 @@ certificateStakePoolRetirementRejectTestCases: List[SignTxTestCase] = [
         options=False,
         additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
+        has_warning=True,
         has_aux_warning=False,
     ),
 ]
@@ -7014,7 +7015,7 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_WITHDRAWALS,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Seed-dependent: canonical ordering depends on derived reward addresses
+        unsuitable_in_ragger_reason="Seed-dependent: canonical ordering depends on derived reward addresses",
     ),
     SignTxTestCase(
         name="Script_hash_as_stake_credential_in_Ordinary_Tx",
@@ -7244,7 +7245,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection happens after tx validation
     ),
     SignTxTestCase(
         name="Multisig_account_path_in_Ordinary_Tx",
@@ -7283,7 +7283,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Multisig_spending_path_in_Ordinary_Tx",
@@ -7322,7 +7321,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Multisig_staking_path_in_Ordinary_Tx",
@@ -7361,7 +7359,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Mint_path_in_Ordinary_Tx",
@@ -7400,7 +7397,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Ordinary_account_path_in_Multisig_Tx",
@@ -7439,7 +7435,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Multisig_account_path_in_Multisig_Tx",
@@ -7478,7 +7473,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Ordinary_spending_path_in_Multisig_Tx",
@@ -7517,7 +7511,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Ordinary_staking_path_in_Multisig_Tx",
@@ -7556,7 +7549,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Mint_path_in_Multisig_Tx",
@@ -7595,7 +7587,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Pool_cold_path_in_Multisig_Tx",
@@ -7634,7 +7625,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Ordinary_account_path_in_Plutus_Tx",
@@ -7673,7 +7663,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Multisig_account_path_in_Plutus_Tx",
@@ -7712,7 +7701,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Multisig_account_path_in_Pool_Registration_Owner_Tx",
@@ -7777,7 +7765,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Ordinary_spending_path_in_Pool_Registration_Owner_Tx",
@@ -7842,7 +7829,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Multisig_spending_path_in_Pool_Registration_Owner_Tx",
@@ -7907,7 +7893,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Multisig_staking_path_in_Pool_Registration_Owner_Tx",
@@ -7972,7 +7957,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Mint_path_in_Pool_Registration_Owner_Tx",
@@ -8037,7 +8021,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Pool_cold_path_in_Pool_Registration_Owner_Tx",
@@ -8102,7 +8085,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Multisig_account_path_in_Pool_Registration_Operator_Tx",
@@ -8161,7 +8143,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Multisig_spending_path_in_Pool_Registration_Operator_Tx",
@@ -8220,7 +8201,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Ordinary_staking_path_in_Pool_Registration_Operator_Tx",
@@ -8279,7 +8259,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Multisig_staking_path_in_Pool_Registration_Operator_Tx",
@@ -8338,7 +8317,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Mint_path_in_Pool_Registration_Operator_Tx",
@@ -8397,7 +8375,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
 ]
 
@@ -8460,7 +8437,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Input_and_stake_deregistration_certificate_account_mismatch",
@@ -8509,7 +8485,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Input_and_withdrawal_account_mismatch",
@@ -8557,7 +8532,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Change_output_and_stake_deregistration_account_mismatch",
@@ -8627,6 +8601,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
+        deny_before_review=True,
     ),
     SignTxTestCase(
         name="Change_output_and_withdrawal_account_mismatch",
@@ -8695,6 +8670,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
+        deny_before_review=True,
     ),
     SignTxTestCase(
         name="Stake_deregistration_certificate_and_withdrawal_account_mismatch",
@@ -8752,6 +8728,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
+        deny_before_review=True,
     ),
     SignTxTestCase(
         name="Byron_to_Shelley_transfer_input_account_mismatch",
@@ -8793,9 +8770,8 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         options=False,
         additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
+        has_warning=True,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Byron_to_Shelley_transfer_output_account_mismatch",
@@ -8843,7 +8819,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
 ]
 
@@ -9417,7 +9392,6 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="Different_prefix",
@@ -9514,7 +9488,6 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=False,
         has_aux_warning=False,
-        works_in_ragger=False,  # Witness-level rejection
     ),
     SignTxTestCase(
         name="No_path_given",
