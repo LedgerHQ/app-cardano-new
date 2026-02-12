@@ -166,8 +166,14 @@ void ui_display_sign_msg(security_policy_t securityPolicy) {
             return;
     }
 
-    // Display review screen with skip button for long messages
-    nbgl_useCaseAdvancedReview(TYPE_OPERATION | SKIPPABLE_OPERATION,
+    nbgl_operationType_t reviewOperationType = TYPE_OPERATION;
+#ifdef SCREEN_SIZE_WALLET
+    // Keep skip only on large wallet screens.
+    reviewOperationType |= SKIPPABLE_OPERATION;
+#endif
+
+    // Display review screen
+    nbgl_useCaseAdvancedReview(reviewOperationType,
                                g_pairsList,
                                &ICON_APP_CARDANO,
                                "Sign message",

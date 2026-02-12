@@ -166,7 +166,6 @@ static void ui_displayAddressReview(const char *title,
                                   ctx->address.length,
                                   humanAddress,
                                   SIZEOF(humanAddress));
-    // TODO: unusual-path warning presentation changed: old app showed a dedicated warning screen
     nbgl_useCaseAddressReview(humanAddress,
                               g_pairsList,
                               &ICON_APP_CARDANO,

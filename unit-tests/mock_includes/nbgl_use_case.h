@@ -55,9 +55,20 @@ typedef struct {
     const char *value;
 } nbgl_contentTagValue_t;
 
+typedef nbgl_contentTagValue_t *(*nbgl_contentTagValueCallback_t)(uint8_t pairIndex);
+typedef void (*nbgl_contentActionCallback_t)(int token, uint8_t index, int page);
+
 typedef struct {
+    const nbgl_contentTagValue_t *pairs;
+    nbgl_contentTagValueCallback_t callback;
     uint8_t nbPairs;
-    nbgl_contentTagValue_t *pairs;
+    uint8_t startIndex;
+    bool hideEndOfLastLine;
+    uint8_t nbMaxLinesForValue;
+    uint8_t token;
+    bool smallCaseForValue;
+    bool wrapping;
+    nbgl_contentActionCallback_t actionCallback;
 } nbgl_contentTagValueList_t;
 
 // Opaque types only passed as NULL by our app code

@@ -160,6 +160,7 @@ bool ui_pairs_init(uint8_t nbPairs) {
     }
     g_pairsList->nbPairs = nbPairs;
     g_pairsList->pairs = g_pairs;
+    g_pairsList->wrapping = true;
     g_next_pair_index = 0;
     return true;
 error:
