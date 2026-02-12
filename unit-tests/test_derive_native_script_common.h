@@ -24,72 +24,7 @@
 
 #include "handler/derive_native_script_hash.h"
 #include "test_native_script_utils.h"
-
-// UI mock for success tests
-extern bool app_mem_init(void);
-
-// UI mock for success tests
-void ui_start_native_script_streaming(void) {
-    apdu_response_send_data(NULL, 0, SWO_SUCCESS);
-}
-
-void ui_display_native_script_hash(void) {
-    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
-
-    switch (ctx->ui_scriptType) {
-        case UI_SCRIPT_ALL: {
-            TRACE("UI_SCRIPT_ALL");
-            apdu_response_send_data(NULL, 0, SWO_SUCCESS);
-            break;
-        }
-        case UI_SCRIPT_N_OF_K: {
-            TRACE("UI_SCRIPT_N_OF_K");
-            apdu_response_send_data(NULL, 0, SWO_SUCCESS);
-            break;
-        }
-        case UI_SCRIPT_ANY: {
-            TRACE("UI_SCRIPT_ANY");
-            apdu_response_send_data(NULL, 0, SWO_SUCCESS);
-            break;
-        }
-        case UI_SCRIPT_PUBKEY_PATH: {
-            TRACE("UI_SCRIPT_PUBKEY_PATH");
-            apdu_response_send_data(NULL, 0, SWO_SUCCESS);
-            break;
-        }
-        case UI_SCRIPT_PUBKEY_HASH: {
-            TRACE("UI_SCRIPT_PUBKEY_HASH");
-            apdu_response_send_data(NULL, 0, SWO_SUCCESS);
-            break;
-        }
-        case UI_SCRIPT_INVALID_BEFORE: {
-            TRACE("UI_SCRIPT_INVALID_BEFORE");
-            apdu_response_send_data(NULL, 0, SWO_SUCCESS);
-            break;
-        }
-        case UI_SCRIPT_INVALID_HEREAFTER: {
-            TRACE("UI_SCRIPT_INVALID_HEREAFTER");
-            apdu_response_send_data(NULL, 0, SWO_SUCCESS);
-            break;
-        }
-        case UI_SCRIPT_DISPLAY_BECH32: {
-            TRACE("UI_SCRIPT_DISPLAY_BECH32");
-            apdu_response_send_data(ctx->scriptHashBuffer, SCRIPT_HASH_LENGTH, SWO_SUCCESS);
-            break;
-        }
-        case UI_SCRIPT_DISPLAY_POLICY_ID: {
-            TRACE("UI_SCRIPT_DISPLAY_POLICY_ID");
-            apdu_response_send_data(ctx->scriptHashBuffer, SCRIPT_HASH_LENGTH, SWO_SUCCESS);
-            break;
-        }
-        default: {
-            TRACE("Invalid UI step");
-            send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
-            return;
-        }
-    }
-    return;
-}
+#include "nbgl_mock.h"
 
 // Recursive fixture runner for success tests
 void run_recursive_fixture(const native_script_t *script) {
@@ -200,6 +135,8 @@ static inline void run_fixture(const native_script_test_case_t *fixture) {
     reset_context();
     assert_true(test_mem_init());
     reset_response_buffer();
+    nbgl_mock_reset();
+    nbgl_mock_set_streaming_start_auto_complete(true, true);
 
     // Check not null
     TRACE("Running derive address fixture: %s\n", fixture->name);

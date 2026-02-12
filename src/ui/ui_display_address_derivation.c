@@ -161,7 +161,7 @@ static void ui_displayAddressReview(const char *title,
 
     LEDGER_ASSERT(ctx->address.length <= MAX_HUMAN_ADDRESS_LENGTH, "Address length too large");
 
-    static char humanAddress[MAX_HUMAN_ADDRESS_LENGTH] = {0};
+    char humanAddress[MAX_HUMAN_ADDRESS_LENGTH] = {0};
     format_address_human_readable(ctx->address.buffer,
                                   ctx->address.length,
                                   humanAddress,

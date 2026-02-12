@@ -312,7 +312,7 @@ set(SIGN_TX_COMMON_SOURCES
     ../src/ui/ui_display_tx.c
     ../src/ui/ui_display_witness.c
     ../src/ui/ui_cvote.c
-    mock_sources/ui_display_cvote_aux_data_stub.c
+    ../src/ui/ui_display_cvote_aux_data.c
     mock_sources/nbgl_mock.c
 )
 set(SIGN_TX_COMMON_LIBS
@@ -711,6 +711,7 @@ set(DERIVE_ADDRESS_COMMON_SOURCES
     ../src/addressUtils/addressUtilsByron.c
     ../src/addressUtils/bip44.c
     ../src/transaction/tx_utils.c
+    ../src/cardano_tokens/cardano_tokens.c
     ../src/securityPolicy/securityPolicy.c
     ../src/securityPolicy/securityPolicy_privkey.c
     ../src/app_context.c
@@ -773,6 +774,7 @@ set(PUBKEY_COMMON_SOURCES
     ../src/addressUtils/addressUtilsByron.c
     ../src/addressUtils/bip44.c
     ../src/transaction/tx_utils.c
+    ../src/cardano_tokens/cardano_tokens.c
     ../src/securityPolicy/securityPolicy.c
     ../src/securityPolicy/securityPolicy_privkey.c
     ../src/app_context.c
@@ -884,6 +886,7 @@ set(DERIVE_NATIVE_SCRIPT_COMMON_SOURCES
     ../src/addressUtils/addressUtilsByron.c
     ../src/addressUtils/bip44.c
     ../src/transaction/tx_utils.c
+    ../src/cardano_tokens/cardano_tokens.c
     ../src/securityPolicy/securityPolicy.c
     ../src/securityPolicy/securityPolicy_privkey.c
     ../src/app_context.c

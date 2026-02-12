@@ -71,6 +71,7 @@ static inline void run_sign_tx_body_chunked(const uint8_t* raw_tx, size_t raw_tx
 }
 
 static inline void run_sign_tx_aux_data_apdu(buffer_t *buffer, uint8_t p2) {
+    io_capture_reset();
     apdu_response_begin(INS_SIGN_TX);
     handler_sign_tx_aux_data(buffer, p2);
     apdu_response_assert_sent_or_deferred();

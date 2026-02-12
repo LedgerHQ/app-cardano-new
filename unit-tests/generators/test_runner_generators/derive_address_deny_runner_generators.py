@@ -62,48 +62,20 @@ def _build_test_file_header() -> str:
 #include "test_address_derivation_fixtures_deny.h"
 #include "test_fixture_types.h"
 #include "apdu_finalization_check.h"
+#include "io_capture.h"
+#include "nbgl_mock.h"
 
 // ----------------------------------------------------------------------
 // Constants
 // ----------------------------------------------------------------------
 
-static uint16_t g_last_sw = 0;
-
-// ----------------------------------------------------------------------
-// Simple mocks for IO and UI plumbing so we can drive the handler
-// ----------------------------------------------------------------------
-
-void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warnings);
-void ui_deriveAddress_handleDisplay(security_policy_t policy, warning_bits_t warnings);
-
-int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
-    (void) buffer;
-    (void) bufferLength;
-    g_last_sw = swo;
-    return 0;
-}
-
-int io_send_sw(uint16_t swo) {
-    g_last_sw = swo;
-    return 0;
-}
-
 // ----------------------------------------------------------------------
 // Fixture runner
 // ----------------------------------------------------------------------
 
-void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warnings) {
-    (void) policy;
-    (void) warnings;
-}
-
-void ui_deriveAddress_handleDisplay(security_policy_t policy, warning_bits_t warnings) {
-    (void) policy;
-    (void) warnings;
-}
-
 static void run_deny_fixture(const derive_address_fixture_t *fixture) {
-    g_last_sw = 0;
+    io_capture_reset();
+    nbgl_mock_reset();
 
     buffer_t buf = {
         .ptr = fixture->data,
@@ -115,7 +87,7 @@ static void run_deny_fixture(const derive_address_fixture_t *fixture) {
     apdu_response_begin(INS_DERIVE_ADDRESS);
     handler_derive_address(&buf, fixture->p1);
     apdu_response_assert_sent_or_deferred();
-    assert_int_equal(g_last_sw, fixture->check_expected);
+    assert_int_equal(g_last_response_sw, fixture->check_expected);
 }
 
 """

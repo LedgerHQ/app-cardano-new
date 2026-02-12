@@ -288,28 +288,24 @@ static void handler_tx_aux_data_delegation(buffer_t *cdata) {
 
     LEDGER_ASSERT(aux_data->remaining_delegations > 0, "wrong remaining delegation count");
     aux_data->remaining_delegations--;
+    const bool is_last_delegation_chunk = (aux_data->remaining_delegations == 0);
 
     if (aux_data->ui_streaming.on) {
-        // Streaming mode
-        bool chunk_complete = ui_cvote_aux_data_add_delegation_streaming(aux_data,
-                                                                          &delegation_credential,
-                                                                          weight);
-
-        // Transition state when all delegations received
-        if (aux_data->remaining_delegations == 0) {
+        if (is_last_delegation_chunk) {
             aux_data->state = CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED;
             TRACE("CVote AUX_DATA: all delegations received");
             // Transition back to CHUNKS state - ready to receive transaction data
             G_context.state.tx_state = TX_STATE_CHUNKS;
         }
 
-        if (chunk_complete) {
-            apdu_response_deferred();
-            return;
-        }
+        // Mark APDU as deferred before invoking UI code.
+        // In unit tests, NBGL callbacks execute synchronously and may send SW immediately.
+        apdu_response_deferred();
+        ui_cvote_aux_data_add_delegation_streaming(aux_data,
+                                                   &delegation_credential,
+                                                   weight);
 
-        // Chunk not complete, more delegations expected
-        apdu_response_send_sw(SWO_SUCCESS);
+        return;
     } else {
         // Non-streaming mode
         ui_cvote_aux_data_add_delegation_non_streaming(aux_data,

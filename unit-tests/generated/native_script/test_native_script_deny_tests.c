@@ -28,19 +28,8 @@
 #include "apdu/dispatcher.h"
 #include "app_context.h"
 #include "test_native_script_utils.h"
+#include "nbgl_mock.h"
 #include "apdu_finalization_check.h"
-
-// ----------------------------------------------------------------------
-// UI mock for deny tests
-// ----------------------------------------------------------------------
-
-void ui_start_native_script_streaming(void) {
-    apdu_response_send_data(NULL, 0, SWO_SUCCESS);
-}
-
-void ui_display_native_script_hash(void) {
-    apdu_response_send_data(NULL, 0, SWO_SUCCESS);
-}
 
 // ----------------------------------------------------------------------
 // Fixture runner
@@ -171,6 +160,8 @@ static inline void run_fixture(const native_script_test_case_t *fixture) {
     reset_context();
     assert_true(test_mem_init());
     reset_response_buffer();
+    nbgl_mock_reset();
+    nbgl_mock_set_streaming_start_auto_complete(true, true);
 
     // Check not null
     TRACE("Running derive address fixture: %s", fixture->name);

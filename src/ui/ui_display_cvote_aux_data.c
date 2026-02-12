@@ -326,7 +326,7 @@ static bool cvote_add_delegation_pairs(cvote_aux_data_t *aux_data,
 
 static bool cvote_init_pairs_for_streaming_page(cvote_aux_data_t *aux_data) {
     LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
-    LEDGER_ASSERT(aux_data != NULL && aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS, "Streaming delegation page in wrong state: %d", aux_data->state);
+    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS || aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED, "Streaming delegation page in wrong state: %d", aux_data->state);
 
     uint16_t pair_count = CVOTE_DELEGATION_UI_PAIRS_MAX;
 
@@ -419,12 +419,12 @@ void ui_cvote_aux_data_streaming_show_initial_page(cvote_aux_data_t *aux_data) {
     cvote_streaming_display_current_page();
 }
 
-bool ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
+void ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
                                                 const cvote_credential_t *credential,
                                                 uint32_t weight) {
     LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
     LEDGER_ASSERT(aux_data->ui_streaming.on, "Called with streaming disabled");
-    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS,
+    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS || aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED,
                   "Streaming delegation page in wrong state: %d",
                   aux_data->state);
     LEDGER_ASSERT(credential != NULL, "Delegation payload missing in streaming loop");
@@ -433,19 +433,18 @@ bool ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
 
     // Initialize pairs for this delegation page
     if (!cvote_init_pairs_for_streaming_page(aux_data)) {
-        return true; // Error already sent
+        return; // Error already sent
     }
 
     if (!cvote_add_delegation_pairs(aux_data, credential, weight)) {
         // Policy DENY sends error inside cvote_add_delegation_pairs
         // If we get here and it failed, it's a memory issue
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return true;
+        return;
     }
 
     // Display this delegation immediately.
     cvote_streaming_display_current_page();
-    return true; // Chunk displayed, waiting for callback
 }
 
 void ui_cvote_aux_data_add_delegation_non_streaming(cvote_aux_data_t *aux_data,

@@ -26,10 +26,10 @@ void ui_cvote_aux_data_add_delegation_non_streaming(cvote_aux_data_t *aux_data M
     // Stub: no-op
 }
 
-bool ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data MARK_UNUSED,
+void ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data MARK_UNUSED,
                                                   const cvote_credential_t *credential MARK_UNUSED,
                                                   uint32_t weight MARK_UNUSED) {
-    return false;
+    // Stub: no-op
 }
 
 void ui_cvote_aux_data_show_non_streaming_final_review(cvote_aux_data_t *aux_data MARK_UNUSED) {

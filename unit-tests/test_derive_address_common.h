@@ -24,12 +24,12 @@
 
 #include "test_fixture_types.h"
 #include "handler/derive_address.h"
+#include "io_capture.h"
+#include "nbgl_mock.h"
 
 // ----------------------------------------------------------------------
 // Constants
 // ----------------------------------------------------------------------
-
-static uint16_t g_last_sw = 0;
 
 // ----------------------------------------------------------------------
 // Simple mocks for IO and UI plumbing so we can drive the handler
@@ -47,67 +47,20 @@ static inline void reset_context(void) {
     memset(&G_context, 0, sizeof(G_context));
 }
 
-void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warnings);
-void ui_deriveAddress_handleDisplay(security_policy_t policy, warning_bits_t warnings);
-
-int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
-    (void) buffer;
-    (void) bufferLength;
-    g_last_sw = swo;
-    return 0;
-}
-
-int io_send_sw(uint16_t swo) {
-    g_last_sw = swo;
-    return 0;
-}
-
 // ----------------------------------------------------------------------
 // Fixture runner
 // ----------------------------------------------------------------------
 
-void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warnings) {
-    (void) warnings;
-    derive_address_ctx_t *ctx = &G_context.derive_address_info;
-// Validate state before proceeding (address must be prepared before UI display)
-    switch (policy) {
-        case POLICY_SHOW:
-            apdu_response_send_data(ctx->address.buffer, ctx->address.length, SWO_SUCCESS);
-            break;
-        case POLICY_HIDE: {
-            // Silently approve and return address without UI
-            finalize_derive_address(true);
-            break;
-        }
-        default:
-            LEDGER_ASSERT(false, "Invalid policy in ui_deriveAddress_handleReturn: %d", policy);
-            break;
-    }
-    
-}
-
-void ui_deriveAddress_handleDisplay(security_policy_t policy, warning_bits_t warnings) {
-    (void) warnings;
-    switch (policy) {
-        case POLICY_SHOW:
-            apdu_response_send_data(NULL, 0, SWO_SUCCESS);
-            break;
-        default:
-            LEDGER_ASSERT(false, "Invalid policy in ui_deriveAddress_handleDisplay: %d", policy);
-            break;
-    }
-}
-
 static inline void run_fixture(const derive_address_fixture_t *fixture) {
     reset_context();
     assert_true(test_mem_init());
+    io_capture_reset();
+    nbgl_mock_reset();
 
     TRACE("Running derive address fixture: %s\n", fixture->name);
 
     // Mock the handler call with fixture data
     // The handler should reject and return the expected status word
-    g_last_sw = 0;
-
     buffer_t buf = {
         .ptr = fixture->data,
         .size = fixture->data_len,
@@ -117,14 +70,12 @@ static inline void run_fixture(const derive_address_fixture_t *fixture) {
     apdu_response_begin(INS_DERIVE_ADDRESS);
     handler_derive_address(&buf, fixture->p1);
     apdu_response_assert_sent_or_deferred();
-    assert_int_equal(g_last_sw, fixture->check_expected);
+    assert_int_equal(g_last_response_sw, fixture->check_expected);
 
     if (fixture->expected_address != NULL && fixture->expected_address_len > 0) {
-        derive_address_ctx_t *ctx = &G_context.derive_address_info;
-        assert_int_equal(ctx->address.length, fixture->expected_address_len);
-        assert_memory_equal(
-            ctx->address.buffer,
-            fixture->expected_address,
-            fixture->expected_address_len);
+        assert_int_equal(g_last_response_len, fixture->expected_address_len);
+        assert_memory_equal(g_last_response,
+                            fixture->expected_address,
+                            fixture->expected_address_len);
     }
 }
