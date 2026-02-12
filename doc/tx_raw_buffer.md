@@ -165,20 +165,183 @@ Set to **21 KB** (not 19.456 KB) to:
 - Leave more memory for UI structures
 - Future-proof against format changes
 
-### Verification Scripts
+### Verification Script
 
-For detailed verification, see:
-- `calc_precise_worst_case.py` — Systematic analysis of all component types
-- `calc_final_precise.py` — Focused analysis on outputs with varying coin sizes
+The following Python script provides automated verification of the worst-case calculation using actual CBOR encoding (via `cbor2` library):
 
-Run from `tests/standalone/venv`:
-```bash
-cd tests/standalone
-source venv/bin/activate
-python3 ../../calc_final_precise.py
+```python
+#!/usr/bin/env python3
+"""
+Final precise calculation focusing on outputs with varying coin sizes.
+"""
+
+import cbor2
+from io import BytesIO
+
+MAX_CBOR_TX_SIZE = 16 * 1024
+
+def measure_cbor_size(obj):
+    buf = BytesIO()
+    cbor2.dump(obj, buf)
+    return len(buf.getvalue())
+
+def analyze_outputs():
+    print("="*80)
+    print("FINAL PRECISE WORST-CASE ANALYSIS")
+    print("="*80)
+    print()
+    print("Testing outputs with varying coin sizes to find maximum overhead.")
+    print()
+
+    address = b'\x00' * 57
+
+    # Test different coin sizes
+    test_cases = [
+        ("Small coin (100)", 100),
+        ("Medium coin (10^6)", 10**6),
+        ("Large coin (10^12)", 10**12),
+        ("Max uint32 (2^32-1)", 2**32 - 1),
+        ("Large uint64 (2^50)", 2**50),
+        ("Max uint64 (2^64-1)", 2**64 - 1),
+    ]
+
+    print(f"{'Coin Value':<25} {'CBOR':>8} {'Raw':>8} {'Diff':>6} {'Count':>6} {'Total Overhead':>15}")
+    print("-"*80)
+
+    max_overhead = 0
+    worst_case = None
+
+    for label, coin_value in test_cases:
+        # CBOR: {0: address, 1: coin}
+        output_cbor = {0: address, 1: coin_value}
+        cbor_size = measure_cbor_size(output_cbor)
+
+        # Raw: destination_type(1) + address_size(2) + address(57) + amount(8) +
+        #      format(1) + num_asset_groups(2) + datum_flag(1) + ref_script_flag(1) +
+        #      output_data_size_prefix(2)
+        raw_size = 1 + 2 + 57 + 8 + 1 + 2 + 1 + 1 + 2
+
+        diff = raw_size - cbor_size
+        count = MAX_CBOR_TX_SIZE // cbor_size
+        total_cbor = count * cbor_size
+        total_raw = count * raw_size
+        total_overhead = total_raw - total_cbor
+
+        print(f"{label:<25} {cbor_size:8} {raw_size:8} {diff:+6} {count:6} {total_overhead:+15}")
+
+        if total_overhead > max_overhead:
+            max_overhead = total_overhead
+            worst_case = {
+                'label': label,
+                'cbor_per': cbor_size,
+                'raw_per': raw_size,
+                'diff_per': diff,
+                'count': count,
+                'total_cbor': total_cbor,
+                'total_raw': total_raw,
+                'total_overhead': total_overhead
+            }
+
+    print("="*80)
+    print()
+    print("WORST CASE IDENTIFIED:")
+    print(f"  Scenario: {worst_case['label']}")
+    print(f"  CBOR per output: {worst_case['cbor_per']} bytes")
+    print(f"  Raw per output:  {worst_case['raw_per']} bytes")
+    print(f"  Overhead per output: {worst_case['diff_per']:+} bytes")
+    print(f"  Number fitting in 16KB: {worst_case['count']}")
+    print(f"  Total CBOR: {worst_case['total_cbor']:,} bytes")
+    print(f"  Total raw:  {worst_case['total_raw']:,} bytes")
+    print(f"  Total overhead: {worst_case['total_overhead']:+,} bytes ({100*worst_case['total_overhead']/worst_case['total_cbor']:+.2f}%)")
+    print()
+
+    # Add safety margin
+    safety_margin = 256
+    recommended = MAX_CBOR_TX_SIZE + worst_case['total_overhead'] + safety_margin
+
+    print("RECOMMENDED TX_BUFFER_SIZE:")
+    print(f"  16,384 (16KB CBOR)")
+    print(f"  +{worst_case['total_overhead']:,} (worst-case overhead)")
+    print(f"  +{safety_margin} (safety margin)")
+    print(f"  = {recommended:,} bytes")
+    print(f"  = {recommended / 1024:.2f} KB")
+    print()
+
+    # Current setting (MAX_TX_BUFFER_SIZE from tx_constants.h)
+    current = 21 * 1024  # 21 KB
+    print(f"Current MAX_TX_BUFFER_SIZE: {current:,} bytes ({current / 1024:.0f} KB)")
+    print(f"Margin above required:  {current - recommended:+,} bytes")
+    if current >= recommended:
+        print("  ✓ Current setting is SAFE")
+    else:
+        print("  ✗ Current setting is TOO SMALL")
+    print()
+
+    # Also check what actually fits in remaining memory
+    size_mem_buffer = 23 * 1024  # worst case (Nano S+)
+    heap_overhead = 200  # approximate overhead for heap structures
+    available = size_mem_buffer - heap_overhead
+
+    print(f"Memory constraints (Nano S+):")
+    print(f"  SIZE_MEM_BUFFER:     {size_mem_buffer:,} bytes")
+    print(f"  Heap overhead:       ~{heap_overhead:,} bytes")
+    print(f"  Available for TX:    {available:,} bytes")
+    print(f"  Recommended TX size: {recommended:,} bytes")
+    print(f"  Remaining margin:    {available - recommended:,} bytes")
+    print()
+
+    return worst_case
+
+if __name__ == "__main__":
+    analyze_outputs()
 ```
 
-Scripts use `cbor2` library for actual CBOR encoding measurements.
+**Expected output:**
+```
+================================================================================
+FINAL PRECISE WORST-CASE ANALYSIS
+================================================================================
+
+Testing outputs with varying coin sizes to find maximum overhead.
+
+Coin Value                    CBOR      Raw   Diff  Count  Total Overhead
+--------------------------------------------------------------------------------
+Small coin (100)                64       75    +11    256           +2816
+Medium coin (10^6)              67       75     +8    244           +1952
+Large coin (10^12)              71       75     +4    230            +920
+Max uint32 (2^32-1)             67       75     +8    244           +1952
+Large uint64 (2^50)             71       75     +4    230            +920
+Max uint64 (2^64-1)             71       75     +4    230            +920
+================================================================================
+
+WORST CASE IDENTIFIED:
+  Scenario: Small coin (100)
+  CBOR per output: 64 bytes
+  Raw per output:  75 bytes
+  Overhead per output: +11 bytes
+  Number fitting in 16KB: 256
+  Total CBOR: 16,384 bytes
+  Total raw:  19,200 bytes
+  Total overhead: +2,816 bytes (+17.19%)
+
+RECOMMENDED TX_BUFFER_SIZE:
+  16,384 (16KB CBOR)
+  +2,816 (worst-case overhead)
+  +256 (safety margin)
+  = 19,456 bytes
+  = 19.00 KB
+
+Current MAX_TX_BUFFER_SIZE: 21,504 bytes (21 KB)
+Margin above required:  +2,048 bytes
+  ✓ Current setting is SAFE
+
+Memory constraints (Nano S+):
+  SIZE_MEM_BUFFER:     23,552 bytes
+  Heap overhead:       ~200 bytes
+  Available for TX:    23,352 bytes
+  Recommended TX size: 19,456 bytes
+  Remaining margin:    3,896 bytes
+```
 
 ---
 
