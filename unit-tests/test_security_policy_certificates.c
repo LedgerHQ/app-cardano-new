@@ -43,6 +43,18 @@ static bip44_path_t make_pool_cold_key_path(void) {
     return path;
 }
 
+static bip44_path_t make_ordinary_staking_path_account_one(void) {
+    bip44_path_t path;
+    memset(&path, 0, sizeof(path));
+    path.length = 5;
+    path.path[0] = bip44_harden(PURPOSE_SHELLEY);
+    path.path[1] = bip44_harden(ADA_COIN_TYPE);
+    path.path[2] = bip44_harden(1);
+    path.path[3] = 2; // CARDANO_CHAIN_STAKING_KEY
+    path.path[4] = 0;
+    return path;
+}
+
 static ext_credential_t make_stake_credential(void) {
     ext_credential_t credential;
     memset(&credential, 0, sizeof(credential));
@@ -150,6 +162,23 @@ static void test_pool_retirement_allowed_in_plutus(void **state) {
     assert_int_equal(policy, POLICY_SHOW);
 }
 
+static void test_pool_registration_reward_account_path_compatibility(void **state) {
+    (void) state;
+    reset_context();
+
+    pool_reward_account_t reward_account;
+    memset(&reward_account, 0, sizeof(reward_account));
+    reward_account.keyReferenceType = KEY_REFERENCE_PATH;
+    reward_account.path = make_ordinary_staking_path_account_one();
+
+    security_policy_t policy = policyForSignTxStakePoolRegistrationRewardAccount(
+        SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER,
+        MAINNET_NETWORK_ID,
+        &reward_account
+    );
+    assert_int_equal(policy, POLICY_SHOW);
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_stake_registration_denied_in_pool_registration_owner),
@@ -159,6 +188,7 @@ int main(void) {
         cmocka_unit_test(test_pool_retirement_denied_in_pool_registration_operator),
         cmocka_unit_test(test_pool_retirement_allowed_in_ordinary),
         cmocka_unit_test(test_pool_retirement_allowed_in_plutus),
+        cmocka_unit_test(test_pool_registration_reward_account_path_compatibility),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

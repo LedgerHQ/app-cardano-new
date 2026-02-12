@@ -1330,7 +1330,8 @@ security_policy_t policyForSignTxStakePoolRegistrationRewardAccount(
         }
         case KEY_REFERENCE_PATH:
             DENY_UNLESS(bip44_isOrdinaryStakingKeyPath(&poolRewardAccount->path));
-            DENY_IF(violatesSingleAccountOrStoreIt(&poolRewardAccount->path));
+            // we do not enforce single account, no benefit for pool registrations
+            // and it is compatible with previous app versions
             break;
         default:
             DENY();
