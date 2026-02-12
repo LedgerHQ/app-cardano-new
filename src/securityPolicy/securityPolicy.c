@@ -649,14 +649,11 @@ static bool is_address_params_suitable_for_tx_output(const address_params_t *par
     {
         // outputs to a different account within this HW wallet,
         // or to a different wallet, should be given as raw address bytes
-
         // this captures the essence of a change output: money stays
         // on an address where payment is fully controlled by this device
-        CHECK(determinePaymentChoice(params->type) == PAYMENT_PATH);
         // Note: if we allowed script hash in payment part, we must add a warning
         // for missing datum (see policyForSignTxOutputAddressBytes)
-
-        ASSERT(determinePaymentChoice(params->type) == PAYMENT_PATH);
+        CHECK(determinePaymentChoice(params->type) == PAYMENT_PATH);
         ASSERT(addressParams_getPaymentPartType(params) == PAYMENT_PART_KEY_PATH);
         CHECK(!violatesSingleAccountOrStoreIt(&params->paymentKeyPath));
     }

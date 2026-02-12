@@ -2639,6 +2639,63 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048283128200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a182727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef83128200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1f6",
     ),
+    SignTxTestCase(
+        name="Sign_tx_with_mixed_script_hash_certificates_in_plutus_mode",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            fee=42,
+            ttl=10,
+            certificates=[
+                Certificate(
+                    CertificateType.VOTE_DELEGATION,
+                    VoteDelegationParams(
+                        CredentialParams(
+                            CredentialParamsType.SCRIPT_HASH,
+                            "122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
+                        ),
+                        DRepParams(DRepParamsType.KEY_PATH, "m/1852'/1815'/0'/3/0"),
+                    ),
+                ),
+                Certificate(
+                    CertificateType.AUTHORIZE_COMMITTEE_HOT,
+                    AuthorizeCommitteeParams(
+                        CredentialParams(
+                            CredentialParamsType.SCRIPT_HASH,
+                            "1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8",
+                        ),
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/5/0"
+                        ),
+                    ),
+                ),
+                Certificate(
+                    CertificateType.DREP_REGISTRATION,
+                    DRepRegistrationParams(
+                        CredentialParams(
+                            CredentialParamsType.SCRIPT_HASH,
+                            "1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8",
+                        ),
+                        19,
+                    ),
+                ),
+                Certificate(
+                    CertificateType.STAKE_REGISTRATION_CONWAY,
+                    StakeRegistrationConwayParams(
+                        CredentialParams(
+                            CredentialParamsType.SCRIPT_HASH,
+                            "122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
+                        ),
+                        17,
+                    ),
+                ),
+            ],
+        ),
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048483098201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42778200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1830e8201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c88200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c4883909284108201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c813f683078201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b427711",
+        has_warning=True,
+    ),
 ]
 
 testsMultisig: List[SignTxTestCase] = [
