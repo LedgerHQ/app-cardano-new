@@ -65,8 +65,10 @@ For detailed analysis, see:
     - [fuzzing/FUZZING.md](fuzzing/FUZZING.md): Fuzzing harnesses and usage.
 
 ## Testing Workflow
-- **When C code is modified:** run unit tests.
-- **Do not run ragger tests or swap tests unless explicitly requested.**
-- **Build process note:** the primary app build uses the VSCode Ledger plugin and is not automated here; use the unit-tests build process as a practical proxy for compile health.
+- **When C code is modified:** run unit tests. Use unit test build as proxy for real app build.
 - **After unit tests pass:** check fuzzing build as an additional compile-health gate.
+- **When `tests/standalone` ragger inputs or `application_client/` are modified:** run `unit-tests/generators/generate_unit_tests_from_ragger.py`, then run unit tests to verify generated outputs are up to date and passing. The generator depends on `application_client/`, so any change there must be reflected by regenerated unit-test fixtures.
+- **Do not run ragger tests or swap tests unless explicitly requested.**
 - **Compilation warnings are not acceptable:** treat warnings as issues to fix.
+- Command to build executed by Ledger VSCode plugin (not suitable for agents because of permissions, but can be run manually):
+  `docker exec --user 1000:1000 -it ledger-app-cardano-container bash -c 'export BOLOS_SDK=$(echo $STAX_SDK) && make -C ./ clean_target' && docker exec --user 1000:1000 -it ledger-app-cardano-container bash -c 'export BOLOS_SDK=$(echo $STAX_SDK) && make -C ./ -j DEBUG=1 COIN=cardano_ada'`
