@@ -119,7 +119,7 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
 #define UI_ADD_FORMAT1(label, max_len, format_fn, value) do { \
     char *_buf = NULL; \
     const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
-    if ((_buf_size > UINT16_MAX) || !APP_MEM_CALLOC((void **) &_buf, (uint16_t) _buf_size)) { \
+    if (!allocate_zeroed((void **) &_buf, _buf_size)) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \
@@ -150,7 +150,7 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
 #define UI_ADD_FORMAT2(label, max_len, format_fn, param1, param2) do { \
     char *_buf = NULL; \
     const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
-    if ((_buf_size > UINT16_MAX) || !APP_MEM_CALLOC((void **) &_buf, (uint16_t) _buf_size)) { \
+    if (!allocate_zeroed((void **) &_buf, _buf_size)) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \
@@ -182,7 +182,7 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
 #define UI_ADD_FORMAT3(label, max_len, format_fn, param1, param2, param3) do { \
     char *_buf = NULL; \
     const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
-    if ((_buf_size > UINT16_MAX) || !APP_MEM_CALLOC((void **) &_buf, (uint16_t) _buf_size)) { \
+    if (!allocate_zeroed((void **) &_buf, _buf_size)) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \
@@ -208,7 +208,7 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
     const char *_static_value = (value); \
     size_t _static_value_len = strlen(_static_value); \
     char *_static_value_copy = NULL; \
-    if ((_static_value_len + 1 > UINT16_MAX) || !APP_MEM_CALLOC((void **) &_static_value_copy, (uint16_t) (_static_value_len + 1))) { \
+    if (!allocate_zeroed((void **) &_static_value_copy, _static_value_len + 1)) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \
@@ -239,7 +239,7 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
 #define UI_ADD_FORMAT4(label, max_len, format_fn, param1, param2, param3, param4) do { \
     char *_buf = NULL; \
     const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
-    if ((_buf_size > UINT16_MAX) || !APP_MEM_CALLOC((void **) &_buf, (uint16_t) _buf_size)) { \
+    if (!allocate_zeroed((void **) &_buf, _buf_size)) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \

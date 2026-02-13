@@ -46,7 +46,7 @@ cmake -DBOLOS_SDK=/opt/ledger-secure-sdk \
       -DTARGET=stax \
       -DCMAKE_C_COMPILER=/usr/bin/clang \
       -Bbuild -H.
-make -C build
+make -C build -j4
 ```
 
 **What this does:**

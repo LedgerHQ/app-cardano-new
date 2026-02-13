@@ -99,7 +99,7 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
     const char* exportPrefix = isUnusual ? "Export UNUSUAL" : "Export";
 
     pubkey_review_cleanup();
-    LEDGER_ASSERT(APP_MEM_CALLOC((void **) &g_pubkey_export_choice_title, PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE), "Failed to allocate public key export title");
+    LEDGER_ASSERT(allocate_zeroed((void **) &g_pubkey_export_choice_title, PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE), "Failed to allocate public key export title");
 
     int written = snprintf(g_pubkey_export_choice_title,
                            PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE,

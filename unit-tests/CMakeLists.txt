@@ -690,6 +690,7 @@ add_test(test_key_derivation test_key_derivation)
 add_test(test_message_signing test_message_signing)
 add_test(test_cvote test_cvote)
 add_test(test_sign_msg test_sign_msg)
+add_test(test_ui_utils test_ui_utils)
 
 add_executable(test_opcert
     generated/opcert/test_opcert.c

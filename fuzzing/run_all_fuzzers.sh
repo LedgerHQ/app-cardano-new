@@ -29,7 +29,7 @@ if [[ ! -d "$build_dir" ]]; then
   echo "Error: build directory not found: $build_dir"
   echo "Build first, e.g.:"
   echo "  cmake -S fuzzing -B fuzzing/build -DBOLOS_SDK=/opt/ledger-secure-sdk -DTARGET=stax"
-  echo "  make --no-print-directory -C fuzzing/build -j1"
+  echo "  make --no-print-directory -C fuzzing/build -j4"
   exit 1
 fi
 

@@ -22,20 +22,20 @@ sudo apt install cmake libcmocka-dev lcov
 In `unit-tests` folder, compile with
 
 ```shell
-cmake -Bbuild -H. && make -C build
+cmake -Bbuild -H. && make -C build -j4
 ```
 
 and run tests with
 
 ```shell
-CTEST_OUTPUT_ON_FAILURE=1 make -C build test
+CTEST_OUTPUT_ON_FAILURE=1 make -C build -j4 test
 ```
 
 To run a specific test binary (e.g., `test_ui_formatters`), use:
 
 ```shell
 cd unit-tests
-cmake -Bbuild -H. && make -C build
+cmake -Bbuild -H. && make -C build -j4
 CTEST_OUTPUT_ON_FAILURE=1 ctest --test-dir build -R test_ui_formatters
 ```
 
@@ -133,9 +133,9 @@ This is the standard test mnemonic used across all Cardano Ledger application te
 **How to run:**
 ```bash
 cd unit-tests
-cmake -Bbuild -H. && make -C build test
+cmake -Bbuild -H. && make -C build -j4 test
 # or specifically:
-CTEST_OUTPUT_ON_FAILURE=1 make -C build test 2>&1 | grep test_mock_key_derivation
+CTEST_OUTPUT_ON_FAILURE=1 make -C build -j4 test 2>&1 | grep test_mock_key_derivation
 ```
 
 **Expected result:** ✓ All entries verified successfully
