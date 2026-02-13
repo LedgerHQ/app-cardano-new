@@ -1216,8 +1216,6 @@ security_policy_t policyForSignTxCertificateStakePoolRetirement(
     switch (txSigningMode) {
         case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
         case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
-            // TODO: Investigate signing-mode restrictions for pool retirement and
-            // document them in doc/spec_pool_registration.md.
             DENY_UNLESS(poolCredential->type == EXT_CREDENTIAL_KEY_PATH);
             // the path hash should be a valid pool cold key path
             DENY_UNLESS(bip44_isPoolColdKeyPath(&poolCredential->keyPath));

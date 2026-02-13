@@ -451,6 +451,8 @@ static bool _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
                            ctx->signature,
                            SIZEOF(ctx->signature));
 
+    APP_MEM_FREE(sigStructure);
+
     return true;
 }
 

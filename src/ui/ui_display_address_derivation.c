@@ -17,41 +17,14 @@
 #include "ui_warnings.h"
 #include "ui_display_address_derivation.h"
 #include "tx_ui_helpers.h"
-/**
- * Cleanup dynamically allocated buffers
- */
-static void derive_address_buffer_cleanup(void) {
+// Called when long press button is touched or when reject footer is touched
+static void derive_address_review_choice(bool confirm) {
+    TRACE("confirmed = %d", confirm);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS, "derive_address_review_choice called without REQUEST_DERIVE_ADDRESS");
+    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED, "derive_address_review_choice called in wrong state: %d", G_context.state.derive_address_state);
+
+    // CLEANUP
     ui_all_cleanup();
-}
-
-// Called when long press button is touched or when reject footer is touched
-static void derive_address_return_review_choice(bool confirm) {
-    TRACE("confirmed = %d", confirm);
-    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS, "derive_address_return_review_choice called without REQUEST_DERIVE_ADDRESS");
-    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED, "derive_address_return_review_choice called in wrong state: %d", G_context.state.derive_address_state);
-
-    // CLEANUP
-    derive_address_buffer_cleanup();
-
-    // FINALIZE
-    finalize_derive_address(confirm);
-
-    // SHOW STATUS
-    if (confirm) {
-        nbgl_useCaseReviewStatus(STATUS_TYPE_ADDRESS_VERIFIED, ui_menu_main);
-    } else {
-        nbgl_useCaseReviewStatus(STATUS_TYPE_ADDRESS_REJECTED, ui_menu_main);
-    }
-}
-
-// Called when long press button is touched or when reject footer is touched
-static void derive_address_display_review_choice(bool confirm) {
-    TRACE("confirmed = %d", confirm);
-    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS, "derive_address_display_review_choice called without REQUEST_DERIVE_ADDRESS");
-    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED, "derive_address_display_review_choice called in wrong state: %d", G_context.state.derive_address_state);
-
-    // CLEANUP
-    derive_address_buffer_cleanup();
 
     // FINALIZE
     finalize_derive_address(confirm);
@@ -183,7 +156,7 @@ void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warn
         case POLICY_SHOW:
             ui_displayAddressReview("Export address",
                                     NULL,
-                                    derive_address_return_review_choice,
+                                    derive_address_review_choice,
                                     warnings);
             break;
         case POLICY_HIDE: {
@@ -206,7 +179,7 @@ void ui_deriveAddress_handleDisplay(security_policy_t policy, warning_bits_t war
         case POLICY_SHOW:
             ui_displayAddressReview("Display address",
                                     "(not exported)",
-                                    derive_address_display_review_choice,
+                                    derive_address_review_choice,
                                     warnings);
             break;
         default:

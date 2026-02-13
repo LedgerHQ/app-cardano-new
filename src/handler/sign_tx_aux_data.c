@@ -191,6 +191,7 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
     // Validate all security policies
     if (!cvote_aux_data_validate(aux_data)) {
         TRACE("CVote AUX_DATA validation failed");
+        APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.raw_cvote_init_data);
         send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
         return;
     }

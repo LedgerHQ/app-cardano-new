@@ -3,11 +3,7 @@
 
 #pragma once
 
-#if defined(TEST)
 #include "hash.h"
-#else
-#include "hash.h"
-#endif
 #include "cvote_types.h"
 #include "keyDerivation.h"
 #include "utils.h"
