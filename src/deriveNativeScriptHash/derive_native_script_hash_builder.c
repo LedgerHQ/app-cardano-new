@@ -27,7 +27,7 @@ static void blake2b_224_append_buffer_data(blake2b_224_context_t* hashCtx,
     blake2b_224_append(hashCtx, buffer, size);
 }
 
-__noinline_due_to_stack__ static void blake2b_224_append_cbor_data(blake2b_224_context_t* hashCtx,
+static void blake2b_224_append_cbor_data(blake2b_224_context_t* hashCtx,
                                                                    uint8_t type,
                                                                    uint64_t value) {
     uint8_t buffer[10] = {0};

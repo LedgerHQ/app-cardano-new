@@ -51,7 +51,7 @@ static void blake2b_256_append_buffer_tx_body(blake2b_256_context_t* hashCtx,
     blake2b_256_append(hashCtx, buffer, bufferSize);
 }
 
-__noinline_due_to_stack__ static void
+static void
 blake2b_256_append_cbor_tx_body(blake2b_256_context_t* hashCtx, uint8_t type, uint64_t value) {
     uint8_t buffer[10] = {0};
     size_t size = 0;
@@ -489,7 +489,7 @@ void txHashBuilder_addOutput_topLevelData(tx_hash_builder_t* builder,
     builder->outputData.outputState = TX_OUTPUT_TOP_LEVEL_DATA;
 }
 
-__noinline_due_to_stack__ static void addTokenGroup(tx_hash_builder_t* builder,
+static void addTokenGroup(tx_hash_builder_t* builder,
                                                     const uint8_t* policyIdBuffer,
                                                     size_t policyIdSize,
                                                     uint16_t numTokens) {
@@ -535,7 +535,7 @@ __noinline_due_to_stack__ static void addTokenGroup(tx_hash_builder_t* builder,
     builder->outputData.outputState = TX_OUTPUT_ASSET_GROUP;
 }
 
-__noinline_due_to_stack__ static void addToken(tx_hash_builder_t* builder,
+static void addToken(tx_hash_builder_t* builder,
                                                const uint8_t* assetNameBuffer,
                                                size_t assetNameSize,
                                                uint64_t amount,

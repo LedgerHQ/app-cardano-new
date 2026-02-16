@@ -18,7 +18,7 @@ uint64_t abs_int64(int64_t number);
  * @param fingerprintBuffer Output buffer for fingerprint bytes
  * @param fingerprintBufferSize Size of output buffer (should be ASSET_FINGERPRINT_SIZE)
  */
-__noinline_due_to_stack__ void deriveAssetFingerprintBytes(const uint8_t* policyId,
+void deriveAssetFingerprintBytes(const uint8_t* policyId,
                                                            size_t policyIdSize,
                                                            const uint8_t* assetName,
                                                            size_t assetNameSize,

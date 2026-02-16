@@ -121,7 +121,7 @@ typedef struct {
 
 size_t deriveAddress(const address_params_t* address_params, uint8_t* outBuffer, size_t outSize);
 
-__noinline_due_to_stack__ size_t constructRewardAddressFromKeyPath(const bip44_path_t* path,
+size_t constructRewardAddressFromKeyPath(const bip44_path_t* path,
                                                                    uint8_t networkId,
                                                                    uint8_t* outBuffer,
                                                                    size_t outSize);
@@ -131,7 +131,7 @@ typedef enum {
     REWARD_HASH_SOURCE_SCRIPT,
 } reward_address_hash_source_t;
 
-__noinline_due_to_stack__ size_t constructRewardAddressFromHash(uint8_t networkId,
+size_t constructRewardAddressFromHash(uint8_t networkId,
                                                                 reward_address_hash_source_t source,
                                                                 const uint8_t* hashBuffer,
                                                                 size_t hashSize,
