@@ -107,6 +107,29 @@ static void test_sign_message_sign_msg_unusual_path_with_high_address_index_16(v
     run_fixture(&SIGN_MSG_FIXTURES[16]);
 }
 
+static void run_deny_init_fixture(const uint8_t *init_data, size_t init_data_len, uint16_t expected_sw) {
+    reset_sign_msg_test_state();
+    buffer_t init_buffer = {
+        .ptr = (uint8_t *) init_data,
+        .size = init_data_len,
+        .offset = 0,
+    };
+    apdu_response_begin(INS_SIGN_MSG);
+    handler_sign_msg(&init_buffer, P1_SIGN_MSG_INIT);
+    apdu_response_assert_sent_or_deferred();
+    assert_int_equal(g_last_response_sw, expected_sw);
+}
+
+static const uint8_t SIGN_MSG_DENY_000_SIGN_MSG_REJECT_NONEXISTENT_ADDRESS_FIELD_TYPE_INIT_APDU[] = {
+    0x00, 0x00, 0x00, 0x04, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x03,
+};
+
+static void test_sign_message_deny_sign_msg_reject_nonexistent_address_field_type_0(void **state) {
+    (void) state;
+    run_deny_init_fixture(SIGN_MSG_DENY_000_SIGN_MSG_REJECT_NONEXISTENT_ADDRESS_FIELD_TYPE_INIT_APDU, sizeof(SIGN_MSG_DENY_000_SIGN_MSG_REJECT_NONEXISTENT_ADDRESS_FIELD_TYPE_INIT_APDU), SWO_SIGN_MSG_INVALID_ADDRESS_FIELD_TYPE);
+}
+
 // ======================================================================
 // Main
 // ======================================================================
@@ -130,6 +153,7 @@ int main(void) {
         cmocka_unit_test(test_sign_message_sign_msg_257_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_14),
         cmocka_unit_test(test_sign_message_sign_msg_1000_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_15),
         cmocka_unit_test(test_sign_message_sign_msg_unusual_path_with_high_address_index_16),
+        cmocka_unit_test(test_sign_message_deny_sign_msg_reject_nonexistent_address_field_type_0),
     };
     return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }

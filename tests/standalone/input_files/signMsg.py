@@ -15,6 +15,7 @@ from ragger.navigator import NavInsID
 
 from standalone.input_files.derive_address import DeriveAddressTestCase
 from application_client.app_def import AddressType, Mainnet
+from application_client.status_words import StatusWord
 
 
 class MessageAddressFieldType(IntEnum):
@@ -56,6 +57,30 @@ class SignMsgTestCase:
     nav: Optional[NavigationData] = None
     expected_in_unit_test: Optional[SignMsgExpectedInUnitTest] = None
     has_warning: bool = False
+
+
+@dataclass(kw_only=True)
+class SignMsgDenyTestCase:
+    name: str
+    msgData: MessageData
+    expected_status: StatusWord
+    invalid_address_field_type: Optional[int] = None
+
+
+def build_sign_msg_init_apdu_for_deny(test_case: SignMsgDenyTestCase) -> bytes:
+    from application_client.command_builder import CommandBuilder
+
+    transient_success_case = SignMsgTestCase(
+        name=test_case.name,
+        msgData=test_case.msgData,
+    )
+    init_apdu = bytearray(CommandBuilder().sign_msg_init(transient_success_case))
+
+    if test_case.invalid_address_field_type is not None:
+        # KEY_HASH has no trailing address params; addressFieldType is the last cdata byte.
+        init_apdu[-1] = test_case.invalid_address_field_type
+
+    return bytes(init_apdu)
 
 
 
@@ -421,5 +446,21 @@ signMsgTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         has_warning=True,
+    ),
+]
+
+
+signMsgDenyTestCases = [
+    SignMsgDenyTestCase(
+        name="Sign_msg_reject_nonexistent_address_field_type",
+        msgData=MessageData(
+            messageHex="deadbeef",
+            signingPath="m/1852'/1815'/0'/0/1",
+            hashPayload=False,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
+        ),
+        invalid_address_field_type=0x03,
+        expected_status=StatusWord.SWO_SIGN_MSG_INVALID_ADDRESS_FIELD_TYPE,
     ),
 ]

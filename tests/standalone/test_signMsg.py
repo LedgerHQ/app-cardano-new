@@ -12,6 +12,7 @@ import pytest
 import cbor
 
 from ragger.backend import BackendInterface
+from ragger.error import ExceptionRAPDU
 from ledgered.devices import Device
 from ragger.navigator import Navigator
 from ragger.navigator.navigation_scenario import NavigateWithScenario
@@ -21,7 +22,14 @@ from application_client.status_words import StatusWord
 from application_client.command_sender import CommandSender
 from application_client.response_unpacker import unpack_sign_message_response
 
-from standalone.input_files.signMsg import signMsgTestCases, SignMsgTestCase, MessageAddressFieldType
+from standalone.input_files.signMsg import (
+    signMsgTestCases,
+    signMsgDenyTestCases,
+    SignMsgTestCase,
+    SignMsgDenyTestCase,
+    MessageAddressFieldType,
+    build_sign_msg_init_apdu_for_deny,
+)
 
 from standalone.test_derive_address import DeriveAddressTestCase
 
@@ -68,6 +76,19 @@ def test_sign_message(device: Device,
 
     # Check the response
     _check_result(testCase, signature, public_key, address_field)
+
+
+@pytest.mark.parametrize(
+    "testCase",
+    signMsgDenyTestCases,
+    ids=idTestFunc
+)
+def test_sign_message_deny(backend: BackendInterface, testCase: SignMsgDenyTestCase) -> None:
+    init_apdu = build_sign_msg_init_apdu_for_deny(testCase)
+
+    with pytest.raises(ExceptionRAPDU) as err:
+        backend.exchange_raw(init_apdu)
+    assert err.value.status == testCase.expected_status
 
 
 def _check_result(testCase: SignMsgTestCase, signature: bytes, public_key: bytes, address_field: bytes) -> None:
