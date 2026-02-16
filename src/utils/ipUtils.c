@@ -54,7 +54,7 @@ void inet_ntop4(const uint8_t* src, char* dst, size_t dstSize) {
 
     int written = snprintf(dst, dstSize, fmt, src[0], src[1], src[2], src[3]);
     LEDGER_ASSERT(written > 0, "snprintf IPv4 formatting failed");
-    LEDGER_ASSERT((size_t)written + 1 < dstSize, "IPv4 string does not fit");
+    LEDGER_ASSERT((size_t)written + 1 <= dstSize, "IPv4 string does not fit");
 }
 
 /*
@@ -149,7 +149,7 @@ void inet_ntop6(const uint8_t* src, char* dst, size_t dstSize) {
     ASSERT(tp < tmp + SIZEOF(tmp));
     *tp++ = '\0';
 
-    ASSERT(strlen(tmp) + 1 < dstSize);
+    ASSERT(strlen(tmp) + 1 <= dstSize);
 
     strncpy(dst, tmp, dstSize);
 }
