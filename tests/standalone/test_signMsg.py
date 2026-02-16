@@ -48,9 +48,18 @@ def test_sign_message(device: Device,
         pytest.skip("TODO navigation for sign msg does not work for Nano")
 
     def review_msg() -> None:
-        scenario_navigator.review_approve(
-            test_name=testCase.name,
-        )
+        if testCase.has_warning:
+            if device.is_nano:
+                # TODO: navigation for warning does not work for Nano yet.
+                pytest.skip("TODO navigation for warning does not work for Nano")
+            scenario_navigator.review_approve_with_warning(
+                test_name=testCase.name,
+                custom_screen_text="Sign message",
+            )
+        else:
+            scenario_navigator.review_approve(
+                test_name=testCase.name,
+            )
 
     signedData = client.sign_msg(testCase, on_review=review_msg)
 

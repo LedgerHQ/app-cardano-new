@@ -2324,7 +2324,11 @@ security_policy_t policyForSignCVoteWitness(const bip44_path_t *path, warning_bi
 
 security_policy_t policyForSignMsg(const bip44_path_t *witnessPath,
                                    cip8_address_field_type_t addressFieldType,
-                                   const address_params_t *address_params) {
+                                   const address_params_t *address_params,
+                                   warning_bits_t *warnings) {
+    LEDGER_ASSERT(witnessPath != NULL, "NULL witnessPath");
+    LEDGER_ASSERT(warnings != NULL, "NULL warnings");
+
     switch (bip44_classifyPath(witnessPath)) {
         case PATH_ORDINARY_PAYMENT_KEY:
         case PATH_ORDINARY_STAKING_KEY:
@@ -2335,11 +2339,16 @@ security_policy_t policyForSignMsg(const bip44_path_t *witnessPath,
         case PATH_COMMITTEE_COLD_KEY:
         case PATH_COMMITTEE_HOT_KEY:
         case PATH_POOL_COLD_KEY:
-            // OK
+            // OK - path classification is valid
             break;
         default:
             DENY();
             break;
+    }
+
+    // Warn if the witness path is unusual
+    if (!bip44_isPathReasonable(witnessPath)) {
+        warning_bits_set(warnings, WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH);
     }
 
     if (addressFieldType == CIP8_ADDRESS_FIELD_ADDRESS) {

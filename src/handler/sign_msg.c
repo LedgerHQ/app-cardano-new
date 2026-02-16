@@ -175,10 +175,12 @@ void signMsg_handle_init(buffer_t *cdata) {
     }
     LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");
 
-    // Check security policy
+    // Check security policy and collect warnings
+    ctx->warnings = 0;
     security_policy_t policy = policyForSignMsg(&ctx->signingPath,
                                                  ctx->addressFieldType,
-                                                 &ctx->address_params);
+                                                 &ctx->address_params,
+                                                 &ctx->warnings);
     TRACE("Policy: %d", (int) policy);
     if (policy == POLICY_DENY) {
         TRACE("Policy denied");
@@ -477,7 +479,7 @@ void signMsg_handle_confirm(buffer_t *cdata) {
 
     // Display UI for user confirmation
     apdu_response_deferred();
-    ui_display_sign_msg(POLICY_SHOW);
+    ui_display_sign_msg(POLICY_SHOW, ctx->warnings);
 }
 
 void finalize_sign_msg(bool confirmed) {

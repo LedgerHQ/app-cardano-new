@@ -229,6 +229,8 @@ typedef struct {
     uint8_t witnessKey[PUBLIC_KEY_LENGTH];
     uint8_t addressField[MAX_ADDRESS_LENGTH];
     size_t addressFieldSize;
+
+    warning_bits_t warnings;
 } sign_msg_ctx_t;
 
 /**

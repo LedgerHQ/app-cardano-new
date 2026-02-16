@@ -178,4 +178,5 @@ security_policy_t policyForSignCVoteWitness(const bip44_path_t* path, warning_bi
 
 security_policy_t policyForSignMsg(const bip44_path_t* witnessPath,
                                    cip8_address_field_type_t addressFieldType,
-                                   const address_params_t* address_params);
+                                   const address_params_t* address_params,
+                                   warning_bits_t* warnings);

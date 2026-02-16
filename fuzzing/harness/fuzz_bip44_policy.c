@@ -47,7 +47,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     (void) policyForDerivePrivateKey(&primary_path);
     (void) policyForGetExtendedPublicKey(&primary_path, &warnings);
     (void) policyForSignCVoteWitness(&primary_path, &warnings);
-    (void) policyForSignMsg(&primary_path, CIP8_ADDRESS_FIELD_KEYHASH, NULL);
+    (void) policyForSignMsg(&primary_path, CIP8_ADDRESS_FIELD_KEYHASH, NULL, &warnings);
 
     return 0;
 }

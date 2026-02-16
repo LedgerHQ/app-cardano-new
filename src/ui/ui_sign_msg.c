@@ -59,7 +59,7 @@ static void sign_msg_review_choice(bool confirm) {
     }
 }
 
-void ui_display_sign_msg(security_policy_t securityPolicy) {
+void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnings) {
     sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
 
     TRACE("=== ui_display_sign_msg START ===");
@@ -166,6 +166,13 @@ void ui_display_sign_msg(security_policy_t securityPolicy) {
             return;
     }
 
+    // Build warnings if any
+    ui_status_t warning_status = ui_build_warnings(warnings);
+    if (warning_status != UI_STATUS_SUCCESS) {
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return;
+    }
+
     nbgl_operationType_t reviewOperationType = TYPE_OPERATION;
 #ifdef SCREEN_SIZE_WALLET
     // Keep skip only on large wallet screens.
@@ -180,6 +187,6 @@ void ui_display_sign_msg(security_policy_t securityPolicy) {
                                "CIP-8",
                                "Sign message",
                                NULL,
-                               NULL,  // No warnings for message signing
+                               ui_get_warnings(),
                                sign_msg_review_choice);
 }

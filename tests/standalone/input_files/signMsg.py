@@ -55,6 +55,7 @@ class SignMsgTestCase:
     msgData: Optional[MessageData] = None
     nav: Optional[NavigationData] = None
     expected_in_unit_test: Optional[SignMsgExpectedInUnitTest] = None
+    has_warning: bool = False
 
 
 
@@ -407,5 +408,18 @@ signMsgTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
+    ),
+    # --- Test with unusual BIP44 path (WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH) ---
+    SignMsgTestCase(
+        name="Sign_msg_unusual_path_with_high_address_index",
+        ledgerjs_name="msg13: Should correctly sign a message with unusual high address index and show warning",
+        msgData=MessageData(
+            messageHex="deadbeef",
+            signingPath="m/1852'/1815'/0'/0/1000001",  # Address index > MAX_REASONABLE_ADDRESS (1000000)
+            hashPayload=False,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
+        ),
+        has_warning=True,
     ),
 ]

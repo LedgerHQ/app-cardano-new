@@ -26,8 +26,7 @@
 #include "assert.h"
 #include "utils.h"
 #include "cbor.h"
-
-#define UI_PAIR_LIMIT 250
+#include "ui_utils.h"
 
 /**
  * Convert ext_credential_t to a version suitable for tx hash building.
@@ -2044,8 +2043,8 @@ int tx_validate_and_compute_hash(tx_ui_plan_t* plan) {
     }
 
     // TODO: until transaction UI streaming is implemented,
-    // TODO: exceeding UI_PAIR_LIMIT is treated as an unsupported internal invariant breach.
-    LEDGER_ASSERT(plan->pair_count <= UI_PAIR_LIMIT, "Need streaming UI fallback");
+    // TODO: exceeding MAX_UI_PAIRS is treated as an unsupported internal invariant breach.
+    LEDGER_ASSERT(plan->pair_count <= MAX_UI_PAIRS, "Need streaming UI fallback");
 
     return SWO_SUCCESS;
 }

@@ -102,6 +102,11 @@ static void test_sign_message_sign_msg_1000_bytes_long_nonhashed_hex_message_wit
     run_fixture(&SIGN_MSG_FIXTURES[15]);
 }
 
+static void test_sign_message_sign_msg_unusual_path_with_high_address_index_16(void **state) {
+    (void) state;
+    run_fixture(&SIGN_MSG_FIXTURES[16]);
+}
+
 // ======================================================================
 // Main
 // ======================================================================
@@ -124,6 +129,7 @@ int main(void) {
         cmocka_unit_test(test_sign_message_sign_msg_1000_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field_13),
         cmocka_unit_test(test_sign_message_sign_msg_257_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_14),
         cmocka_unit_test(test_sign_message_sign_msg_1000_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_15),
+        cmocka_unit_test(test_sign_message_sign_msg_unusual_path_with_high_address_index_16),
     };
     return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }

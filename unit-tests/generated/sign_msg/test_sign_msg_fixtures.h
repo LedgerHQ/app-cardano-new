@@ -932,6 +932,24 @@ static const sign_msg_chunk_t SIGN_MSG_015_SIGN_MSG_1000_BYTES_LONG_NONHASHED_HE
     { .data = SIGN_MSG_015_SIGN_MSG_1000_BYTES_LONG_NONHASHED_HEX_MESSAGE_WITH_KEYHASH_AS_ADDRESS_FIELD_CHUNK_APDU_003, .data_len = sizeof(SIGN_MSG_015_SIGN_MSG_1000_BYTES_LONG_NONHASHED_HEX_MESSAGE_WITH_KEYHASH_AS_ADDRESS_FIELD_CHUNK_APDU_003), },
 };
 
+// ----------------------------------------------------------------------
+// Test 16: Sign_msg_unusual_path_with_high_address_index
+// ----------------------------------------------------------------------
+
+// Source: tests/standalone/input_files/signMsg.py > Sign_msg_unusual_path_with_high_address_index
+static const uint8_t SIGN_MSG_016_SIGN_MSG_UNUSUAL_PATH_WITH_HIGH_ADDRESS_INDEX_INIT_APDU[] = {
+    0x00, 0x00, 0x00, 0x04, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0F, 0x42, 0x41, 0x00, 0x00, 0x02,
+};
+
+static const uint8_t SIGN_MSG_016_SIGN_MSG_UNUSUAL_PATH_WITH_HIGH_ADDRESS_INDEX_CHUNK_APDU_000[] = {
+    0x00, 0x00, 0x00, 0x04, 0xDE, 0xAD, 0xBE, 0xEF,
+};
+
+static const sign_msg_chunk_t SIGN_MSG_016_SIGN_MSG_UNUSUAL_PATH_WITH_HIGH_ADDRESS_INDEX_CHUNKS[] = {
+    { .data = SIGN_MSG_016_SIGN_MSG_UNUSUAL_PATH_WITH_HIGH_ADDRESS_INDEX_CHUNK_APDU_000, .data_len = sizeof(SIGN_MSG_016_SIGN_MSG_UNUSUAL_PATH_WITH_HIGH_ADDRESS_INDEX_CHUNK_APDU_000), },
+};
+
 static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
 // Source: tests/standalone/input_files/signMsg.py > Sign_msg_empty_message_with_keyhash_as_address_field
 {
@@ -1120,6 +1138,18 @@ static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
     .init_data_len = sizeof(SIGN_MSG_015_SIGN_MSG_1000_BYTES_LONG_NONHASHED_HEX_MESSAGE_WITH_KEYHASH_AS_ADDRESS_FIELD_INIT_APDU),
     .chunks = SIGN_MSG_015_SIGN_MSG_1000_BYTES_LONG_NONHASHED_HEX_MESSAGE_WITH_KEYHASH_AS_ADDRESS_FIELD_CHUNKS,
     .chunk_count = sizeof(SIGN_MSG_015_SIGN_MSG_1000_BYTES_LONG_NONHASHED_HEX_MESSAGE_WITH_KEYHASH_AS_ADDRESS_FIELD_CHUNKS) / sizeof(sign_msg_chunk_t),
+    .confirm_data = NULL,
+    .confirm_data_len = 0,
+    .check_expected = SWO_SUCCESS,
+    .expected = NULL,
+},
+// Source: tests/standalone/input_files/signMsg.py > Sign_msg_unusual_path_with_high_address_index
+{
+    .name = "Sign_msg_unusual_path_with_high_address_index",
+    .init_data = SIGN_MSG_016_SIGN_MSG_UNUSUAL_PATH_WITH_HIGH_ADDRESS_INDEX_INIT_APDU,
+    .init_data_len = sizeof(SIGN_MSG_016_SIGN_MSG_UNUSUAL_PATH_WITH_HIGH_ADDRESS_INDEX_INIT_APDU),
+    .chunks = SIGN_MSG_016_SIGN_MSG_UNUSUAL_PATH_WITH_HIGH_ADDRESS_INDEX_CHUNKS,
+    .chunk_count = sizeof(SIGN_MSG_016_SIGN_MSG_UNUSUAL_PATH_WITH_HIGH_ADDRESS_INDEX_CHUNKS) / sizeof(sign_msg_chunk_t),
     .confirm_data = NULL,
     .confirm_data_len = 0,
     .check_expected = SWO_SUCCESS,
