@@ -21,16 +21,12 @@ def test_app_mainmenu(device: Device,
             NavInsID.RIGHT_CLICK,
             NavInsID.BOTH_CLICK,
             NavInsID.RIGHT_CLICK,
-            NavInsID.RIGHT_CLICK,
-            NavInsID.BOTH_CLICK,
-            NavInsID.RIGHT_CLICK,
             NavInsID.BOTH_CLICK,
             NavInsID.RIGHT_CLICK,
             NavInsID.BOTH_CLICK,
             NavInsID.RIGHT_CLICK,
             NavInsID.RIGHT_CLICK,
             NavInsID.BOTH_CLICK,
-            NavInsID.RIGHT_CLICK,
         ]
     elif device.type is DeviceType.STAX:
         instructions += [

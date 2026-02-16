@@ -106,6 +106,22 @@ def _run_sign_tx_test(device: Device,
         else:
             scenario_navigator.review_approve(test_name=test_name, custom_screen_text="Sign transaction")
 
+    def review_advance(nb_steps: int = 1) -> None:
+        if device.is_nano:
+            # Nano review pages can split long values across extra screens.
+            # Use a Nano-specific advancement strategy.
+            # `nb_steps == 2` is used for AUX init (registration + first delegation).
+            # The registration part itself spans multiple Nano screens.
+            initial_aux_init_advance_steps = 6 if expert_mode else 5
+            steps_to_advance = (initial_aux_init_advance_steps if nb_steps == 2 else 4)
+            navigator.navigate([NavInsID.RIGHT_CLICK] * steps_to_advance,
+                               screen_change_before_first_instruction=False,
+                               screen_change_after_last_instruction=False)
+        else:
+            navigator.navigate([NavInsID.USE_CASE_REVIEW_NEXT] * nb_steps,
+                               screen_change_before_first_instruction=False,
+                               screen_change_after_last_instruction=False)
+
     witness_paths = gather_witness_paths(tx, testCase.signingMode, testCase.additionalWitnessPaths or [])
     tx_hash = client.sign_tx(
         tx=tx,
@@ -113,7 +129,8 @@ def _run_sign_tx_test(device: Device,
         additional_witness_paths=testCase.additionalWitnessPaths,
         options=testCase.options,
         on_review=review_tx,
-        on_cvote_review=review_cvote
+        on_cvote_review=review_cvote,
+        on_advance=review_advance
     )
     print(f"Witness paths: {witness_paths}")
 
@@ -228,9 +245,6 @@ def test_sign_tx(device: Device,
 
     if testCase.name == "Sign_tx_with_all_certificates_except_pool_registration":
         pytest.skip("Skipped: out of memory")
-
-    if testCase.name == "Sign_tx_with_CIP36_registration_with_many_delegations_streaming":
-        pytest.skip("Skipped: failing navigation even on Stax")
 
     if device.is_nano and (testCase.has_warning or testCase.has_aux_warning):
         pytest.skip("Skipped: failing warning navigation for Nano")

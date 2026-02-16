@@ -3509,7 +3509,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582092cc23c0ff5952db0243e891ef08d1360ed9a33c6970156dfe945dd4df284d980807",
-    ),  # TODO needs navigation fix
+    ),
 ]
 
 # =================

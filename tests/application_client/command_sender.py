@@ -115,7 +115,8 @@ class CommandSender:
                 additional_witness_paths: Optional[List[str]] = None,
                 options: int = 0,
                 on_review: Optional[Callable[[], None]] = None,
-                on_cvote_review: Optional[Callable[[], None]] = None) -> bytes:
+                on_cvote_review: Optional[Callable[[], None]] = None,
+                on_advance: Optional[Callable[[int], None]] = None) -> bytes:
         """Sign a transaction and return the transaction hash bytes.
 
         This builds the init APDU from the transaction body, sends the raw chunks,
@@ -134,7 +135,7 @@ class CommandSender:
         if response.status != StatusWord.SWO_SUCCESS:
             raise AssertionError(f"Init failed: {hex(response.status)}")
 
-        self._send_tx_aux_data_if_present(tx, on_cvote_review)
+        self._send_tx_aux_data_if_present(tx, on_cvote_review, on_advance)
 
         with self.sign_tx_send_chunks_async(tx) as has_data_available:
             if on_review is not None and not has_data_available:
@@ -148,7 +149,10 @@ class CommandSender:
 
         return response.data
 
-    def _send_tx_aux_data_if_present(self, tx: Transaction, on_review: Optional[Callable[[], None]] = None) -> None:
+    def _send_tx_aux_data_if_present(self,
+                                     tx: Transaction,
+                                     on_review: Optional[Callable[[], None]] = None,
+                                     on_advance: Optional[Callable[[int], None]] = None) -> None:
         if tx.auxiliaryData is None:
             return
         if tx.auxiliaryData.type != TxAuxiliaryDataType.CIP36_REGISTRATION:
@@ -161,12 +165,27 @@ class CommandSender:
         has_delegations = len(aux_params.delegations) > 0
 
         if has_delegations:
-            response = self._exchange(self._cmd_builder.sign_tx_aux_data_init(tx, aux_params))
+            if on_advance:
+                with self._exchange_async(self._cmd_builder.sign_tx_aux_data_init(tx, aux_params)):
+                    # Move over registration and first delegation review screens.
+                    on_advance(2)
+                response = self.get_async_response()
+                if response is None:
+                    raise AssertionError("No response from AUX_DATA init")
+            else:
+                response = self._exchange(self._cmd_builder.sign_tx_aux_data_init(tx, aux_params))
             if response.status != StatusWord.SWO_SUCCESS:
                 raise AssertionError(f"AUX_DATA init failed: {hex(response.status)}")
 
             for delegation in aux_params.delegations[:-1]:
-                response = self._exchange(self._cmd_builder.sign_tx_aux_data_delegation(delegation))
+                if on_advance:
+                    with self._exchange_async(self._cmd_builder.sign_tx_aux_data_delegation(delegation)):
+                        on_advance(1)
+                    response = self.get_async_response()
+                    if response is None:
+                        raise AssertionError("No response from AUX_DATA delegation")
+                else:
+                    response = self._exchange(self._cmd_builder.sign_tx_aux_data_delegation(delegation))
                 if response.status != StatusWord.SWO_SUCCESS:
                     raise AssertionError(f"AUX_DATA registration failed: {hex(response.status)}")
 
