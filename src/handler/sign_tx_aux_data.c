@@ -148,7 +148,7 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
     }
 
     // 4. Nonce
-    security_policy_t nonce_policy = policyForCVoteRegistrationNonce();
+    security_policy_t nonce_policy = policyForCVoteRegistrationNonce(&G_context.tx_info.cvote_warning_bits);
 
     switch (nonce_policy) {
         case POLICY_DENY:
@@ -166,7 +166,7 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
     }
 
     // 5. Voting purpose (CIP36 only)
-    security_policy_t voting_purpose_policy = policyForCVoteRegistrationVotingPurpose();
+    security_policy_t voting_purpose_policy = policyForCVoteRegistrationVotingPurpose(&G_context.tx_info.cvote_warning_bits);
 
     switch (voting_purpose_policy) {
         case POLICY_DENY:

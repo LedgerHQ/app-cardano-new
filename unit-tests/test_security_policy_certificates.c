@@ -76,10 +76,12 @@ static void test_stake_registration_denied_in_pool_registration_owner(void **sta
     reset_context();
 
     ext_credential_t stake_credential = make_stake_credential();
+    warning_bits_t w = 0;
     security_policy_t policy = policyForSignTxCertificateStaking(
         SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER,
         CERTIFICATE_STAKE_REGISTRATION,
-        &stake_credential
+        &stake_credential,
+        &w
     );
     assert_int_equal(policy, POLICY_DENY);
 }
@@ -89,10 +91,12 @@ static void test_stake_registration_denied_in_pool_registration_operator(void **
     reset_context();
 
     ext_credential_t stake_credential = make_stake_credential();
+    warning_bits_t w = 0;
     security_policy_t policy = policyForSignTxCertificateStaking(
         SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR,
         CERTIFICATE_STAKE_REGISTRATION,
-        &stake_credential
+        &stake_credential,
+        &w
     );
     assert_int_equal(policy, POLICY_DENY);
 }
@@ -102,10 +106,12 @@ static void test_pool_retirement_denied_in_multisig(void **state) {
     reset_context();
 
     ext_credential_t pool_credential = make_pool_cold_credential();
+    warning_bits_t w = 0;
     security_policy_t policy = policyForSignTxCertificateStakePoolRetirement(
         SIGN_TX_SIGNINGMODE_MULTISIG_TX,
         &pool_credential,
-        0
+        0,
+        &w
     );
     assert_int_equal(policy, POLICY_DENY);
 }
@@ -115,10 +121,12 @@ static void test_pool_retirement_denied_in_pool_registration_owner(void **state)
     reset_context();
 
     ext_credential_t pool_credential = make_pool_cold_credential();
+    warning_bits_t w = 0;
     security_policy_t policy = policyForSignTxCertificateStakePoolRetirement(
         SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER,
         &pool_credential,
-        0
+        0,
+        &w
     );
     assert_int_equal(policy, POLICY_DENY);
 }
@@ -128,10 +136,12 @@ static void test_pool_retirement_denied_in_pool_registration_operator(void **sta
     reset_context();
 
     ext_credential_t pool_credential = make_pool_cold_credential();
+    warning_bits_t w = 0;
     security_policy_t policy = policyForSignTxCertificateStakePoolRetirement(
         SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR,
         &pool_credential,
-        0
+        0,
+        &w
     );
     assert_int_equal(policy, POLICY_DENY);
 }
@@ -141,10 +151,12 @@ static void test_pool_retirement_allowed_in_ordinary(void **state) {
     reset_context();
 
     ext_credential_t pool_credential = make_pool_cold_credential();
+    warning_bits_t w = 0;
     security_policy_t policy = policyForSignTxCertificateStakePoolRetirement(
         SIGN_TX_SIGNINGMODE_ORDINARY_TX,
         &pool_credential,
-        0
+        0,
+        &w
     );
     assert_int_equal(policy, POLICY_SHOW);
 }
@@ -154,10 +166,12 @@ static void test_pool_retirement_allowed_in_plutus(void **state) {
     reset_context();
 
     ext_credential_t pool_credential = make_pool_cold_credential();
+    warning_bits_t w = 0;
     security_policy_t policy = policyForSignTxCertificateStakePoolRetirement(
         SIGN_TX_SIGNINGMODE_PLUTUS_TX,
         &pool_credential,
-        0
+        0,
+        &w
     );
     assert_int_equal(policy, POLICY_SHOW);
 }
@@ -171,10 +185,12 @@ static void test_pool_registration_reward_account_path_compatibility(void **stat
     reward_account.keyReferenceType = KEY_REFERENCE_PATH;
     reward_account.path = make_ordinary_staking_path_account_one();
 
+    warning_bits_t w = 0;
     security_policy_t policy = policyForSignTxStakePoolRegistrationRewardAccount(
         SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER,
         MAINNET_NETWORK_ID,
-        &reward_account
+        &reward_account,
+        &w
     );
     assert_int_equal(policy, POLICY_SHOW);
 }

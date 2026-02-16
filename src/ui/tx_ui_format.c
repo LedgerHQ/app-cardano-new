@@ -96,7 +96,7 @@ static void add_ui_and_free_inputs(tx_params_t *tx_params, tx_parsed_body_t *tx_
     flist_node_t *node = tx_body->inputs;
     while (node != NULL) {
         tx_input_node_t *input_node = (tx_input_node_t *) node;
-        security_policy_t input_policy = policyForSignTxInput(tx_params->txSigningMode, &input_node->input);
+        security_policy_t input_policy = policyForSignTxInput(tx_params->txSigningMode, &input_node->input, &G_context.tx_info.warning_bits);
         LEDGER_ASSERT(input_policy != POLICY_DENY, "Input denied during UI");
 
         if (input_policy == POLICY_SHOW) {
@@ -214,7 +214,7 @@ static void add_ui_and_free_outputs(tx_params_t *tx_params, tx_parsed_body_t *tx
 
             const output_datum_t* datum = &output_node->output_data.datum;
             if (datum->hasDatum) {
-                security_policy_t datum_policy = policyForSignTxOutputDatumHash(policy);
+                security_policy_t datum_policy = policyForSignTxOutputDatumHash(policy, &G_context.tx_info.warning_bits);
                 LEDGER_ASSERT(datum_policy != POLICY_DENY, "Output datum policy denied during UI");
                 if (datum_policy == POLICY_SHOW) {
                     START_COUNT();
@@ -235,7 +235,7 @@ static void add_ui_and_free_outputs(tx_params_t *tx_params, tx_parsed_body_t *tx
 
             const ref_script_t* ref_script = &output_node->output_data.refScript;
             if (ref_script->hasRefScript) {
-                security_policy_t ref_script_policy = policyForSignTxOutputRefScript(policy);
+                security_policy_t ref_script_policy = policyForSignTxOutputRefScript(policy, &G_context.tx_info.warning_bits);
                 LEDGER_ASSERT(ref_script_policy != POLICY_DENY, "Output ref script policy denied during UI");
                 if (ref_script_policy == POLICY_SHOW) {
                     START_COUNT();
@@ -293,7 +293,7 @@ static void add_ui_and_free_ttl(tx_params_t *tx_params, tx_parsed_body_t *tx_bod
     if (!tx_params->includeTtl) {
         return;
     }
-    security_policy_t ttl_policy = policyForSignTxTtl(tx_body->ttl);
+    security_policy_t ttl_policy = policyForSignTxTtl(tx_body->ttl, &G_context.tx_info.warning_bits);
     LEDGER_ASSERT(ttl_policy != POLICY_DENY, "TTL denied during UI");
     if (ttl_policy == POLICY_SHOW) {
         START_COUNT();
@@ -315,8 +315,8 @@ static bool should_show_pool_registration(
     security_policy_t policy = policyForSignTxStakePoolRegistrationInit(
         txSigningMode,
         certificate->poolRegistration.numPoolOwners,
-        pool_owner_counts->path_owners
-    );
+        pool_owner_counts->path_owners,
+        &G_context.tx_info.warning_bits);
     LEDGER_ASSERT(policy != POLICY_DENY, "Certificate denied during UI");
     return policy == POLICY_SHOW;
 }
@@ -340,8 +340,8 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
 
     security_policy_t pool_id_policy = policyForSignTxStakePoolRegistrationPoolId(
         txSigningMode,
-        &certificate->poolId
-    );
+        &certificate->poolId,
+        &G_context.tx_info.warning_bits);
     LEDGER_ASSERT(pool_id_policy != POLICY_DENY, "Pool ID security policy denied");
 
     if (pool_id_policy == POLICY_SHOW) {
@@ -370,7 +370,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
         CHECK_COUNT(UI_PAIRS_POOL_ID);
     }
 
-    security_policy_t vrf_policy = policyForSignTxStakePoolRegistrationVrfKey(txSigningMode);
+    security_policy_t vrf_policy = policyForSignTxStakePoolRegistrationVrfKey(txSigningMode, &G_context.tx_info.warning_bits);
     LEDGER_ASSERT(vrf_policy != POLICY_DENY, "VRF key security policy denied");
 
     if (vrf_policy == POLICY_SHOW) {
@@ -407,8 +407,8 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
     security_policy_t reward_policy = policyForSignTxStakePoolRegistrationRewardAccount(
         txSigningMode,
         G_context.tx_info.tx_params.networkId,
-        &certificate->poolRegistration.rewardAccount
-    );
+        &certificate->poolRegistration.rewardAccount,
+        &G_context.tx_info.warning_bits);
     LEDGER_ASSERT(reward_policy != POLICY_DENY, "Reward account security policy denied");
 
     if (reward_policy == POLICY_SHOW) {
@@ -429,8 +429,8 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
 
         security_policy_t owner_policy = policyForSignTxStakePoolRegistrationOwner(
             G_context.tx_info.tx_params.txSigningMode,
-            owner_credential
-        );
+            owner_credential,
+            &G_context.tx_info.warning_bits);
         LEDGER_ASSERT(owner_policy != POLICY_DENY, "Pool owner security policy denied");
 
         if (owner_policy == POLICY_SHOW) {
@@ -466,8 +466,8 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
 
         security_policy_t relay_policy = policyForSignTxStakePoolRegistrationRelay(
             G_context.tx_info.tx_params.txSigningMode,
-            relay
-        );
+            relay,
+            &G_context.tx_info.warning_bits);
         LEDGER_ASSERT(relay_policy != POLICY_DENY, "Relay security policy denied");
         if (relay_policy == POLICY_SHOW) {
             {
@@ -548,7 +548,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
     }
 
     if (certificate->poolRegistration.poolMetadataIsNull) {
-        security_policy_t no_metadata_policy = policyForSignTxStakePoolRegistrationNoMetadata();
+        security_policy_t no_metadata_policy = policyForSignTxStakePoolRegistrationNoMetadata(&G_context.tx_info.warning_bits);
         LEDGER_ASSERT(no_metadata_policy != POLICY_DENY, "No metadata security policy denied");
 
         if (no_metadata_policy == POLICY_SHOW) {
@@ -607,62 +607,62 @@ static bool should_show_certificate(
             policy = policyForSignTxCertificateStaking(
                 txSigningMode,
                 certificate_type,
-                &certificate->stakeCredential
-            );
+                &certificate->stakeCredential,
+                &G_context.tx_info.warning_bits);
             break;
 
         case CERTIFICATE_VOTE_DELEGATION:
             policy = policyForSignTxCertificateVoteDelegation(
                 txSigningMode,
                 &certificate->stakeCredential,
-                &certificate->drep
-            );
+                &certificate->drep,
+                &G_context.tx_info.warning_bits);
             break;
 
         case CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION:
             policy = policyForSignTxCertificateStakePoolAndDRepDelegation(
                 txSigningMode,
                 &certificate->stakeCredential,
-                &certificate->drep
-            );
+                &certificate->drep,
+                &G_context.tx_info.warning_bits);
             break;
 
         case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL:
             policy = policyForSignTxCertificateAccountRegistrationDelegationToStakePool(
                 txSigningMode,
-                &certificate->stakeCredential
-            );
+                &certificate->stakeCredential,
+                &G_context.tx_info.warning_bits);
             break;
 
         case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP:
             policy = policyForSignTxCertificateAccountRegistrationDelegationToDRep(
                 txSigningMode,
                 &certificate->stakeCredential,
-                &certificate->drep
-            );
+                &certificate->drep,
+                &G_context.tx_info.warning_bits);
             break;
 
         case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP:
             policy = policyForSignTxCertificateStakePoolAndDRepDelegation(
                 txSigningMode,
                 &certificate->stakeCredential,
-                &certificate->drep
-            );
+                &certificate->drep,
+                &G_context.tx_info.warning_bits);
             break;
 
         case CERTIFICATE_AUTHORIZE_COMMITTEE_HOT:
             policy = policyForSignTxCertificateCommitteeAuth(
                 txSigningMode,
                 &certificate->coldCredential,
-                &certificate->hotCredential
-            );
+                &certificate->hotCredential,
+                &G_context.tx_info.warning_bits);
             break;
 
         case CERTIFICATE_RESIGN_COMMITTEE_COLD:
             policy = policyForSignTxCertificateCommitteeResign(
                 txSigningMode,
-                &certificate->coldCredential
-            );
+                &certificate->coldCredential,
+                &G_context.tx_info.warning_bits);
             break;
 
         case CERTIFICATE_DREP_REGISTRATION:
@@ -670,16 +670,16 @@ static bool should_show_certificate(
         case CERTIFICATE_DREP_UPDATE:
             policy = policyForSignTxCertificateDRep(
                 txSigningMode,
-                &certificate->dRepCredential
-            );
+                &certificate->dRepCredential,
+                &G_context.tx_info.warning_bits);
             break;
 
         case CERTIFICATE_STAKE_POOL_RETIREMENT:
             policy = policyForSignTxCertificateStakePoolRetirement(
                 txSigningMode,
                 &certificate->poolCredential,
-                certificate->retirementEpoch
-            );
+                certificate->retirementEpoch,
+                &G_context.tx_info.warning_bits);
             break;
 
         case CERTIFICATE_STAKE_POOL_REGISTRATION:
@@ -750,7 +750,7 @@ static void add_ui_and_free_aux_data_hash(tx_params_t *tx_params, tx_parsed_body
     if (!tx_params->includeAuxDataHash) {
         return;
     }
-    security_policy_t policy = policyForSignTxAuxData(tx_params->auxDataType);
+    security_policy_t policy = policyForSignTxAuxData(tx_params->auxDataType, &G_context.tx_info.warning_bits);
     LEDGER_ASSERT(policy != POLICY_DENY, "Aux data denied during UI");
     if (policy == POLICY_SHOW) {
         START_COUNT();
@@ -763,7 +763,7 @@ static void add_ui_and_free_validity_interval_start(tx_params_t *tx_params, tx_p
     if (!tx_params->includeValidityIntervalStart) {
         return;
     }
-    security_policy_t validity_interval_start_policy = policyForSignTxValidityIntervalStart();
+    security_policy_t validity_interval_start_policy = policyForSignTxValidityIntervalStart(&G_context.tx_info.warning_bits);
     LEDGER_ASSERT(validity_interval_start_policy != POLICY_DENY, "Validity interval start denied during UI");
     if (validity_interval_start_policy == POLICY_SHOW) {
         START_COUNT();
@@ -785,7 +785,7 @@ static void add_ui_and_free_mint(tx_params_t *tx_params, tx_parsed_body_t *tx_bo
         return;
     }
 
-    security_policy_t mint_policy = policyForSignTxMintInit(tx_params->txSigningMode);
+    security_policy_t mint_policy = policyForSignTxMintInit(tx_params->txSigningMode, &G_context.tx_info.warning_bits);
     LEDGER_ASSERT(mint_policy != POLICY_DENY, "Mint denied during UI");
     const bool show_mint = (mint_policy == POLICY_SHOW);
 
@@ -834,7 +834,7 @@ static void add_ui_and_free_script_data_hash(tx_params_t *tx_params, tx_parsed_b
     if (!tx_params->includeScriptDataHash) {
         return;
     }
-    security_policy_t policy = policyForSignTxScriptDataHash(tx_params->txSigningMode);
+    security_policy_t policy = policyForSignTxScriptDataHash(tx_params->txSigningMode, &G_context.tx_info.warning_bits);
     LEDGER_ASSERT(policy != POLICY_DENY, "Script data hash denied during UI");
     if (policy == POLICY_SHOW) {
         START_COUNT();
@@ -851,7 +851,7 @@ static void add_ui_and_free_collateral_inputs(tx_params_t *tx_params, tx_parsed_
         security_policy_t collateral_input_policy = policyForSignTxCollateralInput(
             tx_params->txSigningMode,
             tx_params->includeTotalCollateral,
-            &collateral_input_node->input);
+            &collateral_input_node->input, &G_context.tx_info.warning_bits);
         LEDGER_ASSERT(collateral_input_policy != POLICY_DENY, "Collateral input policy denied during UI");
 
         if (collateral_input_policy == POLICY_SHOW) {
@@ -872,7 +872,7 @@ static void add_ui_and_free_required_signers(tx_params_t *tx_params, tx_parsed_b
         tx_required_signer_node_t *required_signer_node = (tx_required_signer_node_t *) node;
         required_signer_t *required_signer = &required_signer_node->required_signer;
 
-        security_policy_t policy = policyForSignTxRequiredSigner(tx_params->txSigningMode, required_signer);
+        security_policy_t policy = policyForSignTxRequiredSigner(tx_params->txSigningMode, required_signer, &G_context.tx_info.warning_bits);
         LEDGER_ASSERT(policy != POLICY_DENY, "Required signer denied during UI");
 
         if (policy == POLICY_SHOW) {
@@ -918,15 +918,15 @@ static void add_ui_and_free_collateral_output(tx_params_t *tx_params, tx_parsed_
         tx_params->txSigningMode,
         tx_params->networkId,
         tx_params->protocolMagic,
-        tx_params->includeTotalCollateral
-    );
+        tx_params->includeTotalCollateral,
+        &G_context.tx_info.warning_bits);
     LEDGER_ASSERT(collateral_policy != POLICY_DENY, "Collateral output denied during UI");
 
     security_policy_t collateral_ada_policy =
-        policyForSignTxCollateralOutputAdaAmount(collateral_policy, tx_params->includeTotalCollateral);
+        policyForSignTxCollateralOutputAdaAmount(collateral_policy, tx_params->includeTotalCollateral, &G_context.tx_info.warning_bits);
     LEDGER_ASSERT(collateral_ada_policy != POLICY_DENY, "Collateral ADA policy denied during UI");
     security_policy_t collateral_tokens_policy =
-        policyForSignTxCollateralOutputTokens(collateral_policy, &collateral_desc);
+        policyForSignTxCollateralOutputTokens(collateral_policy, &collateral_desc, &G_context.tx_info.warning_bits);
     LEDGER_ASSERT(collateral_tokens_policy != POLICY_DENY, "Collateral tokens policy denied during UI");
     bool show_collateral_tokens =
         (collateral_policy == POLICY_SHOW) && (collateral_tokens_policy == POLICY_SHOW);
@@ -979,7 +979,7 @@ static void add_ui_and_free_total_collateral(tx_params_t *tx_params, tx_parsed_b
     if (!tx_params->includeTotalCollateral) {
         return;
     }
-    security_policy_t policy = policyForSignTxTotalCollateral();
+    security_policy_t policy = policyForSignTxTotalCollateral(&G_context.tx_info.warning_bits);
     LEDGER_ASSERT(policy != POLICY_DENY, "Total collateral denied during UI");
     if (policy == POLICY_SHOW) {
         START_COUNT();
@@ -995,7 +995,7 @@ static void add_ui_and_free_reference_inputs(tx_params_t *tx_params, tx_parsed_b
 
         security_policy_t reference_input_policy = policyForSignTxReferenceInput(
             tx_params->txSigningMode,
-            &ref_input_node->input);
+            &ref_input_node->input, &G_context.tx_info.warning_bits);
         LEDGER_ASSERT(reference_input_policy != POLICY_DENY, "Reference input denied during UI");
 
         if (reference_input_policy == POLICY_SHOW) {
@@ -1015,7 +1015,7 @@ static void add_ui_and_free_voting_procedures(tx_params_t *tx_params, tx_parsed_
     while (node != NULL) {
         voter_votes_node_t *voter_node = (voter_votes_node_t *) node;
 
-        security_policy_t policy = policyForSignTxVotingProcedure(tx_params->txSigningMode, &voter_node->voter_votes_data.voter);
+        security_policy_t policy = policyForSignTxVotingProcedure(tx_params->txSigningMode, &voter_node->voter_votes_data.voter, &G_context.tx_info.warning_bits);
         LEDGER_ASSERT(policy != POLICY_DENY, "Voting procedure denied during UI");
 
         if (policy == POLICY_SHOW) {
@@ -1052,7 +1052,7 @@ static void add_ui_and_free_treasury(tx_params_t *tx_params, tx_parsed_body_t *t
     if (!tx_params->includeTreasury) {
         return;
     }
-    security_policy_t policy = policyForSignTxTreasury(tx_params->txSigningMode, tx_body->treasury);
+    security_policy_t policy = policyForSignTxTreasury(tx_params->txSigningMode, tx_body->treasury, &G_context.tx_info.warning_bits);
     LEDGER_ASSERT(policy != POLICY_DENY, "Treasury denied during UI");
 
     if (policy == POLICY_SHOW) {
@@ -1066,7 +1066,7 @@ static void add_ui_and_free_donation(tx_params_t *tx_params, tx_parsed_body_t *t
     if (!tx_params->includeDonation) {
         return;
     }
-    security_policy_t policy = policyForSignTxDonation(tx_params->txSigningMode, tx_body->donation);
+    security_policy_t policy = policyForSignTxDonation(tx_params->txSigningMode, tx_body->donation, &G_context.tx_info.warning_bits);
     LEDGER_ASSERT(policy != POLICY_DENY, "Donation denied during UI");
 
     if (policy == POLICY_SHOW) {
@@ -1077,7 +1077,7 @@ static void add_ui_and_free_donation(tx_params_t *tx_params, tx_parsed_body_t *t
 }
 
 static void add_ui_and_free_tx_hash(void) {
-    security_policy_t policy = policyForSignTxDisplayTxHash(G_context.tx_info.tx_params.txSigningMode);
+    security_policy_t policy = policyForSignTxDisplayTxHash(G_context.tx_info.tx_params.txSigningMode, &G_context.tx_info.warning_bits);
     LEDGER_ASSERT(policy != POLICY_DENY, "Transaction hash display denied during UI");
     if (policy == POLICY_SHOW) {
         START_COUNT();

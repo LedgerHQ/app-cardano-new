@@ -103,13 +103,15 @@ static void test_collateral_output_top_level_policy_device_owned(void **state) {
     reset_context();
 
     tx_output_description_t output = make_collateral_output_description_device_owned(0);
+    warning_bits_t w = 0;
 
     security_policy_t policy_without_total = policyForSignTxCollateralOutputAddress(
         &output,
         SIGN_TX_SIGNINGMODE_PLUTUS_TX,
         MAINNET_NETWORK_ID,
         MAINNET_PROTOCOL_MAGIC,
-        false
+        false,
+        &w
     );
     assert_int_equal(policy_without_total, POLICY_SHOW);
 
@@ -118,7 +120,8 @@ static void test_collateral_output_top_level_policy_device_owned(void **state) {
         SIGN_TX_SIGNINGMODE_PLUTUS_TX,
         MAINNET_NETWORK_ID,
         MAINNET_PROTOCOL_MAGIC,
-        true
+        true,
+        &w
     );
     assert_int_equal(policy_with_total, POLICY_HIDE);
 }
@@ -128,13 +131,15 @@ static void test_collateral_output_top_level_policy_third_party(void **state) {
     reset_context();
 
     tx_output_description_t output = make_collateral_output_description_third_party(0);
+    warning_bits_t w = 0;
 
     security_policy_t policy_without_total = policyForSignTxCollateralOutputAddress(
         &output,
         SIGN_TX_SIGNINGMODE_PLUTUS_TX,
         MAINNET_NETWORK_ID,
         MAINNET_PROTOCOL_MAGIC,
-        false
+        false,
+        &w
     );
     assert_int_equal(policy_without_total, POLICY_SHOW);
 
@@ -143,7 +148,8 @@ static void test_collateral_output_top_level_policy_third_party(void **state) {
         SIGN_TX_SIGNINGMODE_PLUTUS_TX,
         MAINNET_NETWORK_ID,
         MAINNET_PROTOCOL_MAGIC,
-        true
+        true,
+        &w
     );
     assert_int_equal(policy_with_total, POLICY_SHOW);
 }
@@ -178,23 +184,27 @@ static void test_collateral_output_subpolicy_matrix(void **state) {
                     tx_output_description_t output = device_owned
                         ? make_collateral_output_description_device_owned(num_asset_groups)
                         : make_collateral_output_description_third_party(num_asset_groups);
+                    warning_bits_t w = 0;
 
                     security_policy_t top_level_policy = policyForSignTxCollateralOutputAddress(
                         &output,
                         SIGN_TX_SIGNINGMODE_PLUTUS_TX,
                         MAINNET_NETWORK_ID,
                         MAINNET_PROTOCOL_MAGIC,
-                        total_collateral_present
+                        total_collateral_present,
+                        &w
                     );
                     assert_true(top_level_policy == POLICY_SHOW || top_level_policy == POLICY_HIDE);
 
                     security_policy_t ada_policy = policyForSignTxCollateralOutputAdaAmount(
                         top_level_policy,
-                        total_collateral_present
+                        total_collateral_present,
+                        &w
                     );
                     security_policy_t tokens_policy = policyForSignTxCollateralOutputTokens(
                         top_level_policy,
-                        &output
+                        &output,
+                        &w
                     );
 
                     if (top_level_policy == POLICY_HIDE) {
@@ -226,13 +236,15 @@ static void test_collateral_output_denied_outside_plutus(void **state) {
     reset_context();
 
     tx_output_description_t output = make_collateral_output_description_device_owned(0);
+    warning_bits_t w = 0;
 
     security_policy_t ordinary_policy = policyForSignTxCollateralOutputAddress(
         &output,
         SIGN_TX_SIGNINGMODE_ORDINARY_TX,
         MAINNET_NETWORK_ID,
         MAINNET_PROTOCOL_MAGIC,
-        true
+        true,
+        &w
     );
     assert_int_equal(ordinary_policy, POLICY_DENY);
 }

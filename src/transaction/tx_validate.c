@@ -186,8 +186,7 @@ static int validate_and_hash_inputs(tx_hash_builder_t* txHashBuilder, tx_ui_plan
         const tx_input_t *input = &input_node->input;
 
         security_policy_t input_policy = policyForSignTxInput(
-            G_context.tx_info.tx_params.txSigningMode,
-            input
+            G_context.tx_info.tx_params.txSigningMode, input, &G_context.tx_info.warning_bits
         );
 
         switch (input_policy) {
@@ -241,8 +240,8 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
                 TRACE("Output security policy denied");
                 return SWO_SECURITY_CONDITION_NOT_SATISFIED;
             case POLICY_SHOW: {
-                datum_policy = policyForSignTxOutputDatumHash(output_policy);
-                ref_script_policy = policyForSignTxOutputRefScript(output_policy);
+                datum_policy = policyForSignTxOutputDatumHash(output_policy, &G_context.tx_info.warning_bits);
+                ref_script_policy = policyForSignTxOutputRefScript(output_policy, &G_context.tx_info.warning_bits);
 
                 plan->pair_count += UI_PAIRS_OUTPUT_BASE;
                 if (output_destination->type == DESTINATION_DEVICE_OWNED) {
@@ -282,8 +281,8 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
                 break;
             }
             case POLICY_HIDE:
-                datum_policy = policyForSignTxOutputDatumHash(output_policy);
-                ref_script_policy = policyForSignTxOutputRefScript(output_policy);
+                datum_policy = policyForSignTxOutputDatumHash(output_policy, &G_context.tx_info.warning_bits);
+                ref_script_policy = policyForSignTxOutputRefScript(output_policy, &G_context.tx_info.warning_bits);
                 LEDGER_ASSERT(datum_policy == POLICY_HIDE,
                               "Output datum policy should be hidden when output is hidden");
                 LEDGER_ASSERT(ref_script_policy == POLICY_HIDE,
@@ -385,7 +384,7 @@ static int validate_and_hash_ttl(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t*
         return SWO_SUCCESS;
     }
 
-    security_policy_t ttl_policy = policyForSignTxTtl(G_context.tx_info.tx_body.ttl);
+    security_policy_t ttl_policy = policyForSignTxTtl(G_context.tx_info.tx_body.ttl, &G_context.tx_info.warning_bits);
     switch (ttl_policy) {
         case POLICY_DENY:
             return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -423,8 +422,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 cert_policy = policyForSignTxCertificateStaking(
                     G_context.tx_info.tx_params.txSigningMode,
                     certificate->type,
-                    &certificate->stakeCredential
-                );
+                    &certificate->stakeCredential,
+                    &G_context.tx_info.warning_bits);
                 switch (cert_policy) {
                     case POLICY_DENY:
                         return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -459,8 +458,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 cert_policy = policyForSignTxCertificateStaking(
                     G_context.tx_info.tx_params.txSigningMode,
                     certificate->type,
-                    &certificate->stakeCredential
-                );
+                    &certificate->stakeCredential,
+                    &G_context.tx_info.warning_bits);
                 switch (cert_policy) {
                     case POLICY_DENY:
                         return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -479,8 +478,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 cert_policy = policyForSignTxCertificateVoteDelegation(
                     G_context.tx_info.tx_params.txSigningMode,
                     &certificate->stakeCredential,
-                    &certificate->drep
-                );
+                    &certificate->drep,
+                    &G_context.tx_info.warning_bits);
                 switch (cert_policy) {
                     case POLICY_DENY:
                         return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -499,8 +498,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 cert_policy = policyForSignTxCertificateStakePoolAndDRepDelegation(
                     G_context.tx_info.tx_params.txSigningMode,
                     &certificate->stakeCredential,
-                    &certificate->drep
-                );
+                    &certificate->drep,
+                    &G_context.tx_info.warning_bits);
                 switch (cert_policy) {
                     case POLICY_DENY:
                         return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -518,8 +517,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
             case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL: {
                 cert_policy = policyForSignTxCertificateAccountRegistrationDelegationToStakePool(
                     G_context.tx_info.tx_params.txSigningMode,
-                    &certificate->stakeCredential
-                );
+                    &certificate->stakeCredential,
+                    &G_context.tx_info.warning_bits);
                 switch (cert_policy) {
                     case POLICY_DENY:
                         return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -538,8 +537,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 cert_policy = policyForSignTxCertificateAccountRegistrationDelegationToDRep(
                     G_context.tx_info.tx_params.txSigningMode,
                     &certificate->stakeCredential,
-                    &certificate->drep
-                );
+                    &certificate->drep,
+                    &G_context.tx_info.warning_bits);
                 switch (cert_policy) {
                     case POLICY_DENY:
                         return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -558,8 +557,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 cert_policy = policyForSignTxCertificateStakePoolAndDRepDelegation(
                     G_context.tx_info.tx_params.txSigningMode,
                     &certificate->stakeCredential,
-                    &certificate->drep
-                );
+                    &certificate->drep,
+                    &G_context.tx_info.warning_bits);
                 switch (cert_policy) {
                     case POLICY_DENY:
                         return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -578,8 +577,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 cert_policy = policyForSignTxCertificateCommitteeAuth(
                     G_context.tx_info.tx_params.txSigningMode,
                     &certificate->coldCredential,
-                    &certificate->hotCredential
-                );
+                    &certificate->hotCredential,
+                    &G_context.tx_info.warning_bits);
                 switch (cert_policy) {
                     case POLICY_DENY:
                         return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -597,8 +596,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
             case CERTIFICATE_RESIGN_COMMITTEE_COLD: {
                 cert_policy = policyForSignTxCertificateCommitteeResign(
                     G_context.tx_info.tx_params.txSigningMode,
-                    &certificate->coldCredential
-                );
+                    &certificate->coldCredential,
+                    &G_context.tx_info.warning_bits);
                 switch (cert_policy) {
                     case POLICY_DENY:
                         return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -636,8 +635,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
             case CERTIFICATE_DREP_UPDATE: {
                 cert_policy = policyForSignTxCertificateDRep(
                     G_context.tx_info.tx_params.txSigningMode,
-                    &certificate->dRepCredential
-                );
+                    &certificate->dRepCredential,
+                    &G_context.tx_info.warning_bits);
                 switch (cert_policy) {
                     case POLICY_DENY:
                         return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -717,8 +716,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 cert_policy = policyForSignTxStakePoolRegistrationInit(
                     G_context.tx_info.tx_params.txSigningMode,
                     certificate->poolRegistration.numPoolOwners,
-                    owner_counts.path_owners
-                );
+                    owner_counts.path_owners,
+                    &G_context.tx_info.warning_bits);
                 switch (cert_policy) {
                     case POLICY_DENY:
                         return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -732,8 +731,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                         // Pool ID (bech32 encoded pool keyhash)
                         security_policy_t pool_id_policy = policyForSignTxStakePoolRegistrationPoolId(
                             G_context.tx_info.tx_params.txSigningMode,
-                            &certificate->poolId
-                        );
+                            &certificate->poolId,
+                            &G_context.tx_info.warning_bits);
                         switch (pool_id_policy) {
                             case POLICY_DENY:
                                 return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -749,8 +748,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
 
                         // VRF Key Hash (verification key for pool's VRF)
                         security_policy_t vrf_policy = policyForSignTxStakePoolRegistrationVrfKey(
-                            G_context.tx_info.tx_params.txSigningMode
-                        );
+                            G_context.tx_info.tx_params.txSigningMode,
+                            &G_context.tx_info.warning_bits);
                         switch (vrf_policy) {
                             case POLICY_DENY:
                                 return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -771,8 +770,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                         security_policy_t reward_policy = policyForSignTxStakePoolRegistrationRewardAccount(
                             G_context.tx_info.tx_params.txSigningMode,
                             G_context.tx_info.tx_params.networkId,
-                            &certificate->poolRegistration.rewardAccount
-                        );
+                            &certificate->poolRegistration.rewardAccount,
+                            &G_context.tx_info.warning_bits);
                         switch (reward_policy) {
                             case POLICY_DENY:
                                 return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -796,8 +795,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
 
                                 security_policy_t owner_policy = policyForSignTxStakePoolRegistrationOwner(
                                     G_context.tx_info.tx_params.txSigningMode,
-                                    owner_credential
-                                );
+                                    owner_credential,
+                                    &G_context.tx_info.warning_bits);
                                 switch (owner_policy) {
                                     case POLICY_DENY:
                                         return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -833,8 +832,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
 
                                 security_policy_t relay_policy = policyForSignTxStakePoolRegistrationRelay(
                                     G_context.tx_info.tx_params.txSigningMode,
-                                    relay
-                                );
+                                    relay,
+                                    &G_context.tx_info.warning_bits);
                                 switch (relay_policy) {
                                     case POLICY_DENY:
                                         return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -893,7 +892,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                         if (certificate->poolRegistration.poolMetadataIsNull) {
                             // No metadata case
                             security_policy_t no_metadata_policy =
-                                policyForSignTxStakePoolRegistrationNoMetadata();
+                                policyForSignTxStakePoolRegistrationNoMetadata(&G_context.tx_info.warning_bits);
                             switch (no_metadata_policy) {
                                 case POLICY_DENY:
                                     return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -940,8 +939,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 cert_policy = policyForSignTxCertificateStakePoolRetirement(
                     G_context.tx_info.tx_params.txSigningMode,
                     &certificate->poolCredential,
-                    certificate->retirementEpoch
-                );
+                    certificate->retirementEpoch,
+                    &G_context.tx_info.warning_bits);
                 switch (cert_policy) {
                     case POLICY_DENY:
                         return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -1334,7 +1333,7 @@ static int validate_and_hash_aux_data_hash(tx_hash_builder_t* txHashBuilder, tx_
     }
 
     security_policy_t aux_policy =
-        policyForSignTxAuxData(G_context.tx_info.tx_params.auxDataType);
+        policyForSignTxAuxData(G_context.tx_info.tx_params.auxDataType, &G_context.tx_info.warning_bits);
     switch (aux_policy) {
         case POLICY_DENY:
             return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -1359,7 +1358,7 @@ static int validate_and_hash_validity_interval_start(tx_hash_builder_t* txHashBu
         return SWO_SUCCESS;
     }
 
-    security_policy_t validity_interval_start_policy = policyForSignTxValidityIntervalStart();
+    security_policy_t validity_interval_start_policy = policyForSignTxValidityIntervalStart(&G_context.tx_info.warning_bits);
     switch (validity_interval_start_policy) {
         case POLICY_DENY:
             return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -1386,7 +1385,7 @@ static int validate_and_hash_mint(tx_hash_builder_t* txHashBuilder, tx_ui_plan_t
     }
 
     security_policy_t mint_policy =
-        policyForSignTxMintInit(G_context.tx_info.tx_params.txSigningMode);
+        policyForSignTxMintInit(G_context.tx_info.tx_params.txSigningMode, &G_context.tx_info.warning_bits);
     switch (mint_policy) {
         case POLICY_DENY:
             return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -1460,8 +1459,8 @@ static int validate_and_hash_script_data_hash(tx_hash_builder_t* txHashBuilder, 
     }
 
     security_policy_t policy = policyForSignTxScriptDataHash(
-        G_context.tx_info.tx_params.txSigningMode
-    );
+        G_context.tx_info.tx_params.txSigningMode,
+        &G_context.tx_info.warning_bits);
 
     switch (policy) {
         case POLICY_DENY:
@@ -1497,8 +1496,8 @@ static int validate_and_hash_collateral_inputs(tx_hash_builder_t* txHashBuilder,
         security_policy_t collateral_input_policy = policyForSignTxCollateralInput(
             G_context.tx_info.tx_params.txSigningMode,
             G_context.tx_info.tx_params.includeTotalCollateral,
-            input
-        );
+            input,
+            &G_context.tx_info.warning_bits);
 
         switch (collateral_input_policy) {
             case POLICY_DENY:
@@ -1534,8 +1533,8 @@ static int validate_and_hash_required_signers(tx_hash_builder_t* txHashBuilder, 
 
         security_policy_t signer_policy = policyForSignTxRequiredSigner(
             G_context.tx_info.tx_params.txSigningMode,
-            required_signer
-        );
+            required_signer,
+            &G_context.tx_info.warning_bits);
 
         switch (signer_policy) {
             case POLICY_DENY:
@@ -1595,8 +1594,8 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
         G_context.tx_info.tx_params.txSigningMode,
         G_context.tx_info.tx_params.networkId,
         G_context.tx_info.tx_params.protocolMagic,
-        G_context.tx_info.tx_params.includeTotalCollateral
-    );
+        G_context.tx_info.tx_params.includeTotalCollateral,
+        &G_context.tx_info.warning_bits);
 
     if (collateral_policy == POLICY_SHOW &&
         collateral_desc.numAssetGroups > 0) {
@@ -1611,13 +1610,13 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
             security_policy_t collateral_ada_policy =
                 policyForSignTxCollateralOutputAdaAmount(
                     collateral_policy,
-                    G_context.tx_info.tx_params.includeTotalCollateral
-                );
+                    G_context.tx_info.tx_params.includeTotalCollateral,
+                    &G_context.tx_info.warning_bits);
             security_policy_t collateral_tokens_policy =
                 policyForSignTxCollateralOutputTokens(
                     collateral_policy,
-                    &collateral_desc
-                );
+                    &collateral_desc,
+                    &G_context.tx_info.warning_bits);
             plan->pair_count += UI_PAIRS_COLLATERAL_OUTPUT_ADDRESS;
             if (G_context.tx_info.tx_body.collateral_output.destination.type == DESTINATION_DEVICE_OWNED) {
                 plan->pair_count += UI_PAIRS_COLLATERAL_OUTPUT_DEVICE_OWNED;
@@ -1699,7 +1698,7 @@ static int validate_and_hash_total_collateral(tx_hash_builder_t* txHashBuilder, 
         return SWO_SUCCESS;
     }
 
-    security_policy_t policy = policyForSignTxTotalCollateral();
+    security_policy_t policy = policyForSignTxTotalCollateral(&G_context.tx_info.warning_bits);
 
     switch (policy) {
         case POLICY_DENY:
@@ -1732,8 +1731,8 @@ static int validate_and_hash_reference_inputs(tx_hash_builder_t* txHashBuilder, 
 
         security_policy_t reference_input_policy = policyForSignTxReferenceInput(
             G_context.tx_info.tx_params.txSigningMode,
-            input
-        );
+            input,
+            &G_context.tx_info.warning_bits);
 
         switch (reference_input_policy) {
             case POLICY_DENY:
@@ -1774,8 +1773,8 @@ static int validate_and_hash_voting_procedures(tx_hash_builder_t* txHashBuilder,
 
         security_policy_t voter_policy = policyForSignTxVotingProcedure(
             G_context.tx_info.tx_params.txSigningMode,
-            &voter_votes->voter
-        );
+            &voter_votes->voter,
+            &G_context.tx_info.warning_bits);
 
         switch (voter_policy) {
             case POLICY_DENY:
@@ -1898,8 +1897,8 @@ static int validate_and_hash_treasury(tx_hash_builder_t* txHashBuilder, tx_ui_pl
 
     security_policy_t treasury_policy = policyForSignTxTreasury(
         G_context.tx_info.tx_params.txSigningMode,
-        G_context.tx_info.tx_body.treasury
-    );
+        G_context.tx_info.tx_body.treasury,
+        &G_context.tx_info.warning_bits);
     switch (treasury_policy) {
         case POLICY_DENY:
             return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -1924,8 +1923,8 @@ static int validate_and_hash_donation(tx_hash_builder_t* txHashBuilder, tx_ui_pl
 
     security_policy_t donation_policy = policyForSignTxDonation(
         G_context.tx_info.tx_params.txSigningMode,
-        G_context.tx_info.tx_body.donation
-    );
+        G_context.tx_info.tx_body.donation,
+        &G_context.tx_info.warning_bits);
     switch (donation_policy) {
         case POLICY_DENY:
             return SWO_SECURITY_CONDITION_NOT_SATISFIED;
@@ -2012,7 +2011,7 @@ int tx_validate_and_compute_hash(tx_ui_plan_t* plan) {
     TRACE_BUFFER(G_context.tx_info.tx_hash, sizeof(G_context.tx_info.tx_hash));
 
     security_policy_t tx_hash_policy =
-        policyForSignTxDisplayTxHash(G_context.tx_info.tx_params.txSigningMode);
+        policyForSignTxDisplayTxHash(G_context.tx_info.tx_params.txSigningMode, &G_context.tx_info.warning_bits);
     switch (tx_hash_policy) {
         case POLICY_SHOW:
             plan->pair_count += UI_PAIRS_TX_HASH;
