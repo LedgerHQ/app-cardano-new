@@ -1040,6 +1040,55 @@ outputs: dict[str, TxOutput] = {
             )
         ],
     ),
+    # Inline outputs that appear frequently - extracted for deduplication
+    "inlineByronMainnet3003112": TxOutputAlonzo(
+        destination=TxOutputDestination(
+            type=TxOutputDestinationType.THIRD_PARTY,
+            params=ThirdPartyAddressParams(
+                addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
+            ),
+        ),
+        amount=3003112,
+        format=TxOutputFormat.ARRAY_LEGACY,
+        tokenBundle=[],
+        datum=None,
+    ),
+    "inlineShelleyBase1": TxOutputAlonzo(
+        destination=TxOutputDestination(
+            type=TxOutputDestinationType.THIRD_PARTY,
+            params=ThirdPartyAddressParams(
+                addressHex="017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
+            ),
+        ),
+        amount=1,
+        format=TxOutputFormat.ARRAY_LEGACY,
+        tokenBundle=[],
+        datum=None,
+    ),
+    "inlineShelleyBase1v2": TxOutputAlonzo(
+        destination=TxOutputDestination(
+            type=TxOutputDestinationType.THIRD_PARTY,
+            params=ThirdPartyAddressParams(
+                addressHex="01eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff"
+            ),
+        ),
+        amount=1,
+        format=TxOutputFormat.ARRAY_LEGACY,
+        tokenBundle=[],
+        datum=None,
+    ),
+    "inlineShelleyBase1234": TxOutputAlonzo(
+        destination=TxOutputDestination(
+            type=TxOutputDestinationType.THIRD_PARTY,
+            params=ThirdPartyAddressParams(
+                addressHex="01eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff"
+            ),
+        ),
+        amount=1234,
+        format=TxOutputFormat.ARRAY_LEGACY,
+        tokenBundle=[],
+        datum=None,
+    ),
 }
 
 mints: dict[str, List[AssetGroup]] = {
@@ -1670,7 +1719,6 @@ testsByron: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoByron"]],
             outputs=[outputs["externalByronDaedalusMainnet"]],
-
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018182584c82d818584283581cd2348b8ef7b8a6d1c922efa499c669b151eeef99e4ce3521e88223f8a101581e581cf281e648a89015a9861bd9e992414d1145ddaf80690be53235b0e2e5001a199834651a002dd2e802182a030a",
@@ -1711,7 +1759,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a",
@@ -1723,7 +1770,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoByron"]],
             outputs=[outputs["externalByronMainnet"], outputs["internalBaseWithStakingPath"]],
-
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e88258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a",
@@ -1738,7 +1784,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
                 outputs["externalByronMainnet"],
                 outputs["internalBaseWithStakingKeyHash"],
             ],
-
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e88258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f1124122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42771a006ca79302182a030a",
@@ -1750,7 +1795,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"], outputs["internalEnterprise"]],
-
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e882581d6114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241a006ca79302182a030a",
@@ -1762,7 +1806,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"], outputs["internalPointer"]],
-
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e88258204114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11240102031a006ca79302182a030a",
@@ -2608,7 +2651,6 @@ testsMultisig: List[SignTxTestCase] = [
             network=Testnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalShelleyBaseScripthashKeyhash"]],
-
         ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e0102182a030a",
@@ -2779,7 +2821,6 @@ testsMary: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"], outputs["multiassetChange"]],
-
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000182825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09018258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c821904d2a1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1a0078386202182a030a",
@@ -3008,7 +3049,6 @@ testsConwayWithoutCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             treasury=27,
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
@@ -3020,7 +3060,6 @@ testsConwayWithoutCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             donation=28,
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
@@ -3032,7 +3071,6 @@ testsConwayWithoutCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             treasury=27,
             donation=28,
         ),
@@ -3552,7 +3590,6 @@ testsAlonzo: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a",
@@ -3583,7 +3620,6 @@ testsAlonzo: List[SignTxTestCase] = [
             network=Testnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["missingDatumHashWithTokens"]],
-
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a0078386202182a030a",
@@ -3736,7 +3772,6 @@ testsBabbage: List[SignTxTestCase] = [
             network=Testnet_legacy,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["datumHashRefScriptExternalMap"]],
-
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a4005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18803d81854deadbeefdeadbeefdeadbeefdeadbeefdeadbeef02182a030a",
@@ -3747,7 +3782,6 @@ testsBabbage: List[SignTxTestCase] = [
             network=Testnet_legacy,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["datumHashRefScript240ExternalMap"]],
-
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a4005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18803d81858f04784392787cc567ac21d7b5346a4a89ae112b7ff7610e402284042aa4e6efca7956a53c3f5cb3ec6745f5e21150f2a77bd71a2adc3f8b9539e9bab41934b477f60a8b302584d1a619ed9b178b5ce6fcad31adc0d6fc17023ede474c09f29fdbfb290a5b30b5240fae5de71168036201772c0d272ae90220181f9bf8c3198e79fc2ae32b076abf4d0e10d3166923ce56994b25c00909e3faab8ef1358c136cd3b197488efc883a7c6cfa3ac63ca9cebc62121c6e22f594420c2abd54e78282adec20ee7dba0e6de65554adb8ee8314f23f86cf7cf0906d4b6c643966baf6c54240c19f4131374e298f38a626a4ad63e6102182a030a",
@@ -3758,7 +3792,6 @@ testsBabbage: List[SignTxTestCase] = [
             network=Testnet_legacy,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["datumHashRefScript304ExternalMap"]],
-
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a4005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18803d818590130deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeaddeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeaddeadbeef02182a030a",
@@ -3770,7 +3803,6 @@ testsBabbage: List[SignTxTestCase] = [
             network=Testnet_legacy,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["datumHashWithTokensMap"]],
-
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a007838620282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a",
@@ -4060,28 +4092,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Non-mainnet protocol magic",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824072),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
-
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -4092,28 +4104,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Invalid network id",
         tx=Transaction(
             network=NetworkDesc(networkId=16, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
-
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -4124,28 +4116,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration (operator) - too few certificates",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
-
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
@@ -4157,28 +4129,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration (owner) - too few certificates",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
-
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
@@ -4190,27 +4142,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration (operator) - too many certificates",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -4262,27 +4195,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration (owner) - too many certificates",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -4346,27 +4260,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration (operator) - too many withdrawals",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -4408,27 +4303,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration (owner) - too many withdrawals",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -4476,27 +4352,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration (operator) - mint included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -4535,27 +4392,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration (owner) - mint included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -4600,35 +4438,10 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Ordinary tx - collateral inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
-            collateralInputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            collateralInputs=[inputs["utxoShelley"]],
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -4640,35 +4453,10 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Multisig tx - collateral inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
-            collateralInputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            collateralInputs=[inputs["utxoShelley"]],
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
@@ -4679,27 +4467,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration (operator) - collateral inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -4722,13 +4491,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            collateralInputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            collateralInputs=[inputs["utxoShelley"]],
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
@@ -4739,27 +4502,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration (owner) - collateral inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -4788,13 +4532,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     ),
                 )
             ],
-            collateralInputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            collateralInputs=[inputs["utxoShelley"]],
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
@@ -4805,27 +4543,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration (operator) - required signers included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -4863,27 +4582,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration (owner) - required signers included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -4927,27 +4627,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Ordinary tx - collateral output included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             collateralOutput=TxOutputAlonzo(
                 destination=TxOutputDestination(
@@ -4971,27 +4652,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Multisig tx - collateral output included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             collateralOutput=TxOutputAlonzo(
                 destination=TxOutputDestination(
@@ -5015,27 +4677,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration (operator) - collateral output included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -5080,27 +4723,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration (owner) - collateral output included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -5151,27 +4775,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Ordinary tx - total collateral included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             totalCollateral=8,
             ),
@@ -5184,27 +4789,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Multisig tx - total collateral included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             totalCollateral=8,
             ),
@@ -5217,27 +4803,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration (operator) - total collateral included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -5271,27 +4838,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration (owner) - total collateral included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -5331,27 +4879,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Ordinary tx - reference inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             referenceInputs=[
                 TxInput(
@@ -5370,27 +4899,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Multisig tx - reference inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             referenceInputs=[
                 TxInput(
@@ -5409,27 +4919,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration (operator) - reference inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -5469,27 +4960,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration (owner) - reference inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -5538,13 +5010,7 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Reward address - key",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
             outputs=[
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
@@ -5568,7 +5034,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -5579,13 +5044,7 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Reward address - script",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
             outputs=[
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
@@ -5609,7 +5068,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -5620,13 +5078,7 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="No spending path - Ordinary Tx 1",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
             outputs=[
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
@@ -5650,7 +5102,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -5661,13 +5112,7 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="No spending path - Ordinary Tx 2",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
             outputs=[
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
@@ -5691,7 +5136,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -5702,13 +5146,7 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool operator - spending choice not path",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
             outputs=[
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
@@ -5732,7 +5170,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
@@ -5743,13 +5180,7 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Multisig - unconditionally",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
             outputs=[
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
@@ -5773,7 +5204,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
@@ -5784,13 +5214,7 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool owner - unconditionally",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
             outputs=[
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
@@ -5814,7 +5238,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
@@ -5828,27 +5251,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -5881,27 +5285,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -5934,27 +5319,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool registration in Plutus Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -5987,27 +5353,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool retirement in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -6031,27 +5378,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Stake registration in Pool Registration Operator",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -6075,20 +5403,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -6111,27 +5426,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Stake deregistration in Pool Registration Operator",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -6155,20 +5451,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -6191,27 +5474,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Stake delegation in Pool Registration Operator",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -6236,20 +5500,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -6273,27 +5524,8 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool retirement in Pool Registration Operator",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -6318,20 +5550,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -6358,27 +5577,8 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Script hash in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -6401,27 +5601,8 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Non-staking path in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -6444,27 +5625,8 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -6490,27 +5652,8 @@ certificateStakePoolRetirementRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Non-pool cold key in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -6538,13 +5681,7 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Reject tx with invalid canonical ordering of withdrawals",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
             outputs=[],
 
             withdrawals=[
@@ -6574,27 +5711,8 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Script hash as stake credential in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             withdrawals=[
                 Withdrawal(
@@ -6615,27 +5733,8 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Non-staking path as stake credential in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             withdrawals=[
                 Withdrawal(
@@ -6656,27 +5755,8 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Staking path as stake credential in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             withdrawals=[
                 Withdrawal(
@@ -6697,27 +5777,8 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Non-staking path as stake credential in Plutus Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             withdrawals=[
                 Withdrawal(
@@ -6741,28 +5802,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Ordinary account path in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
-
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -6774,28 +5815,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Multisig account path in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
-
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -6807,28 +5828,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Multisig spending path in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
-
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -6840,28 +5841,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Multisig staking path in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
-
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -6873,28 +5854,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Mint path in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
-
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -6906,28 +5867,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Ordinary account path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
-
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
@@ -6939,28 +5880,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Multisig account path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
-
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
@@ -6972,28 +5893,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Ordinary spending path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
-
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
@@ -7005,28 +5906,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Ordinary staking path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
-
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
@@ -7038,28 +5919,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Mint path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
-
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
@@ -7071,28 +5932,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool cold path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
-
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
@@ -7104,28 +5945,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Ordinary account path in Plutus Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
-
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
             ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="",
@@ -7137,28 +5958,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Multisig account path in Plutus Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
-
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
             ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="",
@@ -7170,27 +5971,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Multisig account path in Pool Registration (Owner) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -7230,27 +6012,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Ordinary spending path in Pool Registration (Owner) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -7290,27 +6053,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Multisig spending path in Pool Registration (Owner) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -7350,27 +6094,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Multisig staking path in Pool Registration (Owner) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -7410,27 +6135,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Mint path in Pool Registration (Owner) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -7470,27 +6176,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Pool cold path in Pool Registration (Owner) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -7530,27 +6217,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Multisig account path in Pool Registration (Operator) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -7584,27 +6252,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Multisig spending path in Pool Registration (Operator) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -7638,27 +6287,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Ordinary staking path in Pool Registration (Operator) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -7692,27 +6322,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Multisig staking path in Pool Registration (Operator) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -7746,27 +6357,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Mint path in Pool Registration (Operator) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             certificates=[
                 Certificate(
@@ -7803,13 +6395,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Input and change output account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
             outputs=[
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
@@ -7845,7 +6431,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 ),
             ],
-
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -7856,27 +6441,8 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Input and stake deregistration certificate account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="01eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff"
-                        ),
-                    ),
-                    amount=1,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineShelleyBase1v2"]],
 
             certificates=[
                 Certificate(
@@ -7899,27 +6465,8 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Input and withdrawal account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="01eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff"
-                        ),
-                    ),
-                    amount=1,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineShelleyBase1v2"]],
 
             withdrawals=[
                 Withdrawal(
@@ -7940,13 +6487,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Change output and stake deregistration account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
             outputs=[
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
@@ -8005,13 +6546,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Change output and withdrawal account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
             outputs=[
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
@@ -8068,27 +6603,8 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Stake deregistration certificate and withdrawal account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="01eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff"
-                        ),
-                    ),
-                    amount=1,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineShelleyBase1v2"]],
 
             certificates=[
                 Certificate(
@@ -8147,7 +6663,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -8159,13 +6674,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Byron to Shelley transfer output account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/44'/1815'/1'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoByron2"]],
             outputs=[
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
@@ -8189,7 +6698,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -8203,27 +6711,8 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Collateral output with datum hash",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             collateralOutput=TxOutputAlonzo(
                 destination=TxOutputDestination(
@@ -8250,27 +6739,8 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Collateral output with inline datum",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             collateralOutput=TxOutputBabbage(
                 destination=TxOutputDestination(
@@ -8298,27 +6768,8 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Collateral output with reference script",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c2561"
-                        ),
-                    ),
-                    amount=3003112,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
 
             collateralOutput=TxOutputBabbage(
                 destination=TxOutputDestination(
@@ -8346,13 +6797,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         ledgerjs_name="Reject tx where asset groups are not ordered",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
             outputs=[
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
@@ -8376,7 +6821,6 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -8387,13 +6831,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         ledgerjs_name="Reject tx where asset groups are not unique",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
             outputs=[
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
@@ -8417,7 +6855,6 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -8428,13 +6865,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         ledgerjs_name="Reject tx where tokens within an asset group are not ordered - alphabetical",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
             outputs=[
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
@@ -8457,7 +6888,6 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -8468,13 +6898,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         ledgerjs_name="Reject tx where tokens within an asset group are not ordered - length",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
             outputs=[
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
@@ -8497,7 +6921,6 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -8508,13 +6931,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         ledgerjs_name="Reject tx where tokens within an asset group are not unique",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
             outputs=[
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
@@ -8537,7 +6954,6 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
@@ -8548,13 +6964,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         ledgerjs_name="Reject tx with mint fields with invalid canonical ordering of policies",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
             outputs=[],
 
             mint=[
@@ -8583,13 +6993,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         ledgerjs_name="Reject tx with mint fields with invalid canonical ordering of asset names",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path="m/1852'/1815'/0'/0/0",
-                    outputIndex=0,
-                )
-            ],
+            inputs=[inputs["utxoShelley"]],
             outputs=[],
 
             mint=[
@@ -8617,27 +7021,8 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Different index",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
-                        ),
-                    ),
-                    amount=1,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineShelleyBase1"]],
 
             certificates=[
                 Certificate(
@@ -8709,27 +7094,8 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Different prefix",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
-                        ),
-                    ),
-                    amount=1,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineShelleyBase1"]],
 
             certificates=[
                 Certificate(
@@ -8801,27 +7167,8 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="No path given",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
-                        ),
-                    ),
-                    amount=1,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineShelleyBase1"]],
 
             certificates=[
                 Certificate(
@@ -8888,27 +7235,8 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
         name="Invalid_numerator_denominator_relationship",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
-                        ),
-                    ),
-                    amount=1,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineShelleyBase1"]],
 
             certificates=[
                 Certificate(
@@ -8961,27 +7289,8 @@ stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Path sent in for Pool Registration Owner Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
-                        ),
-                    ),
-                    amount=1,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineShelleyBase1"]],
 
             certificates=[
                 Certificate(
@@ -9029,27 +7338,8 @@ stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
         ledgerjs_name="Hash sent in for Pool Registration Operator Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
-                        ),
-                    ),
-                    amount=1,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineShelleyBase1"]],
 
             certificates=[
                 Certificate(
@@ -9100,27 +7390,8 @@ stakePoolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
         name="Non_staking_path_for_Pool_Registration_Owner_Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
-                        ),
-                    ),
-                    amount=1,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineShelleyBase1"]],
 
             certificates=[
                 Certificate(
@@ -9176,27 +7447,8 @@ invalidCertificates: List[SignTxTestCase] = [
         ledgerjs_name="pool registration with multiple path owners",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
-                        ),
-                    ),
-                    amount=1,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineShelleyBase1"]],
 
             certificates=[
                 Certificate(
@@ -9249,27 +7501,8 @@ invalidCertificates: List[SignTxTestCase] = [
         ledgerjs_name="pool registration with no owners",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
-                        ),
-                    ),
-                    amount=1,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineShelleyBase1"]],
 
             certificates=[
                 Certificate(
@@ -9316,27 +7549,8 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
         ledgerjs_name="pool metadata url too long",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
-                        ),
-                    ),
-                    amount=1,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineShelleyBase1"]],
 
             certificates=[
                 Certificate(
@@ -9385,27 +7599,8 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
         ledgerjs_name="pool metadata invalid url",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
-                        ),
-                    ),
-                    amount=1,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineShelleyBase1"]],
 
             certificates=[
                 Certificate(
@@ -9454,27 +7649,8 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
         ledgerjs_name="pool metadata invalid hash length",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
-                        ),
-                    ),
-                    amount=1,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineShelleyBase1"]],
 
             certificates=[
                 Certificate(
@@ -9523,27 +7699,8 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
         ledgerjs_name="pool metadata missing hash",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
-                        ),
-                    ),
-                    amount=1,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineShelleyBase1"]],
 
             certificates=[
                 Certificate(
@@ -9595,27 +7752,8 @@ invalidRelayTestCases: List[SignTxTestCase] = [
         ledgerjs_name="SingleHostHostname missing dns",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
-                        ),
-                    ),
-                    amount=1,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineShelleyBase1"]],
 
             certificates=[
                 Certificate(
@@ -9664,27 +7802,8 @@ invalidRelayTestCases: List[SignTxTestCase] = [
         ledgerjs_name="MultiHost missing dns",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[
-                TxInput(
-                    txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-                    path=None,
-                    outputIndex=0,
-                )
-            ],
-            outputs=[
-                TxOutputAlonzo(
-                    destination=TxOutputDestination(
-                        type=TxOutputDestinationType.THIRD_PARTY,
-                        params=ThirdPartyAddressParams(
-                            addressHex="017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
-                        ),
-                    ),
-                    amount=1,
-                    format=TxOutputFormat.ARRAY_LEGACY,
-                    tokenBundle=[],
-                    datum=None,
-                )
-            ],
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineShelleyBase1"]],
 
             certificates=[
                 Certificate(
