@@ -59,6 +59,17 @@ static bool ensure_sign_tx_state(tx_state_e required_state) {
     return true;
 }
 
+static bool ensure_sign_tx_request_type(request_type_e required_request_type) {
+    if (G_context.req_type != required_request_type) {
+        TRACE("Rejecting sign_tx command for req_type %d (expected %d)",
+              G_context.req_type,
+              required_request_type);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return false;
+    }
+    return true;
+}
+
 /**
  * Helper: Initialize transaction from P1_TX_INIT APDU
  * Validates all transaction metadata and checks security policy
@@ -441,9 +452,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 
     switch (p1) {
         case P1_TX_INIT:
-            if (G_context.req_type != REQUEST_NONE) {
-                TRACE("TX init rejected: request already active");
-                send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+            if (!ensure_sign_tx_request_type(REQUEST_NONE)) {
                 return;
             }
             if (!ensure_sign_tx_state(TX_STATE_NONE)) {
@@ -465,9 +474,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             return;
 
         case P1_TX_CHUNK:
-            if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
-                TRACE("TX data chunk rejected: wrong request type %d", G_context.req_type);
-                send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+            if (!ensure_sign_tx_request_type(REQUEST_SIGN_TRANSACTION)) {
                 return;
             }
             if (!ensure_sign_tx_state(TX_STATE_CHUNKS)) {
@@ -482,9 +489,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             return;
 
         case P1_TX_CONFIRM:
-            if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
-                TRACE("TX final chunk rejected: wrong request type %d", G_context.req_type);
-                send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+            if (!ensure_sign_tx_request_type(REQUEST_SIGN_TRANSACTION)) {
                 return;
             }
             if (!ensure_sign_tx_state(TX_STATE_CHUNKS)) {
@@ -683,9 +688,7 @@ void handler_sign_tx_witness(buffer_t *cdata) {
     TRACE_BUFFER_T(cdata);
 
     // Verify we're in correct state for witness signing
-    if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
-        TRACE("Bad request type for witness signing: %d", G_context.req_type);
-        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+    if (!ensure_sign_tx_request_type(REQUEST_SIGN_TRANSACTION)) {
         return;
     }
 

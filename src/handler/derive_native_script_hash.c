@@ -19,6 +19,17 @@
 #include "ui_display_native_script_hash.h"
 #include "utils.h"
 
+static bool ensure_derive_native_script_hash_request_type(request_type_e required_request_type) {
+    if (G_context.req_type != required_request_type) {
+        TRACE("NATIVE_SCRIPT rejected: request type %d (expected %d)",
+              G_context.req_type,
+              required_request_type);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return false;
+    }
+    return true;
+}
+
 // Complex native script handlers
 static void deriveNativeScriptHash_handleAll() {
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
@@ -431,13 +442,6 @@ static void deriveNativeScriptHash_handleInit(buffer_t *cdata) {
         return;
     }
 
-    // Init entry invariant: no active request
-    if (G_context.req_type != REQUEST_NONE) {
-        TRACE("Request already active");
-        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
-        return;
-    }
-
     // Set up request state
     G_context.req_type = REQUEST_DERIVE_NATIVE_SCRIPT_HASH;
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
@@ -457,15 +461,16 @@ void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
 
     switch (script_type) {
         case P1_NATIVE_SCRIPT_INIT:
+            if (!ensure_derive_native_script_hash_request_type(REQUEST_NONE)) {
+                return;
+            }
             deriveNativeScriptHash_handleInit(cdata);
             break;
         case P1_NATIVE_SCRIPT_START_COMPLEX:
         case P1_NATIVE_SCRIPT_ADD_SIMPLE:
         case P1_NATIVE_SCRIPT_FINISH:
             // All script/finish APDUs require active request
-            if (G_context.req_type != REQUEST_DERIVE_NATIVE_SCRIPT_HASH) {
-                TRACE("No active derive native script hash request");
-                send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+            if (!ensure_derive_native_script_hash_request_type(REQUEST_DERIVE_NATIVE_SCRIPT_HASH)) {
                 return;
             }
             switch (script_type) {

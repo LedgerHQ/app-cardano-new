@@ -26,11 +26,23 @@
 
 #define OP_CERT_BODY_LENGTH (KES_PUBLIC_KEY_LENGTH + 8 + 8)
 
-void handler_sign_opcert(buffer_t *cdata) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_NONE, "opcert init called while another request active");
+static bool ensure_sign_opcert_init_request_state(void) {
+    if (G_context.req_type != REQUEST_NONE) {
+        TRACE("SIGN_OPCERT init rejected: request already active (req_type=%d)",
+              G_context.req_type);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return false;
+    }
+    return true;
+}
 
+void handler_sign_opcert(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handler");
     TRACE_BUFFER_T(cdata);
+
+    if (!ensure_sign_opcert_init_request_state()) {
+        return;
+    }
 
     G_context.req_type = REQUEST_SIGN_OPCERT;
     G_context.state.opcert_state = OPCERT_STATE_NONE;

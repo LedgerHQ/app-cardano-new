@@ -16,28 +16,59 @@
 #include "ui_display_address_derivation.h"
 #include "buffer_helpers.h"
 
-static void prepareResponse() {
-    // Verify we're at the expected state: parameters validated by policy
-    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS, "Bad req_type");
-    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_VALIDATED, "Bad derive_address state");
+static bool ensure_derive_address_init_request_state(void) {
+    if (G_context.req_type != REQUEST_NONE) {
+        TRACE("DERIVE_ADDRESS init rejected: request already active (req_type=%d)",
+              G_context.req_type);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return false;
+    }
+    return true;
+}
+
+static bool ensure_derive_address_state(derive_address_state_e required_state) {
+    if (G_context.state.derive_address_state != required_state) {
+        TRACE("DERIVE_ADDRESS rejected in state %d (expected %d)",
+              G_context.state.derive_address_state,
+              required_state);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return false;
+    }
+    return true;
+}
+
+static bool prepareResponse(void) {
+    if (G_context.req_type != REQUEST_DERIVE_ADDRESS) {
+        TRACE("DERIVE_ADDRESS response preparation rejected: bad request type %d",
+              G_context.req_type);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return false;
+    }
+
+    if (!ensure_derive_address_state(DERIVE_ADDRESS_STATE_VALIDATED)) {
+        return false;
+    }
 
     derive_address_ctx_t *ctx = &G_context.derive_address_info;
     ctx->address.length =
         deriveAddress(&ctx->address_params, ctx->address.buffer, SIZEOF(ctx->address.buffer));
     if (ctx->address.length == 0 || ctx->address.length > SIZEOF(ctx->address.buffer)) {
         send_swo_and_reset(SWO_INCORRECT_DATA);
-        return;
+        return false;
     }
 
     // Address successfully derived and ready for display/response
     G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_PREPARED;
+    return true;
 }
 
 void handler_derive_address(buffer_t *cdata, uint8_t p1) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_NONE, "Request already active");
-
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handler");
     TRACE_BUFFER_T(cdata);
+
+    if (!ensure_derive_address_init_request_state()) {
+        return;
+    }
 
     G_context.req_type = REQUEST_DERIVE_ADDRESS;
     G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_NONE;
@@ -62,7 +93,9 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
         case P1_ADDRESS_RETURN: {
             TRACE("ADDRESS_RETURN");
             ctx->should_export_address = true;
-            LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED, "Bad derive_address state");
+            if (!ensure_derive_address_state(DERIVE_ADDRESS_STATE_PARSED)) {
+                return;
+            }
             warning_bits_t warnings = 0;
             security_policy_t policy = policyForReturnDeriveAddress(&ctx->address_params, &warnings);
             TRACE("Policy: %d", (int) policy);
@@ -72,7 +105,9 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
                 return;
             }
             G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_VALIDATED;
-            prepareResponse();
+            if (!prepareResponse()) {
+                return;
+            }
             apdu_response_deferred();
             ui_deriveAddress_handleReturn(policy, warnings);
             break;
@@ -80,7 +115,9 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
         case P1_ADDRESS_DISPLAY: {
             TRACE("ADDRESS_DISPLAY");
             ctx->should_export_address = false;
-            LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED, "Bad derive_address state");
+            if (!ensure_derive_address_state(DERIVE_ADDRESS_STATE_PARSED)) {
+                return;
+            }
             warning_bits_t warnings = 0;
             security_policy_t policy = policyForShowDeriveAddress(&ctx->address_params, &warnings);
             TRACE("Policy: %d", (int) policy);
@@ -90,7 +127,9 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
                 return;
             }
             G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_VALIDATED;
-            prepareResponse();
+            if (!prepareResponse()) {
+                return;
+            }
             apdu_response_deferred();
             ui_deriveAddress_handleDisplay(policy, warnings);
             break;

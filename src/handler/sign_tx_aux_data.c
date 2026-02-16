@@ -35,6 +35,40 @@
 // ALL_DATA_RECEIVED
 //   -> NONE                       (after user confirm/reject callback)
 
+static bool ensure_sign_tx_aux_data_request_type(request_type_e required_request_type) {
+    if (G_context.req_type != required_request_type) {
+        TRACE("AUX_DATA rejected: request type %d (expected %d)",
+              G_context.req_type,
+              required_request_type);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return false;
+    }
+    return true;
+}
+
+static bool ensure_sign_tx_aux_data_tx_state(tx_state_e required_tx_state) {
+    if (G_context.state.tx_state != required_tx_state) {
+        TRACE("AUX_DATA rejected: tx state %d (expected %d)",
+              G_context.state.tx_state,
+              required_tx_state);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return false;
+    }
+    return true;
+}
+
+static bool ensure_sign_tx_aux_data_state(cvote_aux_data_state_e required_aux_state) {
+    cvote_aux_data_t *aux_data = &G_context.tx_info.cvote_aux_data;
+    if (aux_data->state != required_aux_state) {
+        TRACE("AUX_DATA rejected: aux state %d (expected %d)",
+              aux_data->state,
+              required_aux_state);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return false;
+    }
+    return true;
+}
+
 // Validate CVote aux data against security policies
 // Returns false if any policy denies, true if all policies allow
 static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
@@ -333,33 +367,23 @@ void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata");
     TRACE_BUFFER_T(cdata);
 
-    cvote_aux_data_t *aux_data = &G_context.tx_info.cvote_aux_data;
-
-    if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
-        TRACE("AUX_DATA rejected: wrong request type %d", G_context.req_type);
-        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+    if (!ensure_sign_tx_aux_data_request_type(REQUEST_SIGN_TRANSACTION)) {
         return;
     }
 
-    if (G_context.state.tx_state != TX_STATE_AUX_DATA) {
-        TRACE("Bad state for AUX_DATA: expected TX_STATE_AUX_DATA, got %d", G_context.state.tx_state);
-        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+    if (!ensure_sign_tx_aux_data_tx_state(TX_STATE_AUX_DATA)) {
         return;
     }
 
     switch (p2) {
         case P2_AUX_DATA_INIT:
-            if (aux_data->state != CVOTE_AUX_DATA_STATE_EXPECTING_INIT) {
-                TRACE("P2_AUX_DATA_INIT in wrong state: %d", aux_data->state);
-                send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+            if (!ensure_sign_tx_aux_data_state(CVOTE_AUX_DATA_STATE_EXPECTING_INIT)) {
                 return;
             }
             handler_tx_aux_data_init(cdata);
             return;
         case P2_AUX_DATA_DELEGATION:
-            if (aux_data->state != CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS) {
-                TRACE("P2_AUX_DATA_DELEGATION in wrong state: %d", aux_data->state);
-                send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+            if (!ensure_sign_tx_aux_data_state(CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS)) {
                 return;
             }
             handler_tx_aux_data_delegation(cdata);

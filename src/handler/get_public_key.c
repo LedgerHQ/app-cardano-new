@@ -24,11 +24,23 @@
 #include "securityPolicy.h"
 #include "menu.h"
 
-void handler_get_public_key(buffer_t *cdata) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_NONE, "pubkey handler called while another request active");
+static bool ensure_get_public_key_init_request_state(void) {
+    if (G_context.req_type != REQUEST_NONE) {
+        TRACE("GET_PUBLIC_KEY rejected: request already active (req_type=%d)",
+              G_context.req_type);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return false;
+    }
+    return true;
+}
 
+void handler_get_public_key(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handler");
     TRACE_BUFFER_T(cdata);
+
+    if (!ensure_get_public_key_init_request_state()) {
+        return;
+    }
 
     G_context.req_type = REQUEST_EXPORT_PUBKEY;
 
