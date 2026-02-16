@@ -66,7 +66,12 @@ bool buffer_write_bytes(write_buffer_t *buffer, const uint8_t *data, size_t n) {
     if (!buffer_can_write(buffer, n)) {
         return false;
     }
-    memmove(buffer->ptr + buffer->offset, data, n);
+    // Avoid passing NULL pointer to memmove with zero-length, even though it's technically
+    // valid to do so in the C standard. This guards against implementation-defined behavior
+    // and potential issues on some toolchains.
+    if (n > 0) {
+        memmove(buffer->ptr + buffer->offset, data, n);
+    }
     return write_buffer_seek_cur(buffer, n);
 }
 
