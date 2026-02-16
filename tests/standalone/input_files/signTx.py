@@ -20,9 +20,7 @@ from standalone.input_files.derive_address import (
     pointer_to_str,
 )
 
-
 MAX_SIGN_TX_CHUNK_SIZE = 250
-
 
 class TransactionSigningMode(IntEnum):
     ORDINARY_TRANSACTION = 0x03
@@ -31,38 +29,31 @@ class TransactionSigningMode(IntEnum):
     MULTISIG_TRANSACTION = 0x06
     PLUTUS_TRANSACTION = 0x07
 
-
 class TxAuxiliaryDataType(IntEnum):
     ARBITRARY_HASH = 0x00
     CIP36_REGISTRATION = 0x01
-
 
 class CredentialParamsType(IntEnum):
     KEY_HASH = 0x00
     SCRIPT_HASH = 0x01
     KEY_PATH = 0x02
 
-
 class TxOutputFormat(IntEnum):
     ARRAY_LEGACY = 0x00
     MAP_BABBAGE = 0x01
-
 
 class TxOutputDestinationType(IntEnum):
     THIRD_PARTY = 0x01
     DEVICE_OWNED = 0x02
 
-
 class PoolKeyType(IntEnum):
     DEVICE_OWNED = 0x01
     THIRD_PARTY = 0x02
-
 
 class VoteOption(IntEnum):
     NO = 0x00
     YES = 0x01
     ABSTAIN = 0x02
-
 
 class VoterType(IntEnum):
     COMMITTEE_KEY_HASH = 0
@@ -73,7 +64,6 @@ class VoterType(IntEnum):
     DREP_SCRIPT_HASH = 3
     STAKE_POOL_KEY_HASH = 4
     STAKE_POOL_KEY_PATH = 104
-
 
 class CertificateType(IntEnum):
     STAKE_REGISTRATION = 0
@@ -94,16 +84,13 @@ class CertificateType(IntEnum):
     DREP_DEREGISTRATION = 17
     DREP_UPDATE = 18
 
-
 class CIP36VoteRegistrationFormat(IntEnum):
     CIP_15 = 1
     CIP_36 = 2
 
-
 class CIP36VoteDelegationType(IntEnum):
     KEY = 1
     PATH = 2
-
 
 class DRepParamsType(IntEnum):
     KEY_HASH = 0
@@ -112,22 +99,18 @@ class DRepParamsType(IntEnum):
     NO_CONFIDENCE = 3
     KEY_PATH = 100
 
-
 class TxRequiredSignerType(IntEnum):
     PATH = 0
     HASH = 1
-
 
 class DatumType(IntEnum):
     HASH = 0
     INLINE = 1
 
-
 class RelayType(IntEnum):
     SINGLE_HOST_IP_ADDR = 0
     SINGLE_HOST_HOSTNAME = 1
     MULTI_HOST = 2
-
 
 @dataclass
 class TxInput:
@@ -135,35 +118,29 @@ class TxInput:
     path: Optional[str] = None
     outputIndex: int = 0
 
-
 @dataclass
 class Token:
     assetNameHex: str
     amount: int
-
 
 @dataclass
 class AssetGroup:
     policyIdHex: str
     tokens: List[Token]
 
-
 @dataclass
 class ThirdPartyAddressParams:
     addressHex: str
-
 
 @dataclass
 class TxOutputDestination:
     type: TxOutputDestinationType
     params: Union[ThirdPartyAddressParams, DeriveAddressTestCase]
 
-
 @dataclass
 class Datum:
     type: DatumType
     datumHex: str
-
 
 @dataclass
 class TxOutputAlonzo:
@@ -172,7 +149,6 @@ class TxOutputAlonzo:
     format: TxOutputFormat = TxOutputFormat.ARRAY_LEGACY
     tokenBundle: List[AssetGroup] = field(default_factory=list)
     datum: Optional[Datum] = None
-
 
 @dataclass
 class TxOutputBabbage:
@@ -183,21 +159,17 @@ class TxOutputBabbage:
     datum: Optional[Datum] = None
     referenceScriptHex: Optional[str] = None
 
-
 TxOutput = Union[TxOutputAlonzo, TxOutputBabbage]
-
 
 @dataclass
 class TxAuxiliaryDataHash:
     hashHex: str
-
 
 @dataclass
 class CIP36VoteDelegation:
     type: CIP36VoteDelegationType
     votingKeyPath: str
     weight: int
-
 
 @dataclass
 class TxAuxiliaryDataCIP36:
@@ -209,12 +181,10 @@ class TxAuxiliaryDataCIP36:
     votingPurpose: Optional[int] = None
     delegations: List[CIP36VoteDelegation] = field(default_factory=list)
 
-
 @dataclass
 class TxAuxiliaryData:
     type: TxAuxiliaryDataType
     params: Union[TxAuxiliaryDataHash, TxAuxiliaryDataCIP36]
-
 
 @dataclass
 class RequiredSigner:
@@ -223,77 +193,64 @@ class RequiredSigner:
         str  # BIP44 path (for PATH type) or 28-byte key hash hex (for HASH type)
     )
 
-
 @dataclass
 class CredentialParams:
     type: CredentialParamsType
     keyValue: Optional[str] = None  # keyPath, keyHash or scriptHash
-
 
 @dataclass
 class Withdrawal:
     stakeCredential: CredentialParams
     amount: int
 
-
 @dataclass
 class DRepParams:
     type: DRepParamsType
     keyValue: Optional[str] = None  # keyPath, keyHash or scriptHash
-
 
 @dataclass
 class GovActionId:
     txHashHex: str
     govActionIndex: int
 
-
 @dataclass
 class AnchorParams:
     url: str
     hashHex: str
-
 
 @dataclass
 class VotingProcedure:
     vote: VoteOption
     anchor: Optional[AnchorParams] = None
 
-
 @dataclass
 class Voter:
     type: VoterType
     keyValue: str  # keyPath, keyHash or scriptHash
-
 
 @dataclass
 class Vote:
     govActionId: GovActionId
     votingProcedure: VotingProcedure
 
-
 @dataclass
 class VoterVotes:
     voter: Voter
     votes: List[Vote]
 
-
 @dataclass
 class StakeRegistrationParams:
     stakeCredential: CredentialParams
-
 
 @dataclass
 class StakeRegistrationConwayParams:
     stakeCredential: CredentialParams
     deposit: int
 
-
 @dataclass
 class StakeDelegationParams:
     stakeCredential: CredentialParams
     poolKeyHash: str
-
 
 @dataclass
 class VoteDelegationParams:
@@ -306,13 +263,11 @@ class AccountRegistrationDelegationToStakePoolParams:
     poolKeyHash: str
     coin: int
 
-
 @dataclass
 class AccountRegistrationDelegationToDRepParams:
     stakeCredential: CredentialParams
     dRep: DRepParams
     coin: int
-
 
 @dataclass
 class AccountRegistrationDelegationToStakePoolAndDRepParams:
@@ -327,18 +282,15 @@ class StakePoolAndDRepDelegationParams:
     poolKeyHash: str
     dRep: DRepParams
 
-
 @dataclass
 class AuthorizeCommitteeParams:
     coldCredential: CredentialParams
     hotCredential: CredentialParams
 
-
 @dataclass
 class ResignCommitteeParams:
     coldCredential: CredentialParams
     anchor: Optional[AnchorParams] = None
-
 
 @dataclass
 class DRepRegistrationParams:
@@ -346,36 +298,30 @@ class DRepRegistrationParams:
     deposit: int
     anchor: Optional[AnchorParams] = None
 
-
 @dataclass
 class DRepUpdateParams:
     dRepCredential: CredentialParams
     anchor: Optional[AnchorParams] = None
-
 
 @dataclass
 class PoolRetirementParams:
     poolCredential: CredentialParams
     retirementEpoch: int
 
-
 @dataclass
 class Margin:
     numerator: int
     denominator: int
-
 
 @dataclass
 class PoolMetadataParams:
     metadataUrl: str
     metadataHashHex: str
 
-
 @dataclass
 class PoolKey:  # same for PoolRewardAccount and PoolOwner
     type: PoolKeyType
     key: str  # hex string or path
-
 
 @dataclass
 class SingleHostIpAddrRelayParams:
@@ -383,17 +329,14 @@ class SingleHostIpAddrRelayParams:
     ipv4: Optional[str] = None
     ipv6: Optional[str] = None
 
-
 @dataclass
 class SingleHostHostnameRelayParams:
     portNumber: int
     dnsName: Optional[str]
 
-
 @dataclass
 class MultiHostRelayParams:
     dnsName: Optional[str]
-
 
 @dataclass
 class Relay:
@@ -401,7 +344,6 @@ class Relay:
     params: Union[
         SingleHostIpAddrRelayParams, SingleHostHostnameRelayParams, MultiHostRelayParams
     ]
-
 
 @dataclass
 class PoolRegistrationParams:
@@ -414,7 +356,6 @@ class PoolRegistrationParams:
     poolOwners: List[PoolKey]
     relays: List[Relay]
     metadata: Optional[PoolMetadataParams] = None
-
 
 @dataclass
 class Certificate:
@@ -436,14 +377,13 @@ class Certificate:
         PoolRetirementParams,
     ]
 
-
 @dataclass(kw_only=True)
 class Transaction:
     network: NetworkDesc
     inputs: List[TxInput]
     outputs: List[TxOutput]
-    fee: int
-    ttl: Optional[int] = None
+    fee: int = 42
+    ttl: Optional[int] = 10
     certificates: List[Certificate] = field(default_factory=list)
     withdrawals: List[Withdrawal] = field(default_factory=list)
     mint: List[AssetGroup] = field(default_factory=list)
@@ -460,12 +400,10 @@ class Transaction:
     treasury: Optional[int] = None
     donation: Optional[int] = None
 
-
 @dataclass
 class Witness:
     path: str
     witnessSignatureHex: Optional[str] = None
-
 
 @dataclass(kw_only=True)
 class SignTxTestCase:
@@ -482,7 +420,6 @@ class SignTxTestCase:
     # TODO: Debug navigation
     unsuitable_in_ragger_reason: Optional[str] = None  # If set, explains why this vector is unsuitable for direct ragger execution
     deny_before_review: bool = False  # For deny tests that fail before review UI is displayed
-
 
 # pylint: disable=line-too-long
 inputs: dict[str, TxInput] = {
@@ -1733,8 +1670,7 @@ testsByron: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoByron"]],
             outputs=[outputs["externalByronDaedalusMainnet"]],
-            fee=42,
-            ttl=10,
+
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018182584c82d818584283581cd2348b8ef7b8a6d1c922efa499c669b151eeef99e4ce3521e88223f8a101581e581cf281e648a89015a9861bd9e992414d1145ddaf80690be53235b0e2e5001a199834651a002dd2e802182a030a",
@@ -1775,8 +1711,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-            fee=42,
-            ttl=10,
+
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a",
@@ -1788,8 +1723,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoByron"]],
             outputs=[outputs["externalByronMainnet"], outputs["internalBaseWithStakingPath"]],
-            fee=42,
-            ttl=10,
+
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e88258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a",
@@ -1804,8 +1738,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
                 outputs["externalByronMainnet"],
                 outputs["internalBaseWithStakingKeyHash"],
             ],
-            fee=42,
-            ttl=10,
+
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e88258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f1124122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42771a006ca79302182a030a",
@@ -1817,8 +1750,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"], outputs["internalEnterprise"]],
-            fee=42,
-            ttl=10,
+
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e882581d6114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241a006ca79302182a030a",
@@ -1830,8 +1762,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"], outputs["internalPointer"]],
-            fee=42,
-            ttl=10,
+
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e88258204114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11240102031a006ca79302182a030a",
@@ -1843,8 +1774,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoNonReasonable"]],
             outputs=[outputs["internalBaseWithStakingPathNonReasonable"]],
-            fee=42,
-            ttl=10,
+
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.ARBITRARY_HASH,
                 TxAuxiliaryDataHash(f"{'deadbeef' * 8}"),
@@ -1860,8 +1790,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             withdrawals=[
                 Withdrawal(
                     CredentialParams(
@@ -1881,8 +1810,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.ARBITRARY_HASH,
                 TxAuxiliaryDataHash(f"{'deadbeef' * 8}"),
@@ -1901,8 +1829,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.STAKE_REGISTRATION,
@@ -1923,8 +1850,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DEREGISTRATION,
@@ -1945,8 +1871,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DELEGATION,
@@ -1968,8 +1893,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DEREGISTRATION,
@@ -1998,8 +1922,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.STAKE_POOL_RETIREMENT,
@@ -2029,8 +1952,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.STAKE_POOL_RETIREMENT,
@@ -2063,8 +1985,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.STAKE_REGISTRATION_CONWAY,
@@ -2086,8 +2007,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DEREGISTRATION_CONWAY,
@@ -2109,8 +2029,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.VOTE_DELEGATION,
@@ -2167,7 +2086,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048583098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a183098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c883098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c883098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c810283098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8103",
-        has_warning=False,
     ),
     SignTxTestCase(
         name="Sign_tx_with_stake_pool_and_drep_delegation_certificates",
@@ -2175,8 +2093,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.STAKE_POOL_AND_DREP_DELEGATION,
@@ -2238,7 +2155,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0485840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738200581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738102840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738103",
-        has_warning=False,
     ),
     SignTxTestCase(
         name="Sign_tx_with_account_registration_delegation_to_stake_pool_certificate",
@@ -2246,8 +2162,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL,
@@ -2263,7 +2178,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0481840b8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49731a000f4240",
-        has_warning=False,
     ),
     SignTxTestCase(
         name="Sign_tx_with_account_registration_delegation_to_drep_certificate",
@@ -2271,8 +2185,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_DREP,
@@ -2288,7 +2201,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0481840c8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11a000f4240",
-        has_warning=False,
     ),
     SignTxTestCase(
         name="Sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate",
@@ -2296,8 +2208,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP,
@@ -2314,7 +2225,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0481850d8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11a000f4240",
-        has_warning=False,
     ),
     SignTxTestCase(
         name="Sign_tx_with_all_certificates_except_pool_registration",
@@ -2322,8 +2232,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 certificates["stakeRegistrationPathParam"],
                 certificates["stakeDeregistrationParam"],
@@ -2462,7 +2371,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a049082008200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c82018200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c83078200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1183088200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1183028200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738304581c8e00cd50efb2c15b548abeced2bce0ec4ee445a6954d762aa301d13f182a83098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1830e8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba68200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c48839092830f8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba682782768747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c65416e63686f7258201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef84108200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11382782768747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c65416e63686f7258201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef83118200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11383128200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a182782768747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c65416e63686f7258201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1840b8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49731a000f4240840c8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11a000f4240850d8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11a000f4240",
-        has_warning=False,
     ),
     SignTxTestCase(
         name="Sign_tx_with_AUTHORIZE_COMMITTEE_HOT_certificates",
@@ -2470,8 +2378,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.AUTHORIZE_COMMITTEE_HOT,
@@ -2519,8 +2426,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.RESIGN_COMMITTEE_COLD,
@@ -2553,8 +2459,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.DREP_REGISTRATION,
@@ -2589,8 +2494,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.DREP_DEREGISTRATION,
@@ -2612,8 +2516,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.DREP_UPDATE,
@@ -2646,8 +2549,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.VOTE_DELEGATION,
@@ -2706,8 +2608,7 @@ testsMultisig: List[SignTxTestCase] = [
             network=Testnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalShelleyBaseScripthashKeyhash"]],
-            fee=42,
-            ttl=10,
+
         ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e0102182a030a",
@@ -2720,8 +2621,7 @@ testsMultisig: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             withdrawals=[
                 Withdrawal(
                     CredentialParams(
@@ -2742,8 +2642,7 @@ testsMultisig: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.STAKE_REGISTRATION,
@@ -2766,8 +2665,7 @@ testsMultisig: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DELEGATION,
@@ -2791,8 +2689,7 @@ testsMultisig: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DEREGISTRATION,
@@ -2818,7 +2715,7 @@ testsAllegra: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-            fee=42,
+            ttl=None,
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a300818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a",
@@ -2829,7 +2726,7 @@ testsAllegra: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-            fee=42,
+            ttl=None,
             validityIntervalStart=47,
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
@@ -2844,8 +2741,7 @@ testsMary: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["multiassetOneToken"], outputs["internalBaseWithStakingPath"]],
-            fee=42,
-            ttl=10,
+
             validityIntervalStart=7,
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
@@ -2857,8 +2753,7 @@ testsMary: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["multiassetManyTokens"], outputs["internalBaseWithStakingPath"]],
-            fee=42,
-            ttl=10,
+
             validityIntervalStart=7,
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
@@ -2884,8 +2779,7 @@ testsMary: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"], outputs["multiassetChange"]],
-            fee=42,
-            ttl=10,
+
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000182825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09018258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c821904d2a1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1a0078386202182a030a",
@@ -2906,7 +2800,7 @@ testsMary: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Sign_tx_with_output_with_decimal_places",
         tx=Transaction(
-            network=Mainnet, inputs=[inputs["utxoShelley"]], outputs=[outputs["multiassetDecimalPlaces"]], fee=33
+            network=Mainnet, inputs=[inputs["utxoShelley"]], outputs=[outputs["multiassetDecimalPlaces"]], fee=33, ttl=None
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a300818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821904d2a2581c6954264b15bc92d6d592febeac84f14645e1ed46ca5ebb9acdb5c15fa14553545249501a0034bf15581caf2e27f580f7f08e93190a81f72462f153026d06450924726645891ba244445249501904d24cffffffffffffffffffffffff1904d2021821",
@@ -2917,8 +2811,7 @@ testsMary: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[],
-            fee=42,
-            ttl=10,
+
             mint=mints["mintAmountVariety"],
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
@@ -2932,6 +2825,7 @@ testsMary: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
             fee=33,
+            ttl=None,
             mint=mints["mintWithDecimalPlaces"],
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
@@ -2960,8 +2854,7 @@ testsAlonzoTrezorComparison: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["trezorParity1"], outputs["trezorParityDatumHash1"]],
-            fee=42,
-            ttl=10,
+
             validityIntervalStart=47,
             certificates=[
                 Certificate(
@@ -3025,8 +2918,7 @@ testsBabbageTrezorComparison: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["trezorParity2"], outputs["trezorParityDatumHash2"]],
-            fee=42,
-            ttl=10,
+
             validityIntervalStart=47,
             includeNetworkId=True,
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
@@ -3044,8 +2936,7 @@ testsBabbageTrezorComparison: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["trezorParityBabbageOutputs"]],
-            fee=42,
-            ttl=10,
+
             validityIntervalStart=47,
             includeNetworkId=True,
         ),
@@ -3061,8 +2952,7 @@ testsMultidelegation: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley2"]],
             outputs=[outputs["trezorParity1"], outputs["trezorParityDatumHash1"]],
-            fee=42,
-            ttl=10,
+
             validityIntervalStart=47,
             certificates=[
                 Certificate(
@@ -3118,13 +3008,11 @@ testsConwayWithoutCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             treasury=27,
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a15181b",
-        has_warning=False,
     ),
     SignTxTestCase(
         name="Sign_tx_with_donation",
@@ -3132,13 +3020,11 @@ testsConwayWithoutCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             donation=28,
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a16181c",
-        has_warning=False,
     ),
     SignTxTestCase(
         name="Sign_tx_with_treasury_and_donation",
@@ -3146,14 +3032,12 @@ testsConwayWithoutCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             treasury=27,
             donation=28,
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a15181b16181c",
-        has_warning=False,
     ),
 ]
 
@@ -3201,8 +3085,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             votingProcedures=[
                 VoterVotes(
                     Voter(VoterType.COMMITTEE_KEY_PATH, "m/1852'/1815'/0'/5/0"), [vote1]
@@ -3218,8 +3101,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             votingProcedures=[
                 VoterVotes(
                     Voter(VoterType.DREP_KEY_PATH, "m/1852'/1815'/0'/3/0"), [vote2]
@@ -3235,8 +3117,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             votingProcedures=[
                 VoterVotes(
                     Voter(VoterType.STAKE_POOL_KEY_PATH, "m/1853'/1815'/0'/0'"), [vote3]
@@ -3252,8 +3133,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             votingProcedures=[
                 VoterVotes(
                     Voter(
@@ -3274,8 +3154,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             votingProcedures=[
                 VoterVotes(
                     Voter(
@@ -3296,8 +3175,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             votingProcedures=[
                 VoterVotes(
                     Voter(
@@ -3318,8 +3196,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             votingProcedures=[
                 VoterVotes(
                     Voter(
@@ -3340,8 +3217,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             votingProcedures=[
                 VoterVotes(
                     Voter(
@@ -3362,8 +3238,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             votingProcedures=[
                 VoterVotes(
                     Voter(VoterType.DREP_KEY_PATH, "m/1852'/1815'/0'/3/0"),
@@ -3380,8 +3255,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             votingProcedures=[
                 VoterVotes(
                     Voter(VoterType.COMMITTEE_KEY_PATH, "m/1852'/1815'/0'/5/0"),
@@ -3406,8 +3280,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             votingProcedures=[
                 VoterVotes(
                     Voter(
@@ -3438,8 +3311,7 @@ testsCatalystRegistration: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-            fee=42,
-            ttl=10,
+
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3461,8 +3333,7 @@ testsCatalystRegistration: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-            fee=42,
-            ttl=10,
+
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
                 TxAuxiliaryDataCIP36(
@@ -3487,8 +3358,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-            fee=42,
-            ttl=10,
+
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
                 TxAuxiliaryDataCIP36(
@@ -3510,8 +3380,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-            fee=42,
-            ttl=10,
+
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3533,8 +3402,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-            fee=42,
-            ttl=10,
+
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3556,8 +3424,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-            fee=42,
-            ttl=10,
+
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3580,8 +3447,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-            fee=42,
-            ttl=10,
+
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3604,8 +3470,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-            fee=42,
-            ttl=10,
+
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3637,8 +3502,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-            fee=42,
-            ttl=10,
+
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3674,8 +3538,7 @@ testsAlonzo: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[],
-            fee=42,
-            ttl=10,
+
             scriptDataHash="ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce188",
             includeNetworkId=True,
         ),
@@ -3689,8 +3552,7 @@ testsAlonzo: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-            fee=42,
-            ttl=10,
+
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a",
@@ -3721,8 +3583,7 @@ testsAlonzo: List[SignTxTestCase] = [
             network=Testnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["missingDatumHashWithTokens"]],
-            fee=42,
-            ttl=10,
+
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a0078386202182a030a",
@@ -3734,8 +3595,7 @@ testsAlonzo: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[],
-            fee=42,
-            ttl=10,
+
             collateralInputs=[inputs["utxoByron"]],
             includeNetworkId=True,
         ),
@@ -3749,8 +3609,7 @@ testsAlonzo: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[],
-            fee=42,
-            ttl=10,
+
             collateralInputs=[inputs["utxoShelley"]],
             includeNetworkId=True,
         ),
@@ -3764,8 +3623,7 @@ testsAlonzo: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[],
-            fee=42,
-            ttl=10,
+
             requiredSigners=[
                 RequiredSigner(
                     TxRequiredSignerType.HASH,
@@ -3785,8 +3643,7 @@ testsAlonzo: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-            fee=42,
-            ttl=10,
+
             requiredSigners=[
                 RequiredSigner(TxRequiredSignerType.PATH, "m/1855'/1815'/0'")
             ],
@@ -3802,8 +3659,7 @@ testsAlonzo: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DELEGATION,
@@ -3840,8 +3696,7 @@ testsBabbage: List[SignTxTestCase] = [
             network=Testnet_legacy,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineDatumWithTokensMap"]],
-            fee=42,
-            ttl=10,
+
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
@@ -3854,8 +3709,7 @@ testsBabbage: List[SignTxTestCase] = [
             network=Testnet_legacy,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineDatum480Map"]],
-            fee=42,
-            ttl=10,
+
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
@@ -3868,8 +3722,7 @@ testsBabbage: List[SignTxTestCase] = [
             network=Testnet_legacy,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineDatum304WithTokensMap"]],
-            fee=42,
-            ttl=10,
+
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
@@ -3883,8 +3736,7 @@ testsBabbage: List[SignTxTestCase] = [
             network=Testnet_legacy,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["datumHashRefScriptExternalMap"]],
-            fee=42,
-            ttl=10,
+
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a4005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18803d81854deadbeefdeadbeefdeadbeefdeadbeefdeadbeef02182a030a",
@@ -3895,8 +3747,7 @@ testsBabbage: List[SignTxTestCase] = [
             network=Testnet_legacy,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["datumHashRefScript240ExternalMap"]],
-            fee=42,
-            ttl=10,
+
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a4005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18803d81858f04784392787cc567ac21d7b5346a4a89ae112b7ff7610e402284042aa4e6efca7956a53c3f5cb3ec6745f5e21150f2a77bd71a2adc3f8b9539e9bab41934b477f60a8b302584d1a619ed9b178b5ce6fcad31adc0d6fc17023ede474c09f29fdbfb290a5b30b5240fae5de71168036201772c0d272ae90220181f9bf8c3198e79fc2ae32b076abf4d0e10d3166923ce56994b25c00909e3faab8ef1358c136cd3b197488efc883a7c6cfa3ac63ca9cebc62121c6e22f594420c2abd54e78282adec20ee7dba0e6de65554adb8ee8314f23f86cf7cf0906d4b6c643966baf6c54240c19f4131374e298f38a626a4ad63e6102182a030a",
@@ -3907,8 +3758,7 @@ testsBabbage: List[SignTxTestCase] = [
             network=Testnet_legacy,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["datumHashRefScript304ExternalMap"]],
-            fee=42,
-            ttl=10,
+
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a4005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18803d818590130deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeaddeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeaddeadbeef02182a030a",
@@ -3920,8 +3770,7 @@ testsBabbage: List[SignTxTestCase] = [
             network=Testnet_legacy,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["datumHashWithTokensMap"]],
-            fee=42,
-            ttl=10,
+
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a007838620282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a",
@@ -3935,8 +3784,7 @@ testsBabbage: List[SignTxTestCase] = [
                 outputs["multiassetManyTokensBabbage"],
                 outputs["internalBaseWithStakingPathBabbage"],
             ],
-            fee=42,
-            ttl=10,
+
             validityIntervalStart=7,
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
@@ -3949,8 +3797,7 @@ testsBabbage: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPathMap"]],
-            fee=42,
-            ttl=10,
+
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             collateralInputs=[inputs["utxoShelley"]],
             referenceInputs=[inputs["utxoShelley"], inputs["utxoShelley"]],
@@ -3966,8 +3813,7 @@ testsBabbage: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPathMap"]],
-            fee=42,
-            ttl=10,
+
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             totalCollateral=10,
         ),
@@ -3981,8 +3827,7 @@ testsBabbage: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPathMap"]],
-            fee=42,
-            ttl=10,
+
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             collateralOutput=TxOutputBabbage(
                 destinations["internalBaseWithStakingPathMap"],
@@ -4000,8 +3845,7 @@ testsBabbage: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPathMap"]],
-            fee=42,
-            ttl=10,
+
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             collateralInputs=[inputs["utxoShelley"]],
             collateralOutput=outputs["internalBaseWithTokensMap"],
@@ -4016,8 +3860,7 @@ testsBabbage: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPathMap"]],
-            fee=42,
-            ttl=10,
+
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             collateralInputs=[inputs["utxoShelley"]],
             collateralOutput=outputs["internalBaseWithTokensMap"],
@@ -4025,7 +3868,6 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a800818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a1487564247542686911182f1105",
-        has_warning=False,
     ),
     SignTxTestCase(
         name="Sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral",
@@ -4033,8 +3875,7 @@ testsBabbage: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["multiassetManyTokensBabbage"]],
-            fee=42,
-            ttl=10,
+
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             collateralInputs=[inputs["utxoShelley"]],
             collateralOutput=outputs["externalShelleyBaseKeyhashKeyhash"],
@@ -4049,8 +3890,7 @@ testsBabbage: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["multiassetManyTokensBabbage"]],
-            fee=42,
-            ttl=10,
+
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             collateralInputs=[inputs["utxoShelley"]],
             collateralOutput=outputs["externalShelleyBaseKeyhashKeyhash"],
@@ -4058,7 +3898,6 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a800818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a200583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff01821904d2a2581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a34003581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209015820000000000000000000000000000000000000000000000000000000000000000002581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a248456c204e69c3b16f1904d24874652474436f696e1a0078386202182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09011105",
-        has_warning=False,
     ),
 ]
 
@@ -4072,8 +3911,7 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoNoPath"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-            fee=42,
-            ttl=10,
+
             certificates=[certificates["poolRegistrationMixedOwnersAllRelays"]],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
@@ -4085,8 +3923,7 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoNoPath"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-            fee=42,
-            ttl=10,
+
             certificates=[certificates["poolRegistrationDefault"]],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
@@ -4098,8 +3935,7 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoNoPath"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-            fee=42,
-            ttl=10,
+
             certificates=[certificates["poolRegistrationMixedOwners"]],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
@@ -4111,8 +3947,7 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoNoPath"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 certificates["poolRegistrationMixedOwnersIpv4SingleHostRelays"]
             ],
@@ -4126,8 +3961,7 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoNoPath"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-            fee=42,
-            ttl=10,
+
             certificates=[certificates["poolRegistrationMixedOwnersIpv4Ipv6Relays"]],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
@@ -4139,8 +3973,7 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoNoPath"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-            fee=42,
-            ttl=10,
+
             certificates=[certificates["poolRegistrationNoRelays"]],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
@@ -4153,8 +3986,7 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoNoPath"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-            fee=42,
-            ttl=10,
+
             certificates=[certificates["poolRegistrationNoMetadata"]],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
@@ -4166,8 +3998,7 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoNoPath"]],
             outputs=[],
-            fee=42,
-            ttl=10,
+
             certificates=[certificates["poolRegistrationMixedOwnersAllRelays"]],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
@@ -4182,8 +4013,7 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoWithPath0"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-            fee=42,
-            ttl=10,
+
             certificates=[certificates["poolRegistrationOperatorNoOwnersNoRelays"]],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
@@ -4196,8 +4026,7 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoWithPath0"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 certificates["poolRegistrationOperatorOneOwnerOperatorNoRelays"]
             ],
@@ -4212,8 +4041,7 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoWithPath0"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 certificates["poolRegistrationOperatorMultipleOwnersAllRelays"]
             ],
@@ -4253,17 +4081,11 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_INVALID_PROTOCOL_MAGIC,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Invalid_network_id",
@@ -4291,17 +4113,11 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_INVALID_NETWORK_ID,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_operator_too_few_certificates",
@@ -4329,17 +4145,12 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=True,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_owner_too_few_certificates",
@@ -4367,17 +4178,12 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=True,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_operator_too_many_certificates",
@@ -4405,8 +4211,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4450,11 +4255,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_owner_too_many_certificates",
@@ -4482,8 +4283,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4539,11 +4339,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_operator_too_many_withdrawals",
@@ -4571,8 +4367,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4606,11 +4401,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_owner_too_many_withdrawals",
@@ -4638,8 +4429,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4679,11 +4469,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_operator_mint_included",
@@ -4711,8 +4497,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4743,11 +4528,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_owner_mint_included",
@@ -4775,8 +4556,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4813,11 +4593,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Ordinary_tx_collateral_inputs_included",
@@ -4845,9 +4621,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             collateralInputs=[
                 TxInput(
                     txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
@@ -4858,11 +4632,8 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=True,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Multisig_tx_collateral_inputs_included",
@@ -4890,9 +4661,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             collateralInputs=[
                 TxInput(
                     txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
@@ -4903,11 +4672,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_operator_collateral_inputs_included",
@@ -4935,8 +4700,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4968,11 +4732,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_owner_collateral_inputs_included",
@@ -5000,8 +4760,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -5039,11 +4798,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_operator_required_signers_included",
@@ -5071,8 +4826,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -5102,11 +4856,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_owner_required_signers_included",
@@ -5134,8 +4884,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -5171,11 +4920,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Ordinary_tx_collateral_output_included",
@@ -5203,9 +4948,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             collateralOutput=TxOutputAlonzo(
                 destination=TxOutputDestination(
                     type=TxOutputDestinationType.THIRD_PARTY,
@@ -5221,11 +4964,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Multisig_tx_collateral_output_included",
@@ -5253,9 +4992,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             collateralOutput=TxOutputAlonzo(
                 destination=TxOutputDestination(
                     type=TxOutputDestinationType.THIRD_PARTY,
@@ -5271,11 +5008,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_operator_collateral_output_included",
@@ -5303,8 +5036,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -5341,11 +5073,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_owner_collateral_output_included",
@@ -5373,8 +5101,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -5417,11 +5144,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Ordinary_tx_total_collateral_included",
@@ -5449,18 +5172,12 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             totalCollateral=8,
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Multisig_tx_total_collateral_included",
@@ -5488,18 +5205,12 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             totalCollateral=8,
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_operator_total_collateral_included",
@@ -5527,8 +5238,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -5554,11 +5264,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_owner_total_collateral_included",
@@ -5586,8 +5292,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -5619,11 +5324,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Ordinary_tx_reference_inputs_included",
@@ -5651,9 +5352,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             referenceInputs=[
                 TxInput(
                     txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
@@ -5664,11 +5363,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Multisig_tx_reference_inputs_included",
@@ -5696,9 +5391,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             referenceInputs=[
                 TxInput(
                     txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
@@ -5709,11 +5402,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_operator_reference_inputs_included",
@@ -5741,8 +5430,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -5774,11 +5462,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_owner_reference_inputs_included",
@@ -5806,8 +5490,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -5845,11 +5528,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
 ]
 
@@ -5889,17 +5568,11 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Reward_address_script",
@@ -5936,17 +5609,11 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="No_spending_path_Ordinary_Tx_1",
@@ -5983,17 +5650,11 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="No_spending_path_Ordinary_Tx_2",
@@ -6030,17 +5691,11 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_operator_spending_choice_not_path",
@@ -6077,17 +5732,11 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Multisig_unconditionally",
@@ -6124,17 +5773,11 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_owner_unconditionally",
@@ -6171,17 +5814,11 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
 ]
 
@@ -6212,8 +5849,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -6238,11 +5874,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_in_Multisig_Tx",
@@ -6270,8 +5902,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -6296,11 +5927,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_registration_in_Plutus_Tx",
@@ -6328,8 +5955,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -6354,11 +5980,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_retirement_in_Multisig_Tx",
@@ -6386,8 +6008,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_RETIREMENT,
@@ -6403,11 +6024,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Stake_registration_in_Pool_Registration_Operator",
@@ -6435,8 +6052,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_REGISTRATION,
@@ -6451,11 +6067,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Stake_registration_in_Pool_Registration_Owner",
@@ -6477,8 +6089,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_REGISTRATION,
@@ -6493,11 +6104,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Stake_deregistration_in_Pool_Registration_Operator",
@@ -6525,8 +6132,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_DEREGISTRATION,
@@ -6541,11 +6147,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Stake_deregistration_in_Pool_Registration_Owner",
@@ -6567,8 +6169,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_DEREGISTRATION,
@@ -6583,11 +6184,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Stake_delegation_in_Pool_Registration_Operator",
@@ -6615,8 +6212,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_DELEGATION,
@@ -6632,11 +6228,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Stake_delegation_in_Pool_Registration_Owner",
@@ -6658,8 +6250,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_DELEGATION,
@@ -6675,11 +6266,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_retirement_in_Pool_Registration_Operator",
@@ -6707,8 +6294,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_RETIREMENT,
@@ -6724,11 +6310,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_retirement_in_Pool_Registration_Owner",
@@ -6750,8 +6332,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_RETIREMENT,
@@ -6767,11 +6348,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
 ]
 
@@ -6802,8 +6379,7 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_REGISTRATION,
@@ -6818,11 +6394,7 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Non_staking_path_in_Ordinary_Tx",
@@ -6850,8 +6422,7 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_REGISTRATION,
@@ -6866,11 +6437,7 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Path_in_Multisig_Tx",
@@ -6898,8 +6465,7 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_REGISTRATION,
@@ -6914,11 +6480,7 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
 ]
 
@@ -6949,8 +6511,7 @@ certificateStakePoolRetirementRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_RETIREMENT,
@@ -6966,11 +6527,8 @@ certificateStakePoolRetirementRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=True,
-        has_aux_warning=False,
     ),
 ]
 
@@ -6988,9 +6546,7 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
                 )
             ],
             outputs=[],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             withdrawals=[
                 Withdrawal(
                     stakeCredential=CredentialParams(
@@ -7010,11 +6566,7 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_WITHDRAWALS,
-        has_warning=False,
-        has_aux_warning=False,
         unsuitable_in_ragger_reason="Seed-dependent: canonical ordering depends on derived reward addresses",
     ),
     SignTxTestCase(
@@ -7043,9 +6595,7 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             withdrawals=[
                 Withdrawal(
                     stakeCredential=CredentialParams(
@@ -7058,11 +6608,7 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Non_staking_path_as_stake_credential_in_Ordinary_Tx",
@@ -7090,9 +6636,7 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             withdrawals=[
                 Withdrawal(
                     stakeCredential=CredentialParams(
@@ -7105,11 +6649,7 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Staking_path_as_stake_credential_in_Multisig_Tx",
@@ -7137,9 +6677,7 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             withdrawals=[
                 Withdrawal(
                     stakeCredential=CredentialParams(
@@ -7152,11 +6690,7 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Non_staking_path_as_stake_credential_in_Plutus_Tx",
@@ -7184,9 +6718,7 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             withdrawals=[
                 Withdrawal(
                     stakeCredential=CredentialParams(
@@ -7199,11 +6731,7 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
 ]
 
@@ -7234,17 +6762,12 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1852'/1815'/0'"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Multisig_account_path_in_Ordinary_Tx",
@@ -7272,17 +6795,12 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1854'/1815'/0'"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Multisig_spending_path_in_Ordinary_Tx",
@@ -7310,17 +6828,12 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1854'/1815'/0'/0/0"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Multisig_staking_path_in_Ordinary_Tx",
@@ -7348,17 +6861,12 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1854'/1815'/0'/2/0"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Mint_path_in_Ordinary_Tx",
@@ -7386,17 +6894,12 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1855'/1815'/0'"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Ordinary_account_path_in_Multisig_Tx",
@@ -7424,17 +6927,12 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1852'/1815'/0'"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Multisig_account_path_in_Multisig_Tx",
@@ -7462,17 +6960,12 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1854'/1815'/0'"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Ordinary_spending_path_in_Multisig_Tx",
@@ -7500,17 +6993,12 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1852'/1815'/0'/0/0"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Ordinary_staking_path_in_Multisig_Tx",
@@ -7538,17 +7026,12 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1852'/1815'/0'/2/0"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Mint_path_in_Multisig_Tx",
@@ -7576,17 +7059,12 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1855'/1815'/0'"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_cold_path_in_Multisig_Tx",
@@ -7614,17 +7092,12 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1853'/1815'/0'/0'"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Ordinary_account_path_in_Plutus_Tx",
@@ -7652,17 +7125,12 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1852'/1815'/0'"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Multisig_account_path_in_Plutus_Tx",
@@ -7690,17 +7158,12 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1854'/1815'/0'"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Multisig_account_path_in_Pool_Registration_Owner_Tx",
@@ -7728,8 +7191,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -7760,11 +7222,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1854'/1815'/0'"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Ordinary_spending_path_in_Pool_Registration_Owner_Tx",
@@ -7792,8 +7251,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -7824,11 +7282,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1852'/1815'/0'/0/0"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Multisig_spending_path_in_Pool_Registration_Owner_Tx",
@@ -7856,8 +7311,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -7888,11 +7342,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1854'/1815'/0'/0/0"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Multisig_staking_path_in_Pool_Registration_Owner_Tx",
@@ -7920,8 +7371,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -7952,11 +7402,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1854'/1815'/0'/2/0"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Mint_path_in_Pool_Registration_Owner_Tx",
@@ -7984,8 +7431,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -8016,11 +7462,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1855'/1815'/0'"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Pool_cold_path_in_Pool_Registration_Owner_Tx",
@@ -8048,8 +7491,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -8080,11 +7522,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1853'/1815'/0'/0'"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Multisig_account_path_in_Pool_Registration_Operator_Tx",
@@ -8112,8 +7551,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -8138,11 +7576,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1854'/1815'/0'"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Multisig_spending_path_in_Pool_Registration_Operator_Tx",
@@ -8170,8 +7605,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -8196,11 +7630,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1854'/1815'/0'/0/0"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Ordinary_staking_path_in_Pool_Registration_Operator_Tx",
@@ -8228,8 +7659,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -8254,11 +7684,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1852'/1815'/0'/2/0"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Multisig_staking_path_in_Pool_Registration_Operator_Tx",
@@ -8286,8 +7713,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -8312,11 +7738,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1854'/1815'/0'/2/0"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Mint_path_in_Pool_Registration_Operator_Tx",
@@ -8344,8 +7767,7 @@ witnessRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -8370,11 +7792,8 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1855'/1815'/0'"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
 ]
 
@@ -8426,17 +7845,11 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 ),
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Input_and_stake_deregistration_certificate_account_mismatch",
@@ -8464,8 +7877,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_DEREGISTRATION,
@@ -8480,11 +7892,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Input_and_withdrawal_account_mismatch",
@@ -8512,9 +7920,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             withdrawals=[
                 Withdrawal(
                     stakeCredential=CredentialParams(
@@ -8527,11 +7933,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Change_output_and_stake_deregistration_account_mismatch",
@@ -8580,8 +7982,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 ),
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_DEREGISTRATION,
@@ -8596,11 +7997,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
         deny_before_review=True,
     ),
     SignTxTestCase(
@@ -8650,9 +8047,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 ),
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             withdrawals=[
                 Withdrawal(
                     stakeCredential=CredentialParams(
@@ -8665,11 +8060,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
         deny_before_review=True,
     ),
     SignTxTestCase(
@@ -8698,8 +8089,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_DEREGISTRATION,
@@ -8723,11 +8113,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
         deny_before_review=True,
     ),
     SignTxTestCase(
@@ -8761,17 +8147,12 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         has_warning=True,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Byron_to_Shelley_transfer_output_account_mismatch",
@@ -8808,17 +8189,11 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
 ]
 
@@ -8849,9 +8224,7 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             collateralOutput=TxOutputAlonzo(
                 destination=TxOutputDestination(
                     type=TxOutputDestinationType.THIRD_PARTY,
@@ -8870,11 +8243,7 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Collateral_output_with_inline_datum",
@@ -8902,9 +8271,7 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             collateralOutput=TxOutputBabbage(
                 destination=TxOutputDestination(
                     type=TxOutputDestinationType.THIRD_PARTY,
@@ -8924,11 +8291,7 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Collateral_output_with_reference_script",
@@ -8956,9 +8319,7 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             collateralOutput=TxOutputBabbage(
                 destination=TxOutputDestination(
                     type=TxOutputDestinationType.THIRD_PARTY,
@@ -8975,11 +8336,7 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
 ]
 
@@ -9019,17 +8376,11 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Reject_tx_where_asset_groups_are_not_unique",
@@ -9066,17 +8417,11 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_alphabetical",
@@ -9112,17 +8457,11 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_length",
@@ -9158,17 +8497,11 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Reject_tx_where_tokens_within_an_asset_group_are_not_unique",
@@ -9204,17 +8537,11 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_policies",
@@ -9229,9 +8556,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                 )
             ],
             outputs=[],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             mint=[
                 AssetGroup(
                     policyIdHex="7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc374",
@@ -9251,11 +8576,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_asset_names",
@@ -9270,9 +8591,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                 )
             ],
             outputs=[],
-            fee=42,
-            ttl=10,
-            certificates=[],
+
             mint=[
                 AssetGroup(
                     policyIdHex="7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc374",
@@ -9288,11 +8607,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
-        has_warning=False,
-        has_aux_warning=False,
     ),
 ]
 
@@ -9323,8 +8638,7 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -9387,11 +8701,8 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1852'/1815'/0'/2/0", "m/1852'/1815'/0'/2/1"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Different_prefix",
@@ -9419,8 +8730,7 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -9483,11 +8793,8 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1852'/1815'/0'/2/0", "m/1854'/1815'/0'/2/0"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="No_path_given",
@@ -9515,8 +8822,7 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -9575,11 +8881,8 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1852'/1815'/0'/2/0", "m/1854'/1815'/0'/2/0"],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Invalid_numerator_denominator_relationship",
@@ -9606,8 +8909,7 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -9648,11 +8950,8 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
         additionalWitnessPaths=["m/1852'/1815'/0'/2/0", "m/1854'/1815'/0'/2/0"],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
-        has_warning=False,
-        has_aux_warning=False,
     ),
 ]
 
@@ -9683,8 +8982,7 @@ stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -9724,11 +9022,7 @@ stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="Hash_sent_in_for_Pool_Registration_Operator_Tx",
@@ -9756,8 +9050,7 @@ stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -9798,11 +9091,7 @@ stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
 ]
 
@@ -9832,8 +9121,7 @@ stakePoolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -9874,11 +9162,7 @@ stakePoolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
 ]
 
@@ -9913,8 +9197,7 @@ invalidCertificates: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -9959,11 +9242,7 @@ invalidCertificates: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="pool_registration_with_no_owners",
@@ -9991,8 +9270,7 @@ invalidCertificates: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -10028,11 +9306,7 @@ invalidCertificates: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=False,
-        has_aux_warning=False,
     ),
 ]
 
@@ -10063,8 +9337,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -10105,11 +9378,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="pool_metadata_invalid_url",
@@ -10137,8 +9406,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -10179,11 +9447,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="pool_metadata_invalid_hash_length",
@@ -10211,8 +9475,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -10253,11 +9516,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="pool_metadata_missing_hash",
@@ -10285,8 +9544,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -10327,11 +9585,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
-        has_warning=False,
-        has_aux_warning=False,
     ),
 ]
 
@@ -10362,8 +9616,7 @@ invalidRelayTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -10404,11 +9657,7 @@ invalidRelayTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
-        has_warning=False,
-        has_aux_warning=False,
     ),
     SignTxTestCase(
         name="MultiHost_missing_dns",
@@ -10436,8 +9685,7 @@ invalidRelayTestCases: List[SignTxTestCase] = [
                     datum=None,
                 )
             ],
-            fee=42,
-            ttl=10,
+
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -10476,10 +9724,6 @@ invalidRelayTestCases: List[SignTxTestCase] = [
             ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
-        options=False,
-        additionalWitnessPaths=[],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
-        has_warning=False,
-        has_aux_warning=False,
     ),
 ]
