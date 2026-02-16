@@ -329,7 +329,7 @@ bool format_blockchain_pointer(blockchainPointer_t blockchainPointer, char* out,
                            blockchainPointer.txIndex,
                            blockchainPointer.certificateIndex);
     LEDGER_ASSERT(written > 0, "snprintf blockchain pointer formatting failed");
-    LEDGER_ASSERT((size_t)written + 1 < outSize, "Blockchain pointer string does not fit");
+    LEDGER_ASSERT((size_t)written + 1 < outSize, "Blockchain pointer string does not fit");  // checks for truncation
     return true;
 }
 
@@ -348,7 +348,7 @@ bool format_address_human_readable(const uint8_t* address,
         size_t len = base58_encode(address, addressSize, out, outSize);
         ASSERT(len > 0);
         ASSERT(len == strlen(out));
-        ASSERT(len + 1 < outSize);
+        ASSERT(len + 1 < outSize);  // checks for truncation
         return true;
     }
 
@@ -365,7 +365,7 @@ bool format_address_human_readable(const uint8_t* address,
                 const char* hrp = (networkId == TESTNET_NETWORK_ID) ? "stake_test" : "stake";
                 bool encoded = format_bech32(hrp, address, addressSize, out, outSize);
                 ASSERT(encoded);
-                ASSERT(strlen(out) + 1 < outSize);
+                ASSERT(strlen(out) + 1 < outSize);  // checks for truncation
                 return true;
             }
 
@@ -374,7 +374,7 @@ bool format_address_human_readable(const uint8_t* address,
                 const char* hrp = (networkId == TESTNET_NETWORK_ID) ? "addr_test" : "addr";
                 bool encoded = format_bech32(hrp, address, addressSize, out, outSize);
                 ASSERT(encoded);
-                ASSERT(strlen(out) + 1 < outSize);
+                ASSERT(strlen(out) + 1 < outSize);  // checks for truncation
                 return true;
             }
     }
