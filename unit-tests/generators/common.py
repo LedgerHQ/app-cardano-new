@@ -178,16 +178,22 @@ def format_bytes_as_c_array(
         'static const uint8_t TEST_DATA[] = {\\n    0xAA, 0xBB, 0xCC,\\n};'
         >>> format_bytes_as_c_array(b'\\xAA\\xBB\\xCC', "TEST_DATA", return_as_list=True)
         ['static const uint8_t TEST_DATA[] = {', '    0xAA, 0xBB, 0xCC,', '};']
+        >>> format_bytes_as_c_array(b'', "EMPTY_DATA")
+        'static const uint8_t EMPTY_DATA[1] = { 0x00 };'
     """
     lines = []
-    lines.append(f"static const uint8_t {name}[] = {{")
 
-    for i in range(0, len(data), bytes_per_line):
-        chunk = data[i : i + bytes_per_line]
-        hex_bytes = ", ".join(f"0x{b:02X}" for b in chunk)
-        lines.append(f"    {hex_bytes},")
-
-    lines.append("};")
+    if len(data) == 0:
+        # Empty payloads: use explicit size [1] with dummy byte for C99 compatibility
+        # Callers must explicitly pass 0 as length, not sizeof()
+        lines.append(f"static const uint8_t {name}[1] = {{ 0x00 }};")
+    else:
+        lines.append(f"static const uint8_t {name}[] = {{")
+        for i in range(0, len(data), bytes_per_line):
+            chunk = data[i : i + bytes_per_line]
+            hex_bytes = ", ".join(f"0x{b:02X}" for b in chunk)
+            lines.append(f"    {hex_bytes},")
+        lines.append("};")
 
     if return_as_list:
         return lines

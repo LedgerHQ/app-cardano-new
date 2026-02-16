@@ -84,11 +84,92 @@ def test_sign_message(device: Device,
     ids=idTestFunc
 )
 def test_sign_message_deny(backend: BackendInterface, testCase: SignMsgDenyTestCase) -> None:
+    from standalone.input_files.signMsg import (
+        build_sign_msg_chunk_apdu_for_deny,
+        build_sign_msg_confirm_apdu_for_deny,
+    )
+
+    # Handle multi-phase deny scenarios
+    if testCase.send_chunk_without_init:
+        # Try to send CHUNK without INIT
+        chunk_apdu = build_sign_msg_chunk_apdu_for_deny(testCase, 0)
+        with pytest.raises(ExceptionRAPDU) as err:
+            backend.exchange_raw(chunk_apdu)
+        assert err.value.status == testCase.expected_status
+        return
+
+    # Standard flow: always send INIT first
     init_apdu = build_sign_msg_init_apdu_for_deny(testCase)
 
-    with pytest.raises(ExceptionRAPDU) as err:
-        backend.exchange_raw(init_apdu)
-    assert err.value.status == testCase.expected_status
+    # If we expect failure during INIT, test that
+    # Also check for implicit INIT failures from message length validation
+    msg_len = len(bytes.fromhex(testCase.msgData.messageHex))
+    expect_init_failure = (
+        testCase.invalid_address_field_type is not None or
+        testCase.invalid_msg_length is not None or
+        testCase.truncate_init_apdu_at is not None or
+        # Security policy deny (happens during INIT after parsing succeeds)
+        testCase.expected_status == StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED or
+        # Address params parsing failure (happens during INIT)
+        testCase.expected_status == StatusWord.SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS or
+        # Memory overflow during INIT validation (SWO_INSUFFICIENT_MEMORY)
+        (testCase.expected_status == StatusWord.SWO_INSUFFICIENT_MEMORY and
+         (msg_len > 65535 or  # Exceeds UINT16_MAX
+          (not testCase.msgData.isAscii and msg_len > 32767) or  # Non-ASCII hex buffer overflow
+          (not testCase.msgData.hashPayload and msg_len > 65200)))  # Non-hashed sig_structure overflow
+    )
+
+    if expect_init_failure:
+        with pytest.raises(ExceptionRAPDU) as err:
+            backend.exchange_raw(init_apdu)
+        assert err.value.status == testCase.expected_status
+        return
+
+    # INIT succeeded, continue to CHUNK phase
+    backend.exchange_raw(init_apdu)
+
+    # Handle CHUNK-phase deny scenarios
+    if testCase.invalid_chunk_size is not None or (
+        testCase.msgData.isAscii and not all(32 <= b < 127 for b in bytes.fromhex(testCase.msgData.messageHex))
+    ):
+        # ASCII validation or chunk size validation happens during CHUNK
+        chunk_apdu = build_sign_msg_chunk_apdu_for_deny(testCase, 0)
+        with pytest.raises(ExceptionRAPDU) as err:
+            backend.exchange_raw(chunk_apdu)
+        assert err.value.status == testCase.expected_status
+        return
+
+    # Handle CONFIRM-phase deny scenarios
+    if testCase.send_confirm_without_chunks:
+        # For empty messages or when skipping CHUNK, go directly to CONFIRM
+        confirm_apdu = build_sign_msg_confirm_apdu_for_deny(testCase)
+        with pytest.raises(ExceptionRAPDU) as err:
+            backend.exchange_raw(confirm_apdu)
+        assert err.value.status == testCase.expected_status
+        return
+
+    if testCase.send_confirm_with_payload:
+        # Send all normal chunks first
+        from application_client.command_builder import CommandBuilder
+        from standalone.input_files.signMsg import SignMsgTestCase
+
+        transient_success_case = SignMsgTestCase(
+            name=testCase.name,
+            msgData=testCase.msgData,
+        )
+        chunk_apdus = CommandBuilder().sign_msg_chunks(transient_success_case)
+        for chunk_apdu in chunk_apdus:
+            backend.exchange_raw(chunk_apdu)
+
+        # Now send CONFIRM with invalid payload
+        confirm_apdu = build_sign_msg_confirm_apdu_for_deny(testCase)
+        with pytest.raises(ExceptionRAPDU) as err:
+            backend.exchange_raw(confirm_apdu)
+        assert err.value.status == testCase.expected_status
+        return
+
+    # If we reach here, the test case configuration is incomplete
+    raise ValueError(f"Deny test case {testCase.name} has no deny scenario configured")
 
 
 def _check_result(testCase: SignMsgTestCase, signature: bytes, public_key: bytes, address_field: bytes) -> None:
