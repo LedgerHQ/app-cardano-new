@@ -1963,26 +1963,7 @@ int tx_validate_and_compute_hash(tx_ui_plan_t* plan) {
     tx_hash_builder_t txHashBuilder;
     explicit_bzero(&txHashBuilder, sizeof(txHashBuilder));
 
-    txHashBuilder_init(&txHashBuilder,
-                      G_context.tx_info.tx_params.tagCborSets,
-                      G_context.tx_info.tx_params.num_inputs,
-                      G_context.tx_info.tx_params.num_outputs,
-                      G_context.tx_info.tx_params.includeTtl,
-                      G_context.tx_info.tx_params.num_certificates,
-                      G_context.tx_info.tx_params.num_withdrawals,
-                      G_context.tx_info.tx_params.includeAuxDataHash,
-                      G_context.tx_info.tx_params.includeValidityIntervalStart,
-                      G_context.tx_info.tx_params.num_mint_asset_groups > 0,
-                      G_context.tx_info.tx_params.includeScriptDataHash,
-                      G_context.tx_info.tx_params.num_collateral_inputs,
-                      G_context.tx_info.tx_params.num_required_signers,
-                      G_context.tx_info.tx_params.includeNetworkId,
-                      G_context.tx_info.tx_params.includeCollateralOutput,
-                      G_context.tx_info.tx_params.includeTotalCollateral,
-                      G_context.tx_info.tx_params.num_reference_inputs,
-                      G_context.tx_info.tx_params.num_voters,
-                      G_context.tx_info.tx_params.includeTreasury,
-                      G_context.tx_info.tx_params.includeDonation);
+    txHashBuilder_init(&txHashBuilder, &G_context.tx_info.tx_params);
 
     int status = validate_and_hash_inputs(&txHashBuilder, plan);
     if (status != SWO_SUCCESS) return status;

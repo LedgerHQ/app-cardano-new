@@ -22,7 +22,7 @@ typedef struct {
     blake2b_256_context_t hash;
 } votecast_hash_builder_t;
 
-void vote_cast_hash_builder_init(votecast_hash_builder_t* builder, size_t remainingBytes);
+void vote_cast_hash_builder_init(votecast_hash_builder_t* builder, size_t votecastLength);
 
 void vote_cast_hash_builder_chunk(votecast_hash_builder_t* builder,
                                const uint8_t* chunk,

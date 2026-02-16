@@ -88,6 +88,11 @@ static void auxDataHashBuilder_append_buffer(aux_data_hash_builder_t* builder,
 }
 
 void auxDataHashBuilder_init(aux_data_hash_builder_t* builder) {
+    LEDGER_ASSERT(builder != NULL, "NULL builder");
+
+    // Clear the entire structure to prevent stale data
+    explicit_bzero(builder, sizeof(aux_data_hash_builder_t));
+
     _TRACE("Serializing tx auxiliary data");
     blake2b_256_init(&builder->auxDataHash);
     blake2b_256_init(&builder->cVoteRegistrationData.payloadHash);

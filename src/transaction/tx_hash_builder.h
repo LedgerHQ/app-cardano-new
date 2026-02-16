@@ -105,7 +105,7 @@ typedef struct {
     uint16_t remainingCollateralInputs;
     uint16_t remainingRequiredSigners;
     uint16_t remainingReferenceInputs;
-    uint16_t remainingVotingProcedures;
+    uint16_t remainingVoters;
     bool includeTtl;
     bool includeAuxData;
     bool includeValidityIntervalStart;
@@ -163,26 +163,7 @@ typedef struct {
     bool includeRefScript;
 } tx_output_description_t;
 
-void txHashBuilder_init(tx_hash_builder_t* builder,
-                        bool tagCborSets,
-                        uint16_t numInputs,
-                        uint16_t numOutputs,
-                        bool includeTtl,
-                        uint16_t numCertificates,
-                        uint16_t numWithdrawals,
-                        bool includeAuxData,
-                        bool includeValidityIntervalStart,
-                        bool includeMint,
-                        bool includeScriptDataHash,
-                        uint16_t numCollateralInputs,
-                        uint16_t numRequiredSigners,
-                        bool includeNetworkId,
-                        bool includeCollateralOutput,
-                        bool includeTotalCollateral,
-                        uint16_t numReferenceInputs,
-                        uint16_t numVotingProcedures,
-                        bool includeTreasury,
-                        bool includeDonation);
+void txHashBuilder_init(tx_hash_builder_t* builder, const tx_params_t* txParams);
 
 void txHashBuilder_enterInputs(tx_hash_builder_t* builder);
 

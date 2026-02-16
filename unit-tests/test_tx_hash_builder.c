@@ -24,26 +24,29 @@ static void test_tx_hash_builder_full(void** state) {
 
     tx_hash_builder_t builder = {0};
 
-    txHashBuilder_init(&builder,
-                       true,
-                       1,
-                       1,
-                       true,
-                       1,
-                       1,
-                       true,
-                       true,
-                       true,
-                       true,
-                       1,
-                       1,
-                       true,
-                       true,
-                       true,
-                       1,
-                       1,
-                       true,
-                       true);
+    tx_params_t txParams = {
+        .tagCborSets = true,
+        .num_inputs = 1,
+        .num_outputs = 1,
+        .includeTtl = true,
+        .num_certificates = 1,
+        .num_withdrawals = 1,
+        .includeAuxDataHash = true,
+        .includeValidityIntervalStart = true,
+        .num_mint_asset_groups = 1,
+        .includeScriptDataHash = true,
+        .num_collateral_inputs = 1,
+        .num_required_signers = 1,
+        .includeNetworkId = true,
+        .includeCollateralOutput = true,
+        .includeTotalCollateral = true,
+        .num_reference_inputs = 1,
+        .num_voters = 1,
+        .includeTreasury = true,
+        .includeDonation = true,
+    };
+
+    txHashBuilder_init(&builder, &txParams);
 
     tx_input_t input = {0};
     input.index = 0;
@@ -217,26 +220,30 @@ static void test_tx_hash_builder_minimal(void** state) {
     (void)state;
 
     tx_hash_builder_t builder = {0};
-    txHashBuilder_init(&builder,
-                       false,
-                       1,
-                       5,
-                       false,
-                       0,
-                       0,
-                       false,
-                       false,
-                       false,
-                       false,
-                       0,
-                       0,
-                       false,
-                       false,
-                       false,
-                       0,
-                       0,
-                       false,
-                       false);
+
+    tx_params_t txParams = {
+        .tagCborSets = false,
+        .num_inputs = 1,
+        .num_outputs = 5,
+        .includeTtl = false,
+        .num_certificates = 0,
+        .num_withdrawals = 0,
+        .includeAuxDataHash = false,
+        .includeValidityIntervalStart = false,
+        .num_mint_asset_groups = 0,
+        .includeScriptDataHash = false,
+        .num_collateral_inputs = 0,
+        .num_required_signers = 0,
+        .includeNetworkId = false,
+        .includeCollateralOutput = false,
+        .includeTotalCollateral = false,
+        .num_reference_inputs = 0,
+        .num_voters = 0,
+        .includeTreasury = false,
+        .includeDonation = false,
+    };
+
+    txHashBuilder_init(&builder, &txParams);
 
     tx_input_t input = {0};
     input.index = 0;

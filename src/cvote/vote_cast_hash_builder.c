@@ -37,11 +37,16 @@ static void blake2b_256_append_buffer_tx_body(blake2b_256_context_t* hashCtx,
 // ============================== TX HASH BUILDER STATE INITIALIZATION
 // ==============================
 
-void vote_cast_hash_builder_init(votecast_hash_builder_t* builder, size_t remainingBytes) {
-    TRACE("remainingBytes = %u", remainingBytes);
+void vote_cast_hash_builder_init(votecast_hash_builder_t* builder, size_t votecastLength) {
+    LEDGER_ASSERT(builder != NULL, "NULL builder");
+    LEDGER_ASSERT(votecastLength > 0, "Zero votecastLength");
 
-    ASSERT(remainingBytes > 0);
-    builder->remainingBytes = remainingBytes;
+    // Clear the entire structure to prevent stale data
+    explicit_bzero(builder, sizeof(votecast_hash_builder_t));
+
+    TRACE("votecastLength = %u", votecastLength);
+
+    builder->remainingBytes = votecastLength;
 
     blake2b_256_init(&builder->hash);
 

@@ -314,113 +314,101 @@ static void assertCanLeaveCurrentOutput(tx_hash_builder_t* builder) {
 // ============================== TX HASH BUILDER STATE INITIALIZATION
 // ==============================
 
-void txHashBuilder_init(tx_hash_builder_t* builder,
-                        bool tagCborSets,
-                        uint16_t numInputs,
-                        uint16_t numOutputs,
-                        bool includeTtl,
-                        uint16_t numCertificates,
-                        uint16_t numWithdrawals,
-                        bool includeAuxData,
-                        bool includeValidityIntervalStart,
-                        bool includeMint,
-                        bool includeScriptDataHash,
-                        uint16_t numCollateralInputs,
-                        uint16_t numRequiredSigners,
-                        bool includeNetworkId,
-                        bool includeCollateralOutput,
-                        bool includeTotalCollateral,
-                        uint16_t numReferenceInputs,
-                        uint16_t numVotingProcedures,
-                        bool includeTreasury,
-                        bool includeDonation) {
-    TRACE("tagCborSets = %u", tagCborSets);
-    TRACE("numInputs = %u", numInputs);
-    TRACE("numOutputs = %u", numOutputs);
-    TRACE("includeTtl = %u", includeTtl);
-    TRACE("numCertificates = %u", numCertificates);
-    TRACE("numWithdrawals  = %u", numWithdrawals);
-    TRACE("includeAuxData = %u", includeAuxData);
-    TRACE("includeValidityIntervalStart = %u", includeValidityIntervalStart);
-    TRACE("includeMint = %u", includeMint);
-    TRACE("includeScriptDataHash = %u", includeScriptDataHash);
-    TRACE("numCollateralInputs = %u", numCollateralInputs);
-    TRACE("numRequiredSigners = %u", numRequiredSigners);
-    TRACE("includeNetworkId = %u", includeNetworkId);
-    TRACE("includeCollateralOutput = %u", includeCollateralOutput);
-    TRACE("includeTotalCollateral = %u", includeTotalCollateral);
-    TRACE("numReferenceInputs = %u", numReferenceInputs);
-    TRACE("numVotingProcedures = %u", numReferenceInputs);
-    TRACE("includeTreasury = %u", includeTreasury);
-    TRACE("includeDonation = %u", includeDonation);
+void txHashBuilder_init(tx_hash_builder_t* builder, const tx_params_t* txParams) {
+    LEDGER_ASSERT(builder != NULL, "NULL builder");
+    LEDGER_ASSERT(txParams != NULL, "NULL txParams");
+
+    // Clear the entire structure to prevent stale data in unions
+    explicit_bzero(builder, sizeof(tx_hash_builder_t));
+
+    TRACE("tagCborSets = %u", txParams->tagCborSets);
+    TRACE("numInputs = %u", txParams->num_inputs);
+    TRACE("numOutputs = %u", txParams->num_outputs);
+    TRACE("includeTtl = %u", txParams->includeTtl);
+    TRACE("numCertificates = %u", txParams->num_certificates);
+    TRACE("numWithdrawals  = %u", txParams->num_withdrawals);
+    TRACE("includeAuxDataHash = %u", txParams->includeAuxDataHash);
+    TRACE("includeValidityIntervalStart = %u", txParams->includeValidityIntervalStart);
+    TRACE("numMintAssetGroups = %u", txParams->num_mint_asset_groups);
+    TRACE("includeScriptDataHash = %u", txParams->includeScriptDataHash);
+    TRACE("numCollateralInputs = %u", txParams->num_collateral_inputs);
+    TRACE("numRequiredSigners = %u", txParams->num_required_signers);
+    TRACE("includeNetworkId = %u", txParams->includeNetworkId);
+    TRACE("includeCollateralOutput = %u", txParams->includeCollateralOutput);
+    TRACE("includeTotalCollateral = %u", txParams->includeTotalCollateral);
+    TRACE("numReferenceInputs = %u", txParams->num_reference_inputs);
+    TRACE("numVoters = %u", txParams->num_voters);
+    TRACE("includeTreasury = %u", txParams->includeTreasury);
+    TRACE("includeDonation = %u", txParams->includeDonation);
 
 #ifdef TRACE_TX_HASH_BUILDER
     tx_body_trace_size = 0;
 #endif
 
-    builder->tagCborSets = tagCborSets;
+    builder->tagCborSets = txParams->tagCborSets;
 
     blake2b_256_init(&builder->txHash);
 
     {
         size_t numItems = 0;
 
-        builder->remainingInputs = numInputs;
+        builder->remainingInputs = txParams->num_inputs;
         numItems++;  // an array that is always included (even if empty)
 
-        builder->remainingOutputs = numOutputs;
+        builder->remainingOutputs = txParams->num_outputs;
         numItems++;  // an array that is always included (even if empty)
 
         // fee always included
         numItems++;
 
-        builder->includeTtl = includeTtl;
-        if (includeTtl) numItems++;
+        builder->includeTtl = txParams->includeTtl;
+        if (txParams->includeTtl) numItems++;
 
-        builder->remainingCertificates = numCertificates;
-        if (numCertificates > 0) numItems++;
+        builder->remainingCertificates = txParams->num_certificates;
+        if (txParams->num_certificates > 0) numItems++;
 
-        builder->remainingWithdrawals = numWithdrawals;
-        if (numWithdrawals > 0) numItems++;
+        builder->remainingWithdrawals = txParams->num_withdrawals;
+        if (txParams->num_withdrawals > 0) numItems++;
 
-        builder->includeAuxData = includeAuxData;
-        if (includeAuxData) numItems++;
+        builder->includeAuxData = txParams->includeAuxDataHash;
+        if (txParams->includeAuxDataHash) numItems++;
 
-        builder->includeValidityIntervalStart = includeValidityIntervalStart;
-        if (includeValidityIntervalStart) numItems++;
+        builder->includeValidityIntervalStart = txParams->includeValidityIntervalStart;
+        if (txParams->includeValidityIntervalStart) numItems++;
 
-        builder->includeMint = includeMint;
-        if (includeMint) numItems++;
+        // Derive includeMint from num_mint_asset_groups
+        builder->includeMint = (txParams->num_mint_asset_groups > 0);
+        if (txParams->num_mint_asset_groups > 0) numItems++;
 
-        builder->includeScriptDataHash = includeScriptDataHash;
-        if (includeScriptDataHash) numItems++;
+        builder->includeScriptDataHash = txParams->includeScriptDataHash;
+        if (txParams->includeScriptDataHash) numItems++;
 
-        builder->remainingCollateralInputs = numCollateralInputs;
-        if (numCollateralInputs > 0) numItems++;
+        builder->remainingCollateralInputs = txParams->num_collateral_inputs;
+        if (txParams->num_collateral_inputs > 0) numItems++;
 
-        builder->remainingRequiredSigners = numRequiredSigners;
-        if (numRequiredSigners > 0) numItems++;
+        builder->remainingRequiredSigners = txParams->num_required_signers;
+        if (txParams->num_required_signers > 0) numItems++;
 
-        builder->includeNetworkId = includeNetworkId;
-        if (includeNetworkId) numItems++;
+        builder->includeNetworkId = txParams->includeNetworkId;
+        if (txParams->includeNetworkId) numItems++;
 
-        builder->includeCollateralOutput = includeCollateralOutput;
-        if (includeCollateralOutput) numItems++;
+        builder->includeCollateralOutput = txParams->includeCollateralOutput;
+        if (txParams->includeCollateralOutput) numItems++;
 
-        builder->includeTotalCollateral = includeTotalCollateral;
-        if (includeTotalCollateral) numItems++;
+        builder->includeTotalCollateral = txParams->includeTotalCollateral;
+        if (txParams->includeTotalCollateral) numItems++;
 
-        builder->remainingReferenceInputs = numReferenceInputs;
-        if (numReferenceInputs > 0) numItems++;
+        builder->remainingReferenceInputs = txParams->num_reference_inputs;
+        if (txParams->num_reference_inputs > 0) numItems++;
 
-        builder->remainingVotingProcedures = numVotingProcedures;
-        if (numVotingProcedures > 0) numItems++;
+        builder->remainingVoters = txParams->num_voters;
+        if (txParams->num_voters > 0) numItems++;
 
-        builder->includeTreasury = includeTreasury;
-        if (includeTreasury) numItems++;
+        builder->includeTreasury = txParams->includeTreasury;
+        if (txParams->includeTreasury) numItems++;
 
-        builder->includeDonation = includeDonation;
-        if (includeDonation) numItems++;
+        builder->includeDonation = txParams->includeDonation;
+        if (txParams->includeDonation) numItems++;
 
         ASSERT((3 <= numItems) && (numItems <= 19));
 
@@ -2156,12 +2144,12 @@ void txHashBuilder_enterVotingProcedures(tx_hash_builder_t* builder) {
 
     txHashBuilder_assertCanLeaveReferenceInputs(builder);
     // we don't allow an empty map for an optional item
-    ASSERT(builder->remainingVotingProcedures > 0);
+    ASSERT(builder->remainingVoters > 0);
 
     {
         // Enter voting procedures
         BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, TX_BODY_KEY_VOTING_PROCEDURES);
-        BUILDER_APPEND_CBOR(CBOR_TYPE_MAP, builder->remainingVotingProcedures);
+        BUILDER_APPEND_CBOR(CBOR_TYPE_MAP, builder->remainingVoters);
     }
     builder->state = TX_HASH_BUILDER_IN_VOTING_PROCEDURES;
 }
@@ -2169,17 +2157,17 @@ void txHashBuilder_enterVotingProcedures(tx_hash_builder_t* builder) {
 void txHashBuilder_addVoter(tx_hash_builder_t* builder,
                             const voter_t* voter,
                             uint16_t numVotes) {
-    _TRACE("state = %d, remainingVotingProcedures = %u, numVotes = %u",
+    _TRACE("state = %d, remainingVoters = %u, numVotes = %u",
            builder->state,
-           builder->remainingVotingProcedures,
+           builder->remainingVoters,
            numVotes);
 
     ASSERT(builder->state == TX_HASH_BUILDER_IN_VOTING_PROCEDURES);
-    ASSERT(builder->remainingVotingProcedures > 0);
+    ASSERT(builder->remainingVoters > 0);
     ASSERT(numVotes > 0);
 
     // Assert no KEY_PATH variants (must be converted before calling)
-    builder->remainingVotingProcedures--;
+    builder->remainingVoters--;
 
     // voter - Array(2)[Unsigned[voter type], Bytes[key or script hash]]
     BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 2);
@@ -2235,12 +2223,12 @@ static void txHashBuilder_assertCanLeaveVotingProcedures(tx_hash_builder_t* buil
     switch (builder->state) {
         case TX_HASH_BUILDER_IN_VOTING_PROCEDURES:
             // make sure there are no more voting procedures to process
-            ASSERT(builder->remainingVotingProcedures == 0);
+            ASSERT(builder->remainingVoters == 0);
             break;
 
         default:
             // make sure no voting procedures are expected
-            ASSERT(builder->remainingVotingProcedures == 0);
+            ASSERT(builder->remainingVoters == 0);
             // assert we can leave the previous state
             txHashBuilder_assertCanLeaveReferenceInputs(builder);
             break;
