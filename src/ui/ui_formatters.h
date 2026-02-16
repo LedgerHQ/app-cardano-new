@@ -134,19 +134,6 @@ bool format_ipv4(const ipv4_t *ipv4, char *out, size_t outSize);
 bool format_ipv6(const ipv6_t *ipv6, char *out, size_t outSize);
 
 /**
- * Debug tracing helpers
- */
-#ifdef DEBUG
-void str_traceAdaAmount(const char* prefix, uint64_t amount);
-#define TRACE_ADA_AMOUNT(PREFIX, AMOUNT)    \
-    do {                                    \
-        str_traceAdaAmount(PREFIX, AMOUNT); \
-    } while (0)
-#else
-#define TRACE_ADA_AMOUNT(PREFIX, AMOUNT)
-#endif  // DEBUG
-
-/**
  * Format vote option enum to string
  *
  * Converts vote option enum values to human-readable strings.

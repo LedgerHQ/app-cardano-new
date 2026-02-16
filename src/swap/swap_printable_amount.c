@@ -21,13 +21,10 @@ void swap_handle_get_printable_amount(get_printable_amount_parameters_t *params)
     }
 
     // Format as ADA with 6 decimal places and " ADA" suffix
-    if (!format_ada_amount(amount,
-                           params->printable_amount,
-                           sizeof(params->printable_amount))) {
-        TRACE("Failed to format ADA amount");
-        explicit_bzero(params->printable_amount, sizeof(params->printable_amount));
-        return;
-    }
+    bool formatted = format_ada_amount(amount,
+                                       params->printable_amount,
+                                       sizeof(params->printable_amount));
+    LEDGER_ASSERT(formatted, "Failed to format ADA amount");
 
     TRACE("Amount=%s", params->printable_amount);
 }

@@ -146,26 +146,11 @@ bool format_ada_amount(uint64_t amount, char *out, size_t outSize) {
 
     int written = snprintf(out + rawSize, outSize - rawSize, "%s", suffix);
     LEDGER_ASSERT(written > 0, "snprintf ADA suffix failed");
+    LEDGER_ASSERT((size_t)written < (outSize - rawSize), "snprintf ADA suffix truncated");
     LEDGER_ASSERT((size_t)written == suffixLength, "ADA suffix length mismatch");
 
     return true;
 }
-
-#ifdef DEBUG
-void str_traceAdaAmount(const char* prefix, uint64_t amount) {
-    char adaAmountStr[100] = {0};
-
-    const size_t prefixLen = strlen(prefix);
-    LEDGER_ASSERT(prefixLen <= 50, "Prefix too long");
-    int written = snprintf(adaAmountStr, SIZEOF(adaAmountStr), "%s", prefix);
-    LEDGER_ASSERT(written > 0, "snprintf prefix failed");
-    LEDGER_ASSERT((size_t)written == prefixLen, "snprintf prefix length mismatch");
-
-    bool formatted = format_ada_amount(amount, adaAmountStr + prefixLen, SIZEOF(adaAmountStr) - prefixLen);
-    LEDGER_ASSERT(formatted, "Format failed");
-    TRACE("%s", adaAmountStr);
-}
-#endif  // DEBUG
 
 // Note: This is valid only for mainnet
 static struct {
@@ -207,6 +192,7 @@ static bool format_validity_boundary_mainnet(uint64_t slotNumber, char *out, siz
     }
 
     LEDGER_ASSERT(written > 0, "snprintf epoch/slot formatting failed");
+    LEDGER_ASSERT((size_t)written < outSize, "snprintf epoch/slot formatting truncated");
     LEDGER_ASSERT((size_t)written + 1 < outSize, "Epoch/slot string does not fit in output buffer");
 
     return true;
@@ -248,7 +234,7 @@ bool format_pool_margin(uint64_t numerator, uint64_t denominator, char *out, siz
     STATIC_ASSERT(!IS_SIGNED(percentage), "signed type for %u");
     int written = snprintf(out, outSize, "%u.%u %%", percentage / 100, percentage % 100);
     LEDGER_ASSERT(written > 0, "snprintf pool margin formatting failed");
-    return (size_t)written + 1 < outSize;
+    return (size_t)written + 1 < outSize; // checks for truncation
 }
 
 /**
@@ -258,7 +244,7 @@ bool format_uint16(uint16_t value, char *out, size_t outSize) {
     STATIC_ASSERT(!IS_SIGNED(value), "signed type for %u");
     int written = snprintf(out, outSize, "%u", value);
     LEDGER_ASSERT(written > 0, "snprintf uint16 formatting failed");
-    return (size_t)written + 1 < outSize;
+    return (size_t)written + 1 < outSize; // checks for truncation
 }
 
 /**
@@ -268,7 +254,7 @@ bool format_index_with_prefix(uint32_t value, char *out, size_t outSize) {
     STATIC_ASSERT(!IS_SIGNED(value), "signed type for %u");
     int written = snprintf(out, outSize, "#%u", value);
     LEDGER_ASSERT(written > 0, "snprintf index prefix formatting failed");
-    return (size_t)written + 1 < outSize;
+    return (size_t)written + 1 < outSize; // checks for truncation
 }
 
 /**
@@ -284,6 +270,7 @@ bool format_ipv4(const ipv4_t *ipv4, char *out, size_t outSize) {
     if (ipv4->isNull) {
         int written = snprintf(out, outSize, "(none)");
         LEDGER_ASSERT(written > 0, "snprintf ipv4 null formatting failed");
+        LEDGER_ASSERT((size_t)written < outSize, "snprintf ipv4 null formatting truncated");
         LEDGER_ASSERT((size_t)written + 1 < outSize, "IPv4 null string does not fit in output buffer");
     } else {
         LEDGER_ASSERT(ipv4->ip != NULL, "IPv4 address buffer cannot be null when not null flag");
@@ -309,6 +296,7 @@ bool format_ipv6(const ipv6_t *ipv6, char *out, size_t outSize) {
     if (ipv6->isNull) {
         int written = snprintf(out, outSize, "(none)");
         LEDGER_ASSERT(written > 0, "snprintf ipv6 null formatting failed");
+        LEDGER_ASSERT((size_t)written < outSize, "snprintf ipv6 null formatting truncated");
         LEDGER_ASSERT((size_t)written + 1 < outSize, "IPv6 null string does not fit in output buffer");
     } else {
         LEDGER_ASSERT(ipv6->ip != NULL, "IPv6 address buffer cannot be null when not null flag");
@@ -343,7 +331,7 @@ bool format_vote_option(vote_t voteOption, char *out, size_t outSize) {
 
     int written = snprintf(out, outSize, "%s", vote_str);
     LEDGER_ASSERT(written > 0, "snprintf vote option formatting failed");
-    return (size_t)written + 1 < outSize;
+    return (size_t)written + 1 < outSize; // checks for truncation
 }
 
 /**
@@ -368,7 +356,7 @@ bool format_constant_drep(ext_drep_type_t drep_type, char *out, size_t outSize) 
 
     int written = snprintf(out, outSize, "%s", drep_str);
     LEDGER_ASSERT(written > 0, "snprintf drep formatting failed");
-    return (size_t)written + 1 < outSize;
+    return (size_t)written + 1 < outSize; // checks for truncation
 }
 
 /**
@@ -378,7 +366,7 @@ bool format_certificate_type(certificate_type_t type, char *out, size_t outSize)
     const char *cert_type_name = getCertificateTypeName(type);
     int written = snprintf(out, outSize, "%s", cert_type_name);
     LEDGER_ASSERT(written > 0, "snprintf certificate type formatting failed");
-    return (size_t)written + 1 < outSize;
+    return (size_t)written + 1 < outSize; // checks for truncation
 }
 
 
@@ -459,6 +447,5 @@ bool format_incomplete_hex_with_length(const uint8_t *data,
     STATIC_ASSERT(!IS_SIGNED(dataLen), "signed type for %u");
     int written = snprintf(out, outSize, "%s... (%u bytes)", hexPrefix, (unsigned int)dataLen);
     LEDGER_ASSERT(written > 0, "snprintf incomplete hex formatting failed");
-    LEDGER_ASSERT((size_t)written + 1 < outSize, "Inline datum preview truncated");
-    return true;
+    return (size_t)written + 1 < outSize; // checks for truncation
 }
