@@ -42,7 +42,6 @@ void handler_get_public_key(buffer_t *cdata) {
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
-    LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");
 
     // Log the requested path for easier debugging.
     BIP44_PRINTF(&G_context.pk_info.path);

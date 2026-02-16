@@ -173,8 +173,6 @@ void signMsg_handle_init(buffer_t *cdata) {
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
-    LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");
-
     // Check security policy and collect warnings
     ctx->warnings = 0;
     security_policy_t policy = policyForSignMsg(&ctx->signingPath,

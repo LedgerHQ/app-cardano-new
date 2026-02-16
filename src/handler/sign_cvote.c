@@ -166,7 +166,6 @@ static void handle_sign_cvote_confirm_apdu(buffer_t *cdata) {
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
-    LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");
 
     // Check security policy for witness path
     warning_bits_t warnings = 0;

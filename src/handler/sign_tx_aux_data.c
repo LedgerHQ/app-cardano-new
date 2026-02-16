@@ -283,7 +283,6 @@ static void handler_tx_aux_data_delegation(buffer_t *cdata) {
         send_swo_and_reset(SWO_CVOTE_AUX_DATA_PARSING_FAIL);
         return;
     }
-    LEDGER_ASSERT(!buffer_can_read(cdata, 1), "APDU not fully consumed");
 
     cvote_hash_builder_add_delegation(aux_data, &delegation_credential, weight);
 
