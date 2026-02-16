@@ -23,7 +23,6 @@ void signRawMessageWithPath(const bip44_path_t* path,
     LEDGER_ASSERT(policyForDerivePrivateKey(path) != POLICY_DENY,
                   "Signing denied by private key derivation policy");
 
-#if !defined(FUZZING) || defined(TEST)
     TRACE("signing with path:");
     BIP44_PRINTF(path);
     TRACE("");
@@ -34,7 +33,6 @@ void signRawMessageWithPath(const bip44_path_t* path,
                       messageSize,
                       outBuffer,
                       outSize);
-#endif
 }
 
 // sign the given hash by the private key derived according to the given path
@@ -45,9 +43,7 @@ void getWitness(const bip44_path_t* path,
                 size_t outSize) {
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
 
-#if !defined(FUZZING) || defined(TEST)
     signRawMessageWithPath(path, hashBuffer, hashSize, outBuffer, outSize);
-#endif
 }
 
 void getCVoteRegistrationSignature(const bip44_path_t* path,
@@ -58,7 +54,5 @@ void getCVoteRegistrationSignature(const bip44_path_t* path,
     ASSERT(payloadHashSize == CVOTE_REGISTRATION_PAYLOAD_HASH_LENGTH);
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
 
-#if !defined(FUZZING) || defined(TEST)
     signRawMessageWithPath(path, payloadHashBuffer, payloadHashSize, outBuffer, outSize);
-#endif
 }

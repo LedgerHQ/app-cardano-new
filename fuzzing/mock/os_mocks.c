@@ -142,6 +142,23 @@ cx_err_t cx_eddsa_sign_no_throw(const cx_ecfp_private_key_t *pvkey,
                                 size_t hash_len,
                                 uint8_t *sig,
                                 size_t sig_len) {
+    (void) pvkey;
+    (void) hashID;
+
+    if (sig == NULL || sig_len == 0) {
+        return CX_INVALID_PARAMETER;
+    }
+
+    if (hash == NULL || hash_len == 0) {
+        memset(sig, 0, sig_len);
+        return CX_OK;
+    }
+
+    for (size_t i = 0; i < sig_len; i++) {
+        // Deterministic non-cryptographic bytes for fuzzing-only signature flow.
+        sig[i] = (uint8_t) (hash[i % hash_len] ^ (uint8_t) (0xA5u + i));
+    }
+
     return CX_OK;
 }
 

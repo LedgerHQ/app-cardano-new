@@ -143,8 +143,7 @@ target_link_options(code_lib PUBLIC -fno-sanitize=alignment)
 
 target_compile_definitions(
   code_lib
-  PUBLIC FUZZING
-         FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION=1
+  PUBLIC FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION=1
          HAVE_NBGL
          NBGL_PAGE
          HAVE_PIEZO_SOUND

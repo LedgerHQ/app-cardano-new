@@ -27,6 +27,7 @@
             "test_pubkey_without_confirmation",
             "test_pubkey_deny",
             "test_sign_message",
+            "test_sign_message_deny",
             "test_sign_tx",
             "test_sign_tx_deny",
             "test_ins_constants_match_src",
