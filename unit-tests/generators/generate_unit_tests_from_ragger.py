@@ -213,8 +213,7 @@ _GENERATED_BY_SCRIPT = "unit-tests/generators/generate_unit_tests_from_ragger.py
 
 def _normalize_generated_output_headers() -> None:
     """Ensure generated unit-test outputs carry SPDX and generator provenance comments."""
-    generated_paths = sorted(UNIT_TESTS_DIR.glob("test_*.[ch]"))
-    generated_paths.extend(sorted(GENERATED_DIR.rglob("test_*.[ch]")))
+    generated_paths = sorted(GENERATED_DIR.rglob("test_*.[ch]"))
     generated_paths.append(UNIT_TESTS_DIR / "mock_crypto" / "crypto_mock_data.h")
 
     spdx_line_pattern = re.compile(r"^\s*(//|/\*)\s*SPDX-(FileCopyrightText|License-Identifier):")
@@ -319,41 +318,27 @@ def _count_unit_tests_by_command() -> tuple[dict[str, int], int, str]:
     )
     for path in tx_test_files:
         _add_file_counts(path, "sign_tx")
-    # Additional hand-written sign-tx suites that are not generated from fixtures.
-    for extra_sign_tx_file in (
-        "test_handler_sign_tx_additional.c",
-        "test_handler_sign_tx_swap.c",
-        "test_sign_tx_witness_nbgl_reject.c",
-    ):
-        extra_path = UNIT_TESTS_DIR / extra_sign_tx_file
-        if extra_path.exists():
-            _add_file_counts(extra_path, "sign_tx")
     # Keep sign-tx deny runner out of cmocka-based counting (counted via fixtures),
     # but include its source for function-name coverage matching.
     _add_file_content_only(GENERATED_SIGN_TX_DIR / "test_sign_tx_deny_tests.c")
 
     unit_file_map = {
         "sign_msg": [GENERATED_SIGN_MSG_DIR / "test_sign_msg.c"],
-        "sign_cvote": [GENERATED_CVOTE_DIR / "test_cvote.c", UNIT_TESTS_DIR / "test_sign_cvote_nbgl_reject.c"],
-        "sign_opcert": [GENERATED_OPCERT_DIR / "test_opcert.c", UNIT_TESTS_DIR / "test_sign_opcert_nbgl_reject.c"],
+        "sign_cvote": [GENERATED_CVOTE_DIR / "test_cvote.c"],
+        "sign_opcert": [GENERATED_OPCERT_DIR / "test_opcert.c"],
         "pubkey_export": [
             GENERATED_PUBKEY_DIR / "test_pubkey.c",
             GENERATED_PUBKEY_DIR / "test_pubkey_deny_tests.c",
-            UNIT_TESTS_DIR / "test_pubkey_nbgl_reject.c",
         ],
         "derive_address": [
             GENERATED_DERIVE_ADDRESS_DIR / "test_derive_address.c",
             GENERATED_DERIVE_ADDRESS_DIR / "test_derive_address_deny_tests.c",
-            UNIT_TESTS_DIR / "test_derive_address_nbgl_reject.c",
         ],
         "derive_native_script": [
             GENERATED_NATIVE_SCRIPT_DIR / "test_native_script.c",
             GENERATED_NATIVE_SCRIPT_DIR / "test_native_script_deny_tests.c",
         ],
     }
-    extra_sign_msg_file = UNIT_TESTS_DIR / "test_sign_msg_nbgl_reject.c"
-    if extra_sign_msg_file.exists():
-        _add_file_counts(extra_sign_msg_file, "sign_msg")
     for command, file_paths in unit_file_map.items():
         for file_path in file_paths:
             _add_file_counts(file_path, command)
