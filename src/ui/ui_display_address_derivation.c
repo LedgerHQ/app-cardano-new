@@ -154,7 +154,9 @@ void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warn
 
     switch (policy) {
         case POLICY_SHOW:
-            ui_displayAddressReview("Export address",
+            ui_displayAddressReview(warning_bits_has(warnings, WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)
+                                        ? "Export UNUSUAL address"
+                                        : "Export address",
                                     NULL,
                                     derive_address_review_choice,
                                     warnings);

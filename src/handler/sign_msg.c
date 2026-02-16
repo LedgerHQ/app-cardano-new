@@ -442,8 +442,10 @@ static bool _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
     TRACE("Sig_structure size = %u", sigStructureSize);
     TRACE_BUFFER(sigStructure, sigStructureSize);
 
-    // CIP-8 has no app-level domain separation from tx witness signing, so we must sign
-    // full CBOR Sig_structure bytes; this check only rejects degenerate 32-byte ambiguity.
+    // CIP-8/COSE Sig_structure has fixed semantics and no extra app-defined domain-separation
+    // field for Cardano witness-vs-message separation. Adding a custom prefix/tag here would
+    // break interoperability, so we sign the standard CBOR Sig_structure bytes as defined.
+    // This check only guards against the degenerate 32-byte ambiguity with raw tx hashes.
     LEDGER_ASSERT(sigStructureSize != TX_HASH_LENGTH, "Sig_structure size equals TX_HASH_LENGTH");
 
     // Sign the Sig_structure
