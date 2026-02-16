@@ -528,9 +528,7 @@ void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
     switch (p1) {
         case P1_SIGN_MSG_INIT: {
             TRACE("P1_SIGN_MSG_INIT");
-            if (G_context.state.sign_msg_state != SIGN_MSG_STATE_NONE) {
-                TRACE("Rejecting INIT in state %d", G_context.state.sign_msg_state);
-                send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+            if (!ensure_sign_msg_state(SIGN_MSG_STATE_NONE)) {
                 return;
             }
             G_context.state.sign_msg_state = SIGN_MSG_STATE_INIT;

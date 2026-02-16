@@ -48,6 +48,17 @@ static bool is_valid_tx_signing_mode(uint8_t tx_signing_mode) {
     }
 }
 
+static bool ensure_sign_tx_state(tx_state_e required_state) {
+    if (G_context.state.tx_state != required_state) {
+        TRACE("Rejecting sign_tx command in state %d (expected %d)",
+              G_context.state.tx_state,
+              required_state);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return false;
+    }
+    return true;
+}
+
 /**
  * Helper: Initialize transaction from P1_TX_INIT APDU
  * Validates all transaction metadata and checks security policy
@@ -367,14 +378,8 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
  */
 static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handle_tx_data_chunk");
+    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_CHUNKS, "Invalid state for chunk reception");
     const size_t chunk_size = buffer_remaining(cdata);
-
-    // Validate we're in the correct state for receiving chunks
-    if (G_context.state.tx_state != TX_STATE_CHUNKS) {
-        TRACE("Invalid state for chunk reception: expected TX_STATE_CHUNKS, got %d", G_context.state.tx_state);
-        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
-        return false;
-    }
 
     if (is_final_chunk) {
         if (chunk_size == 0 || chunk_size > MAX_SIGN_TX_CHUNK_SIZE) {
@@ -436,10 +441,12 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 
     switch (p1) {
         case P1_TX_INIT:
-            if (G_context.req_type != REQUEST_NONE ||
-                G_context.state.tx_state != TX_STATE_NONE) {
+            if (G_context.req_type != REQUEST_NONE) {
                 TRACE("TX init rejected: request already active");
                 send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+                return;
+            }
+            if (!ensure_sign_tx_state(TX_STATE_NONE)) {
                 return;
             }
 #ifdef HAVE_SWAP
@@ -463,6 +470,9 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
                 send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
                 return;
             }
+            if (!ensure_sign_tx_state(TX_STATE_CHUNKS)) {
+                return;
+            }
 
             // More data chunks to follow
             if (!handle_tx_data_chunk(cdata, false)) {
@@ -475,6 +485,9 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
                 TRACE("TX final chunk rejected: wrong request type %d", G_context.req_type);
                 send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+                return;
+            }
+            if (!ensure_sign_tx_state(TX_STATE_CHUNKS)) {
                 return;
             }
 
