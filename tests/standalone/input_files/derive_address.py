@@ -20,7 +20,6 @@ from application_client.app_def import (
     FakeNet,
 )
 
-
 @dataclass(kw_only=True)
 class DeriveAddressTestCase:
     name: str
@@ -38,14 +37,12 @@ class DeriveAddressTestCase:
         None  # list of specific navigation instructions for Nano
     )
 
-
 def pointer_to_str(blockIndex: int, txIndex: int, certificateIndex: int) -> str:
     data: str = ""
     data += f"{blockIndex.to_bytes(4, 'big').hex()}"
     data += f"{txIndex.to_bytes(4, 'big').hex()}"
     data += f"{certificateIndex.to_bytes(4, 'big').hex()}"
     return data
-
 
 # pylint: disable=line-too-long
 byronTestCases = [

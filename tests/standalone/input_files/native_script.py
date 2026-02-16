@@ -14,7 +14,6 @@ from dataclasses import dataclass, field
 
 from application_client.status_words import StatusWord
 
-
 class NativeScriptType(IntEnum):
     PUBKEY_DEVICE_OWNED = 0x00
     PUBKEY_THIRD_PARTY = 0xF0
@@ -24,38 +23,31 @@ class NativeScriptType(IntEnum):
     INVALID_BEFORE = 0x04
     INVALID_HEREAFTER = 0x05
 
-
 class NativeScriptHashDisplayFormat(IntEnum):
     BECH32 = 0x01
     POLICY_ID = 0x02
-
 
 @dataclass
 class NativeScript:
     type: NativeScriptType
     params: NativeScriptParams
 
-
 @dataclass
 class NativeScriptParamsPubkey:
     key: str
 
-
 @dataclass
 class NativeScriptParamsScripts:
     scripts: List[NativeScript] = field(default_factory=list)
-
 
 @dataclass
 class NativeScriptParamsNofK:
     requiredCount: int
     scripts: List[NativeScript] = field(default_factory=list)
 
-
 @dataclass
 class NativeScriptParamsInvalid:
     slot: int
-
 
 NativeScriptParams = Union[
     NativeScriptParamsPubkey,
@@ -64,12 +56,10 @@ NativeScriptParams = Union[
     NativeScriptParamsInvalid,
 ]
 
-
 @dataclass
 class SignedData:
     hash: Optional[str] = None
     sw: Optional[StatusWord] = StatusWord.SWO_SUCCESS
-
 
 @dataclass(kw_only=True)
 class ValidNativeScriptTestCase:
@@ -82,8 +72,6 @@ class ValidNativeScriptTestCase:
     )
     nano_skip: Optional[bool] = False
     skip_expected_in_ragger: bool = False
-
-
 
 # pylint: disable=line-too-long
 ValidNativeScriptTestCases = [
@@ -377,7 +365,6 @@ ValidNativeScriptTestCases = [
         nano_skip=True,
     ),
 ]
-
 
 InvalidScriptTestCases = [
     ValidNativeScriptTestCase(

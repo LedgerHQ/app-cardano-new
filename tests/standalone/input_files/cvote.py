@@ -12,19 +12,16 @@ from typing import Optional
 
 MAX_CIP36_PAYLOAD_SIZE = 250
 
-
 @dataclass(kw_only=True)
 class CIP36Vote:
     voteCastDataHex: str  # bytestring to sign in hex
     witnessPath: str  # the witness path for which we need a signature
-
 
 @dataclass(kw_only=True)
 class CVoteTestCase:
     name: str
     cVote: CIP36Vote
     ledgerjs_name: Optional[str] = None
-
 
 # pylint: disable=line-too-long
 cvoteTestCases = [

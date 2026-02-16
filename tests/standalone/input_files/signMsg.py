@@ -18,11 +18,9 @@ from application_client.app_def import AddressType, Mainnet
 from application_client.status_words import StatusWord
 from application_client.command_builder import CommandBuilder, InsType, P1Type, P2Type
 
-
 class MessageAddressFieldType(IntEnum):
     ADDRESS = 0x01
     KEY_HASH = 0x02
-
 
 @dataclass
 class MessageData:
@@ -35,20 +33,17 @@ class MessageData:
     addressFieldType: MessageAddressFieldType
     addressDesc: Optional[DeriveAddressTestCase] = None
 
-
 @dataclass
 class NavigationData:
     init: List[NavInsID]
     chunk: List[NavInsID]
     confirm: List[NavInsID]
 
-
 @dataclass
 class SignMsgExpectedInUnitTest:
     signatureHex: str
     signingPublicKeyHex: str
     addressFieldHex: str
-
 
 @dataclass(kw_only=True)
 class SignMsgTestCase:
@@ -58,7 +53,6 @@ class SignMsgTestCase:
     nav: Optional[NavigationData] = None
     expected_in_unit_test: Optional[SignMsgExpectedInUnitTest] = None
     has_warning: bool = False
-
 
 @dataclass(kw_only=True)
 class SignMsgDenyTestCase:
@@ -75,7 +69,6 @@ class SignMsgDenyTestCase:
     send_chunk_without_init: bool = False
     send_confirm_without_chunks: bool = False  # Skip CHUNK phase entirely
     send_confirm_with_payload: bool = False  # Add non-empty payload to CONFIRM
-
 
 def build_sign_msg_init_apdu_for_deny(test_case: SignMsgDenyTestCase) -> bytes:
     transient_success_case = SignMsgTestCase(
@@ -106,7 +99,6 @@ def build_sign_msg_init_apdu_for_deny(test_case: SignMsgDenyTestCase) -> bytes:
 
     return bytes(init_apdu)
 
-
 def build_sign_msg_chunk_apdu_for_deny(test_case: SignMsgDenyTestCase, chunk_index: int = 0) -> bytes:
     """Build a CHUNK APDU with optional manipulation for deny testing."""
     transient_success_case = SignMsgTestCase(
@@ -135,7 +127,6 @@ def build_sign_msg_chunk_apdu_for_deny(test_case: SignMsgDenyTestCase, chunk_ind
 
     return bytes(chunk_apdu)
 
-
 def build_sign_msg_confirm_apdu_for_deny(test_case: SignMsgDenyTestCase) -> bytes:
     """Build a CONFIRM APDU with optional manipulation for deny testing."""
     if test_case.send_confirm_with_payload:
@@ -150,8 +141,6 @@ def build_sign_msg_confirm_apdu_for_deny(test_case: SignMsgDenyTestCase) -> byte
         P2Type.P2_UNUSED,
         payload
     )
-
-
 
 # pylint: disable=line-too-long
 signMsgTestCases = [
@@ -517,7 +506,6 @@ signMsgTestCases = [
         has_warning=True,
     ),
 ]
-
 
 signMsgDenyTestCases = [
     # ========== Address Field Type Validation ==========

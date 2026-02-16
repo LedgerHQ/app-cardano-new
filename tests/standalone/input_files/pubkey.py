@@ -10,14 +10,12 @@ This module provides Ragger tests for Public Key check
 from dataclasses import dataclass
 from typing import Optional
 
-
 @dataclass(kw_only=True)
 class PubKeyTestCase:
     name: str
     ledgerjs_name: Optional[str] = None
     path: Optional[str] = None
     nav: Optional[bool] = True
-
 
 # pylint: disable=line-too-long
 testsByron = [
@@ -80,7 +78,6 @@ testsMintKeys = [
     PubKeyTestCase(name="Export_pubkey_mint_key_path_0", ledgerjs_name=None, path="m/1855'/1815'/0'"),
 ]
 
-
 def _parse_bip44_path(path: str) -> list[tuple[int, bool]]:
     parts = path.split("/")[1:]
     parsed: list[tuple[int, bool]] = []
@@ -89,7 +86,6 @@ def _parse_bip44_path(path: str) -> list[tuple[int, bool]]:
         value_str = part[:-1] if hardened else part
         parsed.append((int(value_str), hardened))
     return parsed
-
 
 def _is_silent_export_path(path: str) -> bool:
     parsed = _parse_bip44_path(path)
@@ -118,7 +114,6 @@ def _is_silent_export_path(path: str) -> bool:
     elif chain not in {0, 1, 2}:
         return False
     return address <= 1000000
-
 
 testsSilentExport = [
     test_case

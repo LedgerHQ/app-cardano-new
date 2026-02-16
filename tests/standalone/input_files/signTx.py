@@ -1817,7 +1817,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoNonReasonable"]],
             outputs=[outputs["internalBaseWithStakingPathNonReasonable"]],
-
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.ARBITRARY_HASH,
                 TxAuxiliaryDataHash(f"{'deadbeef' * 8}"),
@@ -1833,7 +1832,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             withdrawals=[
                 Withdrawal(
                     CredentialParams(
@@ -1853,7 +1851,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.ARBITRARY_HASH,
                 TxAuxiliaryDataHash(f"{'deadbeef' * 8}"),
@@ -1872,7 +1869,6 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.STAKE_REGISTRATION,
@@ -1893,7 +1889,6 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DEREGISTRATION,
@@ -1914,7 +1909,6 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DELEGATION,
@@ -1936,7 +1930,6 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DEREGISTRATION,
@@ -1965,7 +1958,6 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.STAKE_POOL_RETIREMENT,
@@ -1995,7 +1987,6 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.STAKE_POOL_RETIREMENT,
@@ -2028,7 +2019,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.STAKE_REGISTRATION_CONWAY,
@@ -2050,7 +2040,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DEREGISTRATION_CONWAY,
@@ -2072,7 +2061,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.VOTE_DELEGATION,
@@ -2136,7 +2124,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.STAKE_POOL_AND_DREP_DELEGATION,
@@ -2205,7 +2192,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL,
@@ -2228,7 +2214,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_DREP,
@@ -2251,7 +2236,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP,
@@ -2275,7 +2259,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 certificates["stakeRegistrationPathParam"],
                 certificates["stakeDeregistrationParam"],
@@ -2421,7 +2404,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.AUTHORIZE_COMMITTEE_HOT,
@@ -2469,7 +2451,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.RESIGN_COMMITTEE_COLD,
@@ -2502,7 +2483,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.DREP_REGISTRATION,
@@ -2537,7 +2517,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.DREP_DEREGISTRATION,
@@ -2559,7 +2538,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.DREP_UPDATE,
@@ -2592,7 +2570,6 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.VOTE_DELEGATION,
@@ -2663,7 +2640,6 @@ testsMultisig: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             withdrawals=[
                 Withdrawal(
                     CredentialParams(
@@ -2684,7 +2660,6 @@ testsMultisig: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.STAKE_REGISTRATION,
@@ -2707,7 +2682,6 @@ testsMultisig: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DELEGATION,
@@ -2731,7 +2705,6 @@ testsMultisig: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DEREGISTRATION,
@@ -2783,7 +2756,6 @@ testsMary: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["multiassetOneToken"], outputs["internalBaseWithStakingPath"]],
-
             validityIntervalStart=7,
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
@@ -2795,7 +2767,6 @@ testsMary: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["multiassetManyTokens"], outputs["internalBaseWithStakingPath"]],
-
             validityIntervalStart=7,
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
@@ -2852,7 +2823,6 @@ testsMary: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[],
-
             mint=mints["mintAmountVariety"],
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
@@ -2895,7 +2865,6 @@ testsAlonzoTrezorComparison: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["trezorParity1"], outputs["trezorParityDatumHash1"]],
-
             validityIntervalStart=47,
             certificates=[
                 Certificate(
@@ -2959,7 +2928,6 @@ testsBabbageTrezorComparison: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["trezorParity2"], outputs["trezorParityDatumHash2"]],
-
             validityIntervalStart=47,
             includeNetworkId=True,
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
@@ -2977,7 +2945,6 @@ testsBabbageTrezorComparison: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["trezorParityBabbageOutputs"]],
-
             validityIntervalStart=47,
             includeNetworkId=True,
         ),
@@ -2993,7 +2960,6 @@ testsMultidelegation: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley2"]],
             outputs=[outputs["trezorParity1"], outputs["trezorParityDatumHash1"]],
-
             validityIntervalStart=47,
             certificates=[
                 Certificate(
@@ -3123,7 +3089,6 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             votingProcedures=[
                 VoterVotes(
                     Voter(VoterType.COMMITTEE_KEY_PATH, "m/1852'/1815'/0'/5/0"), [vote1]
@@ -3139,7 +3104,6 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             votingProcedures=[
                 VoterVotes(
                     Voter(VoterType.DREP_KEY_PATH, "m/1852'/1815'/0'/3/0"), [vote2]
@@ -3155,7 +3119,6 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             votingProcedures=[
                 VoterVotes(
                     Voter(VoterType.STAKE_POOL_KEY_PATH, "m/1853'/1815'/0'/0'"), [vote3]
@@ -3171,7 +3134,6 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             votingProcedures=[
                 VoterVotes(
                     Voter(
@@ -3192,7 +3154,6 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             votingProcedures=[
                 VoterVotes(
                     Voter(
@@ -3213,7 +3174,6 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             votingProcedures=[
                 VoterVotes(
                     Voter(
@@ -3234,7 +3194,6 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             votingProcedures=[
                 VoterVotes(
                     Voter(
@@ -3255,7 +3214,6 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             votingProcedures=[
                 VoterVotes(
                     Voter(
@@ -3276,7 +3234,6 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             votingProcedures=[
                 VoterVotes(
                     Voter(VoterType.DREP_KEY_PATH, "m/1852'/1815'/0'/3/0"),
@@ -3293,7 +3250,6 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             votingProcedures=[
                 VoterVotes(
                     Voter(VoterType.COMMITTEE_KEY_PATH, "m/1852'/1815'/0'/5/0"),
@@ -3318,7 +3274,6 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             votingProcedures=[
                 VoterVotes(
                     Voter(
@@ -3349,7 +3304,6 @@ testsCatalystRegistration: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3371,7 +3325,6 @@ testsCatalystRegistration: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
                 TxAuxiliaryDataCIP36(
@@ -3396,7 +3349,6 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
                 TxAuxiliaryDataCIP36(
@@ -3418,7 +3370,6 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3440,7 +3391,6 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3462,7 +3412,6 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3485,7 +3434,6 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3508,7 +3456,6 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3540,7 +3487,6 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
-
             validityIntervalStart=7,
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
@@ -3576,7 +3522,6 @@ testsAlonzo: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[],
-
             scriptDataHash="ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce188",
             includeNetworkId=True,
         ),
@@ -3631,7 +3576,6 @@ testsAlonzo: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[],
-
             collateralInputs=[inputs["utxoByron"]],
             includeNetworkId=True,
         ),
@@ -3645,7 +3589,6 @@ testsAlonzo: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[],
-
             collateralInputs=[inputs["utxoShelley"]],
             includeNetworkId=True,
         ),
@@ -3659,7 +3602,6 @@ testsAlonzo: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[],
-
             requiredSigners=[
                 RequiredSigner(
                     TxRequiredSignerType.HASH,
@@ -3679,7 +3621,6 @@ testsAlonzo: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"]],
-
             requiredSigners=[
                 RequiredSigner(TxRequiredSignerType.PATH, "m/1855'/1815'/0'")
             ],
@@ -3695,7 +3636,6 @@ testsAlonzo: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[],
-
             certificates=[
                 Certificate(
                     CertificateType.STAKE_DELEGATION,
@@ -3732,7 +3672,6 @@ testsBabbage: List[SignTxTestCase] = [
             network=Testnet_legacy,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineDatumWithTokensMap"]],
-
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
@@ -3745,7 +3684,6 @@ testsBabbage: List[SignTxTestCase] = [
             network=Testnet_legacy,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineDatum480Map"]],
-
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
@@ -3758,7 +3696,6 @@ testsBabbage: List[SignTxTestCase] = [
             network=Testnet_legacy,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineDatum304WithTokensMap"]],
-
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
@@ -3816,7 +3753,6 @@ testsBabbage: List[SignTxTestCase] = [
                 outputs["multiassetManyTokensBabbage"],
                 outputs["internalBaseWithStakingPathBabbage"],
             ],
-
             validityIntervalStart=7,
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
@@ -3829,7 +3765,6 @@ testsBabbage: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPathMap"]],
-
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             collateralInputs=[inputs["utxoShelley"]],
             referenceInputs=[inputs["utxoShelley"], inputs["utxoShelley"]],
@@ -3845,7 +3780,6 @@ testsBabbage: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPathMap"]],
-
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             totalCollateral=10,
         ),
@@ -3859,7 +3793,6 @@ testsBabbage: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPathMap"]],
-
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             collateralOutput=TxOutputBabbage(
                 destinations["internalBaseWithStakingPathMap"],
@@ -3877,7 +3810,6 @@ testsBabbage: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPathMap"]],
-
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             collateralInputs=[inputs["utxoShelley"]],
             collateralOutput=outputs["internalBaseWithTokensMap"],
@@ -3892,7 +3824,6 @@ testsBabbage: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPathMap"]],
-
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             collateralInputs=[inputs["utxoShelley"]],
             collateralOutput=outputs["internalBaseWithTokensMap"],
@@ -3907,7 +3838,6 @@ testsBabbage: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["multiassetManyTokensBabbage"]],
-
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             collateralInputs=[inputs["utxoShelley"]],
             collateralOutput=outputs["externalShelleyBaseKeyhashKeyhash"],
@@ -3922,7 +3852,6 @@ testsBabbage: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["multiassetManyTokensBabbage"]],
-
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             collateralInputs=[inputs["utxoShelley"]],
             collateralOutput=outputs["externalShelleyBaseKeyhashKeyhash"],
@@ -3943,7 +3872,6 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoNoPath"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-
             certificates=[certificates["poolRegistrationMixedOwnersAllRelays"]],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
@@ -3955,7 +3883,6 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoNoPath"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-
             certificates=[certificates["poolRegistrationDefault"]],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
@@ -3967,7 +3894,6 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoNoPath"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-
             certificates=[certificates["poolRegistrationMixedOwners"]],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
@@ -3979,7 +3905,6 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoNoPath"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-
             certificates=[
                 certificates["poolRegistrationMixedOwnersIpv4SingleHostRelays"]
             ],
@@ -3993,7 +3918,6 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoNoPath"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-
             certificates=[certificates["poolRegistrationMixedOwnersIpv4Ipv6Relays"]],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
@@ -4005,7 +3929,6 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoNoPath"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-
             certificates=[certificates["poolRegistrationNoRelays"]],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
@@ -4018,7 +3941,6 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoNoPath"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-
             certificates=[certificates["poolRegistrationNoMetadata"]],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
@@ -4030,7 +3952,6 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoNoPath"]],
             outputs=[],
-
             certificates=[certificates["poolRegistrationMixedOwnersAllRelays"]],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
@@ -4045,7 +3966,6 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoWithPath0"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-
             certificates=[certificates["poolRegistrationOperatorNoOwnersNoRelays"]],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
@@ -4058,7 +3978,6 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoWithPath0"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-
             certificates=[
                 certificates["poolRegistrationOperatorOneOwnerOperatorNoRelays"]
             ],
@@ -4073,7 +3992,6 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
             network=Mainnet,
             inputs=[inputs["utxoWithPath0"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-
             certificates=[
                 certificates["poolRegistrationOperatorMultipleOwnersAllRelays"]
             ],
@@ -4144,7 +4062,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4197,7 +4114,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4262,7 +4178,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4305,7 +4220,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4354,7 +4268,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4394,7 +4307,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4440,7 +4352,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             collateralInputs=[inputs["utxoShelley"]],
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
@@ -4455,7 +4366,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             collateralInputs=[inputs["utxoShelley"]],
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
@@ -4469,7 +4379,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4504,7 +4413,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4545,7 +4453,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4584,7 +4491,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4629,7 +4535,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             collateralOutput=TxOutputAlonzo(
                 destination=TxOutputDestination(
                     type=TxOutputDestinationType.THIRD_PARTY,
@@ -4654,7 +4559,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             collateralOutput=TxOutputAlonzo(
                 destination=TxOutputDestination(
                     type=TxOutputDestinationType.THIRD_PARTY,
@@ -4679,7 +4583,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4725,7 +4628,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4777,7 +4679,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             totalCollateral=8,
             ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
@@ -4791,7 +4692,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             totalCollateral=8,
             ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
@@ -4805,7 +4705,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4840,7 +4739,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4881,7 +4779,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             referenceInputs=[
                 TxInput(
                     txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
@@ -4901,7 +4798,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             referenceInputs=[
                 TxInput(
                     txHashHex="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
@@ -4921,7 +4817,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -4962,7 +4857,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -5253,7 +5147,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -5287,7 +5180,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -5321,7 +5213,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -5355,7 +5246,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_RETIREMENT,
@@ -5380,7 +5270,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_REGISTRATION,
@@ -5404,7 +5293,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_REGISTRATION,
@@ -5428,7 +5316,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_DEREGISTRATION,
@@ -5452,7 +5339,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_DEREGISTRATION,
@@ -5476,7 +5362,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_DELEGATION,
@@ -5501,7 +5386,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_DELEGATION,
@@ -5526,7 +5410,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_RETIREMENT,
@@ -5551,7 +5434,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_RETIREMENT,
@@ -5579,7 +5461,6 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_REGISTRATION,
@@ -5603,7 +5484,6 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_REGISTRATION,
@@ -5627,7 +5507,6 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_REGISTRATION,
@@ -5654,7 +5533,6 @@ certificateStakePoolRetirementRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_RETIREMENT,
@@ -5683,7 +5561,6 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[],
-
             withdrawals=[
                 Withdrawal(
                     stakeCredential=CredentialParams(
@@ -5713,7 +5590,6 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             withdrawals=[
                 Withdrawal(
                     stakeCredential=CredentialParams(
@@ -5735,7 +5611,6 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             withdrawals=[
                 Withdrawal(
                     stakeCredential=CredentialParams(
@@ -5757,7 +5632,6 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             withdrawals=[
                 Withdrawal(
                     stakeCredential=CredentialParams(
@@ -5779,7 +5653,6 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             withdrawals=[
                 Withdrawal(
                     stakeCredential=CredentialParams(
@@ -5973,7 +5846,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -6014,7 +5886,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -6055,7 +5926,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -6096,7 +5966,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -6137,7 +6006,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -6178,7 +6046,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -6219,7 +6086,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -6254,7 +6120,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -6289,7 +6154,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -6324,7 +6188,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -6359,7 +6222,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -6443,7 +6305,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineShelleyBase1v2"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_DEREGISTRATION,
@@ -6467,7 +6328,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineShelleyBase1v2"]],
-
             withdrawals=[
                 Withdrawal(
                     stakeCredential=CredentialParams(
@@ -6523,7 +6383,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 ),
             ],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_DEREGISTRATION,
@@ -6582,7 +6441,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                     datum=None,
                 ),
             ],
-
             withdrawals=[
                 Withdrawal(
                     stakeCredential=CredentialParams(
@@ -6605,7 +6463,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineShelleyBase1v2"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_DEREGISTRATION,
@@ -6713,7 +6570,6 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             collateralOutput=TxOutputAlonzo(
                 destination=TxOutputDestination(
                     type=TxOutputDestinationType.THIRD_PARTY,
@@ -6741,7 +6597,6 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             collateralOutput=TxOutputBabbage(
                 destination=TxOutputDestination(
                     type=TxOutputDestinationType.THIRD_PARTY,
@@ -6770,7 +6625,6 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-
             collateralOutput=TxOutputBabbage(
                 destination=TxOutputDestination(
                     type=TxOutputDestinationType.THIRD_PARTY,
@@ -6966,7 +6820,6 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[],
-
             mint=[
                 AssetGroup(
                     policyIdHex="7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc374",
@@ -6995,7 +6848,6 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[],
-
             mint=[
                 AssetGroup(
                     policyIdHex="7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc374",
@@ -7023,7 +6875,6 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineShelleyBase1"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -7096,7 +6947,6 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineShelleyBase1"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -7169,7 +7019,6 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineShelleyBase1"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -7237,7 +7086,6 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineShelleyBase1"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -7291,7 +7139,6 @@ stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineShelleyBase1"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -7340,7 +7187,6 @@ stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineShelleyBase1"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -7392,7 +7238,6 @@ stakePoolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineShelleyBase1"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -7449,7 +7294,6 @@ invalidCertificates: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineShelleyBase1"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -7503,7 +7347,6 @@ invalidCertificates: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineShelleyBase1"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -7551,7 +7394,6 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineShelleyBase1"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -7601,7 +7443,6 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineShelleyBase1"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -7651,7 +7492,6 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineShelleyBase1"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -7701,7 +7541,6 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineShelleyBase1"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -7754,7 +7593,6 @@ invalidRelayTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineShelleyBase1"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
@@ -7804,7 +7642,6 @@ invalidRelayTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineShelleyBase1"]],
-
             certificates=[
                 Certificate(
                     type=CertificateType.STAKE_POOL_REGISTRATION,
