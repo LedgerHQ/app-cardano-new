@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <stdbool.h>
+
 #include "buffer.h"
 
 typedef enum {
@@ -32,3 +34,11 @@ typedef enum {
  *   Current step selector (start complex, add simple, finish).
  */
 void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type);
+
+/**
+ * Finalize native script hash derivation after final user choice.
+ *
+ * @param confirmed
+ *   True if user confirmed final hash output, false otherwise.
+ */
+void finalize_derive_native_script_hash(bool confirmed);

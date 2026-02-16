@@ -112,7 +112,7 @@ static void derive_native_script_hash_buffer_cleanup(void) {
     ui_all_cleanup();
 }
 
-static void derive_native_script_hash_review_continue(bool confirm) {
+static void derive_native_script_hash_streaming_continue_choice(bool confirm) {
     // CLEANUP
     derive_native_script_hash_buffer_cleanup();
 
@@ -138,30 +138,15 @@ void ui_start_native_script_streaming(void) {
                                      &ICON_APP_CARDANO,
                                      "Review Script",
                                      NULL,
-                                     derive_native_script_hash_review_continue);
+                                     derive_native_script_hash_streaming_continue_choice);
 }
 
-static void derive_native_script_hash_review_confirmation_output(bool confirm) {
+static void derive_native_script_hash_review_choice(bool confirm) {
     // CLEANUP
     derive_native_script_hash_buffer_cleanup();
 
     // FINALIZE
-    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_NATIVE_SCRIPT_HASH,
-                  "Wrong req_type in finalize: %d",
-                  G_context.req_type);
-    derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
-    LEDGER_ASSERT(ctx->hashBuilder.state == NATIVE_SCRIPT_HASH_BUILDER_FINISHED,
-                  "Hash builder not in finished state");
-    if (confirm) {
-        TRACE("User confirmed");
-        LEDGER_ASSERT(ctx->scriptHashBuffer != NULL || SCRIPT_HASH_LENGTH == 0,
-                      "NULL response data with non-zero size");
-        apdu_response_send_data(ctx->scriptHashBuffer, SCRIPT_HASH_LENGTH, SWO_SUCCESS);
-    } else {
-        TRACE("User rejected");
-        apdu_response_send_sw(SWO_CONDITIONS_NOT_SATISFIED);
-    }
-    reset_app_context();
+    finalize_derive_native_script_hash(confirm);
 
     // SHOW STATUS
     if (confirm) {
@@ -173,7 +158,7 @@ static void derive_native_script_hash_review_confirmation_output(bool confirm) {
     }
 }
 
-static void derive_native_script_hash_review_ask_confirmation(bool confirm) {
+static void derive_native_script_hash_streaming_finish_continue(bool confirm) {
     // CLEANUP
     derive_native_script_hash_buffer_cleanup();
 
@@ -190,7 +175,7 @@ static void derive_native_script_hash_review_ask_confirmation(bool confirm) {
     if (confirm) {
         TRACE("User confirmed");
         nbgl_useCaseReviewStreamingFinish("Confirm hash",
-                                          derive_native_script_hash_review_confirmation_output);
+                                          derive_native_script_hash_review_choice);
     } else {
         TRACE("User rejected");
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
@@ -272,7 +257,7 @@ void display_complex_script_content(ui_native_script_type scriptType) {
                    ctx->complexScripts[ctx->level].remainingScripts);
     CHECK_COUNT(expectedPairs);
 
-    nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_review_continue);
+    nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
 }
 
 void ui_display_native_script_hash(void) {
@@ -320,7 +305,7 @@ void ui_display_native_script_hash(void) {
                            &ctx->scriptContent.pubkeyPath);
             CHECK_COUNT(expectedPairs);
 
-            nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_review_continue);
+            nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
             break;
         }
         case UI_SCRIPT_PUBKEY_HASH: {
@@ -351,7 +336,7 @@ void ui_display_native_script_hash(void) {
                            ADDRESS_KEY_HASH_LENGTH);
             CHECK_COUNT(expectedPairs);
 
-            nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_review_continue);
+            nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
             break;
         }
         case UI_SCRIPT_INVALID_BEFORE: {
@@ -381,7 +366,7 @@ void ui_display_native_script_hash(void) {
                            0);
             CHECK_COUNT(expectedPairs);
 
-            nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_review_continue);
+            nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
             break;
         }
         case UI_SCRIPT_INVALID_HEREAFTER: {
@@ -411,7 +396,7 @@ void ui_display_native_script_hash(void) {
                            0);
             CHECK_COUNT(expectedPairs);
 
-            nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_review_continue);
+            nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
             break;
         }
         case UI_SCRIPT_DISPLAY_BECH32: {
@@ -431,7 +416,7 @@ void ui_display_native_script_hash(void) {
             CHECK_COUNT(expectedPairs);
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList,
-                                                derive_native_script_hash_review_ask_confirmation);
+                                                derive_native_script_hash_streaming_finish_continue);
             break;
         }
         case UI_SCRIPT_DISPLAY_POLICY_ID: {
@@ -450,7 +435,7 @@ void ui_display_native_script_hash(void) {
             CHECK_COUNT(expectedPairs);
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList,
-                                                derive_native_script_hash_review_ask_confirmation);
+                                                derive_native_script_hash_streaming_finish_continue);
             break;
         }
         default: {

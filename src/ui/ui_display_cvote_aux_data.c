@@ -42,7 +42,7 @@
 
 static const char cvote_review_title[] = "Review vote delegation";
 
-static void cvote_aux_data_review_streaming_continue(bool confirm);
+static void cvote_aux_data_streaming_continue_choice(bool confirm);
 
 // Helper to check if this is the last streaming page
 static inline bool cvote_is_last_chunk(const cvote_aux_data_t *aux_data) {
@@ -65,7 +65,7 @@ static void cvote_finalize_pairs_count_for_display(void) {
 static void cvote_streaming_display_current_page(void) {
     cvote_finalize_pairs_count_for_display();
     nbgl_useCaseReviewStreamingContinue(g_pairsList,
-                                        cvote_aux_data_review_streaming_continue);
+                                        cvote_aux_data_streaming_continue_choice);
 }
 
 static void cvote_aux_data_review_cleanup(void) {
@@ -92,7 +92,7 @@ static bool cvote_start_streaming_review(cvote_aux_data_t *aux_data) {
                                              cvote_review_title,
                                              NULL,
                                              warning_ptr,
-                                             cvote_aux_data_review_streaming_continue);
+                                             cvote_aux_data_streaming_continue_choice);
     aux_data->ui_streaming.review_started = true;
 
     return true;
@@ -112,7 +112,7 @@ static void cvote_aux_data_review_choice(bool confirm) {
     finalize_sign_tx_aux_data(confirm);
 }
 
-static void cvote_aux_data_review_streaming_continue(bool confirm) {
+static void cvote_aux_data_streaming_continue_choice(bool confirm) {
     cvote_aux_data_t *aux_data = &G_context.tx_info.cvote_aux_data;
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "CVote streaming callback in wrong request type: %d", G_context.req_type);
     LEDGER_ASSERT(aux_data->ui_streaming.on, "CVote streaming callback with streaming disabled");
