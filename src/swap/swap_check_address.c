@@ -42,6 +42,10 @@ void swap_handle_check_address(check_address_parameters_t *params) {
         TRACE("ERROR: failed to parse BIP44 path");
         return;
     }
+    if (buffer_can_read(&pathBuffer, 1)) {
+        TRACE("ERROR: trailing bytes in packed BIP44 path");
+        return;
+    }
 
     uint32_t purpose = pathSpec.path[BIP44_I_PURPOSE] & (~HARDENED_BIP32);
 

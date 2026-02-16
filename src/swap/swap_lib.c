@@ -38,6 +38,7 @@ __attribute__((noreturn)) void swap_reject_and_exit(uint8_t common_error_code,
 
 bool swap_copy_transaction_parameters(create_transaction_parameters_t *params) {
     TRACE("Inside swap_copy_transaction_parameters");
+    LEDGER_ASSERT(params != NULL, "NULL create_transaction_parameters");
 
     // Ensure no extra id (Cardano does not use extra IDs)
     if (params->destination_address_extra_id == NULL) {
@@ -97,10 +98,8 @@ bool swap_check_destination_validity(const tx_output_destination_t *destination)
     char rawAddressHuman[MAX_HUMAN_ADDRESS_LENGTH] = {0};
 
     TRACE("Inside swap_check_destination_validity");
-    if (!G_swap_validated.initialized) {
-        TRACE("Not initialized!");
-        return false;
-    }
+    LEDGER_ASSERT(destination != NULL, "NULL destination");
+    LEDGER_ASSERT(G_swap_validated.initialized, "Swap validation called before initialization");
 
     switch (destination->type) {
         case DESTINATION_THIRD_PARTY:
@@ -119,8 +118,8 @@ bool swap_check_destination_validity(const tx_output_destination_t *destination)
             }
             break;
         default:
-            TRACE("Invalid destination type for swap: %d", destination->type);
-            return false;
+            LEDGER_ASSERT(false, "Invalid destination type for swap: %d", destination->type);
+            return false;  // Unreachable
     }
     TRACE("Destination VALID");
     return true;
@@ -128,10 +127,7 @@ bool swap_check_destination_validity(const tx_output_destination_t *destination)
 
 bool swap_check_amount_validity(uint64_t amount) {
     TRACE("Inside swap_check_amount_validity");
-    if (!G_swap_validated.initialized) {
-        TRACE("Not initialized!");
-        return false;
-    }
+    LEDGER_ASSERT(G_swap_validated.initialized, "Swap validation called before initialization");
     if (amount != G_swap_validated.amount) {
         TRACE("Invalid swap amount!");
         return false;
@@ -142,10 +138,7 @@ bool swap_check_amount_validity(uint64_t amount) {
 
 bool swap_check_fee_validity(uint64_t fee) {
     TRACE("Inside swap_check_fee_validity");
-    if (!G_swap_validated.initialized) {
-        TRACE("Not initialized!");
-        return false;
-    }
+    LEDGER_ASSERT(G_swap_validated.initialized, "Swap validation called before initialization");
     if (fee != G_swap_validated.fee) {
         TRACE("Invalid swap fee!");
         return false;
