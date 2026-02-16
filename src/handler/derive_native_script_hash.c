@@ -18,6 +18,7 @@
 #include "securityPolicy.h"
 #include "ui_display_native_script_hash.h"
 #include "utils.h"
+#include "buffer_helpers.h"
 
 static bool ensure_derive_native_script_hash_request_type(request_type_e required_request_type) {
     if (G_context.req_type != required_request_type) {
@@ -62,9 +63,8 @@ static void deriveNativeScriptHash_handleNofK(buffer_t *cdata) {
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
-    if (buffer_can_read(cdata, 1)) {
+    if (deny_unconsumed_bytes(cdata, SWO_WRONG_DATA_LENGTH)) {
         TRACE("NofK APDU not fully consumed");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     if (ctx->complexScripts[ctx->level].remainingScripts < ctx->scriptContent.requiredScripts) {
@@ -149,9 +149,8 @@ static bool deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
         send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_PUBKEY_CREDENTIAL);
         return false;
     }
-    if (buffer_can_read(cdata, 1)) {
+    if (deny_unconsumed_bytes(cdata, SWO_WRONG_DATA_LENGTH)) {
         TRACE("Pubkey APDU not fully consumed");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return false;
     }
 
@@ -223,9 +222,8 @@ static bool deriveNativeScriptHash_handleInvalidBefore(buffer_t *cdata) {
         send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_TIMELOCK);
         return false;
     }
-    if (buffer_can_read(cdata, 1)) {
+    if (deny_unconsumed_bytes(cdata, SWO_WRONG_DATA_LENGTH)) {
         TRACE("Invalid before APDU not fully consumed");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return false;
     }
     nativeScriptHashBuilder_addScript_invalidBefore(&ctx->hashBuilder, ctx->scriptContent.timelock);
@@ -244,9 +242,8 @@ static bool deriveNativeScriptHash_handleInvalidHereafter(buffer_t *cdata) {
         send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_TIMELOCK);
         return false;
     }
-    if (buffer_can_read(cdata, 1)) {
+    if (deny_unconsumed_bytes(cdata, SWO_WRONG_DATA_LENGTH)) {
         TRACE("Invalid hereafter APDU not fully consumed");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return false;
     }
     nativeScriptHashBuilder_addScript_invalidHereafter(&ctx->hashBuilder,
@@ -308,9 +305,9 @@ static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
         return;
     }
     ctx->complexScripts[ctx->level].totalScripts = ctx->complexScripts[ctx->level].remainingScripts;
-    if (nativeScriptType != NATIVE_SCRIPT_N_OF_K && buffer_can_read(cdata, 1)) {
+    if (nativeScriptType != NATIVE_SCRIPT_N_OF_K &&
+        deny_unconsumed_bytes(cdata, SWO_WRONG_DATA_LENGTH)) {
         TRACE("Complex script start APDU not fully consumed");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 
@@ -402,9 +399,8 @@ static void deriveNativeScriptHash_handleWholeNativeScriptFinish(buffer_t *cdata
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
-    if (buffer_can_read(cdata, 1)) {
+    if (deny_unconsumed_bytes(cdata, SWO_WRONG_DATA_LENGTH)) {
         TRACE("Finish APDU not fully consumed");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 
@@ -436,9 +432,8 @@ static void deriveNativeScriptHash_handleInit(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata");
 
     // Init APDU should have no payload
-    if (buffer_can_read(cdata, 1)) {
+    if (deny_unconsumed_bytes(cdata, SWO_WRONG_DATA_LENGTH)) {
         TRACE("Init APDU should be empty");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 

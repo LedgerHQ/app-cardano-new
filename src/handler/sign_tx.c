@@ -28,6 +28,7 @@
 #include "tx_utils.h"
 #include "tx_validate.h"
 #include "utils.h"
+#include "buffer_helpers.h"
 
 #ifdef HAVE_SWAP
 #include "swap.h"
@@ -322,9 +323,8 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         return;
     }
 
-    if (buffer_can_read(cdata, 1)) {
+    if (deny_unconsumed_bytes(cdata, SWO_WRONG_DATA_LENGTH)) {
         TRACE("TX init APDU not fully consumed");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 
@@ -715,9 +715,8 @@ void handler_sign_tx_witness(buffer_t *cdata) {
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
-    if (buffer_can_read(cdata, 1)) {
+    if (deny_unconsumed_bytes(cdata, SWO_WRONG_DATA_LENGTH)) {
         TRACE("Witness APDU not fully consumed");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 

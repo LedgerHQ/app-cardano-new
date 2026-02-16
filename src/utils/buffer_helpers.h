@@ -8,6 +8,7 @@
 
 #include "buffer.h"
 #include "assert.h"
+#include "app_context.h"
 
 static inline size_t buffer_total_size(const buffer_t *buffer) {
     return buffer != NULL ? buffer->size : 0;
@@ -38,4 +39,14 @@ static inline bool buffer_consume(buffer_t *buffer, size_t length) {
         return false;
     }
     return buffer_seek_cur(buffer, length);
+}
+
+static inline bool deny_unconsumed_bytes(const buffer_t *buffer,
+                                         uint16_t swo) {
+    LEDGER_ASSERT(buffer != NULL, "NULL buffer");
+    if (!buffer_can_read(buffer, 1)) {
+        return false;
+    }
+    send_swo_and_reset(swo);
+    return true;
 }

@@ -23,6 +23,7 @@
 #include "dispatcher.h"
 #include "securityPolicy.h"
 #include "menu.h"
+#include "buffer_helpers.h"
 
 static bool ensure_get_public_key_init_request_state(void) {
     if (G_context.req_type != REQUEST_NONE) {
@@ -49,9 +50,8 @@ void handler_get_public_key(buffer_t *cdata) {
         send_swo_and_reset(SWO_BIP44_PATH_PARSING_FAIL);
         return;
     }
-    if (buffer_can_read(cdata, 1)) {
+    if (deny_unconsumed_bytes(cdata, SWO_WRONG_DATA_LENGTH)) {
         TRACE("Get pubkey APDU not fully consumed");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 

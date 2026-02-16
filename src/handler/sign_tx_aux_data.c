@@ -312,9 +312,8 @@ static void handler_tx_aux_data_delegation(buffer_t *cdata) {
         send_swo_and_reset(SWO_CVOTE_AUX_DATA_PARSING_FAIL);
         return;
     }
-    if (buffer_can_read(cdata, 1)) {
+    if (deny_unconsumed_bytes(cdata, SWO_CVOTE_AUX_DATA_PARSING_FAIL)) {
         TRACE("CVote AUX_DATA delegation APDU not fully consumed");
-        send_swo_and_reset(SWO_CVOTE_AUX_DATA_PARSING_FAIL);
         return;
     }
 

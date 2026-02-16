@@ -24,6 +24,7 @@
 #include "cbor.h"
 #include "nbgl_use_case.h"
 #include "app_mem_utils.h"
+#include "buffer_helpers.h"
 
 // Overhead for Sig_structure CBOR encoding:
 // - 1 byte array(4) header
@@ -168,9 +169,8 @@ void signMsg_handle_init(buffer_t *cdata) {
     }
 
     // Verify APDU fully consumed
-    if (buffer_can_read(cdata, 1)) {
+    if (deny_unconsumed_bytes(cdata, SWO_WRONG_DATA_LENGTH)) {
         TRACE("INIT APDU not fully consumed");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
     // Check security policy and collect warnings
@@ -465,9 +465,8 @@ void signMsg_handle_confirm(buffer_t *cdata) {
     sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
 
     // CONFIRM APDU must be empty
-    if (buffer_can_read(cdata, 1)) {
+    if (deny_unconsumed_bytes(cdata, SWO_SIGN_MSG_CONFIRM_MUST_BE_EMPTY)) {
         TRACE("CONFIRM APDU must be empty");
-        send_swo_and_reset(SWO_SIGN_MSG_CONFIRM_MUST_BE_EMPTY);
         return;
     }
 

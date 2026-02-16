@@ -161,9 +161,8 @@ static void handle_sign_cvote_confirm_apdu(buffer_t *cdata) {
     BIP44_PRINTF(&ctx->witness_path);
 
     // Ensure the entire APDU has been consumed
-    if (buffer_can_read(cdata, 1)) {
+    if (deny_unconsumed_bytes(cdata, SWO_WRONG_DATA_LENGTH)) {
         TRACE("CONFIRM APDU not fully consumed");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
 

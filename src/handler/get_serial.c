@@ -11,6 +11,8 @@
 #include "cardano_swo.h"
 #include "assert.h"
 #include "app_context.h"
+#include "buffer_helpers.h"
+#include "utils.h"
 
 /**
  * Device serial number length as returned by os_serial().
@@ -22,8 +24,8 @@ void handler_get_serial(const buffer_t *data_buffer) {
     LEDGER_ASSERT(data_buffer != NULL, "NULL data_buffer");
 
     // Verify no data is present
-    if (buffer_can_read(data_buffer, 1)) {
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+    if (deny_unconsumed_bytes(data_buffer, SWO_WRONG_DATA_LENGTH)) {
+        TRACE("Get serial APDU must be empty");
         return;
     }
 
