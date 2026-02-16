@@ -751,8 +751,10 @@ security_policy_t policyForSignTxOutput(const tx_output_description_t *output,
                                                       warnings);
         default:
             ASSERT(false);
-            return POLICY_DENY;
+            break;
     }
+
+    DENY();  // should not be reached
 }
 
 security_policy_t policyForSignTxOutputDatumHash(security_policy_t outputPolicy) {
@@ -760,15 +762,20 @@ security_policy_t policyForSignTxOutputDatumHash(security_policy_t outputPolicy)
         case POLICY_DENY:
             LEDGER_ASSERT(false, "Output policy DENY should not reach datum policy");
             DENY();
+            break;
         case POLICY_SHOW:
             SHOW_IF(is_expert_mode());
             HIDE();
+            break;
         case POLICY_HIDE:
             HIDE();
+            break;
         default:
             ASSERT(false);
             DENY();
     }
+
+    DENY();  // should not be reached
 }
 
 security_policy_t policyForSignTxOutputRefScript(security_policy_t outputPolicy) {
@@ -776,15 +783,20 @@ security_policy_t policyForSignTxOutputRefScript(security_policy_t outputPolicy)
         case POLICY_DENY:
             LEDGER_ASSERT(false, "Output policy DENY should not reach ref script policy");
             DENY();
+            break;
         case POLICY_SHOW:
             SHOW_IF(is_expert_mode());
             HIDE();
+            break;
         case POLICY_HIDE:
             HIDE();
+            break;
         default:
             ASSERT(false);
             DENY();
     }
+
+    DENY();  // should not be reached
 }
 
 // ======================================= Collateral Output =======================================
@@ -892,8 +904,10 @@ security_policy_t policyForSignTxCollateralOutputAddress(const tx_output_descrip
                                                                 isTotalCollateralIncluded);
         default:
             ASSERT(false);
-            return POLICY_DENY;
+            break;
     }
+
+    DENY();  // should not be reached
 }
 
 security_policy_t policyForSignTxCollateralOutputAdaAmount(security_policy_t outputPolicy,
@@ -953,6 +967,7 @@ security_policy_t policyForSignTxFee(sign_tx_signingmode_t txSigningMode,
             }
             SHOW();
 
+            break;
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
             // fees are paid by the operator and are thus irrelevant for owners
             HIDE();
@@ -1537,6 +1552,7 @@ security_policy_t policyForSignTxAuxData(aux_data_type_t auxDataType) {
             SHOW_IF(is_expert_mode());
             HIDE();
 
+            break;
         case AUX_DATA_TYPE_CVOTE_REGISTRATION:
             // this is the policy for the initial prompt
             // details of the registration are governed by separate policies
@@ -1631,7 +1647,7 @@ security_policy_t policyForSignTxCollateralInput(const sign_tx_signingmode_t txS
             ASSERT(false);
     }
 
-    DENY();
+    DENY();  // should not be reached
 }
 
 // ======================================= Required Signers =======================================
@@ -1729,7 +1745,7 @@ security_policy_t policyForSignTxReferenceInput(const sign_tx_signingmode_t txSi
         default:
             ASSERT(false);
     }
-    DENY();
+    DENY();  // should not be reached
 }
 
 // ======================================= Voting Procedures =======================================
@@ -1838,6 +1854,8 @@ security_policy_t policyForSignTxDisplayTxHash(sign_tx_signingmode_t signingMode
             DENY();
             break;
     }
+
+    DENY();  // should not be reached
 }
 
 // ======================================= Tx witnesses =======================================
@@ -2085,6 +2103,7 @@ security_policy_t policyForCVoteRegistrationVoteKey(const cvote_credential_t* cr
     switch(credential->type) {
         case CVOTE_CREDENTIAL_KEY: {
             SHOW();
+            break;
         }
         case CVOTE_CREDENTIAL_KEY_PATH: {
             DENY_UNLESS(format == CIP36);
@@ -2095,11 +2114,15 @@ security_policy_t policyForCVoteRegistrationVoteKey(const cvote_credential_t* cr
                 mark_unusual_key_derivation(warnings, &credential->keyPath);
             }
             SHOW();
+            break;
         }
         default:
             LEDGER_ASSERT(false, "Unknown credential type: %u", credential->type);
             DENY();
+            break;
     }
+
+    DENY();  // should not be reached
 }
 
 security_policy_t policyForCVoteRegistrationStakingKey(const bip44_path_t *stakingKeyPath,
@@ -2318,6 +2341,8 @@ security_policy_t policyForSignCVoteWitness(const bip44_path_t *path, warning_bi
             DENY();
             break;
     }
+
+    DENY();  // should not be reached
 }
 
 // ======================================= Sign msg =======================================
