@@ -678,6 +678,18 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
         TRACE("Invalid margin denominator: cannot be zero");
         return CERTIFICATES_PARSING_ERROR;
     }
+    if (cert_data->poolRegistration.marginDenominator > MARGIN_DENOMINATOR_MAX) {
+        TRACE("Invalid margin denominator: exceeds maximum");
+        TRACE("Invalid margin denominator: %llu",
+              (unsigned long long) cert_data->poolRegistration.marginDenominator);
+        return CERTIFICATES_PARSING_ERROR;
+    }
+    if (cert_data->poolRegistration.marginNumerator > MARGIN_DENOMINATOR_MAX) {
+        TRACE("Invalid margin numerator: exceeds maximum");
+        TRACE("Invalid margin numerator: %llu",
+              (unsigned long long) cert_data->poolRegistration.marginNumerator);
+        return CERTIFICATES_PARSING_ERROR;
+    }
     if (cert_data->poolRegistration.marginNumerator > cert_data->poolRegistration.marginDenominator) {
         TRACE("Invalid margin: numerator > denominator");
         TRACE("Invalid margin numerator: %llu",
