@@ -7,6 +7,7 @@
 #include "write.h"
 #include "assert.h"
 #include <string.h>
+#include <limits.h>
 
 // Note(ppershing): consume functions should either
 // a) *consume* expected value, or
@@ -161,7 +162,11 @@ bool cbor_writeToken(uint8_t type, uint64_t value, uint8_t* buffer, size_t buffe
             if (negativeValue >= 0) {
                 return false;
             }
-            value = (uint64_t)(-negativeValue) - 1;
+            if (negativeValue == INT64_MIN) {
+                value = (uint64_t) INT64_MAX;
+            } else {
+                value = (uint64_t)(-negativeValue) - 1;
+            }
         }
             __attribute__((fallthrough));
         case CBOR_TYPE_UNSIGNED:
