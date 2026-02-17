@@ -204,12 +204,8 @@ parser_status_e parse_tx(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_
         return TX_SIZE_TOO_LARGE_ERROR;
     }
 
-    // Initialize lists
-    tx_body->inputs = NULL;
-    tx_body->outputs = NULL;
-    tx_body->withdrawals = NULL;
-    tx_body->certificates = NULL;
-    tx_body->mint_asset_groups = NULL;
+    // Initialize all transaction body fields
+    explicit_bzero(tx_body, sizeof(*tx_body));
 
     parser_status_e status;
 
