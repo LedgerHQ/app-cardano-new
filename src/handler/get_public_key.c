@@ -74,15 +74,7 @@ void handler_get_public_key(buffer_t *cdata) {
     ui_display_pubkey(policy, warnings);
 }
 
-void finalize_pubkey_export(bool confirmed) {
-    TRACE("confirmed = %d", confirmed);
-
-    if (!confirmed) {
-        TRACE("Public key export rejected by user");
-        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
-        return;
-    }
-
+void finalize_pubkey_export(void) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_EXPORT_PUBKEY, "Bad req_type");
 
     // Send the extended public key back to the client

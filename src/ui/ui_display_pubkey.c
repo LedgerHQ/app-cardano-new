@@ -39,20 +39,21 @@ static void pubkey_review_choice(bool confirm) {
     pubkey_review_cleanup();
 
     // FINALIZE
-    finalize_pubkey_export(confirm);
+    if (!confirm) {
+        TRACE("User rejected");
+        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
+        nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
+        return;
+    }
+
+    TRACE("User confirmed");
+    // does not need a spinner
+    finalize_pubkey_export();
 
     // SHOW STATUS
-    if (G_context.pk_info.silentExport) {
-        ui_menu_main();
-    } else {
-        if (confirm) {
-            // Keep a custom status here: exporting a public key is not a signing operation,
-            // and nbgl_reviewStatusType_t has no "public key exported" equivalent.
-            nbgl_useCaseStatus("Public key exported", true, ui_menu_main);
-        } else {
-            nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
-        }
-    }
+    // Keep a custom status here: exporting a public key is not a signing operation,
+    // and nbgl_reviewStatusType_t has no "public key exported" equivalent.
+    nbgl_useCaseStatus("Public key exported", true, ui_menu_main);
 }
 
 void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings) {
@@ -82,7 +83,7 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
         case POLICY_HIDE:
             LEDGER_ASSERT(is_silent_pubkey_export_allowed(), "Silent pubkey export not allowed");
             pk->silentExport = true;
-            finalize_pubkey_export(true);
+            finalize_pubkey_export();
             return;
 
         default:

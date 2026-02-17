@@ -24,24 +24,32 @@ void tx_review_cleanup(void) {
 }
 
 static void tx_review_choice(bool confirm) {
-    const bool has_witnesses = (G_context.tx_info.num_witnesses > 0);
 
     // CLEANUP
     tx_review_cleanup();
 
     // FINALIZE
-    finalize_sign_tx(confirm);
-
-    // SHOW STATUS
-    if (confirm) {
-        if (has_witnesses) {
-            nbgl_useCaseSpinner("Processing");
-        } else {
-            nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_SIGNED, ui_menu_main);
-        }
+    if (!confirm) {
+        TRACE("User rejected");
+        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
+        nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main);
         return;
     }
-    nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main);
+
+    TRACE("User confirmed");
+    const bool has_witnesses = (G_context.tx_info.num_witnesses > 0);
+    if (has_witnesses) {
+        // we will wait for a witness APDU
+        // the spinner is not needed for finalize_sign_tx on its own, it is fast
+        nbgl_useCaseSpinner("Processing");
+    }
+    finalize_sign_tx();
+
+    // SHOW STATUS
+    if (!has_witnesses) {
+        // we are totally finished
+        nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_SIGNED, ui_menu_main);
+    }
 }
 
 void ui_display_transaction(void) {

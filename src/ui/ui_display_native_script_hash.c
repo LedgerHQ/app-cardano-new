@@ -146,16 +146,19 @@ static void derive_native_script_hash_review_choice(bool confirm) {
     derive_native_script_hash_buffer_cleanup();
 
     // FINALIZE
-    finalize_derive_native_script_hash(confirm);
+    if (!confirm) {
+        TRACE("User rejected");
+        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
+        nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
+        return;
+    }
+
+    TRACE("User confirmed");
+    // does not need a spinner
+    finalize_derive_native_script_hash();
 
     // SHOW STATUS
-    if (confirm) {
-        TRACE("User confirmed");
-        nbgl_useCaseStatus("Confirm native script hash", true, ui_menu_main);
-    } else {
-        TRACE("User rejected");
-        nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
-    }
+    nbgl_useCaseStatus("Confirm native script hash", true, ui_menu_main);
 }
 
 static void derive_native_script_hash_streaming_finish_continue(bool confirm) {

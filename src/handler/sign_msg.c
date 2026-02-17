@@ -481,14 +481,9 @@ void signMsg_handle_confirm(buffer_t *cdata) {
     ui_display_sign_msg(POLICY_SHOW, ctx->warnings);
 }
 
-void finalize_sign_msg(bool confirmed) {
+void finalize_sign_msg(void) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_MSG, "Bad req_type");
     LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CONFIRM, "Bad sign_msg state");
-
-    if (!confirmed) {
-        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
-        return;
-    }
 
     // User confirmed - send response
     sign_msg_ctx_t *ctx = &G_context.sign_msg_info;

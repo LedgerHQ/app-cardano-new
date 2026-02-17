@@ -87,14 +87,9 @@ void handler_sign_opcert(buffer_t *cdata) {
     ui_display_opcert(policy, warnings);
 }
 
-void finalize_sign_opcert(bool confirmed) {
+void finalize_sign_opcert(void) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_OPCERT, "Bad req_type");
     LEDGER_ASSERT(G_context.state.opcert_state == OPCERT_STATE_VALIDATED, "Bad opcert state");
-
-    if (!confirmed) {
-        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
-        return;
-    }
 
     // user confirmed
     G_context.state.opcert_state = OPCERT_STATE_APPROVED;

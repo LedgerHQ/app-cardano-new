@@ -181,14 +181,9 @@ static void handle_sign_cvote_confirm_apdu(buffer_t *cdata) {
     ui_display_cvote_confirm(policy, warnings);
 }
 
-void finalize_sign_cvote(bool confirmed) {
+void finalize_sign_cvote(void) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_CVOTE, "Bad req_type");
     LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STATE_CONFIRM, "Bad cvote state");
-
-    if (!confirmed) {
-        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
-        return;
-    }
 
     // User confirmed
     cvote_ctx_t *ctx = &G_context.cvote_info;

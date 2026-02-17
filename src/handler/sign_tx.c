@@ -613,14 +613,9 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
     }
 }
 
-void finalize_sign_tx(bool confirm) {
+void finalize_sign_tx(void) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_UI_PREPARED, "Bad tx_state");
-
-    if (!confirm) {
-        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
-        return;
-    }
 
     G_context.state.tx_state = TX_STATE_APPROVED;
     G_context.tx_info.current_witness = 0;
@@ -634,20 +629,13 @@ void finalize_sign_tx(bool confirm) {
 
 
 // All witnesses processed
-void finalize_witness(bool confirm)
+void finalize_witness(void)
 {
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_APPROVED, "Bad tx_state");
     LEDGER_ASSERT(G_context.tx_info.num_witnesses > 0, "No witnesses expected");
     LEDGER_ASSERT(G_context.tx_info.current_witness < G_context.tx_info.num_witnesses,
                   "Witness index out of range");
-
-    if (!confirm) {
-        // Reject entire signing operation - no more witnesses will be processed
-        TRACE("Witness rejected by user");
-        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
-        return;
-    }
 
     // Witness confirmed - sign transaction hash with the selected witness path
     getWitness(&G_context.tx_info.witness_path,
@@ -782,7 +770,7 @@ void handler_sign_tx_witness(buffer_t *cdata) {
         case POLICY_HIDE:
             // POLICY_HIDE: witness does not require user confirmation
             // Finalize directly without displaying UI (similar to silent pubkey export)
-            finalize_witness(true);
+            finalize_witness();
 
             // Handle UI state: if this was the last witness, return to main menu
             // Otherwise, the spinner from tx_review_choice will continue showing

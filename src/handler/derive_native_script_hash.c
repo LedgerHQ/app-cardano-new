@@ -491,17 +491,12 @@ void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
     return;
 }
 
-void finalize_derive_native_script_hash(bool confirmed) {
+void finalize_derive_native_script_hash(void) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_NATIVE_SCRIPT_HASH, "Bad req_type");
 
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     LEDGER_ASSERT(ctx->hashBuilder.state == NATIVE_SCRIPT_HASH_BUILDER_FINISHED,
                   "Hash builder not in finished state");
-
-    if (!confirmed) {
-        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
-        return;
-    }
 
     LEDGER_ASSERT(ctx->scriptHashBuffer != NULL || SCRIPT_HASH_LENGTH == 0,
                   "NULL response data with non-zero size");

@@ -395,15 +395,10 @@ void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
     }
 }
 
-void finalize_sign_tx_aux_data(bool confirmed) {
+void finalize_sign_tx_aux_data(void) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
     LEDGER_ASSERT(G_context.tx_info.cvote_aux_data.state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED, "Bad aux state");
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_AUX_DATA || G_context.state.tx_state == TX_STATE_CHUNKS, "Bad tx_state");
-
-    if (!confirmed) {
-        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
-        return;
-    }
 
     cvote_hash_finalize();
     cleanup_output_destination(&G_context.tx_info.cvote_aux_data.destination);

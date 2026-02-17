@@ -142,14 +142,9 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
     return;
 }
 
-void finalize_derive_address(bool confirm) {
+void finalize_derive_address(void) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS, "Bad req_type");
     LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED, "Bad derive_address state");
-
-    if (!confirm) {
-        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
-        return;
-    }
 
     derive_address_ctx_t *ctx = &G_context.derive_address_info;
     if (ctx->should_export_address) {

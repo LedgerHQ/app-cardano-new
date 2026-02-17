@@ -15,7 +15,5 @@ void handler_sign_msg(buffer_t *cdata, uint8_t p1);
 
 /**
  * Finalize message signing after user confirmation.
- *
- * @param[in] confirmed  true if user confirmed, false if rejected
  */
-void finalize_sign_msg(bool confirmed);
+void finalize_sign_msg(void);

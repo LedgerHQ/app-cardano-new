@@ -4,7 +4,6 @@
 #pragma once
 
 #include <stddef.h>   // size_t
-#include <stdbool.h>  // bool
 #include <stdint.h>   // uint*_t
 
 #include "buffer.h"
@@ -15,4 +14,4 @@
  */
 void handler_get_public_key(buffer_t *cdata);
 
-void finalize_pubkey_export(bool confirmed);
+void finalize_pubkey_export(void);

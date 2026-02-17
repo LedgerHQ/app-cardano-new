@@ -29,19 +29,22 @@ static void witness_review_choice(bool confirm) {
     // No dynamically allocated UI buffers to release in this flow.
 
     // FINALIZE
-    finalize_witness(confirm);
+    if (!confirm) {
+        TRACE("User rejected");
+        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
+        nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main);
+        return;
+    }
+
+    TRACE("User confirmed");
+    nbgl_useCaseSpinner("Processing");
+    finalize_witness();
 
     // SHOW STATUS
-    if (confirm) {
-        if (G_context.tx_info.current_witness == G_context.tx_info.num_witnesses) {
-            // All witnesses processed - show final success status
-            nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_SIGNED, ui_menu_main);
-        } else {
-            // More witnesses to process - show spinner
-            nbgl_useCaseSpinner("Processing");
-        }
-    } else {
-        nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main);
+    const bool is_last_witness = (G_context.tx_info.current_witness == G_context.tx_info.num_witnesses);
+    if (is_last_witness) {
+        // All witnesses processed - show final success status
+        nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_SIGNED, ui_menu_main);
     }
 }
 

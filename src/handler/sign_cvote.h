@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include <stdbool.h>
 #include "buffer.h"
 
 /**
@@ -27,7 +26,5 @@ void handler_sign_cvote(buffer_t *cdata, uint8_t p1);
  * Computes the votecast hash, signs it with the witness key,
  * and sends the response containing both hash and signature.
  *
- * @param[in] confirmed
- *   true if user confirmed, false if rejected
  */
-void finalize_sign_cvote(bool confirmed);
+void finalize_sign_cvote(void);

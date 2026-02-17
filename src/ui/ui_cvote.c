@@ -31,14 +31,19 @@ static void cvote_review_choice(bool confirm) {
     cvote_buffer_cleanup();
 
     // FINALIZE
-    finalize_sign_cvote(confirm);
+    if (!confirm) {
+        TRACE("User rejected");
+        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
+        nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
+        return;
+    }
+
+    TRACE("User confirmed");
+    nbgl_useCaseSpinner("Processing");
+    finalize_sign_cvote();
 
     // SHOW STATUS
-    if (confirm) {
-        nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_SIGNED, ui_menu_main);
-    } else {
-        nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
-    }
+    nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_SIGNED, ui_menu_main);
 }
 
 void ui_display_cvote_confirm(security_policy_t securityPolicy, warning_bits_t warnings) {

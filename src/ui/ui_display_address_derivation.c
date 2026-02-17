@@ -27,14 +27,19 @@ static void derive_address_review_choice(bool confirm) {
     ui_all_cleanup();
 
     // FINALIZE
-    finalize_derive_address(confirm);
+    if (!confirm) {
+        TRACE("User rejected");
+        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
+        nbgl_useCaseReviewStatus(STATUS_TYPE_ADDRESS_REJECTED, ui_menu_main);
+        return;
+    }
+
+    TRACE("User confirmed");
+    // does not need a spinner
+    finalize_derive_address();
 
     // SHOW STATUS
-    if (confirm) {
-        nbgl_useCaseReviewStatus(STATUS_TYPE_ADDRESS_VERIFIED, ui_menu_main);
-    } else {
-        nbgl_useCaseReviewStatus(STATUS_TYPE_ADDRESS_REJECTED, ui_menu_main);
-    }
+    nbgl_useCaseReviewStatus(STATUS_TYPE_ADDRESS_VERIFIED, ui_menu_main);
 }
 
 // Address derivation UI pair counts
@@ -164,7 +169,7 @@ void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warn
             break;
         case POLICY_HIDE: {
             // Silently approve and return address without UI
-            finalize_derive_address(true);
+            finalize_derive_address();
             break;
         }
         default:

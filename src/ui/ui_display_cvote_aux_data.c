@@ -42,8 +42,6 @@
 
 static const char cvote_review_title[] = "Review vote delegation";
 
-static void cvote_aux_data_streaming_continue_choice(bool confirm);
-
 // Helper to check if this is the last streaming page
 static inline bool cvote_is_last_chunk(const cvote_aux_data_t *aux_data) {
     uint16_t remaining = aux_data->ui_delegations_total - aux_data->ui_delegations_shown;
@@ -62,14 +60,59 @@ static void cvote_finalize_pairs_count_for_display(void) {
     g_pairsList->nbPairs = (uint8_t) actual_pair_count;
 }
 
+static void cvote_aux_data_review_cleanup(void) {
+    ui_all_cleanup();
+}
+
+static void cvote_aux_data_review_choice(bool confirm) {
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "CVote review choice callback in wrong request type: %d", G_context.req_type);
+    LEDGER_ASSERT(G_context.tx_info.cvote_aux_data.state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED, "CVote review choice callback in wrong state: %d", G_context.tx_info.cvote_aux_data.state);
+
+    // CLEANUP
+    cvote_aux_data_review_cleanup();
+
+    // FINALIZE
+    if (!confirm) {
+        TRACE("User rejected");
+        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
+        return;
+    }
+
+    TRACE("User confirmed");
+    nbgl_useCaseSpinner("Processing");
+    finalize_sign_tx_aux_data();
+}
+
+static void cvote_aux_data_streaming_continue_choice(bool confirm) {
+    cvote_aux_data_t *aux_data = &G_context.tx_info.cvote_aux_data;
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "CVote streaming callback in wrong request type: %d", G_context.req_type);
+    LEDGER_ASSERT(aux_data->ui_streaming.on, "CVote streaming callback with streaming disabled");
+    LEDGER_ASSERT(aux_data->ui_streaming.review_started, "CVote streaming callback before streaming review start");
+    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS || aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED, "Streaming continue callback in wrong state: %d", aux_data->state);
+
+    ui_free_pairs();
+
+    if (!confirm) {
+        TRACE("User rejected");
+        ui_free_warnings();
+        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
+        return;
+    }
+
+    TRACE("User confirmed");
+    if (cvote_is_last_chunk(aux_data)) {
+        nbgl_useCaseReviewStreamingFinish("Confirm vote delegation",
+                                          cvote_aux_data_review_choice);
+        return;
+    }
+
+    apdu_response_send_sw(SWO_SUCCESS);
+}
+
 static void cvote_streaming_display_current_page(void) {
     cvote_finalize_pairs_count_for_display();
     nbgl_useCaseReviewStreamingContinue(g_pairsList,
                                         cvote_aux_data_streaming_continue_choice);
-}
-
-static void cvote_aux_data_review_cleanup(void) {
-    ui_all_cleanup();
 }
 
 static bool cvote_start_streaming_review(cvote_aux_data_t *aux_data) {
@@ -96,44 +139,6 @@ static bool cvote_start_streaming_review(cvote_aux_data_t *aux_data) {
     aux_data->ui_streaming.review_started = true;
 
     return true;
-}
-
-static void cvote_aux_data_review_choice(bool confirm) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "CVote review choice callback in wrong request type: %d", G_context.req_type);
-    LEDGER_ASSERT(G_context.tx_info.cvote_aux_data.state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED, "CVote review choice callback in wrong state: %d", G_context.tx_info.cvote_aux_data.state);
-
-    // CLEANUP
-    cvote_aux_data_review_cleanup();
-
-    // FINALIZE
-    if (confirm) {
-        nbgl_useCaseSpinner("Processing");
-    }
-    finalize_sign_tx_aux_data(confirm);
-}
-
-static void cvote_aux_data_streaming_continue_choice(bool confirm) {
-    cvote_aux_data_t *aux_data = &G_context.tx_info.cvote_aux_data;
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "CVote streaming callback in wrong request type: %d", G_context.req_type);
-    LEDGER_ASSERT(aux_data->ui_streaming.on, "CVote streaming callback with streaming disabled");
-    LEDGER_ASSERT(aux_data->ui_streaming.review_started, "CVote streaming callback before streaming review start");
-    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS || aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED, "Streaming continue callback in wrong state: %d", aux_data->state);
-
-    ui_free_pairs();
-
-    if (!confirm) {
-        ui_free_warnings();
-        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
-        return;
-    }
-
-    if (cvote_is_last_chunk(aux_data)) {
-        nbgl_useCaseReviewStreamingFinish("Confirm vote delegation",
-                                          cvote_aux_data_review_choice);
-        return;
-    }
-
-    apdu_response_send_sw(SWO_SUCCESS);
 }
 
 static bool format_cvote_delegation_index(uint16_t delegation_index,

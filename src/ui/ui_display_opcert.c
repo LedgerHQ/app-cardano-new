@@ -82,20 +82,24 @@ static ui_status_t format_opcert_fields(const parsed_opcert_t* opcert) {
     return ui_get_error_status();
 }
 
-// called when long press button on 3rd page is long-touched or when reject footer is touched
 static void opcert_review_choice(bool confirm) {
     // CLEANUP
     opcert_buffer_cleanup();
 
     // FINALIZE
-    finalize_sign_opcert(confirm);
+    if (!confirm) {
+        TRACE("User rejected");
+        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
+        nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
+        return;
+    }
+
+    TRACE("User confirmed");
+    nbgl_useCaseSpinner("Processing");
+    finalize_sign_opcert();
 
     // SHOW STATUS
-    if (confirm) {
-        nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_SIGNED, ui_menu_main);
-    } else {
-        nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
-    }
+    nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_SIGNED, ui_menu_main);
 }
 
 void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings) {
@@ -113,7 +117,7 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
         case POLICY_HIDE:
             // Silent approval - finalize without showing UI
             TRACE("POLICY_HIDE: silently approving opcert");
-            finalize_sign_opcert(true);
+            finalize_sign_opcert();
             return;
 
         default:
