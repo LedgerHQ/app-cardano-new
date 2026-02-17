@@ -364,7 +364,9 @@ bool format_address_human_readable(const uint8_t* address,
             {
                 const char* hrp = (networkId == TESTNET_NETWORK_ID) ? "stake_test" : "stake";
                 bool encoded = format_bech32(hrp, address, addressSize, out, outSize);
-                ASSERT(encoded);
+                if (!encoded) {
+                    return false;
+                }
                 ASSERT(strlen(out) + 1 < outSize);  // checks for truncation
                 return true;
             }
@@ -373,7 +375,9 @@ bool format_address_human_readable(const uint8_t* address,
             {
                 const char* hrp = (networkId == TESTNET_NETWORK_ID) ? "addr_test" : "addr";
                 bool encoded = format_bech32(hrp, address, addressSize, out, outSize);
-                ASSERT(encoded);
+                if (!encoded) {
+                    return false;
+                }
                 ASSERT(strlen(out) + 1 < outSize);  // checks for truncation
                 return true;
             }

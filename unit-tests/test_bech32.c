@@ -128,6 +128,38 @@ static void test_bech32_cardano_address(void **state) {
     assert_string_equal(outputStr, expected);
 }
 
+static void test_bech32_large_payload(void **state) {
+    (void) state;
+
+    // Test with payload larger than 65 bytes (e.g. 70 bytes)
+    // 70 bytes = 140 hex chars
+    const char* inputHex = "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+                           "202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f"
+                           "404142434445";
+    uint8_t inputBuffer[100] = {0};
+    size_t inputSize;
+    bool success = decode_hex(inputHex, inputBuffer, sizeof(inputBuffer), &inputSize);
+    assert_true(success);
+    assert_int_equal(inputSize, 70);
+
+    char outputStr[300] = {0};
+    // Should return false with MAX_BECH32_BYTES_LENGTH = 65
+    bool formatted = format_bech32("large", inputBuffer, inputSize, outputStr, sizeof(outputStr));
+    assert_false(formatted);
+}
+
+static void test_bech32_small_buffer(void **state) {
+    (void) state;
+
+    const char* hrp = "addr";
+    uint8_t inputBuffer[10] = {0};
+    // Expected length approx: 4 (hrp) + 1 + ceil(8*10/5)=16 + 6 = 27 chars
+    char outputStr[10] = {0}; // Too small
+
+    bool formatted = format_bech32(hrp, inputBuffer, sizeof(inputBuffer), outputStr, sizeof(outputStr));
+    assert_false(formatted);
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_bech32_empty_prefix),
@@ -136,6 +168,8 @@ int main(void) {
         cmocka_unit_test(test_bech32_all_zeros),
         cmocka_unit_test(test_bech32_split_example),
         cmocka_unit_test(test_bech32_cardano_address),
+        cmocka_unit_test(test_bech32_large_payload),
+        cmocka_unit_test(test_bech32_small_buffer),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

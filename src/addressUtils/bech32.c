@@ -101,7 +101,9 @@ bool format_bech32(const char* hrp,
                    size_t bytesSize,
                    char* output,
                    size_t maxOutputSize) {
-    ASSERT(bytesSize <= MAX_BECH32_BYTES_LENGTH);
+    if (bytesSize > MAX_BECH32_BYTES_LENGTH) {
+        return false;
+    }
     ASSERT(strlen(hrp) >= 1);  // not allowed for bech32
 
     const size_t SEPARATOR_LEN = 1;
@@ -109,9 +111,10 @@ bool format_bech32(const char* hrp,
     size_t ceiling =
         (8 * bytesSize + 4) / 5;  // ceiling of 8/5 * bytesLen (base32 encoding with padding)
     size_t supposedOutputLength = strlen(hrp) + SEPARATOR_LEN + ceiling + CHECKSUM_LEN;
-    ASSERT(maxOutputSize >= supposedOutputLength + 1);
+    if (maxOutputSize < supposedOutputLength + 1) {
+        return false;
+    }
     ASSERT(maxOutputSize < BUFFER_SIZE_PARANOIA);
-    ASSERT(bytesSize < BUFFER_SIZE_PARANOIA);
 
     uint8_t data5bit[(8 * MAX_BECH32_BYTES_LENGTH + 4) / 5] = {0};  // ceiling of (8/5 * MAX_BYTES_LEN) = 104
     size_t data5bitLength = 0;
