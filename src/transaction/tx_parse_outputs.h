@@ -34,6 +34,13 @@ parser_status_e parse_output_destination(buffer_t* buf,
                                          tx_output_destination_t* destination);
 
 /**
+ * Clean up dynamically allocated memory in output destination.
+ *
+ * @param[in,out] destination Destination structure to clean up
+ */
+void cleanup_output_destination(tx_output_destination_t* destination);
+
+/**
  * Parse transaction output serialization format from buffer.
  *
  * Validates that the format is either ARRAY_LEGACY or MAP_BABBAGE.

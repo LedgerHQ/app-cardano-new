@@ -137,6 +137,32 @@ static void free_output_item(tx_output_node_t *item) {
     APP_MEM_FREE(item);
 }
 
+static void free_certificate_item(tx_certificate_node_t *item) {
+    if (item == NULL) {
+        return;
+    }
+
+    if (item->certificate.type == CERTIFICATE_STAKE_POOL_REGISTRATION) {
+        flist_node_t *owner_node = item->certificate.poolRegistration.poolOwners;
+        while (owner_node != NULL) {
+            flist_node_t *next = owner_node->next;
+            APP_MEM_FREE(owner_node);
+            owner_node = next;
+        }
+        item->certificate.poolRegistration.poolOwners = NULL;
+
+        flist_node_t *relay_node = item->certificate.poolRegistration.relays;
+        while (relay_node != NULL) {
+            flist_node_t *next = relay_node->next;
+            APP_MEM_FREE(relay_node);
+            relay_node = next;
+        }
+        item->certificate.poolRegistration.relays = NULL;
+    }
+
+    APP_MEM_FREE(item);
+}
+
 static void free_mint_item(mint_asset_group_node_t *item) {
     if (item == NULL) {
         return;
@@ -369,8 +395,10 @@ static parser_status_e parse_tx_inputs(buffer_t *buf, const tx_params_t *tx_para
     return PARSING_OK;
 }
 
-static void cleanup_parsed_output_asset_groups(parsed_tx_output_t *output) {
+static void cleanup_parsed_output(parsed_tx_output_t *output) {
     LEDGER_ASSERT(output != NULL, "NULL output");
+
+    cleanup_output_destination(&output->destination);
     free_asset_groups(output->assetGroups);
     output->assetGroups = NULL;
 }
@@ -387,7 +415,7 @@ static parser_status_e cleanup_token_parse_error(parsed_tx_output_t *output,
     if (group_node != NULL) {
         free_asset_group_node(group_node);
     }
-    cleanup_parsed_output_asset_groups(output);
+    cleanup_parsed_output(output);
     return status;
 }
 
@@ -409,14 +437,14 @@ static parser_status_e parse_output_asset_groups(buffer_t *output_buf,
         output_asset_group_node_t *group_node = NULL;
         if (!APP_MEM_CALLOC((void **) &group_node, (uint16_t) sizeof(*group_node))) {
             TRACE("Out of memory allocating asset group");
-            cleanup_parsed_output_asset_groups(output);
+            cleanup_parsed_output(output);
             return OUT_OF_MEMORY_ERROR;
         }
 
         output_asset_group_t *group = &group_node->asset_group;
         if (!buffer_read_bytes_ptr(output_buf, &group->policyId, MINTING_POLICY_ID_LENGTH)) {
             free_asset_group_node(group_node);
-            cleanup_parsed_output_asset_groups(output);
+            cleanup_parsed_output(output);
             return parse_failure_status;
         }
         ASSERT(group->policyId != NULL);
@@ -428,7 +456,7 @@ static parser_status_e parse_output_asset_groups(buffer_t *output_buf,
                               MINTING_POLICY_ID_LENGTH)) {
             TRACE("Output asset groups not canonical");
             free_asset_group_node(group_node);
-            cleanup_parsed_output_asset_groups(output);
+            cleanup_parsed_output(output);
             return CANONICAL_ORDERING_ERROR;
         }
         previous_policy_id = group->policyId;
@@ -437,7 +465,7 @@ static parser_status_e parse_output_asset_groups(buffer_t *output_buf,
         ASSERT_TYPE(group->numTokens, uint16_t);
         if (!buffer_read_u16(output_buf, &group->numTokens, BE)) {
             free_asset_group_node(group_node);
-            cleanup_parsed_output_asset_groups(output);
+            cleanup_parsed_output(output);
             return parse_failure_status;
         }
         TRACE("Deserialize: asset group %u: %u tokens",
@@ -455,7 +483,7 @@ static parser_status_e parse_output_asset_groups(buffer_t *output_buf,
             if (!APP_MEM_CALLOC((void **) &token_item, (uint16_t) sizeof(*token_item))) {
                 TRACE("Out of memory allocating token");
                 free_asset_group_node(group_node);
-                cleanup_parsed_output_asset_groups(output);
+                cleanup_parsed_output(output);
                 return OUT_OF_MEMORY_ERROR;
             }
 
@@ -525,52 +553,59 @@ static parser_status_e parse_output_payload(buffer_t *output_buf,
     parser_status_e status = parse_output_destination(output_buf,
                                                       &output->destination);
     if (status != PARSING_OK) {
+        if (status == OUT_OF_MEMORY_ERROR) {
+            return OUT_OF_MEMORY_ERROR;
+        }
         return parse_failure_status;
     }
 
     ASSERT_TYPE(output->adaAmount, uint64_t);
     if (!buffer_read_u64(output_buf, &output->adaAmount, BE)) {
-        return parse_failure_status;
+        status = parse_failure_status;
+        goto cleanup;
     }
 
     status = parse_output_format(output_buf, &output->format, parse_failure_status);
     if (status != PARSING_OK) {
-        return status;
+        goto cleanup;
     }
 
     ASSERT_TYPE(output->numAssetGroups, uint16_t);
     if (!buffer_read_u16(output_buf, &output->numAssetGroups, BE)) {
-        return parse_failure_status;
+        status = parse_failure_status;
+        goto cleanup;
     }
 
     status = parse_output_asset_groups(output_buf,
                                        output,
                                        parse_failure_status);
     if (status != PARSING_OK) {
-        return status;
+        goto cleanup;
     }
 
     status = parse_output_datum(output_buf, &output->datum, parse_failure_status);
     if (status != PARSING_OK) {
-        cleanup_parsed_output_asset_groups(output);
-        return status;
+        goto cleanup;
     }
 
     status = parse_output_ref_script(output_buf, &output->refScript, parse_failure_status);
     if (status != PARSING_OK) {
-        cleanup_parsed_output_asset_groups(output);
-        return status;
+        goto cleanup;
     }
 
     if (buffer_can_read(output_buf, 1)) {
         TRACE("Deserialize: output buffer not fully consumed: offset=%u, size=%u",
               (unsigned int) buffer_current_offset(output_buf),
               (unsigned int) buffer_total_size(output_buf));
-        cleanup_parsed_output_asset_groups(output);
-        return parse_failure_status;
+        status = parse_failure_status;
+        goto cleanup;
     }
 
     return PARSING_OK;
+
+cleanup:
+    cleanup_parsed_output(output);
+    return status;
 }
 
 static parser_status_e parse_tx_outputs(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
@@ -602,7 +637,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, const tx_params_t *tx_par
                                                       &item->output_data,
                                                       OUTPUTS_PARSING_ERROR);
         if (status != PARSING_OK) {
-            APP_MEM_FREE(item);
+            free_output_item(item);
             return status;
         }
         TRACE("Deserialize: Output %u payload parsed", i);
@@ -823,7 +858,7 @@ static parser_status_e parse_tx_certificates(buffer_t *buf, const tx_params_t *t
 
         if (status != PARSING_OK) {
             TRACE("Certificate parse failure: type=%u status=%d", cert_type_wire, status);
-            APP_MEM_FREE(item);
+            free_certificate_item(item);
             return status;
         }
 
@@ -887,10 +922,8 @@ void transaction_free_certificates(tx_parsed_body_t *tx_body) {
 
     flist_node_t *certificate_node = tx_body->certificates;
     while (certificate_node != NULL) {
-        // Certificate items don't have additional allocated memory
-        // (credential data is stored inline in the union)
         flist_node_t *next = certificate_node->next;
-        APP_MEM_FREE(certificate_node);
+        free_certificate_item((tx_certificate_node_t *) certificate_node);
         certificate_node = next;
     }
     tx_body->certificates = NULL;
@@ -990,15 +1023,7 @@ void transaction_free_voting_procedures(tx_parsed_body_t *tx_body) {
 void transaction_free_collateral_output(tx_parsed_body_t *tx_body) {
     LEDGER_ASSERT(tx_body != NULL, "NULL tx_body");
 
-    // Free dynamically allocated address_params_t for device-owned outputs
-    if (tx_body->collateral_output.destination.type == DESTINATION_DEVICE_OWNED &&
-        tx_body->collateral_output.destination.params != NULL) {
-        APP_MEM_FREE(tx_body->collateral_output.destination.params);
-        tx_body->collateral_output.destination.params = NULL;
-    }
-
-    free_asset_groups(tx_body->collateral_output.assetGroups);
-    tx_body->collateral_output.assetGroups = NULL;
+    cleanup_parsed_output(&tx_body->collateral_output);
     tx_body->collateral_output.numAssetGroups = 0;
 }
 

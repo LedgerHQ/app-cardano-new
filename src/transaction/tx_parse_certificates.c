@@ -630,18 +630,21 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
                                                          certificate_data_t *cert_data) {
     TRACE("Parsing STAKE_POOL_REGISTRATION certificate");
     cert_data->type = CERTIFICATE_STAKE_POOL_REGISTRATION;
+    cert_data->poolRegistration.poolOwners = NULL;
+    cert_data->poolRegistration.relays = NULL;
 
     // Parse pool ID (operator key - hash or path)
     parser_status_e status = _parse_pool_id(buf, &cert_data->poolId);
     if (status != PARSING_OK) {
         TRACE("Failed to parse pool ID");
-        return status;
+        goto cleanup;
     }
 
     // Parse VRF key hash (32 bytes)
     if (!buffer_read_bytes_ptr(buf, &cert_data->vrfKeyHash, VRF_KEY_HASH_LENGTH)) {
         TRACE("Failed to read VRF key hash");
-        return CERTIFICATES_PARSING_ERROR;
+        status = CERTIFICATES_PARSING_ERROR;
+        goto cleanup;
     }
     TRACE("Successfully parsed VRF key hash");
 
@@ -649,14 +652,16 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
     ASSERT_TYPE(cert_data->poolRegistration.pledge, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->poolRegistration.pledge, BE)) {
         TRACE("Failed to read pledge");
-        return CERTIFICATES_PARSING_ERROR;
+        status = CERTIFICATES_PARSING_ERROR;
+        goto cleanup;
     }
     TRACE("Pledge: %llu", (unsigned long long) cert_data->poolRegistration.pledge);
 
     ASSERT_TYPE(cert_data->poolRegistration.cost, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->poolRegistration.cost, BE)) {
         TRACE("Failed to read cost");
-        return CERTIFICATES_PARSING_ERROR;
+        status = CERTIFICATES_PARSING_ERROR;
+        goto cleanup;
     }
     TRACE("Cost: %llu", (unsigned long long) cert_data->poolRegistration.cost);
 
@@ -664,7 +669,8 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
     ASSERT_TYPE(cert_data->poolRegistration.marginNumerator, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->poolRegistration.marginNumerator, BE)) {
         TRACE("Failed to read margin numerator");
-        return CERTIFICATES_PARSING_ERROR;
+        status = CERTIFICATES_PARSING_ERROR;
+        goto cleanup;
     }
     TRACE("Margin numerator: %llu",
           (unsigned long long) cert_data->poolRegistration.marginNumerator);
@@ -672,23 +678,27 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
     ASSERT_TYPE(cert_data->poolRegistration.marginDenominator, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->poolRegistration.marginDenominator, BE)) {
         TRACE("Failed to read margin denominator");
-        return CERTIFICATES_PARSING_ERROR;
+        status = CERTIFICATES_PARSING_ERROR;
+        goto cleanup;
     }
     if (cert_data->poolRegistration.marginDenominator == 0) {
         TRACE("Invalid margin denominator: cannot be zero");
-        return CERTIFICATES_PARSING_ERROR;
+        status = CERTIFICATES_PARSING_ERROR;
+        goto cleanup;
     }
     if (cert_data->poolRegistration.marginDenominator > MARGIN_DENOMINATOR_MAX) {
         TRACE("Invalid margin denominator: exceeds maximum");
         TRACE("Invalid margin denominator: %llu",
               (unsigned long long) cert_data->poolRegistration.marginDenominator);
-        return CERTIFICATES_PARSING_ERROR;
+        status = CERTIFICATES_PARSING_ERROR;
+        goto cleanup;
     }
     if (cert_data->poolRegistration.marginNumerator > MARGIN_DENOMINATOR_MAX) {
         TRACE("Invalid margin numerator: exceeds maximum");
         TRACE("Invalid margin numerator: %llu",
               (unsigned long long) cert_data->poolRegistration.marginNumerator);
-        return CERTIFICATES_PARSING_ERROR;
+        status = CERTIFICATES_PARSING_ERROR;
+        goto cleanup;
     }
     if (cert_data->poolRegistration.marginNumerator > cert_data->poolRegistration.marginDenominator) {
         TRACE("Invalid margin: numerator > denominator");
@@ -696,7 +706,8 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
               (unsigned long long) cert_data->poolRegistration.marginNumerator);
         TRACE("Invalid margin denominator: %llu",
               (unsigned long long) cert_data->poolRegistration.marginDenominator);
-        return CERTIFICATES_PARSING_ERROR;
+        status = CERTIFICATES_PARSING_ERROR;
+        goto cleanup;
     }
     TRACE("Margin denominator: %llu",
           (unsigned long long) cert_data->poolRegistration.marginDenominator);
@@ -705,7 +716,8 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
     uint8_t reward_account_type;
     if (!buffer_read_u8(buf, &reward_account_type)) {
         TRACE("Failed to read reward account type");
-        return CERTIFICATES_PARSING_ERROR;
+        status = CERTIFICATES_PARSING_ERROR;
+        goto cleanup;
     }
 
     TRACE("Reward account type wire: 0x%02x", reward_account_type);
@@ -715,7 +727,8 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
             if (!buffer_read_bytes_ptr(buf, &cert_data->poolRegistration.rewardAccount.hashBuffer,
                                        REWARD_ACCOUNT_LENGTH)) {
                 TRACE("Failed to read reward account hash");
-                return CERTIFICATES_PARSING_ERROR;
+                status = CERTIFICATES_PARSING_ERROR;
+                goto cleanup;
             }
             ASSERT(cert_data->poolRegistration.rewardAccount.hashBuffer != NULL);
             TRACE("Successfully parsed reward account as KEY_HASH");
@@ -724,39 +737,42 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
             cert_data->poolRegistration.rewardAccount.keyReferenceType = KEY_REFERENCE_PATH;
             if (!buffer_read_bip44_path(buf, &cert_data->poolRegistration.rewardAccount.path)) {
                 TRACE("Failed to read reward account path");
-                return CERTIFICATES_PARSING_ERROR;
+                status = CERTIFICATES_PARSING_ERROR;
+                goto cleanup;
             }
             TRACE("Successfully parsed reward account as KEY_PATH");
             break;
         default:
             TRACE("Invalid reward account type: 0x%02x", reward_account_type);
-            return CERTIFICATES_PARSING_ERROR;
+            status = CERTIFICATES_PARSING_ERROR;
+            goto cleanup;
     }
 
     // Parse pool owners array
     uint8_t num_owners;
     if (!buffer_read_u8(buf, &num_owners)) {
         TRACE("Failed to read number of pool owners");
-        return CERTIFICATES_PARSING_ERROR;
+        status = CERTIFICATES_PARSING_ERROR;
+        goto cleanup;
     }
     cert_data->poolRegistration.numPoolOwners = num_owners;
     TRACE("Number of pool owners: %u", num_owners);
 
     // Parse each pool owner
-    cert_data->poolRegistration.poolOwners = NULL;
     for (uint16_t i = 0; i < num_owners; i++) {
         TRACE("Parsing pool owner %u", i);
         tx_certificate_node_t *owner_item = NULL;
         if (!APP_MEM_CALLOC((void **) &owner_item, (uint16_t) sizeof(*owner_item))) {
             TRACE("Failed to allocate memory for pool owner");
-            return CERTIFICATES_PARSING_ERROR;
+            status = OUT_OF_MEMORY_ERROR;
+            goto cleanup;
         }
 
         status = parse_stake_credential(buf, &owner_item->certificate.stakeCredential);
         if (status != PARSING_OK) {
             TRACE("Failed to parse pool owner credential");
             APP_MEM_FREE(owner_item);
-            return status;
+            goto cleanup;
         }
 
         // Add to linked list
@@ -768,19 +784,20 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
     uint8_t num_relays;
     if (!buffer_read_u8(buf, &num_relays)) {
         TRACE("Failed to read number of relays");
-        return CERTIFICATES_PARSING_ERROR;
+        status = CERTIFICATES_PARSING_ERROR;
+        goto cleanup;
     }
     cert_data->poolRegistration.numRelays = num_relays;
     TRACE("Number of relays: %u", num_relays);
 
     // Parse each relay
-    cert_data->poolRegistration.relays = NULL;
     for (uint16_t i = 0; i < num_relays; i++) {
         TRACE("Parsing relay %u", i);
         tx_certificate_node_t *relay_item = NULL;
         if (!APP_MEM_CALLOC((void **) &relay_item, (uint16_t) sizeof(*relay_item))) {
             TRACE("Failed to allocate memory for relay");
-            return CERTIFICATES_PARSING_ERROR;
+            status = OUT_OF_MEMORY_ERROR;
+            goto cleanup;
         }
 
         // We need to get the certificate_data properly typed for relay
@@ -791,7 +808,7 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
         if (status != PARSING_OK) {
             TRACE("Failed to parse relay");
             APP_MEM_FREE(relay_item);
-            return status;
+            goto cleanup;
         }
 
         // Add to linked list
@@ -804,9 +821,30 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
                                  &cert_data->poolRegistration.poolMetadataIsNull);
     if (status != PARSING_OK) {
         TRACE("Failed to parse pool metadata");
-        return status;
+        goto cleanup;
     }
 
     TRACE("Successfully parsed STAKE_POOL_REGISTRATION");
     return PARSING_OK;
+
+cleanup:
+    {
+        flist_node_t *node = cert_data->poolRegistration.poolOwners;
+        while (node != NULL) {
+            flist_node_t *next = node->next;
+            APP_MEM_FREE(node);
+            node = next;
+        }
+        cert_data->poolRegistration.poolOwners = NULL;
+    }
+    {
+        flist_node_t *node = cert_data->poolRegistration.relays;
+        while (node != NULL) {
+            flist_node_t *next = node->next;
+            APP_MEM_FREE(node);
+            node = next;
+        }
+        cert_data->poolRegistration.relays = NULL;
+    }
+    return status;
 }

@@ -148,7 +148,8 @@ cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
     ASSERT_TYPE(out_data->nonce, uint64_t);
     if (!buffer_read_u64(&parse_buf, &out_data->nonce, BE)) {
         TRACE("CVote init: failed to read nonce");
-        return CVOTE_PARSER_INVALID_FORMAT;
+        dest_status = CVOTE_PARSER_INVALID_FORMAT;
+        goto cleanup;
     }
 
     // Parse format-specific fields
@@ -158,14 +159,16 @@ cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
         case CIP36:
             if (!buffer_read_u64(&parse_buf, &out_data->voting_purpose, BE)) {
                 TRACE("CVote init: failed to read voting_purpose");
-                return CVOTE_PARSER_INVALID_FORMAT;
+                dest_status = CVOTE_PARSER_INVALID_FORMAT;
+                goto cleanup;
             }
 
             // CIP36 with 0 delegations includes vote credential in init
             if (out_data->remaining_delegations == 0) {
                 if (!buffer_read_cvote_credential(&parse_buf, &out_data->vote_credential)) {
                     TRACE("CVote init: failed to parse vote credential (CIP36, no delegations)");
-                    return CVOTE_PARSER_INVALID_FORMAT;
+                    dest_status = CVOTE_PARSER_INVALID_FORMAT;
+                    goto cleanup;
                 }
             }
             break;
@@ -174,24 +177,31 @@ cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
             // CIP15 always includes vote credential in init
             if (!buffer_read_cvote_credential(&parse_buf, &out_data->vote_credential)) {
                 TRACE("CVote init: failed to parse vote credential (CIP15)");
-                return CVOTE_PARSER_INVALID_FORMAT;
+                dest_status = CVOTE_PARSER_INVALID_FORMAT;
+                goto cleanup;
             }
             break;
 
         default:
             LEDGER_ASSERT(false, "Invalid CVote registration format: %u", out_data->format);
-            return CVOTE_PARSER_INVALID_FORMAT;
+            dest_status = CVOTE_PARSER_INVALID_FORMAT;
+            goto cleanup;
     }
 
     // Verify buffer fully consumed
     if (parse_buf.offset != parse_buf.size) {
         TRACE("CVote init payload not fully consumed: %u/%u bytes",
               (unsigned)parse_buf.offset, (unsigned)parse_buf.size);
-        return CVOTE_PARSER_INVALID_FORMAT;
+        dest_status = CVOTE_PARSER_INVALID_FORMAT;
+        goto cleanup;
     }
 
     TRACE("CVote init parsed: format=%u, delegations=%u, nonce=%llu",
           out_data->format, out_data->remaining_delegations, out_data->nonce);
 
     return CVOTE_PARSER_OK;
+
+cleanup:
+    cleanup_output_destination(&out_data->destination);
+    return dest_status;
 }

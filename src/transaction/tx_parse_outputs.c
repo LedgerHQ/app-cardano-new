@@ -66,6 +66,25 @@ parser_status_e parse_output_destination(buffer_t* buf,
     return PARSING_OK;
 }
 
+void cleanup_output_destination(tx_output_destination_t* destination) {
+    if (destination == NULL) {
+        return;
+    }
+
+    if (destination->type == DESTINATION_DEVICE_OWNED) {
+        if (destination->params != NULL) {
+            APP_MEM_FREE(destination->params);
+            destination->params = NULL;
+        }
+    }
+
+    // Leave destination in a stable empty state so repeated cleanup is safe
+    // even if caller does not reinitialize the whole struct.
+    destination->type = DESTINATION_THIRD_PARTY;
+    destination->address.buffer = NULL;
+    destination->address.length = 0;
+}
+
 parser_status_e parse_output_format(buffer_t* buf,
                                     tx_output_serialization_format_t* format,
                                     parser_status_e parseFailureStatus) {

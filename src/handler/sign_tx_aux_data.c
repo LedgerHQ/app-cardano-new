@@ -20,6 +20,7 @@
 #include "sign_tx_aux_data.h"
 #include "tx.h"
 #include "tx_credential_types.h"
+#include "tx_parse_outputs.h"
 #include "ui_display_cvote_aux_data.h"
 #include "utils.h"
 
@@ -405,6 +406,7 @@ void finalize_sign_tx_aux_data(bool confirmed) {
     }
 
     cvote_hash_finalize();
+    cleanup_output_destination(&G_context.tx_info.cvote_aux_data.destination);
 
     // CVote init buffer is no longer needed once aux-data hash is finalized.
     APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.raw_cvote_init_data);
