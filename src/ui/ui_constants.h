@@ -24,17 +24,14 @@
 #define MAX_ADA_AMOUNT_STRING_LENGTH 32         // 20 digits + "." + 6 decimals + " ADA"
 #define MAX_MINT_SUMMARY_STRING_LENGTH 32       // For mint summary strings (e.g., "2 asset groups")
 #define ASSET_FINGERPRINT_HRP_LENGTH 5          // "asset"
-#define ASSET_FINGERPRINT_DATA_LENGTH 20        // blake2b-160
 #define ASSET_FINGERPRINT_BASE32_LENGTH 32      // ceil(8/5 * 20)
 #define MAX_TOKEN_FINGERPRINT_STRING_LENGTH \
     (ASSET_FINGERPRINT_HRP_LENGTH + 1 + 6 + ASSET_FINGERPRINT_BASE32_LENGTH + 1)
 #define MAX_TOKEN_AMOUNT_STRING_LENGTH 100
-#define MAX_WARNING_MESSAGE_LENGTH 128       // For warning/error message text
 #define MAX_TX_HASH_DISPLAY_LENGTH 65        // For transaction hash hex display (32 bytes + null)
 #define MAX_POOL_METADATA_HASH_STRING_LENGTH (2 * POOL_METADATA_HASH_LENGTH + 1)
 #define MAX_REFERENCE_SCRIPT_STRING_LENGTH 40
 #define MAX_INLINE_DATUM_STRING_LENGTH 40
-#define MAX_COLLATERAL_STRING_LENGTH 13        // "return output"
 #define MAX_RELAY_INDEX_STRING_LENGTH 20     // For relay index "#4294967295"
 #define MAX_PROFIT_MARGIN_STRING_LENGTH 50   // For pool margin percentage "100.99 %"
 #define MAX_VOTE_OPTION_LENGTH 16            // For vote option strings ("Abstain", "Yes", "No")

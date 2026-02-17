@@ -70,7 +70,6 @@ from standalone.input_files.signTx import (
     VoteDelegationParams,
     VoterType,
     MAX_SIGN_TX_CHUNK_SIZE,
-    Withdrawal,
 )
 
 CLA: int = 0xd7

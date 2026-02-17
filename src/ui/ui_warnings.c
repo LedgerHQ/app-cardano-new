@@ -122,17 +122,6 @@ const nbgl_warning_t* ui_get_warnings(void) {
     return g_warning;
 }
 
-ui_status_t ui_build_predefined_warning(uint32_t predefinedSet) {
-    LEDGER_ASSERT(g_warning == NULL, "Warnings already built");
-    g_warning = NULL;
-    if (!allocate_zeroed((void **) &g_warning, sizeof(nbgl_warning_t))) {
-        return UI_STATUS_OUT_OF_MEMORY;
-    }
-
-    g_warning->predefinedSet = predefinedSet;
-    return UI_STATUS_SUCCESS;
-}
-
 void ui_free_warnings(void) {
     if (g_warning == NULL) {
         return;

@@ -13,10 +13,9 @@ import cbor2  # type: ignore
 import pytest
 
 from ragger.backend import BackendInterface
-from ledgered.devices import DeviceType, Device
+from ledgered.devices import Device
 from ragger.navigator import Navigator, NavInsID
 from ragger.navigator.navigation_scenario import NavigateWithScenario
-from ragger.error import ExceptionRAPDU
 
 from application_client.status_words import StatusWord
 from application_client.command_sender import CommandSender
@@ -24,7 +23,6 @@ from application_client.response_unpacker import unpack_derive_native_script_has
 
 from standalone.input_files.native_script import ValidNativeScriptTestCases, ValidNativeScriptTestCase
 from standalone.input_files.native_script import NativeScript, NativeScriptType
-from standalone.input_files.native_script import NativeScriptParamsPubkey, NativeScriptHashDisplayFormat
 from standalone.input_files.native_script import NativeScriptParamsScripts, NativeScriptParamsNofK
 
 from standalone.utils import idTestFunc, get_device_pubkey

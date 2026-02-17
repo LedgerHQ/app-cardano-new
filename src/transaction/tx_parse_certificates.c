@@ -655,11 +655,21 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
         status = CERTIFICATES_PARSING_ERROR;
         goto cleanup;
     }
+    if (cert_data->poolRegistration.pledge >= LOVELACE_MAX_SUPPLY) {
+        TRACE("Invalid pledge: %llu", (unsigned long long) cert_data->poolRegistration.pledge);
+        status = CERTIFICATES_PARSING_ERROR;
+        goto cleanup;
+    }
     TRACE("Pledge: %llu", (unsigned long long) cert_data->poolRegistration.pledge);
 
     ASSERT_TYPE(cert_data->poolRegistration.cost, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->poolRegistration.cost, BE)) {
         TRACE("Failed to read cost");
+        status = CERTIFICATES_PARSING_ERROR;
+        goto cleanup;
+    }
+    if (cert_data->poolRegistration.cost >= LOVELACE_MAX_SUPPLY) {
+        TRACE("Invalid cost: %llu", (unsigned long long) cert_data->poolRegistration.cost);
         status = CERTIFICATES_PARSING_ERROR;
         goto cleanup;
     }

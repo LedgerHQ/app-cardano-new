@@ -564,6 +564,12 @@ static parser_status_e parse_output_payload(buffer_t *output_buf,
         status = parse_failure_status;
         goto cleanup;
     }
+    if (output->adaAmount >= LOVELACE_MAX_SUPPLY) {
+        TRACE("Output ADA amount out of bounds: %llu",
+              (unsigned long long) output->adaAmount);
+        status = parse_failure_status;
+        goto cleanup;
+    }
 
     status = parse_output_format(output_buf, &output->format, parse_failure_status);
     if (status != PARSING_OK) {

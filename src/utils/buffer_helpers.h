@@ -34,13 +34,6 @@ static inline const uint8_t *buffer_current_ptr(const buffer_t *buffer) {
     return current_ptr;
 }
 
-static inline bool buffer_consume(buffer_t *buffer, size_t length) {
-    if (buffer == NULL) {
-        return false;
-    }
-    return buffer_seek_cur(buffer, length);
-}
-
 static inline bool deny_unconsumed_bytes(const buffer_t *buffer,
                                          uint16_t swo) {
     LEDGER_ASSERT(buffer != NULL, "NULL buffer");

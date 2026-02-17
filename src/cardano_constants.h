@@ -8,6 +8,7 @@
  */
 #define LOVELACE_MAX_SUPPLY 45000000000000000
 #define LOVELACE_INVALID    47000000000000000
+_Static_assert(LOVELACE_MAX_SUPPLY < LOVELACE_INVALID, "LOVELACE_INVALID must exceed max supply");
 
 /**
  * Lengths of cryptographic material.
@@ -68,8 +69,3 @@
  * Maximum allowed pool margin denominator.
  */
 #define MARGIN_DENOMINATOR_MAX 1000000000000000ul
-
-/**
- * Native script depth limit.
- */
-#define SCRIPT_DEPTH_MAX 11

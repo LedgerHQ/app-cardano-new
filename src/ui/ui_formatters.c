@@ -231,7 +231,7 @@ bool format_pool_margin(uint64_t numerator, uint64_t denominator, char *out, siz
     uint64_t margin_percentage = (10000 * numerator + (denominator / 2)) / denominator;
     unsigned int percentage = (unsigned int) margin_percentage;
 
-    STATIC_ASSERT(!IS_SIGNED(percentage), "signed type for %u");
+    STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(percentage)), "signed type for %u");
     int written = snprintf(out, outSize, "%u.%u %%", percentage / 100, percentage % 100);
     LEDGER_ASSERT(written > 0, "snprintf pool margin formatting failed");
     return (size_t)written + 1 < outSize; // checks for truncation
@@ -241,7 +241,7 @@ bool format_pool_margin(uint64_t numerator, uint64_t denominator, char *out, siz
  * Format 16-bit unsigned integer to string
  */
 bool format_uint16(uint16_t value, char *out, size_t outSize) {
-    STATIC_ASSERT(!IS_SIGNED(value), "signed type for %u");
+    STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(value)), "signed type for %u");
     int written = snprintf(out, outSize, "%u", value);
     LEDGER_ASSERT(written > 0, "snprintf uint16 formatting failed");
     return (size_t)written + 1 < outSize; // checks for truncation
@@ -251,7 +251,7 @@ bool format_uint16(uint16_t value, char *out, size_t outSize) {
  * Format unsigned integer with "#" prefix for numbered items
  */
 bool format_index_with_prefix(uint32_t value, char *out, size_t outSize) {
-    STATIC_ASSERT(!IS_SIGNED(value), "signed type for %u");
+    STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(value)), "signed type for %u");
     int written = snprintf(out, outSize, "#%u", value);
     LEDGER_ASSERT(written > 0, "snprintf index prefix formatting failed");
     return (size_t)written + 1 < outSize; // checks for truncation
@@ -444,7 +444,7 @@ bool format_incomplete_hex_with_length(const uint8_t *data,
         return false;
     }
 
-    STATIC_ASSERT(!IS_SIGNED(dataLen), "signed type for %u");
+    STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(dataLen)), "signed type for %u");
     int written = snprintf(out, outSize, "%s... (%u bytes)", hexPrefix, (unsigned int)dataLen);
     LEDGER_ASSERT(written > 0, "snprintf incomplete hex formatting failed");
     return (size_t)written + 1 < outSize; // checks for truncation

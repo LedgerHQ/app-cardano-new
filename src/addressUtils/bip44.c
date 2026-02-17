@@ -213,12 +213,6 @@ static bool bip44_hasReasonablePoolColdKeyIndex(const bip44_path_t* pathSpec) {
     return bip44_unharden(coldKeyIndex) <= MAX_REASONABLE_COLD_KEY_INDEX;
 }
 
-// ChainType
-
-bool bip44_containsChainType(const bip44_path_t* pathSpec) {
-    return pathSpec->length > BIP44_I_CHAIN;
-}
-
 uint32_t bip44_getChainTypeValue(const bip44_path_t* pathSpec) {
     ASSERT(pathSpec->length > BIP44_I_CHAIN);
     return pathSpec->path[BIP44_I_CHAIN];

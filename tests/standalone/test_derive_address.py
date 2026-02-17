@@ -12,11 +12,10 @@ import base58
 
 from ledgered.devices import Device
 from ragger.backend import BackendInterface
-from ragger.navigator import Navigator, NavInsID
+from ragger.navigator import Navigator
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 from ragger.error import ExceptionRAPDU
 
-from application_client.app_def import Testnet
 from application_client.status_words import StatusWord
 from application_client.command_sender import CommandSender
 from application_client.command_builder import P1Type

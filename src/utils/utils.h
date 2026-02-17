@@ -88,7 +88,6 @@
 #define MARK_UNUSED __attribute__((unused, deprecated))
 
 #define IS_SIGNED_TYPE(type) (((type)(-1)) < 0)
-#define IS_SIGNED(var)       (((typeof(var))(-1)) < 0)
 
 
 // -----------------------------------------------------------------------------

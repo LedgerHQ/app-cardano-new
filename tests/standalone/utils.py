@@ -5,22 +5,16 @@ from pathlib import Path
 from typing import List, Tuple, Union
 import re
 import hashlib
-from Crypto.Hash import keccak
 
-from ecdsa.curves import SECP256k1, Ed25519
+from ecdsa.curves import Ed25519
 from ecdsa.keys import VerifyingKey
-from ecdsa.util import sigdecode_der
 
 from bip_utils import Bip44, Bip44Coins, Bip44Changes, Bip39SeedGenerator
 from bip_utils.bip.bip32.bip32_path import Bip32Path, Bip32PathParser
 
 from ragger.bip import calculate_public_key_and_chaincode, CurveChoice
-from ragger.conftest.configuration import OPTIONAL
 
-from ragger.navigator import NavInsID, NavIns, Navigator
 from ragger.bip.seed import SPECULOS_MNEMONIC
-
-from ledgered.devices import DeviceType, Device
 
 from application_client.app_def import AddressType
 
@@ -121,7 +115,7 @@ def _deriveAddressByron(testCase: DeriveAddressTestCase) -> str:
     if testCase.result:
         return testCase.result
     # Generate seed from mnemonic
-    # seed_bytes = Bip39SeedGenerator(OPTIONAL.CUSTOM_SEED).Generate()
+    # Use the deterministic Speculos mnemonic for reproducible tests.
     seed_bytes = Bip39SeedGenerator(SPECULOS_MNEMONIC).Generate()
 
     # Construct from seed

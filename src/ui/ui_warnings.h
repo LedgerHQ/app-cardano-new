@@ -27,15 +27,6 @@ ui_status_t ui_build_warnings(warning_bits_t warnings);
 const nbgl_warning_t* ui_get_warnings(void);
 
 /**
- * Build a predefined warning structure (NBGL predefinedSet).
- * Frees any previously built warning structures.
- *
- * @param predefinedSet Bitmask for predefined warning set
- * @return UI_STATUS_SUCCESS on success, UI_STATUS_OUT_OF_MEMORY on failure
- */
-ui_status_t ui_build_predefined_warning(uint32_t predefinedSet);
-
-/**
  * Free warning structure.
  * Idempotent - safe to call multiple times or when no warnings were built.
  */

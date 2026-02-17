@@ -78,8 +78,6 @@ bool bip44_hasCVoteKeyPrefix(const bip44_path_t* pathSpec);
 bool bip44_containsAccount(const bip44_path_t* pathSpec);
 uint32_t bip44_getAccount(const bip44_path_t* pathSpec);
 
-bool bip44_containsChainType(const bip44_path_t* pathSpec);
-
 bool bip44_containsAddress(const bip44_path_t* pathSpec);
 
 bool bip44_isOrdinaryStakingKeyPath(const bip44_path_t* pathSpec);

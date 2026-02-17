@@ -68,10 +68,6 @@ def parse_mock_paths_from_header():
     with open(header_file, 'r') as f:
         content = f.read()
 
-    # Find all mock path entries
-    # Pattern matches from "/* Path " to the closing "},"
-    entry_pattern = r'/\* Path "([^"]+)"[^{]+\{([^}]+\}[^}]+\})'
-
     entries = []
 
     # Split content by entries - find each mock path block

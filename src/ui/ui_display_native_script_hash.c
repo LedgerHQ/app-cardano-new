@@ -35,7 +35,7 @@ void build_position_description(const derive_native_script_hash_ctx_t *ctx,
     for (size_t i = 1; i <= level; i++) {
         uint32_t position =
             ctx->complexScripts[i].totalScripts - ctx->complexScripts[i].remainingScripts + 1;
-        STATIC_ASSERT(!IS_SIGNED(position), "signed type for %u");
+        STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(position)), "signed type for %u");
         snprintf(ptr, end - ptr, "%u.", position);
         LEDGER_ASSERT(strlen(out) + 1 < out_len, "Exceeded output size");
         ptr += strlen(ptr);
@@ -91,7 +91,7 @@ bool format_position(derive_native_script_hash_ctx_t *ctx,
 
 bool format_remaining(uint32_t remaining_scripts, char *out, size_t out_size) {
     LEDGER_ASSERT(out != NULL, "NULL output buffer");
-    STATIC_ASSERT(!IS_SIGNED(remaining_scripts), "signed type for %u");
+    STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(remaining_scripts)), "signed type for %u");
     int chars_written = snprintf(out, out_size, "%u nested scripts", remaining_scripts);
     return (chars_written > 0 && chars_written < (int)out_size);
 }
@@ -101,8 +101,8 @@ bool format_required_signatures(uint32_t requiredScripts,
                                 char *out,
                                 size_t out_size) {
     LEDGER_ASSERT(out != NULL, "NULL output buffer");
-    STATIC_ASSERT(!IS_SIGNED(requiredScripts), "signed type for %u");
-    STATIC_ASSERT(!IS_SIGNED(remainingScripts), "signed type for %u");
+    STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(requiredScripts)), "signed type for %u");
+    STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(remainingScripts)), "signed type for %u");
     int chars_written =
         snprintf(out, out_size, "%u out of %u signatures", requiredScripts, remainingScripts);
     return (chars_written > 0 && chars_written < (int)out_size);

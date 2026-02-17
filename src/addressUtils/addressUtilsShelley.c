@@ -317,9 +317,9 @@ bool format_blockchain_pointer(blockchainPointer_t blockchainPointer, char* out,
     explicit_bzero(out, outSize);
 
     STATIC_ASSERT(sizeof(blockchainIndex_t) <= sizeof(unsigned), "oversized type for %u");
-    STATIC_ASSERT(!IS_SIGNED(blockchainPointer.blockIndex), "signed type for %u");
-    STATIC_ASSERT(!IS_SIGNED(blockchainPointer.txIndex), "signed type for %u");
-    STATIC_ASSERT(!IS_SIGNED(blockchainPointer.certificateIndex), "signed type for %u");
+    STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(blockchainPointer.blockIndex)), "signed type for %u");
+    STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(blockchainPointer.txIndex)), "signed type for %u");
+    STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(blockchainPointer.certificateIndex)), "signed type for %u");
 
     ASSERT(outSize > 0);
     int written = snprintf(out,

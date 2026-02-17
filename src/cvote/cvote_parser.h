@@ -18,8 +18,6 @@ typedef enum {
     CVOTE_PARSER_OUT_OF_MEMORY,
 } cvote_parser_status_t;
 
-#define CVOTE_PUBLIC_KEY_LENGTH (PUBLIC_KEY_LENGTH)
-
 typedef struct {
     // Parsed CVote registration data
     // Credentials point into raw_cvote_init_data buffer (like TX credentials)

@@ -13,9 +13,6 @@
 #include "addressUtilsShelley.h"
 #include "assert.h"
 
-#define ASSET_NAME_HASH_SIZE 32
-#define ASSET_NAME_DISPLAY_SIZE 32
-
 typedef enum {
     DESTINATION_THIRD_PARTY = 1,
     DESTINATION_DEVICE_OWNED = 2,
