@@ -17,6 +17,7 @@
 #include "test_sign_msg_fixtures.h"
 #include "test_sign_msg_common.h"
 #include "apdu_finalization_check.h"
+#include "test_read_buffer_helpers.h"
 
 // ======================================================================
 // CIP-8 Message Signing Tests (Auto-Generated)
@@ -113,38 +114,29 @@ static void test_sign_message_sign_msg_unusual_path_with_high_address_index_16(v
 
 static void run_deny_init_fixture(const uint8_t *init_data, size_t init_data_len, uint16_t expected_sw) {
     reset_sign_msg_test_state();
-    buffer_t init_buffer = {
-        .ptr = (uint8_t *) init_data,
-        .size = init_data_len,
-        .offset = 0,
-    };
+    test_read_buffer_t init_buffer = make_test_read_buffer(init_data, init_data_len);
     apdu_response_begin(INS_SIGN_MSG);
-    handler_sign_msg(&init_buffer, P1_SIGN_MSG_INIT);
+    handler_sign_msg(&init_buffer.sdk_buffer, P1_SIGN_MSG_INIT);
     apdu_response_assert_sent_or_deferred();
+    assert_read_buffer_unchanged_and_cleanup(&init_buffer, init_data);
     assert_int_equal(g_last_response_sw, expected_sw);
 }
 
 static void run_deny_chunk_fixture(const uint8_t *chunk_data, size_t chunk_data_len, uint16_t expected_sw) {
-    buffer_t chunk_buffer = {
-        .ptr = (uint8_t *) chunk_data,
-        .size = chunk_data_len,
-        .offset = 0,
-    };
+    test_read_buffer_t chunk_buffer = make_test_read_buffer(chunk_data, chunk_data_len);
     apdu_response_begin(INS_SIGN_MSG);
-    handler_sign_msg(&chunk_buffer, P1_SIGN_MSG_CHUNK);
+    handler_sign_msg(&chunk_buffer.sdk_buffer, P1_SIGN_MSG_CHUNK);
     apdu_response_assert_sent_or_deferred();
+    assert_read_buffer_unchanged_and_cleanup(&chunk_buffer, chunk_data);
     assert_int_equal(g_last_response_sw, expected_sw);
 }
 
 static void run_deny_confirm_fixture(const uint8_t *confirm_data, size_t confirm_data_len, uint16_t expected_sw) {
-    buffer_t confirm_buffer = {
-        .ptr = (uint8_t *) confirm_data,
-        .size = confirm_data_len,
-        .offset = 0,
-    };
+    test_read_buffer_t confirm_buffer = make_test_read_buffer(confirm_data, confirm_data_len);
     apdu_response_begin(INS_SIGN_MSG);
-    handler_sign_msg(&confirm_buffer, P1_SIGN_MSG_CONFIRM);
+    handler_sign_msg(&confirm_buffer.sdk_buffer, P1_SIGN_MSG_CONFIRM);
     apdu_response_assert_sent_or_deferred();
+    assert_read_buffer_unchanged_and_cleanup(&confirm_buffer, confirm_data);
     assert_int_equal(g_last_response_sw, expected_sw);
 }
 

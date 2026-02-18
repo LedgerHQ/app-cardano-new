@@ -25,6 +25,7 @@
 #include "app_context.h"
 #include "nbgl_mock.h"
 #include "io_capture.h"
+#include "test_read_buffer_helpers.h"
 
 #define TEST_HEAP_SIZE (23 * 1024)
 static uint8_t test_heap[TEST_HEAP_SIZE];
@@ -60,12 +61,9 @@ static inline void run_sign_tx_body_chunked(const uint8_t* raw_tx, size_t raw_tx
             ? P1_TX_CHUNK
             : P1_TX_CONFIRM;
 
-        buffer_t tx_chunk_buffer = {
-            .ptr = (uint8_t*) raw_tx + tx_offset,
-            .size = current_chunk_size,
-            .offset = 0,
-        };
-        run_sign_tx_apdu(&tx_chunk_buffer, p1);
+        test_read_buffer_t tx_chunk_buffer = make_test_read_buffer(raw_tx + tx_offset, current_chunk_size);
+        run_sign_tx_apdu(&tx_chunk_buffer.sdk_buffer, p1);
+        assert_read_buffer_unchanged_and_cleanup(&tx_chunk_buffer, raw_tx + tx_offset);
         tx_offset += current_chunk_size;
     }
 }
@@ -116,23 +114,20 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
     if (include_aux_data_hash && aux_data_type == AUX_DATA_TYPE_CVOTE_REGISTRATION) {
         assert_non_null(aux_data_init_payload);
         assert_true(aux_data_init_payload_len > 0);
-        buffer_t aux_init_buf = {
-            .ptr = (uint8_t*) aux_data_init_payload,
-            .size = aux_data_init_payload_len,
-            .offset = 0,
-        };
-        run_sign_tx_aux_data_apdu(&aux_init_buf, P2_AUX_DATA_INIT);
+        test_read_buffer_t aux_init_buffer = make_test_read_buffer(aux_data_init_payload, aux_data_init_payload_len);
+        run_sign_tx_aux_data_apdu(&aux_init_buffer.sdk_buffer, P2_AUX_DATA_INIT);
+        assert_read_buffer_unchanged_and_cleanup(&aux_init_buffer, aux_data_init_payload);
 
         for (size_t i = 0; i < aux_data_delegation_count; i++) {
             const aux_data_payload_t* delegation = &aux_data_delegations[i];
             assert_non_null(delegation->payload);
             assert_true(delegation->payload_len > 0);
-            buffer_t aux_reg_buf = {
-                .ptr = (uint8_t*) delegation->payload,
-                .size = delegation->payload_len,
-                .offset = 0,
-            };
-            run_sign_tx_aux_data_apdu(&aux_reg_buf, P2_AUX_DATA_DELEGATION);
+            test_read_buffer_t aux_delegation_buffer = make_test_read_buffer(
+                delegation->payload,
+                delegation->payload_len
+            );
+            run_sign_tx_aux_data_apdu(&aux_delegation_buffer.sdk_buffer, P2_AUX_DATA_DELEGATION);
+            assert_read_buffer_unchanged_and_cleanup(&aux_delegation_buffer, delegation->payload);
         }
 
         assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
@@ -293,7 +288,7 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 
-    run_sign_tx_apdu(&(buffer_t){.ptr = (uint8_t *) init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_sw, SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
 
@@ -306,12 +301,12 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
 
         assert_non_null(fixture->aux_data_init_payload);
         assert_true(fixture->aux_data_init_payload_len > 0);
-        buffer_t aux_init_buf = {
-            .ptr = (uint8_t *) fixture->aux_data_init_payload,
-            .size = fixture->aux_data_init_payload_len,
-            .offset = 0,
-        };
-        run_sign_tx_aux_data_apdu(&aux_init_buf, P2_AUX_DATA_INIT);
+        test_read_buffer_t aux_init_buffer = make_test_read_buffer(
+            fixture->aux_data_init_payload,
+            fixture->aux_data_init_payload_len
+        );
+        run_sign_tx_aux_data_apdu(&aux_init_buffer.sdk_buffer, P2_AUX_DATA_INIT);
+        assert_read_buffer_unchanged_and_cleanup(&aux_init_buffer, fixture->aux_data_init_payload);
 
         if (g_last_response_sw == SWO_CONDITIONS_NOT_SATISFIED) {
             goto reject_assertions;
@@ -322,12 +317,12 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
             const aux_data_payload_t *delegation = &fixture->aux_data_delegations[i];
             assert_non_null(delegation->payload);
             assert_true(delegation->payload_len > 0);
-            buffer_t aux_reg_buf = {
-                .ptr = (uint8_t *) delegation->payload,
-                .size = delegation->payload_len,
-                .offset = 0,
-            };
-            run_sign_tx_aux_data_apdu(&aux_reg_buf, P2_AUX_DATA_DELEGATION);
+            test_read_buffer_t aux_delegation_buffer = make_test_read_buffer(
+                delegation->payload,
+                delegation->payload_len
+            );
+            run_sign_tx_aux_data_apdu(&aux_delegation_buffer.sdk_buffer, P2_AUX_DATA_DELEGATION);
+            assert_read_buffer_unchanged_and_cleanup(&aux_delegation_buffer, delegation->payload);
             if (g_last_response_sw == SWO_CONDITIONS_NOT_SATISFIED) {
                 goto reject_assertions;
             }

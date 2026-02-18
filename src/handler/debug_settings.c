@@ -10,7 +10,7 @@
 #include "io.h"
 #include "ledger_assert.h"
 #include "buffer.h"
-#include "buffer_helpers.h"
+#include "cardano_buffer.h"
 
 #include "debug_settings.h"
 #include "globals.h"
@@ -22,7 +22,7 @@ void handler_debug_set_settings(const buffer_t *buf) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
 
     // Expect exactly 2 bytes of data
-    const size_t remaining = buffer_remaining(buf);
+    const size_t remaining = buffer_data_size(buf);
     if (remaining != 2) {
         TRACE("DEBUG: Invalid data length: %d (expected 2)", (int)remaining);
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);

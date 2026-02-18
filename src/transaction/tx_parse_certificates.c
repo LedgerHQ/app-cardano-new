@@ -9,7 +9,6 @@
 
 #include "cardano_swo.h"
 #include "assert.h"
-#include "buffer_write.h"
 #include "utils.h"
 #include "textUtils.h"
 #include "ui_formatters.h"

@@ -23,7 +23,7 @@
 #include "dispatcher.h"
 #include "securityPolicy.h"
 #include "menu.h"
-#include "buffer_helpers.h"
+#include "cardano_buffer.h"
 
 static bool ensure_get_public_key_init_request_state(void) {
     if (G_context.req_type != REQUEST_NONE) {

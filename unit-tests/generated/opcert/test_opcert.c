@@ -26,6 +26,7 @@
 #include "apdu/dispatcher.h"
 #include "mem.h"
 #include "apdu_finalization_check.h"
+#include "test_read_buffer_helpers.h"
 
 
 static uint16_t g_last_sw = 0;
@@ -58,10 +59,11 @@ void reset_opcert_context(void) {
 static void run_opcert_fixture(const opcert_fixture_t *fixture) {
     assert_non_null(fixture);
     reset_opcert_context();
-    buffer_t data = {.ptr = fixture->payload, .size = fixture->payload_len, .offset = 0};
+    test_read_buffer_t opcert_buffer = make_test_read_buffer(fixture->payload, fixture->payload_len);
     apdu_response_begin(INS_SIGN_OPCERT);
-    handler_sign_opcert(&data);
+    handler_sign_opcert(&opcert_buffer.sdk_buffer);
     apdu_response_assert_sent_or_deferred();
+    assert_read_buffer_unchanged_and_cleanup(&opcert_buffer, fixture->payload);
     assert_int_equal(g_last_sw, SWO_SUCCESS);
     assert_int_equal(g_last_response_len, ED25519_SIGNATURE_LENGTH);
 }

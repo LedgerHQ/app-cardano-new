@@ -95,7 +95,7 @@ set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/ui/ui_formatters.c
     ${CARDANO_PATH}/src/ui/ui_utils.c
     ${CARDANO_PATH}/src/ui/ui_warnings.c
-    ${CARDANO_PATH}/src/utils/buffer_write.c
+    ${CARDANO_PATH}/src/utils/cardano_buffer.c
     ${CARDANO_PATH}/src/app_context.c
     ${CARDANO_PATH}/src/utils/cbor.c
     ${CARDANO_PATH}/src/utils/ipUtils.c

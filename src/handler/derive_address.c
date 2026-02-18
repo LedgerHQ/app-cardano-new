@@ -14,7 +14,7 @@
 #include "app_context.h"
 #include "io.h"
 #include "ui_display_address_derivation.h"
-#include "buffer_helpers.h"
+#include "cardano_buffer.h"
 
 static bool ensure_derive_address_init_request_state(void) {
     if (G_context.req_type != REQUEST_NONE) {

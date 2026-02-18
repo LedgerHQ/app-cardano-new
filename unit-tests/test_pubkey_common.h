@@ -23,6 +23,7 @@
 #include "app_mem_utils.h"
 #include "io_capture.h"
 #include "nbgl_mock.h"
+#include "test_read_buffer_helpers.h"
 
 // ----------------------------------------------------------------------
 // Test state
@@ -48,15 +49,12 @@ static inline void run_fixture(const pubkey_fixture_t *fixture) {
 
     unit_test_silent_pubkey_export_enabled = fixture->silent_export_enabled;
 
-    buffer_t buf = {
-        .ptr = fixture->data,
-        .size = fixture->data_len,
-        .offset = 0,
-    };
+    test_read_buffer_t pubkey_buffer = make_test_read_buffer(fixture->data, fixture->data_len);
 
     apdu_response_begin(INS_GET_PUBLIC_KEY);
-    handler_get_public_key(&buf);
+    handler_get_public_key(&pubkey_buffer.sdk_buffer);
     apdu_response_assert_sent_or_deferred();
+    assert_read_buffer_unchanged_and_cleanup(&pubkey_buffer, fixture->data);
     assert_int_equal(g_last_response_sw, fixture->check_expected);
 
     if (fixture->check_expected == SWO_SUCCESS) {

@@ -26,6 +26,7 @@
 #include "handler/derive_address.h"
 #include "io_capture.h"
 #include "nbgl_mock.h"
+#include "test_read_buffer_helpers.h"
 
 // ----------------------------------------------------------------------
 // Constants
@@ -61,15 +62,12 @@ static inline void run_fixture(const derive_address_fixture_t *fixture) {
 
     // Mock the handler call with fixture data
     // The handler should reject and return the expected status word
-    buffer_t buf = {
-        .ptr = fixture->data,
-        .size = fixture->data_len,
-        .offset = 0,
-    };
-    TRACE_BUFFER(buf.ptr, buf.size);
+    test_read_buffer_t derive_address_buffer = make_test_read_buffer(fixture->data, fixture->data_len);
+    TRACE_BUFFER(derive_address_buffer.sdk_buffer.ptr, derive_address_buffer.sdk_buffer.size);
     apdu_response_begin(INS_DERIVE_ADDRESS);
-    handler_derive_address(&buf, fixture->p1);
+    handler_derive_address(&derive_address_buffer.sdk_buffer, fixture->p1);
     apdu_response_assert_sent_or_deferred();
+    assert_read_buffer_unchanged_and_cleanup(&derive_address_buffer, fixture->data);
     assert_int_equal(g_last_response_sw, fixture->check_expected);
 
     if (fixture->expected_address != NULL && fixture->expected_address_len > 0) {

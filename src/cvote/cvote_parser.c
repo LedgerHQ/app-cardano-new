@@ -9,7 +9,6 @@
 #include "addressUtilsShelley.h"
 #include "globals.h"
 #include "mem.h"
-#include "buffer_write.h"
 #include "cardano_parsers.h"
 #include "tx_parse_outputs.h"
 #include "utils.h"

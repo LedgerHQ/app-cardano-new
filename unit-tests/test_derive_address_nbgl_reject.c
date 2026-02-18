@@ -20,6 +20,7 @@
 #include "io_capture.h"
 #include "nbgl_mock.h"
 #include "apdu_finalization_check.h"
+#include "test_read_buffer_helpers.h"
 
 #define TEST_HEAP_SIZE (23 * 1024)
 static uint8_t test_heap[TEST_HEAP_SIZE];
@@ -45,15 +46,15 @@ static void test_nbgl_reject_on_address_review_resets_context(void **state) {
     const bool final_decisions[] = {false};
     nbgl_mock_set_final_decisions(final_decisions, ARRAY_LEN(final_decisions));
 
-    buffer_t buf = {
-        .ptr = (uint8_t *) SHELLEY_DISPLAY_APDU_PAYLOAD,
-        .size = sizeof(SHELLEY_DISPLAY_APDU_PAYLOAD),
-        .offset = 0,
-    };
+    test_read_buffer_t derive_address_buffer = make_test_read_buffer(
+        SHELLEY_DISPLAY_APDU_PAYLOAD,
+        sizeof(SHELLEY_DISPLAY_APDU_PAYLOAD)
+    );
 
     apdu_response_begin(INS_DERIVE_ADDRESS);
-    handler_derive_address(&buf, P1_ADDRESS_DISPLAY);
+    handler_derive_address(&derive_address_buffer.sdk_buffer, P1_ADDRESS_DISPLAY);
     apdu_response_assert_sent_or_deferred();
+    assert_read_buffer_unchanged_and_cleanup(&derive_address_buffer, SHELLEY_DISPLAY_APDU_PAYLOAD);
 
     assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(g_last_response_len, 0);

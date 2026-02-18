@@ -21,6 +21,7 @@
 #include "nbgl_mock.h"
 #include "test_opcert_fixtures.h"
 #include "apdu_finalization_check.h"
+#include "test_read_buffer_helpers.h"
 
 #define TEST_HEAP_SIZE (23 * 1024)
 static uint8_t test_heap[TEST_HEAP_SIZE];
@@ -40,15 +41,12 @@ static void test_nbgl_reject_on_sign_opcert_review_resets_context(void **state) 
     nbgl_mock_set_final_decisions(final_decisions, ARRAY_LEN(final_decisions));
 
     const opcert_fixture_t *fixture = &OPCERT_FIXTURES[0];
-    buffer_t buf = {
-        .ptr = (uint8_t *) fixture->payload,
-        .size = fixture->payload_len,
-        .offset = 0,
-    };
+    test_read_buffer_t opcert_buffer = make_test_read_buffer(fixture->payload, fixture->payload_len);
 
     apdu_response_begin(INS_SIGN_OPCERT);
-    handler_sign_opcert(&buf);
+    handler_sign_opcert(&opcert_buffer.sdk_buffer);
     apdu_response_assert_sent_or_deferred();
+    assert_read_buffer_unchanged_and_cleanup(&opcert_buffer, fixture->payload);
 
     assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(g_last_response_len, 0);

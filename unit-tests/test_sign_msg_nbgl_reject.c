@@ -21,6 +21,7 @@
 #include "nbgl_mock.h"
 #include "test_sign_msg_fixtures.h"
 #include "apdu_finalization_check.h"
+#include "test_read_buffer_helpers.h"
 
 #define TEST_HEAP_SIZE (23 * 1024)
 static uint8_t test_heap[TEST_HEAP_SIZE];
@@ -33,14 +34,11 @@ static void reset_test_context(void) {
 }
 
 static void run_sign_msg_apdu(const uint8_t *data, size_t data_len, uint8_t p1) {
-    buffer_t buf = {
-        .ptr = (uint8_t *) data,
-        .size = data_len,
-        .offset = 0,
-    };
+    test_read_buffer_t sign_msg_buffer = make_test_read_buffer(data, data_len);
     apdu_response_begin(INS_SIGN_MSG);
-    handler_sign_msg(&buf, p1);
+    handler_sign_msg(&sign_msg_buffer.sdk_buffer, p1);
     apdu_response_assert_sent_or_deferred();
+    assert_read_buffer_unchanged_and_cleanup(&sign_msg_buffer, data);
 }
 
 static void test_nbgl_reject_on_sign_msg_review_resets_context(void **state) {

@@ -120,7 +120,7 @@ add_executable(test_cardano_tokens
 )
 add_executable(test_bip44 test_bip44.c)
 add_executable(test_cbor test_cbor.c)
-add_executable(test_buffer_utils test_buffer_write.c)
+add_executable(test_cardano_buffer test_cardano_buffer.c)
 add_executable(test_ip_utils test_ip_utils.c ../src/utils/ipUtils.c)
 add_executable(test_hash test_hash.c)
 add_executable(test_address_utils_byron
@@ -210,7 +210,7 @@ set(TEST_EXECUTABLES
     test_cardano_tokens
     test_bip44
     test_cbor
-    test_buffer_utils
+    test_cardano_buffer
     test_ip_utils
     test_hash
     test_address_utils_byron
@@ -229,7 +229,7 @@ set(TEST_EXECUTABLES
 add_library(base58 SHARED $ENV{BOLOS_SDK}/lib_standard_app/base58.c)
 add_library(bip32 SHARED $ENV{BOLOS_SDK}/lib_standard_app/bip32.c)
 add_library(buffer SHARED $ENV{BOLOS_SDK}/lib_standard_app/buffer.c)
-target_link_libraries(buffer PUBLIC varint bip32)
+target_link_libraries(buffer PUBLIC varint bip32 read write)
 add_library(read SHARED $ENV{BOLOS_SDK}/lib_standard_app/read.c)
 add_library(write SHARED $ENV{BOLOS_SDK}/lib_standard_app/write.c)
 add_library(format SHARED $ENV{BOLOS_SDK}/lib_standard_app/format.c)
@@ -249,8 +249,8 @@ add_library(bip44_real SHARED ../src/addressUtils/bip44.c)
 target_link_libraries(bip44_real PUBLIC c read write buffer varint)
 add_library(cbor_lib SHARED ../src/utils/cbor.c)
 target_link_libraries(cbor_lib PUBLIC c m read)
-add_library(buffer_write_lib SHARED ../src/utils/buffer_write.c)
-target_link_libraries(buffer_write_lib PUBLIC c cbor_lib buffer write)
+add_library(cardano_buffer_lib SHARED ../src/utils/cardano_buffer.c)
+target_link_libraries(cardano_buffer_lib PUBLIC c cbor_lib buffer write)
 add_library(parsers_lib SHARED ../src/parsers/cardano_parsers.c)
 target_link_libraries(parsers_lib PUBLIC c buffer read write varint bip32 text_utils bip44_real)
 add_library(crypto_mocks_lib SHARED
@@ -317,7 +317,7 @@ set(SIGN_TX_COMMON_LIBS
     base58
     bech32_lib
     bip44_real
-    buffer_write_lib
+    cardano_buffer_lib
     cbor_lib
     blake2b_lib
     sha3_lib
@@ -368,7 +368,7 @@ target_link_libraries(test_text_utils
         hash_mocks_lib
         blake2b_lib
         sha3_lib
-        buffer_write_lib
+        cardano_buffer_lib
         format
 )
 target_link_libraries(test_ui_formatters
@@ -380,7 +380,7 @@ target_link_libraries(test_ui_formatters
         hash_mocks_lib
         blake2b_lib
         sha3_lib
-        buffer_write_lib
+        cardano_buffer_lib
         format
 )
 target_link_libraries(test_cardano_tokens
@@ -392,12 +392,12 @@ target_link_libraries(test_cardano_tokens
         hash_mocks_lib
         blake2b_lib
         sha3_lib
-        buffer_write_lib
+        cardano_buffer_lib
         format
 )
 target_link_libraries(test_bip44 PUBLIC cmocka gcov bip44_real)
 target_link_libraries(test_cbor PUBLIC cmocka gcov cbor_lib hex_utils read write c)
-target_link_libraries(test_buffer_utils PUBLIC cmocka gcov buffer_write_lib buffer write varint bip32 parsers_lib)
+target_link_libraries(test_cardano_buffer PUBLIC cmocka gcov cardano_buffer_lib buffer write varint bip32 parsers_lib)
 target_link_libraries(test_ip_utils PUBLIC cmocka gcov)
 target_link_libraries(test_hash PUBLIC cmocka gcov hex_utils blake2b_lib sha3_lib hash_mocks_lib)
 target_link_libraries(test_address_utils_byron
@@ -410,7 +410,7 @@ target_link_libraries(test_address_utils_byron
         hash_mocks_lib
         blake2b_lib
         sha3_lib
-        buffer_write_lib
+        cardano_buffer_lib
         cbor_lib
         buffer
         write
@@ -431,7 +431,7 @@ target_link_libraries(test_address_utils_shelley
         hash_mocks_lib
         blake2b_lib
         sha3_lib
-        buffer_write_lib
+        cardano_buffer_lib
         parsers_lib
         cbor_lib
         buffer
@@ -467,7 +467,7 @@ target_link_libraries(test_tx_hash_builder
         sha3_lib
         hex_utils
         cbor_lib
-        buffer_write_lib
+        cardano_buffer_lib
         buffer
         write
         read
@@ -487,7 +487,7 @@ target_link_libraries(test_tx_prepare
         base58
         bech32_lib
         bip44_real
-        buffer_write_lib
+        cardano_buffer_lib
         buffer
         write
         read
@@ -677,7 +677,7 @@ add_test(test_ui_formatters test_ui_formatters)
 add_test(test_cardano_tokens test_cardano_tokens)
 add_test(test_bip44 test_bip44)
 add_test(test_cbor test_cbor)
-add_test(test_buffer_utils test_buffer_utils)
+add_test(test_cardano_buffer test_cardano_buffer)
 add_test(test_ip_utils test_ip_utils)
 add_test(test_hash test_hash)
 add_test(test_address_utils_byron test_address_utils_byron)
@@ -731,7 +731,7 @@ set(DERIVE_ADDRESS_COMMON_LIBS
     base58
     bech32_lib
     bip44_real
-    buffer_write_lib
+    cardano_buffer_lib
     cbor_lib
     blake2b_lib
     sha3_lib
@@ -790,7 +790,7 @@ set(PUBKEY_COMMON_LIBS
     base58
     bech32_lib
     bip44_real
-    buffer_write_lib
+    cardano_buffer_lib
     cbor_lib
     blake2b_lib
     sha3_lib
@@ -823,7 +823,7 @@ set(SIGN_MSG_COMMON_SOURCES
     ../src/addressUtils/bip44.c
     ../src/cardano_tokens/cardano_tokens.c
     ../src/parsers/cardano_parsers.c
-    ../src/utils/buffer_write.c
+    ../src/utils/cardano_buffer.c
     ../src/utils/cbor.c
     ../src/utils/textUtils.c
     ../src/ui/ui_utils.c
@@ -843,7 +843,7 @@ set(SIGN_MSG_COMMON_LIBS
     base58
     bech32_lib
     bip44_real
-    buffer_write_lib
+    cardano_buffer_lib
     cbor_lib
     blake2b_lib
     sha3_lib
@@ -904,7 +904,7 @@ set(DERIVE_NATIVE_SCRIPT_COMMON_LIBS
     base58
     bech32_lib
     bip44_real
-    buffer_write_lib
+    cardano_buffer_lib
     cbor_lib
     blake2b_lib
     sha3_lib

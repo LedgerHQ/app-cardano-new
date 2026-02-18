@@ -8,7 +8,7 @@
 #include "assert.h"
 #include "textUtils.h"
 #include "utils.h"
-#include "buffer_helpers.h"
+#include "cardano_buffer.h"
 
 #include <string.h>
 
@@ -42,19 +42,7 @@ bool buffer_read_bytes(buffer_t *buffer, uint8_t *destBuffer, size_t n) {
         return false;
     }
 
-    memmove(destBuffer, buffer_current_ptr(buffer), n);
-    return buffer_seek_cur(buffer, n);
-}
-
-bool buffer_read_bytes_ptr(buffer_t *buffer, const uint8_t **destBuffer, size_t n) {
-    LEDGER_ASSERT(buffer != NULL, "NULL buffer");
-    LEDGER_ASSERT(destBuffer != NULL, "NULL destination");
-
-    if (!buffer_can_read(buffer, n)) {
-        return false;
-    }
-
-    *destBuffer = buffer_current_ptr(buffer);
+    memmove(destBuffer, buffer_get_cur(buffer), n);
     return buffer_seek_cur(buffer, n);
 }
 

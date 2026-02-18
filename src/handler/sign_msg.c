@@ -16,7 +16,7 @@
 #include "app_context.h"
 #include "io.h"
 #include "cardano_parsers.h"
-#include "buffer_write.h"
+#include "cardano_buffer.h"
 #include "messageSigning.h"
 #include "ui_sign_msg.h"
 #include "keyDerivation.h"
@@ -24,7 +24,6 @@
 #include "cbor.h"
 #include "nbgl_use_case.h"
 #include "app_mem_utils.h"
-#include "buffer_helpers.h"
 
 // Overhead for Sig_structure CBOR encoding:
 // - 1 byte array(4) header
@@ -335,7 +334,7 @@ static size_t _createProtectedHeader(sign_msg_ctx_t *ctx,
     //     1 : -8,                         // set algorithm to EdDSA
     //     "address" : address_bytes       // raw address or key hash
     // }
-    write_buffer_t buffer = buffer_init_write(protectedHeaderBuffer, maxSize);
+    buffer_t buffer = buffer_create(protectedHeaderBuffer, maxSize);
 
     // Map with 2 entries
     LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_MAP, 2), "CBOR write failed");
@@ -364,7 +363,7 @@ static size_t _createProtectedHeader(sign_msg_ctx_t *ctx,
     LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_BYTES, ctx->addressFieldSize), "CBOR write failed");
     LEDGER_ASSERT(buffer_write_bytes(&buffer, ctx->addressField, ctx->addressFieldSize), "Buffer overflow");
 
-    const size_t protectedHeaderSize = buffer_written_size(&buffer);
+    const size_t protectedHeaderSize = buffer.offset;
     LEDGER_ASSERT(protectedHeaderSize > 0 && protectedHeaderSize <= maxSize, "Invalid header size");
 
     return protectedHeaderSize;
@@ -398,7 +397,7 @@ static bool _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
         return false;
     }
 
-    write_buffer_t buffer = buffer_init_write(sigStructure, sigStructureMaxSize);
+    buffer_t buffer = buffer_create(sigStructure, sigStructureMaxSize);
 
     // Array with 4 elements
     LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_ARRAY, 4), "CBOR write failed");
@@ -436,7 +435,7 @@ static bool _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
         LEDGER_ASSERT(buffer_write_bytes(&buffer, ctx->msgBuffer, ctx->msgLength), "Buffer overflow");
     }
 
-    const size_t sigStructureSize = buffer_written_size(&buffer);
+    const size_t sigStructureSize = buffer.offset;
     TRACE("Sig_structure size = %u", sigStructureSize);
     TRACE_BUFFER(sigStructure, sigStructureSize);
 
@@ -492,14 +491,14 @@ void finalize_sign_msg(void) {
     // [64 bytes: signature] [32 bytes: witnessKey] [4 bytes: addressFieldSize BE]
     // [addressFieldSize bytes: addressField]
     uint8_t response_buffer[ED25519_SIGNATURE_LENGTH + PUBLIC_KEY_LENGTH + 4 + MAX_ADDRESS_LENGTH];
-    write_buffer_t response = buffer_init_write(response_buffer, SIZEOF(response_buffer));
+    buffer_t response = buffer_create(response_buffer, SIZEOF(response_buffer));
 
     LEDGER_ASSERT(buffer_write_bytes(&response, ctx->signature, SIZEOF(ctx->signature)), "Write signature failed");
     LEDGER_ASSERT(buffer_write_bytes(&response, ctx->witnessKey, SIZEOF(ctx->witnessKey)), "Write witness key failed");
     LEDGER_ASSERT(buffer_write_u32(&response, ctx->addressFieldSize, BE), "Write address size failed");
     LEDGER_ASSERT(buffer_write_bytes(&response, ctx->addressField, ctx->addressFieldSize), "Write address failed");
 
-    const size_t response_size = buffer_written_size(&response);
+    const size_t response_size = response.offset;
     TRACE("Response size = %u", response_size);
 
     apdu_response_send_data(response_buffer, response_size, SWO_SUCCESS);

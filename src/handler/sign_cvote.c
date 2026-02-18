@@ -14,11 +14,10 @@
 #include "app_context.h"
 #include "io.h"
 #include "cardano_parsers.h"
-#include "buffer_write.h"
+#include "cardano_buffer.h"
 #include "cvote/vote_cast_hash_builder.h"
 #include "messageSigning.h"
 #include "ui_cvote.h"
-#include "buffer_helpers.h"
 
 static bool ensure_sign_cvote_state(cvote_state_e required_state) {
     if (G_context.state.cvote_state != required_state) {
@@ -52,8 +51,8 @@ static void handle_sign_cvote_init_apdu(buffer_t *cdata) {
     TRACE("Remaining votecast bytes = %u", ctx->remaining_votecast_bytes);
 
     // Verify that the rest of the APDU contains exactly the amount of data specified
-    const size_t votecast_chunk_size = buffer_remaining(cdata);
-    const uint8_t *votecast_chunk_ptr = buffer_current_ptr(cdata);
+    const size_t votecast_chunk_size = buffer_data_size(cdata);
+    const uint8_t *votecast_chunk_ptr = buffer_get_cur(cdata);
     if (votecast_chunk_size > ctx->remaining_votecast_bytes) {
         TRACE("APDU contains more data than specified in length field");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
@@ -117,7 +116,7 @@ static void handle_sign_cvote_chunk_apdu(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
     cvote_ctx_t *ctx = &G_context.cvote_info;
 
-    const size_t chunk_size = buffer_remaining(cdata);
+    const size_t chunk_size = buffer_data_size(cdata);
     TRACE("chunk_size = %u", (unsigned) chunk_size);
 
     const size_t expected_chunk_size = MIN(ctx->remaining_votecast_bytes, MAX_VOTECAST_CHUNK_SIZE);
@@ -130,7 +129,7 @@ static void handle_sign_cvote_chunk_apdu(buffer_t *cdata) {
     }
 
     vote_cast_hash_builder_chunk(&ctx->votecast_hash_builder,
-                                 buffer_current_ptr(cdata),
+                                 buffer_get_cur(cdata),
                                  chunk_size);
 
     ctx->remaining_votecast_bytes -= chunk_size;
@@ -206,12 +205,16 @@ void finalize_sign_cvote(void) {
 
     // Prepare response: hash (32 bytes) + signature (64 bytes)
     uint8_t response_buffer[VOTECAST_HASH_LENGTH + ED25519_SIGNATURE_LENGTH];
-    write_buffer_t response = buffer_init_write(response_buffer, SIZEOF(response_buffer));
+    buffer_t response = buffer_create(response_buffer, SIZEOF(response_buffer));
 
-    buffer_write_bytes(&response, votecast_hash, SIZEOF(votecast_hash));
-    buffer_write_bytes(&response, ctx->witness_signature, SIZEOF(ctx->witness_signature));
+    LEDGER_ASSERT(buffer_write_bytes(&response, votecast_hash, SIZEOF(votecast_hash)),
+                  "Write vote cast hash failed");
+    LEDGER_ASSERT(buffer_write_bytes(&response,
+                                     ctx->witness_signature,
+                                     SIZEOF(ctx->witness_signature)),
+                  "Write witness signature failed");
 
-    LEDGER_ASSERT(buffer_written_size(&response) == SIZEOF(response_buffer), "Response size mismatch");
+    LEDGER_ASSERT(response.offset == SIZEOF(response_buffer), "Response size mismatch");
 
     apdu_response_send_data(response_buffer, SIZEOF(response_buffer), SWO_SUCCESS);
     reset_app_context();

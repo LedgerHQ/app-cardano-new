@@ -18,7 +18,7 @@
 #include "securityPolicy.h"
 #include "ui_display_native_script_hash.h"
 #include "utils.h"
-#include "buffer_helpers.h"
+#include "cardano_buffer.h"
 
 static bool ensure_derive_native_script_hash_request_type(request_type_e required_request_type) {
     if (G_context.req_type != required_request_type) {

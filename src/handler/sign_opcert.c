@@ -9,7 +9,7 @@
 #include "app_context.h"
 #include "bip44.h"
 #include "buffer.h"
-#include "buffer_write.h"
+#include "cardano_buffer.h"
 #include "cardano_swo.h"
 #include "globals.h"
 #include "io.h"
@@ -98,14 +98,14 @@ void finalize_sign_opcert(void) {
     const parsed_opcert_t* opcert = &G_context.opcert_info.opcert;
     uint8_t opCertBodyBuffer[OP_CERT_BODY_LENGTH] = {0};
     {
-        write_buffer_t buf = buffer_init_write(opCertBodyBuffer, SIZEOF(opCertBodyBuffer));
+        buffer_t buf = buffer_create(opCertBodyBuffer, SIZEOF(opCertBodyBuffer));
 
         // Buffer is exactly sized - failure is programming error
         LEDGER_ASSERT(buffer_write_bytes(&buf, (const uint8_t*) opcert->kesPublicKey, KES_PUBLIC_KEY_LENGTH), "Write KES pubkey failed");
         LEDGER_ASSERT(buffer_write_u64(&buf, opcert->issueCounter, BE), "Write issueCounter failed");
         LEDGER_ASSERT(buffer_write_u64(&buf, opcert->kesPeriod, BE), "Write kesPeriod failed");
 
-        LEDGER_ASSERT(buffer_written_size(&buf) == OP_CERT_BODY_LENGTH, "Bad body length");
+        LEDGER_ASSERT(buf.offset == OP_CERT_BODY_LENGTH, "Bad body length");
         TRACE_BUFFER(opCertBodyBuffer, SIZEOF(opCertBodyBuffer));
     }
 

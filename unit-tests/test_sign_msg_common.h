@@ -23,6 +23,7 @@
 #include "app_mem_utils.h"
 #include "io_capture.h"
 #include "nbgl_mock.h"
+#include "test_read_buffer_helpers.h"
 
 // ----------------------------------------------------------------------
 // Test state
@@ -49,37 +50,28 @@ static inline void run_fixture(const sign_msg_fixture_t *fixture) {
     reset_sign_msg_test_state();
     reset_mock_signature_state();
 
-    buffer_t init_buffer = {
-        .ptr = fixture->init_data,
-        .size = fixture->init_data_len,
-        .offset = 0,
-    };
+    test_read_buffer_t init_buffer = make_test_read_buffer(fixture->init_data, fixture->init_data_len);
     apdu_response_begin(INS_SIGN_MSG);
-    handler_sign_msg(&init_buffer, P1_SIGN_MSG_INIT);
+    handler_sign_msg(&init_buffer.sdk_buffer, P1_SIGN_MSG_INIT);
     apdu_response_assert_sent_or_deferred();
+    assert_read_buffer_unchanged_and_cleanup(&init_buffer, fixture->init_data);
     assert_int_equal(g_last_response_sw, fixture->check_expected);
 
     for (size_t chunk_idx = 0; chunk_idx < fixture->chunk_count; chunk_idx++) {
         const sign_msg_chunk_t *chunk = &fixture->chunks[chunk_idx];
-        buffer_t chunk_buffer = {
-            .ptr = chunk->data,
-            .size = chunk->data_len,
-            .offset = 0,
-        };
+        test_read_buffer_t chunk_buffer = make_test_read_buffer(chunk->data, chunk->data_len);
         apdu_response_begin(INS_SIGN_MSG);
-        handler_sign_msg(&chunk_buffer, P1_SIGN_MSG_CHUNK);
+        handler_sign_msg(&chunk_buffer.sdk_buffer, P1_SIGN_MSG_CHUNK);
         apdu_response_assert_sent_or_deferred();
+        assert_read_buffer_unchanged_and_cleanup(&chunk_buffer, chunk->data);
         assert_int_equal(g_last_response_sw, fixture->check_expected);
     }
 
-    buffer_t confirm_buffer = {
-        .ptr = fixture->confirm_data,
-        .size = fixture->confirm_data_len,
-        .offset = 0,
-    };
+    test_read_buffer_t confirm_buffer = make_test_read_buffer(fixture->confirm_data, fixture->confirm_data_len);
     apdu_response_begin(INS_SIGN_MSG);
-    handler_sign_msg(&confirm_buffer, P1_SIGN_MSG_CONFIRM);
+    handler_sign_msg(&confirm_buffer.sdk_buffer, P1_SIGN_MSG_CONFIRM);
     apdu_response_assert_sent_or_deferred();
+    assert_read_buffer_unchanged_and_cleanup(&confirm_buffer, fixture->confirm_data);
     assert_int_equal(g_last_response_sw, fixture->check_expected);
 
     assert_true(g_last_response_len > 0);

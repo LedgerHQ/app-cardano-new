@@ -28,7 +28,7 @@
 #include "tx_utils.h"
 #include "tx_validate.h"
 #include "utils.h"
-#include "buffer_helpers.h"
+#include "cardano_buffer.h"
 
 #ifdef HAVE_SWAP
 #include "swap.h"
@@ -390,7 +390,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
 static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handle_tx_data_chunk");
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_CHUNKS, "Invalid state for chunk reception");
-    const size_t chunk_size = buffer_remaining(cdata);
+    const size_t chunk_size = buffer_data_size(cdata);
 
     if (is_final_chunk) {
         if (chunk_size == 0 || chunk_size > MAX_SIGN_TX_CHUNK_SIZE) {

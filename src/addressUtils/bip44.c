@@ -6,7 +6,7 @@
 #include "cardano_swo.h"
 #include "read.h"
 #include "assert.h"
-#include "buffer_helpers.h"
+#include "cardano_buffer.h"
 
 enum {
     CARDANO_CHAIN_EXTERNAL = 0,
@@ -67,8 +67,8 @@ bool buffer_read_bip44_path(buffer_t *buf, bip44_path_t* path)
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     LEDGER_ASSERT(path != NULL, "NULL path");
 
-    const uint8_t *wire_ptr = buffer_current_ptr(buf);
-    size_t remaining = buffer_remaining(buf);
+    const uint8_t *wire_ptr = buffer_get_cur(buf);
+    size_t remaining = buffer_data_size(buf);
     size_t length = bip44_parse_path(path, wire_ptr, remaining);
 
     // bip44_parse_path returns 0 on error (invalid path)

@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "buffer.h"
+#include "cardano_buffer.h"
 #include "tx_credential_types.h"
 #include "tx_certificate_types.h"
 
@@ -44,16 +45,6 @@ bool buffer_read_flag_included(buffer_t *buf, bool* result);
  * @return true on success, false on failure
  */
 bool buffer_read_bytes(buffer_t *buffer, uint8_t *destBuffer, size_t n);
-
-/**
- * Read bytes from buffer and return pointer into input buffer.
- *
- * @param[in,out] buffer Read buffer
- * @param[out] destBuffer Pointer to buffer contents
- * @param[in] n Number of bytes to read
- * @return true on success, false on failure
- */
-bool buffer_read_bytes_ptr(buffer_t *buffer, const uint8_t **destBuffer, size_t n);
 
 /**
  * Read an int64 value with specified endianness.

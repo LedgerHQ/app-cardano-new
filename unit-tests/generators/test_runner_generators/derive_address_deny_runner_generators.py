@@ -64,6 +64,7 @@ def _build_test_file_header() -> str:
 #include "apdu_finalization_check.h"
 #include "io_capture.h"
 #include "nbgl_mock.h"
+#include "test_read_buffer_helpers.h"
 
 // ----------------------------------------------------------------------
 // Constants
@@ -77,16 +78,13 @@ static void run_deny_fixture(const derive_address_fixture_t *fixture) {
     io_capture_reset();
     nbgl_mock_reset();
 
-    buffer_t buf = {
-        .ptr = fixture->data,
-        .size = fixture->data_len,
-        .offset = 0,
-    };
-    TRACE_BUFFER(buf.ptr, buf.size);
+    test_read_buffer_t deny_fixture_buffer = make_test_read_buffer(fixture->data, fixture->data_len);
+    TRACE_BUFFER(deny_fixture_buffer.sdk_buffer.ptr, deny_fixture_buffer.sdk_buffer.size);
     TRACE("Running deny fixture: %s", fixture->name);
     apdu_response_begin(INS_DERIVE_ADDRESS);
-    handler_derive_address(&buf, fixture->p1);
+    handler_derive_address(&deny_fixture_buffer.sdk_buffer, fixture->p1);
     apdu_response_assert_sent_or_deferred();
+    assert_read_buffer_unchanged_and_cleanup(&deny_fixture_buffer, fixture->data);
     assert_int_equal(g_last_response_sw, fixture->check_expected);
 }
 

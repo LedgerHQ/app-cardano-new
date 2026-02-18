@@ -4,7 +4,7 @@
 #include <string.h>  // explicit_bzero
 
 #include "assert.h"
-#include "buffer_write.h"
+#include "cardano_buffer.h"
 #include "addressUtilsByron.h"
 #include "keyDerivation.h"
 #include "cbor.h"
@@ -14,7 +14,6 @@
 #include "cardano_swo.h"
 #include "utils.h"
 #include "assert.h"
-#include "buffer_helpers.h"
 
 #define BYRON_ADDRESS_CBOR_HASH_SIZE 32
 #define ADDRESS_ROOT_SIZE 28
@@ -36,7 +35,7 @@ void addressRootFromExtPubKey(const extendedPublicKey_t* extPubKey,
     ASSERT(outSize == ADDRESS_ROOT_SIZE);
 
     uint8_t cborBuffer[64 + 10] = {0};
-    write_buffer_t cbor = buffer_init_write(cborBuffer, SIZEOF(cborBuffer));
+    buffer_t cbor = buffer_create(cborBuffer, SIZEOF(cborBuffer));
 
     {
         // [0, [0, publicKey:chainCode], Map(0)]
@@ -56,7 +55,7 @@ void addressRootFromExtPubKey(const extendedPublicKey_t* extPubKey,
 
     // cborBuffer is hashed twice. First by sha3_256 and then by blake2b_224
     uint8_t cborShaHash[BYRON_ADDRESS_CBOR_HASH_SIZE] = {0};
-    sha3_256_hash(cbor.ptr, buffer_written_size(&cbor), cborShaHash, SIZEOF(cborShaHash));
+    sha3_256_hash(cbor.ptr, cbor.offset, cborShaHash, SIZEOF(cborShaHash));
     blake2b_224_hash(cborShaHash, SIZEOF(cborShaHash), outBuffer, outSize);
 }
 
@@ -70,7 +69,7 @@ size_t cborEncodePubkeyAddressInner(const uint8_t* addressRoot,
     ASSERT(addressRootSize == ADDRESS_ROOT_SIZE);  // should be result of blake2b_224
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
 
-    write_buffer_t out = buffer_init_write(outBuffer, outSize);
+    buffer_t out = buffer_create(outBuffer, outSize);
     {
         // [0, [0, publicKey:chainCode], Map(0)]
         ASSERT(buffer_write_cbor_token(&out, CBOR_TYPE_ARRAY, 3));
@@ -110,7 +109,7 @@ size_t cborEncodePubkeyAddressInner(const uint8_t* addressRoot,
             ASSERT(buffer_write_cbor_token(&out, CBOR_TYPE_UNSIGNED, CARDANO_ADDRESS_TYPE_PUBKEY));
         }
     }
-    return buffer_written_size(&out);
+    return out.offset;
 }
 
 size_t cborPackRawAddressWithChecksum(const uint8_t* rawAddressBuffer,
@@ -120,7 +119,7 @@ size_t cborPackRawAddressWithChecksum(const uint8_t* rawAddressBuffer,
     ASSERT(rawAddressSize < BUFFER_SIZE_PARANOIA);
     ASSERT(outputSize < BUFFER_SIZE_PARANOIA);
 
-    write_buffer_t output = buffer_init_write(outputBuffer, outputSize);
+    buffer_t output = buffer_create(outputBuffer, outputSize);
     {
         // Format is
         // Array[
@@ -138,7 +137,7 @@ size_t cborPackRawAddressWithChecksum(const uint8_t* rawAddressBuffer,
             ASSERT(buffer_write_cbor_token(&output, CBOR_TYPE_UNSIGNED, checksum));
         }
     }
-    return buffer_written_size(&output);
+    return output.offset;
 }
 
 size_t deriveRawAddress(const bip44_path_t* pathSpec,
@@ -182,7 +181,7 @@ size_t deriveAddress_byron(const bip44_path_t* pathSpec,
 static bool parseToken(buffer_t* buf, uint8_t expectedType, uint64_t* out_value) {
     cbor_token_t token = {0};
 
-    if (!cbor_parseToken(buffer_current_ptr(buf), buffer_remaining(buf), &token)) {
+    if (!cbor_parseToken(buffer_get_cur(buf), buffer_data_size(buf), &token)) {
         return false;
     }
 
@@ -230,7 +229,7 @@ static bool parseBytesSizeToken(buffer_t* buf, size_t* out_size) {
     }
 
     // Check remaining size in read buffer
-    size_t remaining = buffer_remaining(buf);
+    size_t remaining = buffer_data_size(buf);
     if (parsedSizeDowncasted > remaining) {
         return false;
     }

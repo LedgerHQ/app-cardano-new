@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: 2025-2026 Vacuumlabs */
 /* SPDX-License-Identifier: Apache-2.0 */
 
-#include "buffer_write.h"
+#include "cardano_buffer.h"
 #include "cardano_parsers.h"
 #include "keyDerivation.h"
 #include "addressUtilsByron.h"
@@ -127,7 +127,7 @@ static bool is_staking_part_consistent_with_address_type(const address_params_t*
 }
 
 static bool buffer_write_pubkey_hash(
-    write_buffer_t* buf,
+    buffer_t* buf,
     const bip44_path_t* keyDerivationPath) {
 
     uint8_t hashedPubKey[ADDRESS_KEY_HASH_LENGTH] = {0};
@@ -137,7 +137,7 @@ static bool buffer_write_pubkey_hash(
 }
 
 // Write the payment credential (key-hash or script-hash) into buf.
-static void write_payment_credential(write_buffer_t* buf, const address_params_t* address_params) {
+static void write_payment_credential(buffer_t* buf, const address_params_t* address_params) {
     ASSERT(isValidAddressParams(address_params));
     switch (address_params->paymentPartType) {
         case PAYMENT_PART_KEY_PATH:
@@ -155,7 +155,7 @@ static void write_payment_credential(write_buffer_t* buf, const address_params_t
 
 // Write the staking credential (key-hash or script-hash) into buf.
 // stakingPartType must be one of STAKING_PART_KEY_PATH / STAKING_PART_KEY_HASH / STAKING_PART_SCRIPT_HASH.
-static void write_staking_credential(write_buffer_t* buf, const address_params_t* address_params) {
+static void write_staking_credential(buffer_t* buf, const address_params_t* address_params) {
     ASSERT(isValidAddressParams(address_params));
     switch (address_params->stakingPartType) {
         case STAKING_PART_KEY_PATH:
@@ -172,7 +172,7 @@ static void write_staking_credential(write_buffer_t* buf, const address_params_t
     }
 }
 
-static bool buffer_appendVariableLengthUInt(write_buffer_t* buf, uint64_t value) {
+static bool buffer_appendVariableLengthUInt(buffer_t* buf, uint64_t value) {
     ASSERT(value < (1llu << 63));  // avoid accidental cast from negative signed value
 
     if (value == 0) {
@@ -212,11 +212,11 @@ static size_t deriveAddress_reward(const address_params_t* address_params,
     const uint8_t header =
         constructShelleyAddressHeader(address_params->type, address_params->networkId);
 
-    write_buffer_t out = buffer_init_write(outBuffer, outSize);
+    buffer_t out = buffer_create(outBuffer, outSize);
     ASSERT(buffer_write_bytes(&out, &header, 1));
     // no payment data — reward addresses contain only the staking credential
     write_staking_credential(&out, address_params);
-    return buffer_written_size(&out);
+    return out.offset;
 }
 
 size_t constructRewardAddressFromKeyPath(const bip44_path_t* path,
@@ -249,7 +249,7 @@ size_t constructRewardAddressFromHash(uint8_t networkId,
     STATIC_ASSERT(ADDRESS_KEY_HASH_LENGTH == SCRIPT_HASH_LENGTH, "incompatible hash sizes");
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
 
-    write_buffer_t out = buffer_init_write(outBuffer, outSize);
+    buffer_t out = buffer_create(outBuffer, outSize);
     {
         const uint8_t addressHeader = constructShelleyAddressHeader(
             (source == REWARD_HASH_SOURCE_KEY) ? REWARD_KEY : REWARD_SCRIPT,
@@ -259,9 +259,9 @@ size_t constructRewardAddressFromHash(uint8_t networkId,
     }
 
     const int ADDRESS_LENGTH = REWARD_ACCOUNT_LENGTH;
-    ASSERT(buffer_written_size(&out) == ADDRESS_LENGTH);
+    ASSERT(out.offset == ADDRESS_LENGTH);
 
-    return buffer_written_size(&out);
+    return out.offset;
 }
 
 size_t deriveAddress(const address_params_t* address_params, uint8_t* outBuffer, size_t outSize) {
@@ -282,7 +282,7 @@ size_t deriveAddress(const address_params_t* address_params, uint8_t* outBuffer,
     }
 
     // All remaining Shelley types: header + payment + (staking credential | blockchain pointer | nothing)
-    write_buffer_t out = buffer_init_write(outBuffer, outSize);
+    buffer_t out = buffer_create(outBuffer, outSize);
     const uint8_t header =
         constructShelleyAddressHeader(address_params->type, address_params->networkId);
     ASSERT(buffer_write_bytes(&out, &header, 1));
@@ -308,7 +308,7 @@ size_t deriveAddress(const address_params_t* address_params, uint8_t* outBuffer,
             ASSERT(false);
     }
 
-    return buffer_written_size(&out);
+    return out.offset;
 }
 
 bool format_blockchain_pointer(blockchainPointer_t blockchainPointer, char* out, size_t outSize) {

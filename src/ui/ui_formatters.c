@@ -9,7 +9,7 @@
 #include "cardano_tokens.h"
 #include "cardano_constants.h"
 #include "bech32.h"
-#include "buffer_write.h"
+#include "cardano_buffer.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -74,7 +74,7 @@ bool format_decimal_amount(uint64_t amount, size_t places, char *out, size_t out
     LEDGER_ASSERT(places <= UINT8_MAX, "Decimal places exceed maximum value");
 
     char scratchBuffer[40] = {0};
-    write_buffer_t scratch_buf = buffer_init_write(scratchBuffer, SIZEOF(scratchBuffer));
+    buffer_t scratch_buf = buffer_create(scratchBuffer, SIZEOF(scratchBuffer));
 
     // We print in reverse
     // decimal digits
@@ -106,14 +106,14 @@ bool format_decimal_amount(uint64_t amount, size_t places, char *out, size_t out
     } while (amount > 0);
 
     // Size without terminating character
-    size_t rawSize = buffer_written_size(&scratch_buf);
+    size_t rawSize = scratch_buf.offset;
     if (rawSize + 1 > outSize) {
         return false;
     }
 
     // Copy reversed & append terminator
     explicit_bzero(out, outSize);
-    write_buffer_t out_buf = buffer_init_write(out, outSize);
+    buffer_t out_buf = buffer_create(out, outSize);
     for (size_t i = 0; i < rawSize; i++) {
         if (!buffer_write_u8(&out_buf, (uint8_t)scratchBuffer[rawSize - 1 - i])) {
             return false;

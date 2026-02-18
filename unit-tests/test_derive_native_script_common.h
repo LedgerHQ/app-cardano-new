@@ -25,6 +25,7 @@
 #include "handler/derive_native_script_hash.h"
 #include "test_native_script_utils.h"
 #include "nbgl_mock.h"
+#include "test_read_buffer_helpers.h"
 
 // Recursive fixture runner for success tests
 void run_recursive_fixture(const native_script_t *script) {
@@ -37,12 +38,15 @@ void run_recursive_fixture(const native_script_t *script) {
             case NATIVE_SCRIPT_TYPE_INVALID_BEFORE:
             case NATIVE_SCRIPT_TYPE_PUBKEY_DEVICE_OWNED:
             case NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY: {
-                buffer_t buf = {
-                    .ptr = script->impl.simple.apdu_payload,
-                    .size = script->impl.simple.apdu_payload_length,
-                    .offset = 0,
-                };
-                run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+                test_read_buffer_t native_script_simple_buffer = make_test_read_buffer(
+                    script->impl.simple.apdu_payload,
+                    script->impl.simple.apdu_payload_length
+                );
+                run_derive_native_script_apdu(&native_script_simple_buffer.sdk_buffer, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+                assert_read_buffer_unchanged_and_cleanup(
+                    &native_script_simple_buffer,
+                    script->impl.simple.apdu_payload
+                );
                 assert_int_equal(get_last_sw(), SWO_SUCCESS);
             } break;
             case NATIVE_SCRIPT_TYPE_ALL: {
@@ -149,12 +153,15 @@ static inline void run_fixture(const native_script_test_case_t *fixture) {
     run_recursive_fixture(fixture->root_script);
 
     // Send finish APDU
-    buffer_t buf = {
-        .ptr = fixture->finish_apdu_payload,
-        .size = fixture->finish_apdu_payload_length,
-        .offset = 0,
-    };
-    run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_FINISH);
+    test_read_buffer_t native_script_finish_buffer = make_test_read_buffer(
+        fixture->finish_apdu_payload,
+        fixture->finish_apdu_payload_length
+    );
+    run_derive_native_script_apdu(&native_script_finish_buffer.sdk_buffer, P1_NATIVE_SCRIPT_FINISH);
+    assert_read_buffer_unchanged_and_cleanup(
+        &native_script_finish_buffer,
+        fixture->finish_apdu_payload
+    );
 
     // Compare derived hash with expected hash
     assert_memory_equal(get_response_buffer(), fixture->expected_hash, SCRIPT_HASH_LENGTH);

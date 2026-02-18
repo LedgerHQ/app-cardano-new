@@ -597,8 +597,8 @@ static parser_status_e parse_output_payload(buffer_t *output_buf,
 
     if (buffer_can_read(output_buf, 1)) {
         TRACE("Deserialize: output buffer not fully consumed: offset=%u, size=%u",
-              (unsigned int) buffer_current_offset(output_buf),
-              (unsigned int) buffer_total_size(output_buf));
+              (unsigned int) output_buf->offset,
+              (unsigned int) output_buf->size);
         status = parse_failure_status;
         goto cleanup;
     }
@@ -617,14 +617,14 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, const tx_params_t *tx_par
             return OUTPUTS_PARSING_ERROR;
         }
         TRACE("Deserialize: Output %u: length=%u, buffer offset before parse=%u",
-              i, output_len, (unsigned int) buffer_current_offset(buf));
+              i, output_len, (unsigned int) buf->offset);
 
         // Create sub-buffer for this output with exact length
         if (!buffer_can_read(buf, output_len)) {
             return OUTPUTS_PARSING_ERROR;
         }
         buffer_t output_buf = {
-            .ptr = buffer_current_ptr(buf),
+            .ptr = buffer_get_cur(buf),
             .size = output_len,
             .offset = 0
         };
@@ -653,7 +653,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, const tx_params_t *tx_par
         }
         TRACE("Deserialize: Output %u complete, buffer offset now=%u",
               i,
-              (unsigned int) buffer_current_offset(buf));
+              (unsigned int) buf->offset);
 
         item->flist_node.next = NULL;
         flist_push_back(&tx_body->outputs, (flist_node_t *) item);
@@ -771,8 +771,8 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, const tx_params_t *tx
 static parser_status_e parse_tx_certificates(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
     TRACE("parse_tx_certificates: num_certificates=%u buf->offset=%u buf->size=%u",
           tx_params->num_certificates,
-          (unsigned int) buffer_current_offset(buf),
-          (unsigned int) buffer_total_size(buf));
+          (unsigned int) buf->offset,
+          (unsigned int) buf->size);
     for (uint16_t i = 0; i < tx_params->num_certificates; i++) {
         tx_certificate_node_t *item = NULL;
         if (!APP_MEM_CALLOC((void **) &item, (uint16_t) sizeof(*item))) {
@@ -1144,7 +1144,7 @@ static parser_status_e parse_tx_collateral_output(buffer_t *buf, const tx_params
     }
 
     buffer_t output_buf = {
-        .ptr = buffer_current_ptr(buf),
+        .ptr = buffer_get_cur(buf),
         .size = output_len,
         .offset = 0
     };

@@ -7,7 +7,7 @@
 #include <stdbool.h>
 #include <stddef.h> // Required for size_t
 #include "assert.h"
-#include "buffer_helpers.h"
+#include "cardano_buffer.h"
 
 // -----------------------------------------------------------------------------
 // Type Safety Macros
@@ -106,13 +106,13 @@
 static inline void trace_buffer_t_impl(const buffer_t *buffer) {
     LEDGER_ASSERT(buffer != NULL, "TRACE_BUFFER_T NULL buffer");
 
-    size_t remaining = buffer_remaining(buffer);
+    size_t remaining = buffer_data_size(buffer);
     if (remaining == 0) {
-        TRACE("empty buffer (total_size=%u)", (unsigned)buffer_total_size(buffer));
+        TRACE("empty buffer (total_size=%u)", (unsigned)buffer->size);
         return;
     }
 
-    TRACE("%.*h", (int)remaining, buffer_current_ptr(buffer));
+    TRACE("%.*h", (int)remaining, buffer_get_cur(buffer));
 }
 
 #define TRACE_BUFFER(BUF, SIZE) TRACE("%.*h", (int)(SIZE), BUF)

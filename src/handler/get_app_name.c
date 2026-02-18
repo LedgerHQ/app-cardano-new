@@ -12,7 +12,7 @@
 #include "cardano_swo.h"
 #include "assert.h"
 #include "app_context.h"
-#include "buffer_helpers.h"
+#include "cardano_buffer.h"
 #include "utils.h"
 
 void handler_get_app_name(const buffer_t *data_buffer) {
