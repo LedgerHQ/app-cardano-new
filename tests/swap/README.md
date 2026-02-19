@@ -2,6 +2,8 @@
 
 Local test suite for validating the Cardano app's swap functionality when called as a library by the Exchange app.
 
+In this repository workflow, swap tests are run only on explicit request.
+
 ## Quick Start
 
 ```bash

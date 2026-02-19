@@ -8,7 +8,8 @@ The Cardano Ledger app allows users to manage their Cardano assets on Ledger har
 
 For detailed information about the application, please refer to:
 - [doc/OVERVIEW.md](doc/OVERVIEW.md): High-level architecture, data flow, and testing infrastructure.
-- [doc/TX.md](doc/TX.md): Detailed transaction body processing and hashing specifications.
+- [doc/tx.md](doc/tx.md): Detailed transaction body processing and hashing specifications.
+- [doc/apdu.md](doc/apdu.md): Compact APDU command/flow reference and source-of-truth pointers.
 - [AGENTS.md](AGENTS.md): Development guidelines and instructions for AI agents.
 
 ## Quick start guide
@@ -66,7 +67,10 @@ Unit tests are located in `unit-tests/` and use the [CMocka](https://cmocka.org/
 ## Documentation
 
 - Architecture Overview: [doc/OVERVIEW.md](doc/OVERVIEW.md)
-- Transaction Processing: [doc/TX.md](doc/TX.md)
+- Testing Overview: [doc/testing.md](doc/testing.md)
+- Transaction Processing: [doc/tx.md](doc/tx.md)
+- APDU Overview: [doc/apdu.md](doc/apdu.md)
+- Changelog: [CHANGELOG.md](CHANGELOG.md)
 - Unit Tests: [unit-tests/README.md](unit-tests/README.md)
 - Fuzzing: [fuzzing/FUZZING.md](fuzzing/FUZZING.md)
 

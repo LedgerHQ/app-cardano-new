@@ -75,12 +75,17 @@ Security policies are the gatekeeper that prevents the device from signing trans
 
 Detailed data flow and transaction-specific logic are documented in [tx.md](tx.md).
 
+## APDU Reference
+
+For a compact command/flow reference and links to APDU source-of-truth headers, see [apdu.md](apdu.md).
+
 ## 4. Testing Infrastructure
 
 The app uses three complementary testing approaches for comprehensive validation:
 
 ### Testing Docs
 
+- `testing.md` for testing entry point and workflow.
 - `unit-tests/README.md` for unit-test build/run/fixtures.
 - `tests/standalone/README.md` for ragger standalone tests.
 - `tests/swap/README.md` for swap/library-mode tests.
