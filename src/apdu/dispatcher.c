@@ -131,60 +131,49 @@ void apdu_dispatcher(const command_t *cmd) {
     // Create data buffer upfront from APDU data
     buffer_t data_buffer = {.ptr = cmd->data, .size = cmd->lc, .offset = 0};
 
+#define REJECT_INCORRECT_P1_P2_IF(condition)             \
+    do {                                                 \
+        if (condition) {                                 \
+            send_swo_and_reset(SWO_INCORRECT_P1_P2);     \
+            apdu_response_assert_sent_or_deferred();     \
+            return;                                      \
+        }                                                \
+    } while (0)
+#define REJECT_USED_P1(p1) REJECT_INCORRECT_P1_P2_IF((p1) != P1_UNUSED)
+#define REJECT_USED_P2(p2) REJECT_INCORRECT_P1_P2_IF((p2) != P2_UNUSED)
+
     switch (cmd->ins) {
         case INS_GET_SERIAL:
-            if (cmd->p1 != P1_UNUSED || cmd->p2 != P2_UNUSED) {
-                send_swo_and_reset(SWO_INCORRECT_P1_P2);
-                apdu_response_assert_sent_or_deferred();
-                return;
-            }
-
+            REJECT_USED_P1(cmd->p1);
+            REJECT_USED_P2(cmd->p2);
             handler_get_serial(&data_buffer);
             apdu_response_assert_sent_or_deferred();
             return;
 
         case INS_GET_VERSION:
-            if (cmd->p1 != P1_UNUSED || cmd->p2 != P2_UNUSED) {
-                send_swo_and_reset(SWO_INCORRECT_P1_P2);
-                apdu_response_assert_sent_or_deferred();
-                return;
-            }
-
+            REJECT_USED_P1(cmd->p1);
+            REJECT_USED_P2(cmd->p2);
             handler_get_version(&data_buffer);
             apdu_response_assert_sent_or_deferred();
             return;
 
         case INS_GET_APP_NAME:
-            if (cmd->p1 != P1_UNUSED || cmd->p2 != P2_UNUSED) {
-                send_swo_and_reset(SWO_INCORRECT_P1_P2);
-                apdu_response_assert_sent_or_deferred();
-                return;
-            }
-
+            REJECT_USED_P1(cmd->p1);
+            REJECT_USED_P2(cmd->p2);
             handler_get_app_name(&data_buffer);
             apdu_response_assert_sent_or_deferred();
             return;
 
         case INS_GET_PUBLIC_KEY: {
-            if (cmd->p1 != P1_UNUSED || cmd->p2 != P2_UNUSED) {
-                send_swo_and_reset(SWO_INCORRECT_P1_P2);
-                apdu_response_assert_sent_or_deferred();
-                return;
-            }
-
+            REJECT_USED_P1(cmd->p1);
+            REJECT_USED_P2(cmd->p2);
             handler_get_public_key(&data_buffer);
             apdu_response_assert_sent_or_deferred();
             return;
         }
 
         case INS_DERIVE_ADDRESS:
-            if (cmd->p2 != P2_UNUSED) {
-                send_swo_and_reset(SWO_INCORRECT_P1_P2);
-                apdu_response_assert_sent_or_deferred();
-                return;
-            }
-
-            // Validate and dispatch based on P1 value
+            REJECT_USED_P2(cmd->p2);
             switch (cmd->p1) {
                 case P1_ADDRESS_RETURN:
                 case P1_ADDRESS_DISPLAY:
@@ -198,13 +187,7 @@ void apdu_dispatcher(const command_t *cmd) {
             }
 
         case INS_DERIVE_NATIVE_SCRIPT_HASH:
-            // P2 must be unused for native script hash APDUs
-            if (cmd->p2 != P2_UNUSED) {
-                send_swo_and_reset(SWO_INCORRECT_P1_P2);
-                apdu_response_assert_sent_or_deferred();
-                return;
-            }
-            // Validate and dispatch based on P1 value
+            REJECT_USED_P2(cmd->p2);
             switch (cmd->p1) {
                 case P1_NATIVE_SCRIPT_INIT:
                 case P1_NATIVE_SCRIPT_START_COMPLEX:
@@ -220,20 +203,6 @@ void apdu_dispatcher(const command_t *cmd) {
             }
 
         case INS_SIGN_TX:
-            // Check if this is a witness APDU
-            if (cmd->p1 == P1_TX_SIGN_WITNESS) {
-                if (cmd->p2 != P2_UNUSED) {
-                    send_swo_and_reset(SWO_INCORRECT_P1_P2);
-                    apdu_response_assert_sent_or_deferred();
-                    return;
-                }
-
-                handler_sign_tx_witness(&data_buffer);
-                apdu_response_assert_sent_or_deferred();
-                return;
-            }
-
-            // Check if this is auxiliary data APDU (CVote)
             if (cmd->p1 == P1_TX_AUX_DATA) {
                 if (cmd->p2 != P2_AUX_DATA_INIT && cmd->p2 != P2_AUX_DATA_DELEGATION) {
                     send_swo_and_reset(SWO_INCORRECT_P1_P2);
@@ -246,11 +215,11 @@ void apdu_dispatcher(const command_t *cmd) {
                 return;
             }
 
-            // Transaction processing
-            // P1 controls flow: P1_TX_INIT (0x00), P1_TX_CHUNK (0x01), P1_TX_CONFIRM (0x02)
-            // P2 must be unused for transaction body APDUs
-            if (cmd->p2 != P2_UNUSED) {
-                send_swo_and_reset(SWO_INCORRECT_P1_P2);
+            // for other p1 values, p2 must be unused
+            REJECT_USED_P2(cmd->p2);
+
+            if (cmd->p1 == P1_TX_SIGN_WITNESS) {
+                handler_sign_tx_witness(&data_buffer);
                 apdu_response_assert_sent_or_deferred();
                 return;
             }
@@ -260,25 +229,15 @@ void apdu_dispatcher(const command_t *cmd) {
             return;
 
         case INS_SIGN_OPCERT: {
-            if (cmd->p1 != P1_UNUSED || cmd->p2 != P2_UNUSED) {
-                send_swo_and_reset(SWO_INCORRECT_P1_P2);
-                apdu_response_assert_sent_or_deferred();
-                return;
-            }
-
+            REJECT_USED_P1(cmd->p1);
+            REJECT_USED_P2(cmd->p2);
             handler_sign_opcert(&data_buffer);
             apdu_response_assert_sent_or_deferred();
             return;
         }
 
         case INS_SIGN_CVOTE: {
-            // P2 must be unused for cvote
-            if (cmd->p2 != P2_UNUSED) {
-                send_swo_and_reset(SWO_INCORRECT_P1_P2);
-                apdu_response_assert_sent_or_deferred();
-                return;
-            }
-            // Validate and dispatch based on P1 value
+            REJECT_USED_P2(cmd->p2);
             switch (cmd->p1) {
                 case P1_CVOTE_INIT:
                 case P1_CVOTE_CHUNK:
@@ -294,13 +253,7 @@ void apdu_dispatcher(const command_t *cmd) {
         }
 
         case INS_SIGN_MSG: {
-            // P2 must be unused for message signing
-            if (cmd->p2 != P2_UNUSED) {
-                send_swo_and_reset(SWO_INCORRECT_P1_P2);
-                apdu_response_assert_sent_or_deferred();
-                return;
-            }
-            // Validate and dispatch based on P1 value
+            REJECT_USED_P2(cmd->p2);
             switch (cmd->p1) {
                 case P1_SIGN_MSG_INIT:
                 case P1_SIGN_MSG_CHUNK:
@@ -318,12 +271,8 @@ void apdu_dispatcher(const command_t *cmd) {
 #ifdef DEBUG
         case INS_DEBUG_SET_SETTINGS: {
             // Debug-only command to set app settings for testing
-            if (cmd->p1 != P1_UNUSED || cmd->p2 != P2_UNUSED) {
-                send_swo_and_reset(SWO_INCORRECT_P1_P2);
-                apdu_response_assert_sent_or_deferred();
-                return;
-            }
-
+            REJECT_USED_P1(cmd->p1);
+            REJECT_USED_P2(cmd->p2);
             handler_debug_set_settings(&data_buffer);
             apdu_response_assert_sent_or_deferred();
             return;
@@ -335,4 +284,8 @@ void apdu_dispatcher(const command_t *cmd) {
             apdu_response_assert_sent_or_deferred();
             return;
     }
+
+#undef REJECT_USED_P2
+#undef REJECT_USED_P1
+#undef REJECT_INCORRECT_P1_P2_IF
 }
