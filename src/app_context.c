@@ -59,22 +59,24 @@ void apdu_response_assert_sent_or_deferred(void) {
     }
 }
 
-int apdu_response_send_sw(uint16_t swo) {
+void apdu_response_send_sw(uint16_t swo) {
     LEDGER_ASSERT(!G_apdu_response_state.response_sent,
                   "Second APDU response for INS=0x%02x",
                   G_apdu_response_state.instruction);
     G_apdu_response_state.response_sent = true;
 
-    return io_send_sw(swo);
+    int io_send_result = io_send_sw(swo);
+    LEDGER_ASSERT(io_send_result >= 0, "io_send_sw failed");
 }
 
-int apdu_response_send_data(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
+void apdu_response_send_data(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
     LEDGER_ASSERT(!G_apdu_response_state.response_sent,
                   "Second APDU response for INS=0x%02x",
                   G_apdu_response_state.instruction);
     G_apdu_response_state.response_sent = true;
 
-    return io_send_response_pointer(buffer, bufferLength, swo);
+    int io_send_result = io_send_response_pointer(buffer, bufferLength, swo);
+    LEDGER_ASSERT(io_send_result >= 0, "io_send_response_pointer failed");
 }
 
 void reset_app_context(void) {

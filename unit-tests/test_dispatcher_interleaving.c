@@ -16,6 +16,7 @@
 #include "cardano_swo.h"
 #include "globals.h"
 #include "app_context.h"
+#include "ledger_assert.h"
 
 static uint16_t g_last_sw = 0;
 static uint8_t g_last_called_ins = 0;
@@ -91,7 +92,7 @@ void apdu_response_assert_sent_or_deferred(void) {
     }
 }
 
-int apdu_response_send_sw(uint16_t swo) {
+void apdu_response_send_sw(uint16_t swo) {
     if (g_apdu_response_active) {
         if (g_apdu_response_sent) {
             abort();
@@ -99,15 +100,15 @@ int apdu_response_send_sw(uint16_t swo) {
         g_apdu_response_sent = true;
     }
     int result = io_send_sw(swo);
+    LEDGER_ASSERT(result >= 0, "io_send_sw failed");
     if (g_apdu_response_active && g_apdu_response_deferred && g_apdu_response_sent) {
         g_apdu_response_active = false;
         g_apdu_response_sent = false;
         g_apdu_response_deferred = false;
     }
-    return result;
 }
 
-int apdu_response_send_data(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
+void apdu_response_send_data(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
     if (g_apdu_response_active) {
         if (g_apdu_response_sent) {
             abort();
@@ -115,12 +116,12 @@ int apdu_response_send_data(const uint8_t *buffer, size_t bufferLength, uint16_t
         g_apdu_response_sent = true;
     }
     int result = io_send_response_pointer(buffer, bufferLength, swo);
+    LEDGER_ASSERT(result >= 0, "io_send_response_pointer failed");
     if (g_apdu_response_active && g_apdu_response_deferred && g_apdu_response_sent) {
         g_apdu_response_active = false;
         g_apdu_response_sent = false;
         g_apdu_response_deferred = false;
     }
-    return result;
 }
 
 // -------------------------------------------------------------------------

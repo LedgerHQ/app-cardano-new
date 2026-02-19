@@ -55,7 +55,8 @@ static void
 blake2b_256_append_cbor_tx_body(blake2b_256_context_t* hashCtx, uint8_t type, uint64_t value) {
     uint8_t buffer[10] = {0};
     size_t size = 0;
-    cbor_writeToken(type, value, buffer, SIZEOF(buffer), &size);
+    LEDGER_ASSERT(cbor_writeToken(type, value, buffer, SIZEOF(buffer), &size),
+                  "Failed to write CBOR token");
     TRACE_BODY(buffer, size);
     blake2b_256_append(hashCtx, buffer, size);
 }
@@ -76,8 +77,8 @@ static void _append_cbor_token(uint8_t* buffer,
     LEDGER_ASSERT(*offset < bufferLen, "CBOR buffer overflow");
 
     size_t tokenSize = 0;
-    bool ok = cbor_writeToken(type, value, buffer + *offset, bufferLen - *offset, &tokenSize);
-    LEDGER_ASSERT(ok, "Failed to write CBOR token");
+    LEDGER_ASSERT(cbor_writeToken(type, value, buffer + *offset, bufferLen - *offset, &tokenSize),
+                  "Failed to write CBOR token");
     *offset += tokenSize;
 }
 

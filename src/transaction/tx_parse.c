@@ -377,7 +377,7 @@ static parser_status_e parse_input_item(buffer_t *buf, flist_node_t **list_head,
     }
 
     item->flist_node.next = NULL;
-    flist_push_back(list_head, (flist_node_t *) item);
+    ASSERT(flist_push_back(list_head, (flist_node_t *) item));
     return PARSING_OK;
 }
 
@@ -530,11 +530,11 @@ static parser_status_e parse_output_asset_groups(buffer_t *output_buf,
             }
 
             token_item->flist_node.next = NULL;
-            flist_push_back(&group->tokens, (flist_node_t *) token_item);
+            ASSERT(flist_push_back(&group->tokens, (flist_node_t *) token_item));
         }
 
         group_node->flist_node.next = NULL;
-        flist_push_back(&output->assetGroups, (flist_node_t *) group_node);
+        ASSERT(flist_push_back(&output->assetGroups, (flist_node_t *) group_node));
     }
 
     return PARSING_OK;
@@ -656,7 +656,7 @@ static parser_status_e parse_tx_outputs(buffer_t *buf, const tx_params_t *tx_par
               (unsigned int) buf->offset);
 
         item->flist_node.next = NULL;
-        flist_push_back(&tx_body->outputs, (flist_node_t *) item);
+        ASSERT(flist_push_back(&tx_body->outputs, (flist_node_t *) item));
     }
     return PARSING_OK;
 }
@@ -758,11 +758,11 @@ static parser_status_e parse_tx_mint_groups(buffer_t *buf, const tx_params_t *tx
 
             // Add token to asset group's token list
             token_item->flist_node.next = NULL;
-            flist_push_back(&item->asset_group.tokens, (flist_node_t *) token_item);
+            ASSERT(flist_push_back(&item->asset_group.tokens, (flist_node_t *) token_item));
         }
 
         item->flist_node.next = NULL;
-        flist_push_back(&tx_body->mint_asset_groups, (flist_node_t *) item);
+        ASSERT(flist_push_back(&tx_body->mint_asset_groups, (flist_node_t *) item));
     }
     return PARSING_OK;
 }
@@ -865,7 +865,7 @@ static parser_status_e parse_tx_certificates(buffer_t *buf, const tx_params_t *t
         }
 
         item->flist_node.next = NULL;
-        flist_push_back(&tx_body->certificates, (flist_node_t *) item);
+        ASSERT(flist_push_back(&tx_body->certificates, (flist_node_t *) item));
     }
     return PARSING_OK;
 }
@@ -899,7 +899,7 @@ static parser_status_e parse_tx_withdrawals(buffer_t *buf, const tx_params_t *tx
         TRACE("Deserialize: Withdrawal %u, type=%u", i, item->withdrawal.stakeCredential.type);
 
         item->flist_node.next = NULL;
-        flist_push_back(&tx_body->withdrawals, (flist_node_t *) item);
+        ASSERT(flist_push_back(&tx_body->withdrawals, (flist_node_t *) item));
     }
     return PARSING_OK;
 }
@@ -1128,7 +1128,7 @@ static parser_status_e parse_tx_required_signers(buffer_t *buf, const tx_params_
         }
 
         item->flist_node.next = NULL;
-        flist_push_back(&tx_body->required_signers, (flist_node_t *) item);
+        ASSERT(flist_push_back(&tx_body->required_signers, (flist_node_t *) item));
     }
     return PARSING_OK;
 }
@@ -1285,13 +1285,13 @@ static parser_status_e parse_tx_voting_procedures(buffer_t *buf, const tx_params
 
             // Add vote to voter's vote list
             vote_item->flist_node.next = NULL;
-            flist_push_back(&voter_item->voter_votes_data.votes, (flist_node_t *) vote_item);
+            ASSERT(flist_push_back(&voter_item->voter_votes_data.votes, (flist_node_t *) vote_item));
             vote_item = NULL;
         }
 
         // Add voter to transaction's voter list
         voter_item->flist_node.next = NULL;
-        flist_push_back(&tx_body->voting_procedures, (flist_node_t *) voter_item);
+        ASSERT(flist_push_back(&tx_body->voting_procedures, (flist_node_t *) voter_item));
         voter_item = NULL;
     }
 

@@ -12,7 +12,6 @@
  * Send APDU status word and reset the application context.
  *
  * @param swo Status word to return.
- * @return Result of io_send_sw().
  */
 void send_swo_and_reset(uint16_t swo);
 
@@ -47,5 +46,5 @@ void apdu_response_assert_sent_or_deferred(void);
 /**
  * Guarded response wrappers enforcing exactly one APDU response per command.
  */
-int apdu_response_send_sw(uint16_t swo);
-int apdu_response_send_data(const uint8_t *buffer, size_t bufferLength, uint16_t swo);
+void apdu_response_send_sw(uint16_t swo);
+void apdu_response_send_data(const uint8_t *buffer, size_t bufferLength, uint16_t swo);

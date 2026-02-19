@@ -786,7 +786,7 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
 
         // Add to linked list
         owner_item->flist_node.next = NULL;
-        flist_push_back(&cert_data->poolRegistration.poolOwners, &owner_item->flist_node);
+        ASSERT(flist_push_back(&cert_data->poolRegistration.poolOwners, &owner_item->flist_node));
     }
 
     // Parse relays array
@@ -822,7 +822,7 @@ parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
 
         // Add to linked list
         relay_item->flist_node.next = NULL;
-        flist_push_back(&cert_data->poolRegistration.relays, &relay_item->flist_node);
+        ASSERT(flist_push_back(&cert_data->poolRegistration.relays, &relay_item->flist_node));
     }
 
     // Parse pool metadata

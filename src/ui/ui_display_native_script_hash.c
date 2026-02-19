@@ -36,9 +36,11 @@ void build_position_description(const derive_native_script_hash_ctx_t *ctx,
         uint32_t position =
             ctx->complexScripts[i].totalScripts - ctx->complexScripts[i].remainingScripts + 1;
         STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(position)), "signed type for %u");
-        snprintf(ptr, end - ptr, "%u.", position);
-        LEDGER_ASSERT(strlen(out) + 1 < out_len, "Exceeded output size");
-        ptr += strlen(ptr);
+        size_t available_len = (size_t) (end - ptr);
+        int chars_written = snprintf(ptr, available_len, "%u.", position);
+        LEDGER_ASSERT(chars_written > 0 && (size_t) chars_written < available_len,
+                      "Exceeded output size");
+        ptr += chars_written;
     }
 
     // Remove trailing '.'

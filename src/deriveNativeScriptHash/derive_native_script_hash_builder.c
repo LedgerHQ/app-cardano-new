@@ -32,7 +32,8 @@ static void blake2b_224_append_cbor_data(blake2b_224_context_t* hashCtx,
                                                                    uint64_t value) {
     uint8_t buffer[10] = {0};
     size_t size = 0;
-    cbor_writeToken(type, value, buffer, SIZEOF(buffer), &size);
+    LEDGER_ASSERT(cbor_writeToken(type, value, buffer, SIZEOF(buffer), &size),
+                  "Failed to write CBOR token");
     _TRACE_BUFFER(buffer, size);
     blake2b_224_append(hashCtx, buffer, size);
 }
