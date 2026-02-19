@@ -185,7 +185,7 @@ static bool buffer_appendVariableLengthUInt(write_buffer_t* buf, uint64_t value)
     uint8_t chunks[10] = {0};  // 7-bit chunks of the input bits, at most 10 in uint64
     size_t outputSize = 0;
     {
-        blockchainIndex_t bits = value;
+        uint64_t bits = value;
         while (bits > 0) {
             // take next 7 bits from the right
             chunks[outputSize++] = bits & 0x7F;

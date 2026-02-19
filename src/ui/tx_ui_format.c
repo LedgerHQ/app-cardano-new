@@ -51,6 +51,7 @@
 #include "ui_constants.h"
 #include "tx_output_types.h"
 #include "tx.h"
+#include "tx_parse_outputs.h"
 #include "tx_ui_plan.h"
 #include "keyDerivation.h"
 #include "mem.h"
@@ -271,6 +272,7 @@ static void add_ui_and_free_outputs(tx_params_t *tx_params, tx_parsed_body_t *tx
         // Note: inline datum and reference script data are pointers into the raw_tx buffer,
         // not separately allocated, so they do not need to be freed
         node = node->next;
+        cleanup_output_destination(&output_node->output_data.destination);
         APP_MEM_FREE(output_node);
     }
     tx_body->outputs = NULL;
@@ -444,8 +446,10 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
         }
 
         owner_node = owner_node->next;
+        APP_MEM_FREE(owner_item);
         owner_index++;
     }
+    ((certificate_data_t*) certificate)->poolRegistration.poolOwners = NULL;
 
     LEDGER_ASSERT(owner_index == pool_owner_counts.total_owners, "Pool owner index mismatch");
     if (pool_owner_counts.total_owners == 0) {
@@ -533,8 +537,10 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
         }
 
         relay_node = relay_node->next;
+        APP_MEM_FREE(relay_item);
         relay_index++;
     }
+    ((certificate_data_t*) certificate)->poolRegistration.relays = NULL;
 
     LEDGER_ASSERT(relay_index == certificate->poolRegistration.numRelays, "Relay index mismatch");
     if (relay_index == 0) {
@@ -972,6 +978,7 @@ static void add_ui_and_free_collateral_output(tx_params_t *tx_params, tx_parsed_
         CHECK_COUNT(UI_PAIRS_TOKEN * token_count);
     }
 
+    cleanup_output_destination(&tx_body->collateral_output.destination);
     tx_body->collateral_output.assetGroups = NULL;
 }
 
