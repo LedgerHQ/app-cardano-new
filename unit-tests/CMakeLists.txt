@@ -92,7 +92,6 @@ add_compile_definitions(PATCH_VERSION=0)
 
 # Test executables
 add_executable(test_hex_utils test_hex_utils.c)
-add_executable(test_base58 test_base58.c)
 add_executable(test_bech32 test_bech32.c)
 add_executable(test_text_utils
     test_text_utils.c
@@ -203,7 +202,6 @@ add_executable(test_ui_utils
 
 set(TEST_EXECUTABLES
     test_hex_utils
-    test_base58
     test_bech32
     test_text_utils
     test_ui_formatters
@@ -357,7 +355,6 @@ target_link_libraries(hash_mocks_lib PUBLIC blake2b_lib sha3_lib)
 
 # Link test executables
 target_link_libraries(test_hex_utils PUBLIC cmocka gcov hex_utils)
-target_link_libraries(test_base58 PUBLIC cmocka gcov base58 hex_utils)
 target_link_libraries(test_bech32 PUBLIC cmocka gcov bech32_lib hex_utils)
 target_link_libraries(test_text_utils
     PUBLIC
@@ -670,7 +667,6 @@ add_test(test_tx_utils test_tx_utils)
 
 # Register tests with CTest
 add_test(test_hex_utils test_hex_utils)
-add_test(test_base58 test_base58)
 add_test(test_bech32 test_bech32)
 add_test(test_text_utils test_text_utils)
 add_test(test_ui_formatters test_ui_formatters)
