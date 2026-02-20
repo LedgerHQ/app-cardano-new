@@ -34,6 +34,17 @@
 // Conservative fixed overhead (covers all CBOR tokens + protectedHeader).
 #define SIG_STRUCTURE_OVERHEAD 256
 
+static bool ensure_sign_msg_request_type(request_type_e required_request_type) {
+    if (G_context.req_type != required_request_type) {
+        TRACE("Rejecting sign_msg command for req_type %d (expected %d)",
+              G_context.req_type,
+              required_request_type);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return false;
+    }
+    return true;
+}
+
 static bool ensure_sign_msg_state(sign_msg_state_e required_state) {
     if (G_context.state.sign_msg_state != required_state) {
         TRACE("Rejecting sign_msg command in state %d (expected %d)",
@@ -511,25 +522,25 @@ void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_msg handler");
     TRACE_BUFFER_T(cdata);
 
-    if (G_context.req_type == REQUEST_NONE) {
-        G_context.req_type = REQUEST_SIGN_MSG;
-    } else if (G_context.req_type != REQUEST_SIGN_MSG) {
-        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
-        return;
-    }
-
     switch (p1) {
         case P1_SIGN_MSG_INIT: {
             TRACE("P1_SIGN_MSG_INIT");
+            if (!ensure_sign_msg_request_type(REQUEST_NONE)) {
+                return;
+            }
             if (!ensure_sign_msg_state(SIGN_MSG_STATE_NONE)) {
                 return;
             }
+            G_context.req_type = REQUEST_SIGN_MSG;
             G_context.state.sign_msg_state = SIGN_MSG_STATE_INIT;
             signMsg_handle_init(cdata);
             break;
         }
         case P1_SIGN_MSG_CHUNK: {
             TRACE("P1_SIGN_MSG_CHUNK");
+            if (!ensure_sign_msg_request_type(REQUEST_SIGN_MSG)) {
+                return;
+            }
             if (!ensure_sign_msg_state(SIGN_MSG_STATE_CHUNK)) {
                 return;
             }
@@ -538,6 +549,9 @@ void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
         }
         case P1_SIGN_MSG_CONFIRM: {
             TRACE("P1_SIGN_MSG_CONFIRM");
+            if (!ensure_sign_msg_request_type(REQUEST_SIGN_MSG)) {
+                return;
+            }
             if (!ensure_sign_msg_state(SIGN_MSG_STATE_CONFIRM)) {
                 return;
             }

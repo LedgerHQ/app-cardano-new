@@ -19,6 +19,17 @@
 #include "messageSigning.h"
 #include "ui_cvote.h"
 
+static bool ensure_sign_cvote_request_type(request_type_e required_request_type) {
+    if (G_context.req_type != required_request_type) {
+        TRACE("Rejecting CVote command for req_type %d (expected %d)",
+              G_context.req_type,
+              required_request_type);
+        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+        return false;
+    }
+    return true;
+}
+
 static bool ensure_sign_cvote_state(cvote_state_e required_state) {
     if (G_context.state.cvote_state != required_state) {
         TRACE("Rejecting CVote command in state %d (expected %d)",
@@ -224,16 +235,13 @@ void handler_sign_cvote(buffer_t *cdata, uint8_t p1) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_cvote handler");
     TRACE_BUFFER_T(cdata);
 
-    if (G_context.req_type == REQUEST_NONE) {
-        G_context.req_type = REQUEST_CVOTE;
-    } else if (G_context.req_type != REQUEST_CVOTE) {
-        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
-        return;
-    }
-
     switch (p1) {
         case P1_CVOTE_INIT: {
             TRACE("P1_CVOTE_INIT");
+            if (!ensure_sign_cvote_request_type(REQUEST_NONE)) {
+                return;
+            }
+            G_context.req_type = REQUEST_CVOTE;
             if (!ensure_sign_cvote_state(VOTECAST_STATE_NONE)) {
                 return;
             }
@@ -243,6 +251,9 @@ void handler_sign_cvote(buffer_t *cdata, uint8_t p1) {
         }
         case P1_CVOTE_CHUNK: {
             TRACE("P1_CVOTE_CHUNK");
+            if (!ensure_sign_cvote_request_type(REQUEST_CVOTE)) {
+                return;
+            }
             if (!ensure_sign_cvote_state(VOTECAST_STATE_CHUNK)) {
                 return;
             }
@@ -251,6 +262,9 @@ void handler_sign_cvote(buffer_t *cdata, uint8_t p1) {
         }
         case P1_CVOTE_CONFIRM: {
             TRACE("P1_CVOTE_CONFIRM");
+            if (!ensure_sign_cvote_request_type(REQUEST_CVOTE)) {
+                return;
+            }
             if (!ensure_sign_cvote_state(VOTECAST_STATE_CONFIRM)) {
                 return;
             }
