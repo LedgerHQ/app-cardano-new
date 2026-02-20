@@ -14,5 +14,4 @@
 // See doc/tx_raw_buffer.md for details.
 #define MAX_TX_BUFFER_SIZE (21 * 1024)  // 21 KB
 
-// Ensure BUFFER_SIZE_PARANOIA is always greater than MAX_TX_BUFFER_SIZE
 STATIC_ASSERT(BUFFER_SIZE_PARANOIA > MAX_TX_BUFFER_SIZE, "BUFFER_SIZE_PARANOIA must be > MAX_TX_BUFFER_SIZE");

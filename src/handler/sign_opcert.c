@@ -58,10 +58,7 @@ void handler_sign_opcert(buffer_t *cdata) {
                     .offset = 0};
     TRACE_BUFFER(buf.ptr, buf.size);
 
-    opcert_parser_status_e status = parse_opcert(&buf, &G_context.opcert_info.opcert);
-    TRACE("Opcert parsing status: %d", status);
-    if (status != PARSING_OK) {
-        send_swo_and_reset(opcert_map_parser_status_to_swo(status));
+    if (!parse_opcert(&buf, &G_context.opcert_info.opcert)) {
         return;
     }
     G_context.state.opcert_state = OPCERT_STATE_PARSED;

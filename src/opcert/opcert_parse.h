@@ -1,4 +1,4 @@
-/* SPDX-FileCopyrightText: 2025-2026 Vacuumlabs */
+/* SPDX-FileCopyrightText: 2025 Vacuumlabs */
 /* SPDX-License-Identifier: Apache-2.0 */
 
 #pragma once
@@ -7,34 +7,10 @@
 
 #include "opcert_types.h"
 
-typedef enum {
-    PARSING_OK = 1,
-    KES_PUBLIC_KEY_PARSING_ERROR = -1,
-    KES_PERIOD_PARSING_ERROR = -2,
-    ISSUE_COUNTER_PARSING_ERROR = -3,
-    POOL_COLD_KEY_PATH_PARSING_ERROR = -4,
-    WRONG_LENGTH_ERROR = -7
-} opcert_parser_status_e;
-
 /**
- * Deserialize opcert.
+ * Deserialize opcert from buf into opcert.
+ * On failure, sends the appropriate SW and resets app context.
  *
- * @param[in, out] buf
- *   Pointer to buffer with serialized transaction.
- * @param[out]     opcert
- *   Pointer to opcert structure.
- *
- * @return PARSING_OK if success, error status otherwise.
- *
+ * @return true on success, false on failure (SW already sent).
  */
-opcert_parser_status_e parse_opcert(buffer_t *buf, parsed_opcert_t *opcert);
-
-/**
- * Map opcert parser status to status word.
- *
- * @param[in] status
- *   The opcert parser status from parse_opcert()
- *
- * @return SWO status word for transmission to host
- */
-uint16_t opcert_map_parser_status_to_swo(opcert_parser_status_e status);
+bool parse_opcert(buffer_t *buf, parsed_opcert_t *opcert);

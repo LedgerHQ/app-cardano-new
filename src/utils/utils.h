@@ -72,12 +72,8 @@
 // Iteration & Logic
 // -----------------------------------------------------------------------------
 
-/*
- * Any buffer claiming to be longer than this is a bug.
- * Keep in sync with MAX_TX_BUFFER_SIZE in tx_constants.h.
- * Suggestion: #include "tx_constants.h" and use (MAX_TX_BUFFER_SIZE + 1)
- * to avoid drift.
- */
+/* Any buffer claiming to be longer than this is a bug.
+ * Enforced against MAX_TX_BUFFER_SIZE by STATIC_ASSERT in tx_constants.h. */
 #define BUFFER_SIZE_PARANOIA (21 * 1024 + 1)
 
 /*
