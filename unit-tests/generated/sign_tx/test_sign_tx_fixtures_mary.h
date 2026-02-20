@@ -58,6 +58,22 @@ static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_OUTPUT_RAW_TX[] = {
     0x00, 0x00, 0x07,
 };
 
+static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_OUTPUT_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_OUTPUT_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0x03, 0x3A, 0x69, 0xA4, 0x57, 0xB9, 0xC1, 0x3F, 0x8A, 0x07, 0xE5, 0x52, 0xE6, 0x53, 0xB2, 0x0F,
+    0xB0, 0xF1, 0xDA, 0x24, 0xF6, 0x75, 0x2A, 0x6B, 0x82, 0x16, 0xCB, 0xEA, 0x30, 0xF3, 0x0E, 0xA1,
+    0x5F, 0x5D, 0x09, 0x44, 0x20, 0xDE, 0xA1, 0xDF, 0xD6, 0x60, 0x85, 0xB2, 0x86, 0x34, 0xD2, 0x6F,
+    0xC7, 0x91, 0xBA, 0xC4, 0xAA, 0x12, 0x4A, 0x8B, 0xF5, 0x71, 0xAB, 0x4A, 0x2C, 0xD4, 0x2E, 0x01,
+};
+
+static const witness_payload_t FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_OUTPUT_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_OUTPUT_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_OUTPUT_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_OUTPUT_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_OUTPUT = {
     .name = "Sign_tx_with_a_multiasset_output",
     .raw_tx = FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_OUTPUT_RAW_TX,
@@ -70,6 +86,8 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_OUTPUT = {
     .num_inputs = 1,
     .num_outputs = 2,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_OUTPUT_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,
@@ -127,6 +145,22 @@ static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT_RAW_T
     0x0A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07,
 };
 
+static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0x21, 0xBD, 0x9D, 0xC7, 0x2C, 0xAB, 0x45, 0x80, 0x1D, 0xFF, 0x85, 0x64, 0x40, 0x97, 0xB3, 0x21,
+    0xB5, 0xF3, 0x4C, 0x0E, 0x06, 0x48, 0x96, 0x00, 0xEF, 0x4F, 0x7F, 0xD9, 0x82, 0xB9, 0x6F, 0xEC,
+    0x7D, 0xDA, 0xFD, 0x27, 0x5B, 0xCC, 0x25, 0x60, 0x41, 0x98, 0xE5, 0x84, 0x20, 0xF0, 0xD3, 0x41,
+    0xC2, 0x93, 0x2C, 0xEE, 0x5A, 0x2F, 0xF6, 0xE0, 0x98, 0x28, 0x1F, 0x79, 0x9E, 0x9E, 0x4F, 0x4C,
+};
+
+static const witness_payload_t FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT = {
     .name = "Sign_tx_with_a_complex_multiasset_output",
     .raw_tx = FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT_RAW_TX,
@@ -139,6 +173,8 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT 
     .num_inputs = 1,
     .num_outputs = 2,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,
@@ -184,6 +220,22 @@ static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_BIG_NUMBERS_RAW_TX[] = {
     0xA2, 0x75, 0x92, 0x5D, 0x56, 0x0F,
 };
 
+static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_BIG_NUMBERS_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_BIG_NUMBERS_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0x7F, 0xA6, 0x92, 0x0B, 0x65, 0xDC, 0x03, 0x8F, 0x55, 0x38, 0xFD, 0x49, 0xCD, 0x8C, 0xD6, 0x39,
+    0xCC, 0x6E, 0xB7, 0xE1, 0x45, 0x08, 0x22, 0xC4, 0x78, 0x21, 0xE7, 0x9C, 0x37, 0x3A, 0x09, 0x0C,
+    0x23, 0xC1, 0xF2, 0xEB, 0x12, 0xBB, 0x63, 0x6F, 0x09, 0x5F, 0x9D, 0xA9, 0xAD, 0xEB, 0xB6, 0x59,
+    0xBB, 0x0E, 0xD7, 0x01, 0x19, 0x6F, 0x42, 0x24, 0x0F, 0x46, 0x87, 0x3C, 0x2B, 0x1D, 0x29, 0xAC,
+};
+
+static const witness_payload_t FIXTURE_MARY_SIGN_TX_WITH_BIG_NUMBERS_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_MARY_SIGN_TX_WITH_BIG_NUMBERS_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_MARY_SIGN_TX_WITH_BIG_NUMBERS_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_MARY_SIGN_TX_WITH_BIG_NUMBERS_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_BIG_NUMBERS = {
     .name = "Sign_tx_with_big_numbers",
     .raw_tx = FIXTURE_MARY_SIGN_TX_WITH_BIG_NUMBERS_RAW_TX,
@@ -196,6 +248,8 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_BIG_NUMBERS = {
     .num_inputs = 1,
     .num_outputs = 1,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_MARY_SIGN_TX_WITH_BIG_NUMBERS_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,
@@ -244,6 +298,22 @@ static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT_RAW_TX
     0x00, 0x00, 0x2A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A,
 };
 
+static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0x99, 0xFA, 0x95, 0xEC, 0xDB, 0x1C, 0x95, 0x34, 0xB2, 0xDC, 0x06, 0xF5, 0x5A, 0xAD, 0xB6, 0x01,
+    0xB8, 0x94, 0x06, 0xBB, 0x4B, 0x88, 0xEA, 0xCB, 0xD5, 0x03, 0x0E, 0x93, 0x7E, 0x26, 0x62, 0x50,
+    0xC5, 0x9D, 0xF5, 0x0C, 0xAC, 0x7B, 0xF5, 0xD4, 0xEE, 0xBB, 0x66, 0x15, 0x3A, 0xCA, 0xD6, 0x61,
+    0xCF, 0xF4, 0x66, 0x5B, 0x17, 0xEF, 0x8A, 0x2B, 0xA2, 0x64, 0x6E, 0x33, 0x62, 0x01, 0x42, 0xF0,
+};
+
+static const witness_payload_t FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT = {
     .name = "Sign_tx_with_a_multiasset_change_output",
     .raw_tx = FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT_RAW_TX,
@@ -256,6 +326,8 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT =
     .num_inputs = 1,
     .num_outputs = 2,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,
@@ -297,6 +369,22 @@ static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVA
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
+static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0x35, 0x68, 0x30, 0x5D, 0x2A, 0x6A, 0x24, 0x1A, 0xFF, 0x30, 0x4D, 0xA1, 0x85, 0x50, 0x7C, 0x83,
+    0x06, 0xE3, 0xB3, 0x2B, 0xF7, 0xC2, 0xED, 0xE6, 0xED, 0x93, 0x0B, 0x45, 0x85, 0x40, 0xB0, 0x55,
+    0x69, 0x0F, 0x50, 0xBD, 0x5D, 0x0D, 0x44, 0xFA, 0xA3, 0x57, 0x2D, 0x41, 0xE5, 0x37, 0x1C, 0xE3,
+    0x71, 0x83, 0xD3, 0xCB, 0xAB, 0xA5, 0x8D, 0x06, 0x9A, 0xF4, 0x6B, 0xE5, 0x99, 0x67, 0x90, 0xF5,
+};
+
+static const witness_payload_t FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START = {
     .name = "Sign_tx_with_zero_fee_TTL_and_validity_interval_start",
     .raw_tx = FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START_RAW_TX,
@@ -309,6 +397,8 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_IN
     .num_inputs = 1,
     .num_outputs = 1,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,
@@ -357,6 +447,22 @@ static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES_RAW_TX
     0x00, 0x00, 0x21,
 };
 
+static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0x3A, 0xCD, 0x80, 0xA4, 0x27, 0x48, 0x87, 0xA3, 0xF6, 0x32, 0x6B, 0x4C, 0x7B, 0x62, 0x35, 0xAE,
+    0x75, 0x99, 0xB7, 0x65, 0x9F, 0x7C, 0xEA, 0xB7, 0xD5, 0x9E, 0xED, 0xA0, 0x56, 0xFA, 0x61, 0x3B,
+    0x66, 0xAA, 0xE0, 0x44, 0x50, 0x2F, 0xE7, 0x43, 0xAA, 0x55, 0x0B, 0xAC, 0x1B, 0x05, 0x55, 0xCE,
+    0x02, 0xF9, 0xD7, 0x85, 0xC3, 0x1B, 0x8A, 0x57, 0xA2, 0xF9, 0x8D, 0x00, 0x4A, 0xDD, 0x41, 0x9B,
+};
+
+static const witness_payload_t FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES = {
     .name = "Sign_tx_with_output_with_decimal_places",
     .raw_tx = FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES_RAW_TX,
@@ -369,6 +475,8 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES =
     .num_inputs = 1,
     .num_outputs = 1,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,
@@ -415,6 +523,22 @@ static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS_
     0xF2, 0x0B, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
+static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0x4A, 0xB1, 0xAF, 0xA0, 0xD7, 0x97, 0x31, 0x0A, 0xDB, 0xCF, 0x57, 0x32, 0x28, 0x8D, 0xC5, 0x30,
+    0x0E, 0x9B, 0x62, 0x85, 0xCE, 0xF8, 0x34, 0x9B, 0x02, 0x7A, 0xD9, 0x7B, 0x06, 0xC5, 0xEE, 0xA5,
+    0x16, 0xD6, 0xCF, 0x40, 0xA0, 0xF0, 0x51, 0xEA, 0x87, 0xA8, 0x37, 0xD2, 0x48, 0xEA, 0xA5, 0x50,
+    0x79, 0xFB, 0x02, 0x65, 0x92, 0x9F, 0x54, 0x7B, 0x75, 0x1D, 0xB9, 0xDB, 0x1A, 0xE2, 0xCE, 0x05,
+};
+
+static const witness_payload_t FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS = {
     .name = "Sign_tx_with_mint_fields_with_various_amounts",
     .raw_tx = FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS_RAW_TX,
@@ -427,6 +551,8 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMO
     .num_inputs = 1,
     .num_outputs = 0,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 1,
@@ -475,6 +601,22 @@ static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES_RAW_TX[]
     0x00, 0x04, 0xD2,
 };
 
+static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0x30, 0xCA, 0xCF, 0xBD, 0x2E, 0xF5, 0xE2, 0x4C, 0xE9, 0x55, 0x56, 0x2D, 0xCB, 0x08, 0x19, 0x6D,
+    0x43, 0x7A, 0xF5, 0xDB, 0x90, 0x79, 0x47, 0x96, 0xA1, 0xF6, 0x1D, 0x85, 0x1A, 0x81, 0xEB, 0x43,
+    0x6C, 0xAD, 0xAF, 0x5D, 0x59, 0x92, 0x82, 0xAC, 0xB5, 0x32, 0x36, 0xCD, 0xAB, 0x6F, 0x79, 0x0D,
+    0x34, 0x1A, 0x95, 0x3B, 0xCC, 0x1E, 0x27, 0x76, 0xD6, 0x91, 0x7D, 0x25, 0x06, 0xA6, 0xCB, 0xE3,
+};
+
+static const witness_payload_t FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES = {
     .name = "Sign_tx_with_mint_with_decimal_places",
     .raw_tx = FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES_RAW_TX,
@@ -487,6 +629,8 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES = {
     .num_inputs = 1,
     .num_outputs = 1,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 2,
@@ -545,6 +689,22 @@ static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS_RA
     0x0B, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
+static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0xD0, 0xC9, 0xCA, 0x38, 0x20, 0x66, 0x0D, 0x59, 0xAB, 0xFD, 0xDA, 0x44, 0x6C, 0xB7, 0xA7, 0x37,
+    0x2D, 0x37, 0x8D, 0x93, 0x1B, 0xD9, 0x3B, 0x2B, 0x17, 0xF0, 0x7D, 0xF9, 0xFC, 0xD6, 0x16, 0x0D,
+    0x8C, 0xAE, 0xAA, 0xD8, 0x57, 0x01, 0x6D, 0xB9, 0xF7, 0x9A, 0xBA, 0xA4, 0x0C, 0xD0, 0xC7, 0x57,
+    0x5A, 0x57, 0xED, 0x73, 0x47, 0xBE, 0x5B, 0xCB, 0x60, 0x97, 0x1D, 0x59, 0xE0, 0xF1, 0x36, 0xAD,
+};
+
+static const witness_payload_t FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS = {
     .name = "Sign_tx_with_mint_fields_among_other_fields",
     .raw_tx = FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS_RAW_TX,
@@ -557,6 +717,8 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIEL
     .num_inputs = 1,
     .num_outputs = 2,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 1,

@@ -23,6 +23,7 @@
 #include "ui_display_tx.h"
 #include "app_mem_utils.h"
 #include "app_context.h"
+#include "mock_crypto/crypto_mock_data.h"
 #include "nbgl_mock.h"
 #include "io_capture.h"
 #include "test_read_buffer_helpers.h"
@@ -94,6 +95,8 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
                                      const char* cbor_hex,
                                      const char* expected_hash_hex,
                                      uint16_t num_witnesses,
+                                     const witness_payload_t *witness_payloads,
+                                     size_t witness_payload_count,
                                      bool include_ttl,
                                      bool include_validity_interval_start,
                                      const uint8_t* response_buf,
@@ -135,27 +138,68 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
 
     run_sign_tx_body_chunked(raw_tx, raw_tx_len);
 
-    uint8_t expected_cbor[100 * 1024];
-    size_t cbor_len = hex_to_bytes(cbor_hex, expected_cbor, sizeof(expected_cbor));
-    assert_true(cbor_len > 0);
+    assert_non_null(cbor_hex);
+    assert_true(strlen(cbor_hex) > 0);
 
     uint8_t expected_hash[TX_HASH_LENGTH];
     size_t expected_hash_len = hex_to_bytes(expected_hash_hex, expected_hash, sizeof(expected_hash));
     assert_int_equal(expected_hash_len, TX_HASH_LENGTH);
 
+    uint8_t tx_body_cbor[100 * 1024];
+    size_t tx_body_cbor_len = hex_to_bytes(cbor_hex, tx_body_cbor, sizeof(tx_body_cbor));
+    assert_true(tx_body_cbor_len > 0);
+
+    uint8_t computed_hash[TX_HASH_LENGTH];
+    assert_int_equal(
+        blake2b(computed_hash, sizeof(computed_hash), tx_body_cbor, tx_body_cbor_len),
+        0
+    );
+    assert_memory_equal(computed_hash, expected_hash, TX_HASH_LENGTH);
+
     assert_int_equal(*response_len, TX_HASH_LENGTH);
     assert_memory_equal(response_buf, expected_hash, TX_HASH_LENGTH);
     assert_int_equal(*response_sw, SWO_SUCCESS);
 
-    // When using real UI code: if there are witnesses, req_type stays REQUEST_SIGN_TRANSACTION
-    // If no witnesses, finalize_sign_tx() calls reset_app_context() which sets req_type to REQUEST_NONE
     if (num_witnesses > 0) {
-        assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
+        // Verify all witness APDU payloads from fixtures end-to-end.
+        assert_non_null(witness_payloads);
+        assert_int_equal(witness_payload_count, num_witnesses);
         assert_int_equal(G_context.state.tx_state, TX_STATE_APPROVED);
-        // Manually clean up for tests since we won't process witnesses
-        tx_review_cleanup();
-        tx_context_cleanup();
+        assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
+        reset_mock_signature_state();
+
+        for (size_t witness_index = 0; witness_index < witness_payload_count; witness_index++) {
+            const witness_payload_t *witness_payload = &witness_payloads[witness_index];
+            const bool is_last_fixture_witness = (witness_index == witness_payload_count - 1);
+            assert_non_null(witness_payload->payload);
+            assert_true(witness_payload->payload_len > 0);
+
+            test_read_buffer_t witness_buffer = make_test_read_buffer(
+                witness_payload->payload,
+                witness_payload->payload_len
+            );
+            run_sign_tx_witness_apdu(&witness_buffer.sdk_buffer);
+            assert_read_buffer_unchanged_and_cleanup(&witness_buffer, witness_payload->payload);
+
+            assert_int_equal(*response_sw, SWO_SUCCESS);
+            assert_int_equal(*response_len, ED25519_SIGNATURE_LENGTH);
+            assert_int_equal(g_mock_last_signed_message_len, TX_HASH_LENGTH);
+            assert_memory_equal(g_mock_last_signed_message, expected_hash, TX_HASH_LENGTH);
+            assert_non_null(witness_payload->expected_signature);
+            assert_memory_equal(response_buf,
+                                witness_payload->expected_signature,
+                                ED25519_SIGNATURE_LENGTH);
+            if (is_last_fixture_witness) {
+                assert_int_equal(G_context.req_type, REQUEST_NONE);
+                assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
+            } else {
+                assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
+                assert_int_equal(G_context.state.tx_state, TX_STATE_APPROVED);
+            }
+        }
     } else {
+        assert_null(witness_payloads);
+        assert_int_equal(witness_payload_count, 0);
         assert_int_equal(G_context.req_type, REQUEST_NONE);
         assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
     }
@@ -233,6 +277,8 @@ static inline void run_fixture(const tx_fixture_t *fixture) {
                       fixture->tx_body_cbor_hex,
                       fixture->expected_hash_hex,
                       fixture->num_witnesses,
+                      fixture->witness_payloads,
+                      fixture->witness_payload_count,
                       fixture->include_ttl,
                       fixture->include_validity_interval_start,
                       g_last_response,

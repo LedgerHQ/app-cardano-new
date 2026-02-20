@@ -46,6 +46,22 @@ static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITHOUT_OUTPUTS_RAW_TX[] = {
     0x00, 0x00, 0x00, 0x0A,
 };
 
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITHOUT_OUTPUTS_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITHOUT_OUTPUTS_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0x66, 0x75, 0x77, 0xA1, 0x5C, 0xF9, 0x11, 0x63, 0x75, 0x43, 0xB0, 0x2D, 0xC1, 0x80, 0xF7, 0xB5,
+    0x3A, 0xD7, 0x1E, 0x6B, 0xCA, 0x69, 0xCE, 0x87, 0x72, 0x86, 0x4C, 0x6F, 0xC5, 0xFE, 0x22, 0xCC,
+    0x3A, 0x12, 0x17, 0x41, 0x2B, 0x9E, 0x71, 0x83, 0x29, 0x24, 0xD0, 0xCD, 0xA1, 0xE7, 0x97, 0xD5,
+    0x4D, 0xB7, 0x7E, 0x8B, 0x96, 0x0E, 0xAE, 0x67, 0x05, 0xE1, 0x2C, 0xCF, 0xD9, 0xD9, 0x02, 0x6C,
+};
+
+static const witness_payload_t FIXTURE_SHELLEY_SIGN_TX_WITHOUT_OUTPUTS_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_SHELLEY_SIGN_TX_WITHOUT_OUTPUTS_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_SHELLEY_SIGN_TX_WITHOUT_OUTPUTS_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_SHELLEY_SIGN_TX_WITHOUT_OUTPUTS_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITHOUT_OUTPUTS = {
     .name = "Sign_tx_without_outputs",
     .raw_tx = FIXTURE_SHELLEY_SIGN_TX_WITHOUT_OUTPUTS_RAW_TX,
@@ -58,6 +74,8 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITHOUT_OUTPUTS = {
     .num_inputs = 1,
     .num_outputs = 0,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_SHELLEY_SIGN_TX_WITHOUT_OUTPUTS_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,
@@ -95,6 +113,22 @@ static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_258_TAG_ON_INPUTS_RAW_TX[] = {
     0x00, 0x00, 0x00, 0x0A,
 };
 
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_258_TAG_ON_INPUTS_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_258_TAG_ON_INPUTS_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0x9F, 0x9C, 0x9D, 0x9E, 0xD9, 0x09, 0x9D, 0xB5, 0x0F, 0xCA, 0x22, 0xC9, 0x8F, 0x5F, 0x72, 0xCD,
+    0x9C, 0x39, 0x6D, 0x31, 0x0F, 0x0A, 0x26, 0x86, 0xC4, 0xE8, 0xFD, 0xE4, 0x6C, 0x95, 0xF8, 0x3F,
+    0xC3, 0xFB, 0xFD, 0x7E, 0xAE, 0x6E, 0xFD, 0x55, 0x53, 0xAD, 0x42, 0x29, 0xEF, 0x38, 0x12, 0xAD,
+    0xEB, 0x59, 0x0D, 0xD1, 0x53, 0x6D, 0x46, 0x66, 0xB3, 0x8F, 0x9D, 0x44, 0x70, 0xB2, 0xD8, 0x9F,
+};
+
+static const witness_payload_t FIXTURE_SHELLEY_SIGN_TX_WITH_258_TAG_ON_INPUTS_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_SHELLEY_SIGN_TX_WITH_258_TAG_ON_INPUTS_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_SHELLEY_SIGN_TX_WITH_258_TAG_ON_INPUTS_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_SHELLEY_SIGN_TX_WITH_258_TAG_ON_INPUTS_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_258_TAG_ON_INPUTS = {
     .name = "Sign_tx_with_258_tag_on_inputs",
     .raw_tx = FIXTURE_SHELLEY_SIGN_TX_WITH_258_TAG_ON_INPUTS_RAW_TX,
@@ -107,6 +141,8 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_258_TAG_ON_INPUTS = {
     .num_inputs = 1,
     .num_outputs = 0,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_SHELLEY_SIGN_TX_WITH_258_TAG_ON_INPUTS_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,
@@ -148,6 +184,22 @@ static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITHOUT_CHANGE_ADDRESS_RAW_TX[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A,
 };
 
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITHOUT_CHANGE_ADDRESS_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITHOUT_CHANGE_ADDRESS_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0xCB, 0xC9, 0x1A, 0x45, 0x64, 0x10, 0x95, 0x07, 0x00, 0xAD, 0xD3, 0xE2, 0x23, 0x01, 0x30, 0x1B,
+    0x50, 0x71, 0xCB, 0x34, 0xE7, 0x31, 0x8C, 0xF4, 0xE0, 0x1B, 0x62, 0xD3, 0xCE, 0x9D, 0x00, 0x6E,
+    0x97, 0xAE, 0x7A, 0xA5, 0x13, 0x77, 0xF5, 0xE7, 0x5C, 0xCA, 0xB3, 0x02, 0x43, 0x66, 0x50, 0x7B,
+    0x27, 0x11, 0xAB, 0xD4, 0xBB, 0x56, 0xEC, 0x14, 0x97, 0x7C, 0x02, 0x73, 0xD2, 0xBA, 0x20, 0xCE,
+};
+
+static const witness_payload_t FIXTURE_SHELLEY_SIGN_TX_WITHOUT_CHANGE_ADDRESS_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_SHELLEY_SIGN_TX_WITHOUT_CHANGE_ADDRESS_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_SHELLEY_SIGN_TX_WITHOUT_CHANGE_ADDRESS_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_SHELLEY_SIGN_TX_WITHOUT_CHANGE_ADDRESS_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITHOUT_CHANGE_ADDRESS = {
     .name = "Sign_tx_without_change_address",
     .raw_tx = FIXTURE_SHELLEY_SIGN_TX_WITHOUT_CHANGE_ADDRESS_RAW_TX,
@@ -160,6 +212,8 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITHOUT_CHANGE_ADDRESS = {
     .num_inputs = 1,
     .num_outputs = 1,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_SHELLEY_SIGN_TX_WITHOUT_CHANGE_ADDRESS_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,
@@ -204,6 +258,22 @@ static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKI
     0x00, 0x00, 0x00, 0x00, 0x00, 0x2A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A,
 };
 
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_PATH_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_PATH_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0xD6, 0x0D, 0x84, 0xD2, 0xE8, 0x97, 0x42, 0x1F, 0xDC, 0xE7, 0x1B, 0x43, 0xEF, 0xC9, 0x1E, 0x0A,
+    0x6E, 0x7D, 0x3F, 0xAB, 0x2E, 0xBE, 0xBE, 0xDF, 0x8F, 0x8F, 0x93, 0xB5, 0xA8, 0xF0, 0x1C, 0x74,
+    0x9A, 0x6A, 0xE4, 0x32, 0x9F, 0xF7, 0x22, 0xFF, 0x90, 0x80, 0x7B, 0xA3, 0x8F, 0xA9, 0x7E, 0x6A,
+    0x19, 0x1D, 0x5F, 0x4B, 0x62, 0xD9, 0xDE, 0x3F, 0xF8, 0xEF, 0xF3, 0x15, 0xA4, 0xD7, 0x3C, 0xD4,
+};
+
+static const witness_payload_t FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_PATH_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_PATH_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_PATH_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_PATH_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_PATH = {
     .name = "Sign_tx_with_change_base_address_with_staking_path",
     .raw_tx = FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_PATH_RAW_TX,
@@ -216,6 +286,8 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_
     .num_inputs = 1,
     .num_outputs = 2,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_PATH_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,
@@ -261,6 +333,22 @@ static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKI
     0x00, 0x00, 0x00, 0x00, 0x0A,
 };
 
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_KEY_HASH_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_KEY_HASH_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0x6D, 0xD4, 0x04, 0x82, 0x52, 0x5A, 0x1B, 0x04, 0x56, 0xD7, 0xE0, 0xB1, 0x80, 0xA8, 0xA3, 0xC2,
+    0xF7, 0x19, 0x0C, 0x67, 0x98, 0xBF, 0xBA, 0x59, 0x75, 0xB8, 0xBE, 0x4A, 0x4D, 0x1C, 0x5D, 0xE3,
+    0x31, 0xB3, 0x64, 0x62, 0x25, 0x3D, 0x7B, 0xE4, 0x0A, 0xB0, 0x80, 0x51, 0xE0, 0xCF, 0xC3, 0xA2,
+    0x80, 0x79, 0x6C, 0x87, 0xC4, 0xD8, 0xDA, 0xB9, 0x02, 0xDF, 0xDE, 0xEA, 0x51, 0x3B, 0x7D, 0x43,
+};
+
+static const witness_payload_t FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_KEY_HASH_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_KEY_HASH_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_KEY_HASH_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_KEY_HASH_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_KEY_HASH = {
     .name = "Sign_tx_with_change_base_address_with_staking_key_hash",
     .raw_tx = FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_KEY_HASH_RAW_TX,
@@ -273,6 +361,8 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_
     .num_inputs = 1,
     .num_outputs = 2,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_STAKING_KEY_HASH_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,
@@ -316,6 +406,22 @@ static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_ENTERPRISE_CHANGE_ADDRESS_RAW_
     0x2A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A,
 };
 
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_ENTERPRISE_CHANGE_ADDRESS_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_ENTERPRISE_CHANGE_ADDRESS_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0x58, 0x33, 0x15, 0xE2, 0x2E, 0x79, 0xF7, 0x5A, 0x22, 0xD1, 0x9C, 0xDD, 0x86, 0x2B, 0x33, 0x60,
+    0x79, 0x20, 0x64, 0xFD, 0xDD, 0x58, 0x21, 0x42, 0x07, 0x07, 0xEE, 0x8F, 0x76, 0xC1, 0x88, 0x21,
+    0x04, 0x54, 0x75, 0x02, 0x59, 0x1E, 0x97, 0xBA, 0x7E, 0xB6, 0xFC, 0x3D, 0xE6, 0x4C, 0x53, 0x00,
+    0x0E, 0x40, 0x04, 0x1D, 0x81, 0x3F, 0x41, 0xA2, 0x70, 0x60, 0x8E, 0x2F, 0x6A, 0xE6, 0xA8, 0x81,
+};
+
+static const witness_payload_t FIXTURE_SHELLEY_SIGN_TX_WITH_ENTERPRISE_CHANGE_ADDRESS_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_SHELLEY_SIGN_TX_WITH_ENTERPRISE_CHANGE_ADDRESS_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_SHELLEY_SIGN_TX_WITH_ENTERPRISE_CHANGE_ADDRESS_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_SHELLEY_SIGN_TX_WITH_ENTERPRISE_CHANGE_ADDRESS_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_ENTERPRISE_CHANGE_ADDRESS = {
     .name = "Sign_tx_with_enterprise_change_address",
     .raw_tx = FIXTURE_SHELLEY_SIGN_TX_WITH_ENTERPRISE_CHANGE_ADDRESS_RAW_TX,
@@ -328,6 +434,8 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_ENTERPRISE_CHANGE_ADDRESS
     .num_inputs = 1,
     .num_outputs = 2,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_SHELLEY_SIGN_TX_WITH_ENTERPRISE_CHANGE_ADDRESS_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,
@@ -372,6 +480,22 @@ static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_POINTER_CHANGE_ADDRESS_RAW_TX[
     0x00, 0x00, 0x00, 0x00, 0x0A,
 };
 
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_POINTER_CHANGE_ADDRESS_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_POINTER_CHANGE_ADDRESS_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0xD2, 0xB8, 0x45, 0xD7, 0x55, 0xAD, 0xC1, 0xE2, 0xBB, 0xF7, 0x8C, 0x21, 0x75, 0x60, 0x43, 0xFE,
+    0x5E, 0x93, 0xE9, 0x12, 0xC2, 0x1B, 0xAC, 0x33, 0x48, 0xF9, 0x7F, 0xE4, 0xAC, 0xC5, 0xC1, 0x38,
+    0x8E, 0xDF, 0x25, 0x37, 0x22, 0xCA, 0xA1, 0x02, 0xE7, 0x90, 0xEC, 0xC1, 0x15, 0x07, 0x23, 0x9E,
+    0x29, 0xF3, 0x89, 0xF2, 0x9E, 0x7C, 0xCC, 0xD3, 0x3F, 0x9E, 0x1F, 0x44, 0xB0, 0xE2, 0xE1, 0x98,
+};
+
+static const witness_payload_t FIXTURE_SHELLEY_SIGN_TX_WITH_POINTER_CHANGE_ADDRESS_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_SHELLEY_SIGN_TX_WITH_POINTER_CHANGE_ADDRESS_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_SHELLEY_SIGN_TX_WITH_POINTER_CHANGE_ADDRESS_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_SHELLEY_SIGN_TX_WITH_POINTER_CHANGE_ADDRESS_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_POINTER_CHANGE_ADDRESS = {
     .name = "Sign_tx_with_pointer_change_address",
     .raw_tx = FIXTURE_SHELLEY_SIGN_TX_WITH_POINTER_CHANGE_ADDRESS_RAW_TX,
@@ -384,6 +508,8 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_POINTER_CHANGE_ADDRESS = 
     .num_inputs = 1,
     .num_outputs = 2,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_SHELLEY_SIGN_TX_WITH_POINTER_CHANGE_ADDRESS_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,
@@ -425,6 +551,22 @@ static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_NONREASONABLE_ACCOUNT_AND_ADDR
     0x0A,
 };
 
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_NONREASONABLE_ACCOUNT_AND_ADDRESS_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x01, 0xC8, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_NONREASONABLE_ACCOUNT_AND_ADDRESS_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0xD9, 0x12, 0x00, 0x34, 0xCD, 0xF6, 0x4B, 0x6C, 0xBE, 0x3E, 0xD7, 0x8E, 0x87, 0x53, 0xE7, 0xE1,
+    0x5B, 0x82, 0x7F, 0x02, 0xAF, 0x4B, 0xAF, 0xF0, 0x56, 0x76, 0xFB, 0x3F, 0x4F, 0x30, 0x26, 0xC4,
+    0x4D, 0x75, 0x60, 0xD4, 0xBA, 0x90, 0x2B, 0x8C, 0xE2, 0x59, 0xB7, 0x6E, 0x2F, 0x34, 0x87, 0x81,
+    0x2C, 0xE3, 0x1F, 0xE2, 0x3B, 0x2C, 0xCF, 0x10, 0x21, 0x10, 0x9B, 0x9F, 0x53, 0x17, 0x06, 0x64,
+};
+
+static const witness_payload_t FIXTURE_SHELLEY_SIGN_TX_WITH_NONREASONABLE_ACCOUNT_AND_ADDRESS_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_SHELLEY_SIGN_TX_WITH_NONREASONABLE_ACCOUNT_AND_ADDRESS_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_SHELLEY_SIGN_TX_WITH_NONREASONABLE_ACCOUNT_AND_ADDRESS_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_SHELLEY_SIGN_TX_WITH_NONREASONABLE_ACCOUNT_AND_ADDRESS_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_NONREASONABLE_ACCOUNT_AND_ADDRESS = {
     .name = "Sign_tx_with_nonreasonable_account_and_address",
     .raw_tx = FIXTURE_SHELLEY_SIGN_TX_WITH_NONREASONABLE_ACCOUNT_AND_ADDRESS_RAW_TX,
@@ -437,6 +579,8 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_NONREASONABLE_ACCOUNT_AND
     .num_inputs = 1,
     .num_outputs = 1,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_SHELLEY_SIGN_TX_WITH_NONREASONABLE_ACCOUNT_AND_ADDRESS_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,
@@ -479,6 +623,35 @@ static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL_RAW_TX[]
     0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,
 };
 
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0x46, 0x67, 0x98, 0x91, 0xF6, 0x17, 0xE0, 0x93, 0x20, 0x9B, 0xA8, 0xE0, 0xED, 0xF7, 0xEC, 0x39,
+    0x15, 0x6E, 0xEA, 0xB4, 0x2E, 0x60, 0xD4, 0xBF, 0x81, 0xD8, 0xAD, 0x96, 0x02, 0xE8, 0xA8, 0xD7,
+    0x1A, 0x00, 0xF8, 0x71, 0x81, 0x70, 0x80, 0x73, 0x7C, 0xFC, 0xC8, 0x00, 0x8D, 0x90, 0x8C, 0x59,
+    0x62, 0x0E, 0x8A, 0x54, 0x72, 0x07, 0xB4, 0x5F, 0xF6, 0xBF, 0xCD, 0x36, 0x1E, 0xCF, 0x88, 0x77,
+};
+
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL_WITNESS_1_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x02, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL_WITNESS_1_EXPECTED_SIGNATURE[] = {
+    0x46, 0x67, 0x98, 0x91, 0xF6, 0x17, 0xE0, 0x93, 0x22, 0x9B, 0xA8, 0xE0, 0xED, 0xF7, 0xEC, 0x39,
+    0x15, 0x6E, 0xEA, 0xB4, 0x2E, 0x60, 0xD4, 0xBF, 0x81, 0xD8, 0xAD, 0x96, 0x00, 0xE8, 0xA8, 0xD7,
+    0x1A, 0x00, 0xF8, 0x71, 0x81, 0x70, 0x80, 0x73, 0x7C, 0xFC, 0xC8, 0x00, 0x8D, 0x90, 0x8C, 0x59,
+    0x60, 0x0E, 0x8A, 0x54, 0x72, 0x07, 0xB4, 0x5F, 0xF6, 0xBF, 0xCD, 0x36, 0x1E, 0xCF, 0x88, 0x77,
+};
+
+static const witness_payload_t FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL_WITNESS_0_EXPECTED_SIGNATURE },
+    { .payload = FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL_WITNESS_1_PAYLOAD, .payload_len = sizeof(FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL_WITNESS_1_PAYLOAD), .expected_signature = FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL_WITNESS_1_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL = {
     .name = "Sign_tx_with_path_based_withdrawal",
     .raw_tx = FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL_RAW_TX,
@@ -491,6 +664,8 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL = {
     .num_inputs = 1,
     .num_outputs = 1,
     .num_witnesses = 2,
+    .witness_payloads = FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL_WITNESS_PAYLOADS,
+    .witness_payload_count = 2,
     .num_certificates = 0,
     .num_withdrawals = 1,
     .num_mint_asset_groups = 0,
@@ -532,6 +707,22 @@ static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_AUXILIARY_DATA_HASH_RAW_TX[] =
     0x0A,
 };
 
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_AUXILIARY_DATA_HASH_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_SHELLEY_SIGN_TX_WITH_AUXILIARY_DATA_HASH_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0xAD, 0x60, 0x7A, 0xF1, 0x68, 0xEF, 0xF9, 0x2C, 0x26, 0xC6, 0xA4, 0xC6, 0x16, 0x95, 0x7B, 0xC7,
+    0xD3, 0x54, 0x6E, 0xD6, 0x0E, 0x77, 0xD0, 0xC4, 0x86, 0x76, 0x80, 0xCF, 0xF7, 0x82, 0xBD, 0x2B,
+    0xF1, 0x07, 0x1A, 0x11, 0x1F, 0x88, 0x99, 0xCC, 0x7A, 0xA1, 0xC4, 0x26, 0x76, 0xF2, 0x1B, 0xA7,
+    0xA4, 0x34, 0x0E, 0x36, 0x52, 0x10, 0xB0, 0x24, 0xF1, 0x11, 0xE0, 0x6F, 0xEB, 0xA5, 0x9D, 0x8B,
+};
+
+static const witness_payload_t FIXTURE_SHELLEY_SIGN_TX_WITH_AUXILIARY_DATA_HASH_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_SHELLEY_SIGN_TX_WITH_AUXILIARY_DATA_HASH_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_SHELLEY_SIGN_TX_WITH_AUXILIARY_DATA_HASH_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_SHELLEY_SIGN_TX_WITH_AUXILIARY_DATA_HASH_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_AUXILIARY_DATA_HASH = {
     .name = "Sign_tx_with_auxiliary_data_hash",
     .raw_tx = FIXTURE_SHELLEY_SIGN_TX_WITH_AUXILIARY_DATA_HASH_RAW_TX,
@@ -544,6 +735,8 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_AUXILIARY_DATA_HASH = {
     .num_inputs = 1,
     .num_outputs = 1,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_SHELLEY_SIGN_TX_WITH_AUXILIARY_DATA_HASH_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,

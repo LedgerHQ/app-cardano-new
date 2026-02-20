@@ -47,6 +47,11 @@ static inline void reset_sign_msg_test_state(void) {
 
 static inline void run_fixture(const sign_msg_fixture_t *fixture) {
     assert_non_null(fixture);
+    assert_non_null(fixture->init_data);
+    assert_true(fixture->init_data_len > 0);
+    if (fixture->confirm_data_len > 0) {
+        assert_non_null(fixture->confirm_data);
+    }
     reset_sign_msg_test_state();
     reset_mock_signature_state();
 

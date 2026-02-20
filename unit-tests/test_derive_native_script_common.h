@@ -29,11 +29,9 @@
 
 // Recursive fixture runner for success tests
 void run_recursive_fixture(const native_script_t *script) {
-    if (script == NULL) {
-        TRACE("  NULL script!\n");
-    } else {
-        TRACE("Running script type: %d\n", script->type);
-        switch (script->type) {
+    assert_non_null(script);
+    TRACE("Running script type: %d\n", script->type);
+    switch (script->type) {
             case NATIVE_SCRIPT_TYPE_INVALID_HEREAFTER:
             case NATIVE_SCRIPT_TYPE_INVALID_BEFORE:
             case NATIVE_SCRIPT_TYPE_PUBKEY_DEVICE_OWNED:
@@ -128,10 +126,9 @@ void run_recursive_fixture(const native_script_t *script) {
                 }
                 break;
             }
-            default:
-                TRACE("  Unknown script type!\n");
-                assert_true(false);
-        }
+        default:
+            TRACE("  Unknown script type!\n");
+            assert_true(false);
     }
 }
 

@@ -112,8 +112,8 @@ static void handle_sign_cvote_init_apdu(buffer_t *cdata) {
 // ============================== VOTECAST CHUNK ==============================
 
 static void handle_sign_cvote_chunk_apdu(buffer_t *cdata) {
-    LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STATE_CHUNK, "Invalid cvote state");
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
+    LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STATE_CHUNK, "Invalid cvote state");
     cvote_ctx_t *ctx = &G_context.cvote_info;
 
     const size_t chunk_size = buffer_data_size(cdata);

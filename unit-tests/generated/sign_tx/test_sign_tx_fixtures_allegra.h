@@ -50,6 +50,22 @@ static const uint8_t FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_INTERVA
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A,
 };
 
+static const uint8_t FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_INTERVAL_START_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_INTERVAL_START_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0x52, 0x17, 0x49, 0xC8, 0xAB, 0x3A, 0x7B, 0x99, 0xAB, 0xD5, 0xB1, 0x49, 0x7E, 0xAF, 0x75, 0x02,
+    0xBF, 0x52, 0x52, 0x5F, 0xB4, 0x57, 0x77, 0xEB, 0x79, 0x9E, 0xDA, 0xD4, 0x82, 0x43, 0x3C, 0x5C,
+    0x0E, 0x70, 0x29, 0x28, 0xDC, 0x5D, 0x1B, 0x79, 0xF7, 0xB2, 0xD1, 0xA9, 0x1E, 0xC8, 0x15, 0x62,
+    0xC8, 0x32, 0x32, 0xBF, 0xE8, 0x30, 0x17, 0x0B, 0x0E, 0xF9, 0xBA, 0x74, 0x9E, 0x64, 0x1C, 0xFC,
+};
+
+static const witness_payload_t FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_INTERVAL_START_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_INTERVAL_START_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_INTERVAL_START_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_INTERVAL_START_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_INTERVAL_START = {
     .name = "Sign_tx_with_no_ttl_and_no_validity_interval_start",
     .raw_tx = FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_INTERVAL_START_RAW_TX,
@@ -62,6 +78,8 @@ static const tx_fixture_t FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_IN
     .num_inputs = 1,
     .num_outputs = 1,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_INTERVAL_START_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,
@@ -103,6 +121,22 @@ static const uint8_t FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_INTER
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F,
 };
 
+static const uint8_t FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_INTERVAL_START_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_INTERVAL_START_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0x06, 0x1D, 0xB2, 0xBE, 0xD5, 0x50, 0x5F, 0x24, 0x34, 0x25, 0xAC, 0x78, 0x4E, 0xDC, 0xDA, 0xD2,
+    0x9D, 0xF6, 0xFA, 0xA7, 0x8F, 0x72, 0xDE, 0xCA, 0x87, 0xBC, 0xCF, 0x43, 0x39, 0x61, 0x6A, 0x7F,
+    0x5A, 0x7A, 0xD2, 0x5E, 0xA2, 0x37, 0x3F, 0xC4, 0x68, 0x42, 0xCC, 0x98, 0x2E, 0xBB, 0xBA, 0xB2,
+    0xEA, 0x96, 0x9A, 0x47, 0xD3, 0x15, 0xBE, 0x2A, 0xF0, 0xDB, 0xAF, 0xE3, 0x25, 0x46, 0x4A, 0xDF,
+};
+
+static const witness_payload_t FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_INTERVAL_START_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_INTERVAL_START_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_INTERVAL_START_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_INTERVAL_START_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_INTERVAL_START = {
     .name = "Sign_tx_with_no_ttl_but_with_validity_interval_start",
     .raw_tx = FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_INTERVAL_START_RAW_TX,
@@ -115,6 +149,8 @@ static const tx_fixture_t FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_
     .num_inputs = 1,
     .num_outputs = 1,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_INTERVAL_START_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,

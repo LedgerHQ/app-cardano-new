@@ -75,7 +75,7 @@ void app_main(void) {
                 if (!apdu_parser(&cmd, G_io_apdu_buffer, input_len)) {
                     TRACE("BAD LENGTH:");
                     TRACE_BUFFER(G_io_apdu_buffer, input_len);
-                    apdu_response_begin((command_e) 0);
+                    apdu_response_begin(INS_NONE);
                     send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
                     apdu_response_assert_sent_or_deferred();
                     continue;

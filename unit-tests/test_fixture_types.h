@@ -13,6 +13,12 @@ typedef struct {
 } aux_data_payload_t;
 
 typedef struct {
+    const uint8_t *payload;
+    size_t payload_len;
+    const uint8_t *expected_signature;
+} witness_payload_t;
+
+typedef struct {
     const char *name;
     const uint8_t *raw_tx;
     size_t raw_tx_len;
@@ -21,6 +27,8 @@ typedef struct {
     uint16_t num_inputs;
     uint16_t num_outputs;
     uint16_t num_witnesses;
+    const witness_payload_t *witness_payloads;
+    size_t witness_payload_count;
     uint16_t num_certificates;
     uint16_t num_withdrawals;
     uint16_t num_mint_asset_groups;

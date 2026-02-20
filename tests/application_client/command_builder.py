@@ -83,6 +83,7 @@ MAX_UINT16: int = 0xFFFF
 MAX_CIP8_MSG_CHUNK_SIZE = 250
 # Mirrors `src/apdu/dispatcher.h::command_e`
 class InsType(IntEnum):
+    INS_NONE = 0x00
     INS_GET_VERSION = 0x03
     INS_GET_APP_NAME = 0x04
     INS_GET_SERIAL = 0x01

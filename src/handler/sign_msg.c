@@ -226,8 +226,8 @@ void signMsg_handle_init(buffer_t *cdata) {
 // ============================== CHUNK ==============================
 
 void signMsg_handle_chunk(buffer_t *cdata) {
-    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CHUNK, "Invalid sign_msg state");
     LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
+    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CHUNK, "Invalid sign_msg state");
 
     sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
 
@@ -304,7 +304,7 @@ void signMsg_handle_chunk(buffer_t *cdata) {
 // ============================== CONFIRM ==============================
 
 // Helper: prepare address field (derive address or compute key hash)
-static void _prepareAddressField(sign_msg_ctx_t *ctx) {
+static void prepare_address_field(sign_msg_ctx_t *ctx) {
     switch (ctx->addressFieldType) {
         case CIP8_ADDRESS_FIELD_ADDRESS: {
             ctx->addressFieldSize =
@@ -327,9 +327,9 @@ static void _prepareAddressField(sign_msg_ctx_t *ctx) {
 }
 
 // Helper: create CBOR-encoded protected header
-static size_t _createProtectedHeader(sign_msg_ctx_t *ctx,
-                                                                uint8_t *protectedHeaderBuffer,
-                                                                size_t maxSize) {
+static size_t create_protected_header(sign_msg_ctx_t *ctx,
+                                      uint8_t *protectedHeaderBuffer,
+                                      size_t maxSize) {
     // protectedHeader = {
     //     1 : -8,                         // set algorithm to EdDSA
     //     "address" : address_bytes       // raw address or key hash
@@ -357,7 +357,7 @@ static size_t _createProtectedHeader(sign_msg_ctx_t *ctx,
     LEDGER_ASSERT(buffer_write_bytes(&buffer, (const uint8_t *) address_key, address_key_len), "Buffer overflow");
 
     // Value: address bytes
-    _prepareAddressField(ctx);
+    prepare_address_field(ctx);
     LEDGER_ASSERT(ctx->addressFieldSize > 0, "Address field not prepared");
 
     LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_BYTES, ctx->addressFieldSize), "CBOR write failed");
@@ -371,7 +371,7 @@ static size_t _createProtectedHeader(sign_msg_ctx_t *ctx,
 
 // Helper: build Sig_structure and sign it
 // Returns false on allocation failures, true on success.
-static bool _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
+static bool build_and_sign_sig_structure(sign_msg_ctx_t *ctx) {
     // Sig_structure = [
     //     context : "Signature1",
     //     body_protected : CBOR_encode(protectedHeader),
@@ -411,7 +411,7 @@ static bool _buildAndSignSigStructure(sign_msg_ctx_t *ctx) {
     // Element 2: CBOR-encoded protectedHeader (as bytes)
     uint8_t protectedHeaderBuffer[MAX_ADDRESS_LENGTH + 32];
     const size_t protectedHeaderSize =
-        _createProtectedHeader(ctx, protectedHeaderBuffer, SIZEOF(protectedHeaderBuffer));
+        create_protected_header(ctx, protectedHeaderBuffer, SIZEOF(protectedHeaderBuffer));
 
     LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_BYTES, protectedHeaderSize), "CBOR write failed");
     LEDGER_ASSERT(buffer_write_bytes(&buffer, protectedHeaderBuffer, protectedHeaderSize), "Buffer overflow");
@@ -470,7 +470,7 @@ void signMsg_handle_confirm(buffer_t *cdata) {
     }
 
     // Build Sig_structure and sign it
-    if (!_buildAndSignSigStructure(ctx)) {
+    if (!build_and_sign_sig_structure(ctx)) {
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
     }

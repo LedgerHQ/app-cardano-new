@@ -15,6 +15,7 @@
  * command constants aligned with the Python helpers.
  */
 typedef enum {
+    INS_NONE = 0x00,
     INS_GET_SERIAL = 0x01,
     INS_GET_VERSION = 0x03,
     INS_GET_APP_NAME = 0x04,

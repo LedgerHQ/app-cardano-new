@@ -45,6 +45,9 @@ static inline void reset_context(void) {
 // ----------------------------------------------------------------------
 
 static inline void run_fixture(const pubkey_fixture_t *fixture) {
+    assert_non_null(fixture);
+    assert_non_null(fixture->data);
+    assert_true(fixture->data_len > 0);
     reset_context();
 
     unit_test_silent_pubkey_export_enabled = fixture->silent_export_enabled;
@@ -58,6 +61,8 @@ static inline void run_fixture(const pubkey_fixture_t *fixture) {
     assert_int_equal(g_last_response_sw, fixture->check_expected);
 
     if (fixture->check_expected == SWO_SUCCESS) {
+        assert_non_null(fixture->expected_response);
+        assert_true(fixture->expected_response_len > 0);
         assert_int_equal(g_last_response_len, fixture->expected_response_len);
         assert_memory_equal(g_last_response, fixture->expected_response, fixture->expected_response_len);
     }

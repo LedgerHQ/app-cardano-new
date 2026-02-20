@@ -53,6 +53,9 @@ static inline void reset_context(void) {
 // ----------------------------------------------------------------------
 
 static inline void run_fixture(const derive_address_fixture_t *fixture) {
+    assert_non_null(fixture);
+    assert_non_null(fixture->data);
+    assert_true(fixture->data_len > 0);
     reset_context();
     assert_true(test_mem_init());
     io_capture_reset();
@@ -71,6 +74,7 @@ static inline void run_fixture(const derive_address_fixture_t *fixture) {
     assert_int_equal(g_last_response_sw, fixture->check_expected);
 
     if (fixture->expected_address != NULL && fixture->expected_address_len > 0) {
+        assert_int_equal(fixture->check_expected, SWO_SUCCESS);
         assert_int_equal(g_last_response_len, fixture->expected_address_len);
         assert_memory_equal(g_last_response,
                             fixture->expected_address,

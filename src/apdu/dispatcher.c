@@ -185,6 +185,8 @@ void apdu_dispatcher(const command_t *cmd) {
                     apdu_response_assert_sent_or_deferred();
                     return;
             }
+            LEDGER_ASSERT(false, "Unreachable INS_DERIVE_ADDRESS dispatch path");
+            return;
 
         case INS_DERIVE_NATIVE_SCRIPT_HASH:
             REJECT_USED_P2(cmd->p2);

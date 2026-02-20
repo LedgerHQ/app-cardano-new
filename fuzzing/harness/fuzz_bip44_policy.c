@@ -13,7 +13,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     fuzzing_reset_state();
 
     buffer_t path_buffer = {
-        .ptr = data,
+        .ptr = (uint8_t *) data,
         .size = size,
         .offset = 0,
     };

@@ -8,12 +8,13 @@ from typing import Any, Sequence
 from common import (
     _ensure_base58_module,
     _add_tests_to_sys_path,
+    read_file_safe,
     write_file_safe,
     sanitize_c_identifier,
     extract_apdu_payload,
     format_bytes_as_c_array,
 )
-from paths import GENERATED_SIGN_TX_DIR
+from paths import GENERATED_SIGN_TX_DIR, UNIT_TESTS_DIR
 
 
 # ======================================================================
@@ -31,6 +32,124 @@ def _split_hex_string(hex_str: str, chunk_size: int = 1024) -> list[str]:
 def _compute_blake2b_256(data: bytes) -> str:
     return hashlib.blake2b(data, digest_size=32).hexdigest()
 
+
+_MOCK_SIGNATURE_LOOKUP: dict[tuple[tuple[int, ...], bytes], bytes] | None = None
+
+
+def _parse_path_to_words(path: str) -> tuple[int, ...]:
+    path_parts = path.split("/")
+    if path_parts[0] == "m":
+        path_parts = path_parts[1:]
+
+    path_words: list[int] = []
+    for path_part in path_parts:
+        is_hardened = path_part.endswith("'")
+        path_index = int(path_part[:-1] if is_hardened else path_part)
+        if is_hardened:
+            path_index |= 0x80000000
+        path_words.append(path_index)
+    return tuple(path_words)
+
+
+def _extract_braced_entries(body: str) -> list[str]:
+    entries: list[str] = []
+    start_index = 0
+    while True:
+        entry_start = body.find("{ .path =", start_index)
+        if entry_start == -1:
+            break
+        depth = 0
+        cursor = entry_start
+        while cursor < len(body):
+            char = body[cursor]
+            if char == "{":
+                depth += 1
+            elif char == "}":
+                depth -= 1
+                if depth == 0:
+                    entries.append(body[entry_start:cursor + 1])
+                    start_index = cursor + 1
+                    break
+            cursor += 1
+        else:
+            raise ValueError("Unbalanced braces while parsing mock signature entries")
+    return entries
+
+
+def _load_mock_signature_lookup() -> dict[tuple[tuple[int, ...], bytes], bytes]:
+    global _MOCK_SIGNATURE_LOOKUP
+    if _MOCK_SIGNATURE_LOOKUP is not None:
+        return _MOCK_SIGNATURE_LOOKUP
+
+    mock_data_path = UNIT_TESTS_DIR / "mock_crypto" / "crypto_mock_data.h"
+    mock_data_content = read_file_safe(mock_data_path)
+
+    message_lookup: dict[str, bytes] = {}
+    for message_match in re.finditer(
+        r"static const uint8_t (\w+)\[\] = \{([^}]+)\};",
+        mock_data_content,
+        flags=re.DOTALL,
+    ):
+        message_name = message_match.group(1)
+        message_hex_values = re.findall(r"0x[0-9a-fA-F]{2}", message_match.group(2))
+        if not message_hex_values:
+            continue
+        message_lookup[message_name] = bytes(int(value, 16) for value in message_hex_values)
+
+    signatures_match = re.search(
+        r"static const mock_signature_data_t MOCK_SIGNATURES\[\]\s*=\s*\{(.*?)\n\};",
+        mock_data_content,
+        flags=re.DOTALL,
+    )
+    if signatures_match is None:
+        raise ValueError("MOCK_SIGNATURES array not found in mock_crypto/crypto_mock_data.h")
+
+    signature_lookup: dict[tuple[tuple[int, ...], bytes], bytes] = {}
+    for signature_entry in _extract_braced_entries(signatures_match.group(1)):
+        path_match = re.search(r"\.path\s*=\s*(\{[^}]+\})", signature_entry)
+        path_len_match = re.search(r"\.path_len\s*=\s*(\d+)", signature_entry)
+        message_name_match = re.search(r"\.message\s*=\s*(\w+)", signature_entry)
+        signature_match = re.search(r"\.signature\s*=\s*\{([^}]*)\}", signature_entry, flags=re.DOTALL)
+        if (
+            path_match is None
+            or path_len_match is None
+            or message_name_match is None
+            or signature_match is None
+        ):
+            continue
+
+        path_hex_values = re.findall(r"0x[0-9a-fA-F]+", path_match.group(1))
+        path_len = int(path_len_match.group(1))
+        path_words = tuple(int(value, 16) for value in path_hex_values[:path_len])
+        message_name = message_name_match.group(1)
+        if message_name not in message_lookup:
+            continue
+        signature_hex_values = re.findall(r"0x[0-9a-fA-F]{2}", signature_match.group(1))
+        signature_bytes = bytes(int(value, 16) for value in signature_hex_values)
+        signature_lookup[(path_words, message_lookup[message_name])] = signature_bytes
+
+    _MOCK_SIGNATURE_LOOKUP = signature_lookup
+    return signature_lookup
+
+
+def _compute_fallback_mock_signature(path_words: tuple[int, ...], message: bytes) -> bytes:
+    signature = bytearray(64)
+    for signature_index in range(64):
+        signature_byte = message[signature_index % len(message)]
+        if len(path_words) > 0:
+            path_word = path_words[signature_index % len(path_words)]
+            signature_byte ^= (path_word >> ((signature_index % 4) * 8)) & 0xFF
+        signature[signature_index] = signature_byte ^ ((0xA5 + signature_index) & 0xFF)
+    return bytes(signature)
+
+
+def _derive_witness_signature(witness_path: str, message: bytes) -> bytes:
+    path_words = _parse_path_to_words(witness_path)
+    signature_lookup = _load_mock_signature_lookup()
+    return signature_lookup.get(
+        (path_words, message),
+        _compute_fallback_mock_signature(path_words, message),
+    )
 
 
 def _bool_to_c(value: bool) -> str:
@@ -210,6 +329,48 @@ def _generate_fixtures_for_era(
                 header_lines.extend(delegation_entries)
                 header_lines.append("};")
             header_lines.append("")
+        witness_paths = gather_witness_paths(
+            tx,
+            test_case.signingMode,
+            getattr(test_case, "additionalWitnessPaths", []),
+        )
+        witness_declaration_lines = []
+        witness_payload_entries = []
+        witness_payloads_name = f"{fixture_prefix}_WITNESS_PAYLOADS"
+        expected_hash_bytes = bytes.fromhex(expected_hash_hex)
+        for witness_index, witness_path in enumerate(witness_paths):
+            witness_payload_name = f"{fixture_prefix}_WITNESS_{witness_index}_PAYLOAD"
+            witness_signature_name = f"{fixture_prefix}_WITNESS_{witness_index}_EXPECTED_SIGNATURE"
+            witness_apdu = builder.sign_tx_witness(witness_path)
+            witness_payload = extract_apdu_payload(witness_apdu)
+            witness_signature = _derive_witness_signature(
+                witness_path,
+                expected_hash_bytes,
+            )
+            witness_lines = format_bytes_as_c_array(
+                witness_payload,
+                witness_payload_name,
+            ).split("\n")
+            witness_declaration_lines.extend(witness_lines)
+            witness_declaration_lines.append("")
+            witness_signature_lines = format_bytes_as_c_array(
+                witness_signature,
+                witness_signature_name,
+            ).split("\n")
+            witness_declaration_lines.extend(witness_signature_lines)
+            witness_declaration_lines.append("")
+            witness_payload_entries.append(
+                "    { .payload = "
+                f"{witness_payload_name}, .payload_len = sizeof({witness_payload_name}), "
+                f".expected_signature = {witness_signature_name} }},"
+            )
+        if witness_payload_entries:
+            witness_declaration_lines.append(f"static const witness_payload_t {witness_payloads_name}[] = {{")
+            witness_declaration_lines.extend(witness_payload_entries)
+            witness_declaration_lines.append("};")
+            witness_declaration_lines.append("")
+
+        header_lines.extend(witness_declaration_lines)
         header_lines.append(f"static const tx_fixture_t {fixture_prefix} = {{")
         header_lines.append(f'    .name = "{test_case.name}",')
         header_lines.append(f"    .raw_tx = {fixture_prefix}_RAW_TX,")
@@ -228,12 +389,15 @@ def _generate_fixtures_for_era(
         header_lines.append(f"    .protocol_magic = {protocol_magic_value},")
         header_lines.append(f"    .num_inputs = {len(tx.inputs)},")
         header_lines.append(f"    .num_outputs = {len(tx.outputs)},")
-        witness_paths = gather_witness_paths(
-            tx,
-            test_case.signingMode,
-            getattr(test_case, "additionalWitnessPaths", []),
-        )
         header_lines.append(f"    .num_witnesses = {len(witness_paths)},")
+        if witness_payload_entries:
+            header_lines.append(f"    .witness_payloads = {witness_payloads_name},")
+            header_lines.append(
+                f"    .witness_payload_count = {len(witness_payload_entries)},"
+            )
+        else:
+            header_lines.append("    .witness_payloads = NULL,")
+            header_lines.append("    .witness_payload_count = 0,")
         header_lines.append(
             f"    .num_certificates = {len(tx.certificates) if tx.certificates else 0},"
         )

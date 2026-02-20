@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <stdbool.h>  // bool
 #include <stdint.h>   // uint*_t
 
 #include "buffer.h"
@@ -54,5 +55,12 @@ void finalize_sign_tx(void);
 /**
  * Finalize witness signing. Called after user approves witness signature.
  * Sends the witness signature back to the client.
+ *
  */
 void finalize_witness(void);
+
+/**
+ * Returns true if processing the current witness would complete witness signing.
+ * Intended to be checked immediately before calling finalize_witness().
+ */
+bool is_last_witness_to_process(void);

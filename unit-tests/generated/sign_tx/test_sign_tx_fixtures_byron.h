@@ -50,6 +50,22 @@ static const uint8_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_MAINNET_OUTPUT_
     0x0A,
 };
 
+static const uint8_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_MAINNET_OUTPUT_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_MAINNET_OUTPUT_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0xFA, 0x41, 0x3C, 0x76, 0x16, 0x32, 0x02, 0xCC, 0x5C, 0xD1, 0x29, 0x92, 0x60, 0xAC, 0xBC, 0x20,
+    0x56, 0x4E, 0x6D, 0x5F, 0xE9, 0x62, 0x9D, 0x43, 0xAB, 0xC6, 0x57, 0x61, 0x33, 0xCE, 0x4E, 0xF2,
+    0xB6, 0x26, 0x5C, 0x96, 0x61, 0x52, 0x62, 0x2C, 0x10, 0xB6, 0x49, 0x72, 0x00, 0xCC, 0xDC, 0x40,
+    0x21, 0x2E, 0x0D, 0xBF, 0xA5, 0x05, 0xFD, 0xA3, 0xDC, 0xA6, 0x37, 0xC1, 0x3F, 0xE9, 0x6E, 0x52,
+};
+
+static const witness_payload_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_MAINNET_OUTPUT_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_MAINNET_OUTPUT_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_MAINNET_OUTPUT_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_MAINNET_OUTPUT_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_MAINNET_OUTPUT = {
     .name = "Sign_tx_with_thirdparty_Byron_mainnet_output",
     .raw_tx = FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_MAINNET_OUTPUT_RAW_TX,
@@ -62,6 +78,8 @@ static const tx_fixture_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_MAINNET_OU
     .num_inputs = 1,
     .num_outputs = 1,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_MAINNET_OUTPUT_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,
@@ -105,6 +123,22 @@ static const uint8_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_DAEDALUS_MAINNE
     0x00, 0x0A,
 };
 
+static const uint8_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_DAEDALUS_MAINNET_OUTPUT_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_DAEDALUS_MAINNET_OUTPUT_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0xB5, 0x52, 0xFC, 0xE5, 0x32, 0x50, 0x2C, 0x94, 0x47, 0x1B, 0x71, 0x55, 0x2F, 0xB7, 0x93, 0x89,
+    0x0E, 0x81, 0x07, 0x66, 0x9E, 0x85, 0xFB, 0x7D, 0x65, 0x15, 0x69, 0xC3, 0xF2, 0xC8, 0x54, 0x12,
+    0xF9, 0x35, 0x9C, 0x05, 0x45, 0x30, 0x4C, 0x74, 0x0B, 0x7C, 0x11, 0xB5, 0x4F, 0xD7, 0xF3, 0xE9,
+    0x79, 0xE1, 0x67, 0x86, 0xD2, 0xE2, 0x9B, 0x9D, 0x12, 0x75, 0x09, 0x63, 0xFE, 0xEF, 0x74, 0xB2,
+};
+
+static const witness_payload_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_DAEDALUS_MAINNET_OUTPUT_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_DAEDALUS_MAINNET_OUTPUT_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_DAEDALUS_MAINNET_OUTPUT_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_DAEDALUS_MAINNET_OUTPUT_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_DAEDALUS_MAINNET_OUTPUT = {
     .name = "Sign_tx_with_thirdparty_Byron_Daedalus_mainnet_output",
     .raw_tx = FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_DAEDALUS_MAINNET_OUTPUT_RAW_TX,
@@ -117,6 +151,8 @@ static const tx_fixture_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_DAEDALUS_M
     .num_inputs = 1,
     .num_outputs = 1,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_DAEDALUS_MAINNET_OUTPUT_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,
@@ -158,6 +194,22 @@ static const uint8_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_TESTNET_OUTPUT_
     0x00, 0x00, 0x00, 0x00, 0x0A,
 };
 
+static const uint8_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_TESTNET_OUTPUT_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_TESTNET_OUTPUT_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0x6B, 0x90, 0x39, 0x40, 0x98, 0xD0, 0x6E, 0x1B, 0x02, 0xE2, 0x83, 0x03, 0x93, 0x18, 0x4A, 0xCF,
+    0xCE, 0xD2, 0x1E, 0xE6, 0xAC, 0x9C, 0x16, 0xC9, 0x16, 0x2F, 0x0B, 0xB5, 0x74, 0xF2, 0xAA, 0x27,
+    0x27, 0xF7, 0x59, 0xA0, 0xEF, 0xB0, 0x0E, 0xFB, 0x4E, 0x85, 0xE3, 0xE3, 0xF3, 0x78, 0x2A, 0xAF,
+    0xB9, 0xB2, 0x7E, 0x06, 0xE0, 0xFB, 0x76, 0x29, 0x61, 0x4F, 0x6B, 0x15, 0x78, 0xD5, 0x8A, 0x87,
+};
+
+static const witness_payload_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_TESTNET_OUTPUT_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_TESTNET_OUTPUT_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_TESTNET_OUTPUT_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_TESTNET_OUTPUT_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
 static const tx_fixture_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_TESTNET_OUTPUT = {
     .name = "Sign_tx_with_thirdparty_Byron_testnet_output",
     .raw_tx = FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_TESTNET_OUTPUT_RAW_TX,
@@ -170,6 +222,8 @@ static const tx_fixture_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_TESTNET_OU
     .num_inputs = 1,
     .num_outputs = 1,
     .num_witnesses = 1,
+    .witness_payloads = FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_TESTNET_OUTPUT_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
     .num_certificates = 0,
     .num_withdrawals = 0,
     .num_mint_asset_groups = 0,

@@ -6,6 +6,10 @@
 #include <string.h>
 
 #include "assert.h"
+#ifdef HAVE_SWAP
+#include "os.h"
+#include "swap.h"
+#endif
 
 uint8_t g_last_response[IO_CAPTURE_MAX_RESPONSE_SIZE];
 size_t g_last_response_len = 0;
@@ -25,6 +29,15 @@ __attribute__((weak)) int io_send_response_pointer(const uint8_t *buffer, size_t
 
     g_last_response_len = bufferLength;
     g_last_response_sw = swo;
+
+#ifdef HAVE_SWAP
+    // Match SDK behavior in swap mode: once Exchange response is marked ready,
+    // terminate app control flow from within the response send path.
+    if (G_called_from_swap && G_swap_response_ready) {
+        os_lib_end();
+    }
+#endif
+
     return 0;
 }
 

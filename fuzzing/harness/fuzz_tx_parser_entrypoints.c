@@ -22,7 +22,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     size--;
 
     buffer_t parse_buffer = {
-        .ptr = data,
+        .ptr = (uint8_t *) data,
         .size = size,
         .offset = 0,
     };
@@ -55,7 +55,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
             tx_params.includeTreasury = (flags & 0x20) != 0;
             tx_params.includeDonation = (flags & 0x40) != 0;
 
-            parse_buffer.ptr = data + 10;
+            parse_buffer.ptr = (uint8_t *) (data + 10);
             parse_buffer.size = size - 10;
             parse_buffer.offset = 0;
 

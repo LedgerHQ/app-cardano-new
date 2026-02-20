@@ -628,7 +628,17 @@ void finalize_sign_tx(void) {
 }
 
 
-// All witnesses processed
+bool is_last_witness_to_process(void) {
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
+    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_APPROVED, "Bad tx_state");
+    LEDGER_ASSERT(G_context.tx_info.num_witnesses > 0, "No witnesses expected");
+    LEDGER_ASSERT(G_context.tx_info.current_witness < G_context.tx_info.num_witnesses,
+                  "Witness index out of range for final-witness check");
+    const uint16_t remaining_witnesses =
+        G_context.tx_info.num_witnesses - G_context.tx_info.current_witness;
+    return (remaining_witnesses == 1);
+}
+
 void finalize_witness(void)
 {
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
@@ -646,10 +656,12 @@ void finalize_witness(void)
 
     TRACE_BUFFER(G_context.tx_info.witness_signature, ED25519_SIGNATURE_LENGTH);
 
+    const bool is_last_witness = is_last_witness_to_process();
+
     // Witness confirmed - send signature back
 #ifdef HAVE_SWAP
     if (G_called_from_swap &&
-        (G_context.tx_info.current_witness + 1 == G_context.tx_info.num_witnesses)) {
+        is_last_witness) {
         // Must be set before apdu_response_send_data(): the SDK IO send path checks
         // G_swap_response_ready while transmitting the response and calls os_lib_end()
         // immediately to return control to Exchange.
@@ -662,12 +674,14 @@ void finalize_witness(void)
         ED25519_SIGNATURE_LENGTH,
         SWO_SUCCESS
     );
-    // apdu_response_send_data() must consume/copy response bytes before returning,
-    // so clearing G_context afterwards does not affect the just-sent signature.
-    G_context.tx_info.current_witness++;
-    if (G_context.tx_info.current_witness == G_context.tx_info.num_witnesses) {
+
+    if (is_last_witness) {
         // All witnesses processed - reset context to prevent further APDUs for this tx
+        // apdu_response_send_data() must consume/copy response bytes before returning,
+        // so clearing G_context afterwards does not affect the just-sent signature.
         reset_app_context();
+    } else {
+        G_context.tx_info.current_witness++;
     }
 }
 
@@ -767,26 +781,24 @@ void handler_sign_tx_witness(buffer_t *cdata) {
     }
 
     switch (policy) {
-        case POLICY_HIDE:
+        case POLICY_HIDE: {
             // POLICY_HIDE: witness does not require user confirmation
-            // Finalize directly without displaying UI (similar to silent pubkey export)
+            // Finalize directly without displaying UI
+            const bool is_last_witness = is_last_witness_to_process();
             finalize_witness();
 
-            // Handle UI state: if this was the last witness, return to main menu
-            // Otherwise, the spinner from tx_review_choice will continue showing
-            // Note: In swap mode, finalize_witness calls os_lib_end() so this code
-            // is not reached, but we guard it anyway for safety.
-            if (G_context.tx_info.current_witness == G_context.tx_info.num_witnesses) {
+            // Handle UI state: if this was the last witness, return to main menu.
+            if (is_last_witness) {
 #ifdef HAVE_SWAP
-                if (!G_called_from_swap)
+                LEDGER_ASSERT(!G_called_from_swap,
+                              "Swap flow must terminate before returning from finalize_witness");
 #endif
-                {
-                    // All witnesses processed - return to main menu
-                    TRACE("All POLICY_HIDE witnesses complete, returning to main menu");
-                    ui_menu_main();
-                }
+                // All witnesses processed - return to main menu
+                TRACE("All POLICY_HIDE witnesses complete, returning to main menu");
+                ui_menu_main();
             }
             return;
+        }
 
         case POLICY_SHOW:
             apdu_response_deferred();

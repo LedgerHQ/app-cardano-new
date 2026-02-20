@@ -48,7 +48,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     // Directly fuzz low-level CVote credential parsing.
     buffer_t credential_buffer = {
-        .ptr = data,
+        .ptr = (uint8_t *) data,
         .size = size,
         .offset = 0,
     };
@@ -57,7 +57,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 
     // Directly fuzz destination parser, including dynamic destination params allocation.
     buffer_t destination_buffer = {
-        .ptr = data,
+        .ptr = (uint8_t *) data,
         .size = size,
         .offset = 0,
     };

@@ -936,7 +936,7 @@ SYSCALL unsigned int os_endorsement_key2_derive_sign_data(
  */
 SYSCALL void
 os_lib_call(unsigned int *call_parameters PLENGTH(3 * sizeof(unsigned int)));
-SYSCALL void os_lib_end(void);
+SYSCALL void __attribute__((noreturn)) os_lib_end(void);
 SYSCALL void os_lib_throw(unsigned int exception);
 
 /* ----------------------------------------------------------------------- */

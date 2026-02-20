@@ -38,10 +38,10 @@ static void witness_review_choice(bool confirm) {
 
     TRACE("User confirmed");
     nbgl_useCaseSpinner("Processing");
+    const bool is_last_witness = is_last_witness_to_process();
     finalize_witness();
 
     // SHOW STATUS
-    const bool is_last_witness = (G_context.tx_info.current_witness == G_context.tx_info.num_witnesses);
     if (is_last_witness) {
         // All witnesses processed - show final success status
         nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_SIGNED, ui_menu_main);

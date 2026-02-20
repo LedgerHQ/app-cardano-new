@@ -301,6 +301,7 @@ set(SIGN_TX_COMMON_SOURCES
     ${UNIT_TEST_MEM_UTILS_STUB}
     mock_sources/glyphs_mock.c
     mock_sources/hex_stub.c
+    mock_sources/os_lib_end_stub.c
     test_utils/io_capture.c
     # Real UI display code - calls NBGL functions mocked in nbgl_mock.c
     ../src/ui/ui_display_tx.c
