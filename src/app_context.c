@@ -92,10 +92,26 @@ void reset_app_context(void) {
 
     // Ensure request type is explicitly idle
     G_context.req_type = REQUEST_NONE;
+
+    // Fix up APDU response state for the next command:
+    //
+    //   sent=false, deferred=false  normal idle state, nothing to do
+    //   sent=true,  deferred=false  response sent; apdu_response_assert_sent_or_deferred()
+    //                               will acknowledge it
+    //   sent=true,  deferred=true   response sent; as above
+    //   sent=false, deferred=true   stale: some failure occurred between
+    //                               apdu_response_deferred() and the UX callback;
+    //                               calling reset_app_context() was the proper way to do.
+    //                               Force sent=true so apdu_response_begin() treats
+    //                               it as a completed deferred response and clears it.
+    if (!G_apdu_response_state.response_sent &&
+        G_apdu_response_state.response_deferred_to_ux) {
+        G_apdu_response_state.response_sent = true;
+    }
 }
 
 void send_swo_and_reset(uint16_t swo) {
     TRACE("send_swo_and_reset swo=0x%04x", swo);
-    reset_app_context();
     apdu_response_send_sw(swo);
+    reset_app_context();
 }
