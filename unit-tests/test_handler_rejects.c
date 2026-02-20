@@ -140,7 +140,7 @@ static void test_tx_init_invalid_signing_mode(void **state) {
         .offset = 0,
     };
     run_sign_tx_apdu(&init_buf, P1_TX_INIT);
-    assert_int_equal(g_last_sw, SWO_WRONG_TX_INIT_APDU_DATA);
+    assert_int_equal(g_last_sw, SWO_INVALID_TX_SIGNING_MODE);
 }
 
 static void test_tx_init_trailing_bytes(void **state) {

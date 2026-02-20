@@ -72,6 +72,101 @@ static bool ensure_sign_tx_request_type(request_type_e required_request_type) {
 }
 
 /**
+ * Read and validate the options bitmask from the TX init APDU.
+ * Returns false and sends SW on failure.
+ */
+static bool read_tx_options(buffer_t *cdata, tx_params_t *tx_params) {
+    uint64_t options;
+    if (!buffer_read_u64(cdata, &options, BE)) {
+        TRACE("TX init: missing options");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return false;
+    }
+    tx_params->tagCborSets = (bool) (options & TX_OPTIONS_TAG_CBOR_SETS);
+    options &= ~TX_OPTIONS_TAG_CBOR_SETS;
+    if (options != 0) {
+        TRACE("TX init: unsupported options 0x%llx", (unsigned long long) options);
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Read and validate network ID, protocol magic, and signing mode from the TX init APDU.
+ * Returns false and sends SW on failure.
+ */
+static bool read_tx_network_params(buffer_t *cdata, tx_params_t *tx_params) {
+    if (!buffer_read_u8(cdata, &tx_params->networkId) ||
+        !isValidNetworkId(tx_params->networkId)) {
+        TRACE("TX init: invalid network id %u", tx_params->networkId);
+        send_swo_and_reset(SWO_INVALID_NETWORK_ID);
+        return false;
+    }
+    if (!buffer_read_u32(cdata, &tx_params->protocolMagic, BE)) {
+        TRACE("TX init: invalid or missing protocol magic");
+        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        return false;
+    }
+    if (tx_params->networkId == MAINNET_NETWORK_ID &&
+        tx_params->protocolMagic != MAINNET_PROTOCOL_MAGIC) {
+        TRACE("TX init: invalid mainnet protocol magic %u", tx_params->protocolMagic);
+        send_swo_and_reset(SWO_INVALID_PROTOCOL_MAGIC);
+        return false;
+    }
+    if (!buffer_read_u8(cdata, (uint8_t *) &tx_params->txSigningMode) ||
+        !is_valid_tx_signing_mode(tx_params->txSigningMode)) {
+        TRACE("TX init: invalid or missing signing mode");
+        send_swo_and_reset(SWO_INVALID_TX_SIGNING_MODE);
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Read and validate auxiliary data hash parameters (tx body field 7) from the TX init APDU.
+ * Sets tx_params->includeAuxDataHash, auxDataType, and auxDataHash.
+ * Returns false and sends SW on failure.
+ */
+static bool read_aux_data_params(buffer_t *cdata, tx_params_t *tx_params) {
+    if (!buffer_read_flag_included(cdata, &tx_params->includeAuxDataHash)) {
+        TRACE("TX init: invalid aux data hash inclusion flag");
+        send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
+        return false;
+    }
+    if (!tx_params->includeAuxDataHash) {
+        tx_params->auxDataType = AUX_DATA_TYPE_ARBITRARY_HASH;
+        explicit_bzero(tx_params->auxDataHash, AUX_DATA_HASH_LENGTH);
+        return true;
+    }
+    uint8_t auxDataTypeByte = 0;
+    if (!buffer_read_u8(cdata, &auxDataTypeByte)) {
+        TRACE("TX init: missing aux data type");
+        send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
+        return false;
+    }
+    switch (auxDataTypeByte) {
+        case AUX_DATA_TYPE_ARBITRARY_HASH:
+            tx_params->auxDataType = AUX_DATA_TYPE_ARBITRARY_HASH;
+            if (!buffer_read_bytes(cdata, tx_params->auxDataHash, AUX_DATA_HASH_LENGTH)) {
+                TRACE("TX init: missing aux data hash bytes");
+                send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
+                return false;
+            }
+            break;
+        case AUX_DATA_TYPE_CVOTE_REGISTRATION:
+            tx_params->auxDataType = AUX_DATA_TYPE_CVOTE_REGISTRATION;
+            explicit_bzero(tx_params->auxDataHash, AUX_DATA_HASH_LENGTH);
+            break;
+        default:
+            TRACE("TX init: unsupported aux data type %u", auxDataTypeByte);
+            send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
+            return false;
+    }
+    return true;
+}
+
+/**
  * Helper: Initialize transaction from P1_TX_INIT APDU
  * Validates all transaction metadata and checks security policy
  */
@@ -88,57 +183,12 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     explicit_bzero(&G_context.tx_info.pool_owner_path, sizeof(bip44_path_t));
     G_context.tx_info.pool_owner_path_present = false;
 
-    // Read and validate options (fixed header)
-    uint64_t options;
-    if (!buffer_read_u64(cdata, &options, BE)) {
-        TRACE("TX init: missing options");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+    if (!read_tx_options(cdata, tx_params)) {
         return;
     }
-    bool tagCborSets = options & TX_OPTIONS_TAG_CBOR_SETS;
-    options &= ~TX_OPTIONS_TAG_CBOR_SETS;
-    if (options != 0) {
-        TRACE("TX init: unsupported options");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+    if (!read_tx_network_params(cdata, tx_params)) {
         return;
     }
-    tx_params->tagCborSets = tagCborSets;
-
-    // Read network parameters and signing mode
-    if (!buffer_read_u8(cdata, &tx_params->networkId) ||
-        !buffer_read_u32(cdata, &tx_params->protocolMagic, BE)) {
-        TRACE("TX init: missing network parameters");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
-    }
-
-    // Validate network ID immediately - return specific error code
-    if (!isValidNetworkId(tx_params->networkId)) {
-        TRACE("TX init: invalid network id %u", tx_params->networkId);
-        send_swo_and_reset(SWO_INVALID_NETWORK_ID);
-        return;
-    }
-
-    // Validate mainnet protocol magic - return specific error code
-    if (tx_params->networkId == MAINNET_NETWORK_ID &&
-        tx_params->protocolMagic != MAINNET_PROTOCOL_MAGIC) {
-        TRACE("TX init: invalid mainnet protocol magic %u", tx_params->protocolMagic);
-        send_swo_and_reset(SWO_INVALID_PROTOCOL_MAGIC);
-        return;
-    }
-
-    uint8_t txSigningMode;
-    if (!buffer_read_u8(cdata, &txSigningMode)) {
-        TRACE("TX init: missing signing mode");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return;
-    }
-    if (!is_valid_tx_signing_mode(txSigningMode)) {
-        TRACE("TX init: invalid signing mode %u", txSigningMode);
-        send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
-        return;
-    }
-    tx_params->txSigningMode = (sign_tx_signingmode_t) txSigningMode;
 
     // Read transaction structure counts (fields 0-1: inputs and outputs, always present)
     if (!buffer_read_u16(cdata, &tx_params->num_inputs, BE) ||
@@ -170,43 +220,8 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     }
 
     // Field 7 (auxiliary data hash) - optional
-    bool includeAuxDataHash = false;
-    if (!buffer_read_flag_included(cdata, &includeAuxDataHash)) {
-        TRACE("TX init: invalid aux data hash inclusion flag");
-        send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
+    if (!read_aux_data_params(cdata, tx_params)) {
         return;
-    }
-    tx_params->includeAuxDataHash = includeAuxDataHash;
-    if (includeAuxDataHash) {
-        uint8_t auxDataTypeByte = 0;
-        if (!buffer_read_u8(cdata, &auxDataTypeByte)) {
-            TRACE("TX init: missing aux data type");
-            send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
-            return;
-        }
-
-        if (auxDataTypeByte == AUX_DATA_TYPE_ARBITRARY_HASH) {
-            tx_params->auxDataType = AUX_DATA_TYPE_ARBITRARY_HASH;
-            if (!buffer_read_bytes(cdata,
-                                   tx_params->auxDataHash,
-                                   AUX_DATA_HASH_LENGTH)) {
-                TRACE("TX init: missing aux data hash bytes");
-                send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
-                return;
-            }
-        } else if (auxDataTypeByte == AUX_DATA_TYPE_CVOTE_REGISTRATION) {
-            tx_params->auxDataType = AUX_DATA_TYPE_CVOTE_REGISTRATION;
-            explicit_bzero(tx_params->auxDataHash,
-                           AUX_DATA_HASH_LENGTH);
-        } else {
-            TRACE("TX init: unsupported aux data type %u", auxDataTypeByte);
-            send_swo_and_reset(SWO_WRONG_TX_INIT_APDU_DATA);
-            return;
-        }
-    } else {
-        tx_params->auxDataType = AUX_DATA_TYPE_ARBITRARY_HASH;
-        explicit_bzero(tx_params->auxDataHash,
-                       AUX_DATA_HASH_LENGTH);
     }
 
     // Field 8 (validity interval start) - optional
@@ -224,13 +239,11 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     }
 
     // Field 11 (script data hash) - optional
-    bool includeScriptDataHash = false;
-    if (!buffer_read_flag_included(cdata, &includeScriptDataHash)) {
+    if (!buffer_read_flag_included(cdata, &tx_params->includeScriptDataHash)) {
         TRACE("TX init: invalid script data hash inclusion flag");
         send_swo_and_reset(SWO_TX_PARSING_FAIL_INCLUSION_FLAG);
         return;
     }
-    tx_params->includeScriptDataHash = includeScriptDataHash;
 
     // Field 13 (collateral inputs)
     if (!buffer_read_u16(cdata, &tx_params->num_collateral_inputs, BE)) {
@@ -357,7 +370,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     }
 
     // Determine if CVote auxiliary data is expected
-    bool cvote_aux_data_expected = (includeAuxDataHash &&
+    bool cvote_aux_data_expected = (tx_params->includeAuxDataHash &&
                                     (tx_params->auxDataType == AUX_DATA_TYPE_CVOTE_REGISTRATION));
 
     // Show spinner only in standalone mode; in swap mode UI must stay in Exchange app.

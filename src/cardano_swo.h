@@ -57,6 +57,7 @@ typedef enum {
     SWO_TX_PARSING_FAIL_INCLUSION_FLAG = 0x6B39,      // optional field flag error
     SWO_TX_PARSING_FAIL_BUFFER_NOT_FULLY_CONSUMED = 0x6B3A,  // extra data in buffer
     SWO_TX_PARSING_FAIL_CANONICAL_ORDER = 0x6B3B,     // CBOR canonical ordering
+    SWO_INVALID_TX_SIGNING_MODE = 0x6B3C,             // unknown or unsupported tx signing mode
 
     SWO_CVOTE_PARSING_FAIL_REMAINING_VOTECAST_BYTES = 0x6B54, // failed to read remaining votecast bytes
     SWO_CVOTE_PARSING_FAIL_VOTE_PLAN_ID = 0x6B51, // failed to read vote plan id
