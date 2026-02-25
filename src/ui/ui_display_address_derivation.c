@@ -139,13 +139,13 @@ static void ui_displayAddressReview(const char *title,
 
     LEDGER_ASSERT(ctx->address.length <= MAX_HUMAN_ADDRESS_LENGTH, "Address length too large");
 
-    char humanAddress[MAX_HUMAN_ADDRESS_LENGTH] = {0};
     bool formattingSucceeded = format_address_human_readable(ctx->address.buffer,
                                                              ctx->address.length,
-                                                             humanAddress,
-                                                             SIZEOF(humanAddress));
+                                                             ctx->humanAddress,
+                                                             SIZEOF(ctx->humanAddress));
     LEDGER_ASSERT(formattingSucceeded, "Failed to format derived address");
-    nbgl_useCaseAddressReview(humanAddress,
+    TRACE("Derived human-readable address (bech32/base58): %s", ctx->humanAddress);
+    nbgl_useCaseAddressReview(ctx->humanAddress,
                               g_pairsList,
                               &ICON_APP_CARDANO,
                               title,

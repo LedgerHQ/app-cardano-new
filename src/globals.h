@@ -178,6 +178,8 @@ typedef struct {
         uint8_t buffer[MAX_ADDRESS_LENGTH];
         size_t length;
     } address;
+    // Persistent human-readable address buffer for NBGL flows that keep pointers.
+    char humanAddress[MAX_HUMAN_ADDRESS_LENGTH];
 } derive_address_ctx_t;
 
 #define MAX_VOTECAST_CHUNK_SIZE 250
