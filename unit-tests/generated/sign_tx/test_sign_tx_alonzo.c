@@ -129,6 +129,26 @@ static void test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_reje
     run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_FAKENET_BIG_TTL, true);
 }
 
+static void test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_MAINNET_BIG_TTL_EPOCH_OVER_1000000, false);
+}
+
+static void test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_MAINNET_BIG_TTL_EPOCH_OVER_1000000, false);
+}
+
+static void test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_MAINNET_BIG_TTL_EPOCH_OVER_1000000, true);
+}
+
+static void test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_MAINNET_BIG_TTL_EPOCH_OVER_1000000, true);
+}
+
 static void test_sign_tx_with_datum_hash_in_output_as_array_with_tokens_expert_off(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_WITH_TOKENS, false);
@@ -331,6 +351,10 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_expert_on),
         cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_expert_off),
+        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_expert_on),
+        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_with_tokens_expert_off),
         cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_with_tokens_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_with_tokens_expert_on),

@@ -563,6 +563,13 @@ destinations: dict[str, TxOutputDestination] = {
             "105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e"
         ),
     ),
+    "externalShelleyBaseScripthashKeyhashMainnet": TxOutputDestination(
+        TxOutputDestinationType.THIRD_PARTY,
+        # Same payload as externalShelleyBaseScripthashKeyhash, but with Mainnet network id in header nibble.
+        ThirdPartyAddressParams(
+            "115e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e"
+        ),
+    ),
     "externalShelleyBaseScripthashKeyhashFakenet": TxOutputDestination(
         TxOutputDestinationType.THIRD_PARTY,
         # Same address payload as externalShelleyBaseScripthashKeyhash, but with FakeNet network id in header nibble.
@@ -870,6 +877,14 @@ outputs: dict[str, TxOutput] = {
     ),
     "datumHashExternalFakenet": TxOutputAlonzo(
         destinations["externalShelleyBaseScripthashKeyhashFakenet"],
+        7120787,
+        datum=Datum(
+            DatumType.HASH,
+            "ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce188",
+        ),
+    ),
+    "datumHashExternalMainnet": TxOutputAlonzo(
+        destinations["externalShelleyBaseScripthashKeyhashMainnet"],
         7120787,
         datum=Datum(
             DatumType.HASH,
@@ -3576,6 +3591,18 @@ testsAlonzo: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839135e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e1a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a031b0055a275925d560f",
         has_warning=True,
+    ),
+    SignTxTestCase(
+        name="Sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["datumHashExternalMainnet"]],
+            fee=42,
+            ttl=24103998870869519,
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839115e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e1a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a031b0055a275925d560f",
     ),
     SignTxTestCase(
         name="Sign_tx_with_datum_hash_in_output_as_array_with_tokens",
