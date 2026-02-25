@@ -90,7 +90,7 @@ static bool is_msg_length_valid_for_sign_msg_init(uint32_t message_length,
 // ============================== INIT ==============================
 
 void signMsg_handle_init(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
     LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_INIT, "Invalid sign_msg state");
 
     sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
@@ -237,7 +237,7 @@ void signMsg_handle_init(buffer_t *cdata) {
 // ============================== CHUNK ==============================
 
 void signMsg_handle_chunk(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
     LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CHUNK, "Invalid sign_msg state");
 
     sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
@@ -470,7 +470,7 @@ static bool build_and_sign_sig_structure(sign_msg_ctx_t *ctx) {
 
 void signMsg_handle_confirm(buffer_t *cdata) {
     LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CONFIRM, "Invalid sign_msg state");
-    LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
 
     sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
 
@@ -519,7 +519,7 @@ void finalize_sign_msg(void) {
 // ============================== MAIN HANDLER ==============================
 
 void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_msg handler");
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
     TRACE_BUFFER_T(cdata);
 
     switch (p1) {

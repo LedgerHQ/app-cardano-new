@@ -9,7 +9,7 @@
 #include "utils.h"
 
 bool violatesSingleAccountOrStoreIt(const bip44_path_t* path) {
-    LEDGER_ASSERT(path != NULL, "NULL path in single-account check");
+    LEDGER_ASSERT(path != NULL, "NULL path");
     TRACE("Considering path");
     BIP44_PRINTF(path);
     TRACE("");
@@ -51,7 +51,7 @@ bool tx_output_destination_to_address_bytes(const tx_output_destination_t* desti
                                             size_t addressBufferSize,
                                             size_t* outAddressLength) {
     LEDGER_ASSERT(destination != NULL, "NULL destination");
-    LEDGER_ASSERT(addressBuffer != NULL, "NULL address buffer");
+    LEDGER_ASSERT(addressBuffer != NULL, "NULL addressBuffer");
     LEDGER_ASSERT(outAddressLength != NULL, "NULL outAddressLength");
 
     LEDGER_ASSERT(addressBufferSize < BUFFER_SIZE_PARANOIA,

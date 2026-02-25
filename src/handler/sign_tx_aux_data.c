@@ -210,7 +210,7 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
     }
 
     const uint8_t *payload_start = buffer_get_cur(cdata);
-    LEDGER_ASSERT(payload_start != NULL, "NULL cdata ptr in AUX_DATA init");
+    LEDGER_ASSERT(payload_start != NULL, "NULL payload_start");
     memcpy(G_context.tx_info.raw_cvote_init_data, payload_start, init_payload_len);
     G_context.tx_info.raw_cvote_init_data_len = init_payload_len;
 

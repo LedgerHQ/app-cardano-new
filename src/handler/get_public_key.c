@@ -36,7 +36,7 @@ static bool ensure_get_public_key_init_request_state(void) {
 }
 
 void handler_get_public_key(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handler");
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
     TRACE_BUFFER_T(cdata);
 
     if (!ensure_get_public_key_init_request_state()) {

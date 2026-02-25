@@ -262,8 +262,8 @@ bool format_index_with_prefix(uint32_t value, char *out, size_t outSize) {
  */
 bool format_ipv4(const ipv4_t *ipv4, char *out, size_t outSize) {
     LEDGER_ASSERT(outSize < BUFFER_SIZE_PARANOIA, "Output buffer size exceeds paranoia limit");
-    LEDGER_ASSERT(out != NULL, "Output buffer cannot be null");
-    LEDGER_ASSERT(ipv4 != NULL, "IPv4 structure cannot be null");
+    LEDGER_ASSERT(out != NULL, "NULL out");
+    LEDGER_ASSERT(ipv4 != NULL, "NULL ipv4");
 
     explicit_bzero(out, outSize);
 
@@ -273,7 +273,7 @@ bool format_ipv4(const ipv4_t *ipv4, char *out, size_t outSize) {
         LEDGER_ASSERT((size_t)written < outSize, "snprintf ipv4 null formatting truncated");
         LEDGER_ASSERT((size_t)written + 1 < outSize, "IPv4 null string does not fit in output buffer");
     } else {
-        LEDGER_ASSERT(ipv4->ip != NULL, "IPv4 address buffer cannot be null when not null flag");
+        LEDGER_ASSERT(ipv4->ip != NULL, "NULL ipv4->ip");
         inet_ntop4(ipv4->ip, out, outSize);
     }
 
@@ -288,8 +288,8 @@ bool format_ipv4(const ipv4_t *ipv4, char *out, size_t outSize) {
  */
 bool format_ipv6(const ipv6_t *ipv6, char *out, size_t outSize) {
     LEDGER_ASSERT(outSize < BUFFER_SIZE_PARANOIA, "Output buffer size exceeds paranoia limit");
-    LEDGER_ASSERT(out != NULL, "Output buffer cannot be null");
-    LEDGER_ASSERT(ipv6 != NULL, "IPv6 structure cannot be null");
+    LEDGER_ASSERT(out != NULL, "NULL out");
+    LEDGER_ASSERT(ipv6 != NULL, "NULL ipv6");
 
     explicit_bzero(out, outSize);
 
@@ -299,7 +299,7 @@ bool format_ipv6(const ipv6_t *ipv6, char *out, size_t outSize) {
         LEDGER_ASSERT((size_t)written < outSize, "snprintf ipv6 null formatting truncated");
         LEDGER_ASSERT((size_t)written + 1 < outSize, "IPv6 null string does not fit in output buffer");
     } else {
-        LEDGER_ASSERT(ipv6->ip != NULL, "IPv6 address buffer cannot be null when not null flag");
+        LEDGER_ASSERT(ipv6->ip != NULL, "NULL ipv6->ip");
         inet_ntop6(ipv6->ip, out, outSize);
     }
 

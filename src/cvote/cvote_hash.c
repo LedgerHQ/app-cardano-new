@@ -18,13 +18,13 @@
 #include "utils.h"
 
 static void cvote_extract_pubkey(const cvote_credential_t *credential, uint8_t *out_pubkey, size_t out_pubkey_size) {
-    LEDGER_ASSERT(credential != NULL, "Credential cannot be null");
-    LEDGER_ASSERT(out_pubkey != NULL, "Output pubkey buffer cannot be null");
+    LEDGER_ASSERT(credential != NULL, "NULL credential");
+    LEDGER_ASSERT(out_pubkey != NULL, "NULL out_pubkey");
     LEDGER_ASSERT(out_pubkey_size >= PUBLIC_KEY_LENGTH, "Output pubkey buffer too small: %u < %u", (unsigned) out_pubkey_size, PUBLIC_KEY_LENGTH);
 
     switch (credential->type) {
         case CVOTE_CREDENTIAL_KEY:
-            LEDGER_ASSERT(credential->publicKey != NULL, "NULL CVote public key (credential type=%u, pubkey=%p)", credential->type, credential->publicKey);
+            LEDGER_ASSERT(credential->publicKey != NULL, "NULL publicKey");
             memmove(out_pubkey, credential->publicKey, PUBLIC_KEY_LENGTH);
             return;
         case CVOTE_CREDENTIAL_KEY_PATH: {
@@ -52,7 +52,7 @@ static void cvote_extract_destination_address(const tx_output_destination_t *des
 }
 
 void cvote_hash_builder_setup(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "Auxiliary data cannot be null");
+    LEDGER_ASSERT(aux_data != NULL, "NULL aux_data");
 
     auxDataHashBuilder_init(&aux_data->hash_builder);
     auxDataHashBuilder_cVoteRegistration_enter(&aux_data->hash_builder, aux_data->format);
@@ -64,7 +64,7 @@ void cvote_hash_builder_setup(cvote_aux_data_t *aux_data) {
 }
 
 static void cvote_hash_builder_add_vote_key(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "Auxiliary data cannot be null");
+    LEDGER_ASSERT(aux_data != NULL, "NULL aux_data");
 
     bool should_add_vote_key = false;
     switch (aux_data->format) {
@@ -89,7 +89,7 @@ static void cvote_hash_builder_add_vote_key(cvote_aux_data_t *aux_data) {
 }
 
 static void cvote_hash_builder_add_staking_key(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "Auxiliary data cannot be null");
+    LEDGER_ASSERT(aux_data != NULL, "NULL aux_data");
 
     uint8_t pubkey[PUBLIC_KEY_LENGTH] = {0};
     cvote_extract_pubkey(&aux_data->staking_credential, pubkey, sizeof(pubkey));
@@ -97,7 +97,7 @@ static void cvote_hash_builder_add_staking_key(cvote_aux_data_t *aux_data) {
 }
 
 static void cvote_hash_builder_add_payment_address(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "Auxiliary data cannot be null");
+    LEDGER_ASSERT(aux_data != NULL, "NULL aux_data");
 
     uint8_t address_buffer[MAX_ADDRESS_LENGTH] = {0};
     size_t address_len = 0;
@@ -111,13 +111,13 @@ static void cvote_hash_builder_add_payment_address(cvote_aux_data_t *aux_data) {
 }
 
 static void cvote_hash_builder_add_nonce(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "Auxiliary data cannot be null");
+    LEDGER_ASSERT(aux_data != NULL, "NULL aux_data");
 
     auxDataHashBuilder_cVoteRegistration_addNonce(&aux_data->hash_builder, aux_data->nonce);
 }
 
 static void cvote_hash_builder_add_common_fields(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "Auxiliary data cannot be null");
+    LEDGER_ASSERT(aux_data != NULL, "NULL aux_data");
 
     if (aux_data->final_fields_processed) {
         return;
@@ -134,7 +134,7 @@ static void cvote_hash_builder_add_common_fields(cvote_aux_data_t *aux_data) {
 }
 
 static void cvote_append_registration_signature(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "Auxiliary data cannot be null");
+    LEDGER_ASSERT(aux_data != NULL, "NULL aux_data");
 
     // Staking credential must be a key path - validated during parsing and UI policy check
     LEDGER_ASSERT(aux_data->staking_credential.type == CVOTE_CREDENTIAL_KEY_PATH,
@@ -167,8 +167,8 @@ static void cvote_append_registration_signature(cvote_aux_data_t *aux_data) {
 void cvote_hash_builder_add_delegation(cvote_aux_data_t *aux_data,
                                        const cvote_credential_t *credential,
                                        uint32_t weight) {
-    LEDGER_ASSERT(aux_data != NULL, "Auxiliary data cannot be null");
-    LEDGER_ASSERT(credential != NULL, "Credential cannot be null");
+    LEDGER_ASSERT(aux_data != NULL, "NULL aux_data");
+    LEDGER_ASSERT(credential != NULL, "NULL credential");
 
     uint8_t pubkey[PUBLIC_KEY_LENGTH] = {0};
     cvote_extract_pubkey(credential, pubkey, sizeof(pubkey));

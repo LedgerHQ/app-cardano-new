@@ -48,7 +48,7 @@ bool buffer_read_bytes(buffer_t *buffer, uint8_t *destBuffer, size_t n) {
 
 bool buffer_read_int64(buffer_t *buffer, int64_t *value, endianness_t endianness) {
     LEDGER_ASSERT(buffer != NULL, "NULL buffer");
-    LEDGER_ASSERT(value != NULL, "NULL value pointer");
+    LEDGER_ASSERT(value != NULL, "NULL value");
 
     uint64_t unsigned_value;
     if (!buffer_read_u64(buffer, &unsigned_value, endianness)) {

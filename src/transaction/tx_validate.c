@@ -46,12 +46,12 @@ static credential_t _credentialForTxHash(const ext_credential_t* credential) {
             keyPathToKeyHash(&credential->keyPath, result.keyHash, SIZEOF(result.keyHash));
             break;
         case EXT_CREDENTIAL_KEY_HASH:
-            LEDGER_ASSERT(credential->keyHash != NULL, "NULL credential key hash pointer");
+            LEDGER_ASSERT(credential->keyHash != NULL, "NULL credential->keyHash");
             result.type = CREDENTIAL_KEY_HASH;
             memcpy(result.keyHash, credential->keyHash, SIZEOF(result.keyHash));
             break;
         case EXT_CREDENTIAL_SCRIPT_HASH:
-            LEDGER_ASSERT(credential->scriptHash != NULL, "NULL credential script hash pointer");
+            LEDGER_ASSERT(credential->scriptHash != NULL, "NULL credential->scriptHash");
             result.type = CREDENTIAL_SCRIPT_HASH;
             memcpy(result.scriptHash, credential->scriptHash, SIZEOF(result.scriptHash));
             break;
@@ -79,12 +79,12 @@ static drep_t _drepForTxHash(const ext_drep_t* ext_drep) {
             keyPathToKeyHash(&ext_drep->keyPath, result.keyHash, SIZEOF(result.keyHash));
             break;
         case EXT_DREP_KEY_HASH:
-            LEDGER_ASSERT(ext_drep->keyHash != NULL, "NULL drep key hash pointer");
+            LEDGER_ASSERT(ext_drep->keyHash != NULL, "NULL ext_drep->keyHash");
             result.type = DREP_KEY_HASH;
             memcpy(result.keyHash, ext_drep->keyHash, SIZEOF(result.keyHash));
             break;
         case EXT_DREP_SCRIPT_HASH:
-            LEDGER_ASSERT(ext_drep->scriptHash != NULL, "NULL drep script hash pointer");
+            LEDGER_ASSERT(ext_drep->scriptHash != NULL, "NULL ext_drep->scriptHash");
             result.type = DREP_SCRIPT_HASH;
             memcpy(result.scriptHash, ext_drep->scriptHash, SIZEOF(result.scriptHash));
             break;

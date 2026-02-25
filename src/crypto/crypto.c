@@ -86,11 +86,11 @@ void crypto_eddsa_sign(const uint32_t* path,
                        uint8_t* sig,
                        size_t sig_len) {
 
-    LEDGER_ASSERT(path != NULL, "path is NULL");
+    LEDGER_ASSERT(path != NULL, "NULL path");
     LEDGER_ASSERT(path_len > 0, "path is empty");
-    LEDGER_ASSERT(hash != NULL, "hash is NULL");
+    LEDGER_ASSERT(hash != NULL, "NULL hash");
     LEDGER_ASSERT(hash_len > 0, "hash_len is zero");
-    LEDGER_ASSERT(sig != NULL, "sig is NULL");
+    LEDGER_ASSERT(sig != NULL, "NULL sig");
     LEDGER_ASSERT(sig_len == ED25519_SIGNATURE_LENGTH, "expected_sig_len must equal ED25519_SIGNATURE_LENGTH");
 
     cx_ecfp_256_extended_private_key_t privkey = {0};

@@ -37,7 +37,7 @@ static bool ensure_sign_opcert_init_request_state(void) {
 }
 
 void handler_sign_opcert(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handler");
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
     TRACE_BUFFER_T(cdata);
 
     if (!ensure_sign_opcert_init_request_state()) {

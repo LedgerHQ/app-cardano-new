@@ -171,7 +171,7 @@ static bool read_aux_data_params(buffer_t *cdata, tx_params_t *tx_params) {
  * Validates all transaction metadata and checks security policy
  */
 static void handle_tx_init_apdu(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handle_tx_init_apdu");
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
     tx_params_t *tx_params = &G_context.tx_info.tx_params;
     G_context.tx_info.raw_tx = NULL;
     G_context.tx_info.raw_tx_current_length = 0;
@@ -401,7 +401,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
  * Returns true on success. On failure, sends SW and resets context.
  */
 static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handle_tx_data_chunk");
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_CHUNKS, "Invalid state for chunk reception");
     const size_t chunk_size = buffer_data_size(cdata);
 
@@ -460,7 +460,7 @@ static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
 }
 
 void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_tx handler");
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
     TRACE_BUFFER_T(cdata);
 
     switch (p1) {
@@ -699,7 +699,7 @@ void finalize_witness(void)
 }
 
 void handler_sign_tx_witness(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_tx_witness handler");
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
     TRACE_BUFFER_T(cdata);
 
     // Verify we're in correct state for witness signing

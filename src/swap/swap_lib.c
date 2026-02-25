@@ -38,7 +38,7 @@ __attribute__((noreturn)) void swap_reject_and_exit(uint8_t common_error_code,
 
 bool swap_copy_transaction_parameters(create_transaction_parameters_t *params) {
     TRACE("Inside swap_copy_transaction_parameters");
-    LEDGER_ASSERT(params != NULL, "NULL create_transaction_parameters");
+    LEDGER_ASSERT(params != NULL, "NULL params");
 
     // Ensure no extra id (Cardano does not use extra IDs)
     if (params->destination_address_extra_id == NULL) {

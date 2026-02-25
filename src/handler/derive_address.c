@@ -63,7 +63,7 @@ static bool prepareResponse(void) {
 }
 
 void handler_derive_address(buffer_t *cdata, uint8_t p1) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to handler");
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
     TRACE_BUFFER_T(cdata);
 
     if (!ensure_derive_address_init_request_state()) {

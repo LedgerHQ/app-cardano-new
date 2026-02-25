@@ -140,12 +140,12 @@ void addDRepUIPairs(const ext_drep_t *drep, const char *label) {
             break;
         }
         case EXT_DREP_KEY_HASH: {
-            LEDGER_ASSERT(drep->keyHash != NULL, "NULL drep key hash pointer");
+            LEDGER_ASSERT(drep->keyHash != NULL, "NULL drep->keyHash");
             UI_ADD_FORMAT3(label, MAX_BECH32_STRING_LENGTH, format_bech32, "drep_vkh", drep->keyHash, ADDRESS_KEY_HASH_LENGTH);
             break;
         }
         case EXT_DREP_SCRIPT_HASH: {
-            LEDGER_ASSERT(drep->scriptHash != NULL, "NULL drep script hash pointer");
+            LEDGER_ASSERT(drep->scriptHash != NULL, "NULL drep->scriptHash");
             UI_ADD_FORMAT3(label, MAX_BECH32_STRING_LENGTH, format_bech32, "drep_script", drep->scriptHash, SCRIPT_HASH_LENGTH);
             break;
         }

@@ -545,7 +545,7 @@ bool buffer_read_address_params(buffer_t* buffer, address_params_t* params) {
             if (!buffer_read_bytes_ptr(buffer, &params->paymentScriptHash, SCRIPT_HASH_LENGTH)) {
                 return false;
             }
-            LEDGER_ASSERT(params->paymentScriptHash != NULL, "NULL payment script hash pointer");
+            LEDGER_ASSERT(params->paymentScriptHash != NULL, "NULL params->paymentScriptHash");
             TRACE("Payment script hash: ");
             TRACE_BUFFER(params->paymentScriptHash, SCRIPT_HASH_LENGTH);
             break;
@@ -590,7 +590,7 @@ bool buffer_read_address_params(buffer_t* buffer, address_params_t* params) {
             if (!buffer_read_bytes_ptr(buffer, &params->stakingKeyHash, ADDRESS_KEY_HASH_LENGTH)) {
                 return false;
             }
-            LEDGER_ASSERT(params->stakingKeyHash != NULL, "NULL staking key hash pointer");
+            LEDGER_ASSERT(params->stakingKeyHash != NULL, "NULL params->stakingKeyHash");
             TRACE("Stake key hash: ");
             TRACE_BUFFER(params->stakingKeyHash, ADDRESS_KEY_HASH_LENGTH);
             break;
@@ -600,7 +600,7 @@ bool buffer_read_address_params(buffer_t* buffer, address_params_t* params) {
             if (!buffer_read_bytes_ptr(buffer, &params->stakingScriptHash, SCRIPT_HASH_LENGTH)) {
                 return false;
             }
-            LEDGER_ASSERT(params->stakingScriptHash != NULL, "NULL staking script hash pointer");
+            LEDGER_ASSERT(params->stakingScriptHash != NULL, "NULL params->stakingScriptHash");
             TRACE("Stake script hash: ");
             TRACE_BUFFER(params->stakingScriptHash, SCRIPT_HASH_LENGTH);
             break;
@@ -790,7 +790,7 @@ void poolRewardAccountToBuffer(const pool_reward_account_t* rewardAccount,
                                uint8_t* rewardAccountBuffer) {
     switch (rewardAccount->keyReferenceType) {
         case KEY_REFERENCE_HASH: {
-            LEDGER_ASSERT(rewardAccount->hashBuffer != NULL, "NULL reward account hash buffer");
+            LEDGER_ASSERT(rewardAccount->hashBuffer != NULL, "NULL rewardAccount->hashBuffer");
             memmove(rewardAccountBuffer, rewardAccount->hashBuffer, REWARD_ACCOUNT_LENGTH);
             break;
         }

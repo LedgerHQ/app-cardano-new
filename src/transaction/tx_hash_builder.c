@@ -100,7 +100,7 @@ static void _append_map_key_bytes(uint8_t* buffer,
 
 static const uint8_t* _voter_key_data_with_size(const voter_t* voter, size_t* out_size) {
     LEDGER_ASSERT(voter != NULL, "NULL voter");
-    LEDGER_ASSERT(out_size != NULL, "NULL accept");
+    LEDGER_ASSERT(out_size != NULL, "NULL out_size");
 
     switch (voter->type) {
         case VOTER_COMMITTEE_HOT_KEY_HASH:

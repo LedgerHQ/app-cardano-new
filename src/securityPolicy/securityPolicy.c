@@ -142,7 +142,7 @@ policy_checked_return(const warning_bits_t *w,
     if (!(expr)) RETURN(POLICY_HIDE)
 
 static inline void mark_unusual_key_derivation(warning_bits_t *w, const bip44_path_t *path) {
-    LEDGER_ASSERT(w != NULL, "NULL w pointer");
+    LEDGER_ASSERT(w != NULL, "NULL w");
     LEDGER_ASSERT(path != NULL, "NULL path");
 
     if (!bip44_isPathReasonable(path)) {
@@ -1440,10 +1440,10 @@ security_policy_t policyForSignTxStakePoolRegistrationRewardAccount(
     const pool_reward_account_t *poolRewardAccount,
     warning_bits_t *w) {
     POLICY_INIT();
-    LEDGER_ASSERT(poolRewardAccount != NULL, "NULL pool reward account");
+    LEDGER_ASSERT(poolRewardAccount != NULL, "NULL poolRewardAccount");
     switch (poolRewardAccount->keyReferenceType) {
         case KEY_REFERENCE_HASH: {
-            LEDGER_ASSERT(poolRewardAccount->hashBuffer != NULL, "NULL reward account hash buffer");
+            LEDGER_ASSERT(poolRewardAccount->hashBuffer != NULL, "NULL hashBuffer");
             const uint8_t header =
                 getAddressHeader(poolRewardAccount->hashBuffer, REWARD_ACCOUNT_LENGTH);
             const address_type_t address_type = getAddressType(header);
@@ -1478,7 +1478,7 @@ security_policy_t policyForSignTxStakePoolRegistrationOwner(
     const ext_credential_t *ownerCredential,
     warning_bits_t *w) {
     POLICY_INIT();
-    LEDGER_ASSERT(ownerCredential != NULL, "NULL pool owner credential");
+    LEDGER_ASSERT(ownerCredential != NULL, "NULL ownerCredential");
     switch (ownerCredential->type) {
         case EXT_CREDENTIAL_KEY_PATH:
             // when path is present, it should be a valid staking path
@@ -2122,7 +2122,7 @@ static inline security_policy_t _poolRegistrationOwnerWitnessPolicy(
     const bip44_path_t *poolOwnerPath,
     warning_bits_t *w) {
     POLICY_INIT();
-    LEDGER_ASSERT(witnessPath != NULL, "NULL witness path");
+    LEDGER_ASSERT(witnessPath != NULL, "NULL witnessPath");
     switch (bip44_classifyPath(witnessPath)) {
         case PATH_ORDINARY_STAKING_KEY:
             if (poolOwnerPath != NULL) {
@@ -2201,7 +2201,7 @@ security_policy_t policyForSignTxWitness(sign_tx_signingmode_t txSigningMode,
                                          const bip44_path_t *poolOwnerPath,
                                          warning_bits_t *w) {
     POLICY_INIT();
-    LEDGER_ASSERT(witnessPath != NULL, "NULL witness path");
+    LEDGER_ASSERT(witnessPath != NULL, "NULL witnessPath");
 
     if (isSwap) {
         RETURN(_swapWitnessPolicy(txSigningMode, witnessPath, w));
@@ -2288,7 +2288,7 @@ security_policy_t policyForCVoteRegistrationPaymentDestination(
 
     switch (destination->type) {
         case DESTINATION_DEVICE_OWNED: {
-            LEDGER_ASSERT(destination->params != NULL, "NULL CVote device-owned destination params");
+            LEDGER_ASSERT(destination->params != NULL, "NULL destination params");
             DENY_UNLESS(isValidAddressParams(destination->params));
             DENY_UNLESS(isShelleyAddressType(destination->params->type));
             DENY_IF(destination->params->networkId != networkId);
@@ -2341,7 +2341,7 @@ security_policy_t policyForCVoteRegistrationVotingPurpose(warning_bits_t *w) {
 security_policy_t policyForSignOpCert(const bip44_path_t *poolColdKeyPath,
                                       warning_bits_t *w) {
     POLICY_INIT();
-    LEDGER_ASSERT(poolColdKeyPath != NULL, "NULL pool key path");
+    LEDGER_ASSERT(poolColdKeyPath != NULL, "NULL poolColdKeyPath");
     switch (bip44_classifyPath(poolColdKeyPath)) {
         case PATH_POOL_COLD_KEY:
             if (!bip44_isPathReasonable(poolColdKeyPath)) {

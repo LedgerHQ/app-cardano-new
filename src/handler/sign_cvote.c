@@ -43,7 +43,7 @@ static bool ensure_sign_cvote_state(cvote_state_e required_state) {
 
 // ============================== INIT ==============================
 static void handle_sign_cvote_init_apdu(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
     LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STATE_INIT, "Invalid cvote state");
 
     cvote_ctx_t *ctx = &G_context.cvote_info;
@@ -123,7 +123,7 @@ static void handle_sign_cvote_init_apdu(buffer_t *cdata) {
 // ============================== VOTECAST CHUNK ==============================
 
 static void handle_sign_cvote_chunk_apdu(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
     LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STATE_CHUNK, "Invalid cvote state");
     cvote_ctx_t *ctx = &G_context.cvote_info;
 
@@ -156,7 +156,7 @@ static void handle_sign_cvote_chunk_apdu(buffer_t *cdata) {
 // ============================== CONFIRM ==============================
 static void handle_sign_cvote_confirm_apdu(buffer_t *cdata) {
     LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STATE_CONFIRM, "Invalid cvote state");
-    LEDGER_ASSERT(cdata != NULL, "cdata is NULL");
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
 
     cvote_ctx_t *ctx = &G_context.cvote_info;
 
@@ -232,7 +232,7 @@ void finalize_sign_cvote(void) {
 }
 
 void handler_sign_cvote(buffer_t *cdata, uint8_t p1) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata passed to sign_cvote handler");
+    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
     TRACE_BUFFER_T(cdata);
 
     switch (p1) {

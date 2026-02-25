@@ -54,7 +54,7 @@ static void cvote_add_vote_key_path_warning_pair(void) {
 }
 
 static void cvote_finalize_pairs_count_for_display(void) {
-    LEDGER_ASSERT(g_pairsList != NULL, "UI pairs list not initialized");
+    LEDGER_ASSERT(g_pairsList != NULL, "NULL g_pairsList");
     uint16_t actual_pair_count = ui_pairs_get_count();
     LEDGER_ASSERT(actual_pair_count <= UINT8_MAX, "UI pair count overflow");
     g_pairsList->nbPairs = (uint8_t) actual_pair_count;
@@ -440,7 +440,7 @@ void ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
                    aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED),
                   "Streaming delegation page in wrong state: %d",
                   aux_data != NULL ? aux_data->state : -1);
-    LEDGER_ASSERT(credential != NULL, "Delegation payload missing in streaming loop");
+    LEDGER_ASSERT(credential != NULL, "NULL credential");
     LEDGER_ASSERT(aux_data != NULL && aux_data->ui_streaming.review_started,
                   "Streaming review must be started before delegation pages");
 
