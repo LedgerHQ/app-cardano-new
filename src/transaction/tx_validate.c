@@ -1959,6 +1959,10 @@ int tx_validate_and_compute_hash(tx_ui_plan_t* plan) {
     G_context.tx_info.pool_owner_path_present = false;
     plan->pair_count = 0;
 
+    if (shouldShowNetworkDetails(&G_context.tx_info.tx_params)) {
+        plan->pair_count += UI_PAIRS_NETWORK_DETAILS;
+    }
+
     tx_hash_builder_t txHashBuilder;
     explicit_bzero(&txHashBuilder, sizeof(txHashBuilder));
 

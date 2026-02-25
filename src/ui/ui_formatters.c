@@ -185,7 +185,7 @@ static bool format_validity_boundary_mainnet(uint64_t slotNumber, char *out, siz
     int written;
     if (epoch > 1000000) {
         // thousands of years
-        written = snprintf(out, outSize, "epoch more than 1000000");
+        written = snprintf(out, outSize, "epoch > 1000000");
     } else {
         // Safe: epoch and slotInEpoch are uint64_t but guaranteed < 1000000 by check above
         written = snprintf(out, outSize, "epoch %u / slot %u", (unsigned) epoch, (unsigned) slotInEpoch);

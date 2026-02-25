@@ -59,6 +59,9 @@
 #define UI_PAIRS_SCRIPT_DATA_HASH 1              // key 11: "Script data hash"
 #define UI_PAIRS_COLLATERAL_INPUT 1              // key 13: "Coll input"
 #define UI_PAIRS_REQUIRED_SIGNER 1               // key 14: "Required signer"
+#define UI_PAIRS_NETWORK_ID 1                    // "Network ID"
+#define UI_PAIRS_PROTOCOL_MAGIC 1                // "Protocol magic"
+#define UI_PAIRS_NETWORK_DETAILS (UI_PAIRS_NETWORK_ID + UI_PAIRS_PROTOCOL_MAGIC) // network details block
 #define UI_PAIRS_COLLATERAL_OUTPUT_ADDRESS 1     // key 16: "Collateral address"
 #define UI_PAIRS_COLLATERAL_OUTPUT_DEVICE_OWNED (UI_PAIRS_PAYMENT_INFO + UI_PAIRS_STAKING_INFO)  // key 16: Payment + Staking info (additional if device-owned)
 #define UI_PAIRS_COLLATERAL_OUTPUT_AMOUNT 1      // key 16: "Collateral amount" (if shown)

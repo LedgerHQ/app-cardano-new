@@ -33,6 +33,8 @@ static inline warning_bits_t warning_bits_except_mask(warning_bits_t warnings,
     return warnings & ~excluded_mask;
 }
 
+bool shouldShowNetworkDetails(const tx_params_t* txParams);
+
 security_policy_t policyForDerivePrivateKey(const bip44_path_t* path);
 
 security_policy_t policyForGetExtendedPublicKey(const bip44_path_t* path,

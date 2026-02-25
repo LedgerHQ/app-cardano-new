@@ -93,6 +93,25 @@ static bool format_input_with_index(const tx_input_t *input, char *out, size_t o
     return true;
 }
 
+static void add_ui_network_details(const tx_params_t* tx_params) {
+    LEDGER_ASSERT(tx_params != NULL, "NULL tx_params");
+
+    if (!shouldShowNetworkDetails(tx_params)) {
+        return;
+    }
+
+    START_COUNT();
+    UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Network ID", "Net ID"),
+                   MAX_UINT64_STRING_LENGTH,
+                   format_uint64,
+                   (uint64_t) tx_params->networkId);
+    UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Protocol magic", "Prot magic"),
+                   MAX_UINT64_STRING_LENGTH,
+                   format_uint64,
+                   (uint64_t) tx_params->protocolMagic);
+    CHECK_COUNT(UI_PAIRS_NETWORK_DETAILS);
+}
+
 static void add_ui_and_free_inputs(tx_params_t *tx_params, tx_parsed_body_t *tx_body) {
     flist_node_t *node = tx_body->inputs;
     while (node != NULL) {
@@ -1107,6 +1126,7 @@ static int add_ui_strings_and_free_parsed_data(void) {
 
     TRACE("UI formatting starting");
 
+    add_ui_network_details(tx_params);
     add_ui_and_free_inputs(tx_params, tx_body);
     add_ui_and_free_outputs(tx_params, tx_body);
     add_ui_and_free_fee(tx_params, tx_body);

@@ -162,7 +162,7 @@ static void test_format_validity_boundary(void **state) {
             sizeof(tmp)
         );
         assert_true(success);
-        assert_string_equal(tmp, "epoch more than 1000000");
+        assert_string_equal(tmp, "epoch > 1000000");
     }
 }
 

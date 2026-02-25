@@ -364,6 +364,25 @@ static bool isTxNetworkIdVerifiable(bool includeNetworkId,
     }
 }
 
+bool shouldShowNetworkDetails(const tx_params_t* txParams) {
+    LEDGER_ASSERT(txParams != NULL, "NULL txParams");
+
+    const bool is_network_id_verifiable = isTxNetworkIdVerifiable(
+        txParams->includeNetworkId,
+        txParams->num_outputs,
+        txParams->num_withdrawals,
+        txParams->txSigningMode
+    );
+    if (!is_network_id_verifiable) {
+        // no point in showing the given network id because tx body
+        // does not have any elements containing it
+        return false;
+    }
+
+    // we hide usual network details to avoid bothering users
+    return !isNetworkUsual(txParams->networkId, txParams->protocolMagic);
+}
+
 static inline void set_missing_collateral_warning(warning_bits_t *w,
                                                   sign_tx_signingmode_t signingMode,
                                                   uint32_t numCollateralInputs) {
