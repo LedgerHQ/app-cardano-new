@@ -70,12 +70,13 @@ parser_status_e parse_output_format(buffer_t* buf,
  *     - data bytes: <size> bytes
  *
  * @param[in,out] buf Buffer to read from
- * @param[out] datum Datum structure to populate
+ * @param[out] datum_out Set to heap-allocated output_datum_t if present, NULL if absent.
+ *   Caller must free via APP_MEM_FREE on success if non-NULL.
  * @param[in] parseFailureStatus Error status to return on parse failure
- * @return PARSING_OK on success, parseFailureStatus on failure
+ * @return PARSING_OK on success, OUT_OF_MEMORY_ERROR or parseFailureStatus on failure
  */
 parser_status_e parse_output_datum(buffer_t* buf,
-                                   output_datum_t* datum,
+                                   output_datum_t** datum_out,
                                    parser_status_e parseFailureStatus);
 
 /**
@@ -83,15 +84,16 @@ parser_status_e parse_output_datum(buffer_t* buf,
  *
  * Wire format:
  * - ref_script_present: 1 byte (FLAG_INCLUDED_NO/FLAG_INCLUDED_YES)
- * - if HAS_SCRIPT (2):
+ * - if HAS_SCRIPT (1):
  *     - size: 2 bytes (BE)
  *     - data bytes: <size> bytes
  *
  * @param[in,out] buf Buffer to read from
- * @param[out] refScript Reference script structure to populate (includes presence flag)
+ * @param[out] ref_script_out Set to heap-allocated ref_script_t if present, NULL if absent.
+ *   Caller must free via APP_MEM_FREE on success if non-NULL.
  * @param[in] parseFailureStatus Error status to return on parse failure
- * @return PARSING_OK on success, parseFailureStatus on failure
+ * @return PARSING_OK on success, OUT_OF_MEMORY_ERROR or parseFailureStatus on failure
  */
 parser_status_e parse_output_ref_script(buffer_t* buf,
-                                        ref_script_t* refScript,
+                                        ref_script_t** ref_script_out,
                                         parser_status_e parseFailureStatus);

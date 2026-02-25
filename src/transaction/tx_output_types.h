@@ -92,8 +92,8 @@ typedef enum {
     DATUM_INLINE = 1,
 } datum_type_t;
 
+// Dynamically allocated when datum is present; NULL means no datum.
 typedef struct {
-    bool hasDatum;
     datum_type_t type;
     union {
         const uint8_t* hash;  // Points to 32-byte hash in raw_tx buffer
@@ -104,8 +104,8 @@ typedef struct {
     };
 } output_datum_t;
 
+// Dynamically allocated when ref script is present; NULL means no ref script.
 typedef struct {
-    bool hasRefScript;
     uint16_t size;
     const uint8_t* data;  // Points to data in raw_tx buffer
 } ref_script_t;
@@ -123,8 +123,8 @@ typedef struct {
     uint64_t adaAmount;
     uint16_t numAssetGroups;
     flist_node_t* assetGroups;
-    output_datum_t datum;
-    ref_script_t refScript;
+    output_datum_t* datum;    // NULL if no datum; heap-allocated if present
+    ref_script_t* refScript;  // NULL if no ref script; heap-allocated if present
     tx_output_serialization_format_t format;
 } parsed_tx_output_t;
 

@@ -198,8 +198,8 @@ static void add_ui_and_free_outputs(tx_params_t *tx_params, tx_parsed_body_t *tx
             .format = output_node->output_data.format,
             .amount = output_node->output_data.adaAmount,
             .numAssetGroups = output_node->output_data.numAssetGroups,
-            .includeDatum = output_node->output_data.datum.hasDatum,
-            .includeRefScript = output_node->output_data.refScript.hasRefScript,
+            .includeDatum = (output_node->output_data.datum != NULL),
+            .includeRefScript = (output_node->output_data.refScript != NULL),
         };
 
         output_desc.destination = output_node->output_data.destination;
@@ -232,8 +232,8 @@ static void add_ui_and_free_outputs(tx_params_t *tx_params, tx_parsed_body_t *tx
                             (output_node->output_data.destination.type == DESTINATION_DEVICE_OWNED ? UI_PAIRS_OUTPUT_DEVICE_OWNED : 0));
             }
 
-            const output_datum_t* datum = &output_node->output_data.datum;
-            if (datum->hasDatum) {
+            const output_datum_t* datum = output_node->output_data.datum;
+            if (datum != NULL) {
                 security_policy_t datum_policy = policyForSignTxOutputDatumHash(policy, &G_context.tx_info.warning_bits);
                 LEDGER_ASSERT(datum_policy != POLICY_DENY, "Output datum policy denied during UI");
                 if (datum_policy == POLICY_SHOW) {
@@ -253,8 +253,8 @@ static void add_ui_and_free_outputs(tx_params_t *tx_params, tx_parsed_body_t *tx
                 }
             }
 
-            const ref_script_t* ref_script = &output_node->output_data.refScript;
-            if (ref_script->hasRefScript) {
+            const ref_script_t* ref_script = output_node->output_data.refScript;
+            if (ref_script != NULL) {
                 security_policy_t ref_script_policy = policyForSignTxOutputRefScript(policy, &G_context.tx_info.warning_bits);
                 LEDGER_ASSERT(ref_script_policy != POLICY_DENY, "Output ref script policy denied during UI");
                 if (ref_script_policy == POLICY_SHOW) {
@@ -932,8 +932,8 @@ static void add_ui_and_free_collateral_output(tx_params_t *tx_params, tx_parsed_
         .format = tx_body->collateral_output.format,
         .amount = tx_body->collateral_output.adaAmount,
         .numAssetGroups = tx_body->collateral_output.numAssetGroups,
-        .includeDatum = tx_body->collateral_output.datum.hasDatum,
-        .includeRefScript = tx_body->collateral_output.refScript.hasRefScript,
+        .includeDatum = (tx_body->collateral_output.datum != NULL),
+        .includeRefScript = (tx_body->collateral_output.refScript != NULL),
     };
 
     collateral_desc.destination = tx_body->collateral_output.destination;

@@ -214,15 +214,15 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
     while (node != NULL) {
         tx_output_node_t *output_node = (tx_output_node_t *) node;
         const tx_output_destination_t *output_destination = &output_node->output_data.destination;
-        const output_datum_t *output_datum = &output_node->output_data.datum;
-        const ref_script_t *output_ref_script = &output_node->output_data.refScript;
+        const output_datum_t *output_datum = output_node->output_data.datum;
+        const ref_script_t *output_ref_script = output_node->output_data.refScript;
 
         tx_output_description_t output_desc = {0};
         output_desc.format = output_node->output_data.format;
         output_desc.amount = output_node->output_data.adaAmount;
         output_desc.numAssetGroups = output_node->output_data.numAssetGroups;
-        output_desc.includeDatum = output_datum->hasDatum;
-        output_desc.includeRefScript = output_ref_script->hasRefScript;
+        output_desc.includeDatum = (output_datum != NULL);
+        output_desc.includeRefScript = (output_ref_script != NULL);
         output_desc.destination = *output_destination;
 
         security_policy_t datum_policy = POLICY_HIDE;
@@ -247,10 +247,10 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
                 if (output_destination->type == DESTINATION_DEVICE_OWNED) {
                     plan->pair_count += UI_PAIRS_OUTPUT_DEVICE_OWNED;
                 }
-                if (datum_policy == POLICY_SHOW && output_datum->hasDatum) {
+                if (datum_policy == POLICY_SHOW && output_datum != NULL) {
                     plan->pair_count += UI_PAIRS_OUTPUT_DATUM;
                 }
-                if (ref_script_policy == POLICY_SHOW && output_ref_script->hasRefScript) {
+                if (ref_script_policy == POLICY_SHOW && output_ref_script != NULL) {
                     plan->pair_count += UI_PAIRS_OUTPUT_REF_SCRIPT;
                 }
 
@@ -325,7 +325,7 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
                           "Output asset group count mismatch");
         }
 
-        if (output_datum->hasDatum) {
+        if (output_datum != NULL) {
             if (output_datum->type == DATUM_HASH) {
                 txHashBuilder_addOutput_datum(txHashBuilder,
                                              DATUM_HASH,
@@ -342,7 +342,7 @@ static int validate_and_hash_outputs(tx_hash_builder_t* txHashBuilder, tx_ui_pla
             }
         }
 
-        if (output_ref_script->hasRefScript) {
+        if (output_ref_script != NULL) {
             txHashBuilder_addOutput_referenceScript(txHashBuilder,
                                                    output_ref_script->size);
             txHashBuilder_addOutput_referenceScript_dataChunk(txHashBuilder,
@@ -1584,8 +1584,8 @@ static int validate_and_hash_collateral_output(tx_hash_builder_t* txHashBuilder,
     collateral_desc.format = G_context.tx_info.tx_body.collateral_output.format;
     collateral_desc.amount = G_context.tx_info.tx_body.collateral_output.adaAmount;
     collateral_desc.numAssetGroups = G_context.tx_info.tx_body.collateral_output.numAssetGroups;
-    collateral_desc.includeDatum = G_context.tx_info.tx_body.collateral_output.datum.hasDatum;
-    collateral_desc.includeRefScript = G_context.tx_info.tx_body.collateral_output.refScript.hasRefScript;
+    collateral_desc.includeDatum = (G_context.tx_info.tx_body.collateral_output.datum != NULL);
+    collateral_desc.includeRefScript = (G_context.tx_info.tx_body.collateral_output.refScript != NULL);
 
     collateral_desc.destination = G_context.tx_info.tx_body.collateral_output.destination;
 

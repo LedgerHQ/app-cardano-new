@@ -109,23 +109,33 @@ parser_status_e parse_output_format(buffer_t* buf,
 }
 
 parser_status_e parse_output_datum(buffer_t* buf,
-                                   output_datum_t* datum,
+                                   output_datum_t** datum_out,
                                    parser_status_e parseFailureStatus) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(datum != NULL, "NULL datum");
+    LEDGER_ASSERT(datum_out != NULL, "NULL datum_out");
     LEDGER_ASSERT(parseFailureStatus != PARSING_OK, "Invalid parse failure status");
 
-    if (!buffer_read_flag_included(buf, &datum->hasDatum)) {
+    *datum_out = NULL;
+
+    bool datum_present = false;
+    if (!buffer_read_flag_included(buf, &datum_present)) {
         return parseFailureStatus;
     }
-    TRACE("Datum present: %u", datum->hasDatum);
+    TRACE("Datum present: %u", datum_present);
 
-    if (!datum->hasDatum) {
+    if (!datum_present) {
         return PARSING_OK;
+    }
+
+    output_datum_t* datum = NULL;
+    if (!APP_MEM_CALLOC((void **) &datum, (uint16_t) sizeof(*datum))) {
+        TRACE("parse_output_datum: out of memory");
+        return OUT_OF_MEMORY_ERROR;
     }
 
     uint8_t datum_wire_type = 0;
     if (!buffer_read_u8(buf, &datum_wire_type)) {
+        APP_MEM_FREE(datum);
         return parseFailureStatus;
     }
     TRACE("Datum type: wire=%u", datum_wire_type);
@@ -135,6 +145,7 @@ parser_status_e parse_output_datum(buffer_t* buf,
             datum->type = DATUM_HASH;
 
             if (!buffer_read_bytes_ptr(buf, &datum->hash, OUTPUT_DATUM_HASH_LENGTH)) {
+                APP_MEM_FREE(datum);
                 return parseFailureStatus;
             }
             ASSERT(datum->hash != NULL);
@@ -148,11 +159,13 @@ parser_status_e parse_output_datum(buffer_t* buf,
 
             uint16_t datum_size;
             if (!buffer_read_u16(buf, &datum_size, BE)) {
+                APP_MEM_FREE(datum);
                 return parseFailureStatus;
             }
             datum->inline_datum.length = datum_size;
 
             if (!buffer_read_bytes_ptr(buf, &datum->inline_datum.buffer, datum_size)) {
+                APP_MEM_FREE(datum);
                 return parseFailureStatus;
             }
             ASSERT(datum->inline_datum.buffer != NULL);
@@ -162,41 +175,53 @@ parser_status_e parse_output_datum(buffer_t* buf,
         }
 
         default:
+            APP_MEM_FREE(datum);
             return parseFailureStatus;
     }
 
+    *datum_out = datum;
     return PARSING_OK;
 }
 
 parser_status_e parse_output_ref_script(buffer_t* buf,
-                                        ref_script_t* refScript,
+                                        ref_script_t** ref_script_out,
                                         parser_status_e parseFailureStatus) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(refScript != NULL, "NULL refScript");
+    LEDGER_ASSERT(ref_script_out != NULL, "NULL ref_script_out");
     LEDGER_ASSERT(parseFailureStatus != PARSING_OK, "Invalid parse failure status");
 
-    if (!buffer_read_flag_included(buf, &refScript->hasRefScript)) {
+    *ref_script_out = NULL;
+
+    bool ref_script_present = false;
+    if (!buffer_read_flag_included(buf, &ref_script_present)) {
         return parseFailureStatus;
     }
-    TRACE("Reference script present: %u", refScript->hasRefScript);
+    TRACE("Reference script present: %u", ref_script_present);
 
-    if (!refScript->hasRefScript) {
-        refScript->size = 0;
-        refScript->data = NULL;
+    if (!ref_script_present) {
         return PARSING_OK;
+    }
+
+    ref_script_t* ref_script = NULL;
+    if (!APP_MEM_CALLOC((void **) &ref_script, (uint16_t) sizeof(*ref_script))) {
+        TRACE("parse_output_ref_script: out of memory");
+        return OUT_OF_MEMORY_ERROR;
     }
 
     uint16_t script_size;
     if (!buffer_read_u16(buf, &script_size, BE)) {
+        APP_MEM_FREE(ref_script);
         return parseFailureStatus;
     }
-    refScript->size = script_size;
+    ref_script->size = script_size;
 
-    if (!buffer_read_bytes_ptr(buf, &refScript->data, script_size)) {
+    if (!buffer_read_bytes_ptr(buf, &ref_script->data, script_size)) {
+        APP_MEM_FREE(ref_script);
         return parseFailureStatus;
     }
-    ASSERT(refScript->data != NULL);
+    ASSERT(ref_script->data != NULL);
     TRACE("Reference script read: %u bytes", script_size);
 
+    *ref_script_out = ref_script;
     return PARSING_OK;
 }

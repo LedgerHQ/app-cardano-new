@@ -134,6 +134,10 @@ static void free_output_item(tx_output_node_t *item) {
 
     free_asset_groups(item->output_data.assetGroups);
     item->output_data.assetGroups = NULL;
+    APP_MEM_FREE(item->output_data.datum);
+    item->output_data.datum = NULL;
+    APP_MEM_FREE(item->output_data.refScript);
+    item->output_data.refScript = NULL;
     APP_MEM_FREE(item);
 }
 
@@ -397,6 +401,10 @@ static void cleanup_parsed_output(parsed_tx_output_t *output) {
     cleanup_output_destination(&output->destination);
     free_asset_groups(output->assetGroups);
     output->assetGroups = NULL;
+    APP_MEM_FREE(output->datum);
+    output->datum = NULL;
+    APP_MEM_FREE(output->refScript);
+    output->refScript = NULL;
 }
 
 static parser_status_e cleanup_token_parse_error(parsed_tx_output_t *output,
