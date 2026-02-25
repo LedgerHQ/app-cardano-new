@@ -1854,6 +1854,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182583901f90b0dfcace47bf03e88f7469a2f4fb3a7918461aa4765bfaf55f0dae260546c20562e598fb761f419dad27edcd49f4ee4f0540b8e40d4d51a006ca79302182a030a075820deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+        has_warning=True,
     ),
     SignTxTestCase(
         name="Sign_tx_with_path_based_withdrawal",

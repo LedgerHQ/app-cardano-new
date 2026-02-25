@@ -91,3 +91,13 @@ static inline bool warning_bits_is_empty(const warning_bits_t* warnings) {
 static inline bool warning_bits_has_any_cvote_aux_data(warning_bits_t warnings) {
     return (warnings & CVOTE_AUX_DATA_WARNING_BITS_MASK) != 0;
 }
+
+// CVote-only warnings that must never appear in regular transaction warning_bits.
+#define CVOTE_TX_FORBIDDEN_WARNING_BITS_MASK \
+    (((warning_bits_t)1 << WARNING_BIT_CVOTE_PAYMENT_THIRD_PARTY) | \
+     ((warning_bits_t)1 << WARNING_BIT_CVOTE_PAYMENT_NONSTANDARD_OWNED) | \
+     ((warning_bits_t)1 << WARNING_BIT_CVOTE_WITNESS_NOT_FULLY_VERIFIABLE))
+
+static inline bool warning_bits_has_any_cvote_tx_forbidden(warning_bits_t warnings) {
+    return (warnings & CVOTE_TX_FORBIDDEN_WARNING_BITS_MASK) != 0;
+}

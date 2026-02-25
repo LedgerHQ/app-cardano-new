@@ -746,6 +746,10 @@ static security_policy_t policyForSignTxOutputAddressParams(const tx_output_desc
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
         case SIGN_TX_SIGNINGMODE_ORDINARY_TX: {
             if (!is_standard_base_address(params)) {
+                mark_unusual_key_derivation(w, &params->paymentKeyPath);
+                if (addressParams_getStakingPartType(params) == STAKING_PART_KEY_PATH) {
+                    mark_unusual_key_derivation(w, &params->stakingKeyPath);
+                }
                 SHOW();
             }
 
