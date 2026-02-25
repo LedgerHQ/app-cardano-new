@@ -328,14 +328,24 @@ static bool should_show_pool_registration(
     sign_tx_signingmode_t txSigningMode,
     pool_owner_counts_t *pool_owner_counts) {
     LEDGER_ASSERT(pool_owner_counts != NULL, "NULL pool owner counts");
-        LEDGER_ASSERT(certificate != NULL && certificate->type == CERTIFICATE_STAKE_POOL_REGISTRATION, "Expected stake pool registration certificate");
+    LEDGER_ASSERT(
+        (certificate != NULL) &&
+        (certificate->type == CERTIFICATE_STAKE_POOL_REGISTRATION) &&
+        (certificate->poolRegistration != NULL),
+        "Invalid pool registration certificate"
+    );
 
+    const pool_registration_data_t *poolReg = certificate->poolRegistration;
+    if (poolReg == NULL) {
+        LEDGER_ASSERT(false, "NULL poolRegistration");
+        __builtin_unreachable();
+    }
     *pool_owner_counts = count_pool_owner_nodes(
-        certificate->poolRegistration.poolOwners
+        poolReg->poolOwners
     );
     security_policy_t policy = policyForSignTxStakePoolRegistrationInit(
         txSigningMode,
-        certificate->poolRegistration.numPoolOwners,
+        poolReg->numPoolOwners,
         pool_owner_counts->path_owners,
         &G_context.tx_info.warning_bits);
     LEDGER_ASSERT(policy != POLICY_DENY, "Certificate denied during UI");
@@ -400,7 +410,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
                        MAX_BECH32_STRING_LENGTH,
                        format_bech32,
                        "vrf_vk",
-                       certificate->vrfKeyHash,
+                       certificate->poolRegistration->vrfKeyHash,
                        VRF_KEY_HASH_LENGTH);
         CHECK_COUNT(UI_PAIRS_POOL_VRF_KEY);
     }
@@ -410,25 +420,25 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Pledge"),
                        MAX_ADA_AMOUNT_STRING_LENGTH,
                        format_ada_amount,
-                       certificate->poolRegistration.pledge);
+                       certificate->poolRegistration->pledge);
 
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Cost"),
                        MAX_ADA_AMOUNT_STRING_LENGTH,
                        format_ada_amount,
-                       certificate->poolRegistration.cost);
+                       certificate->poolRegistration->cost);
 
         UI_ADD_FORMAT2(UI_STATIC_LABEL("Profit margin"),
                        MAX_PROFIT_MARGIN_STRING_LENGTH,
                        format_pool_margin,
-                       certificate->poolRegistration.marginNumerator,
-                       certificate->poolRegistration.marginDenominator);
+                       certificate->poolRegistration->marginNumerator,
+                       certificate->poolRegistration->marginDenominator);
         CHECK_COUNT(UI_PAIRS_POOL_FIXED);
     }
 
     security_policy_t reward_policy = policyForSignTxStakePoolRegistrationRewardAccount(
         txSigningMode,
         G_context.tx_info.tx_params.networkId,
-        &certificate->poolRegistration.rewardAccount,
+        &certificate->poolRegistration->rewardAccount,
         &G_context.tx_info.warning_bits);
     LEDGER_ASSERT(reward_policy != POLICY_DENY, "Reward account security policy denied");
 
@@ -438,12 +448,12 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
                        MAX_HUMAN_ADDRESS_LENGTH,
                        format_pool_reward_account,
                        G_context.tx_info.tx_params.networkId,
-                       &certificate->poolRegistration.rewardAccount);
+                       &certificate->poolRegistration->rewardAccount);
         CHECK_COUNT(UI_PAIRS_POOL_REWARD_ACCOUNT);
     }
 
     uint32_t owner_index = 0;
-    flist_node_t* owner_node = certificate->poolRegistration.poolOwners;
+    flist_node_t* owner_node = certificate->poolRegistration->poolOwners;
     while (owner_node != NULL) {
         tx_certificate_node_t* owner_item = (tx_certificate_node_t*) owner_node;
         ext_credential_t* owner_credential = &owner_item->certificate.stakeCredential;
@@ -468,7 +478,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
         APP_MEM_FREE(owner_item);
         owner_index++;
     }
-    ((certificate_data_t*) certificate)->poolRegistration.poolOwners = NULL;
+    ((certificate_data_t*) certificate)->poolRegistration->poolOwners = NULL;
 
     LEDGER_ASSERT(owner_index == pool_owner_counts.total_owners, "Pool owner index mismatch");
     if (pool_owner_counts.total_owners == 0) {
@@ -482,7 +492,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
     }
 
     uint32_t relay_index = 0;
-    flist_node_t* relay_node = certificate->poolRegistration.relays;
+    flist_node_t* relay_node = certificate->poolRegistration->relays;
     while (relay_node != NULL) {
         tx_certificate_node_t* relay_item = (tx_certificate_node_t*) relay_node;
         pool_relay_t* relay = (pool_relay_t*) &relay_item->certificate;
@@ -559,9 +569,9 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
         APP_MEM_FREE(relay_item);
         relay_index++;
     }
-    ((certificate_data_t*) certificate)->poolRegistration.relays = NULL;
+    ((certificate_data_t*) certificate)->poolRegistration->relays = NULL;
 
-    LEDGER_ASSERT(relay_index == certificate->poolRegistration.numRelays, "Relay index mismatch");
+    LEDGER_ASSERT(relay_index == certificate->poolRegistration->numRelays, "Relay index mismatch");
     if (relay_index == 0) {
         warning_bits_set(&G_context.tx_info.warning_bits,
                          WARNING_BIT_POOL_REGISTRATION_NO_RELAYS);
@@ -572,7 +582,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
         }
     }
 
-    if (certificate->poolRegistration.poolMetadataIsNull) {
+    if (certificate->poolRegistration->poolMetadataIsNull) {
         security_policy_t no_metadata_policy = policyForSignTxStakePoolRegistrationNoMetadata(&G_context.tx_info.warning_bits);
         LEDGER_ASSERT(no_metadata_policy != POLICY_DENY, "No metadata security policy denied");
 
@@ -585,7 +595,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
         warning_bits_t metadata_warnings = 0;
         security_policy_t metadata_policy =
             policyForSignTxStakePoolRegistrationMetadata(
-                &certificate->poolRegistration.poolMetadata,
+                &certificate->poolRegistration->poolMetadata,
                 &metadata_warnings
             );
         LEDGER_ASSERT(warning_bits_except_mask(metadata_warnings, G_context.tx_info.warning_bits) == 0, "Pool metadata warnings mismatch between validation and UI");
@@ -594,7 +604,7 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
         if (metadata_policy == POLICY_SHOW) {
             {
                 START_COUNT();
-                if (certificate->poolRegistration.poolMetadata.urlSize == 0) {
+                if (certificate->poolRegistration->poolMetadata.urlSize == 0) {
                     LEDGER_ASSERT(warning_bits_has(G_context.tx_info.warning_bits, WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL), "Empty pool metadata URL warning missing");
                     UI_ADD_STATIC(UI_LABEL_BY_SCREEN("Pool metadata url", "Metadata url"),
                                   UI_STATIC_LABEL("(empty)"));
@@ -602,13 +612,13 @@ static void add_ui_and_free_certificate_pool_registration(const certificate_data
                     UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Pool metadata url", "Metadata url"),
                                    MAX_POOL_METADATA_URL_LENGTH,
                                    format_url,
-                                   certificate->poolRegistration.poolMetadata.url,
-                                   certificate->poolRegistration.poolMetadata.urlSize);
+                                   certificate->poolRegistration->poolMetadata.url,
+                                   certificate->poolRegistration->poolMetadata.urlSize);
                 }
                 UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Pool metadata hash", "Metadata hash"),
                                MAX_POOL_METADATA_HASH_STRING_LENGTH,
                                format_hex_bytes,
-                               certificate->poolRegistration.poolMetadata.hash,
+                               certificate->poolRegistration->poolMetadata.hash,
                                POOL_METADATA_HASH_LENGTH);
                 CHECK_COUNT(UI_PAIRS_POOL_METADATA);
             }

@@ -694,8 +694,9 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 break;
             }
             case CERTIFICATE_STAKE_POOL_REGISTRATION: {
+                LEDGER_ASSERT(certificate->poolRegistration != NULL, "NULL poolRegistration");
                 pool_owner_counts_t owner_counts =
-                    count_pool_owner_nodes(certificate->poolRegistration.poolOwners);
+                    count_pool_owner_nodes(certificate->poolRegistration->poolOwners);
                 switch (G_context.tx_info.tx_params.txSigningMode) {
                     case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
                         LEDGER_ASSERT(!G_context.tx_info.pool_owner_path_present,
@@ -715,7 +716,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 }
                 cert_policy = policyForSignTxStakePoolRegistrationInit(
                     G_context.tx_info.tx_params.txSigningMode,
-                    certificate->poolRegistration.numPoolOwners,
+                    certificate->poolRegistration->numPoolOwners,
                     owner_counts.path_owners,
                     &G_context.tx_info.warning_bits);
                 switch (cert_policy) {
@@ -770,7 +771,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                         security_policy_t reward_policy = policyForSignTxStakePoolRegistrationRewardAccount(
                             G_context.tx_info.tx_params.txSigningMode,
                             G_context.tx_info.tx_params.networkId,
-                            &certificate->poolRegistration.rewardAccount,
+                            &certificate->poolRegistration->rewardAccount,
                             &G_context.tx_info.warning_bits);
                         switch (reward_policy) {
                             case POLICY_DENY:
@@ -787,7 +788,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
 
                         // Pool Owners (variable count: each owner gets 1 pair if SHOW policy)
                         {
-                            flist_node_t *node2 = certificate->poolRegistration.poolOwners;
+                            flist_node_t *node2 = certificate->poolRegistration->poolOwners;
                             while (node2 != NULL) {
                                 tx_certificate_node_t *owner_node = (tx_certificate_node_t *) node2;
                                 ext_credential_t *owner_credential =
@@ -814,7 +815,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                             }
                         }
                         ASSERT(owner_counts.total_owners ==
-                               certificate->poolRegistration.numPoolOwners);
+                               certificate->poolRegistration->numPoolOwners);
                         // If no owners present, add placeholder pair to indicate "no owners"
                         if (owner_counts.total_owners == 0) {
                             pool_pairs += UI_PAIRS_POOL_NO_OWNERS;
@@ -825,7 +826,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                         // Each relay itself is 1 pair, plus additional pairs for its endpoints
                         uint32_t relay_count = 0;
                         {
-                            flist_node_t *node2 = certificate->poolRegistration.relays;
+                            flist_node_t *node2 = certificate->poolRegistration->relays;
                             while (node2 != NULL) {
                                 tx_certificate_node_t *relay_node = (tx_certificate_node_t *) node2;
                                 const pool_relay_t *relay = (const pool_relay_t *) &relay_node->certificate;
@@ -882,14 +883,14 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                                 relay_count++;
                             }
                         }
-                        ASSERT(relay_count == certificate->poolRegistration.numRelays);
+                        ASSERT(relay_count == certificate->poolRegistration->numRelays);
                         // If no relays present, add placeholder pair to indicate "no relays"
                         if (relay_count == 0) {
                             pool_pairs += UI_PAIRS_POOL_NO_RELAYS;
                         }
 
                         // Pool Metadata (optional: URL and hash)
-                        if (certificate->poolRegistration.poolMetadataIsNull) {
+                        if (certificate->poolRegistration->poolMetadataIsNull) {
                             // No metadata case
                             security_policy_t no_metadata_policy =
                                 policyForSignTxStakePoolRegistrationNoMetadata(&G_context.tx_info.warning_bits);
@@ -909,7 +910,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                             // Metadata present case: URL + hash
                             security_policy_t metadata_policy =
                                 policyForSignTxStakePoolRegistrationMetadata(
-                                    &certificate->poolRegistration.poolMetadata,
+                                    &certificate->poolRegistration->poolMetadata,
                                     &G_context.tx_info.warning_bits
                                 );
                             switch (metadata_policy) {
@@ -1022,7 +1023,8 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
                 break;
             }
             case CERTIFICATE_STAKE_POOL_REGISTRATION: {
-                const pool_registration_data_t *poolReg = &certificate->poolRegistration;
+                LEDGER_ASSERT(certificate->poolRegistration != NULL, "NULL poolRegistration");
+                const pool_registration_data_t *poolReg = certificate->poolRegistration;
 
                 txHashBuilder_poolRegistrationCertificate_enter(
                     txHashBuilder,
@@ -1045,7 +1047,7 @@ static int validate_and_hash_certificates(tx_hash_builder_t* txHashBuilder, tx_u
 
                 txHashBuilder_poolRegistrationCertificate_vrfKeyHash(
                     txHashBuilder,
-                    certificate->vrfKeyHash,
+                    certificate->poolRegistration->vrfKeyHash,
                     VRF_KEY_HASH_LENGTH
                 );
 

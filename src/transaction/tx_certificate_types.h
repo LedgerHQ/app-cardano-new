@@ -86,6 +86,7 @@ typedef struct {
 } pool_metadata_t;
 
 typedef struct {
+    const uint8_t* vrfKeyHash;
     uint64_t pledge;
     uint64_t cost;
     uint64_t marginNumerator;

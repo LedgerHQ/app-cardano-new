@@ -136,7 +136,7 @@ typedef tx_input_node_t tx_collateral_input_node_t;
 // - STAKE_REGISTRATION_CONWAY/DEREGISTRATION_CONWAY: stakeCredential, deposit
 // - STAKE_DELEGATION: stakeCredential, poolKeyHash
 // - STAKE_POOL_RETIREMENT: poolCredential, retirementEpoch
-// - STAKE_POOL_REGISTRATION: poolId, vrfKeyHash, poolRegistration
+// - STAKE_POOL_REGISTRATION: poolId, poolRegistration
 // - VOTE_DELEGATION: stakeCredential, drep
 // - AUTHORIZE_COMMITTEE_HOT: coldCredential, hotCredential
 // - RESIGN_COMMITTEE_COLD: coldCredential, anchor
@@ -156,9 +156,8 @@ typedef struct {
     ext_drep_t drep;
     uint64_t deposit;
     uint64_t retirementEpoch;
-    const uint8_t* vrfKeyHash;
     anchor_t anchor;  // For committee resign, DRep registration/update
-    pool_registration_data_t poolRegistration;
+    pool_registration_data_t* poolRegistration;  // NULL if not STAKE_POOL_REGISTRATION; heap-allocated if present
 } certificate_data_t;
 
 typedef struct {

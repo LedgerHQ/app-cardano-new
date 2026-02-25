@@ -146,22 +146,30 @@ static void free_certificate_item(tx_certificate_node_t *item) {
         return;
     }
 
-    if (item->certificate.type == CERTIFICATE_STAKE_POOL_REGISTRATION) {
-        flist_node_t *owner_node = item->certificate.poolRegistration.poolOwners;
+    if (item->certificate.poolRegistration != NULL) {
+        // poolRegistration is only set for CERTIFICATE_STAKE_POOL_REGISTRATION
+        LEDGER_ASSERT(item->certificate.type == CERTIFICATE_STAKE_POOL_REGISTRATION,
+                      "poolRegistration type");
+        pool_registration_data_t *poolReg = item->certificate.poolRegistration;
+
+        flist_node_t *owner_node = poolReg->poolOwners;
         while (owner_node != NULL) {
             flist_node_t *next = owner_node->next;
             APP_MEM_FREE(owner_node);
             owner_node = next;
         }
-        item->certificate.poolRegistration.poolOwners = NULL;
+        poolReg->poolOwners = NULL;
 
-        flist_node_t *relay_node = item->certificate.poolRegistration.relays;
+        flist_node_t *relay_node = poolReg->relays;
         while (relay_node != NULL) {
             flist_node_t *next = relay_node->next;
             APP_MEM_FREE(relay_node);
             relay_node = next;
         }
-        item->certificate.poolRegistration.relays = NULL;
+        poolReg->relays = NULL;
+
+        APP_MEM_FREE(item->certificate.poolRegistration);
+        item->certificate.poolRegistration = NULL;
     }
 
     APP_MEM_FREE(item);
