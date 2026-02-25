@@ -21,6 +21,7 @@ static uint8_t test_heap[TEST_HEAP_SIZE];
 static void reset_context(void) {
     explicit_bzero(&G_context, sizeof(G_context));
     G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    G_context.state.tx_state = TX_STATE_PARSED;
     assert_true(mem_utils_init(test_heap, sizeof(test_heap)));
 }
 
