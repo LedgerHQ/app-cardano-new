@@ -124,8 +124,8 @@ void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnin
             return;
     }
 
-    // Field 4: Message length
-    UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Message length", "Msg length"),
+    // Field 4: Message length in bytes
+    UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Message length (bytes)", "Msg len (B)"),
                    MAX_UINT64_STRING_LENGTH,
                    format_uint64,
                    ctx->msgLength);
