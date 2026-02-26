@@ -6,74 +6,68 @@
 #include "buffer.h"
 
 #include "tx.h"
+#include "tx_hash_builder.h"
+#include "tx_ui_plan.h"
+#include "securityWarnings.h"
 
-typedef enum {
-    PARSING_OK = 1,
-    FEE_PARSING_ERROR = -4,
-    TX_SIZE_TOO_LARGE_ERROR = -8,
-    INPUTS_COUNT_PARSING_ERROR = -9,
-    INPUTS_PARSING_ERROR = -10,
-    OUTPUTS_COUNT_PARSING_ERROR = -11,
-    OUTPUTS_PARSING_ERROR = -12,
-    OUTPUT_DESTINATION_TYPE_ERROR = -13,
-    OUTPUT_ADDRESS_SIZE_ERROR = -14,
-    WITHDRAWALS_PARSING_ERROR = -15,
-    TTL_PARSING_ERROR = -16,
-    VALIDITY_INTERVAL_START_PARSING_ERROR = -17,
-    TX_BUFFER_NOT_FULLY_CONSUMED_ERROR = -18,
-    CERTIFICATES_PARSING_ERROR = -19,
-    MINT_PARSING_ERROR = -20,
-    SCRIPT_DATA_HASH_PARSING_ERROR = -22,
-    COLLATERAL_INPUTS_PARSING_ERROR = -23,
-    REQUIRED_SIGNERS_PARSING_ERROR = -24,
-    COLLATERAL_OUTPUT_PARSING_ERROR = -25,
-    TOTAL_COLLATERAL_PARSING_ERROR = -26,
-    REFERENCE_INPUTS_PARSING_ERROR = -27,
-    TREASURY_PARSING_ERROR = -28,
-    DONATION_PARSING_ERROR = -29,
-    VOTING_PROCEDURES_PARSING_ERROR = -30,
-    CANONICAL_ORDERING_ERROR = -31,
-    OUT_OF_MEMORY_ERROR = -21
-} parser_status_e;
+typedef struct {
+    bool run_validation;              // pass 1: true, pass 2: true
+    bool run_hash_builder;            // pass 1: true, pass 2: false
+    bool run_ui_planning;             // pass 1: true, pass 2: false
+    bool run_ui_rendering;            // pass 1: false, pass 2: true
+} parse_tx_mode_t;
 
 /**
- * Deserialize raw transaction buffer into structured format.
- *
- * Allocates memory for transaction elements (inputs, outputs, withdrawals, etc.) and their
- * nested structures (asset groups, tokens, inline datums, reference scripts). On parsing
- * failure, some allocations may be partially completed. If the caller continues without
- * a full reset, it must call tx_context_cleanup() to free allocated memory.
- *
- * OWNERSHIP MODEL:
- * - This function allocates memory for parsed structures
- * - Caller owns the responsibility for cleanup via tx_context_cleanup() if no reset occurs
- *
- * @param[in, out] buf
- *   Pointer to buffer with serialized transaction.
- * @param[in]      tx_params
- *   Pointer to transaction init parameters parsed from INIT APDU.
- * @param[out]     tx_body
- *   Pointer to parsed tx body structure (caller-owned). Populated with pointers to
- *   allocated element lists on success, or partially populated on error.
- *
- * @return PARSING_OK if success, error status otherwise.
- *
- * @see tx_context_cleanup
+ * Unpacked view of global tx context for use at the top of processing functions.
+ * Created as a local variable via tx_get_ctx(); never stored globally.
  */
-parser_status_e parse_tx(buffer_t *buf, const tx_params_t *tx_params, tx_parsed_body_t *tx_body);
-
-void tx_handle_parse_error(parser_status_e status);
+typedef struct {
+    const tx_params_t     *tx_params;
+    const parse_tx_mode_t *mode;
+    warning_bits_t        *warning_bits;
+    tx_hash_builder_t     *hash_builder;
+} tx_parse_ctx_t;
 
 /**
- * Cleanup all dynamically allocated structures in transaction.
- *
- * Operates on G_context.tx_info.tx_body. Frees all allocated transaction elements
- * (inputs, outputs, withdrawals, certificates, etc.) and their nested allocations (asset groups/tokens,
- * inline datums, reference scripts). Safe to call multiple times or on partially-initialized
- * transactions.
- *
- * USAGE CONTRACT:
- * - Call this when abandoning a parsed transaction without a full app reset
- * - Not needed if reset_app_context() is used to tear down the call
+ * Assert that the global tx processing context is valid and return an unpacked view.
+ * Call at the top of every tx_process_* function after asserting buf != NULL.
  */
-void tx_context_cleanup(void);
+tx_parse_ctx_t tx_get_ctx(void);
+
+void tx_handle_parse_error(uint16_t swo);
+
+// ---------------------------------------------------------------------------
+// Context helpers
+// ---------------------------------------------------------------------------
+
+void validate_parse_tx_mode(const parse_tx_mode_t *mode);
+
+#include "cbor_canonical.h"
+
+// ---------------------------------------------------------------------------
+// Parse-item helpers
+// ---------------------------------------------------------------------------
+
+bool parse_input(buffer_t *buf, tx_input_t *out_input);
+
+bool parse_required_signer(buffer_t *buf, required_signer_t *out_required_signer);
+
+bool parse_voter_votes_header(buffer_t *buf,
+                              ext_voter_t *out_voter,
+                              uint16_t *out_num_votes);
+
+bool parse_vote(buffer_t *buf, vote_item_t *out_vote_item);
+
+bool parse_withdrawal(buffer_t *buf, withdrawal_t *out_withdrawal);
+
+bool parse_mint_token(buffer_t *buf, mint_token_t *out_mint_token);
+
+// ---------------------------------------------------------------------------
+// Credential/DRep/voter conversion helpers (ext → hash-builder format)
+// ---------------------------------------------------------------------------
+
+credential_t credential_for_tx_hash_from_ext_credential(const ext_credential_t *credential);
+
+drep_t drep_for_tx_hash_from_ext_drep(const ext_drep_t *ext_drep);
+
+voter_t voter_for_tx_hash_from_ext_voter(const ext_voter_t *ext_voter);

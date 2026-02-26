@@ -243,9 +243,6 @@ def test_sign_tx(device: Device,
     client = CommandSender(backend)
     client.set_debug_settings(expert_mode=expert_mode, silent_export=False)
 
-    if testCase.name == "Sign_tx_with_all_certificates_except_pool_registration":
-        pytest.skip("Skipped: out of memory")
-
     if device.is_nano and (testCase.has_warning or testCase.has_aux_warning):
         pytest.skip("Skipped: failing warning navigation for Nano")
 

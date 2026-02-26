@@ -47,7 +47,8 @@ static void test_sign_tx_swap_mode_skips_ui_and_validates_exchange_parameters(vo
     assert_int_equal(g_last_response_len, TX_HASH_LENGTH);
     assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
     assert_int_equal(G_context.state.tx_state, TX_STATE_APPROVED);
-    assert_int_equal(G_context.tx_info.planned_ui_pairs, 0);
+    // In swap mode UI is skipped, so planned_ui_pairs is set but never consumed.
+    assert_true(G_context.tx_info.planned_ui_pairs > 0);
     assert_false(G_swap_response_ready);
 
     assert_int_equal(g_swap_stub_fee_check_calls, 1);

@@ -8,25 +8,6 @@
 #include "tx_parse.h"
 
 /**
- * Parse a complete stake credential (type + data)
- *
- * Wire format for credential type (as sent by Python client):
- * - 0x00: KEY_HASH (28-byte public key hash)
- * - 0x01: SCRIPT_HASH (28-byte script hash)
- * - 0x02: KEY_PATH (device derivation path; converted to KEY_HASH before hashing)
- *
- * CBOR credential types (tx hash builder, per CDDL):
- * - 0x00: KEY_HASH
- * - 0x01: SCRIPT_HASH
- *
- * @param[in]  buf        Buffer with serialized credential
- * @param[out] credential Parsed credential structure
- *
- * @return PARSING_OK on success, CERTIFICATES_PARSING_ERROR on failure
- */
-parser_status_e parse_stake_credential(buffer_t *buf, ext_credential_t *credential);
-
-/**
  * Parse CERTIFICATE_STAKE_REGISTRATION or CERTIFICATE_STAKE_DEREGISTRATION (Shelley era)
  *
  * Format:
@@ -37,9 +18,9 @@ parser_status_e parse_stake_credential(buffer_t *buf, ext_credential_t *credenti
  * @param[in]  cert_type Either CERTIFICATE_STAKE_REGISTRATION or CERTIFICATE_STAKE_DEREGISTRATION
  * @param[out] cert_data Parsed certificate data
  *
- * @return PARSING_OK on success, CERTIFICATES_PARSING_ERROR on failure
+ * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-parser_status_e parse_certificate_stake_registration_deregistration(
+bool parse_certificate_stake_registration_deregistration(
     buffer_t *buf,
     certificate_type_t cert_type,
     certificate_data_t *cert_data);
@@ -55,9 +36,9 @@ parser_status_e parse_certificate_stake_registration_deregistration(
  * @param[in]  buf      Buffer with serialized certificate
  * @param[out] cert_data Parsed certificate data
  *
- * @return PARSING_OK on success, CERTIFICATES_PARSING_ERROR on failure
+ * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-parser_status_e parse_certificate_stake_delegation(buffer_t *buf,
+bool parse_certificate_stake_delegation(buffer_t *buf,
                                                   certificate_data_t *cert_data);
 
 /**
@@ -72,9 +53,9 @@ parser_status_e parse_certificate_stake_delegation(buffer_t *buf,
  * @param[in]  cert_type Either CERTIFICATE_STAKE_REGISTRATION_CONWAY or CERTIFICATE_STAKE_DEREGISTRATION_CONWAY
  * @param[out] cert_data  Parsed certificate data
  *
- * @return PARSING_OK on success, CERTIFICATES_PARSING_ERROR on failure
+ * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-parser_status_e parse_certificate_stake_registration_deregistration_conway(
+bool parse_certificate_stake_registration_deregistration_conway(
     buffer_t *buf,
     certificate_type_t cert_type,
     certificate_data_t *cert_data);
@@ -90,9 +71,9 @@ parser_status_e parse_certificate_stake_registration_deregistration_conway(
  * @param[in]  buf      Buffer with serialized certificate
  * @param[out] cert_data Parsed certificate data
  *
- * @return PARSING_OK on success, CERTIFICATES_PARSING_ERROR on failure
+ * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-parser_status_e parse_certificate_stake_pool_retirement(buffer_t *buf,
+bool parse_certificate_stake_pool_retirement(buffer_t *buf,
                                                        certificate_data_t *cert_data);
 
 /**
@@ -106,9 +87,9 @@ parser_status_e parse_certificate_stake_pool_retirement(buffer_t *buf,
  * @param[in]  buf      Buffer with serialized certificate
  * @param[out] cert_data Parsed certificate data
  *
- * @return PARSING_OK on success, CERTIFICATES_PARSING_ERROR on failure
+ * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-parser_status_e parse_certificate_vote_delegation(buffer_t *buf,
+bool parse_certificate_vote_delegation(buffer_t *buf,
                                                  certificate_data_t *cert_data);
 
 /**
@@ -120,18 +101,18 @@ parser_status_e parse_certificate_vote_delegation(buffer_t *buf,
  * - pool_key_hash (28 bytes)
  * - drep (variable): DRep specification
  */
-parser_status_e parse_certificate_stake_pool_and_drep_delegation(buffer_t *buf,
+bool parse_certificate_stake_pool_and_drep_delegation(buffer_t *buf,
                                                                  certificate_data_t *cert_data);
 
-parser_status_e parse_certificate_account_registration_delegation_to_stake_pool(
+bool parse_certificate_account_registration_delegation_to_stake_pool(
     buffer_t *buf,
     certificate_data_t *cert_data);
 
-parser_status_e parse_certificate_account_registration_delegation_to_drep(
+bool parse_certificate_account_registration_delegation_to_drep(
     buffer_t *buf,
     certificate_data_t *cert_data);
 
-parser_status_e parse_certificate_account_registration_delegation_to_stake_pool_and_drep(
+bool parse_certificate_account_registration_delegation_to_stake_pool_and_drep(
     buffer_t *buf,
     certificate_data_t *cert_data);
 
@@ -146,9 +127,9 @@ parser_status_e parse_certificate_account_registration_delegation_to_stake_pool_
  * @param[in]  buf      Buffer with serialized certificate
  * @param[out] cert_data Parsed certificate data
  *
- * @return PARSING_OK on success, CERTIFICATES_PARSING_ERROR on failure
+ * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-parser_status_e parse_certificate_authorize_committee_hot(buffer_t *buf,
+bool parse_certificate_authorize_committee_hot(buffer_t *buf,
                                                          certificate_data_t *cert_data);
 
 /**
@@ -162,9 +143,9 @@ parser_status_e parse_certificate_authorize_committee_hot(buffer_t *buf,
  * @param[in]  buf      Buffer with serialized certificate
  * @param[out] cert_data Parsed certificate data
  *
- * @return PARSING_OK on success, CERTIFICATES_PARSING_ERROR on failure
+ * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-parser_status_e parse_certificate_resign_committee_cold(buffer_t *buf,
+bool parse_certificate_resign_committee_cold(buffer_t *buf,
                                                        certificate_data_t *cert_data);
 
 /**
@@ -179,9 +160,9 @@ parser_status_e parse_certificate_resign_committee_cold(buffer_t *buf,
  * @param[in]  buf      Buffer with serialized certificate
  * @param[out] cert_data Parsed certificate data
  *
- * @return PARSING_OK on success, CERTIFICATES_PARSING_ERROR on failure
+ * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-parser_status_e parse_certificate_drep_registration(buffer_t *buf,
+bool parse_certificate_drep_registration(buffer_t *buf,
                                                    certificate_data_t *cert_data);
 
 /**
@@ -195,9 +176,9 @@ parser_status_e parse_certificate_drep_registration(buffer_t *buf,
  * @param[in]  buf      Buffer with serialized certificate
  * @param[out] cert_data Parsed certificate data
  *
- * @return PARSING_OK on success, CERTIFICATES_PARSING_ERROR on failure
+ * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-parser_status_e parse_certificate_drep_deregistration(buffer_t *buf,
+bool parse_certificate_drep_deregistration(buffer_t *buf,
                                                      certificate_data_t *cert_data);
 
 /**
@@ -211,9 +192,9 @@ parser_status_e parse_certificate_drep_deregistration(buffer_t *buf,
  * @param[in]  buf      Buffer with serialized certificate
  * @param[out] cert_data Parsed certificate data
  *
- * @return PARSING_OK on success, CERTIFICATES_PARSING_ERROR on failure
+ * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-parser_status_e parse_certificate_drep_update(buffer_t *buf,
+bool parse_certificate_drep_update(buffer_t *buf,
                                              certificate_data_t *cert_data);
 
 /**
@@ -227,14 +208,20 @@ parser_status_e parse_certificate_drep_update(buffer_t *buf,
  * - cost (8 bytes): pool cost in lovelace
  * - margin (variable): unit interval (numerator + denominator)
  * - reward_account (29 bytes): reward account address
+ * - has_metadata (1 byte): flag indicating presence of pool metadata
  * - pool_owners (variable): array of owner credentials
  * - relays (variable): array of relay specifications
- * - pool_metadata (variable): metadata URL and hash or null
+ * - pool_metadata (variable): metadata URL and hash, only present if has_metadata is set
  *
  * @param[in]  buf      Buffer with serialized certificate
  * @param[out] cert_data Parsed certificate data
  *
- * @return PARSING_OK on success, CERTIFICATES_PARSING_ERROR on failure
+ * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-parser_status_e parse_certificate_stake_pool_registration(buffer_t *buf,
+bool parse_certificate_stake_pool_registration(buffer_t *buf,
                                                          certificate_data_t *cert_data);
+
+bool parse_pool_relay(buffer_t *buf, pool_relay_t *relay);
+bool parse_pool_metadata(buffer_t *buf, pool_metadata_t *out_metadata);
+
+bool parse_certificate(buffer_t *buf, certificate_data_t *out_certificate_data);

@@ -137,7 +137,7 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf) {
  *
  * @return whether the initialization was successful
  */
-bool ui_pairs_init(uint8_t nbPairs) {
+bool ui_pairs_init(uint16_t nbPairs) {
     // Allocate the pairsList memory
     APP_MEM_FREE_AND_NULL((void **) &g_pairsList);
     if (!allocate_zeroed((void **) &g_pairsList, sizeof(nbgl_contentTagValueList_t))) {
@@ -149,7 +149,9 @@ bool ui_pairs_init(uint8_t nbPairs) {
     if (!allocate_zeroed((void **) &g_pairs, nbPairs * sizeof(nbgl_contentTagValue_t))) {
         goto error;
     }
-    g_pairsList->nbPairs = nbPairs;
+    STATIC_ASSERT(MAX_UI_PAIRS <= UINT8_MAX, "MAX_UI_PAIRS must fit in uint8_t");
+    LEDGER_ASSERT(nbPairs <= MAX_UI_PAIRS, "nbPairs exceeds MAX_UI_PAIRS");
+    g_pairsList->nbPairs = (uint8_t) nbPairs;
     g_pairsList->pairs = g_pairs;
     g_pairsList->wrapping = true;
     g_next_pair_index = 0;

@@ -10,9 +10,9 @@
 #include "globals.h"
 #include "mem.h"
 #include "cardano_parsers.h"
+#include "cardano_swo.h"
 #include "tx_parse_outputs.h"
 #include "utils.h"
-#include "app_mem_utils.h"
 
 /**
  * Parse CVote credential
@@ -56,11 +56,11 @@ bool buffer_read_cvote_credential(buffer_t *buf, cvote_credential_t *credential)
     return true;
 }
 
-static cvote_parser_status_t _map_output_parser_status(parser_status_e status) {
-    switch (status) {
-        case PARSING_OK:
+static cvote_parser_status_t _map_output_parser_status(uint16_t swo) {
+    switch (swo) {
+        case 0:
             return CVOTE_PARSER_OK;
-        case OUT_OF_MEMORY_ERROR:
+        case SWO_INSUFFICIENT_MEMORY:
             return CVOTE_PARSER_OUT_OF_MEMORY;
         default:
             return CVOTE_PARSER_INVALID_FORMAT;
@@ -72,18 +72,17 @@ cvote_parser_status_t cvote_parse_destination(buffer_t *buf,
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     LEDGER_ASSERT(destination != NULL, "NULL destination");
 
-    parser_status_e output_status = parse_output_destination(buf, destination);
+    uint16_t output_status = parse_output_destination(buf, destination);
     cvote_parser_status_t cvote_status = _map_output_parser_status(output_status);
     if (cvote_status != CVOTE_PARSER_OK) {
-        TRACE("CVote destination parsing failed with output status %d", output_status);
+        TRACE("CVote destination parsing failed with output status 0x%04x", output_status);
         return cvote_status;
     }
 
     if (destination->type == DESTINATION_DEVICE_OWNED) {
-        LEDGER_ASSERT(destination->params != NULL, "NULL destination params");
         TRACE("CVote destination type 0x%x, staking %d",
-              destination->params->type,
-              addressParams_getStakingPartType(destination->params));
+              destination->params.type,
+              addressParams_getStakingPartType(&destination->params));
     } else {
         TRACE("CVote destination: third-party payload");
     }
@@ -148,7 +147,7 @@ cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
     if (!buffer_read_u64(&parse_buf, &out_data->nonce, BE)) {
         TRACE("CVote init: failed to read nonce");
         dest_status = CVOTE_PARSER_INVALID_FORMAT;
-        goto cleanup;
+        return dest_status;
     }
 
     // Parse format-specific fields
@@ -159,7 +158,7 @@ cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
             if (!buffer_read_u64(&parse_buf, &out_data->voting_purpose, BE)) {
                 TRACE("CVote init: failed to read voting_purpose");
                 dest_status = CVOTE_PARSER_INVALID_FORMAT;
-                goto cleanup;
+                return dest_status;
             }
 
             // CIP36 with 0 delegations includes vote credential in init
@@ -167,7 +166,7 @@ cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
                 if (!buffer_read_cvote_credential(&parse_buf, &out_data->vote_credential)) {
                     TRACE("CVote init: failed to parse vote credential (CIP36, no delegations)");
                     dest_status = CVOTE_PARSER_INVALID_FORMAT;
-                    goto cleanup;
+                    return dest_status;
                 }
             }
             break;
@@ -177,14 +176,14 @@ cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
             if (!buffer_read_cvote_credential(&parse_buf, &out_data->vote_credential)) {
                 TRACE("CVote init: failed to parse vote credential (CIP15)");
                 dest_status = CVOTE_PARSER_INVALID_FORMAT;
-                goto cleanup;
+                return dest_status;
             }
             break;
 
         default:
             LEDGER_ASSERT(false, "Invalid CVote registration format: %u", out_data->format);
             dest_status = CVOTE_PARSER_INVALID_FORMAT;
-            goto cleanup;
+            return dest_status;
     }
 
     // Verify buffer fully consumed
@@ -192,15 +191,11 @@ cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
         TRACE("CVote init payload not fully consumed: %u/%u bytes",
               (unsigned)parse_buf.offset, (unsigned)parse_buf.size);
         dest_status = CVOTE_PARSER_INVALID_FORMAT;
-        goto cleanup;
+        return dest_status;
     }
 
     TRACE("CVote init parsed: format=%u, delegations=%u, nonce=%llu",
           out_data->format, out_data->remaining_delegations, out_data->nonce);
 
     return CVOTE_PARSER_OK;
-
-cleanup:
-    cleanup_output_destination(&out_data->destination);
-    return dest_status;
 }

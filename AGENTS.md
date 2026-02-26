@@ -66,7 +66,7 @@ For detailed analysis, see:
     - [fuzzing/FUZZING.md](fuzzing/FUZZING.md): Fuzzing harnesses and usage.
 
 ## Testing Workflow
-- **When C code is modified:** run unit tests. Use unit test build as proxy for real app build.
+- **When C code is modified:** run unit tests. Use unit test build as proxy for real app build. Use `-j8` for make, not `-j$(nproc)`.
 - **After unit tests pass:** check fuzzing build as an additional compile-health gate.
 - **When `tests/standalone` ragger inputs or `application_client/` are modified:** run `unit-tests/generators/generate_unit_tests_from_ragger.py`, then run unit tests to verify generated outputs are up to date and passing. The generator depends on `application_client/`, so any change there must be reflected by regenerated unit-test fixtures.
 - **Do not run ragger tests or swap tests unless explicitly requested.**

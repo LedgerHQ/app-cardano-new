@@ -24,9 +24,8 @@
 #include "tx.h"
 #include "tx_credential_types.h"
 #include "tx_output_types.h"
-#include "tx_parse.h"
+#include "tx_processing.h"
 #include "tx_utils.h"
-#include "tx_validate.h"
 #include "utils.h"
 #include "cardano_buffer.h"
 
@@ -356,17 +355,18 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         G_context.tx_info.raw_tx_total_length
     );
 
-    // Check security policy
-    security_policy_t init_policy = policyForSignTxInit(
-        tx_params,
-        &G_context.tx_info.warning_bits);
-
-    TRACE("Transaction init security policy: %d", (int) init_policy);
-
-    if (init_policy == POLICY_DENY) {
-        TRACE("Security policy DENY - rejecting transaction init");
-        send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
-        return;
+    // Check security policy for DENY at init time (before buffering the tx body).
+    // Warning bits are intentionally discarded here; they will be re-set in tx_validate
+    // so they are available for UI display.
+    {
+        warning_bits_t dummy_warnings = 0;
+        security_policy_t init_policy = policyForSignTxInit(tx_params, &dummy_warnings);
+        TRACE("Transaction init security policy: %d", (int) init_policy);
+        if (init_policy == POLICY_DENY) {
+            TRACE("Security policy DENY - rejecting transaction init");
+            send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
+            return;
+        }
     }
 
     // Determine if CVote auxiliary data is expected
@@ -534,22 +534,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
                 .size = G_context.tx_info.raw_tx_current_length,
                 .offset = 0
             };
-
-            parser_status_e parse_status = parse_tx(
-                &buf,
-                &G_context.tx_info.tx_params,
-                &G_context.tx_info.tx_body);
-            if (parse_status != PARSING_OK) {
-                tx_handle_parse_error(parse_status);
-                return;
-            }
-            G_context.state.tx_state = TX_STATE_PARSED;
-            tx_ui_plan_t ui_plan = {0};
-            // Validate transaction and compute hash. On failure, stop immediately before UI prep.
-            int validation_status = tx_validate_and_compute_hash(&ui_plan);
-            if (validation_status != SWO_SUCCESS) {
-                TRACE("TX validation/hash failed: 0x%04x", validation_status);
-                send_swo_and_reset(validation_status);
+            if (!tx_validate(&buf)) {
                 return;
             }
 
@@ -557,40 +542,6 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 
 #ifdef HAVE_SWAP
             if (G_called_from_swap) {
-                // Validate swap parameters against parsed transaction
-                // Check fee
-                if (!swap_check_fee_validity(G_context.tx_info.tx_body.fee)) {
-                    swap_reject_and_exit(SWAP_EC_ERROR_WRONG_FEES, SWAP_APP_CODE_DEFAULT);
-                }
-
-                // Check outputs: exactly one THIRD_PARTY output must be present and it must
-                // match the destination + amount validated by Exchange.
-                size_t third_party_output_count = 0;
-                flist_node_t *node = G_context.tx_info.tx_body.outputs;
-                while (node != NULL) {
-                    tx_output_node_t *outputNode = (tx_output_node_t *) node;
-                    parsed_tx_output_t *output = &outputNode->output_data;
-
-                    if (output->destination.type == DESTINATION_THIRD_PARTY) {
-                        third_party_output_count++;
-                        if (!swap_check_destination_validity(&output->destination)) {
-                            swap_reject_and_exit(SWAP_EC_ERROR_WRONG_DESTINATION,
-                                                 SWAP_APP_CODE_DEFAULT);
-                        }
-                        if (!swap_check_amount_validity(output->adaAmount)) {
-                            swap_reject_and_exit(SWAP_EC_ERROR_WRONG_AMOUNT,
-                                                 SWAP_APP_CODE_DEFAULT);
-                        }
-                    }
-                    node = node->next;
-                }
-
-                if (third_party_output_count != 1) {
-                    TRACE("Swap: expected exactly one THIRD_PARTY output, found %u",
-                          (unsigned int) third_party_output_count);
-                    swap_reject_and_exit(SWAP_EC_ERROR_WRONG_DESTINATION, SWAP_APP_CODE_DEFAULT);
-                }
-
                 // In swap mode there is no interactive transaction review, so we intentionally
                 // skip TX_STATE_UI_PREPARED and transition directly to TX_STATE_APPROVED.
                 // Consequently, finalize_sign_tx() is not used in this flow.
@@ -603,14 +554,13 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             }
 #endif
 
-            LEDGER_ASSERT(ui_plan.pair_count > 0, "Invalid UI plan");
-            G_context.tx_info.planned_ui_pairs = ui_plan.pair_count;
+            LEDGER_ASSERT(G_context.tx_info.planned_ui_pairs > 0, "Invalid UI plan");
 
-            int ui_prep_result = ui_prepare_transaction_review();
-            if (ui_prep_result != SWO_SUCCESS) {
+            bool ui_prepare_succeeded = tx_prepare_ui_review();
+            if (!ui_prepare_succeeded) {
                 tx_review_cleanup();
-                TRACE("TX UI preparation failed: 0x%04x", ui_prep_result);
-                send_swo_and_reset(ui_prep_result);
+                TRACE("TX UI preparation failed");
+                send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
                 return;
             }
 

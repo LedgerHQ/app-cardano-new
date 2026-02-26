@@ -57,7 +57,7 @@ ui_status_t ui_get_error_status(void);
  */
 void ui_set_error_status(ui_status_t status);
 
-bool ui_pairs_init(uint8_t nbPairs);
+bool ui_pairs_init(uint16_t nbPairs);
 void ui_free_pairs(void);
 void ui_all_cleanup(void);
 uint16_t ui_pairs_get_count(void);

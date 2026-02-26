@@ -50,11 +50,3 @@ bool tx_output_destination_to_address_bytes(const tx_output_destination_t* desti
 bool format_tx_output_destination_human_readable(const tx_output_destination_t* destination,
                                                  char* out,
                                                  size_t outSize);
-
-typedef struct {
-    uint32_t total_owners;
-    uint32_t path_owners;
-    const ext_credential_t* first_path_owner;
-} pool_owner_counts_t;
-
-pool_owner_counts_t count_pool_owner_nodes(const flist_node_t* owners);

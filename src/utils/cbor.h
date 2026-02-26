@@ -63,7 +63,3 @@ bool cbor_writeToken(uint8_t type, uint64_t value, uint8_t* buffer, size_t buffe
 // Does not modify output parameter on error
 bool cbor_parseToken(const uint8_t* buf, size_t size, cbor_token_t* out_token);
 
-bool cbor_mapKeyFulfillsCanonicalOrdering(const uint8_t* previousBuffer,
-                                          size_t previousSize,
-                                          const uint8_t* nextBuffer,
-                                          size_t nextSize);

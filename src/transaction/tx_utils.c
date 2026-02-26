@@ -71,11 +71,8 @@ bool tx_output_destination_to_address_bytes(const tx_output_destination_t* desti
             return true;
 
         case DESTINATION_DEVICE_OWNED: {
-            if (destination->params == NULL) {
-                return false;
-            }
             size_t derivedAddressLength =
-                deriveAddress(destination->params, addressBuffer, addressBufferSize);
+                deriveAddress(&destination->params, addressBuffer, addressBufferSize);
             LEDGER_ASSERT(derivedAddressLength > 0 &&
                           derivedAddressLength <= MAX_ADDRESS_LENGTH &&
                           derivedAddressLength <= addressBufferSize,
@@ -103,25 +100,4 @@ bool format_tx_output_destination_human_readable(const tx_output_destination_t* 
     }
 
     return format_address_human_readable(addressBytes, addressLength, out, outSize);
-}
-
-pool_owner_counts_t count_pool_owner_nodes(const flist_node_t* owners) {
-    pool_owner_counts_t counts = {0};
-    const flist_node_t* node = owners;
-    while (node != NULL) {
-        const tx_certificate_node_t* owner_item = (const tx_certificate_node_t*) node;
-        const ext_credential_t* owner_cred = &owner_item->certificate.stakeCredential;
-        if (owner_cred->type == EXT_CREDENTIAL_KEY_PATH) {
-            counts.path_owners++;
-            if (counts.first_path_owner == NULL) {
-                counts.first_path_owner = owner_cred;
-            }
-        }
-        counts.total_owners++;
-        node = node->next;
-    }
-    LEDGER_ASSERT(counts.path_owners <= counts.total_owners, "Pool owner count mismatch");
-    LEDGER_ASSERT((counts.path_owners == 0) == (counts.first_path_owner == NULL),
-                  "Pool owner path state mismatch");
-    return counts;
 }

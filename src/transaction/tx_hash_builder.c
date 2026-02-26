@@ -1942,10 +1942,7 @@ void txHashBuilder_addRequiredSigner(tx_hash_builder_t* builder,
 
     ASSERT(vkeySize < BUFFER_SIZE_PARANOIA);
 
-    // Array(2)[
-    //    Bytes[hash],
-    //    Unsigned[index]
-    // ]
+    // Bytes[hash]
     {
         ASSERT(vkeySize == ADDRESS_KEY_HASH_LENGTH);
         BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, vkeySize);

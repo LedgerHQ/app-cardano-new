@@ -8,7 +8,7 @@
 
 // UI pair count constants for transaction elements.
 // These define how many UI pairs each transaction element contributes when displayed.
-// CRITICAL: These must match exactly with the actual UI_ADD_* calls in tx_ui_format.c.
+// CRITICAL: These must match exactly with the actual UI_ADD_* calls in tx_parse.c (pass 2 rendering).
 // Ordered by CBOR transaction body keys (0, 1, 2, 3, 4, 5, 7, 8, 9, 11, 13, 14, 17, 18, 21, 22, ...)
 #define UI_PAIRS_INPUT 1                         // key 0: "Input"
 #define UI_PAIRS_OUTPUT_BASE 3                   // key 1: "Output", "Address", "Amount"
@@ -74,12 +74,3 @@
 #define UI_PAIRS_DONATION 1                      // key 22: "Donation"
 #define UI_PAIRS_TX_HASH 1                       // Transaction hash display
 
-/**
- * Plan for UI pair consumption and display constraints when preparing a transaction review.
- *
- * This structure is populated during transaction validation (tx_validate_and_compute_hash)
- * and consumed during UI formatting (ui_prepare_transaction_review).
- */
-typedef struct {
-    uint32_t pair_count;  /// Number of nbgl_contentTagValue pairs required for display
-} tx_ui_plan_t;

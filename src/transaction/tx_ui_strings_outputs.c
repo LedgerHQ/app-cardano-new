@@ -1,0 +1,172 @@
+/* SPDX-FileCopyrightText: 2025 Vacuumlabs */
+/* SPDX-License-Identifier: Apache-2.0 */
+
+#include <stdint.h>
+#include <string.h>
+
+#include "assert.h"
+#include "bech32.h"
+#include "cardano_tokens.h"
+#include "globals.h"
+#include "tx_ui_helpers.h"
+#include "tx_ui_plan.h"
+#include "tx_ui_strings_outputs.h"
+#include "tx_utils.h"
+#include "ui_constants.h"
+#include "ui_formatters.h"
+#include "ui_utils.h"
+
+void tx_ui_plan_or_render_output(const parse_tx_mode_t *mode,
+                                 uint16_t output_index,
+                                 const tx_output_description_t *output_desc) {
+    LEDGER_ASSERT(mode != NULL, "NULL mode");
+    LEDGER_ASSERT(output_desc != NULL, "NULL output_desc");
+
+    if (mode->run_ui_planning) {
+        G_context.tx_info.planned_ui_pairs += UI_PAIRS_OUTPUT_BASE;
+        if (output_desc->destination.type == DESTINATION_DEVICE_OWNED) {
+            G_context.tx_info.planned_ui_pairs += UI_PAIRS_OUTPUT_DEVICE_OWNED;
+        }
+    } else if (mode->run_ui_rendering) {
+        START_COUNT();
+        UI_ADD_FORMAT1(UI_STATIC_LABEL("Output"),
+                       MAX_UINT64_STRING_LENGTH,
+                       format_index_with_prefix,
+                       (uint32_t) output_index + 1);
+        UI_ADD_FORMAT1(UI_STATIC_LABEL("Address"),
+                       MAX_HUMAN_ADDRESS_LENGTH,
+                       format_tx_output_destination_human_readable,
+                       &output_desc->destination);
+        if (output_desc->destination.type == DESTINATION_DEVICE_OWNED) {
+            addPaymentInfoUIPairs(&output_desc->destination.params);
+            addStakingInfoUIPairs(&output_desc->destination.params);
+        }
+        UI_ADD_FORMAT1(UI_STATIC_LABEL("Amount"),
+                       MAX_ADA_AMOUNT_STRING_LENGTH,
+                       format_ada_amount,
+                       output_desc->amount);
+        uint32_t expected_base = UI_PAIRS_OUTPUT_BASE;
+        if (output_desc->destination.type == DESTINATION_DEVICE_OWNED) {
+            expected_base += UI_PAIRS_OUTPUT_DEVICE_OWNED;
+        }
+        CHECK_COUNT(expected_base);
+    }
+}
+
+void tx_ui_plan_or_render_collateral_output_address(const parse_tx_mode_t *mode,
+                                                    const tx_output_description_t *output_desc) {
+    LEDGER_ASSERT(mode != NULL, "NULL mode");
+    LEDGER_ASSERT(output_desc != NULL, "NULL output_desc");
+
+    if (mode->run_ui_planning) {
+        G_context.tx_info.planned_ui_pairs += UI_PAIRS_COLLATERAL_OUTPUT_ADDRESS;
+        if (output_desc->destination.type == DESTINATION_DEVICE_OWNED) {
+            G_context.tx_info.planned_ui_pairs += UI_PAIRS_COLLATERAL_OUTPUT_DEVICE_OWNED;
+        }
+    } else if (mode->run_ui_rendering) {
+        START_COUNT();
+        UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Collateral address", "Coll address"),
+                       MAX_HUMAN_ADDRESS_LENGTH,
+                       format_tx_output_destination_human_readable,
+                       &output_desc->destination);
+        if (output_desc->destination.type == DESTINATION_DEVICE_OWNED) {
+            addPaymentInfoUIPairs(&output_desc->destination.params);
+            addStakingInfoUIPairs(&output_desc->destination.params);
+        }
+        uint32_t expected_collateral = UI_PAIRS_COLLATERAL_OUTPUT_ADDRESS;
+        if (output_desc->destination.type == DESTINATION_DEVICE_OWNED) {
+            expected_collateral += UI_PAIRS_COLLATERAL_OUTPUT_DEVICE_OWNED;
+        }
+        CHECK_COUNT(expected_collateral);
+    }
+}
+
+void tx_ui_plan_or_render_collateral_output_amount(const parse_tx_mode_t *mode,
+                                                   const tx_output_description_t *output_desc) {
+    LEDGER_ASSERT(mode != NULL, "NULL mode");
+    LEDGER_ASSERT(output_desc != NULL, "NULL output_desc");
+
+    if (mode->run_ui_planning) {
+        G_context.tx_info.planned_ui_pairs += UI_PAIRS_COLLATERAL_OUTPUT_AMOUNT;
+    } else if (mode->run_ui_rendering) {
+        START_COUNT();
+        UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Collateral amount", "Coll amount"),
+                       MAX_ADA_AMOUNT_STRING_LENGTH,
+                       format_ada_amount,
+                       output_desc->amount);
+        CHECK_COUNT(UI_PAIRS_COLLATERAL_OUTPUT_AMOUNT);
+    }
+}
+
+void tx_ui_plan_or_render_output_token(const parse_tx_mode_t *mode,
+                                       const uint8_t *policy_id,
+                                       const output_token_t *token) {
+    LEDGER_ASSERT(mode != NULL, "NULL mode");
+    LEDGER_ASSERT(policy_id != NULL, "NULL policy_id");
+    LEDGER_ASSERT(token != NULL, "NULL token");
+
+    if (mode->run_ui_planning) {
+        // Pair count added in the caller (total_token_count known there)
+    } else if (mode->run_ui_rendering) {
+        START_COUNT();
+        UI_ADD_FORMAT3(UI_STATIC_LABEL("Fingerprint"),
+                       MAX_TOKEN_FINGERPRINT_STRING_LENGTH,
+                       format_asset_fingerprint_bech32,
+                       policy_id,
+                       token->assetName,
+                       token->assetNameLen);
+        UI_ADD_FORMAT4(UI_STATIC_LABEL("Token amount"),
+                       MAX_TOKEN_AMOUNT_STRING_LENGTH,
+                       format_token_amount_output,
+                       policy_id,
+                       token->assetName,
+                       token->assetNameLen,
+                       token->amount);
+        CHECK_COUNT(UI_PAIRS_TOKEN);
+    }
+}
+
+void tx_ui_plan_or_render_output_datum(const parse_tx_mode_t *mode,
+                                       const output_datum_t *datum) {
+    LEDGER_ASSERT(mode != NULL, "NULL mode");
+    LEDGER_ASSERT(datum != NULL, "NULL datum");
+
+    if (mode->run_ui_planning) {
+        G_context.tx_info.planned_ui_pairs += UI_PAIRS_OUTPUT_DATUM;
+    } else if (mode->run_ui_rendering) {
+        START_COUNT();
+        if (datum->type == DATUM_HASH) {
+            UI_ADD_FORMAT3(UI_STATIC_LABEL("Datum hash"),
+                           MAX_BECH32_STRING_LENGTH,
+                           format_bech32,
+                           "datum",
+                           datum->hash,
+                           OUTPUT_DATUM_HASH_LENGTH);
+        } else {
+            UI_ADD_FORMAT2(UI_STATIC_LABEL("Datum"),
+                           MAX_INLINE_DATUM_STRING_LENGTH,
+                           format_incomplete_hex_with_length,
+                           datum->inline_datum.buffer,
+                           datum->inline_datum.length);
+        }
+        CHECK_COUNT(UI_PAIRS_OUTPUT_DATUM);
+    }
+}
+
+void tx_ui_plan_or_render_output_ref_script(const parse_tx_mode_t *mode,
+                                            const ref_script_t *ref_script) {
+    LEDGER_ASSERT(mode != NULL, "NULL mode");
+    LEDGER_ASSERT(ref_script != NULL, "NULL ref_script");
+
+    if (mode->run_ui_planning) {
+        G_context.tx_info.planned_ui_pairs += UI_PAIRS_OUTPUT_REF_SCRIPT;
+    } else if (mode->run_ui_rendering) {
+        START_COUNT();
+        UI_ADD_FORMAT2(UI_STATIC_LABEL("Script"),
+                       MAX_REFERENCE_SCRIPT_STRING_LENGTH,
+                       format_incomplete_hex_with_length,
+                       ref_script->data,
+                       ref_script->size);
+        CHECK_COUNT(UI_PAIRS_OUTPUT_REF_SCRIPT);
+    }
+}

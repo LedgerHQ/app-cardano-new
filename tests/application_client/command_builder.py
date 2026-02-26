@@ -763,6 +763,12 @@ class CommandBuilder:
 
         output_data.extend(tx_output.amount.to_bytes(8, "big"))
         output_data.append(tx_output.format if hasattr(tx_output, "format") else 0)
+
+        has_datum = hasattr(tx_output, "datum") and tx_output.datum is not None
+        output_data.append(FLAG_INCLUDED_YES if has_datum else FLAG_INCLUDED_NO)
+        has_ref_script = isinstance(tx_output, TxOutputBabbage) and tx_output.referenceScriptHex is not None
+        output_data.append(FLAG_INCLUDED_YES if has_ref_script else FLAG_INCLUDED_NO)
+
         num_asset_groups = len(tx_output.tokenBundle) if hasattr(tx_output, "tokenBundle") else 0
         output_data.extend(num_asset_groups.to_bytes(2, "big"))
 
@@ -776,8 +782,7 @@ class CommandBuilder:
                     output_data.extend(asset_name_bytes)
                     output_data.extend(token.amount.to_bytes(8, "big"))
 
-        if hasattr(tx_output, "datum") and tx_output.datum is not None:
-            output_data.append(FLAG_INCLUDED_YES)
+        if has_datum:
             datum_type = tx_output.datum.type
             if datum_type == DatumType.HASH:
                 output_data.append(int(DatumType.HASH))
@@ -787,16 +792,10 @@ class CommandBuilder:
                 datum_bytes = bytes.fromhex(tx_output.datum.datumHex)
                 output_data.extend(len(datum_bytes).to_bytes(2, "big"))
                 output_data.extend(datum_bytes)
-        else:
-            output_data.append(FLAG_INCLUDED_NO)
-
-        if isinstance(tx_output, TxOutputBabbage) and tx_output.referenceScriptHex is not None:
-            output_data.append(FLAG_INCLUDED_YES)
+        if has_ref_script:
             script_bytes = bytes.fromhex(tx_output.referenceScriptHex)
             output_data.extend(len(script_bytes).to_bytes(2, "big"))
             output_data.extend(script_bytes)
-        else:
-            output_data.append(FLAG_INCLUDED_NO)
 
         return output_data
 
@@ -931,12 +930,9 @@ class CommandBuilder:
             raise ValueError(f"Unsupported relay type: {relay.type}")
         return bytes(data)
 
-    def _serialize_pool_metadata(self, metadata: Optional[PoolMetadataParams]) -> bytes:
+    def _serialize_pool_metadata(self, metadata: PoolMetadataParams) -> bytes:
+        """Serialize pool metadata URL and hash (presence flag is in pool registration header)."""
         data = bytearray()
-        if metadata is None:
-            data.append(FLAG_INCLUDED_NO)
-            return bytes(data)
-        data.append(FLAG_INCLUDED_YES)
         url_bytes = metadata.metadataUrl.encode("utf-8")
         if len(url_bytes) > MAX_UINT16:
             raise ValueError("Pool metadata URL exceeds maximum encodable length")
@@ -959,13 +955,15 @@ class CommandBuilder:
         data.extend(params.margin.denominator.to_bytes(8, "big"))
         data.extend(self._serialize_pool_key_reference(params.rewardAccount))
         data.append(len(params.poolOwners))
+        data.append(len(params.relays))
+        data.append(FLAG_INCLUDED_YES if params.metadata is not None else FLAG_INCLUDED_NO)
         for owner in params.poolOwners:
             credential = self._pool_key_to_credential(owner)
             data.extend(self._serialize_credential_inline(credential))
-        data.append(len(params.relays))
         for relay in params.relays:
             data.extend(self._serialize_relay(relay))
-        data.extend(self._serialize_pool_metadata(params.metadata))
+        if params.metadata is not None:
+            data.extend(self._serialize_pool_metadata(params.metadata))
         return bytes(data)
 
     def _serialize_certificate(self, certificate: Certificate) -> bytes:
@@ -1034,7 +1032,11 @@ class CommandBuilder:
             result.extend(self._serialize_anchor(params.anchor))
         elif cert_type == CertificateType.STAKE_POOL_REGISTRATION:
             assert isinstance(params, PoolRegistrationParams)
-            result.extend(self._serialize_pool_registration(params))
+            pool_registration_payload = self._serialize_pool_registration(params)
+            if len(pool_registration_payload) > MAX_UINT16:
+                raise ValueError("Pool registration payload exceeds maximum encodable length")
+            result.extend(len(pool_registration_payload).to_bytes(2, "big"))
+            result.extend(pool_registration_payload)
         elif cert_type == CertificateType.STAKE_POOL_RETIREMENT:
             assert isinstance(params, PoolRetirementParams)
             result.extend(self._serialize_credential_inline(params.poolCredential))

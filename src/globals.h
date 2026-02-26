@@ -25,6 +25,7 @@
 #include "messageSigning.h"
 #include "hash.h"
 #include "ui_constants.h"
+#include "tx_processing.h"
 /**
  * State machine for transaction processing.
  * Tracks the progression through receiving, parsing, hashing, UI preparation, and approval.
@@ -101,7 +102,6 @@ typedef struct {
     size_t raw_tx_current_length;     /// Actual received length so far
     uint16_t raw_tx_total_length;     /// Advertised size from client (total expected)
     tx_params_t tx_params;
-    tx_parsed_body_t tx_body;
     uint8_t tx_hash[TX_HASH_LENGTH];
 
     uint16_t num_witnesses;    /// Total witnesses requested by host; not decremented during signing.
@@ -123,7 +123,12 @@ typedef struct {
 
     warning_bits_t warning_bits;          /// Transaction warnings only
     warning_bits_t cvote_warning_bits;    /// CVote auxiliary data warnings only
-    uint32_t planned_ui_pairs;
+    uint16_t planned_ui_pairs;
+
+    /// Per-pass parse mode; set by tx_processing_state_init() before each pass.
+    parse_tx_mode_t parse_mode;
+    /// Mutable parse state; lives in globals to keep tx_hash_builder_t off the stack.
+    tx_processing_state_t processing_state;
 } transaction_ctx_t;
 
 /**

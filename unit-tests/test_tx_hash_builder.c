@@ -10,6 +10,7 @@
 #include <cmocka.h>
 
 #include "tx_hash_builder.h"
+#include "tx_parse_outputs.h"
 #include "hexUtils.h"
 #include "utils/utils.h"
 

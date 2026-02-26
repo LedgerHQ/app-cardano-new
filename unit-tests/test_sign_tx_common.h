@@ -405,3 +405,10 @@ static inline void run_fixture_reject_aux_with_expert_mode(const tx_fixture_t *f
                                                            bool expert_mode) {
     run_fixture_reject_with_expert_mode(fixture, expert_mode, REJECT_STAGE_AUX);
 }
+
+// Free heap-allocated tx buffers and reset the UI pair count.
+// Used in tests that abort a transaction early and need to clean up before the next test.
+static inline void tx_context_cleanup(void) {
+    APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.raw_tx);
+    G_context.tx_info.planned_ui_pairs = 0;
+}

@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include "tx.h"
 #include "tx_output_types.h"
 #include "tx_certificate_types.h"
 #include "tx_credential_types.h"
@@ -237,3 +238,7 @@ bool format_incomplete_hex_with_length(const uint8_t *data,
                                      size_t dataLen,
                                      char *out,
                                      size_t outSize);
+
+bool format_input_with_index(const tx_input_t *input, char *out, size_t outSize);
+
+bool format_mint_summary(uint16_t num_groups, char *out, size_t outSize);

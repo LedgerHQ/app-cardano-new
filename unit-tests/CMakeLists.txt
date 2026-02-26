@@ -163,11 +163,16 @@ add_executable(test_tx_hash_builder
     test_tx_hash_builder.c
     ../src/transaction/tx_hash_builder.c
 )
-add_executable(test_tx_prepare
-    test_tx_prepare.c
+add_executable(test_tx_validate
+    test_tx_validate.c
     mock_sources/mock_globals.c
-    ../src/transaction/tx_validate.c
     ../src/transaction/tx_parse.c
+    ../src/transaction/tx_processing.c
+    ../src/transaction/tx_processing_outputs.c
+    ../src/transaction/tx_processing_certificates.c
+    ../src/transaction/tx_ui_strings.c
+    ../src/transaction/tx_ui_strings_certificates.c
+    ../src/transaction/tx_ui_strings_outputs.c
     ../src/transaction/tx_parse_certificates.c
     ../src/transaction/tx_parse_outputs.c
     ../src/transaction/tx_utils.c
@@ -185,7 +190,6 @@ add_executable(test_tx_prepare
     ../src/ui/ui_utils.c
     ../src/ui/ui_warnings.c
     ../src/ui/ui_formatters.c
-    ../src/ui/tx_ui_format.c
     ../src/ui/tx_ui_helpers.c
     ../src/app_context.c
     ${UNIT_TEST_MEM_UTILS_STUB}
@@ -219,7 +223,7 @@ set(TEST_EXECUTABLES
     test_sign_msg
     test_aux_data_hash_builder
     test_tx_hash_builder
-    test_tx_prepare
+    test_tx_validate
     test_ui_utils
 )
 
@@ -245,7 +249,7 @@ add_library(text_utils SHARED ../src/utils/textUtils.c ../src/utils/ipUtils.c)
 target_link_libraries(text_utils PUBLIC c format)
 add_library(bip44_real SHARED ../src/addressUtils/bip44.c)
 target_link_libraries(bip44_real PUBLIC c read write buffer varint)
-add_library(cbor_lib SHARED ../src/utils/cbor.c)
+add_library(cbor_lib SHARED ../src/utils/cbor.c ../src/utils/cbor_canonical.c)
 target_link_libraries(cbor_lib PUBLIC c m read)
 add_library(cardano_buffer_lib SHARED ../src/utils/cardano_buffer.c)
 target_link_libraries(cardano_buffer_lib PUBLIC c cbor_lib buffer write)
@@ -279,6 +283,12 @@ set(SIGN_TX_COMMON_SOURCES
     ../src/cvote/vote_cast_hash_builder.c
     ../src/cvote/aux_data_hash_builder.c
     ../src/transaction/tx_parse.c
+    ../src/transaction/tx_processing.c
+    ../src/transaction/tx_processing_outputs.c
+    ../src/transaction/tx_processing_certificates.c
+    ../src/transaction/tx_ui_strings.c
+    ../src/transaction/tx_ui_strings_certificates.c
+    ../src/transaction/tx_ui_strings_outputs.c
     ../src/transaction/tx_parse_certificates.c
     ../src/transaction/tx_parse_outputs.c
     ../src/transaction/tx_utils.c
@@ -291,8 +301,6 @@ set(SIGN_TX_COMMON_SOURCES
     ../src/addressUtils/addressUtilsShelley.c
     ../src/addressUtils/addressUtilsByron.c
     ../src/transaction/tx_hash_builder.c
-    ../src/transaction/tx_validate.c
-    ../src/ui/tx_ui_format.c
     ../src/ui/tx_ui_helpers.c
     ../src/ui/ui_utils.c
     ../src/ui/ui_warnings.c
@@ -472,7 +480,7 @@ target_link_libraries(test_tx_hash_builder
         varint
         bip32
 )
-target_link_libraries(test_tx_prepare
+target_link_libraries(test_tx_validate
     PUBLIC
         cmocka
         gcov
@@ -822,6 +830,7 @@ set(SIGN_MSG_COMMON_SOURCES
     ../src/parsers/cardano_parsers.c
     ../src/utils/cardano_buffer.c
     ../src/utils/cbor.c
+    ../src/utils/cbor_canonical.c
     ../src/utils/textUtils.c
     ../src/ui/ui_utils.c
     ../src/ui/ui_warnings.c

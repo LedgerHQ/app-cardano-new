@@ -21,12 +21,12 @@ The application is written in C and runs on Ledger devices (Stax, Flex, Nano X, 
     - `derive_native_script_hash.c`: Native script hash derivation.
     - Other utility handlers: `get_version.c`, `get_app_name.c`, `get_serial.c`, `debug_settings.c` (debug builds only).
 - **`transaction/`**: Core transaction processing logic using a 2-phase architecture:
-    - **Phase 1** (`tx_validate.c` with `tx_hash_builder.c`): Validates transaction structure, enforces security policies, computes the Blake2b-256 transaction hash, and counts required UI display pairs.
-    - **Phase 2** (`tx_ui_format.c` with `tx_ui_helpers.c`): Formats validated transaction data into human-readable strings for NBGL UI display.
-    - Also includes parsing (`tx_parse.c`, `tx_parse_outputs.c`, `tx_parse_certificates.c`) and utility functions (`tx_utils.c`).
+    - **Phase 1** (`tx_processing.c`, `tx_processing_outputs.c`, `tx_processing_certificates.c` with `tx_hash_builder.c`): Validates transaction structure, enforces security policies, computes the Blake2b-256 transaction hash, and counts required UI display pairs.
+    - **Phase 2** (`ui/ui_display_tx.c` with `tx_ui_helpers.c`): Formats validated transaction data into human-readable strings for NBGL UI display.
+    - Also includes parsing (`tx_parse.c`, `tx_parse_outputs.c`, `tx_parse_certificates.c`), UI string formatters (`tx_ui_strings.c`, `tx_ui_strings_outputs.c`, `tx_ui_strings_certificates.c`), and utility functions (`tx_utils.c`).
     - Detailed documentation can be found in [tx.md](tx.md).
 - **`ui/`**: User interface components using NBGL framework.
-    - `tx_ui_format.c`: Formats transaction data into UI key-value pairs (Phase 2 of transaction processing).
+    - `ui_display_tx.c`: Formats transaction data into UI key-value pairs (Phase 2 of transaction processing).
     - `tx_ui_helpers.c`: Helper functions for transaction UI formatting.
     - `ui_formatters.c`: Low-level formatting functions for addresses, amounts, tokens.
     - Display modules for different operations: `ui_display_tx.c`, `ui_display_pubkey.c`, `ui_display_opcert.c`, `ui_display_cvote_aux_data.c`, `ui_display_native_script_hash.c`, `ui_display_address_derivation.c`, `ui_sign_msg.c`.
@@ -173,7 +173,7 @@ Together, these approaches ensure correctness (unit tests), real-world behavior 
 
 - **`write_buffer_t`** (`utils/buffer_write.h`): Write buffer structure with mutable pointer. Used for serializing data and building responses. Provides bounds-checked write operations.
 
-- **Linked lists**: Transaction components (inputs, outputs, certificates, etc.) are stored in linked lists using `flist_node_t` from the Ledger SDK's `lists.h`.
+- **Streaming parsing**: Transaction components are processed one item at a time directly from the raw transaction buffer. The app does not materialize full transaction body lists in memory.
 
 - **`mem.h`**: Dynamic memory allocator optimized for Ledger device constraints (`app_mem_alloc`).
 

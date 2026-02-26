@@ -121,6 +121,7 @@ security_policy_t policyForSignTxCertificateStakePoolRetirement(
     warning_bits_t* w);
 security_policy_t policyForSignTxStakePoolRegistrationInit(sign_tx_signingmode_t txSigningMode,
                                                            uint32_t numOwners,
+                                                           uint32_t numRelays,
                                                            uint32_t numPathOwners,
                                                            warning_bits_t* w);
 security_policy_t policyForSignTxStakePoolRegistrationPoolId(sign_tx_signingmode_t txSigningMode,

@@ -408,7 +408,7 @@ static void test_multiple_reinit_attempts(void **state) {
         .networkId = MAINNET_NETWORK_ID,
         .protocolMagic = MAINNET_PROTOCOL_MAGIC,
         .signingMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX,
-        .numInputs = 0,
+        .numInputs = 1,  // At least one input required for replay protection
         .numOutputs = 0,
         .includeTtl = false,
         .numCertificates = 0,

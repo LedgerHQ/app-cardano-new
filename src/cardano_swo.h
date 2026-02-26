@@ -7,6 +7,10 @@
 #include <status_words.h>
 
 typedef enum {
+    // Success: returned by parse_* functions to indicate no error.
+    // Any nonzero value is a specific error code.
+    SWO_OK = 0x0000,
+
     // Cardano app-specific status words (primarily 0x6BXX range)
     // ISO 7816-4 compliant: 0x6BXX is standard "proprietary" range for wrong parameters
     SWO_INVALID_TX_LENGTH = 0x6B00,

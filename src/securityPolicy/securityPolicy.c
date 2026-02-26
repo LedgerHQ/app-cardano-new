@@ -63,8 +63,7 @@ static address_type_t getDestinationAddressType(const tx_output_destination_t *d
 
     switch (destination->type) {
         case DESTINATION_DEVICE_OWNED:
-            LEDGER_ASSERT(destination->params != NULL, "NULL destination params");
-            return destination->params->type;
+            return destination->params.type;
         case DESTINATION_THIRD_PARTY:
             LEDGER_ASSERT(destination->address.buffer != NULL, "NULL destination address");
             LEDGER_ASSERT(destination->address.length > 0, "Zero destination address length");
@@ -445,6 +444,13 @@ security_policy_t policyForSignTxInit(const tx_params_t *txParams,
     // Note: testnets can still use byron mainnet protocol magic so we can't deny the opposite
     // direction
 
+    // At least one input is required for certificate replay protection:
+    // the input uniquely identifies the transaction by consuming a UTxO.
+    // Exception: pool registration owner mode — the owner is only a co-signer
+    // and does not need to control any inputs in the transaction.
+    DENY_IF(txParams->num_inputs == 0 &&
+            txParams->txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER);
+
     // certain combinations of tx body elements are forbidden
     // mostly because of potential cross-witnessing
     switch (txParams->txSigningMode) {
@@ -736,7 +742,7 @@ static security_policy_t policyForSignTxOutputAddressParams(const tx_output_desc
     LEDGER_ASSERT(output != NULL, "NULL output");
     (void) w;
     ASSERT(output->destination.type == DESTINATION_DEVICE_OWNED);
-    const address_params_t *params = output->destination.params;
+    const address_params_t *params = &output->destination.params;
 
     DENY_UNLESS(is_address_params_suitable_for_tx_output(params, networkId, protocolMagic));
 
@@ -925,7 +931,7 @@ static security_policy_t policyForSignTxCollateralOutputAddressParams(
     // interdependent
 
     ASSERT(output->destination.type == DESTINATION_DEVICE_OWNED);
-    const address_params_t *params = output->destination.params;
+    const address_params_t *params = &output->destination.params;
 
     DENY_UNLESS(is_address_params_suitable_for_tx_output(params, networkId, protocolMagic));
     DENY_UNLESS(is_address_suitable_for_collateral_output(output));
@@ -1359,9 +1365,16 @@ security_policy_t policyForSignTxCertificateStakePoolRetirement(
 
 security_policy_t policyForSignTxStakePoolRegistrationInit(sign_tx_signingmode_t txSigningMode,
                                                            uint32_t numOwners,
+                                                           uint32_t numRelays,
                                                            uint32_t numPathOwners,
                                                            warning_bits_t *w) {
     POLICY_INIT();
+    if (numOwners == 0) {
+        warning_bits_set(w, WARNING_BIT_POOL_REGISTRATION_NO_OWNERS);
+    }
+    if (numRelays == 0) {
+        warning_bits_set(w, WARNING_BIT_POOL_REGISTRATION_NO_RELAYS);
+    }
     switch (txSigningMode) {
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
             // Tightened vs old Shelley app:
@@ -2292,17 +2305,16 @@ security_policy_t policyForCVoteRegistrationPaymentDestination(
 
     switch (destination->type) {
         case DESTINATION_DEVICE_OWNED: {
-            LEDGER_ASSERT(destination->params != NULL, "NULL destination params");
-            DENY_UNLESS(isValidAddressParams(destination->params));
-            DENY_UNLESS(isShelleyAddressType(destination->params->type));
-            DENY_IF(destination->params->networkId != networkId);
+            DENY_UNLESS(isValidAddressParams(&destination->params));
+            DENY_UNLESS(isShelleyAddressType(destination->params.type));
+            DENY_IF(destination->params.networkId != networkId);
 
             // in a typical case, the rewards go to an address controlled by this device
             // and the address is sent in a way allowing a verification of that fact
-            if (!is_standard_base_address(destination->params)) {
+            if (!is_standard_base_address(&destination->params)) {
                 warning_bits_set(w, WARNING_BIT_CVOTE_PAYMENT_NONSTANDARD_OWNED);
             }
-            SHOW_UNLESS(is_standard_base_address(destination->params));
+            SHOW_UNLESS(is_standard_base_address(&destination->params));
 
             // we are sure the address belongs to the device
             SHOW();

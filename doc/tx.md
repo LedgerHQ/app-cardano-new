@@ -42,10 +42,10 @@ The `tx_hash_builder` is a stateful component responsible for computing the Blak
 
 ## Parsing Logic (`tx_parse.c`)
 
-The parser decodes the custom APDU-based serialization format sent by the client into internal C structures.
+The parser decodes the custom APDU-based serialization format sent by the client and processes elements in a streaming fashion.
 
-- **Dynamic Allocation**: Uses a specialized allocator (`app_mem_alloc`) to manage memory during the parsing phase.
-- **Linked Lists**: Complex structures like multi-asset outputs or multiple certificates are stored in linked lists using `flist_node_t` from the Ledger SDK's `lists.h` to handle variable-length data without large static buffers.
+- **Dynamic Allocation**: Uses a specialized allocator (`app_mem_alloc`) only for element-local data that cannot be represented as direct pointers into the raw transaction buffer.
+- **Streaming Elements**: Complex structures (inputs, outputs, certificates, withdrawals, mint, voting) are parsed and handled one item at a time without building in-memory linked-list transaction bodies.
 - **Field Parsing**: Specialized modules handle complex fields:
   - `tx_parse_outputs.c`: Parses outputs including addresses, datums, and reference scripts.
   - `tx_parse_certificates.c`: Parses all certificate types (stake operations, pool operations, committee/DRep operations).
@@ -54,11 +54,11 @@ The parser decodes the custom APDU-based serialization format sent by the client
 
 Transaction processing uses a 2-phase architecture to ensure security and correctness:
 
-### Phase 1: Validation and Hashing (`tx_validate.c`)
+### Phase 1: Validation and Hashing (`tx_parse.c`)
 
-The validation phase enforces security policies, computes the Blake2b-256 transaction hash, and plans the UI display in a single pass via the state machine in `tx_hash_builder.c`.
+The validation phase enforces security policies, computes the Blake2b-256 transaction hash, and plans the UI display in a single streaming pass via the state machine in `tx_hash_builder.c`.
 
-**Primary Function:** `tx_validate_and_compute_hash(tx_ui_plan_t* plan)`
+**Primary Function:** `tx_validate_from_raw(...)`
 
 This function:
 1. Iterates through transaction fields in canonical CBOR order (keys 0-22).

@@ -20,7 +20,6 @@
 #include "sign_tx_aux_data.h"
 #include "tx.h"
 #include "tx_credential_types.h"
-#include "tx_parse_outputs.h"
 #include "ui_display_cvote_aux_data.h"
 #include "utils.h"
 
@@ -79,7 +78,7 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
     LEDGER_ASSERT(warning_bits_is_empty(&G_context.tx_info.cvote_warning_bits), "Non-empty cvote_warning_bits");
 
     // 1. Vote key (only checked in CIP15 or CIP36 with no delegations)
-    security_policy_t vote_key_policy;
+    security_policy_t vote_key_policy = POLICY_DENY;
     if (aux_data->remaining_delegations == 0) {
         warning_bits_t vote_key_warnings = 0;
         vote_key_policy = policyForCVoteRegistrationVoteKey(
@@ -401,7 +400,6 @@ void finalize_sign_tx_aux_data(void) {
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_AUX_DATA || G_context.state.tx_state == TX_STATE_CHUNKS, "Bad tx_state");
 
     cvote_hash_finalize();
-    cleanup_output_destination(&G_context.tx_info.cvote_aux_data.destination);
 
     // CVote init buffer is no longer needed once aux-data hash is finalized.
     APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.raw_cvote_init_data);

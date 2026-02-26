@@ -14,6 +14,7 @@
 #include "addressUtilsShelley.h"
 #include "addressUtils/bip44.h"
 #include "transaction/tx_output_types.h"
+#include "transaction/tx_parse_outputs.h"
 #include "cardano_constants.h"
 #include "globals.h"
 

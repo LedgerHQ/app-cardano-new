@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "cardano_constants.h"
-#include "lists.h"
 #include "bip44.h"
 #include "tx_credential_types.h"
 
@@ -32,26 +31,16 @@ typedef struct {
 } tx_input_t;
 
 typedef struct {
+    const uint8_t* policyId;   // set by caller from outer asset group context, not parsed here
     const uint8_t* assetName;
     uint8_t assetNameLen;
     int64_t amount;
 } mint_token_t;
 
 typedef struct {
-    flist_node_t flist_node;
-    mint_token_t token;
-} mint_token_node_t;
-
-typedef struct {
     const uint8_t* policyId;
     uint16_t numTokens;
-    flist_node_t* tokens;
 } mint_asset_group_t;
-
-typedef struct {
-    flist_node_t flist_node;
-    mint_asset_group_t asset_group;
-} mint_asset_group_node_t;
 
 typedef enum {
     SIGN_TX_SIGNINGMODE_ORDINARY_TX = 3,
@@ -95,11 +84,6 @@ typedef enum {
 } tx_options_e;
 
 typedef struct {
-    flist_node_t flist_node;
-    tx_input_t input;
-} tx_input_node_t;
-
-typedef struct {
     ext_credential_t stakeCredential;
     uint64_t amount;
 } withdrawal_t;
@@ -116,19 +100,6 @@ typedef struct {
         const uint8_t* keyHash;
     };
 } required_signer_t;
-
-typedef struct {
-    flist_node_t flist_node;
-    withdrawal_t withdrawal;
-} tx_withdrawal_node_t;
-
-typedef struct {
-    flist_node_t flist_node;
-    required_signer_t required_signer;
-} tx_required_signer_node_t;
-
-// Collateral inputs use the same structure as regular inputs
-typedef tx_input_node_t tx_collateral_input_node_t;
 
 // Certificate data structure supporting multiple certificate types.
 // Fields are used selectively depending on certificate type:
@@ -157,36 +128,5 @@ typedef struct {
     uint64_t deposit;
     uint64_t retirementEpoch;
     anchor_t anchor;  // For committee resign, DRep registration/update
-    pool_registration_data_t* poolRegistration;  // NULL if not STAKE_POOL_REGISTRATION; heap-allocated if present
+    pool_registration_data_t poolRegistration;  // valid only when type == CERTIFICATE_STAKE_POOL_REGISTRATION
 } certificate_data_t;
-
-typedef struct {
-    flist_node_t flist_node;
-    certificate_data_t certificate;
-} tx_certificate_node_t;
-
-typedef struct {
-    // Note: We use linked lists (via flist) for parsed transaction items because
-    // the memory allocated to list nodes may be gradually reused/reallocated for UI
-    // string formatting during processing. Arrays would prevent this reallocation.
-    // CBOR key order (matches transaction_body CDDL)
-    flist_node_t* inputs;                    // key 0
-    flist_node_t* outputs;                   // key 1
-    uint64_t fee;                            // key 2
-    uint64_t ttl;                            // key 3
-    flist_node_t* certificates;              // key 4
-    flist_node_t* withdrawals;               // key 5
-    uint64_t validityIntervalStart;          // key 8
-    flist_node_t* mint_asset_groups;         // key 9
-    const uint8_t* scriptDataHash;           // key 11
-    flist_node_t* collateral_inputs;         // key 13
-    flist_node_t* required_signers;          // key 14
-    parsed_tx_output_t collateral_output; // key 16
-    // Note: For DESTINATION_DEVICE_OWNED, collateral_output.destination.params points to
-    // dynamically allocated memory that must be freed when the collateral output is freed.
-    uint64_t totalCollateral;                 // key 17
-    flist_node_t* reference_inputs;           // key 18
-    flist_node_t* voting_procedures;          // key 19
-    uint64_t treasury;                        // key 21
-    uint64_t donation;                        // key 22
-} tx_parsed_body_t;

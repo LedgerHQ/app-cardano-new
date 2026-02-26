@@ -12,7 +12,6 @@
 
 #include "globals.h"
 #include "tx_utils.h"
-#include "tx.h"
 
 static void reset_test_context(void) {
     memset(&G_context, 0, sizeof(G_context));
@@ -69,83 +68,6 @@ static void test_single_account_byron_shelley_mix_allowed_only_for_account_zero(
     assert_true(violatesSingleAccountOrStoreIt(&shelley_account1));
 }
 
-static void test_count_pool_owner_nodes_counts_paths_and_first_path_owner(void **state) {
-    (void) state;
-    reset_test_context();
-
-    tx_certificate_node_t owner1 = {0};
-    tx_certificate_node_t owner2 = {0};
-    tx_certificate_node_t owner3 = {0};
-
-    owner1.certificate.stakeCredential.type = EXT_CREDENTIAL_KEY_HASH;
-    owner2.certificate.stakeCredential.type = EXT_CREDENTIAL_KEY_PATH;
-    owner3.certificate.stakeCredential.type = EXT_CREDENTIAL_KEY_PATH;
-
-    owner1.flist_node.next = &owner2.flist_node;
-    owner2.flist_node.next = &owner3.flist_node;
-    owner3.flist_node.next = NULL;
-
-    pool_owner_counts_t counts = count_pool_owner_nodes(&owner1.flist_node);
-    assert_int_equal(counts.total_owners, 3);
-    assert_int_equal(counts.path_owners, 2);
-    assert_ptr_equal(counts.first_path_owner, &owner2.certificate.stakeCredential);
-}
-
-static void test_count_pool_owner_nodes_single_owner(void **state) {
-    (void) state;
-    reset_test_context();
-
-    tx_certificate_node_t owner = {0};
-    owner.certificate.stakeCredential.type = EXT_CREDENTIAL_KEY_PATH;
-    owner.flist_node.next = NULL;
-
-    pool_owner_counts_t counts = count_pool_owner_nodes(&owner.flist_node);
-    assert_int_equal(counts.total_owners, 1);
-    assert_int_equal(counts.path_owners, 1);
-    assert_ptr_equal(counts.first_path_owner, &owner.certificate.stakeCredential);
-}
-
-static void test_count_pool_owner_nodes_all_hashes(void **state) {
-    (void) state;
-    reset_test_context();
-
-    tx_certificate_node_t owner1 = {0};
-    tx_certificate_node_t owner2 = {0};
-
-    owner1.certificate.stakeCredential.type = EXT_CREDENTIAL_KEY_HASH;
-    owner2.certificate.stakeCredential.type = EXT_CREDENTIAL_KEY_HASH;
-
-    owner1.flist_node.next = &owner2.flist_node;
-    owner2.flist_node.next = NULL;
-
-    pool_owner_counts_t counts = count_pool_owner_nodes(&owner1.flist_node);
-    assert_int_equal(counts.total_owners, 2);
-    assert_int_equal(counts.path_owners, 0);
-    assert_null(counts.first_path_owner);
-}
-
-static void test_count_pool_owner_nodes_mixed_with_path_first(void **state) {
-    (void) state;
-    reset_test_context();
-
-    tx_certificate_node_t owner1 = {0};
-    tx_certificate_node_t owner2 = {0};
-    tx_certificate_node_t owner3 = {0};
-
-    owner1.certificate.stakeCredential.type = EXT_CREDENTIAL_KEY_PATH;
-    owner2.certificate.stakeCredential.type = EXT_CREDENTIAL_KEY_HASH;
-    owner3.certificate.stakeCredential.type = EXT_CREDENTIAL_KEY_PATH;
-
-    owner1.flist_node.next = &owner2.flist_node;
-    owner2.flist_node.next = &owner3.flist_node;
-    owner3.flist_node.next = NULL;
-
-    pool_owner_counts_t counts = count_pool_owner_nodes(&owner1.flist_node);
-    assert_int_equal(counts.total_owners, 3);
-    assert_int_equal(counts.path_owners, 2);
-    assert_ptr_equal(counts.first_path_owner, &owner1.certificate.stakeCredential);
-}
-
 static void test_single_account_account_number_zero_allowed_with_both_types(void **state) {
     (void) state;
     reset_test_context();
@@ -198,14 +120,9 @@ int main(void) {
         cmocka_unit_test(test_single_account_store_and_reuse_same_account),
         cmocka_unit_test(test_single_account_rejects_different_account),
         cmocka_unit_test(test_single_account_byron_shelley_mix_allowed_only_for_account_zero),
-        cmocka_unit_test(test_count_pool_owner_nodes_counts_paths_and_first_path_owner),
-        cmocka_unit_test(test_count_pool_owner_nodes_single_owner),
-        cmocka_unit_test(test_count_pool_owner_nodes_all_hashes),
-        cmocka_unit_test(test_count_pool_owner_nodes_mixed_with_path_first),
         cmocka_unit_test(test_single_account_account_number_zero_allowed_with_both_types),
         cmocka_unit_test(test_single_account_multiple_addresses_same_account),
         cmocka_unit_test(test_single_account_account_number_boundaries),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
-

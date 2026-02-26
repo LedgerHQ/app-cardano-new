@@ -1142,9 +1142,7 @@ mints: dict[str, List[AssetGroup]] = {
     "mintAmountVariety": [
         AssetGroup(
             "7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373",
-            # fingerprint: asset1rjklcrnsdzqp65wjgrg55sy9723kw09mlgvlc3
             [
-                Token("", 0),
                 # fingerprint: asset17jd78wukhtrnmjh3fngzasxm8rck0l2r4hhyyt
                 Token("1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209", -1),
                 # fingerprint: asset17jd78wukhtrnmjh3fngzasxm8rck0l2r4hhyyt (and incremented)
@@ -2857,7 +2855,7 @@ testsMary: List[SignTxTestCase] = [
             mint=mints["mintAmountVariety"],
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
-        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a09a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a44000581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff",
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a09a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a3581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff",
         has_warning=True,
     ),
     SignTxTestCase(
@@ -2885,7 +2883,7 @@ testsMary: List[SignTxTestCase] = [
             mint=mints["mintAmountVariety"],
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
-        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821904d2a1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1a007838628258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca793020a031903e808186409a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a44000581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff",
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821904d2a1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1a007838628258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca793020a031903e808186409a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a3581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff",
     ),
 ]
 
@@ -6880,7 +6878,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                 AssetGroup(
                     policyIdHex="7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc374",
                     tokens=[
-                        Token(assetNameHex="", amount=0),
+                        Token(assetNameHex="", amount=1),
                         Token(
                             assetNameHex="1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209",
                             amount=-1,
@@ -6889,7 +6887,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                 ),
                 AssetGroup(
                     policyIdHex="7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373",
-                    tokens=[Token(assetNameHex="", amount=0)],
+                    tokens=[Token(assetNameHex="", amount=1)],
                 ),
             ],
             ),
@@ -6912,7 +6910,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                             assetNameHex="1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209",
                             amount=-1,
                         ),
-                        Token(assetNameHex="", amount=0),
+                        Token(assetNameHex="", amount=1),
                     ],
                 )
             ],
@@ -7235,6 +7233,7 @@ stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        deny_before_review=True,
     ),
     SignTxTestCase(
         name="Hash_sent_in_for_Pool_Registration_Operator_Tx",
@@ -7284,6 +7283,7 @@ stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        deny_before_review=True,
     ),
 ]
 

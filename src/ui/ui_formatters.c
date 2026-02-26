@@ -2,6 +2,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 
 #include "ui_formatters.h"
+#include "tx.h"
 #include "utils.h"
 #include "textUtils.h"
 #include "ipUtils.h"
@@ -424,6 +425,31 @@ bool format_asset_fingerprint_bech32(const uint8_t *policyId,
  * Format inline datum or reference script with size and preview
  * Formats as "deadbeefaf... (XXXX bytes)" where first 6 bytes show as hex.
  */
+bool format_input_with_index(const tx_input_t *input, char *out, size_t outSize) {
+    LEDGER_ASSERT(input != NULL, "NULL input");
+    LEDGER_ASSERT(out != NULL, "NULL output buffer");
+    int hex_status = bytes_to_lowercase_hex(out, outSize, input->txHash, TX_HASH_LENGTH);
+    if (hex_status != 0) {
+        return false;
+    }
+    size_t hash_len = strlen(out);
+    if (hash_len + 1 >= outSize) {
+        return false;
+    }
+    STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(input->index)), "signed type for %u");
+    int written = snprintf(out + hash_len, outSize - hash_len, " / %u", input->index);
+    LEDGER_ASSERT(written > 0, "snprintf input index formatting failed");
+    LEDGER_ASSERT((size_t) written + hash_len + 1 <= outSize, "Input display buffer overflow");
+    return true;
+}
+
+bool format_mint_summary(uint16_t num_groups, char *out, size_t outSize) {
+    STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(num_groups)), "signed type for %u");
+    int written = snprintf(out, outSize, "%u asset group%s", num_groups, (num_groups == 1) ? "" : "s");
+    LEDGER_ASSERT(written > 0, "snprintf mint summary formatting failed");
+    return (size_t) written + 1 < outSize;
+}
+
 bool format_incomplete_hex_with_length(const uint8_t *data,
                                      size_t dataLen,
                                      char *out,
