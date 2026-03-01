@@ -139,6 +139,10 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
         assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
     }
 
+    // Enable streaming auto-complete for TX body review. This must be set after
+    // aux data processing (CVote streaming has its own auto-complete lifecycle).
+    nbgl_mock_set_streaming_start_auto_complete(true, true);
+
     run_sign_tx_body_chunked(raw_tx, raw_tx_len);
 
     // Assert warning bits. Direct struct access because at this point the state may have
@@ -400,6 +404,9 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
         const bool final_decisions[] = {false};
         nbgl_mock_set_final_decisions(final_decisions, ARRAY_LEN(final_decisions));
     }
+
+    // Enable streaming auto-complete for TX body review (after aux data processing).
+    nbgl_mock_set_streaming_start_auto_complete(true, true);
 
     run_sign_tx_body_chunked(fixture->raw_tx, fixture->raw_tx_len);
 

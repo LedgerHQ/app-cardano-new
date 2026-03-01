@@ -421,6 +421,8 @@ class SignTxTestCase:
     # TODO: Debug navigation
     unsuitable_in_ragger_reason: Optional[str] = None  # If set, explains why this vector is unsuitable for direct ragger execution
     deny_before_review: bool = False  # For deny tests that fail before review UI is displayed
+    tx_streaming: bool = False  # True when the tx body review uses NBGL streaming (multiple chunks)
+
 
 # pylint: disable=line-too-long
 inputs: dict[str, TxInput] = {
@@ -3545,6 +3547,33 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
 # =================
 # signTxPlutus
 # =================
+_tx_streaming_many_required_signers = Transaction(
+    network=Mainnet,
+    inputs=[inputs["utxoShelley"]],
+    outputs=[],
+    requiredSigners=[
+        RequiredSigner(
+            TxRequiredSignerType.HASH,
+            f"{i:0>8x}646c67fb467f8a5425e9c752e1e262b0420ba4b638f39514",
+        )
+        for i in range(700)
+    ],
+    includeNetworkId=True,
+)
+
+_tx_streaming_many_outputs = Transaction(
+    network=Mainnet,
+    inputs=[inputs["utxoShelley"]],
+    outputs=[
+        TxOutputAlonzo(
+            destinations["externalShelleyBaseKeyhashKeyhash"],
+            1000000 + i,
+        )
+        for i in range(90)
+    ],
+    includeNetworkId=True,
+)
+
 testsAlonzo: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Sign_tx_with_script_data_hash",
@@ -3717,6 +3746,55 @@ testsAlonzo: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a048183028200581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb497305a1581de129fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd1903e80f01",
         expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH],
+    ),
+]
+
+testsStreaming: List[SignTxTestCase] = [
+    # Streaming test: 700 required signers to exceed MAX_UI_PAIRS (250) and trigger streaming NBGL review.
+    # Per hash-type signer: 1 byte (type) + 28 bytes (hash) = 29 bytes raw; 1 UI pair.
+    # Fixed overhead: 1 input (36B) + fee (8B) + TTL (8B) = 52 bytes.
+    # Total raw: 700*29 + 52 = 20,352 bytes < MAX_TX_BUFFER_SIZE (21,504).
+    # Total UI pairs: 700 + input(1) + fee(1) + TTL(1) + network_id(2) + tx_hash(1) = 706 > 250.
+    # txBody: map(6){0: tagged-set([utxoShelley:0]), 1: [], 2: fee=42, 3: ttl=10,
+    #             14: tagged-set(700 hashes), 15: networkId=1}
+    # prefix: map header + key0 (input) + key1 (empty outputs) + key2 (fee) + key3 (ttl) + key14 header
+    # each signer: 581c (28-byte bstr) + 8-hex-char counter + fixed suffix
+    # suffix: key15 (networkId=1)
+    SignTxTestCase(
+        name="Sign_tx_streaming_many_required_signers",
+        tx=_tx_streaming_many_required_signers,
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody=(
+            "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0e9902bc"
+            + "".join(f"581c{i:0>8x}646c67fb467f8a5425e9c752e1e262b0420ba4b638f39514" for i in range(700))
+            + "0f01"
+        ),
+        tx_streaming=True,
+    ),
+    # Streaming test: 90 third-party outputs to exceed MAX_UI_PAIRS (250).
+    # Per simple third-party output: 2B (length) + 1B (type) + 2B (addr len) + 57B (addr) + 8B (amount)
+    #   + 1B (format) + 1B (datum) + 1B (ref_script) + 2B (tokens) = 75 bytes raw; 3 UI pairs.
+    # Total raw: 90*75 + 52 = 6,802 bytes.
+    # Total UI pairs: 90*3 + input(1) + fee(1) + TTL(1) + network_id(2) + tx_hash(1) = 276 > 250.
+    # txBody: map(5){0: [utxoShelley:0], 1: 90 outputs to externalShelleyBaseKeyhashKeyhash
+    #             with amounts 1_000_000..1_000_089, 2: fee=42, 3: ttl=10, 15: networkId=1}
+    # prefix: map header + key0 (input) + key1 header (90-element array = 0x985a)
+    # each output: addr (57 bytes = 825839...8b09) + amount (4-byte uint = 1a000f42{0x40+i:02x})
+    # suffix: key2 (fee) + key3 (ttl) + key15 (networkId)
+    SignTxTestCase(
+        name="Sign_tx_streaming_many_outputs",
+        tx=_tx_streaming_many_outputs,
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody=(
+            "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001985a"
+            + "".join(
+                f"825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
+                f"1a000f42{0x40 + i:02x}"
+                for i in range(90)
+            )
+            + "02182a030a0f01"
+        ),
+        tx_streaming=True,
     ),
 ]
 

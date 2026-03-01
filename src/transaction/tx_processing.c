@@ -869,11 +869,12 @@ bool tx_validate(buffer_t *buf) {
         policyForSignTxDisplayTxHash(tx_params->txSigningMode, &tx_body_ctx()->warning_bits);
     APPLY_POLICY(tx_hash_policy, tx_ui_plan_or_render_tx_hash, &mode, G_context.tx_info.tx_hash);
 
-    LEDGER_ASSERT(tx_body_ctx()->planned_ui_pairs <= MAX_UI_PAIRS, "Need UI fallback");
+    TRACE("tx_validate: planned_ui_pairs=%u, max_ui_pairs=%u",
+          tx_body_ctx()->planned_ui_pairs, MAX_UI_PAIRS);
     return true;
 }
 
-bool tx_render_ui(void) {
+bool tx_render_ui_chunk(uint16_t from) {
     LEDGER_ASSERT(tx_body_ctx()->raw_tx != NULL, "Missing raw tx for UI rendering");
     buffer_t buf = {
         .ptr = tx_body_ctx()->raw_tx,
@@ -887,10 +888,13 @@ bool tx_render_ui(void) {
         .run_ui_planning = false,
         .run_ui_rendering = true,
     };
-    // Use a copy of warnings for the second pass so that the render pass cannot
+    // Use a copy of warnings for the render pass so it cannot
     // accidentally change global warning state, and we can assert consistency.
     warning_bits_t render_pass_warnings = tx_body_ctx()->warning_bits;
     tx_processing_state_init(&mode, &render_pass_warnings);
+
+    // Set the render window: pairs before `from` are skipped, OOM stops the chunk.
+    ui_render_window_init(from);
 
     const tx_params_t *tx_params = &G_context.tx_info.tx_params;
     if (shouldShowNetworkDetails(tx_params)) {
@@ -919,29 +923,50 @@ bool tx_prepare_ui_review(void) {
         return false;
     }
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_HASHED, "UI prep called too early");
-    uint16_t pair_count = tx_body_ctx()->planned_ui_pairs;
+    uint16_t planned_pairs = tx_body_ctx()->planned_ui_pairs;
 
-    TRACE("Preparing TX review: planned_ui_pairs=%u max_ui_pairs=%u", pair_count, MAX_UI_PAIRS);
-    LEDGER_ASSERT(pair_count > 0, "UI pair count is zero - at minimum fee must be displayed");
+    TRACE("Preparing TX review: planned_ui_pairs=%u max_ui_pairs=%u", planned_pairs, MAX_UI_PAIRS);
+    LEDGER_ASSERT(planned_pairs > 0, "UI pair count is zero - at minimum fee must be displayed");
 
-    if (pair_count > MAX_UI_PAIRS) {
-        TRACE("UI pair count exceeds limit: %u > %u", pair_count, MAX_UI_PAIRS);
-        return false;
-    }
+    // Allocate the full slab; OOM during rendering is the natural chunk boundary.
+    uint16_t alloc_count = (planned_pairs <= MAX_UI_PAIRS) ? planned_pairs : MAX_UI_PAIRS;
 
     ui_reset_error_status();
-    if (!ui_pairs_init(pair_count)) {
-        TRACE("ui_pairs_init failed for %u pairs", pair_count);
+    if (!ui_pairs_init(alloc_count)) {
+        TRACE("ui_pairs_init failed for %u pairs", alloc_count);
         return false;
     }
 
-    if (!tx_render_ui()) {
+    // Try to render everything into the first chunk (from pair 0).
+    if (!tx_render_ui_chunk(0)) {
         TRACE("UI build failed in second-pass rendering");
         return false;
     }
-    TRACE("UI second-pass rendering finished: planned=%u formatted=%u",
-          (unsigned) pair_count, (unsigned) ui_pairs_get_count());
-    LEDGER_ASSERT(ui_pairs_get_count() == pair_count, "UI pair count mismatch");
+
+    uint16_t cursor_after = ui_render_cursor_get();
+
+    if (ui_get_error_status() == UI_STATUS_SUCCESS) {
+        // Everything fit in a single chunk — non-streaming path.
+        // cursor_after must equal planned_pairs: every UI_ADD_* increments g_render_cursor exactly
+        // once, so if no OOM occurred the render pass consumed all planned pairs.
+        LEDGER_ASSERT(cursor_after == planned_pairs, "cursor mismatch: render completed without OOM but cursor does not equal planned_pairs");
+        tx_body_ctx()->streaming_mode = false;
+        TRACE("Non-streaming: planned=%u rendered=%u",
+              (unsigned) planned_pairs, (unsigned) ui_pairs_get_count());
+        LEDGER_ASSERT(ui_pairs_get_count() == planned_pairs, "UI pair count mismatch");
+    } else {
+        // Does not fit — streaming path. First chunk is already rendered.
+        tx_body_ctx()->streaming_mode = true;
+        tx_body_ctx()->render_cursor = ui_pairs_get_count();
+        // Reset OOM status: it was expected as the chunk boundary signal.
+        g_ui_error_status = UI_STATUS_SUCCESS;
+        TRACE("Streaming: first chunk rendered %u pairs, cursor_after=%u, planned=%u",
+              (unsigned) ui_pairs_get_count(), cursor_after, (unsigned) planned_pairs);
+    }
+
+    // Finalize the pairs count for display (may be less than allocated).
+    LEDGER_ASSERT(g_pairsList != NULL, "NULL g_pairsList after rendering");
+    g_pairsList->nbPairs = (uint8_t) ui_pairs_get_count();
 
     LEDGER_ASSERT(!warning_bits_has_any_cvote_tx_forbidden(tx_body_ctx()->warning_bits),
                   "CVote warning leaked into transaction warnings");

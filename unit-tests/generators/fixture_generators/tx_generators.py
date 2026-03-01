@@ -239,9 +239,13 @@ def _generate_fixtures_for_era(
         builder = CommandBuilder()
         raw_tx_bytes = builder._serialize_transaction_unpacked_raw(tx)
 
+        if test_case.txBody is None:
+            raise ValueError(
+                f"Test case '{test_case.name}' is missing txBody. "
+                "Every sign-tx fixture must supply the expected CBOR-encoded transaction body hex. "
+                "The fallback of using the raw APDU wire format is incorrect and was removed."
+            )
         expected_cbor_hex = test_case.txBody
-        if expected_cbor_hex is None:
-            expected_cbor_hex = raw_tx_bytes.hex()
         cbor_bytes = _cbor_hex_to_bytes(expected_cbor_hex)
         expected_hash_hex = _compute_blake2b_256(cbor_bytes)
         body_aux_data_hash = _extract_aux_data_hash_from_tx_body(expected_cbor_hex)
@@ -533,6 +537,7 @@ def _load_sign_tx_tests() -> dict[str, Any]:
         testsByron,
         testsAlonzo,
         testsAlonzoTrezorComparison,
+        testsStreaming,
         testsBabbage,
         testsBabbageTrezorComparison,
         testsConwayWithCertificates,
@@ -556,6 +561,7 @@ def _load_sign_tx_tests() -> dict[str, Any]:
         "allegra": testsAllegra,
         "mary": testsMary,
         "alonzo": testsAlonzo + testsAlonzoTrezorComparison + testsMultidelegation,
+        "streaming": testsStreaming,
         "babbage": testsBabbage + testsBabbageTrezorComparison,
         "conway": testsConwayWithCertificates,
         "conway_without_certificates": testsConwayWithoutCertificates,

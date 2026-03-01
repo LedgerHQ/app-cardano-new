@@ -27,6 +27,7 @@ from standalone.input_files.signTx import (  # type: ignore
     testsAlonzoTrezorComparison,
     testsBabbageTrezorComparison,
     testsAlonzo,
+    testsStreaming,
     testsBabbage,
     testsConwayWithoutCertificates,
     testsConwayVotingProcedures,
@@ -101,7 +102,15 @@ def _run_sign_tx_test(device: Device,
     def review_tx() -> None:
         # Main transaction review
         test_name = f"{testCase.name}-{mode_str}/review"
-        if len(testCase.expected_warnings) > 0:
+        if testCase.tx_streaming:
+            # Streaming tx review: navigate through intermediate chunks without snapshots,
+            # then capture only the final "Sign transaction" screen.
+            navigator.navigate_until_text(
+                navigate_instruction=NavInsID.USE_CASE_REVIEW_NEXT,
+                validation_instructions=[NavInsID.USE_CASE_REVIEW_CONFIRM],
+                text="Sign transaction",
+            )
+        elif len(testCase.expected_warnings) > 0:
             scenario_navigator.review_approve_with_warning(test_name=test_name, custom_screen_text="Sign transaction")
         else:
             scenario_navigator.review_approve(test_name=test_name, custom_screen_text="Sign transaction")
@@ -215,7 +224,7 @@ def _run_sign_tx_test(device: Device,
     "testCase",
     testsByron + testsMary + testsShelleyNoCertificates + testsShelleyWithCertificates +
     testsAllegra + testsAlonzoTrezorComparison + testsBabbageTrezorComparison +
-    testsAlonzo + testsBabbage + testsConwayWithCertificates +
+    testsAlonzo + testsStreaming + testsBabbage + testsConwayWithCertificates +
     testsConwayWithoutCertificates + testsConwayVotingProcedures +
     testsMultidelegation + testsCatalystRegistration + testsCVoteRegistrationCIP36 +
     testsMultisig + poolRegistrationOwnerTestCases + poolRegistrationOperatorTestCases,

@@ -61,6 +61,6 @@ bool tx_process_collateral_inputs(buffer_t *buf, tx_processing_state_t *state);
 bool tx_process_required_signers(buffer_t *buf, tx_processing_state_t *state);
 bool tx_process_reference_inputs(buffer_t *buf, tx_processing_state_t *state);
 bool tx_validate(buffer_t *buf);
-bool tx_render_ui(void);
+bool tx_render_ui_chunk(uint16_t from);
 bool tx_prepare_ui_review(void);
 

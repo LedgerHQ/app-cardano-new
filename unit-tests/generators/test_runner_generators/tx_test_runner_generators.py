@@ -77,6 +77,11 @@ ERA_TEST_FILE_MAP: dict[str, tuple[str, str, str]] = {
         "test_sign_tx_pool_registration.c",
         "POOL_REGISTRATION",
     ),
+    "streaming": (
+        "test_sign_tx_fixtures_streaming.h",
+        "test_sign_tx_streaming.c",
+        "STREAMING",
+    ),
 }
 
 

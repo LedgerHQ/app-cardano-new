@@ -25,12 +25,14 @@ For detailed analysis, see:
 - **Memory Management:** Be extremely mindful of scarce memory. Global context data should be strictly necessary.
 - **Imports:** Organize imports logically and avoid forward declarations.
 - **Legacy Code:** Identify and propose removal of any boilerplate leftovers.
+- **Use cheap fast model to gather context if possible (e.g. Haiku)**.
 
 ### What NOT to DO
 - **Do NOT modify `src/transaction/tx_hash_builder.c`, `src/addressUtils/addressUtilsShelley.c`, or `src/addressUtils/bip44.c`** without explicit confirmation. They are trusted components.
 - **Do NOT add custom CBOR serialization**, address manipulation, or BIP44 path functions. Use existing utilities.
 - **Do NOT remove original comments** explaining crucial details without confirmation.
 - **Do NOT perform git operations** (modifications/writes).
+- **Do NOT install anything**.
 
 ### License Comment Policy
 - **Preserve attribution:** Apache-2.0 requires preserving copyright/attribution notices from upstream code.
@@ -68,7 +70,7 @@ For detailed analysis, see:
 ## Testing Workflow
 - **When C code is modified:** run unit tests. Use unit test build as proxy for real app build. Use `-j8` for make, not `-j$(nproc)`.
 - **After unit tests pass:** check fuzzing build as an additional compile-health gate.
-- **When `tests/standalone` ragger inputs or `application_client/` are modified:** run `unit-tests/generators/generate_unit_tests_from_ragger.py`, then run unit tests to verify generated outputs are up to date and passing. The generator depends on `application_client/`, so any change there must be reflected by regenerated unit-test fixtures.
+- **When `tests/standalone` ragger inputs or `application_client/` are modified:** run `unit-tests/generators/generate_unit_tests_from_ragger.py` (using `tests/standalone/venv` to have virtual env for python with all the required packages), then run unit tests to verify generated outputs are up to date and passing. The generator depends on `application_client/`, so any change there must be reflected by regenerated unit-test fixtures.
 - **Do not run ragger tests or swap tests unless explicitly requested.**
 - **Compilation warnings are not acceptable:** treat warnings as issues to fix.
 - Command to build executed by Ledger VSCode plugin (not suitable for agents because of permissions, but can be run manually):

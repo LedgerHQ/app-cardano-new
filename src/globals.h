@@ -135,6 +135,8 @@ typedef struct {
             size_t raw_tx_current_length;        /// Actual received length so far
             warning_bits_t warning_bits;         /// Transaction warnings
             uint16_t planned_ui_pairs;
+            uint16_t render_cursor;             /// Next pair index to render in upcoming chunk
+            bool     streaming_mode;            /// True when using streaming NBGL API
             /// Per-pass parse mode; set by tx_processing_state_init() before each pass.
             tx_processing_mode_t parse_mode;
             /// Mutable parse state; lives in globals to keep tx_hash_builder_t off the stack.

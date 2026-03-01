@@ -62,12 +62,41 @@ void ui_free_pairs(void);
 void ui_all_cleanup(void);
 uint16_t ui_pairs_get_count(void);
 
-// UI pair count verification macros for transaction formatting
+/**
+ * Render-window support for streaming chunk rendering.
+ *
+ * When rendering a chunk starting at pair index `from`, pairs with
+ * g_render_cursor < from are skipped (no allocation). Pairs after OOM
+ * are also skipped. g_render_cursor always increments exactly once per
+ * UI_ADD_* call, keeping it in sync with planned_ui_pairs.
+ */
+void ui_render_window_init(uint16_t from);
+uint16_t ui_render_cursor_get(void);
+
+/**
+ * Check whether the current pair should be skipped.
+ * Always increments the render cursor. Returns true if the pair
+ * should be skipped (before window or OOM already set).
+ */
+bool ui_render_should_skip(void);
+
+/**
+ * Returns true when rendering a chunk that starts after pair 0
+ * (i.e., pairs before the window may be skipped).
+ */
+bool ui_render_is_chunked(void);
+
+// UI pair count verification macros for transaction formatting.
+// CHECK_COUNT is a no-op when OOM is set or when rendering a non-first chunk
+// (pairs before the window are skipped, so counts won't match).
 #define START_COUNT() uint16_t _pairs_before = ui_pairs_get_count()
-#define CHECK_COUNT(expected) \
-    LEDGER_ASSERT(ui_pairs_get_count() - _pairs_before == (expected), \
-                  "UI pairs mismatch: expected %d, actual %d", \
-                  (expected), ui_pairs_get_count() - _pairs_before)
+#define CHECK_COUNT(expected) do { \
+    if (g_ui_error_status == UI_STATUS_SUCCESS && !ui_render_is_chunked()) { \
+        LEDGER_ASSERT(ui_pairs_get_count() - _pairs_before == (expected), \
+                      "UI pairs mismatch: expected %d, actual %d", \
+                      (expected), ui_pairs_get_count() - _pairs_before); \
+    } \
+} while(0)
 
 #ifdef __GNUC__
 #define UI_STATIC_LABEL(label) ((void)sizeof(char[__builtin_constant_p(label) ? 1 : -1]), (label))
@@ -117,6 +146,7 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
  * @param value      Value to format (passed as first argument to format_fn)
  */
 #define UI_ADD_FORMAT1(label, max_len, format_fn, value) do { \
+    if (ui_render_should_skip()) break; \
     char *_buf = NULL; \
     const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
     if (!allocate_zeroed((void **) &_buf, _buf_size)) { \
@@ -124,8 +154,8 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
         break; \
     } \
     bool _ok = format_fn((value), _buf, _buf_size); \
-    LEDGER_ASSERT(_ok, "Format failed: " #format_fn); \
-    LEDGER_ASSERT(strlen(_buf) <= (max_len), "Buffer too short: " #format_fn " (max %u bytes)", (unsigned int)(max_len)); \
+    LEDGER_ASSERT(_ok, "Format fn failed"); \
+    LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long"); \
     if (!ui_pairs_add_static_label((label), _buf)) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
@@ -148,6 +178,7 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
  * @param param2     Second parameter to pass to format_fn
  */
 #define UI_ADD_FORMAT2(label, max_len, format_fn, param1, param2) do { \
+    if (ui_render_should_skip()) break; \
     char *_buf = NULL; \
     const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
     if (!allocate_zeroed((void **) &_buf, _buf_size)) { \
@@ -155,8 +186,8 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
         break; \
     } \
     bool _ok = format_fn((param1), (param2), _buf, _buf_size); \
-    LEDGER_ASSERT(_ok, "Format failed: " #format_fn); \
-    LEDGER_ASSERT(strlen(_buf) <= (max_len), "Buffer too short: " #format_fn " (max %u bytes)", (unsigned int)(max_len)); \
+    LEDGER_ASSERT(_ok, "Format fn failed"); \
+    LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long"); \
     if (!ui_pairs_add_static_label((label), _buf)) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
@@ -180,6 +211,7 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
  * @param param3     Third parameter to pass to format_fn
  */
 #define UI_ADD_FORMAT3(label, max_len, format_fn, param1, param2, param3) do { \
+    if (ui_render_should_skip()) break; \
     char *_buf = NULL; \
     const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
     if (!allocate_zeroed((void **) &_buf, _buf_size)) { \
@@ -187,8 +219,8 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
         break; \
     } \
     bool _ok = format_fn((param1), (param2), (param3), _buf, _buf_size); \
-    LEDGER_ASSERT(_ok, "Format failed: " #format_fn); \
-    LEDGER_ASSERT(strlen(_buf) <= (max_len), "Buffer too short: " #format_fn " (max %u bytes)", (unsigned int)(max_len)); \
+    LEDGER_ASSERT(_ok, "Format fn failed"); \
+    LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long"); \
     if (!ui_pairs_add_static_label((label), _buf)) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
@@ -205,6 +237,7 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
  * @param value NUL-terminated static string value
  */
 #define UI_ADD_STATIC(label, value) do { \
+    if (ui_render_should_skip()) break; \
     const char *_static_value = (value); \
     size_t _static_value_len = strlen(_static_value); \
     char *_static_value_copy = NULL; \
@@ -237,6 +270,7 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
  * @param param4     Fourth parameter to pass to format_fn
  */
 #define UI_ADD_FORMAT4(label, max_len, format_fn, param1, param2, param3, param4) do { \
+    if (ui_render_should_skip()) break; \
     char *_buf = NULL; \
     const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
     if (!allocate_zeroed((void **) &_buf, _buf_size)) { \
@@ -244,8 +278,8 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
         break; \
     } \
     bool _ok = format_fn((param1), (param2), (param3), (param4), _buf, _buf_size); \
-    LEDGER_ASSERT(_ok, "Format failed: " #format_fn); \
-    LEDGER_ASSERT(strlen(_buf) <= (max_len), "Buffer too short: " #format_fn " (max %u bytes)", (unsigned int)(max_len)); \
+    LEDGER_ASSERT(_ok, "Format fn failed"); \
+    LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long"); \
     if (!ui_pairs_add_static_label((label), _buf)) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
