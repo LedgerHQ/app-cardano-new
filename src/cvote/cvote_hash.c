@@ -11,6 +11,7 @@
 #include "cardano_swo.h"
 #include "cvote_hash.h"
 #include "globals.h"
+#include "sign_tx_ctx.h"
 #include "io.h"
 #include "keyDerivation.h"
 #include "messageSigning.h"
@@ -179,7 +180,7 @@ void cvote_hash_builder_add_delegation(cvote_aux_data_t *aux_data,
 }
 
 void cvote_hash_finalize(void) {
-    cvote_aux_data_t *aux_data = &G_context.tx_info.cvote_aux_data;
+    cvote_aux_data_t *aux_data = &tx_aux_data_ctx()->cvote_aux_data;
 
     if (aux_data->hash_finalized) {
         return;

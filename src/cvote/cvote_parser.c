@@ -8,6 +8,7 @@
 
 #include "addressUtilsShelley.h"
 #include "globals.h"
+#include "sign_tx_ctx.h"
 #include "mem.h"
 #include "cardano_parsers.h"
 #include "cardano_swo.h"
@@ -92,16 +93,16 @@ cvote_parser_status_t cvote_parse_destination(buffer_t *buf,
 
 cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
     LEDGER_ASSERT(out_data != NULL, "NULL out_data");
-    LEDGER_ASSERT(G_context.tx_info.raw_cvote_init_data != NULL, "NULL raw_cvote_init_data");
+    LEDGER_ASSERT(tx_aux_data_ctx()->raw_cvote_init_data != NULL, "NULL raw_cvote_init_data");
 
-    if (G_context.tx_info.raw_cvote_init_data_len < 3) {
-        TRACE("CVote init payload too short: %u bytes", (unsigned)G_context.tx_info.raw_cvote_init_data_len);
+    if (tx_aux_data_ctx()->raw_cvote_init_data_len < 3) {
+        TRACE("CVote init payload too short: %u bytes", (unsigned)tx_aux_data_ctx()->raw_cvote_init_data_len);
         return CVOTE_PARSER_INVALID_FORMAT;
     }
 
     buffer_t parse_buf = {
-        .ptr = G_context.tx_info.raw_cvote_init_data,
-        .size = G_context.tx_info.raw_cvote_init_data_len,
+        .ptr = tx_aux_data_ctx()->raw_cvote_init_data,
+        .size = tx_aux_data_ctx()->raw_cvote_init_data_len,
         .offset = 0
     };
 

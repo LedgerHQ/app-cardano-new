@@ -11,6 +11,7 @@
 #include <cmocka.h>
 
 #include "globals.h"
+#include "sign_tx_ctx.h"
 #include "handler/sign_tx.h"
 #include "securityPolicy.h"
 #include "addressUtils/bip44.h"
@@ -145,7 +146,6 @@ static void test_sign_tx_witness_rejects_before_approved_state(void **state) {
 
     G_context.req_type = REQUEST_SIGN_TRANSACTION;
     G_context.state.tx_state = TX_STATE_NONE;
-    G_context.tx_info.current_witness = 0;
     G_context.tx_info.num_witnesses = 1;
     G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
 

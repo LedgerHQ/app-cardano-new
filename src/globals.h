@@ -35,7 +35,6 @@ typedef enum {
     TX_STATE_AUX_DATA,     /// receiving CVote aux data
     TX_STATE_CHUNKS,       /// receiving transaction chunks
     TX_STATE_RECEIVED,     /// all chunks received, waiting to parse
-    TX_STATE_PARSED,       /// transaction parsed, ready for hashing
     TX_STATE_HASHED,       /// hash computed, UI plan ready
     TX_STATE_UI_PREPARED,  /// UI strings prepared
     TX_STATE_APPROVED      /// user approved, waiting for witnesses
@@ -98,37 +97,58 @@ typedef struct {
  * Transaction context (covers raw tx buffer + witness bookkeeping).
  */
 typedef struct {
-    uint8_t *raw_tx;
-    size_t raw_tx_current_length;     /// Actual received length so far
-    uint16_t raw_tx_total_length;     /// Advertised size from client (total expected)
     tx_params_t tx_params;
     uint8_t tx_hash[TX_HASH_LENGTH];
 
-    uint16_t num_witnesses;    /// Total witnesses requested by host; not decremented during signing.
-    uint16_t current_witness;  /// Number of witnesses already processed (also next witness index).
-    bip44_path_t witness_path;
-    char witness_path_str[MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN];  // Static buffer for NBGL UI
-    uint8_t witness_signature[ED25519_SIGNATURE_LENGTH];
+    uint16_t num_witnesses;         /// Total witnesses requested by host; not decremented during signing.
+    uint16_t raw_tx_total_length;   /// Advertised raw tx size from INIT APDU; must survive aux_data stage.
 
-    // CVote auxiliary data buffers and parsed data
-    // (state moved to cvote_aux_data_t.state)
-    uint8_t *raw_cvote_init_data;        /// Raw APDU buffer for CVote init (like raw_tx)
-    size_t raw_cvote_init_data_len;
-    cvote_aux_data_t cvote_aux_data;     /// Parsed CVote data with pointers into raw buffer and state
-
+    /**
+     * Fields that must survive across all stages (body + witnesses).
+     * Set during body processing, read during witness policy checks.
+     */
     bool pool_owner_path_present;
     bip44_path_t pool_owner_path;
-
     single_account_data_t single_account_data;
 
-    warning_bits_t warning_bits;          /// Transaction warnings only
-    warning_bits_t cvote_warning_bits;    /// CVote auxiliary data warnings only
-    uint16_t planned_ui_pairs;
+    /**
+     * Per-stage context. Only one slot is valid at a time, gated by tx_state:
+     *   TX_STATE_AUX_DATA                          -> aux_data
+     *   TX_STATE_CHUNKS .. TX_STATE_UI_PREPARED    -> body
+     *   TX_STATE_APPROVED                          -> witness
+     *
+     * Access exclusively via tx_aux_data_ctx() / tx_body_ctx() / tx_witness_ctx()
+     * in sign_tx_ctx.h, which assert the correct state.
+     */
+    union {
+        /// Valid during TX_STATE_AUX_DATA. Zeroed atomically at tx init.
+        struct {
+            uint8_t *raw_cvote_init_data;        /// Raw APDU buffer for CVote init
+            size_t raw_cvote_init_data_len;
+            cvote_aux_data_t cvote_aux_data;     /// Parsed CVote data
+            warning_bits_t cvote_warning_bits;   /// CVote AUX_DATA warnings only
+        } aux_data;
 
-    /// Per-pass parse mode; set by tx_processing_state_init() before each pass.
-    parse_tx_mode_t parse_mode;
-    /// Mutable parse state; lives in globals to keep tx_hash_builder_t off the stack.
-    tx_processing_state_t processing_state;
+        /// Valid during TX_STATE_CHUNKS .. TX_STATE_UI_PREPARED. Zeroed atomically at tx init.
+        struct {
+            uint8_t *raw_tx;
+            size_t raw_tx_current_length;        /// Actual received length so far
+            warning_bits_t warning_bits;         /// Transaction warnings
+            uint16_t planned_ui_pairs;
+            /// Per-pass parse mode; set by tx_processing_state_init() before each pass.
+            tx_processing_mode_t parse_mode;
+            /// Mutable parse state; lives in globals to keep tx_hash_builder_t off the stack.
+            tx_processing_state_t processing_state;
+        } body;
+
+        /// Valid during TX_STATE_APPROVED. Initialized at witness stage entry.
+        struct {
+            uint16_t current_witness;            /// Number of witnesses already processed.
+            bip44_path_t witness_path;
+            char witness_path_str[MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN];
+            uint8_t witness_signature[ED25519_SIGNATURE_LENGTH];
+        } witness;
+    };
 } transaction_ctx_t;
 
 /**

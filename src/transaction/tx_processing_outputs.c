@@ -14,6 +14,7 @@
 #include "tx_output_types.h"
 #include "keyDerivation.h"
 #include "globals.h"
+#include "sign_tx_ctx.h"
 #include "ui_utils.h"
 #include "ui_warnings.h"
 #include "ui_constants.h"
@@ -69,9 +70,9 @@ static void hash_add_output_top_level(tx_hash_builder_t *tx_hash_builder,
 static bool tx_process_output(buffer_t *output_buf,
                                       uint16_t output_index,
                                       tx_processing_state_t *state) {
-    tx_parse_ctx_t ctx = tx_get_ctx();
+    tx_processing_ctx_t ctx = tx_get_ctx();
     const tx_params_t *tx_params = ctx.tx_params;
-    const parse_tx_mode_t *mode = ctx.mode;
+    const tx_processing_mode_t *mode = ctx.mode;
     tx_hash_builder_t *hash_builder = ctx.hash_builder;
 
     // --- 1. Parse top-level output fields ---
@@ -179,7 +180,7 @@ static bool tx_process_output(buffer_t *output_buf,
 
     // Add token pair counts to plan now that total_token_count is known
     if (mode->run_validation && mode->run_ui_planning && output_policy == POLICY_SHOW) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_TOKEN * total_token_count;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_TOKEN * total_token_count;
     }
 
     // --- 5. Datum ---
@@ -244,9 +245,9 @@ static bool tx_process_output(buffer_t *output_buf,
  * Process the collateral return output from output_buf.
  */
 static bool tx_process_collateral_return_output(buffer_t *output_buf) {
-    tx_parse_ctx_t ctx = tx_get_ctx();
+    tx_processing_ctx_t ctx = tx_get_ctx();
     const tx_params_t *tx_params = ctx.tx_params;
-    const parse_tx_mode_t *mode = ctx.mode;
+    const tx_processing_mode_t *mode = ctx.mode;
     tx_hash_builder_t *hash_builder = ctx.hash_builder;
 
     // --- 1. Parse top-level output fields ---
@@ -347,7 +348,7 @@ static bool tx_process_collateral_return_output(buffer_t *output_buf) {
 
     // Add token pair counts to plan now that total_token_count is known
     if (mode->run_validation && mode->run_ui_planning && collateral_tokens_policy == POLICY_SHOW) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_TOKEN * total_token_count;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_TOKEN * total_token_count;
     }
 
     // Collateral outputs MUST NOT contain datum or ref script
@@ -368,9 +369,9 @@ static bool tx_process_collateral_return_output(buffer_t *output_buf) {
 
 bool tx_process_outputs(buffer_t *buf, tx_processing_state_t *state) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
-    tx_parse_ctx_t ctx = tx_get_ctx();
+    tx_processing_ctx_t ctx = tx_get_ctx();
     const tx_params_t *tx_params = ctx.tx_params;
-    const parse_tx_mode_t *mode = ctx.mode;
+    const tx_processing_mode_t *mode = ctx.mode;
 
     if (mode->run_hash_builder) {
         LEDGER_ASSERT(state->hash_builder_initialized, "Hash builder not initialized");
@@ -417,7 +418,7 @@ bool tx_process_outputs(buffer_t *buf, tx_processing_state_t *state) {
 
 bool tx_process_collateral_output(buffer_t *buf) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
-    tx_parse_ctx_t ctx = tx_get_ctx();
+    tx_processing_ctx_t ctx = tx_get_ctx();
     const tx_params_t *tx_params = ctx.tx_params;
 
     if (!tx_params->includeCollateralOutput) {

@@ -13,6 +13,7 @@
 #include "cvote_hash.h"
 #include "format.h"
 #include "globals.h"
+#include "sign_tx_ctx.h"
 #include "io.h"
 #include "menu.h"
 #include "nbgl_use_case.h"
@@ -66,7 +67,7 @@ static void cvote_aux_data_review_cleanup(void) {
 
 static void cvote_aux_data_review_choice(bool confirm) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "CVote review choice callback in wrong request type: %d", G_context.req_type);
-    LEDGER_ASSERT(G_context.tx_info.cvote_aux_data.state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED, "CVote review choice callback in wrong state: %d", G_context.tx_info.cvote_aux_data.state);
+    LEDGER_ASSERT(tx_aux_data_ctx()->cvote_aux_data.state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED, "CVote review choice callback in wrong state: %d", tx_aux_data_ctx()->cvote_aux_data.state);
 
     // CLEANUP
     cvote_aux_data_review_cleanup();
@@ -84,7 +85,7 @@ static void cvote_aux_data_review_choice(bool confirm) {
 }
 
 static void cvote_aux_data_streaming_continue_choice(bool confirm) {
-    cvote_aux_data_t *aux_data = &G_context.tx_info.cvote_aux_data;
+    cvote_aux_data_t *aux_data = &tx_aux_data_ctx()->cvote_aux_data;
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "CVote streaming callback in wrong request type: %d", G_context.req_type);
     LEDGER_ASSERT(aux_data->ui_streaming.on, "CVote streaming callback with streaming disabled");
     LEDGER_ASSERT(aux_data->ui_streaming.review_started, "CVote streaming callback before streaming review start");
@@ -119,11 +120,11 @@ static bool cvote_start_streaming_review(cvote_aux_data_t *aux_data) {
     LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
     LEDGER_ASSERT(aux_data != NULL && !aux_data->ui_streaming.review_started, "Streaming review already started");
 
-    LEDGER_ASSERT(warning_bits_except_mask(G_context.tx_info.cvote_warning_bits, CVOTE_AUX_DATA_WARNING_BITS_MASK) == 0, "Transaction warnings leaked into CVote warning bits - cvote_warning_bits should only contain CVote AUX_DATA warnings");
+    LEDGER_ASSERT(warning_bits_except_mask(tx_aux_data_ctx()->cvote_warning_bits, CVOTE_AUX_DATA_WARNING_BITS_MASK) == 0, "Transaction warnings leaked into CVote warning bits - cvote_warning_bits should only contain CVote AUX_DATA warnings");
 
     // Build warnings known at start of streaming flow.
     // Warnings for specific delegations are added via cvote_add_vote_key_path_warning_pair.
-    ui_status_t warning_status = ui_build_warnings(G_context.tx_info.cvote_warning_bits);
+    ui_status_t warning_status = ui_build_warnings(tx_aux_data_ctx()->cvote_warning_bits);
     if (warning_status != UI_STATUS_SUCCESS) {
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return false;
@@ -479,12 +480,10 @@ void ui_cvote_aux_data_show_non_streaming_final_review(cvote_aux_data_t *aux_dat
     LEDGER_ASSERT(aux_data != NULL && aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED, "ui_cvote_aux_data_show_non_streaming_final_review called in wrong state: %d", aux_data->state);
     LEDGER_ASSERT(aux_data != NULL && !aux_data->ui_streaming.on, "ui_cvote_aux_data_show_non_streaming_final_review called with streaming on");
 
-    LEDGER_ASSERT(warning_bits_is_empty(&G_context.tx_info.warning_bits), "Transaction warning_bits should be empty during CVote review - TX processing should not set warnings yet");
-
-    LEDGER_ASSERT(warning_bits_except_mask(G_context.tx_info.cvote_warning_bits, CVOTE_AUX_DATA_WARNING_BITS_MASK) == 0, "Transaction warnings leaked into CVote warning bits - cvote_warning_bits should only contain CVote AUX_DATA warnings");
+    LEDGER_ASSERT(warning_bits_except_mask(tx_aux_data_ctx()->cvote_warning_bits, CVOTE_AUX_DATA_WARNING_BITS_MASK) == 0, "Transaction warnings leaked into CVote warning bits - cvote_warning_bits should only contain CVote AUX_DATA warnings");
 
     // Build CVote-specific warnings for display
-    ui_status_t warning_status = ui_build_warnings(G_context.tx_info.cvote_warning_bits);
+    ui_status_t warning_status = ui_build_warnings(tx_aux_data_ctx()->cvote_warning_bits);
     if (warning_status != UI_STATUS_SUCCESS) {
         cvote_aux_data_review_cleanup();
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);

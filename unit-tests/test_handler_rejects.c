@@ -17,6 +17,7 @@
 #include "cardano_swo.h"
 #include "cardano_constants.h"
 #include "globals.h"
+#include "sign_tx_ctx.h"
 #include "init_apdu.h"
 #include "securityPolicy.h"
 #include "addressUtils/bip44.h"
@@ -213,7 +214,7 @@ static void test_witness_trailing_bytes(void **state) {
 
     G_context.req_type = REQUEST_SIGN_TRANSACTION;
     G_context.state.tx_state = TX_STATE_APPROVED;
-    G_context.tx_info.current_witness = 0;
+    tx_witness_ctx()->current_witness = 0;
     G_context.tx_info.num_witnesses = 1;
     G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
     G_context.tx_info.tx_params.num_mint_asset_groups = 0;
@@ -301,7 +302,6 @@ static void test_handler_state_during_active_request(void **state) {
     };
     // Set wrong state (not APPROVED)
     G_context.state.tx_state = TX_STATE_NONE;
-    G_context.tx_info.current_witness = 0;
     G_context.tx_info.num_witnesses = 1;
     run_sign_tx_witness_apdu(&witness_buf);
     assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
@@ -369,7 +369,6 @@ static void test_witness_extraction_with_wrong_state(void **state) {
     // Set up a transaction context but in wrong state (not APPROVED)
     G_context.req_type = REQUEST_SIGN_TRANSACTION;
     G_context.state.tx_state = TX_STATE_NONE;  // Not approved, should be TX_STATE_APPROVED
-    G_context.tx_info.current_witness = 0;
     G_context.tx_info.num_witnesses = 1;
     G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
     G_context.tx_info.tx_params.num_mint_asset_groups = 0;

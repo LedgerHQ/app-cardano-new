@@ -11,6 +11,7 @@
 #include <cmocka.h>
 
 #include "globals.h"
+#include "sign_tx_ctx.h"
 #include "cardano_swo.h"
 #include "tx_parse.h"
 #include "tx_constants.h"
@@ -36,9 +37,9 @@ static void test_compute_tx_hash_and_plan_ui_counts_ttl(void **state) {
         // ttl = 123
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7B,
     };
-    G_context.tx_info.raw_tx = raw_tx;
+    tx_body_ctx()->raw_tx = raw_tx;
     G_context.tx_info.raw_tx_total_length = SIZEOF(raw_tx);
-    G_context.tx_info.raw_tx_current_length = SIZEOF(raw_tx);
+    tx_body_ctx()->raw_tx_current_length = SIZEOF(raw_tx);
 
     G_context.tx_info.tx_params.num_inputs = 0;
     G_context.tx_info.tx_params.num_outputs = 0;
@@ -48,13 +49,13 @@ static void test_compute_tx_hash_and_plan_ui_counts_ttl(void **state) {
     G_context.tx_info.tx_params.protocolMagic = MAINNET_PROTOCOL_MAGIC;
 
     buffer_t tx_buffer = {
-        .ptr = G_context.tx_info.raw_tx,
-        .size = G_context.tx_info.raw_tx_current_length,
+        .ptr = tx_body_ctx()->raw_tx,
+        .size = tx_body_ctx()->raw_tx_current_length,
         .offset = 0,
     };
     bool result = tx_validate(&tx_buffer);
     assert_true(result);
-    assert_true(G_context.tx_info.planned_ui_pairs >= 2);
+    assert_true(tx_body_ctx()->planned_ui_pairs >= 2);
 }
 
 int main(void) {

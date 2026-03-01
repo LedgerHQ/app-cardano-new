@@ -16,6 +16,7 @@
 #include "buffer.h"
 #include "cardano_swo.h"
 #include "globals.h"
+#include "sign_tx_ctx.h"
 #include "dispatcher.h"
 #include "securityPolicy/securityPolicy.h"
 #include "tx_utils.h"
@@ -88,9 +89,10 @@ typedef struct {
 #include "test_sign_tx_fixtures_deny.h"
 #include "app_mem_utils.h"
 
+// Accesses the body slot directly because this may be called in any tx state (including NONE).
 static inline void tx_context_cleanup(void) {
-    APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.raw_tx);
-    G_context.tx_info.planned_ui_pairs = 0;
+    APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.body.raw_tx);
+    G_context.tx_info.body.planned_ui_pairs = 0;
 }
 
 #define TEST_HEAP_SIZE (23 * 1024)

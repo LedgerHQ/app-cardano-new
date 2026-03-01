@@ -7,6 +7,7 @@
 #include "bech32.h"
 #include "bip44.h"
 #include "globals.h"
+#include "sign_tx_ctx.h"
 #include "keyDerivation.h"
 #include "securityWarnings.h"
 #include "tx_certificate_types.h"
@@ -18,12 +19,12 @@
 #include "ui_utils.h"
 #include "cardano_tokens.h"
 
-void tx_ui_plan_or_render_input(const parse_tx_mode_t *mode, const tx_input_t *parsed_input) {
+void tx_ui_plan_or_render_input(const tx_processing_mode_t *mode, const tx_input_t *parsed_input) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_input != NULL, "NULL parsed_input");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_INPUT;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_INPUT;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Input"),
@@ -34,13 +35,13 @@ void tx_ui_plan_or_render_input(const parse_tx_mode_t *mode, const tx_input_t *p
     }
 }
 
-void tx_ui_plan_or_render_collateral_input(const parse_tx_mode_t *mode,
+void tx_ui_plan_or_render_collateral_input(const tx_processing_mode_t *mode,
                                            const tx_input_t *parsed_input) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_input != NULL, "NULL parsed_input");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_COLLATERAL_INPUT;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_COLLATERAL_INPUT;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Coll input"),
@@ -51,13 +52,13 @@ void tx_ui_plan_or_render_collateral_input(const parse_tx_mode_t *mode,
     }
 }
 
-void tx_ui_plan_or_render_reference_input(const parse_tx_mode_t *mode,
+void tx_ui_plan_or_render_reference_input(const tx_processing_mode_t *mode,
                                           const tx_input_t *parsed_input) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_input != NULL, "NULL parsed_input");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_REFERENCE_INPUT;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_REFERENCE_INPUT;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Ref input"),
@@ -68,13 +69,13 @@ void tx_ui_plan_or_render_reference_input(const parse_tx_mode_t *mode,
     }
 }
 
-void tx_ui_plan_or_render_required_signer(const parse_tx_mode_t *mode,
+void tx_ui_plan_or_render_required_signer(const tx_processing_mode_t *mode,
                                           const required_signer_t *parsed_required_signer) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_required_signer != NULL, "NULL parsed_required_signer");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_REQUIRED_SIGNER;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_REQUIRED_SIGNER;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         switch (parsed_required_signer->type) {
@@ -100,12 +101,12 @@ void tx_ui_plan_or_render_required_signer(const parse_tx_mode_t *mode,
     }
 }
 
-void tx_ui_plan_or_render_mint_summary(const parse_tx_mode_t *mode,
+void tx_ui_plan_or_render_mint_summary(const tx_processing_mode_t *mode,
                                        uint16_t num_mint_asset_groups) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_MINT_SUMMARY;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_MINT_SUMMARY;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Mint"),
@@ -116,14 +117,14 @@ void tx_ui_plan_or_render_mint_summary(const parse_tx_mode_t *mode,
     }
 }
 
-void tx_ui_plan_or_render_mint_token(const parse_tx_mode_t *mode,
+void tx_ui_plan_or_render_mint_token(const tx_processing_mode_t *mode,
                                      const mint_token_t *mint_token) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(mint_token != NULL, "NULL mint_token");
     LEDGER_ASSERT(mint_token->policyId != NULL, "NULL mint_token->policyId");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_TOKEN;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_TOKEN;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         UI_ADD_FORMAT3(UI_STATIC_LABEL("Fingerprint"),
@@ -143,11 +144,11 @@ void tx_ui_plan_or_render_mint_token(const parse_tx_mode_t *mode,
     }
 }
 
-void tx_ui_plan_or_render_fee(const parse_tx_mode_t *mode, uint64_t parsed_fee) {
+void tx_ui_plan_or_render_fee(const tx_processing_mode_t *mode, uint64_t parsed_fee) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_FEE;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_FEE;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Fee"),
@@ -158,11 +159,11 @@ void tx_ui_plan_or_render_fee(const parse_tx_mode_t *mode, uint64_t parsed_fee) 
     }
 }
 
-void tx_ui_plan_or_render_ttl(const parse_tx_mode_t *mode, uint64_t parsed_ttl) {
+void tx_ui_plan_or_render_ttl(const tx_processing_mode_t *mode, uint64_t parsed_ttl) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_TTL;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_TTL;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         UI_ADD_FORMAT3(UI_STATIC_LABEL("TTL"),
@@ -175,12 +176,12 @@ void tx_ui_plan_or_render_ttl(const parse_tx_mode_t *mode, uint64_t parsed_ttl) 
     }
 }
 
-void tx_ui_plan_or_render_validity_interval_start(const parse_tx_mode_t *mode,
+void tx_ui_plan_or_render_validity_interval_start(const tx_processing_mode_t *mode,
                                                   uint64_t validity_interval_start) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_VALIDITY_INTERVAL_START;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_VALIDITY_INTERVAL_START;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         UI_ADD_FORMAT3(UI_STATIC_LABEL("Valid from"),
@@ -193,7 +194,7 @@ void tx_ui_plan_or_render_validity_interval_start(const parse_tx_mode_t *mode,
     }
 }
 
-void tx_ui_plan_or_render_withdrawal(const parse_tx_mode_t *mode,
+void tx_ui_plan_or_render_withdrawal(const tx_processing_mode_t *mode,
                                      const withdrawal_t *parsed_withdrawal,
                                      uint8_t network_id) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
@@ -203,9 +204,9 @@ void tx_ui_plan_or_render_withdrawal(const parse_tx_mode_t *mode,
 
     if (mode->run_ui_planning) {
         if (credential->type == EXT_CREDENTIAL_KEY_PATH) {
-            G_context.tx_info.planned_ui_pairs += UI_PAIRS_WITHDRAWAL_KEY_PATH;
+            tx_body_ctx()->planned_ui_pairs += UI_PAIRS_WITHDRAWAL_KEY_PATH;
         } else {
-            G_context.tx_info.planned_ui_pairs += UI_PAIRS_WITHDRAWAL_OTHER;
+            tx_body_ctx()->planned_ui_pairs += UI_PAIRS_WITHDRAWAL_OTHER;
         }
     } else if (mode->run_ui_rendering) {
         START_COUNT();
@@ -229,13 +230,13 @@ void tx_ui_plan_or_render_withdrawal(const parse_tx_mode_t *mode,
     }
 }
 
-void tx_ui_plan_or_render_aux_data_hash(const parse_tx_mode_t *mode,
+void tx_ui_plan_or_render_aux_data_hash(const tx_processing_mode_t *mode,
                                         const uint8_t *aux_data_hash) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(aux_data_hash != NULL, "NULL aux_data_hash");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_AUXILIARY_DATA_HASH;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_AUXILIARY_DATA_HASH;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Auxiliary data hash", "Aux data hash"),
@@ -247,13 +248,13 @@ void tx_ui_plan_or_render_aux_data_hash(const parse_tx_mode_t *mode,
     }
 }
 
-void tx_ui_plan_or_render_script_data_hash(const parse_tx_mode_t *mode,
+void tx_ui_plan_or_render_script_data_hash(const tx_processing_mode_t *mode,
                                            const uint8_t *script_data_hash) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(script_data_hash != NULL, "NULL script_data_hash");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_SCRIPT_DATA_HASH;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_SCRIPT_DATA_HASH;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Script data hash", "Script hash"),
@@ -266,12 +267,12 @@ void tx_ui_plan_or_render_script_data_hash(const parse_tx_mode_t *mode,
     }
 }
 
-void tx_ui_plan_or_render_total_collateral(const parse_tx_mode_t *mode,
+void tx_ui_plan_or_render_total_collateral(const tx_processing_mode_t *mode,
                                            uint64_t total_collateral) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_TOTAL_COLLATERAL;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_TOTAL_COLLATERAL;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Total collateral", "Total coll"),
@@ -282,12 +283,12 @@ void tx_ui_plan_or_render_total_collateral(const parse_tx_mode_t *mode,
     }
 }
 
-void tx_ui_plan_or_render_voter(const parse_tx_mode_t *mode, const ext_voter_t *parsed_voter) {
+void tx_ui_plan_or_render_voter(const tx_processing_mode_t *mode, const ext_voter_t *parsed_voter) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_voter != NULL, "NULL parsed_voter");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_VOTER;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_VOTER;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         switch (parsed_voter->type) {
@@ -363,12 +364,12 @@ void tx_ui_plan_or_render_voter(const parse_tx_mode_t *mode, const ext_voter_t *
     }
 }
 
-void tx_ui_plan_or_render_vote(const parse_tx_mode_t *mode, const vote_item_t *parsed_vote) {
+void tx_ui_plan_or_render_vote(const tx_processing_mode_t *mode, const vote_item_t *parsed_vote) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_vote != NULL, "NULL parsed_vote");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_VOTE;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_VOTE;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Gov action tx hash", "Action tx hash"),
@@ -388,17 +389,17 @@ void tx_ui_plan_or_render_vote(const parse_tx_mode_t *mode, const vote_item_t *p
     }
 }
 
-void tx_ui_plan_or_render_vote_anchor(const parse_tx_mode_t *mode, const anchor_t *anchor) {
+void tx_ui_plan_or_render_vote_anchor(const tx_processing_mode_t *mode, const anchor_t *anchor) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(anchor != NULL, "NULL anchor");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_ANCHOR;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_ANCHOR;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         if (anchor->urlLength == 0) {
             LEDGER_ASSERT(
-                warning_bits_has(G_context.tx_info.warning_bits, WARNING_BIT_EMPTY_ANCHOR_URL),
+                warning_bits_has(tx_body_ctx()->warning_bits, WARNING_BIT_EMPTY_ANCHOR_URL),
                 "Empty anchor URL warning missing");
             UI_ADD_STATIC(UI_STATIC_LABEL("Anchor URL"), UI_STATIC_LABEL("(empty)"));
         } else {
@@ -418,11 +419,11 @@ void tx_ui_plan_or_render_vote_anchor(const parse_tx_mode_t *mode, const anchor_
     }
 }
 
-void tx_ui_plan_or_render_treasury(const parse_tx_mode_t *mode, uint64_t treasury) {
+void tx_ui_plan_or_render_treasury(const tx_processing_mode_t *mode, uint64_t treasury) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_TREASURY;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_TREASURY;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Treasury"),
@@ -433,11 +434,11 @@ void tx_ui_plan_or_render_treasury(const parse_tx_mode_t *mode, uint64_t treasur
     }
 }
 
-void tx_ui_plan_or_render_donation(const parse_tx_mode_t *mode, uint64_t donation) {
+void tx_ui_plan_or_render_donation(const tx_processing_mode_t *mode, uint64_t donation) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_DONATION;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_DONATION;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Donation"),
@@ -448,12 +449,12 @@ void tx_ui_plan_or_render_donation(const parse_tx_mode_t *mode, uint64_t donatio
     }
 }
 
-void tx_ui_plan_or_render_tx_hash(const parse_tx_mode_t *mode, const uint8_t *tx_hash) {
+void tx_ui_plan_or_render_tx_hash(const tx_processing_mode_t *mode, const uint8_t *tx_hash) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(tx_hash != NULL, "NULL tx_hash");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_TX_HASH;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_TX_HASH;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         UI_ADD_FORMAT2(UI_STATIC_LABEL("Tx hash"),

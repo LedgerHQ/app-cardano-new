@@ -14,6 +14,7 @@
 #include "ui_icons.h"
 #include "ui_constants.h"
 #include "globals.h"
+#include "sign_tx_ctx.h"
 #include "utils.h"
 #include "app_context.h"
 #include "cardano_swo.h"
@@ -71,10 +72,10 @@ void ui_display_witness(const bip44_path_t* witnessPath,
 
     // Format the witness path into static buffer
     bool formatted = format_bip44_path(witnessPath,
-                                       G_context.tx_info.witness_path_str,
-                                       sizeof(G_context.tx_info.witness_path_str));
+                                       tx_witness_ctx()->witness_path_str,
+                                       sizeof(tx_witness_ctx()->witness_path_str));
     LEDGER_ASSERT(formatted, "Unable to format witness path");
-    LEDGER_ASSERT(strlen(G_context.tx_info.witness_path_str) <= MAX_BIP44_PATH_STRING_LENGTH, "Witness path ui string buffer too short");
+    LEDGER_ASSERT(strlen(tx_witness_ctx()->witness_path_str) <= MAX_BIP44_PATH_STRING_LENGTH, "Witness path ui string buffer too short");
 
     if (isUnusual) {
         // A mild warning about unusual path
@@ -82,7 +83,7 @@ void ui_display_witness(const bip44_path_t* witnessPath,
         nbgl_useCaseChoice(
             &WARNING_ICON,
             "Sign with UNUSUAL key",
-            G_context.tx_info.witness_path_str,
+            tx_witness_ctx()->witness_path_str,
             "Confirm",
             "Reject",
             witness_review_choice
@@ -92,7 +93,7 @@ void ui_display_witness(const bip44_path_t* witnessPath,
         nbgl_useCaseChoice(
             &ICON_APP_CARDANO,
             "Witness",
-            G_context.tx_info.witness_path_str,
+            tx_witness_ctx()->witness_path_str,
             "Confirm",
             "Reject",
             witness_review_choice

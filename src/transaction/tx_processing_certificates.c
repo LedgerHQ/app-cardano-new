@@ -334,8 +334,8 @@ bool process_pool_registration_certificate(buffer_t *buf,
     // buf is positioned at the start of owners data (after the fixed header fields
     // already parsed by parse_certificate_stake_pool_registration).
 
-    tx_parse_ctx_t ctx = tx_get_ctx();
-    const parse_tx_mode_t *mode = ctx.mode;
+    tx_processing_ctx_t ctx = tx_get_ctx();
+    const tx_processing_mode_t *mode = ctx.mode;
     tx_hash_builder_t *hash_builder = ctx.hash_builder;
 
     const pool_registration_data_t *pool_registration = &parsed_cert->poolRegistration;
@@ -545,9 +545,9 @@ bool process_pool_registration_certificate(buffer_t *buf,
 
 bool tx_process_certificates(buffer_t *buf, tx_processing_state_t *state) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
-    tx_parse_ctx_t ctx = tx_get_ctx();
+    tx_processing_ctx_t ctx = tx_get_ctx();
     const tx_params_t *tx_params = ctx.tx_params;
-    const parse_tx_mode_t *mode = ctx.mode;
+    const tx_processing_mode_t *mode = ctx.mode;
 
     if (tx_params->num_certificates == 0) {
         return true;

@@ -13,6 +13,7 @@
 #include "cardano_constants.h"
 #include "cardano_swo.h"
 #include "globals.h"
+#include "sign_tx_ctx.h"
 #include "init_apdu.h"
 #include "nbgl_mock.h"
 #include "test_sign_tx_common.h"
@@ -60,7 +61,7 @@ static void test_nbgl_reject_on_witness_review_resets_context(void **state) {
     run_sign_tx_body_chunked(fixture->raw_tx, fixture->raw_tx_len);
     assert_int_equal(g_last_response_sw, SWO_SUCCESS);
     assert_int_equal(G_context.state.tx_state, TX_STATE_APPROVED);
-    assert_int_equal(G_context.tx_info.current_witness, 0);
+    assert_int_equal(tx_witness_ctx()->current_witness, 0);
     assert_int_equal(G_context.tx_info.num_witnesses, 1);
 
     const bool final_decisions[] = {false};

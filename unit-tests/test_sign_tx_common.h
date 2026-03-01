@@ -16,6 +16,7 @@
 #include "tx_parse.h"
 #include "blake2b.h"
 #include "globals.h"
+#include "sign_tx_ctx.h"
 #include "cardano_settings.h"
 #include "cardano_constants.h"
 #include "test_fixture_types.h"
@@ -140,8 +141,9 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
 
     run_sign_tx_body_chunked(raw_tx, raw_tx_len);
 
-    // Assert warning bits while G_context is still populated (before witnesses clear it).
-    const warning_bits_t actual_warning_bits = G_context.tx_info.warning_bits;
+    // Assert warning bits. Direct struct access because at this point the state may have
+    // already transitioned to TX_STATE_APPROVED (via finalize_sign_tx UI callback mock).
+    const warning_bits_t actual_warning_bits = G_context.tx_info.body.warning_bits;
     if (actual_warning_bits != expected_warning_bits) {
         print_message("WARNING BITS MISMATCH for fixture \"%s\":\n"
                       "  expected: 0x%016llx\n"
@@ -424,7 +426,8 @@ static inline void run_fixture_reject_aux_with_expert_mode(const tx_fixture_t *f
 
 // Free heap-allocated tx buffers and reset the UI pair count.
 // Used in tests that abort a transaction early and need to clean up before the next test.
+// Accesses the body slot directly because this may be called in any tx state.
 static inline void tx_context_cleanup(void) {
-    APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.raw_tx);
-    G_context.tx_info.planned_ui_pairs = 0;
+    APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.body.raw_tx);
+    G_context.tx_info.body.planned_ui_pairs = 0;
 }

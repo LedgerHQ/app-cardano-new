@@ -11,6 +11,7 @@
 #include <cmocka.h>
 
 #include "globals.h"
+#include "sign_tx_ctx.h"
 #include "tx_utils.h"
 
 static void reset_test_context(void) {

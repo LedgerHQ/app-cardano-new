@@ -11,6 +11,7 @@
 #include <cmocka.h>
 
 #include "globals.h"
+#include "sign_tx_ctx.h"
 #include "tx_parse.h"
 #include "tx_constants.h"
 #include "cardano_constants.h"
@@ -28,6 +29,8 @@ static inline bool test_mem_init(void) {
 
 static void reset_test_context(void) {
     memset(&G_context, 0, sizeof(G_context));
+    // Set body-stage state so tx_body_ctx() accessor assertions pass in tests.
+    G_context.state.tx_state = TX_STATE_CHUNKS;
     g_last_sw = 0;
     assert_true(test_mem_init());
 }
@@ -120,7 +123,7 @@ static void test_process_inputs_field_pass1_success(void **state) {
     G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_PLUTUS_TX;
     G_context.tx_info.tx_params.num_inputs = 1;
 
-    parse_tx_mode_t mode = {
+    tx_processing_mode_t mode = {
         .run_validation = true,
         .run_hash_builder = false,
         .run_ui_planning = true,
@@ -129,10 +132,10 @@ static void test_process_inputs_field_pass1_success(void **state) {
     warning_bits_t warnings = 0;
     tx_processing_state_init(&mode, &warnings);
 
-    bool ok = tx_process_inputs(&buf, &G_context.tx_info.processing_state);
+    bool ok = tx_process_inputs(&buf, &tx_body_ctx()->processing_state);
     assert_true(ok);
     assert_int_equal(buf.offset, sizeof(raw_input));
-    assert_int_equal(G_context.tx_info.planned_ui_pairs, 0);  // ordinary mode hides inputs
+    assert_int_equal(tx_body_ctx()->planned_ui_pairs, 0);  // ordinary mode hides inputs
 }
 
 static void test_process_inputs_field_parse_error_sends_inputs_swo(void **state) {
@@ -149,7 +152,7 @@ static void test_process_inputs_field_parse_error_sends_inputs_swo(void **state)
     G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_PLUTUS_TX;
     G_context.tx_info.tx_params.num_inputs = 1;
 
-    parse_tx_mode_t mode = {
+    tx_processing_mode_t mode = {
         .run_validation = true,
         .run_hash_builder = false,
         .run_ui_planning = true,
@@ -159,7 +162,7 @@ static void test_process_inputs_field_parse_error_sends_inputs_swo(void **state)
     tx_processing_state_init(&mode, &warnings);
 
     apdu_response_begin(INS_SIGN_TX);
-    bool ok = tx_process_inputs(&buf, &G_context.tx_info.processing_state);
+    bool ok = tx_process_inputs(&buf, &tx_body_ctx()->processing_state);
     apdu_response_assert_sent_or_deferred();
     assert_false(ok);
     assert_int_equal(g_last_sw, SWO_TX_PARSING_FAIL_INPUTS);
@@ -181,7 +184,7 @@ static void test_process_collateral_inputs_field_pass1_success(void **state) {
     G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_PLUTUS_TX;
     G_context.tx_info.tx_params.num_collateral_inputs = 1;
 
-    parse_tx_mode_t mode = {
+    tx_processing_mode_t mode = {
         .run_validation = true,
         .run_hash_builder = false,
         .run_ui_planning = true,
@@ -190,10 +193,10 @@ static void test_process_collateral_inputs_field_pass1_success(void **state) {
     warning_bits_t warnings = 0;
     tx_processing_state_init(&mode, &warnings);
 
-    bool ok = tx_process_collateral_inputs(&buf, &G_context.tx_info.processing_state);
+    bool ok = tx_process_collateral_inputs(&buf, &tx_body_ctx()->processing_state);
     assert_true(ok);
     assert_int_equal(buf.offset, sizeof(raw_input));
-    assert_int_equal(G_context.tx_info.planned_ui_pairs, 0);  // non-expert mode hides collateral inputs
+    assert_int_equal(tx_body_ctx()->planned_ui_pairs, 0);  // non-expert mode hides collateral inputs
 }
 
 static void test_process_reference_inputs_field_parse_error_sends_reference_swo(void **state) {
@@ -210,7 +213,7 @@ static void test_process_reference_inputs_field_parse_error_sends_reference_swo(
     G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
     G_context.tx_info.tx_params.num_reference_inputs = 1;
 
-    parse_tx_mode_t mode = {
+    tx_processing_mode_t mode = {
         .run_validation = true,
         .run_hash_builder = false,
         .run_ui_planning = true,
@@ -220,7 +223,7 @@ static void test_process_reference_inputs_field_parse_error_sends_reference_swo(
     tx_processing_state_init(&mode, &warnings);
 
     apdu_response_begin(INS_SIGN_TX);
-    bool ok = tx_process_reference_inputs(&buf, &G_context.tx_info.processing_state);
+    bool ok = tx_process_reference_inputs(&buf, &tx_body_ctx()->processing_state);
     apdu_response_assert_sent_or_deferred();
     assert_false(ok);
     assert_int_equal(g_last_sw, SWO_TX_PARSING_FAIL_REFERENCE_INPUTS);
@@ -245,7 +248,7 @@ static void test_process_required_signers_field_pass1_success(void **state) {
     G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
     G_context.tx_info.tx_params.num_required_signers = 1;
 
-    parse_tx_mode_t mode = {
+    tx_processing_mode_t mode = {
         .run_validation = true,
         .run_hash_builder = false,
         .run_ui_planning = true,
@@ -254,10 +257,10 @@ static void test_process_required_signers_field_pass1_success(void **state) {
     warning_bits_t warnings = 0;
     tx_processing_state_init(&mode, &warnings);
 
-    bool ok = tx_process_required_signers(&buf, &G_context.tx_info.processing_state);
+    bool ok = tx_process_required_signers(&buf, &tx_body_ctx()->processing_state);
     assert_true(ok);
     assert_int_equal(buf.offset, sizeof(raw_signer));
-    assert_int_equal(G_context.tx_info.planned_ui_pairs, 0);  // non-expert mode hides required signers
+    assert_int_equal(tx_body_ctx()->planned_ui_pairs, 0);  // non-expert mode hides required signers
 }
 
 static void test_process_required_signers_field_parse_error_sends_required_swo(void **state) {
@@ -274,7 +277,7 @@ static void test_process_required_signers_field_parse_error_sends_required_swo(v
     G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
     G_context.tx_info.tx_params.num_required_signers = 1;
 
-    parse_tx_mode_t mode = {
+    tx_processing_mode_t mode = {
         .run_validation = true,
         .run_hash_builder = false,
         .run_ui_planning = true,
@@ -284,7 +287,7 @@ static void test_process_required_signers_field_parse_error_sends_required_swo(v
     tx_processing_state_init(&mode, &warnings);
 
     apdu_response_begin(INS_SIGN_TX);
-    bool ok = tx_process_required_signers(&buf, &G_context.tx_info.processing_state);
+    bool ok = tx_process_required_signers(&buf, &tx_body_ctx()->processing_state);
     apdu_response_assert_sent_or_deferred();
     assert_false(ok);
     assert_int_equal(g_last_sw, SWO_TX_PARSING_FAIL_REQUIRED_SIGNERS);
@@ -304,7 +307,7 @@ static void test_mode_allows_rendering_with_validation(void **state) {
     G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
     G_context.tx_info.tx_params.num_inputs = 0;
 
-    parse_tx_mode_t mode = {
+    tx_processing_mode_t mode = {
         .run_validation = true,
         .run_hash_builder = false,
         .run_ui_planning = false,
@@ -313,7 +316,7 @@ static void test_mode_allows_rendering_with_validation(void **state) {
     warning_bits_t warnings = 0;
     tx_processing_state_init(&mode, &warnings);
 
-    bool ok = tx_process_inputs(&buf, &G_context.tx_info.processing_state);
+    bool ok = tx_process_inputs(&buf, &tx_body_ctx()->processing_state);
     assert_true(ok);
 }
 
@@ -394,7 +397,7 @@ static void test_validate_from_raw_success(void **state) {
 
     assert_true(ok);
     assert_int_equal(buf.offset, sizeof(raw_tx));
-    assert_true(G_context.tx_info.planned_ui_pairs >= (UI_PAIRS_OUTPUT_BASE + UI_PAIRS_FEE));
+    assert_true(tx_body_ctx()->planned_ui_pairs >= (UI_PAIRS_OUTPUT_BASE + UI_PAIRS_FEE));
 
     bool hash_nonzero = false;
     for (size_t i = 0; i < TX_HASH_LENGTH; i++) {
@@ -510,7 +513,7 @@ static void test_validate_from_raw_with_tokens_and_mint_success(void **state) {
 
     assert_true(ok);
     assert_int_equal(buf.offset, sizeof(raw_tx));
-    assert_int_equal(G_context.tx_info.planned_ui_pairs, 9);  // output base + output token + fee + mint summary + mint token
+    assert_int_equal(tx_body_ctx()->planned_ui_pairs, 9);  // output base + output token + fee + mint summary + mint token
 }
 
 int main(void) {

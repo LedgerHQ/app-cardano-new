@@ -21,6 +21,7 @@
 #include "securityPolicy.h"
 #include "ui_display_tx.h"
 #include "sign_tx.h"
+#include "sign_tx_ctx.h"
 #include "tx.h"
 #include "tx_credential_types.h"
 #include "tx_output_types.h"
@@ -171,16 +172,10 @@ static bool read_aux_data_params(buffer_t *cdata, tx_params_t *tx_params) {
  */
 static void handle_tx_init_apdu(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    // Zero the entire transaction context atomically before tx init.
+    // No stage accessor is valid yet (tx_state == TX_STATE_NONE at this point).
+    explicit_bzero(&G_context.tx_info, sizeof(G_context.tx_info));
     tx_params_t *tx_params = &G_context.tx_info.tx_params;
-    G_context.tx_info.raw_tx = NULL;
-    G_context.tx_info.raw_tx_current_length = 0;
-    G_context.tx_info.raw_tx_total_length = 0;  // Will be set from APDU data
-    G_context.tx_info.warning_bits = 0;
-    G_context.tx_info.cvote_warning_bits = 0;
-    G_context.tx_info.planned_ui_pairs = 0;
-    explicit_bzero(&G_context.tx_info.single_account_data, sizeof(single_account_data_t));
-    explicit_bzero(&G_context.tx_info.pool_owner_path, sizeof(bip44_path_t));
-    G_context.tx_info.pool_owner_path_present = false;
 
     if (!read_tx_options(cdata, tx_params)) {
         return;
@@ -314,7 +309,8 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         return;
     }
 
-    // Read raw transaction buffer size (advertised by client)
+    // Read raw transaction buffer size (advertised by client).
+    // Direct stage access: tx_state is still TX_STATE_NONE at this point.
     if (!buffer_read_u16(cdata, &G_context.tx_info.raw_tx_total_length, BE)) {
         TRACE("TX init: missing raw_tx_total_length");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
@@ -383,12 +379,12 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     }
 
     if (cvote_aux_data_expected) {
-        G_context.tx_info.cvote_aux_data.state = CVOTE_AUX_DATA_STATE_EXPECTING_INIT;
+        // Transition to AUX_DATA state; set initial aux_data sub-state before accessor is valid.
         G_context.state.tx_state = TX_STATE_AUX_DATA;
+        tx_aux_data_ctx()->cvote_aux_data.state = CVOTE_AUX_DATA_STATE_EXPECTING_INIT;
         TRACE("Transaction initialized, waiting for CVote AUX_DATA");
     } else {
-        G_context.tx_info.cvote_aux_data.state = CVOTE_AUX_DATA_STATE_NONE;
-        // Transition to CHUNKS state - now ready to receive transaction data chunks
+        // Transition directly to CHUNKS state - no aux data expected.
         G_context.state.tx_state = TX_STATE_CHUNKS;
         TRACE("Transaction initialized, waiting for data chunks");
     }
@@ -424,21 +420,21 @@ static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
     }
 
     // Allocate buffer on first data chunk (using advertised size from client)
-    if (G_context.tx_info.raw_tx == NULL) {
+    if (tx_body_ctx()->raw_tx == NULL) {
         uint16_t alloc_size = G_context.tx_info.raw_tx_total_length;
         TRACE("Allocating transaction buffer: %u bytes (advertised by client)", alloc_size);
-        if (!APP_MEM_CALLOC((void **) &G_context.tx_info.raw_tx, alloc_size)) {
+        if (!APP_MEM_CALLOC((void **) &tx_body_ctx()->raw_tx, alloc_size)) {
             TRACE("Failed to allocate %u byte transaction buffer!", alloc_size);
             send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
             return false;
         }
-        TRACE("Transaction buffer allocated: %u bytes at %p", alloc_size, G_context.tx_info.raw_tx);
+        TRACE("Transaction buffer allocated: %u bytes at %p", alloc_size, tx_body_ctx()->raw_tx);
     }
 
     // Check if adding this chunk would exceed advertised buffer size
-    if (G_context.tx_info.raw_tx_current_length + chunk_size > G_context.tx_info.raw_tx_total_length) {
+    if (tx_body_ctx()->raw_tx_current_length + chunk_size > G_context.tx_info.raw_tx_total_length) {
         TRACE("Transaction chunk exceeds advertised size: current=%u, chunk=%u, total=%u",
-              (unsigned) G_context.tx_info.raw_tx_current_length,
+              (unsigned) tx_body_ctx()->raw_tx_current_length,
               (unsigned) chunk_size,
               (unsigned) G_context.tx_info.raw_tx_total_length);
         send_swo_and_reset(SWO_INVALID_TX_LENGTH);
@@ -447,14 +443,14 @@ static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
 
     // Copy chunk data
     if (!buffer_move(cdata,
-                     G_context.tx_info.raw_tx + G_context.tx_info.raw_tx_current_length,
+                     tx_body_ctx()->raw_tx + tx_body_ctx()->raw_tx_current_length,
                      chunk_size)) {
         TRACE("Failed to copy transaction chunk");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return false;
     }
-    G_context.tx_info.raw_tx_current_length += chunk_size;
-    TRACE("Copied %u bytes, total: %u", (unsigned) chunk_size, (unsigned) G_context.tx_info.raw_tx_current_length);
+    tx_body_ctx()->raw_tx_current_length += chunk_size;
+    TRACE("Copied %u bytes, total: %u", (unsigned) chunk_size, (unsigned) tx_body_ctx()->raw_tx_current_length);
 
     return true;
 }
@@ -515,9 +511,9 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             }
 
             // Verify received length matches advertised length
-            if (G_context.tx_info.raw_tx_current_length != G_context.tx_info.raw_tx_total_length) {
+            if (tx_body_ctx()->raw_tx_current_length != G_context.tx_info.raw_tx_total_length) {
                 TRACE("TX length mismatch: received=%u, advertised=%u",
-                      (unsigned) G_context.tx_info.raw_tx_current_length,
+                      (unsigned) tx_body_ctx()->raw_tx_current_length,
                       (unsigned) G_context.tx_info.raw_tx_total_length);
                 send_swo_and_reset(SWO_INVALID_TX_LENGTH);
                 return;
@@ -527,11 +523,11 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_CHUNKS, "Bad state before parse");
             G_context.state.tx_state = TX_STATE_RECEIVED;
 
-            LEDGER_ASSERT(G_context.tx_info.raw_tx != NULL, "Raw transaction buffer missing");
+            LEDGER_ASSERT(tx_body_ctx()->raw_tx != NULL, "Raw transaction buffer missing");
 
             buffer_t buf = {
-                .ptr = G_context.tx_info.raw_tx,
-                .size = G_context.tx_info.raw_tx_current_length,
+                .ptr = tx_body_ctx()->raw_tx,
+                .size = tx_body_ctx()->raw_tx_current_length,
                 .offset = 0
             };
             if (!tx_validate(&buf)) {
@@ -545,7 +541,10 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
                 // In swap mode there is no interactive transaction review, so we intentionally
                 // skip TX_STATE_UI_PREPARED and transition directly to TX_STATE_APPROVED.
                 // Consequently, finalize_sign_tx() is not used in this flow.
+                // Null raw_tx while body slot is still valid, before the union is repurposed.
+                tx_body_ctx()->raw_tx = NULL;
                 G_context.state.tx_state = TX_STATE_APPROVED;
+                tx_witness_ctx()->current_witness = 0;
                 apdu_response_send_data(
                     G_context.tx_info.tx_hash,
                     sizeof(G_context.tx_info.tx_hash),
@@ -554,7 +553,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             }
 #endif
 
-            LEDGER_ASSERT(G_context.tx_info.planned_ui_pairs > 0, "Invalid UI plan");
+            LEDGER_ASSERT(tx_body_ctx()->planned_ui_pairs > 0, "Invalid UI plan");
 
             bool ui_prepare_succeeded = tx_prepare_ui_review();
             if (!ui_prepare_succeeded) {
@@ -580,8 +579,11 @@ void finalize_sign_tx(void) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_UI_PREPARED, "Bad tx_state");
 
+    // Transition body -> witness slot. Null raw_tx while body slot is still valid,
+    // before the union is repurposed. Then initialize witness sub-state.
+    tx_body_ctx()->raw_tx = NULL;
     G_context.state.tx_state = TX_STATE_APPROVED;
-    G_context.tx_info.current_witness = 0;
+    tx_witness_ctx()->current_witness = 0;
     apdu_response_send_data(G_context.tx_info.tx_hash, SIZEOF(G_context.tx_info.tx_hash), SWO_SUCCESS);
 
     if (G_context.tx_info.num_witnesses == 0) {
@@ -595,10 +597,10 @@ bool is_last_witness_to_process(void) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_APPROVED, "Bad tx_state");
     LEDGER_ASSERT(G_context.tx_info.num_witnesses > 0, "No witnesses expected");
-    LEDGER_ASSERT(G_context.tx_info.current_witness < G_context.tx_info.num_witnesses,
+    LEDGER_ASSERT(tx_witness_ctx()->current_witness < G_context.tx_info.num_witnesses,
                   "Witness index out of range for final-witness check");
     const uint16_t remaining_witnesses =
-        G_context.tx_info.num_witnesses - G_context.tx_info.current_witness;
+        G_context.tx_info.num_witnesses - tx_witness_ctx()->current_witness;
     return (remaining_witnesses == 1);
 }
 
@@ -607,17 +609,17 @@ void finalize_witness(void)
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_APPROVED, "Bad tx_state");
     LEDGER_ASSERT(G_context.tx_info.num_witnesses > 0, "No witnesses expected");
-    LEDGER_ASSERT(G_context.tx_info.current_witness < G_context.tx_info.num_witnesses,
+    LEDGER_ASSERT(tx_witness_ctx()->current_witness < G_context.tx_info.num_witnesses,
                   "Witness index out of range");
 
     // Witness confirmed - sign transaction hash with the selected witness path
-    getWitness(&G_context.tx_info.witness_path,
+    getWitness(&tx_witness_ctx()->witness_path,
                G_context.tx_info.tx_hash,
                SIZEOF(G_context.tx_info.tx_hash),
-               G_context.tx_info.witness_signature,
-               SIZEOF(G_context.tx_info.witness_signature));
+               tx_witness_ctx()->witness_signature,
+               SIZEOF(tx_witness_ctx()->witness_signature));
 
-    TRACE_BUFFER(G_context.tx_info.witness_signature, ED25519_SIGNATURE_LENGTH);
+    TRACE_BUFFER(tx_witness_ctx()->witness_signature, ED25519_SIGNATURE_LENGTH);
 
     const bool is_last_witness = is_last_witness_to_process();
 
@@ -633,7 +635,7 @@ void finalize_witness(void)
     }
 #endif
     apdu_response_send_data(
-        G_context.tx_info.witness_signature,
+        tx_witness_ctx()->witness_signature,
         ED25519_SIGNATURE_LENGTH,
         SWO_SUCCESS
     );
@@ -644,7 +646,7 @@ void finalize_witness(void)
         // so clearing G_context afterwards does not affect the just-sent signature.
         reset_app_context();
     } else {
-        G_context.tx_info.current_witness++;
+        tx_witness_ctx()->current_witness++;
     }
 }
 
@@ -664,9 +666,9 @@ void handler_sign_tx_witness(buffer_t *cdata) {
     }
 
     // Check that we haven't exceeded the expected number of witnesses
-    if (G_context.tx_info.current_witness >= G_context.tx_info.num_witnesses) {
+    if (tx_witness_ctx()->current_witness >= G_context.tx_info.num_witnesses) {
         TRACE("Witness count exceeded: current=%d, expected=%d",
-              G_context.tx_info.current_witness,
+              tx_witness_ctx()->current_witness,
               G_context.tx_info.num_witnesses
         );
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
@@ -675,7 +677,7 @@ void handler_sign_tx_witness(buffer_t *cdata) {
 
     // Parse witness path from APDU data
     // buffer_read_bip44_path reads the length byte and all path components
-    if (!buffer_read_bip44_path(cdata, &G_context.tx_info.witness_path)) {
+    if (!buffer_read_bip44_path(cdata, &tx_witness_ctx()->witness_path)) {
         TRACE("Witness APDU: failed to parse BIP44 path");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
@@ -686,8 +688,8 @@ void handler_sign_tx_witness(buffer_t *cdata) {
     }
 
     TRACE("Witness %d: path length=%d",
-           G_context.tx_info.current_witness,
-           G_context.tx_info.witness_path.length);
+           tx_witness_ctx()->current_witness,
+           tx_witness_ctx()->witness_path.length);
 
     // Check security policy for witness signing
     // Determine if mint is present in the transaction
@@ -698,7 +700,7 @@ void handler_sign_tx_witness(buffer_t *cdata) {
     switch (G_context.tx_info.tx_params.txSigningMode) {
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
             if (G_context.tx_info.pool_owner_path_present) {
-                poolOwnerPath = &G_context.tx_info.pool_owner_path;
+                poolOwnerPath = &G_context.tx_info.pool_owner_path;  // cross-stage field, direct access ok
             }
             break;
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
@@ -716,7 +718,7 @@ void handler_sign_tx_witness(buffer_t *cdata) {
     security_policy_t policy = policyForSignTxWitness(
         G_context.tx_info.tx_params.txSigningMode,
         isSwap,
-        &G_context.tx_info.witness_path,
+        &tx_witness_ctx()->witness_path,
         mintPresent,
         poolOwnerPath,
         &witness_warnings
@@ -765,7 +767,7 @@ void handler_sign_tx_witness(buffer_t *cdata) {
 
         case POLICY_SHOW:
             apdu_response_deferred();
-            ui_display_witness(&G_context.tx_info.witness_path, policy, witness_warnings);
+            ui_display_witness(&tx_witness_ctx()->witness_path, policy, witness_warnings);
             return;
 
         default:

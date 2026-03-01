@@ -15,24 +15,24 @@ typedef struct {
     bool run_hash_builder;            // pass 1: true, pass 2: false
     bool run_ui_planning;             // pass 1: true, pass 2: false
     bool run_ui_rendering;            // pass 1: false, pass 2: true
-} parse_tx_mode_t;
+} tx_processing_mode_t;
 
 /**
  * Unpacked view of global tx context for use at the top of processing functions.
  * Created as a local variable via tx_get_ctx(); never stored globally.
  */
 typedef struct {
-    const tx_params_t     *tx_params;
-    const parse_tx_mode_t *mode;
-    warning_bits_t        *warning_bits;
-    tx_hash_builder_t     *hash_builder;
-} tx_parse_ctx_t;
+    const tx_params_t        *tx_params;
+    const tx_processing_mode_t *mode;
+    warning_bits_t           *warning_bits;
+    tx_hash_builder_t        *hash_builder;
+} tx_processing_ctx_t;
 
 /**
  * Assert that the global tx processing context is valid and return an unpacked view.
  * Call at the top of every tx_process_* function after asserting buf != NULL.
  */
-tx_parse_ctx_t tx_get_ctx(void);
+tx_processing_ctx_t tx_get_ctx(void);
 
 void tx_handle_parse_error(uint16_t swo);
 
@@ -40,7 +40,7 @@ void tx_handle_parse_error(uint16_t swo);
 // Context helpers
 // ---------------------------------------------------------------------------
 
-void validate_parse_tx_mode(const parse_tx_mode_t *mode);
+void validate_parse_tx_mode(const tx_processing_mode_t *mode);
 
 #include "cbor_canonical.h"
 

@@ -15,6 +15,7 @@
 #include "tx_constants.h"
 #include "keyDerivation.h"
 #include "globals.h"
+#include "sign_tx_ctx.h"
 #include "io.h"
 
 #include <string.h>
@@ -23,7 +24,7 @@
 // Mode validator
 // ---------------------------------------------------------------------------
 
-void validate_parse_tx_mode(const parse_tx_mode_t *mode) {
+void validate_parse_tx_mode(const tx_processing_mode_t *mode) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
 
     LEDGER_ASSERT(!mode->run_ui_rendering || !mode->run_hash_builder,
@@ -38,15 +39,15 @@ void validate_parse_tx_mode(const parse_tx_mode_t *mode) {
 // Context helpers
 // ---------------------------------------------------------------------------
 
-void tx_processing_state_init(const parse_tx_mode_t *mode, warning_bits_t *warning_bits) {
+void tx_processing_state_init(const tx_processing_mode_t *mode, warning_bits_t *warning_bits) {
     validate_parse_tx_mode(mode);
     LEDGER_ASSERT(warning_bits != NULL, "NULL warning_bits");
 
-    tx_processing_state_t *state = &G_context.tx_info.processing_state;
+    tx_processing_state_t *state = &tx_body_ctx()->processing_state;
     explicit_bzero(state, sizeof(*state));
 
-    G_context.tx_info.parse_mode = *mode;
-    state->mode = &G_context.tx_info.parse_mode;
+    tx_body_ctx()->parse_mode = *mode;
+    state->mode = &tx_body_ctx()->parse_mode;
     state->warning_bits = warning_bits;
 
     if (mode->run_hash_builder) {
@@ -55,13 +56,13 @@ void tx_processing_state_init(const parse_tx_mode_t *mode, warning_bits_t *warni
     }
 }
 
-tx_parse_ctx_t tx_get_ctx(void) {
-    tx_processing_state_t *state = &G_context.tx_info.processing_state;
+tx_processing_ctx_t tx_get_ctx(void) {
+    tx_processing_state_t *state = &tx_body_ctx()->processing_state;
     LEDGER_ASSERT(state->mode != NULL, "tx_processing_state not initialized");
     LEDGER_ASSERT(state->warning_bits != NULL, "tx_processing_state not initialized (warnings)");
     validate_parse_tx_mode(state->mode);
 
-    return (tx_parse_ctx_t){
+    return (tx_processing_ctx_t){
         .tx_params    = &G_context.tx_info.tx_params,
         .mode         = state->mode,
         .warning_bits = state->warning_bits,

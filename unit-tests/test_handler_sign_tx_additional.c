@@ -15,6 +15,7 @@
 #include "cardano_swo.h"
 #include "mock_crypto/crypto_mock_data.h"
 #include "globals.h"
+#include "sign_tx_ctx.h"
 #include "init_apdu.h"
 #include "test_sign_tx_common.h"
 #include "test_sign_tx_fixtures_pool_registration.h"
@@ -70,7 +71,7 @@ static void test_sign_tx_witness_flow_signs_and_resets_context(void **state) {
     assert_int_equal(g_last_response_sw, SWO_SUCCESS);
     assert_int_equal(g_last_response_len, TX_HASH_LENGTH);
     assert_int_equal(G_context.state.tx_state, TX_STATE_APPROVED);
-    assert_int_equal(G_context.tx_info.current_witness, 0);
+    assert_int_equal(tx_witness_ctx()->current_witness, 0);
     assert_int_equal(G_context.tx_info.num_witnesses, 1);
     uint8_t tx_hash_before_witness[TX_HASH_LENGTH] = {0};
     memcpy(tx_hash_before_witness, g_last_response, TX_HASH_LENGTH);

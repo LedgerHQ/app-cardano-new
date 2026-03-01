@@ -20,7 +20,7 @@
  * On the rendering pass (mode->run_ui_rendering), renders all UI pairs for the
  * certificate.
  */
-void tx_ui_plan_or_render_certificate(const parse_tx_mode_t *mode,
+void tx_ui_plan_or_render_certificate(const tx_processing_mode_t *mode,
                                       const certificate_data_t *certificate_data);
 
 // ---------------------------------------------------------------------------
@@ -28,24 +28,24 @@ void tx_ui_plan_or_render_certificate(const parse_tx_mode_t *mode,
 // Intended for use by tx_processing_pool_registration.c.
 // ---------------------------------------------------------------------------
 
-void plan_or_render_pool_registration_header(const parse_tx_mode_t *mode,
+void plan_or_render_pool_registration_header(const tx_processing_mode_t *mode,
                                              certificate_type_t type);
-void plan_or_render_pool_id(const parse_tx_mode_t *mode, const pool_id_t *pool_id);
-void plan_or_render_pool_vrf_key_hash(const parse_tx_mode_t *mode,
+void plan_or_render_pool_id(const tx_processing_mode_t *mode, const pool_id_t *pool_id);
+void plan_or_render_pool_vrf_key_hash(const tx_processing_mode_t *mode,
                                       const uint8_t *vrf_key_hash);
-void plan_or_render_pool_financials(const parse_tx_mode_t *mode,
+void plan_or_render_pool_financials(const tx_processing_mode_t *mode,
                                     const pool_registration_data_t *pool_registration);
-void plan_or_render_pool_reward_account(const parse_tx_mode_t *mode,
+void plan_or_render_pool_reward_account(const tx_processing_mode_t *mode,
                                         uint8_t network_id,
                                         const pool_reward_account_t *reward_account);
-void plan_or_render_pool_owner(const parse_tx_mode_t *mode,
+void plan_or_render_pool_owner(const tx_processing_mode_t *mode,
                                uint8_t network_id,
                                const ext_credential_t *owner_credential);
-void plan_or_render_pool_no_owners(const parse_tx_mode_t *mode);
-void plan_or_render_pool_relay(const parse_tx_mode_t *mode,
+void plan_or_render_pool_no_owners(const tx_processing_mode_t *mode);
+void plan_or_render_pool_relay(const tx_processing_mode_t *mode,
                                uint16_t relay_index,
                                const pool_relay_t *relay);
-void plan_or_render_pool_no_relays(const parse_tx_mode_t *mode);
-void plan_or_render_pool_metadata(const parse_tx_mode_t *mode,
+void plan_or_render_pool_no_relays(const tx_processing_mode_t *mode);
+void plan_or_render_pool_metadata(const tx_processing_mode_t *mode,
                                   const pool_metadata_t *pool_metadata);
-void plan_or_render_pool_no_metadata(const parse_tx_mode_t *mode);
+void plan_or_render_pool_no_metadata(const tx_processing_mode_t *mode);

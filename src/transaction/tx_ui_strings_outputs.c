@@ -8,6 +8,7 @@
 #include "bech32.h"
 #include "cardano_tokens.h"
 #include "globals.h"
+#include "sign_tx_ctx.h"
 #include "tx_ui_helpers.h"
 #include "tx_ui_plan.h"
 #include "tx_ui_strings_outputs.h"
@@ -16,16 +17,16 @@
 #include "ui_formatters.h"
 #include "ui_utils.h"
 
-void tx_ui_plan_or_render_output(const parse_tx_mode_t *mode,
+void tx_ui_plan_or_render_output(const tx_processing_mode_t *mode,
                                  uint16_t output_index,
                                  const tx_output_description_t *output_desc) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(output_desc != NULL, "NULL output_desc");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_OUTPUT_BASE;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_OUTPUT_BASE;
         if (output_desc->destination.type == DESTINATION_DEVICE_OWNED) {
-            G_context.tx_info.planned_ui_pairs += UI_PAIRS_OUTPUT_DEVICE_OWNED;
+            tx_body_ctx()->planned_ui_pairs += UI_PAIRS_OUTPUT_DEVICE_OWNED;
         }
     } else if (mode->run_ui_rendering) {
         START_COUNT();
@@ -53,15 +54,15 @@ void tx_ui_plan_or_render_output(const parse_tx_mode_t *mode,
     }
 }
 
-void tx_ui_plan_or_render_collateral_output_address(const parse_tx_mode_t *mode,
+void tx_ui_plan_or_render_collateral_output_address(const tx_processing_mode_t *mode,
                                                     const tx_output_description_t *output_desc) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(output_desc != NULL, "NULL output_desc");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_COLLATERAL_OUTPUT_ADDRESS;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_COLLATERAL_OUTPUT_ADDRESS;
         if (output_desc->destination.type == DESTINATION_DEVICE_OWNED) {
-            G_context.tx_info.planned_ui_pairs += UI_PAIRS_COLLATERAL_OUTPUT_DEVICE_OWNED;
+            tx_body_ctx()->planned_ui_pairs += UI_PAIRS_COLLATERAL_OUTPUT_DEVICE_OWNED;
         }
     } else if (mode->run_ui_rendering) {
         START_COUNT();
@@ -81,13 +82,13 @@ void tx_ui_plan_or_render_collateral_output_address(const parse_tx_mode_t *mode,
     }
 }
 
-void tx_ui_plan_or_render_collateral_output_amount(const parse_tx_mode_t *mode,
+void tx_ui_plan_or_render_collateral_output_amount(const tx_processing_mode_t *mode,
                                                    const tx_output_description_t *output_desc) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(output_desc != NULL, "NULL output_desc");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_COLLATERAL_OUTPUT_AMOUNT;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_COLLATERAL_OUTPUT_AMOUNT;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Collateral amount", "Coll amount"),
@@ -98,7 +99,7 @@ void tx_ui_plan_or_render_collateral_output_amount(const parse_tx_mode_t *mode,
     }
 }
 
-void tx_ui_plan_or_render_output_token(const parse_tx_mode_t *mode,
+void tx_ui_plan_or_render_output_token(const tx_processing_mode_t *mode,
                                        const uint8_t *policy_id,
                                        const output_token_t *token) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
@@ -126,13 +127,13 @@ void tx_ui_plan_or_render_output_token(const parse_tx_mode_t *mode,
     }
 }
 
-void tx_ui_plan_or_render_output_datum(const parse_tx_mode_t *mode,
+void tx_ui_plan_or_render_output_datum(const tx_processing_mode_t *mode,
                                        const output_datum_t *datum) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(datum != NULL, "NULL datum");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_OUTPUT_DATUM;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_OUTPUT_DATUM;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         if (datum->type == DATUM_HASH) {
@@ -153,13 +154,13 @@ void tx_ui_plan_or_render_output_datum(const parse_tx_mode_t *mode,
     }
 }
 
-void tx_ui_plan_or_render_output_ref_script(const parse_tx_mode_t *mode,
+void tx_ui_plan_or_render_output_ref_script(const tx_processing_mode_t *mode,
                                             const ref_script_t *ref_script) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(ref_script != NULL, "NULL ref_script");
 
     if (mode->run_ui_planning) {
-        G_context.tx_info.planned_ui_pairs += UI_PAIRS_OUTPUT_REF_SCRIPT;
+        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_OUTPUT_REF_SCRIPT;
     } else if (mode->run_ui_rendering) {
         START_COUNT();
         UI_ADD_FORMAT2(UI_STATIC_LABEL("Script"),
