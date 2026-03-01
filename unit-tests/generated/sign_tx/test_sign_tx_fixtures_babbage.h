@@ -113,6 +113,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_SHORT_INLINE_DATUM_IN_OUT
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL),
 };
 
 // Test 1: Sign_tx_with_long_inline_datum_480_B_in_output
@@ -218,6 +219,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_480_B_I
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL),
 };
 
 // Test 2: Sign_tx_with_long_inline_datum_304_B_in_output_with_tokens
@@ -316,6 +318,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_304_B_I
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL),
 };
 
 // Test 3: Sign_tx_with_datum_hash_and_short_ref_script_in_output
@@ -391,6 +394,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SHORT_REF_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 4: Sign_tx_with_datum_hash_and_ref_script_240_B_in_output_in_Babbage_format
@@ -480,6 +484,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_REF_SCRIPT
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 5: Sign_tx_with_datum_hash_and_script_reference_304_B_in_output_as_map
@@ -573,6 +578,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SCRIPT_REF
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 6: Sign_tx_with_datum_hash_in_output_with_tokens_in_Babbage_format
@@ -650,6 +656,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_WITH
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 7: Sign_tx_with_a_complex_multiasset_output_Babbage
@@ -737,6 +744,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTP
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 8: Sign_tx_with_change_output_as_map_and_multiple_reference_inputs
@@ -816,6 +824,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL),
 };
 
 // Test 9: Sign_tx_with_change_output_as_map_and_total_collateral
@@ -889,6 +898,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL),
 };
 
 // Test 10: Sign_tx_with_change_output_as_map_and_collateral_output_as_array
@@ -965,6 +975,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL),
 };
 
 // Test 11: Sign_tx_with_change_collateral_output_as_map_without_total_collateral
@@ -1047,6 +1058,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_COLLATERAL_OUTPUT_WARNING),
 };
 
 // Test 12: Sign_tx_with_change_collateral_output_as_map_with_total_collateral
@@ -1129,6 +1141,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 13: Sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral
@@ -1221,6 +1234,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUT
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL),
 };
 
 // Test 14: Sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral
@@ -1313,6 +1327,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUT
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 15: Sign_tx_Full_test_for_trezor_feature_parity_Babbage_elements_Plutus
@@ -1405,6 +1420,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_P
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 16: Sign_tx_Full_test_for_trezor_feature_parity_Babbage_elements_ordinary
@@ -1480,6 +1496,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_P
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 #if defined(__clang__)

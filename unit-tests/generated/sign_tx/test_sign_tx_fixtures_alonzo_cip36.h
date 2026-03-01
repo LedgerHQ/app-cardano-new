@@ -116,6 +116,7 @@ static const tx_fixture_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_W
     .donation = 0,
     .aux_data_hash_hex = "1999b3bb9102b585c42616e40cf1290518d788f967ab4b3329dcb712ac933da0",
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 1: Sign_tx_with_CIP36_registration_with_vote_key_path
@@ -198,6 +199,7 @@ static const tx_fixture_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_W
     .donation = 0,
     .aux_data_hash_hex = "d05698c555a117014a3b360a66931ec43bf18e2aa16560fc99dbd92dd7f6f654",
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 2: Sign_tx_with_CIP36_registration_with_unusual_vote_key_path
@@ -280,6 +282,7 @@ static const tx_fixture_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_W
     .donation = 0,
     .aux_data_hash_hex = "77be323b8df4c6aa1bf2f180112f85ffe8d7f658bc8febdf7dbd5a07453a31cb",
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 3: Sign_tx_with_CIP36_registration_with_thirdparty_payment_address
@@ -363,6 +366,7 @@ static const tx_fixture_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_W
     .donation = 0,
     .aux_data_hash_hex = "42e408fb03986a958be9e2cca01623a31e23f86f31172a5a9b84acdfce6f0e75",
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 4: Sign_tx_with_CIP36_registration_with_voting_purpose
@@ -446,6 +450,7 @@ static const tx_fixture_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_W
     .donation = 0,
     .aux_data_hash_hex = "d706aed1ebc1e8af188aae6d37ffdf4e259a0f04635bef5edce7f43ff632c445",
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 5: Sign_tx_with_CIP36_registration_with_delegations
@@ -542,6 +547,7 @@ static const tx_fixture_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_W
     .donation = 0,
     .aux_data_hash_hex = "f0e62a047ef597d9fb1bfefb9cd3f4e77558c33510ca552484ee8b5c77bbdf65",
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 6: Sign_tx_with_CIP36_registration_with_many_delegations_streaming
@@ -1255,6 +1261,7 @@ static const tx_fixture_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_W
     .donation = 0,
     .aux_data_hash_hex = "92cc23c0ff5952db0243e891ef08d1360ed9a33c6970156dfe945dd4df284d98",
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 #if defined(__clang__)

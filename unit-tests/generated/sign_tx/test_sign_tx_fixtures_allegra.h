@@ -105,6 +105,7 @@ static const tx_fixture_t FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_IN
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 1: Sign_tx_with_no_ttl_but_with_validity_interval_start
@@ -176,6 +177,7 @@ static const tx_fixture_t FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 #if defined(__clang__)

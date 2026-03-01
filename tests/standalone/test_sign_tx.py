@@ -93,7 +93,7 @@ def _run_sign_tx_test(device: Device,
         if testCase.tx.auxiliaryData is not None:
             if testCase.tx.auxiliaryData.type == TxAuxiliaryDataType.CIP36_REGISTRATION:
                 test_name = f"{testCase.name}-{mode_str}/cvote_review"
-                if testCase.has_aux_warning:
+                if len(testCase.expected_aux_warnings) > 0:
                     scenario_navigator.review_approve_with_warning(test_name=test_name, custom_screen_text="Confirm")
                 else:
                     scenario_navigator.review_approve(test_name=test_name, custom_screen_text="Confirm")
@@ -101,7 +101,7 @@ def _run_sign_tx_test(device: Device,
     def review_tx() -> None:
         # Main transaction review
         test_name = f"{testCase.name}-{mode_str}/review"
-        if testCase.has_warning:
+        if len(testCase.expected_warnings) > 0:
             scenario_navigator.review_approve_with_warning(test_name=test_name, custom_screen_text="Sign transaction")
         else:
             scenario_navigator.review_approve(test_name=test_name, custom_screen_text="Sign transaction")
@@ -243,7 +243,7 @@ def test_sign_tx(device: Device,
     client = CommandSender(backend)
     client.set_debug_settings(expert_mode=expert_mode, silent_export=False)
 
-    if device.is_nano and (testCase.has_warning or testCase.has_aux_warning):
+    if device.is_nano and (len(testCase.expected_warnings) > 0 or len(testCase.expected_aux_warnings) > 0):
         pytest.skip("Skipped: failing warning navigation for Nano")
 
     try:
@@ -290,7 +290,7 @@ def test_sign_tx_deny(backend: BackendInterface,
     client = CommandSender(backend)
 
     def _requires_warning_navigation() -> bool:
-        if testCase.has_warning:
+        if len(testCase.expected_warnings) > 0:
             return True
 
         if testCase.signingMode == TransactionSigningMode.PLUTUS_TRANSACTION:

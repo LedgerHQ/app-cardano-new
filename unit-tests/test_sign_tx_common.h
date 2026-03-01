@@ -99,6 +99,8 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
                                      size_t witness_payload_count,
                                      bool include_ttl,
                                      bool include_validity_interval_start,
+                                     warning_bits_t expected_warning_bits,
+                                     const char* fixture_name,
                                      const uint8_t* response_buf,
                                      size_t* response_len,
                                      uint16_t* response_sw) {
@@ -137,6 +139,18 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
     }
 
     run_sign_tx_body_chunked(raw_tx, raw_tx_len);
+
+    // Assert warning bits while G_context is still populated (before witnesses clear it).
+    const warning_bits_t actual_warning_bits = G_context.tx_info.warning_bits;
+    if (actual_warning_bits != expected_warning_bits) {
+        print_message("WARNING BITS MISMATCH for fixture \"%s\":\n"
+                      "  expected: 0x%016llx\n"
+                      "  actual:   0x%016llx\n",
+                      fixture_name,
+                      (unsigned long long) expected_warning_bits,
+                      (unsigned long long) actual_warning_bits);
+    }
+    assert_int_equal(actual_warning_bits, expected_warning_bits);
 
     assert_non_null(cbor_hex);
     assert_true(strlen(cbor_hex) > 0);
@@ -281,6 +295,8 @@ static inline void run_fixture(const tx_fixture_t *fixture) {
                       fixture->witness_payload_count,
                       fixture->include_ttl,
                       fixture->include_validity_interval_start,
+                      fixture->expected_warning_bits,
+                      fixture->name,
                       g_last_response,
                       &g_last_response_len,
                       &g_last_response_sw);

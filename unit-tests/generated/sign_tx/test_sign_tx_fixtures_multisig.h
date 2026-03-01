@@ -105,6 +105,7 @@ static const tx_fixture_t FIXTURE_MULTISIG_SIGN_TX_WITHOUT_CHANGE_ADDRESS_WITH_S
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_NETWORK_UNUSUAL) | ((warning_bits_t)1 << WARNING_BIT_OUTPUT_MISSING_DATUM),
 };
 
 // Test 1: Sign_tx_with_script_based_withdrawal
@@ -178,6 +179,7 @@ static const tx_fixture_t FIXTURE_MULTISIG_SIGN_TX_WITH_SCRIPT_BASED_WITHDRAWAL 
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 2: Sign_tx_with_a_stake_registration_script_certificate
@@ -250,6 +252,7 @@ static const tx_fixture_t FIXTURE_MULTISIG_SIGN_TX_WITH_A_STAKE_REGISTRATION_SCR
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 3: Sign_tx_with_a_stake_delegation_script_certificate
@@ -324,6 +327,7 @@ static const tx_fixture_t FIXTURE_MULTISIG_SIGN_TX_WITH_A_STAKE_DELEGATION_SCRIP
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 4: Sign_tx_with_a_stake_deregistration_script_certificate
@@ -396,6 +400,7 @@ static const tx_fixture_t FIXTURE_MULTISIG_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_S
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 #if defined(__clang__)

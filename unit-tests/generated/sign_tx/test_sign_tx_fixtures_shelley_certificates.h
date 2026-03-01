@@ -106,6 +106,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_REGI
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 1: Sign_tx_with_a_stake_deregistration_path_certificate_preConway
@@ -191,6 +192,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_DERE
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 2: Sign_tx_with_a_stake_delegation_path_certificate
@@ -278,6 +280,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_DELE
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 3: Sign_tx_and_filter_out_witnesses_with_duplicate_paths
@@ -364,6 +367,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_AND_FILTER_OUT_WI
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 4: Sign_tx_with_pool_retirement_combined_with_stake_registration
@@ -451,6 +455,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_POOL_RETIREM
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 5: Sign_tx_with_pool_retirement_combined_with_stake_deregistration
@@ -551,6 +556,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_POOL_RETIREM
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 #if defined(__clang__)

@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 import base58
 
 from application_client.app_def import FakeNet, NetworkDesc, Mainnet, Testnet, Testnet_legacy
+from application_client.security_warnings import WarningBit
 from application_client.status_words import StatusWord
 from standalone.input_files.derive_address import (
     DeriveAddressTestCase,
@@ -415,8 +416,8 @@ class SignTxTestCase:
     options: bool = False
     additionalWitnessPaths: List[str] = field(default_factory=list)
     expected_sw: Optional[StatusWord] = StatusWord.SWO_SUCCESS
-    has_warning: bool = False
-    has_aux_warning: bool = False  # Warnings in auxiliary data (CVote) review
+    expected_warnings: List[WarningBit] = field(default_factory=list)
+    expected_aux_warnings: List[WarningBit] = field(default_factory=list)  # Warnings in auxiliary data (CVote) review
     # TODO: Debug navigation
     unsuitable_in_ragger_reason: Optional[str] = None  # If set, explains why this vector is unsuitable for direct ragger execution
     deny_before_review: bool = False  # For deny tests that fail before review UI is displayed
@@ -1759,7 +1760,7 @@ testsByron: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018182582f82d818582583581c709bfb5d9733cbdd72f520cd2c8b9f8f942da5e6cd0b6994e1803b0aa10242182a001aef14e76d1a002dd2e802182a030a",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
     ),
 ]
 
@@ -1770,7 +1771,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         tx=Transaction(network=Mainnet, inputs=[inputs["utxoShelley"]], outputs=[], fee=42, ttl=10),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_NOT_VERIFIABLE],
     ),
     SignTxTestCase(
         name="Sign_tx_with_258_tag_on_inputs",
@@ -1778,7 +1779,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         tx=Transaction(network=Mainnet, inputs=[inputs["utxoShelley"]], outputs=[], fee=42, ttl=10),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400d90102818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_NOT_VERIFIABLE],
     ),
     SignTxTestCase(
         name="Sign_tx_without_change_address",
@@ -1852,7 +1853,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182583901f90b0dfcace47bf03e88f7469a2f4fb3a7918461aa4765bfaf55f0dae260546c20562e598fb761f419dad27edcd49f4ee4f0540b8e40d4d51a006ca79302182a030a075820deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH],
     ),
     SignTxTestCase(
         name="Sign_tx_with_path_based_withdrawal",
@@ -2646,7 +2647,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048483098201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42778200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1830e8201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c88200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c4883909284108201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c813f683078201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b427711",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH],
     ),
 ]
 
@@ -2661,7 +2662,7 @@ testsMultisig: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e0102182a030a",
         additionalWitnessPaths=["m/1854'/1815'/0'/0/0"],
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL, WarningBit.WARNING_BIT_OUTPUT_MISSING_DATUM],
     ),
     SignTxTestCase(
         name="Sign_tx_with_script_based_withdrawal",
@@ -2813,7 +2814,7 @@ testsMary: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821b0055a275925d560fa1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1b0055a275925d560f021b0055a275925d560f031b0055a275925d560f081b0055a275925d560f",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_HIGH_FEE],
     ),
     SignTxTestCase(
         name="Sign_tx_with_a_multiasset_change_output",
@@ -2856,7 +2857,7 @@ testsMary: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a09a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a3581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_NOT_VERIFIABLE],
     ),
     SignTxTestCase(
         name="Sign_tx_with_mint_with_decimal_places",
@@ -3175,7 +3176,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18200581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH],
     ),
     SignTxTestCase(
         name="Sign_tx_with_voting_procedures_COMMITTEE_SCRIPT_HASH_voter",
@@ -3195,7 +3196,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18201581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038200f6",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH],
     ),
     SignTxTestCase(
         name="Sign_tx_with_voting_procedures_DREP_KEY_HASH_voter",
@@ -3215,7 +3216,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18202581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038201f6",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH],
     ),
     SignTxTestCase(
         name="Sign_tx_with_voting_procedures_DREP_SCRIPT_HASH_voter",
@@ -3235,7 +3236,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18203581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH],
     ),
     SignTxTestCase(
         name="Sign_tx_with_voting_procedures_STAKE_POOL_KEY_HASH_voter",
@@ -3255,7 +3256,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18204581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH],
     ),
     SignTxTestCase(
         name="Sign_tx_with_voting_procedures_single_voter_multiple_votes",
@@ -3319,7 +3320,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a28201581c8afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a28258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f68258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7058201f68202581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1a28258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef8258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f6",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH],
     ),
 ]
 
@@ -3367,7 +3368,7 @@ testsCatalystRegistration: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820d19f7cb4d48a6ae8d370c64d2a42fca1f61d6b2cf3d0c0c02801541811338deb",
-        has_aux_warning=True,
+        expected_aux_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
     ),
 ]
 
@@ -3391,7 +3392,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a0758201999b3bb9102b585c42616e40cf1290518d788f967ab4b3329dcb712ac933da0",
-        has_aux_warning=True,
+        expected_aux_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
     ),
     SignTxTestCase(
         name="Sign_tx_with_CIP36_registration_with_vote_key_path",
@@ -3455,7 +3456,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582042e408fb03986a958be9e2cca01623a31e23f86f31172a5a9b84acdfce6f0e750807",
-        has_aux_warning=True,
+        expected_aux_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
     ),
     SignTxTestCase(
         name="Sign_tx_with_CIP36_registration_with_voting_purpose",
@@ -3567,7 +3568,7 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH],
     ),
     SignTxTestCase(
         name="Sign_tx_with_datum_hash_in_output_as_array",
@@ -3576,7 +3577,7 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e1a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
     ),
     SignTxTestCase(
         name="Sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl",
@@ -3589,7 +3590,7 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839135e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e1a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a031b0055a275925d560f",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
     ),
     SignTxTestCase(
         name="Sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000",
@@ -3610,7 +3611,7 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a007838625820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
     ),
     # tests the path where a warning about missing datum hash is shown on Ledger
     SignTxTestCase(
@@ -3622,7 +3623,7 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a0078386202182a030a",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL, WarningBit.WARNING_BIT_OUTPUT_MISSING_DATUM],
     ),
     SignTxTestCase(
         name="Sign_tx_with_collateral_inputs",
@@ -3635,7 +3636,7 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0d818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc000f01",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH],
     ),
     SignTxTestCase(
         name="Sign_tx_with_collateral_inputs_shelley",
@@ -3648,7 +3649,7 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000f01",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH],
     ),
     SignTxTestCase(
         name="Sign_tx_with_required_signers_mixed",
@@ -3667,7 +3668,7 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0e82581cfea6646c67fb467f8a5425e9c752e1e262b0420ba4b638f39514049a581c14c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11240f01",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH],
     ),
     SignTxTestCase(
         name="Sign_tx_with_mint_path_in_a_required_signer",
@@ -3682,7 +3683,7 @@ testsAlonzo: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0e81581c43040068ce85252be6164296d6dca9595644bbf424b56b7424458227",
         additionalWitnessPaths=["m/1855'/1815'/0'"],
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH],
     ),
     SignTxTestCase(
         name="Sign_tx_with_key_hash_in_stake_credential",
@@ -3715,7 +3716,7 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a048183028200581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb497305a1581de129fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd1903e80f01",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH],
     ),
 ]
 
@@ -3730,7 +3731,7 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a00783862028201d818565579657420616e6f746865722063686f636f6c61746502182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL],
     ),
     SignTxTestCase(
         name="Sign_tx_with_long_inline_datum_480_B_in_output",
@@ -3742,7 +3743,7 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca793028201d8185901e012b8240c5470b47c159597b6f71d78c7fc99d1d8d911cb19b8f50211938ef361a22d30cd8f6354ec50e99a7d3cf3e06797ed4af3d358e01b2a957caa4010da328720b9fbe7a3a6d10209a13d2eb11933eb1bf2ab02713117e421b6dcc66297c41b95ad32d3457a0e6b44d8482385f311465964c3daff226acfb7bbda47011f1a6531db30e5b5977143c48f8b8eb739487f87dc13896f58529cfb48e415fc6123e708cdc3cb15cc1900ecf88c5fc9ff66d8ad6dae18c79e4a3c392a0df4d16ffa3e370f4dad8d8e9d171c5656bb317c78a2711057e7ae0beb1dc66ba01aa69d0c0db244e6742d7758ce8da00dfed6225d4aed4b01c42a0352688ed5803f3fd64873f11355305d9db309f4a2a6673cc408a06b8827a5edef7b0fd8742627fb8aa102a084b7db72fcb5c3d1bf437e2a936b738902a9c0258b462b9f2e9befd2c6bcfc036143bb34342b9124888a5b29fa5d60909c81319f034c11542b05ca3ff6c64c7642ff1e2b25fb60dc9bb6f5c914dd4149f31896955d4d204d822deddc46f852115a479edf7521cdf4ce596805875011855158fd303c33a2a7916a9cb7acaaf5aeca7e6efb75960e9597cd845bd9a93610bf1ab47ab0de943e8a96e26a24c4996f7b07fad437829fee5bc3496192608d4c04ac642cdec7bdbb8a948ad1d43402182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL],
     ),
     SignTxTestCase(
         name="Sign_tx_with_long_inline_datum_304_B_in_output_with_tokens",
@@ -3754,7 +3755,7 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a00783862028201d8185901305579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f7468657220637468657202182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL],
     ),
     # reference script
     SignTxTestCase(
@@ -3825,7 +3826,7 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70012828258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7008258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL],
     ),
     # total collateral and collateral return output
     SignTxTestCase(
@@ -3839,7 +3840,7 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7110a",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL],
     ),
     SignTxTestCase(
         name="Sign_tx_with_change_output_as_map_and_collateral_output_as_array",
@@ -3856,7 +3857,7 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7108258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca793",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL],
     ),
     SignTxTestCase(
         name="Sign_tx_with_change_collateral_output_as_map_without_total_collateral",
@@ -3870,7 +3871,7 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a1487564247542686911182f",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL, WarningBit.WARNING_BIT_COLLATERAL_OUTPUT_WARNING],
     ),
     SignTxTestCase(
         name="Sign_tx_with_change_collateral_output_as_map_with_total_collateral",
@@ -3898,7 +3899,7 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a200583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff01821904d2a2581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a34003581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209015820000000000000000000000000000000000000000000000000000000000000000002581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a248456c204e69c3b16f1904d24874652474436f696e1a0078386202182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b0901",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL],
     ),
     SignTxTestCase(
         name="Sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral",
@@ -3987,7 +3988,7 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8082782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_POOL_REGISTRATION_NO_RELAYS],
     ),
     SignTxTestCase(
         name="Sign_tx_Witness_pool_registration_with_no_metadata",
@@ -4024,7 +4025,7 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad808082782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_POOL_REGISTRATION_NO_OWNERS, WarningBit.WARNING_BIT_POOL_REGISTRATION_NO_RELAYS],
     ),
     SignTxTestCase(
         name="Sign_tx_Witness_pool_registration_as_operator_with_one_owner_and_no_relays",
@@ -4038,7 +4039,7 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1eef1689a3970b7880dcf3cb4ca9f22453b3833824fea34105117c84081581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad8082782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_POOL_REGISTRATION_NO_RELAYS],
     ),
     SignTxTestCase(
         name="Sign_tx_Witness_pool_registration_as_operator_with_multiple_owners_and_all_relays",
@@ -4094,7 +4095,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
     ),
     SignTxTestCase(
         name="Pool_registration_owner_too_few_certificates",
@@ -4107,7 +4108,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
     ),
     SignTxTestCase(
         name="Pool_registration_operator_too_many_certificates",
@@ -4411,7 +4412,7 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
     ),
     SignTxTestCase(
         name="Multisig_tx_collateral_inputs_included",
@@ -5603,7 +5604,7 @@ certificateStakePoolRetirementRejectTestCases: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
     ),
 ]
 
@@ -6578,7 +6579,7 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
     ),
     SignTxTestCase(
         name="Byron_to_Shelley_transfer_output_account_mismatch",

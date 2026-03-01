@@ -13,6 +13,7 @@ from tests.standalone.client_constants_check import (
     assert_ins_constants_match,
     assert_max_sign_tx_chunk_size_match,
     assert_p1_p2_constants_match,
+    assert_warning_bit_constants_match,
 )
 
 
@@ -34,3 +35,7 @@ def test_max_sign_tx_chunk_size():
 
 def test_cvote_credential_constants_match_src():
     assert_cvote_credential_constants_match()
+
+
+def test_warning_bit_constants_match_src():
+    assert_warning_bit_constants_match()

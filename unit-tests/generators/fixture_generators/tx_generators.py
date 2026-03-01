@@ -487,6 +487,16 @@ def _generate_fixtures_for_era(
         else:
             header_lines.append("    .aux_data_hash_hex = NULL,")
         header_lines.append(f"    .options = {options_value},")
+
+        expected_warnings = getattr(test_case, "expected_warnings", [])
+        if expected_warnings:
+            warning_expr = " | ".join(
+                f"((warning_bits_t)1 << {bit.name})" for bit in expected_warnings
+            )
+        else:
+            warning_expr = "0"
+        header_lines.append(f"    .expected_warning_bits = {warning_expr},")
+
         header_lines.append("};")
         header_lines.append("")
 

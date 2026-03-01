@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include "securityWarnings.h"
 
 typedef struct {
     const uint8_t *payload;
@@ -57,6 +58,7 @@ typedef struct {
     uint8_t signing_mode;
     uint8_t network_id;
     uint32_t protocol_magic;
+    warning_bits_t expected_warning_bits;
 } tx_fixture_t;
 
 typedef struct {

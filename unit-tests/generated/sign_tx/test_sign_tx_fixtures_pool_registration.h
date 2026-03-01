@@ -126,6 +126,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIP
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 1: Sign_tx_Witness_valid_single_path_owner_ipv4_relay_pool_registration
@@ -212,6 +213,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_SINGLE
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 2: Sign_tx_Witness_valid_multiple_mixed_owners_ipv4_relay_pool_registration
@@ -300,6 +302,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIP
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 3: Sign_tx_Witness_valid_multiple_mixed_owners_mixed_ipv4_single_host_relays_pool_registration
@@ -389,6 +392,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIP
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 4: Sign_tx_Witness_valid_multiple_mixed_owners_mixed_ipv4_ipv6_relays_pool_registration
@@ -479,6 +483,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIP
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 5: Sign_tx_Witness_valid_single_path_owner_no_relays_pool_registration
@@ -565,6 +570,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_SINGLE
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_POOL_REGISTRATION_NO_RELAYS),
 };
 
 // Test 6: Sign_tx_Witness_pool_registration_with_no_metadata
@@ -646,6 +652,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTR
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 7: Sign_tx_Witness_pool_registration_without_outputs
@@ -733,6 +740,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTR
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 8: Sign_tx_Witness_pool_registration_as_operator_with_no_owners_and_no_relays
@@ -829,6 +837,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTR
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_POOL_REGISTRATION_NO_OWNERS) | ((warning_bits_t)1 << WARNING_BIT_POOL_REGISTRATION_NO_RELAYS),
 };
 
 // Test 9: Sign_tx_Witness_pool_registration_as_operator_with_one_owner_and_no_relays
@@ -927,6 +936,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTR
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_POOL_REGISTRATION_NO_RELAYS),
 };
 
 // Test 10: Sign_tx_Witness_pool_registration_as_operator_with_multiple_owners_and_all_relays
@@ -1032,6 +1042,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTR
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 #if defined(__clang__)

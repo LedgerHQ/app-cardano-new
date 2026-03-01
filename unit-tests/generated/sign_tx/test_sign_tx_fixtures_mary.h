@@ -113,6 +113,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_OUTPUT = {
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 1: Sign_tx_with_a_complex_multiasset_output
@@ -200,6 +201,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT 
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 2: Sign_tx_with_big_numbers
@@ -275,6 +277,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_BIG_NUMBERS = {
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_HIGH_FEE),
 };
 
 // Test 3: Sign_tx_with_a_multiasset_change_output
@@ -353,6 +356,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT =
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 4: Sign_tx_with_zero_fee_TTL_and_validity_interval_start
@@ -424,6 +428,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_IN
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 5: Sign_tx_with_output_with_decimal_places
@@ -502,6 +507,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES =
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 6: Sign_tx_with_mint_fields_with_various_amounts
@@ -578,6 +584,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMO
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_NETWORK_NOT_VERIFIABLE),
 };
 
 // Test 7: Sign_tx_with_mint_with_decimal_places
@@ -656,6 +663,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES = {
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 8: Sign_tx_with_mint_fields_among_other_fields
@@ -743,6 +751,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIEL
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 #if defined(__clang__)

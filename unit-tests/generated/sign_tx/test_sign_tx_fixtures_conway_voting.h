@@ -125,6 +125,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_C
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 1: Sign_tx_with_voting_procedures_DREP_KEY_PATH_voter
@@ -212,6 +213,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_D
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 2: Sign_tx_with_voting_procedures_STAKE_POOL_KEY_PATH_voter
@@ -299,6 +301,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_S
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 3: Sign_tx_with_voting_procedures_COMMITTEE_KEY_HASH_voter
@@ -377,6 +380,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_C
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
 // Test 4: Sign_tx_with_voting_procedures_COMMITTEE_SCRIPT_HASH_voter
@@ -452,6 +456,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_C
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
 // Test 5: Sign_tx_with_voting_procedures_DREP_KEY_HASH_voter
@@ -527,6 +532,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_D
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
 // Test 6: Sign_tx_with_voting_procedures_DREP_SCRIPT_HASH_voter
@@ -605,6 +611,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_D
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
 // Test 7: Sign_tx_with_voting_procedures_STAKE_POOL_KEY_HASH_voter
@@ -683,6 +690,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_S
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
 // Test 8: Sign_tx_with_voting_procedures_single_voter_multiple_votes
@@ -778,6 +786,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_S
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 9: Sign_tx_with_voting_procedures_multiple_voters_single_vote
@@ -902,6 +911,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_M
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 10: Sign_tx_with_voting_procedures_multiple_voters_multiple_votes
@@ -1002,6 +1012,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_M
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
 #if defined(__clang__)

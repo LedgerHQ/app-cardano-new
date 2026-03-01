@@ -105,6 +105,7 @@ static const tx_fixture_t FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_TREAS
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 1: Sign_tx_with_donation
@@ -176,6 +177,7 @@ static const tx_fixture_t FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_DONAT
     .donation = 28,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 2: Sign_tx_with_treasury_and_donation
@@ -248,6 +250,7 @@ static const tx_fixture_t FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_TREAS
     .donation = 28,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 #if defined(__clang__)

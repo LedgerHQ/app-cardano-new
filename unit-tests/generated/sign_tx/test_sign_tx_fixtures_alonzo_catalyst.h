@@ -116,6 +116,7 @@ static const tx_fixture_t FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRA
     .donation = 0,
     .aux_data_hash_hex = "e9141b460aea0abb69ce113c7302c7c03690267736d6a382ee62d2a53c2ec926",
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 1: Sign_tx_with_Catalyst_registration_metadata_with_stake_address
@@ -197,6 +198,7 @@ static const tx_fixture_t FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRA
     .donation = 0,
     .aux_data_hash_hex = "d19f7cb4d48a6ae8d370c64d2a42fca1f61d6b2cf3d0c0c02801541811338deb",
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 #if defined(__clang__)

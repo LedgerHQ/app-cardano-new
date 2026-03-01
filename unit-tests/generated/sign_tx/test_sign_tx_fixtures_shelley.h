@@ -101,6 +101,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITHOUT_OUTPUTS = {
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_NETWORK_NOT_VERIFIABLE),
 };
 
 // Test 1: Sign_tx_with_258_tag_on_inputs
@@ -168,6 +169,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_258_TAG_ON_INPUTS = {
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = TX_OPTIONS_TAG_CBOR_SETS,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_NETWORK_NOT_VERIFIABLE),
 };
 
 // Test 2: Sign_tx_without_change_address
@@ -239,6 +241,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITHOUT_CHANGE_ADDRESS = {
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 3: Sign_tx_with_change_base_address_with_staking_path
@@ -313,6 +316,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 4: Sign_tx_with_change_base_address_with_staking_key_hash
@@ -388,6 +392,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 5: Sign_tx_with_enterprise_change_address
@@ -461,6 +466,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_ENTERPRISE_CHANGE_ADDRESS
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 6: Sign_tx_with_pointer_change_address
@@ -535,6 +541,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_POINTER_CHANGE_ADDRESS = 
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 7: Sign_tx_with_nonreasonable_account_and_address
@@ -606,6 +613,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_NONREASONABLE_ACCOUNT_AND
     .donation = 0,
     .aux_data_hash_hex = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH),
 };
 
 // Test 8: Sign_tx_with_path_based_withdrawal
@@ -691,6 +699,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL = {
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 9: Sign_tx_with_auxiliary_data_hash
@@ -762,6 +771,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_AUXILIARY_DATA_HASH = {
     .donation = 0,
     .aux_data_hash_hex = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 #if defined(__clang__)

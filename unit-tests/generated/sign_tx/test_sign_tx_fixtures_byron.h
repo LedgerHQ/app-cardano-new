@@ -105,6 +105,7 @@ static const tx_fixture_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_MAINNET_OU
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 1: Sign_tx_with_thirdparty_Byron_Daedalus_mainnet_output
@@ -178,6 +179,7 @@ static const tx_fixture_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_DAEDALUS_M
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = 0,
 };
 
 // Test 2: Sign_tx_with_thirdparty_Byron_testnet_output
@@ -249,6 +251,7 @@ static const tx_fixture_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_TESTNET_OU
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_NETWORK_UNUSUAL),
 };
 
 #if defined(__clang__)
