@@ -53,6 +53,10 @@ typedef enum {
 typedef struct {
     const char *item;
     const char *value;
+    int8_t forcePageStart : 1;  ///< if set to 1, the tag will be displayed at the top of a new
+                                ///< review page
+    int8_t centeredInfo : 1;    ///< if set to 1, the tag will be displayed as a centered info
+    int8_t aliasValue : 1;      ///< if set to 1, the value represents an alias
 } nbgl_contentTagValue_t;
 
 typedef nbgl_contentTagValue_t *(*nbgl_contentTagValueCallback_t)(uint8_t pairIndex);

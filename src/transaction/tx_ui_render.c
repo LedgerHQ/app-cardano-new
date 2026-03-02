@@ -27,6 +27,7 @@ void tx_ui_plan_or_render_input(const tx_processing_mode_t *mode, const tx_input
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_INPUT;
     } else if (mode->ui_render) {
         START_COUNT();
+        ui_pairs_force_new_page();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Input"),
                        MAX_INPUT_DISPLAY_STRING_LENGTH,
                        format_input_with_index,
@@ -44,6 +45,7 @@ void tx_ui_plan_or_render_collateral_input(const tx_processing_mode_t *mode,
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_COLLATERAL_INPUT;
     } else if (mode->ui_render) {
         START_COUNT();
+        ui_pairs_force_new_page();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Coll input"),
                        MAX_INPUT_DISPLAY_STRING_LENGTH,
                        format_input_with_index,
@@ -61,6 +63,7 @@ void tx_ui_plan_or_render_reference_input(const tx_processing_mode_t *mode,
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_REFERENCE_INPUT;
     } else if (mode->ui_render) {
         START_COUNT();
+        ui_pairs_force_new_page();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Ref input"),
                        MAX_INPUT_DISPLAY_STRING_LENGTH,
                        format_input_with_index,
@@ -150,6 +153,7 @@ void tx_ui_plan_or_render_fee(const tx_processing_mode_t *mode, uint64_t parsed_
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_FEE;
     } else if (mode->ui_render) {
         START_COUNT();
+        ui_pairs_force_new_page();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Fee"),
                        MAX_ADA_AMOUNT_STRING_LENGTH,
                        format_ada_amount,
@@ -209,6 +213,7 @@ void tx_ui_plan_or_render_withdrawal(const tx_processing_mode_t *mode,
         }
     } else if (mode->ui_render) {
         START_COUNT();
+        ui_pairs_force_new_page();
         UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Withdrawal amount", "Withdraw amount"),
                        MAX_ADA_AMOUNT_STRING_LENGTH,
                        format_ada_amount,
@@ -290,6 +295,7 @@ void tx_ui_plan_or_render_voter(const tx_processing_mode_t *mode, const ext_vote
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_VOTER;
     } else if (mode->ui_render) {
         START_COUNT();
+        ui_pairs_force_new_page();
         switch (parsed_voter->type) {
             case EXT_VOTER_COMMITTEE_HOT_KEY_PATH:
                 UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Committee hot key", "Cmte hot key"),
@@ -371,6 +377,7 @@ void tx_ui_plan_or_render_vote(const tx_processing_mode_t *mode, const vote_item
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_VOTE;
     } else if (mode->ui_render) {
         START_COUNT();
+        ui_pairs_force_new_page();
         UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Gov action tx hash", "Action tx hash"),
                        MAX_TX_HASH_DISPLAY_LENGTH,
                        format_hex_bytes,

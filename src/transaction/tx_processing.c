@@ -1123,7 +1123,7 @@ bool tx_render_ui_all(void) {
         // Everything fit in a single chunk — non-streaming path.
         // cursor_after must equal total_pairs: every UI_ADD_* increments g_pair_scan_index exactly
         // once, so if no OOM occurred the render pass consumed all total pairs.
-        LEDGER_ASSERT(cursor_after == total_pairs, "cursor mismatch: render completed without OOM but cursor does not equal total_pairs");
+        LEDGER_ASSERT(cursor_after == total_pairs, "cursor mismatch: render completed without CHUNK_FULL but cursor does not equal total_pairs");
         tx_body_ctx()->streaming_mode = false;
         TRACE("Non-streaming: total=%u rendered=%u",
               (unsigned) total_pairs, (unsigned) ui_pairs_get_count());
@@ -1132,7 +1132,9 @@ bool tx_render_ui_all(void) {
         // Does not fit — streaming path. First chunk is already rendered.
         tx_body_ctx()->streaming_mode = true;
         tx_body_ctx()->rendered_ui_pairs = ui_pairs_get_count();
-        // Reset OOM status: it was expected as the chunk boundary signal.
+        // Reset chunk-full status: hitting the pairs limit is the expected chunk boundary signal.
+        LEDGER_ASSERT(g_ui_error_status == UI_STATUS_CHUNK_FULL,
+                      "Expected CHUNK_FULL at streaming boundary, got different status");
         g_ui_error_status = UI_STATUS_SUCCESS;
         TRACE("Streaming: first chunk rendered %u pairs, cursor_after=%u, total=%u",
               (unsigned) ui_pairs_get_count(), cursor_after, (unsigned) total_pairs);

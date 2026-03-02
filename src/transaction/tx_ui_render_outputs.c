@@ -30,6 +30,7 @@ void tx_ui_plan_or_render_output(const tx_processing_mode_t *mode,
         }
     } else if (mode->ui_render) {
         START_COUNT();
+        ui_pairs_force_new_page();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Output"),
                        MAX_UINT64_STRING_LENGTH,
                        format_index_with_prefix,

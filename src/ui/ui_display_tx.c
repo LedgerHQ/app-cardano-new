@@ -113,7 +113,10 @@ static void tx_streaming_continue_choice(bool confirm) {
     }
     tx_body_ctx()->rendered_ui_pairs = next_from + rendered_count;
 
-    // Reset OOM status if it was set (expected as chunk boundary).
+    // If the chunk hit the pairs limit, reset CHUNK_FULL — it is the expected boundary signal.
+    // If status is SUCCESS the remaining pairs fit in this chunk (it's the last one).
+    LEDGER_ASSERT(g_ui_error_status == UI_STATUS_CHUNK_FULL || g_ui_error_status == UI_STATUS_SUCCESS,
+                  "Unexpected UI status after streaming chunk render");
     g_ui_error_status = UI_STATUS_SUCCESS;
 
     // Finalize the pairs count for display.

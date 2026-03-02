@@ -186,6 +186,7 @@ static void render_deposit(uint64_t deposit) {
 }
 
 static void render_certificate_header(certificate_type_t type) {
+    ui_pairs_force_new_page();
     UI_ADD_FORMAT1(UI_STATIC_LABEL("Certificate"),
                    MAX_CERTIFICATE_TYPE_LENGTH,
                    format_certificate_type,
@@ -611,6 +612,7 @@ void plan_or_render_pool_relay(const tx_processing_mode_t *mode,
     } else if (mode->ui_render) {
         START_COUNT();
         uint16_t expected_pairs = count_pool_relay_ui_pairs(relay);
+        ui_pairs_force_new_page();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Relay"),
                        MAX_RELAY_INDEX_STRING_LENGTH,
                        format_index_with_prefix,

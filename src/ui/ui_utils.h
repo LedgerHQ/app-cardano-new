@@ -16,14 +16,19 @@
  *
  * UI_STATUS_UNINITIALIZED (0): Default state after bzero - invalid to use, must call ui_reset_error_status()
  * UI_STATUS_SUCCESS (1):        All UI formatting succeeded
- * UI_STATUS_OUT_OF_MEMORY (2):  Memory allocation failure during UI formatting
+ * UI_STATUS_OUT_OF_MEMORY (2):  Memory allocation failure during UI formatting (fatal error)
+ * UI_STATUS_CHUNK_FULL (3):     Pairs array is full — expected chunk boundary in streaming mode,
+ *                               NOT a fatal error; must be reset to SUCCESS before next chunk
  *
- * Note: Once set to error state, cannot be changed back to success (enforced by ui_set_error_status)
+ * CHUNK_FULL and OUT_OF_MEMORY are mutually exclusive: once one is set, the other must not be set.
+ * Note: Once set to error/chunk-full state, cannot be changed back to success via ui_set_error_status;
+ * streaming code resets directly via g_ui_error_status = UI_STATUS_SUCCESS.
  */
 typedef enum {
     UI_STATUS_UNINITIALIZED = 0,
     UI_STATUS_SUCCESS = 1,
     UI_STATUS_OUT_OF_MEMORY = 2,
+    UI_STATUS_CHUNK_FULL = 3,
 } ui_status_t;
 
 extern ui_status_t g_ui_error_status;
@@ -118,6 +123,12 @@ bool ui_render_is_chunked(void);
  * @param shrink if true, allocates exact size for the value; if false, uses buffer as-is
  * @return true on success, false on failure
  */
+/**
+ * Force the next UI pair to start a new page.
+ * Must be followed by at least one UI_ADD_* call before ui_free_pairs() is called.
+ */
+void ui_pairs_force_new_page(void);
+
 bool ui_pairs_add_static_label_impl(const char* label, char* tmp_buf, bool shrink);
 
 /**
@@ -157,7 +168,6 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
     LEDGER_ASSERT(_ok, "Format fn failed"); \
     LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long"); \
     if (!ui_pairs_add_static_label((label), _buf)) { \
-        ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \
 } while(0)
@@ -189,7 +199,6 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
     LEDGER_ASSERT(_ok, "Format fn failed"); \
     LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long"); \
     if (!ui_pairs_add_static_label((label), _buf)) { \
-        ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \
 } while(0)
@@ -222,7 +231,6 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
     LEDGER_ASSERT(_ok, "Format fn failed"); \
     LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long"); \
     if (!ui_pairs_add_static_label((label), _buf)) { \
-        ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \
 } while(0)
@@ -247,7 +255,6 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
     } \
     memcpy(_static_value_copy, _static_value, _static_value_len + 1); \
     if (!ui_pairs_add_static_label_impl((label), _static_value_copy, false)) { \
-        ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \
 } while(0)
@@ -281,7 +288,6 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
     LEDGER_ASSERT(_ok, "Format fn failed"); \
     LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long"); \
     if (!ui_pairs_add_static_label((label), _buf)) { \
-        ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \
 } while(0)

@@ -18,6 +18,7 @@ nbgl_contentTagValueList_t *g_pairsList = NULL;
 ui_status_t g_ui_error_status = UI_STATUS_UNINITIALIZED;
 
 static uint16_t g_next_pair_index = 0;
+static bool g_pending_force_page_start = false;
 
 /// Render-window state for streaming chunk rendering.
 static uint16_t g_pair_scan_index = 0;  // increments for every UI_ADD_* call
@@ -39,13 +40,18 @@ bool ui_render_is_chunked(void) {
 bool ui_render_should_skip(void) {
     uint16_t current = g_pair_scan_index;
     g_pair_scan_index++;
-    // Skip if before the window or if OOM already set
+    // Skip if before the window
     if (current < g_render_from) {
+        // Clear any pending force-new-page: the pair was already rendered in a previous chunk.
+        g_pending_force_page_start = false;
         return true;
     }
     LEDGER_ASSERT(g_ui_error_status != UI_STATUS_UNINITIALIZED,
                   "ui_reset_error_status() must be called before UI_ADD_* macros");
-    if (g_ui_error_status != UI_STATUS_SUCCESS) {
+    // Skip if chunk is full or a real OOM occurred
+    if (g_ui_error_status == UI_STATUS_CHUNK_FULL || g_ui_error_status == UI_STATUS_OUT_OF_MEMORY) {
+        // Clear pending flag: this pair won't be rendered in this chunk.
+        g_pending_force_page_start = false;
         return true;
     }
     return false;
@@ -68,15 +74,29 @@ ui_status_t ui_get_error_status(void) {
 }
 
 /**
- * Set UI error status
- * Cannot change from error state back to success
+ * Set UI error status.
+ * Cannot change from non-SUCCESS state back to success (use direct assignment in streaming reset).
+ * CHUNK_FULL and OUT_OF_MEMORY are mutually exclusive: once the chunk is full,
+ * ui_render_should_skip() gates all further macro calls, so OUT_OF_MEMORY must never follow.
  */
 void ui_set_error_status(ui_status_t status) {
     LEDGER_ASSERT(status != UI_STATUS_UNINITIALIZED, "Cannot set UI status to UNINITIALIZED");
     LEDGER_ASSERT(g_ui_error_status != UI_STATUS_UNINITIALIZED, "UI error status not initialized - must call ui_reset_error_status first");
-    // Once error is set, cannot change back to success
-    LEDGER_ASSERT(g_ui_error_status == UI_STATUS_SUCCESS || status != UI_STATUS_SUCCESS, "Cannot change UI error status from error back to success");
+    // Once non-SUCCESS, cannot go back to success via this function
+    LEDGER_ASSERT(g_ui_error_status == UI_STATUS_SUCCESS || status != UI_STATUS_SUCCESS,
+                  "Cannot change UI error status from non-success back to success");
+    // CHUNK_FULL and OUT_OF_MEMORY must not mix in either direction
+    LEDGER_ASSERT(!(g_ui_error_status == UI_STATUS_CHUNK_FULL && status == UI_STATUS_OUT_OF_MEMORY),
+                  "Cannot set OUT_OF_MEMORY when CHUNK_FULL is already set");
+    LEDGER_ASSERT(!(g_ui_error_status == UI_STATUS_OUT_OF_MEMORY && status == UI_STATUS_CHUNK_FULL),
+                  "Cannot set CHUNK_FULL when OUT_OF_MEMORY is already set");
     g_ui_error_status = status;
+    // On OOM the pending flag can no longer be consumed by a subsequent UI_ADD_* (the macro would
+    // have set OOM before calling add_static_label, or add_static_label itself set OOM on shrink
+    // failure). Clear it here so ui_free_pairs does not false-alarm.
+    if (status == UI_STATUS_OUT_OF_MEMORY) {
+        g_pending_force_page_start = false;
+    }
 }
 
 
@@ -84,6 +104,11 @@ void ui_set_error_status(ui_status_t status) {
  * Cleanup pairs array (g_pairs and g_pairsList)
  */
 void ui_free_pairs(void) {
+    // A dangling flag here always means ui_pairs_force_new_page() was called without a subsequent
+    // UI_ADD_* in any code path (skips always clear it in ui_render_should_skip).
+    LEDGER_ASSERT(!g_pending_force_page_start,
+                  "ui_pairs_force_new_page() called but no pair was added after it");
+    g_pending_force_page_start = false;
     if (g_pairs != NULL) {
         for (uint16_t i = 0; i < g_next_pair_index; i++) {
             if (g_pairs[i].value != NULL) {
@@ -107,6 +132,10 @@ uint16_t ui_pairs_get_count(void) {
     return g_next_pair_index;
 }
 
+void ui_pairs_force_new_page(void) {
+    g_pending_force_page_start = true;
+}
+
 bool ui_pairs_add_static_label_impl(const char* label, char* tmp_buf, bool shrink) {
     LEDGER_ASSERT(label != NULL && label[0] != '\0', "Invalid UI label");
     LEDGER_ASSERT(tmp_buf != NULL && tmp_buf[0] != '\0', "Invalid UI value");
@@ -127,14 +156,20 @@ bool ui_pairs_add_static_label_impl(const char* label, char* tmp_buf, bool shrin
     }
     #endif
 
+    // Always consume the pending flag, regardless of whether the pair is successfully inserted.
+    bool force_page_start = g_pending_force_page_start;
+    g_pending_force_page_start = false;
+
     if (g_pairs == NULL || g_pairsList == NULL) {
         TRACE("Pairs storage not initialized");
+        ui_set_error_status(UI_STATUS_OUT_OF_MEMORY);
         APP_MEM_FREE(tmp_buf);
         return false;
     }
 
     if (g_next_pair_index >= g_pairsList->nbPairs) {
         TRACE("Pairs list overflow: %u/%u", g_next_pair_index, g_pairsList->nbPairs);
+        ui_set_error_status(UI_STATUS_CHUNK_FULL);
         APP_MEM_FREE(tmp_buf);
         return false;
     }
@@ -146,6 +181,7 @@ bool ui_pairs_add_static_label_impl(const char* label, char* tmp_buf, bool shrin
         char *shrinked = NULL;
         if (!allocate_zeroed((void **) &shrinked, len + 1)) {
             TRACE("Failed to allocate shrunk string");
+            ui_set_error_status(UI_STATUS_OUT_OF_MEMORY);
             APP_MEM_FREE(tmp_buf);
             return false;
         }
@@ -156,6 +192,7 @@ bool ui_pairs_add_static_label_impl(const char* label, char* tmp_buf, bool shrin
 
     g_pairs[g_next_pair_index].item = label;
     g_pairs[g_next_pair_index].value = value_ptr;
+    g_pairs[g_next_pair_index].forcePageStart = force_page_start ? 1 : 0;
     g_next_pair_index++;
     return true;
 }
