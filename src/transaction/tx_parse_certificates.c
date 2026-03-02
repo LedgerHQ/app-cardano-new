@@ -15,6 +15,15 @@
 #include "tx.h"
 #include "cardano_parsers.h"
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_TX_PARSE to trace this module's parsing details.
+ */
+#ifdef TRACE_TX_PARSE
+#define TRACE_MODULE(...) TRACE("[tx_parse_certs] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 
 /// Parse CERTIFICATE_STAKE_REGISTRATION or CERTIFICATE_STAKE_DEREGISTRATION
 bool parse_certificate_stake_registration_deregistration(
@@ -30,7 +39,7 @@ bool parse_certificate_stake_registration_deregistration(
         TRACE("Failed to read stake credential");
         return false;
     }
-    TRACE("stakeCredential.type=%u", cert_data->stakeCredential.type);
+    TRACE_MODULE("stakeCredential.type=%u", cert_data->stakeCredential.type);
     return true;
 }
 
@@ -43,7 +52,7 @@ bool parse_certificate_stake_delegation(buffer_t *buf,
         TRACE("Failed to read stake credential");
         return false;
     }
-    TRACE("stakeCredential.type=%u", cert_data->stakeCredential.type);
+    TRACE_MODULE("stakeCredential.type=%u", cert_data->stakeCredential.type);
 
     if (!buffer_read_bytes_ptr(buf, &cert_data->poolKeyHash, POOL_KEY_HASH_LENGTH)) {
         TRACE("Failed to read pool key hash");
@@ -68,14 +77,14 @@ bool parse_certificate_stake_registration_deregistration_conway(
         TRACE("Failed to read stake credential");
         return false;
     }
-    TRACE("stakeCredential.type=%u", cert_data->stakeCredential.type);
+    TRACE_MODULE("stakeCredential.type=%u", cert_data->stakeCredential.type);
 
     ASSERT_TYPE(cert_data->deposit, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->deposit, BE)) {
         TRACE("Failed to read deposit");
         return false;
     }
-    TRACE("deposit=%llu", (unsigned long long) cert_data->deposit);
+    TRACE_MODULE("deposit=%llu", (unsigned long long) cert_data->deposit);
     return true;
 }
 
@@ -88,14 +97,14 @@ bool parse_certificate_stake_pool_retirement(buffer_t *buf,
         TRACE("Failed to read pool credential");
         return false;
     }
-    TRACE("poolCredential.type=%u", cert_data->poolCredential.type);
+    TRACE_MODULE("poolCredential.type=%u", cert_data->poolCredential.type);
 
     ASSERT_TYPE(cert_data->retirementEpoch, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->retirementEpoch, BE)) {
         TRACE("Failed to read retirement epoch");
         return false;
     }
-    TRACE("retirementEpoch=%llu", (unsigned long long) cert_data->retirementEpoch);
+    TRACE_MODULE("retirementEpoch=%llu", (unsigned long long) cert_data->retirementEpoch);
     return true;
 }
 
@@ -108,13 +117,13 @@ bool parse_certificate_vote_delegation(buffer_t *buf,
         TRACE("Failed to read stake credential");
         return false;
     }
-    TRACE("stakeCredential.type=%u", cert_data->stakeCredential.type);
+    TRACE_MODULE("stakeCredential.type=%u", cert_data->stakeCredential.type);
 
     if (!buffer_read_drep(buf, &cert_data->drep)) {
         TRACE("Failed to read drep");
         return false;
     }
-    TRACE("drep.type=%u", cert_data->drep.type);
+    TRACE_MODULE("drep.type=%u", cert_data->drep.type);
     return true;
 }
 
@@ -128,7 +137,7 @@ bool parse_certificate_stake_pool_and_drep_delegation(buffer_t *buf,
         TRACE("Failed to read stake credential");
         return false;
     }
-    TRACE("stakeCredential.type=%u", cert_data->stakeCredential.type);
+    TRACE_MODULE("stakeCredential.type=%u", cert_data->stakeCredential.type);
 
     if (!buffer_read_bytes_ptr(buf, &cert_data->combinedDelegPoolKeyHash, POOL_KEY_HASH_LENGTH)) {
         TRACE("Failed to read combined pool key hash");
@@ -140,7 +149,7 @@ bool parse_certificate_stake_pool_and_drep_delegation(buffer_t *buf,
         TRACE("Failed to read drep");
         return false;
     }
-    TRACE("drep.type=%u", cert_data->drep.type);
+    TRACE_MODULE("drep.type=%u", cert_data->drep.type);
     return true;
 }
 
@@ -155,7 +164,7 @@ bool parse_certificate_account_registration_delegation_to_stake_pool(
         TRACE("Failed to read stake credential");
         return false;
     }
-    TRACE("stakeCredential.type=%u", cert_data->stakeCredential.type);
+    TRACE_MODULE("stakeCredential.type=%u", cert_data->stakeCredential.type);
 
     if (!buffer_read_bytes_ptr(buf, &cert_data->combinedDelegPoolKeyHash, POOL_KEY_HASH_LENGTH)) {
         TRACE("Failed to read combined pool key hash");
@@ -168,7 +177,7 @@ bool parse_certificate_account_registration_delegation_to_stake_pool(
         TRACE("Failed to read deposit");
         return false;
     }
-    TRACE("deposit=%llu", (unsigned long long) cert_data->deposit);
+    TRACE_MODULE("deposit=%llu", (unsigned long long) cert_data->deposit);
     return true;
 }
 
@@ -183,20 +192,20 @@ bool parse_certificate_account_registration_delegation_to_drep(
         TRACE("Failed to read stake credential");
         return false;
     }
-    TRACE("stakeCredential.type=%u", cert_data->stakeCredential.type);
+    TRACE_MODULE("stakeCredential.type=%u", cert_data->stakeCredential.type);
 
     if (!buffer_read_drep(buf, &cert_data->drep)) {
         TRACE("Failed to read drep");
         return false;
     }
-    TRACE("drep.type=%u", cert_data->drep.type);
+    TRACE_MODULE("drep.type=%u", cert_data->drep.type);
 
     ASSERT_TYPE(cert_data->deposit, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->deposit, BE)) {
         TRACE("Failed to read deposit");
         return false;
     }
-    TRACE("deposit=%llu", (unsigned long long) cert_data->deposit);
+    TRACE_MODULE("deposit=%llu", (unsigned long long) cert_data->deposit);
     return true;
 }
 
@@ -211,7 +220,7 @@ bool parse_certificate_account_registration_delegation_to_stake_pool_and_drep(
         TRACE("Failed to read stake credential");
         return false;
     }
-    TRACE("stakeCredential.type=%u", cert_data->stakeCredential.type);
+    TRACE_MODULE("stakeCredential.type=%u", cert_data->stakeCredential.type);
 
     if (!buffer_read_bytes_ptr(buf, &cert_data->combinedDelegPoolKeyHash, POOL_KEY_HASH_LENGTH)) {
         TRACE("Failed to read combined pool key hash");
@@ -223,14 +232,14 @@ bool parse_certificate_account_registration_delegation_to_stake_pool_and_drep(
         TRACE("Failed to read drep");
         return false;
     }
-    TRACE("drep.type=%u", cert_data->drep.type);
+    TRACE_MODULE("drep.type=%u", cert_data->drep.type);
 
     ASSERT_TYPE(cert_data->deposit, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->deposit, BE)) {
         TRACE("Failed to read deposit");
         return false;
     }
-    TRACE("deposit=%llu", (unsigned long long) cert_data->deposit);
+    TRACE_MODULE("deposit=%llu", (unsigned long long) cert_data->deposit);
     return true;
 }
 
@@ -243,13 +252,13 @@ bool parse_certificate_authorize_committee_hot(buffer_t *buf,
         TRACE("Failed to read cold credential");
         return false;
     }
-    TRACE("coldCredential.type=%u", cert_data->coldCredential.type);
+    TRACE_MODULE("coldCredential.type=%u", cert_data->coldCredential.type);
 
     if (!buffer_read_credential(buf, &cert_data->hotCredential)) {
         TRACE("Failed to read hot credential");
         return false;
     }
-    TRACE("hotCredential.type=%u", cert_data->hotCredential.type);
+    TRACE_MODULE("hotCredential.type=%u", cert_data->hotCredential.type);
     return true;
 }
 
@@ -262,13 +271,13 @@ bool parse_certificate_resign_committee_cold(buffer_t *buf,
         TRACE("Failed to read cold credential");
         return false;
     }
-    TRACE("coldCredential.type=%u", cert_data->coldCredential.type);
+    TRACE_MODULE("coldCredential.type=%u", cert_data->coldCredential.type);
 
     if (!buffer_read_anchor(buf, &cert_data->anchor)) {
         TRACE("Failed to read anchor");
         return false;
     }
-    TRACE("anchor.isIncluded=%u", cert_data->anchor.isIncluded);
+    TRACE_MODULE("anchor.isIncluded=%u", cert_data->anchor.isIncluded);
     return true;
 }
 
@@ -281,20 +290,20 @@ bool parse_certificate_drep_registration(buffer_t *buf,
         TRACE("Failed to read drep credential");
         return false;
     }
-    TRACE("dRepCredential.type=%u", cert_data->dRepCredential.type);
+    TRACE_MODULE("dRepCredential.type=%u", cert_data->dRepCredential.type);
 
     ASSERT_TYPE(cert_data->deposit, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->deposit, BE)) {
         TRACE("Failed to read deposit");
         return false;
     }
-    TRACE("deposit=%llu", (unsigned long long) cert_data->deposit);
+    TRACE_MODULE("deposit=%llu", (unsigned long long) cert_data->deposit);
 
     if (!buffer_read_anchor(buf, &cert_data->anchor)) {
         TRACE("Failed to read anchor");
         return false;
     }
-    TRACE("anchor.isIncluded=%u", cert_data->anchor.isIncluded);
+    TRACE_MODULE("anchor.isIncluded=%u", cert_data->anchor.isIncluded);
     return true;
 }
 
@@ -307,14 +316,14 @@ bool parse_certificate_drep_deregistration(buffer_t *buf,
         TRACE("Failed to read drep credential");
         return false;
     }
-    TRACE("dRepCredential.type=%u", cert_data->dRepCredential.type);
+    TRACE_MODULE("dRepCredential.type=%u", cert_data->dRepCredential.type);
 
     ASSERT_TYPE(cert_data->deposit, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->deposit, BE)) {
         TRACE("Failed to read deposit");
         return false;
     }
-    TRACE("deposit=%llu", (unsigned long long) cert_data->deposit);
+    TRACE_MODULE("deposit=%llu", (unsigned long long) cert_data->deposit);
     return true;
 }
 
@@ -327,13 +336,13 @@ bool parse_certificate_drep_update(buffer_t *buf,
         TRACE("Failed to read drep credential");
         return false;
     }
-    TRACE("dRepCredential.type=%u", cert_data->dRepCredential.type);
+    TRACE_MODULE("dRepCredential.type=%u", cert_data->dRepCredential.type);
 
     if (!buffer_read_anchor(buf, &cert_data->anchor)) {
         TRACE("Failed to read anchor");
         return false;
     }
-    TRACE("anchor.isIncluded=%u", cert_data->anchor.isIncluded);
+    TRACE_MODULE("anchor.isIncluded=%u", cert_data->anchor.isIncluded);
     return true;
 }
 
@@ -344,7 +353,7 @@ static uint16_t _parse_pool_id(buffer_t *buf, pool_id_t *pool_id) {
         TRACE("Failed to read pool id type");
         return false;
     }
-    TRACE("pool_id_type_wire=0x%02x", pool_id_type_wire);
+    TRACE_MODULE("pool_id_type_wire=0x%02x", pool_id_type_wire);
 
     switch (pool_id_type_wire) {
         case EXT_CREDENTIAL_KEY_HASH:
@@ -375,7 +384,7 @@ bool parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
         TRACE("Failed to read relay type");
         return false;
     }
-    TRACE("relay_type=%u", relay_type);
+    TRACE_MODULE("relay_type=%u", relay_type);
 
     switch (relay_type) {
         case RELAY_SINGLE_HOST_IP: {
@@ -393,10 +402,10 @@ bool parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
                     TRACE("Failed to read port number");
                     return false;
                 }
-                TRACE("port=%u", relay->port.number);
+                TRACE_MODULE("port=%u", relay->port.number);
             }
             if (relay->port.isNull) {
-                TRACE("Relay single host IP must have a port");
+                TRACE_MODULE("Relay single host IP must have a port");
                 return false;
             }
 
@@ -412,7 +421,7 @@ bool parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
                     return false;
                 }
                 ASSERT(relay->ipv4.ip != NULL);
-                TRACE("ipv4 present");
+                TRACE_MODULE("ipv4 present");
             }
 
             bool ipv6_included = false;
@@ -427,10 +436,10 @@ bool parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
                     return false;
                 }
                 ASSERT(relay->ipv6.ip != NULL);
-                TRACE("ipv6 present");
+                TRACE_MODULE("ipv6 present");
             }
             if (relay->ipv4.isNull && relay->ipv6.isNull) {
-                TRACE("Relay single host IP must have at least one IP");
+                TRACE_MODULE("Relay single host IP must have at least one IP");
                 return false;
             }
             break;
@@ -450,10 +459,10 @@ bool parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
                     TRACE("Failed to read port number");
                     return false;
                 }
-                TRACE("port=%u", relay->port.number);
+                TRACE_MODULE("port=%u", relay->port.number);
             }
             if (relay->port.isNull) {
-                TRACE("Relay single host name must have a port");
+                TRACE_MODULE("Relay single host name must have a port");
                 return false;
             }
 
@@ -463,7 +472,7 @@ bool parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
                 return false;
             }
             if (!dns_included) {
-                TRACE("Relay single host name must have a DNS name");
+                TRACE_MODULE("Relay single host name must have a DNS name");
                 return false;
             }
             uint8_t dns_len;
@@ -487,14 +496,14 @@ bool parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
                 relay->dnsName = NULL;
             }
             if (relay->dnsNameSize == 0) {
-                TRACE("Relay single host name must have a non-empty DNS name");
+                TRACE_MODULE("Relay single host name must have a non-empty DNS name");
                 return false;
             }
             if (!str_isUnambiguousAscii(relay->dnsName, relay->dnsNameSize)) {
-                TRACE("DNS name must be unambiguous ASCII");
+                TRACE_MODULE("DNS name must be unambiguous ASCII");
                 return false;
             }
-            TRACE("dns_len=%u", dns_len);
+            TRACE_MODULE("dns_len=%u", dns_len);
             break;
         }
         case RELAY_MULTIPLE_HOST_NAME: {
@@ -509,7 +518,7 @@ bool parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
                 return false;
             }
             if (!dns_included) {
-                TRACE("Relay multiple host name must have a DNS name");
+                TRACE_MODULE("Relay multiple host name must have a DNS name");
                 return false;
             }
             uint8_t dns_len;
@@ -533,14 +542,14 @@ bool parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
                 relay->dnsName = NULL;
             }
             if (relay->dnsNameSize == 0) {
-                TRACE("Relay multiple host name must have a non-empty DNS name");
+                TRACE_MODULE("Relay multiple host name must have a non-empty DNS name");
                 return false;
             }
             if (!str_isUnambiguousAscii(relay->dnsName, relay->dnsNameSize)) {
-                TRACE("DNS name must be unambiguous ASCII");
+                TRACE_MODULE("DNS name must be unambiguous ASCII");
                 return false;
             }
-            TRACE("dns_len=%u", dns_len);
+            TRACE_MODULE("dns_len=%u", dns_len);
             break;
         }
         default:
@@ -573,7 +582,7 @@ bool parse_pool_metadata(buffer_t *buf, pool_metadata_t *out_metadata) {
         return false;
     }
     ASSERT(out_metadata->hash != NULL);
-    TRACE("metadata urlSize=%u", out_metadata->urlSize);
+    TRACE_MODULE("metadata urlSize=%u", out_metadata->urlSize);
     return true;
 }
 
@@ -590,7 +599,7 @@ bool parse_certificate_stake_pool_registration(buffer_t *buf,
         TRACE("Failed to read pool registration payload length");
         return false;
     }
-    TRACE("payload_length=%u", payload_length);
+    TRACE_MODULE("payload_length=%u", payload_length);
 
     buffer_t pool_registration_payload_buffer = {
         .ptr = buffer_get_cur(buf),
@@ -603,7 +612,7 @@ bool parse_certificate_stake_pool_registration(buffer_t *buf,
         TRACE("Failed to parse pool id");
         return false;
     }
-    TRACE("poolId.keyReferenceType=%u", cert_data->poolId.keyReferenceType);
+    TRACE_MODULE("poolId.keyReferenceType=%u", cert_data->poolId.keyReferenceType);
 
     if (!buffer_read_bytes_ptr(pool_reg_buf, &poolReg->vrfKeyHash, VRF_KEY_HASH_LENGTH)) {
         TRACE("Failed to read vrf key hash");
@@ -619,7 +628,7 @@ bool parse_certificate_stake_pool_registration(buffer_t *buf,
         TRACE("Pledge too large: %llu", (unsigned long long) poolReg->pledge);
         return false;
     }
-    TRACE("pledge=%llu", (unsigned long long) poolReg->pledge);
+    TRACE_MODULE("pledge=%llu", (unsigned long long) poolReg->pledge);
 
     ASSERT_TYPE(poolReg->cost, uint64_t);
     if (!buffer_read_u64(pool_reg_buf, &poolReg->cost, BE)) {
@@ -630,14 +639,14 @@ bool parse_certificate_stake_pool_registration(buffer_t *buf,
         TRACE("Cost too large: %llu", (unsigned long long) poolReg->cost);
         return false;
     }
-    TRACE("cost=%llu", (unsigned long long) poolReg->cost);
+    TRACE_MODULE("cost=%llu", (unsigned long long) poolReg->cost);
 
     ASSERT_TYPE(poolReg->marginNumerator, uint64_t);
     if (!buffer_read_u64(pool_reg_buf, &poolReg->marginNumerator, BE)) {
         TRACE("Failed to read margin numerator");
         return false;
     }
-    TRACE("marginNumerator=%llu", (unsigned long long) poolReg->marginNumerator);
+    TRACE_MODULE("marginNumerator=%llu", (unsigned long long) poolReg->marginNumerator);
 
     ASSERT_TYPE(poolReg->marginDenominator, uint64_t);
     if (!buffer_read_u64(pool_reg_buf, &poolReg->marginDenominator, BE)) {
@@ -653,14 +662,14 @@ bool parse_certificate_stake_pool_registration(buffer_t *buf,
               (unsigned long long) poolReg->marginDenominator);
         return false;
     }
-    TRACE("marginDenominator=%llu", (unsigned long long) poolReg->marginDenominator);
+    TRACE_MODULE("marginDenominator=%llu", (unsigned long long) poolReg->marginDenominator);
 
     uint8_t reward_account_type;
     if (!buffer_read_u8(pool_reg_buf, &reward_account_type)) {
         TRACE("Failed to read reward account type");
         return false;
     }
-    TRACE("reward_account_type=0x%02x", reward_account_type);
+    TRACE_MODULE("reward_account_type=0x%02x", reward_account_type);
 
     switch (reward_account_type) {
         case EXT_CREDENTIAL_KEY_HASH:
@@ -704,7 +713,7 @@ bool parse_certificate_stake_pool_registration(buffer_t *buf,
         return false;
     }
     poolReg->hasMetadata = has_metadata;
-    TRACE("numPoolOwners=%u numRelays=%u hasMetadata=%u", num_owners, num_relays, has_metadata);
+    TRACE_MODULE("numPoolOwners=%u numRelays=%u hasMetadata=%u", num_owners, num_relays, has_metadata);
 
     // Advance the outer buf past the fixed header fields we consumed from pool_reg_buf,
     // leaving buf positioned at the start of the owners data for process_pool_registration_certificate.
@@ -728,7 +737,7 @@ bool parse_certificate(buffer_t *buf, certificate_data_t *out_certificate_data) 
         TRACE("Failed to read certificate type");
         return false;
     }
-    TRACE("certificate_type_wire=%u", certificate_type_wire);
+    TRACE_MODULE("certificate_type_wire=%u", certificate_type_wire);
 
     certificate_type_t certificate_type = (certificate_type_t) certificate_type_wire;
     switch (certificate_type) {

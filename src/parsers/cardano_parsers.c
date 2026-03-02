@@ -12,6 +12,15 @@
 
 #include <string.h>
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_TX_PARSE to trace this module's parsing details.
+ */
+#ifdef TRACE_TX_PARSE
+#define TRACE_MODULE(...) TRACE("[cardano_parsers] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 bool buffer_read_flag_included(buffer_t *buf, bool* result) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     LEDGER_ASSERT(result != NULL, "NULL result");
@@ -78,7 +87,7 @@ bool buffer_read_anchor(buffer_t *buf, anchor_t *anchor) {
         TRACE("Invalid anchor present flag");
         return false;
     }
-    TRACE("Anchor included flag: %u", anchor->isIncluded);
+    TRACE_MODULE("Anchor included flag: %u", anchor->isIncluded);
     if (!anchor->isIncluded) {
         // finished parsing
         return true;
@@ -88,7 +97,7 @@ bool buffer_read_anchor(buffer_t *buf, anchor_t *anchor) {
         TRACE("Failed to read anchor URL length");
         return false;
     }
-    TRACE("Anchor URL length: %u", anchor->urlLength);
+    TRACE_MODULE("Anchor URL length: %u", anchor->urlLength);
     if (anchor->urlLength > MAX_ANCHOR_URL_LENGTH) {
         TRACE("Anchor URL length exceeds maximum: %u > %u", anchor->urlLength,
               MAX_ANCHOR_URL_LENGTH);

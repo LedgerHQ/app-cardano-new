@@ -19,9 +19,18 @@
 #include "messageSigning.h"
 #include "ui_cvote.h"
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_HANDLERS to trace handler-level flow.
+ */
+#ifdef TRACE_HANDLERS
+#define TRACE_MODULE(...) TRACE("[sign_cvote] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 static bool ensure_sign_cvote_request_type(request_type_e required_request_type) {
     if (G_context.req_type != required_request_type) {
-        TRACE("Rejecting CVote command for req_type %d (expected %d)",
+        TRACE_MODULE("Rejecting CVote command for req_type %d (expected %d)",
               G_context.req_type,
               required_request_type);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
@@ -32,7 +41,7 @@ static bool ensure_sign_cvote_request_type(request_type_e required_request_type)
 
 static bool ensure_sign_cvote_state(cvote_state_e required_state) {
     if (G_context.state.cvote_state != required_state) {
-        TRACE("Rejecting CVote command in state %d (expected %d)",
+        TRACE_MODULE("Rejecting CVote command in state %d (expected %d)",
               G_context.state.cvote_state,
               required_state);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
@@ -59,7 +68,7 @@ static void handle_sign_cvote_init_apdu(buffer_t *cdata) {
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
-    TRACE("Remaining votecast bytes = %u", ctx->remaining_votecast_bytes);
+    TRACE_MODULE("Remaining votecast bytes = %u", ctx->remaining_votecast_bytes);
 
     // Verify that the rest of the APDU contains exactly the amount of data specified
     const size_t votecast_chunk_size = buffer_data_size(cdata);
@@ -87,7 +96,7 @@ static void handle_sign_cvote_init_apdu(buffer_t *cdata) {
         send_swo_and_reset(SWO_CVOTE_PARSING_FAIL_VOTE_PLAN_ID);
         return;
     }
-    TRACE("Vote plan id:");
+    TRACE_MODULE("Vote plan id:");
     TRACE_BUFFER(ctx->vote_plan_id, VOTE_PLAN_ID_SIZE);
 
     if (!buffer_read_u8(cdata, &ctx->proposal_index)) {
@@ -95,14 +104,14 @@ static void handle_sign_cvote_init_apdu(buffer_t *cdata) {
         send_swo_and_reset(SWO_CVOTE_PARSING_FAIL_PROPOSAL_INDEX);
         return;
     }
-    TRACE("Proposal index = %u", ctx->proposal_index);
+    TRACE_MODULE("Proposal index = %u", ctx->proposal_index);
 
     if (!buffer_read_u8(cdata, &ctx->payload_type_tag)) {
         TRACE("Failed to read payloadTypeTag");
         send_swo_and_reset(SWO_CVOTE_PARSING_FAIL_PAYLOAD_TYPE_TAG);
         return;
     }
-    TRACE("Payload type tag = %u", ctx->payload_type_tag);
+    TRACE_MODULE("Payload type tag = %u", ctx->payload_type_tag);
 
     vote_cast_hash_builder_init(&ctx->votecast_hash_builder, ctx->remaining_votecast_bytes);
     vote_cast_hash_builder_chunk(&ctx->votecast_hash_builder,
@@ -149,7 +158,7 @@ static void handle_sign_cvote_chunk_apdu(buffer_t *cdata) {
         G_context.state.cvote_state = VOTECAST_STATE_CONFIRM;
     }
 
-    TRACE("Remaining votecast bytes = %u", ctx->remaining_votecast_bytes);
+    TRACE_MODULE("Remaining votecast bytes = %u", ctx->remaining_votecast_bytes);
     apdu_response_send_sw(SWO_SUCCESS);
 }
 

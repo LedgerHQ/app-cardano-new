@@ -9,6 +9,15 @@
 #include "tx_constants.h"
 #include "cardano_constants.h"
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_TX_PARSE to trace this module's parsing details.
+ */
+#ifdef TRACE_TX_PARSE
+#define TRACE_MODULE(...) TRACE("[tx_parse_outputs] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 uint16_t parse_output_destination(buffer_t* buf, tx_output_destination_t* destination) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     LEDGER_ASSERT(destination != NULL, "NULL destination");
@@ -19,7 +28,7 @@ uint16_t parse_output_destination(buffer_t* buf, tx_output_destination_t* destin
         TRACE("Failed to read destination type");
         return SWO_TX_PARSING_FAIL_OUTPUTS;
     }
-    TRACE("Deserialize: Output destination type=0x%02x (1=THIRD_PARTY, 2=DEVICE_OWNED)", dest_type);
+    TRACE_MODULE("Deserialize: Output destination type=0x%02x (1=THIRD_PARTY, 2=DEVICE_OWNED)", dest_type);
 
     switch (dest_type) {
         case DESTINATION_THIRD_PARTY: {
@@ -82,7 +91,7 @@ uint16_t parse_output_format(buffer_t* buf,
         case ARRAY_LEGACY:
         case MAP_BABBAGE:
             *format = (tx_output_serialization_format_t) output_format;
-            TRACE("output_format=%u", output_format);
+            TRACE_MODULE("output_format=%u", output_format);
             return SWO_OK;
         default:
             TRACE("Unknown output format: 0x%02x", (unsigned) output_format);

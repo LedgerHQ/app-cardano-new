@@ -30,6 +30,15 @@
 #include "utils.h"
 #include "cardano_buffer.h"
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_HANDLERS to trace handler-level flow.
+ */
+#ifdef TRACE_HANDLERS
+#define TRACE_MODULE(...) TRACE("[sign_tx] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 #ifdef HAVE_SWAP
 #include "swap.h"
 #include "swap_error_code_helpers.h"
@@ -51,7 +60,7 @@ static bool is_valid_tx_signing_mode(uint8_t tx_signing_mode) {
 
 static bool ensure_sign_tx_state(tx_state_e required_state) {
     if (G_context.state.tx_state != required_state) {
-        TRACE("Rejecting sign_tx command in state %d (expected %d)",
+        TRACE_MODULE("Rejecting sign_tx command in state %d (expected %d)",
               G_context.state.tx_state,
               required_state);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
@@ -62,7 +71,7 @@ static bool ensure_sign_tx_state(tx_state_e required_state) {
 
 static bool ensure_sign_tx_request_type(request_type_e required_request_type) {
     if (G_context.req_type != required_request_type) {
-        TRACE("Rejecting sign_tx command for req_type %d (expected %d)",
+        TRACE_MODULE("Rejecting sign_tx command for req_type %d (expected %d)",
               G_context.req_type,
               required_request_type);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);

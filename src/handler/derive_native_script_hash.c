@@ -20,9 +20,18 @@
 #include "utils.h"
 #include "cardano_buffer.h"
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_HANDLERS to trace handler-level flow.
+ */
+#ifdef TRACE_HANDLERS
+#define TRACE_MODULE(...) TRACE("[native_script] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 static bool ensure_derive_native_script_hash_request_type(request_type_e required_request_type) {
     if (G_context.req_type != required_request_type) {
-        TRACE("NATIVE_SCRIPT rejected: request type %d (expected %d)",
+        TRACE_MODULE("NATIVE_SCRIPT rejected: request type %d (expected %d)",
               G_context.req_type,
               required_request_type);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
@@ -64,11 +73,11 @@ static void deriveNativeScriptHash_handleNofK(buffer_t *cdata) {
         return;
     }
     if (deny_unconsumed_bytes(cdata, SWO_WRONG_DATA_LENGTH)) {
-        TRACE("NofK APDU not fully consumed");
+        TRACE_MODULE("NofK APDU not fully consumed");
         return;
     }
     if (ctx->complexScripts[ctx->level].remainingScripts < ctx->scriptContent.requiredScripts) {
-        TRACE("remainingScripts less than requiredScripts");
+        TRACE_MODULE("remainingScripts less than requiredScripts");
         send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_COUNT);
         return;
     }

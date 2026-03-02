@@ -21,7 +21,16 @@ For detailed analysis, see:
 - **Mimic Established Patterns:** Search the new app repository before copying logic from the old app.
 - **Style:** Use long, descriptive variable names.
 - **Security:** Use `STATIC_ASSERT` and `LEDGER_ASSERT` liberally for parameter validation and state machine invariants.
-- **Debugging:** Use `TRACE` (avoid `PRINTF`).
+- **Debugging:** Use `TRACE` (avoid `PRINTF`). For verbose/repetitive debug output, use **conditional guards** (see `doc/testing.md`):
+  - Use `TRACE_MODULE()` for state tracking, loops, field-level parsing (compiled out unless guard is defined).
+  - Keep `TRACE()` for critical errors and security-relevant information (always compiled in debug builds).
+  - **Available Guards:**
+    - `TRACE_TX_PARSE`: Transaction parsing (`src/transaction/tx_parse*.c`, `src/parsers/cardano_parsers.c`).
+    - `TRACE_TX_HASH_BUILDER`: Transaction hashing (`src/transaction/tx_hash_builder.c`).
+    - `TRACE_HANDLERS`: APDU command handler flow (`src/handler/*.c`).
+    - `TRACE_UI_DISPLAY`: UI rendering and state (`src/ui/ui_display*.c`).
+    - `TRACE_CVOTE`: Catalyst voting parsing (`src/cvote/cvote_parser.c`).
+    - `TRACE_AUX_DATA_HASH_BUILDER`, `TRACE_VOTECAST_HASH_BUILDER`, `TRACE_NATIVE_SCRIPT_HASH_BUILDER`: Hash builders.
 - **Memory Management:** Be extremely mindful of scarce memory. Global context data should be strictly necessary.
 - **Imports:** Organize imports logically and avoid forward declarations.
 - **Legacy Code:** Identify and propose removal of any boilerplate leftovers.

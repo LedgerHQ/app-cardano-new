@@ -176,6 +176,37 @@ Together, these approaches ensure correctness (unit tests), real-world behavior 
 
 - **`mem.h`**: Dynamic memory allocator optimized for Ledger device constraints (`app_mem_alloc`).
 
+## 5.1 Debugging and Tracing
+
+**TRACE macro** (`utils/utils.h`): Use for debug output during development.
+
+- In release builds (no `HAVE_PRINTF`), all `TRACE()` calls compile to no-op, incurring **zero overhead**.
+- In debug builds, TRACE strings become part of the binary and consume memory.
+- **Best practice**: Use **conditional tracing guards** for verbose/repetitive debug output:
+
+```c
+// In your module header or at top of .c file:
+#ifdef TRACE_MY_MODULE
+#define TRACE_MODULE(...) TRACE(__VA_ARGS__)
+#else
+#define TRACE_MODULE(...) // Empty - compiled out
+#endif
+
+// In code:
+TRACE_MODULE("Verbose state tracking: state=%d", state);  // Compiled out unless -DTRACE_MY_MODULE
+TRACE("Critical error detected: %d", error);              // Always compiled in debug builds
+```
+
+This pattern is already used in hash builders (`TRACE_TX_HASH_BUILDER`, `TRACE_VOTECAST_HASH_BUILDER`, etc.).
+
+**Reserved guard names for common modules:**
+- `TRACE_TX_PARSE` - Transaction parsing (certificates, outputs)
+- `TRACE_UI_DISPLAY` - UI rendering modules
+- `TRACE_HANDLERS` - Command handlers
+- `TRACE_CVOTE` - Voting module
+
+See `doc/testing.md` for memory footprint analysis and recommendations.
+
 # Security
 
 Apart from avoiding memory leaks and bugs in general, the security of the app has two main pillars:

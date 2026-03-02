@@ -15,6 +15,15 @@
 #include "tx_parse_outputs.h"
 #include "utils.h"
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_CVOTE to trace voting data processing.
+ */
+#ifdef TRACE_CVOTE
+#define TRACE_MODULE(...) TRACE("[cvote_parser] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 /**
  * Parse CVote credential
  *
@@ -81,11 +90,11 @@ cvote_parser_status_t cvote_parse_destination(buffer_t *buf,
     }
 
     if (destination->type == DESTINATION_DEVICE_OWNED) {
-        TRACE("CVote destination type 0x%x, staking %d",
+        TRACE_MODULE("CVote destination type 0x%x, staking %d",
               destination->params.type,
               addressParams_getStakingPartType(&destination->params));
     } else {
-        TRACE("CVote destination: third-party payload");
+        TRACE_MODULE("CVote destination: third-party payload");
     }
 
     return CVOTE_PARSER_OK;

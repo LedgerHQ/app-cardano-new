@@ -16,6 +16,15 @@
 
 #include <string.h>
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_TX_PARSE to trace this module's parsing details.
+ */
+#ifdef TRACE_TX_PARSE
+#define TRACE_MODULE(...) TRACE("[tx_parse] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 // ---------------------------------------------------------------------------
 // Parse-item helpers
 // ---------------------------------------------------------------------------

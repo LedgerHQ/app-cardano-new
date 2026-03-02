@@ -25,6 +25,15 @@
 #include "nbgl_use_case.h"
 #include "app_mem_utils.h"
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_HANDLERS to trace handler-level flow.
+ */
+#ifdef TRACE_HANDLERS
+#define TRACE_MODULE(...) TRACE("[sign_msg] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 // Overhead for Sig_structure CBOR encoding:
 // - 1 byte array(4) header
 // - 1 + 10 bytes "Signature1" text
@@ -36,7 +45,7 @@
 
 static bool ensure_sign_msg_request_type(request_type_e required_request_type) {
     if (G_context.req_type != required_request_type) {
-        TRACE("Rejecting sign_msg command for req_type %d (expected %d)",
+        TRACE_MODULE("Rejecting sign_msg command for req_type %d (expected %d)",
               G_context.req_type,
               required_request_type);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
@@ -47,7 +56,7 @@ static bool ensure_sign_msg_request_type(request_type_e required_request_type) {
 
 static bool ensure_sign_msg_state(sign_msg_state_e required_state) {
     if (G_context.state.sign_msg_state != required_state) {
-        TRACE("Rejecting sign_msg command in state %d (expected %d)",
+        TRACE_MODULE("Rejecting sign_msg command in state %d (expected %d)",
               G_context.state.sign_msg_state,
               required_state);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);

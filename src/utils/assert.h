@@ -10,4 +10,4 @@
 
 #include "ledger_assert.h"
 
-#define ASSERT(x) LEDGER_ASSERT((x), "probably a bug")
+#define ASSERT(x) LEDGER_ASSERT((x), "bug")
