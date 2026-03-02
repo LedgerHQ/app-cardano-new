@@ -151,11 +151,11 @@ bool parse_output_asset_group(buffer_t* buf, output_asset_group_t* out_group) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     LEDGER_ASSERT(out_group != NULL, "NULL out_group");
 
-    if (!buffer_read_bytes_ptr(buf, &out_group->policyId, MINTING_POLICY_ID_LENGTH)) {
+    if (!buffer_read_bytes_ptr(buf, &out_group->policyId, MINTING_POLICY_ID_LENGTH) ||
+        out_group->policyId == NULL) {
         TRACE("Failed to read policy ID");
         return false;
     }
-    LEDGER_ASSERT(out_group->policyId != NULL, "NULL policy_id");
 
     if (!buffer_read_u16(buf, &out_group->numTokens, BE)) {
         TRACE("Failed to read number of tokens in group");

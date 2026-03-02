@@ -5511,6 +5511,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="",
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
+        deny_before_review=True,
     ),
     SignTxTestCase(
         name="Stake_delegation_in_Pool_Registration_Owner",
@@ -5535,6 +5536,7 @@ certificateRejectTestCases: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
+        deny_before_review=True,
     ),
     SignTxTestCase(
         name="Pool_retirement_in_Pool_Registration_Operator",
@@ -7261,6 +7263,7 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
         txBody="",
         additionalWitnessPaths=["m/1852'/1815'/0'/2/0", "m/1854'/1815'/0'/2/0"],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
+        deny_before_review=True,
     ),
 ]
 
@@ -7570,6 +7573,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
+        deny_before_review=True,
     ),
     SignTxTestCase(
         name="pool_metadata_invalid_url",
@@ -7619,6 +7623,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
+        deny_before_review=True,
     ),
     SignTxTestCase(
         name="pool_metadata_invalid_hash_length",
@@ -7668,6 +7673,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
+        deny_before_review=True,
     ),
     SignTxTestCase(
         name="pool_metadata_missing_hash",
@@ -7717,6 +7723,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
+        deny_before_review=True,
     ),
 ]
 
@@ -7769,6 +7776,7 @@ invalidRelayTestCases: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
+        deny_before_review=True,
     ),
     SignTxTestCase(
         name="MultiHost_missing_dns",
@@ -7816,5 +7824,6 @@ invalidRelayTestCases: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
+        deny_before_review=True,
     ),
 ]

@@ -14,7 +14,6 @@
 #include "menu.h"
 #include "app_context.h"
 #include "sign_tx_ctx.h"
-#include "tx_parse.h"
 #include "tx_processing.h"
 #include "ui_utils.h"
 #include "ui_warnings.h"
@@ -79,8 +78,8 @@ static void tx_streaming_continue_choice(bool confirm) {
     // Free the pairs rendered for the previous chunk.
     ui_free_pairs();
 
-    uint16_t next_from = tx_body_ctx()->render_cursor;
-    uint16_t total     = tx_body_ctx()->planned_ui_pairs;
+    uint16_t next_from = tx_body_ctx()->rendered_ui_pairs;
+    uint16_t total     = tx_body_ctx()->total_ui_pairs;
 
     if (next_from >= total) {
         // All chunks done — finish screen.
@@ -112,7 +111,7 @@ static void tx_streaming_continue_choice(bool confirm) {
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
     }
-    tx_body_ctx()->render_cursor = next_from + rendered_count;
+    tx_body_ctx()->rendered_ui_pairs = next_from + rendered_count;
 
     // Reset OOM status if it was set (expected as chunk boundary).
     g_ui_error_status = UI_STATUS_SUCCESS;
@@ -122,7 +121,7 @@ static void tx_streaming_continue_choice(bool confirm) {
     g_pairsList->nbPairs = (uint8_t) rendered_count;
 
     TRACE("Streaming chunk: from=%u rendered=%u cursor_after=%u total=%u",
-          next_from, rendered_count, tx_body_ctx()->render_cursor, total);
+          next_from, rendered_count, tx_body_ctx()->rendered_ui_pairs, total);
 
     nbgl_useCaseReviewStreamingContinue(g_pairsList, tx_streaming_continue_choice);
 }

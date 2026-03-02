@@ -1377,7 +1377,7 @@ security_policy_t policyForSignTxStakePoolRegistrationInit(sign_tx_signingmode_t
     }
     switch (txSigningMode) {
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
-            // Tightened vs old Shelley app:
+            // Tightened vs legacy app-cardano repository (old Shelley app):
             // old flow accepted owner-mode certs with 0 path owners and only blocked witness later.
             // In the unified parser we already know owner cardinality at cert-init time, so we
             // enforce the intended invariant early: exactly one owner path for owner mode.

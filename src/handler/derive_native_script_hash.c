@@ -439,6 +439,7 @@ static void deriveNativeScriptHash_handleInit(buffer_t *cdata) {
 
     // Set up request state
     G_context.req_type = REQUEST_DERIVE_NATIVE_SCRIPT_HASH;
+    explicit_bzero(&G_context.derive_native_script_hash_info, sizeof(G_context.derive_native_script_hash_info));
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     ctx->level = 0;
     ctx->complexScripts[0].remainingScripts = 1;

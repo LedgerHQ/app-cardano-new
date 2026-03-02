@@ -20,7 +20,7 @@
 #include "ui_constants.h"
 #include "ui_formatters.h"
 #include "tx_processing.h"
-#include "tx_ui_strings_outputs.h"
+#include "tx_ui_render_outputs.h"
 #include "bech32.h"
 #include "securityPolicy.h"
 #include "tx_utils.h"
@@ -72,7 +72,7 @@ static bool tx_process_output(buffer_t *output_buf,
                                       tx_processing_state_t *state) {
     tx_processing_ctx_t ctx = tx_get_ctx();
     const tx_params_t *tx_params = ctx.tx_params;
-    const tx_processing_mode_t *mode = ctx.mode;
+    const tx_processing_mode_t *mode = &ctx.mode;
     tx_hash_builder_t *hash_builder = ctx.hash_builder;
 
     // --- 1. Parse top-level output fields ---
@@ -179,8 +179,8 @@ static bool tx_process_output(buffer_t *output_buf,
     }
 
     // Add token pair counts to plan now that total_token_count is known
-    if (mode->run_validation && mode->run_ui_planning && output_policy == POLICY_SHOW) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_TOKEN * total_token_count;
+    if (mode->run_validation && mode->ui_count_pairs && output_policy == POLICY_SHOW) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_TOKEN * total_token_count;
     }
 
     // --- 5. Datum ---
@@ -247,7 +247,7 @@ static bool tx_process_output(buffer_t *output_buf,
 static bool tx_process_collateral_return_output(buffer_t *output_buf) {
     tx_processing_ctx_t ctx = tx_get_ctx();
     const tx_params_t *tx_params = ctx.tx_params;
-    const tx_processing_mode_t *mode = ctx.mode;
+    const tx_processing_mode_t *mode = &ctx.mode;
     tx_hash_builder_t *hash_builder = ctx.hash_builder;
 
     // --- 1. Parse top-level output fields ---
@@ -347,8 +347,8 @@ static bool tx_process_collateral_return_output(buffer_t *output_buf) {
     }
 
     // Add token pair counts to plan now that total_token_count is known
-    if (mode->run_validation && mode->run_ui_planning && collateral_tokens_policy == POLICY_SHOW) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_TOKEN * total_token_count;
+    if (mode->run_validation && mode->ui_count_pairs && collateral_tokens_policy == POLICY_SHOW) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_TOKEN * total_token_count;
     }
 
     // Collateral outputs MUST NOT contain datum or ref script
@@ -371,7 +371,7 @@ bool tx_process_outputs(buffer_t *buf, tx_processing_state_t *state) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     tx_processing_ctx_t ctx = tx_get_ctx();
     const tx_params_t *tx_params = ctx.tx_params;
-    const tx_processing_mode_t *mode = ctx.mode;
+    const tx_processing_mode_t *mode = &ctx.mode;
 
     if (mode->run_hash_builder) {
         LEDGER_ASSERT(state->hash_builder_initialized, "Hash builder not initialized");

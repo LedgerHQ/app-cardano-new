@@ -170,9 +170,9 @@ add_executable(test_tx_validate
     ../src/transaction/tx_processing.c
     ../src/transaction/tx_processing_outputs.c
     ../src/transaction/tx_processing_certificates.c
-    ../src/transaction/tx_ui_strings.c
-    ../src/transaction/tx_ui_strings_certificates.c
-    ../src/transaction/tx_ui_strings_outputs.c
+    ../src/transaction/tx_ui_render.c
+    ../src/transaction/tx_ui_render_certificates.c
+    ../src/transaction/tx_ui_render_outputs.c
     ../src/transaction/tx_parse_certificates.c
     ../src/transaction/tx_parse_outputs.c
     ../src/transaction/tx_utils.c
@@ -190,7 +190,7 @@ add_executable(test_tx_validate
     ../src/ui/ui_utils.c
     ../src/ui/ui_warnings.c
     ../src/ui/ui_formatters.c
-    ../src/ui/tx_ui_helpers.c
+    ../src/ui/ui_address_fields.c
     ../src/app_context.c
     ${UNIT_TEST_MEM_UTILS_STUB}
     mock_sources/glyphs_mock.c
@@ -286,9 +286,9 @@ set(SIGN_TX_COMMON_SOURCES
     ../src/transaction/tx_processing.c
     ../src/transaction/tx_processing_outputs.c
     ../src/transaction/tx_processing_certificates.c
-    ../src/transaction/tx_ui_strings.c
-    ../src/transaction/tx_ui_strings_certificates.c
-    ../src/transaction/tx_ui_strings_outputs.c
+    ../src/transaction/tx_ui_render.c
+    ../src/transaction/tx_ui_render_certificates.c
+    ../src/transaction/tx_ui_render_outputs.c
     ../src/transaction/tx_parse_certificates.c
     ../src/transaction/tx_parse_outputs.c
     ../src/transaction/tx_utils.c
@@ -301,7 +301,7 @@ set(SIGN_TX_COMMON_SOURCES
     ../src/addressUtils/addressUtilsShelley.c
     ../src/addressUtils/addressUtilsByron.c
     ../src/transaction/tx_hash_builder.c
-    ../src/ui/tx_ui_helpers.c
+    ../src/ui/ui_address_fields.c
     ../src/ui/ui_utils.c
     ../src/ui/ui_warnings.c
     ../src/ui/ui_formatters.c
@@ -725,7 +725,7 @@ set(DERIVE_ADDRESS_COMMON_SOURCES
     ../src/ui/ui_utils.c
     ../src/ui/ui_warnings.c
     ../src/ui/ui_formatters.c
-    ../src/ui/tx_ui_helpers.c
+    ../src/ui/ui_address_fields.c
     ../src/ui/ui_display_address_derivation.c
     ${UNIT_TEST_MEM_UTILS_STUB}
     mock_sources/glyphs_mock.c

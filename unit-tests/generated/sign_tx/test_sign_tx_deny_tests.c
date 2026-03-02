@@ -92,7 +92,7 @@ typedef struct {
 // Accesses the body slot directly because this may be called in any tx state (including NONE).
 static inline void tx_context_cleanup(void) {
     APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.body.raw_tx);
-    G_context.tx_info.body.planned_ui_pairs = 0;
+    G_context.tx_info.body.total_ui_pairs = 0;
 }
 
 #define TEST_HEAP_SIZE (23 * 1024)

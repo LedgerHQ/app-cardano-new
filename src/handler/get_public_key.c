@@ -44,6 +44,7 @@ void handler_get_public_key(buffer_t *cdata) {
     }
 
     G_context.req_type = REQUEST_EXPORT_PUBKEY;
+    explicit_bzero(&G_context.pk_info, sizeof(G_context.pk_info));
 
     if (!buffer_read_bip44_path(cdata, &G_context.pk_info.path)) {
         TRACE("Failed to parse BIP44 path for public key export");

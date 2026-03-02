@@ -232,6 +232,7 @@ void display_complex_script_content(ui_native_script_type scriptType) {
     if (required_position) {
         expectedPairs += UI_PAIRS_POSITION;
     }
+    ui_reset_error_status();
     if (!ui_pairs_init(expectedPairs)) {
         TRACE("Failed to initialize pairs");
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
@@ -291,6 +292,7 @@ void ui_display_native_script_hash(void) {
             if (required_position) {
                 expectedPairs += UI_PAIRS_POSITION;
             }
+            ui_reset_error_status();
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
@@ -320,6 +322,7 @@ void ui_display_native_script_hash(void) {
             if (required_position) {
                 expectedPairs += UI_PAIRS_POSITION;
             }
+            ui_reset_error_status();
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
@@ -351,6 +354,7 @@ void ui_display_native_script_hash(void) {
             if (required_position) {
                 expectedPairs += UI_PAIRS_POSITION;
             }
+            ui_reset_error_status();
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
@@ -381,6 +385,7 @@ void ui_display_native_script_hash(void) {
             if (required_position) {
                 expectedPairs += UI_PAIRS_POSITION;
             }
+            ui_reset_error_status();
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
@@ -406,6 +411,7 @@ void ui_display_native_script_hash(void) {
         }
         case UI_SCRIPT_DISPLAY_BECH32: {
             const int expectedPairs = UI_PAIRS_SCRIPT_HASH;
+            ui_reset_error_status();
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
@@ -426,6 +432,7 @@ void ui_display_native_script_hash(void) {
         }
         case UI_SCRIPT_DISPLAY_POLICY_ID: {
             const int expectedPairs = UI_PAIRS_POLICY_ID;
+            ui_reset_error_status();
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);

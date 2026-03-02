@@ -12,8 +12,8 @@
 #include "securityWarnings.h"
 #include "tx_certificate_types.h"
 #include "tx_credential_types.h"
-#include "tx_ui_plan.h"
-#include "tx_ui_strings.h"
+#include "tx_ui_pair_counts.h"
+#include "tx_ui_render.h"
 #include "ui_constants.h"
 #include "ui_formatters.h"
 #include "ui_utils.h"
@@ -23,9 +23,9 @@ void tx_ui_plan_or_render_input(const tx_processing_mode_t *mode, const tx_input
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_input != NULL, "NULL parsed_input");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_INPUT;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_INPUT;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Input"),
                        MAX_INPUT_DISPLAY_STRING_LENGTH,
@@ -40,9 +40,9 @@ void tx_ui_plan_or_render_collateral_input(const tx_processing_mode_t *mode,
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_input != NULL, "NULL parsed_input");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_COLLATERAL_INPUT;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_COLLATERAL_INPUT;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Coll input"),
                        MAX_INPUT_DISPLAY_STRING_LENGTH,
@@ -57,9 +57,9 @@ void tx_ui_plan_or_render_reference_input(const tx_processing_mode_t *mode,
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_input != NULL, "NULL parsed_input");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_REFERENCE_INPUT;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_REFERENCE_INPUT;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Ref input"),
                        MAX_INPUT_DISPLAY_STRING_LENGTH,
@@ -74,9 +74,9 @@ void tx_ui_plan_or_render_required_signer(const tx_processing_mode_t *mode,
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_required_signer != NULL, "NULL parsed_required_signer");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_REQUIRED_SIGNER;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_REQUIRED_SIGNER;
+    } else if (mode->ui_render) {
         START_COUNT();
         switch (parsed_required_signer->type) {
             case REQUIRED_SIGNER_WITH_HASH:
@@ -105,9 +105,9 @@ void tx_ui_plan_or_render_mint_summary(const tx_processing_mode_t *mode,
                                        uint16_t num_mint_asset_groups) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_MINT_SUMMARY;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_MINT_SUMMARY;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Mint"),
                        MAX_MINT_SUMMARY_STRING_LENGTH,
@@ -120,12 +120,11 @@ void tx_ui_plan_or_render_mint_summary(const tx_processing_mode_t *mode,
 void tx_ui_plan_or_render_mint_token(const tx_processing_mode_t *mode,
                                      const mint_token_t *mint_token) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
-    LEDGER_ASSERT(mint_token != NULL, "NULL mint_token");
-    LEDGER_ASSERT(mint_token->policyId != NULL, "NULL mint_token->policyId");
+    LEDGER_ASSERT(mint_token != NULL && mint_token->policyId != NULL, "NULL mint_token or policyId");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_TOKEN;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_TOKEN;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT3(UI_STATIC_LABEL("Fingerprint"),
                        MAX_TOKEN_FINGERPRINT_STRING_LENGTH,
@@ -147,9 +146,9 @@ void tx_ui_plan_or_render_mint_token(const tx_processing_mode_t *mode,
 void tx_ui_plan_or_render_fee(const tx_processing_mode_t *mode, uint64_t parsed_fee) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_FEE;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_FEE;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Fee"),
                        MAX_ADA_AMOUNT_STRING_LENGTH,
@@ -162,9 +161,9 @@ void tx_ui_plan_or_render_fee(const tx_processing_mode_t *mode, uint64_t parsed_
 void tx_ui_plan_or_render_ttl(const tx_processing_mode_t *mode, uint64_t parsed_ttl) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_TTL;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_TTL;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT3(UI_STATIC_LABEL("TTL"),
                        MAX_VALIDITY_BOUNDARY_STRING_LENGTH,
@@ -180,9 +179,9 @@ void tx_ui_plan_or_render_validity_interval_start(const tx_processing_mode_t *mo
                                                   uint64_t validity_interval_start) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_VALIDITY_INTERVAL_START;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_VALIDITY_INTERVAL_START;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT3(UI_STATIC_LABEL("Valid from"),
                        MAX_VALIDITY_BOUNDARY_STRING_LENGTH,
@@ -202,13 +201,13 @@ void tx_ui_plan_or_render_withdrawal(const tx_processing_mode_t *mode,
 
     const ext_credential_t *credential = &parsed_withdrawal->stakeCredential;
 
-    if (mode->run_ui_planning) {
+    if (mode->ui_count_pairs) {
         if (credential->type == EXT_CREDENTIAL_KEY_PATH) {
-            tx_body_ctx()->planned_ui_pairs += UI_PAIRS_WITHDRAWAL_KEY_PATH;
+            tx_body_ctx()->total_ui_pairs += UI_PAIRS_WITHDRAWAL_KEY_PATH;
         } else {
-            tx_body_ctx()->planned_ui_pairs += UI_PAIRS_WITHDRAWAL_OTHER;
+            tx_body_ctx()->total_ui_pairs += UI_PAIRS_WITHDRAWAL_OTHER;
         }
-    } else if (mode->run_ui_rendering) {
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Withdrawal amount", "Withdraw amount"),
                        MAX_ADA_AMOUNT_STRING_LENGTH,
@@ -235,9 +234,9 @@ void tx_ui_plan_or_render_aux_data_hash(const tx_processing_mode_t *mode,
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(aux_data_hash != NULL, "NULL aux_data_hash");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_AUXILIARY_DATA_HASH;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_AUXILIARY_DATA_HASH;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Auxiliary data hash", "Aux data hash"),
                        MAX_TX_HASH_DISPLAY_LENGTH,
@@ -253,9 +252,9 @@ void tx_ui_plan_or_render_script_data_hash(const tx_processing_mode_t *mode,
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(script_data_hash != NULL, "NULL script_data_hash");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_SCRIPT_DATA_HASH;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_SCRIPT_DATA_HASH;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Script data hash", "Script hash"),
                        MAX_BECH32_STRING_LENGTH,
@@ -271,9 +270,9 @@ void tx_ui_plan_or_render_total_collateral(const tx_processing_mode_t *mode,
                                            uint64_t total_collateral) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_TOTAL_COLLATERAL;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_TOTAL_COLLATERAL;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Total collateral", "Total coll"),
                        MAX_ADA_AMOUNT_STRING_LENGTH,
@@ -287,9 +286,9 @@ void tx_ui_plan_or_render_voter(const tx_processing_mode_t *mode, const ext_vote
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_voter != NULL, "NULL parsed_voter");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_VOTER;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_VOTER;
+    } else if (mode->ui_render) {
         START_COUNT();
         switch (parsed_voter->type) {
             case EXT_VOTER_COMMITTEE_HOT_KEY_PATH:
@@ -368,9 +367,9 @@ void tx_ui_plan_or_render_vote(const tx_processing_mode_t *mode, const vote_item
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_vote != NULL, "NULL parsed_vote");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_VOTE;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_VOTE;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Gov action tx hash", "Action tx hash"),
                        MAX_TX_HASH_DISPLAY_LENGTH,
@@ -393,9 +392,9 @@ void tx_ui_plan_or_render_vote_anchor(const tx_processing_mode_t *mode, const an
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(anchor != NULL, "NULL anchor");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_ANCHOR;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_ANCHOR;
+    } else if (mode->ui_render) {
         START_COUNT();
         if (anchor->urlLength == 0) {
             LEDGER_ASSERT(
@@ -422,9 +421,9 @@ void tx_ui_plan_or_render_vote_anchor(const tx_processing_mode_t *mode, const an
 void tx_ui_plan_or_render_treasury(const tx_processing_mode_t *mode, uint64_t treasury) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_TREASURY;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_TREASURY;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Treasury"),
                        MAX_ADA_AMOUNT_STRING_LENGTH,
@@ -437,9 +436,9 @@ void tx_ui_plan_or_render_treasury(const tx_processing_mode_t *mode, uint64_t tr
 void tx_ui_plan_or_render_donation(const tx_processing_mode_t *mode, uint64_t donation) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_DONATION;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_DONATION;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Donation"),
                        MAX_ADA_AMOUNT_STRING_LENGTH,
@@ -453,9 +452,9 @@ void tx_ui_plan_or_render_tx_hash(const tx_processing_mode_t *mode, const uint8_
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(tx_hash != NULL, "NULL tx_hash");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_TX_HASH;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_TX_HASH;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT2(UI_STATIC_LABEL("Tx hash"),
                        MAX_TX_HASH_DISPLAY_LENGTH,

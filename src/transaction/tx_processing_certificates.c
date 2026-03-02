@@ -25,8 +25,8 @@
 #include "ui_warnings.h"
 #include "ui_constants.h"
 #include "ui_formatters.h"
-#include "tx_ui_helpers.h"
-#include "tx_ui_strings_certificates.h"
+#include "ui_address_fields.h"
+#include "tx_ui_render_certificates.h"
 #include "cardano_tokens.h"
 #include "bech32.h"
 #include "io.h"
@@ -335,7 +335,7 @@ bool process_pool_registration_certificate(buffer_t *buf,
     // already parsed by parse_certificate_stake_pool_registration).
 
     tx_processing_ctx_t ctx = tx_get_ctx();
-    const tx_processing_mode_t *mode = ctx.mode;
+    const tx_processing_mode_t *mode = &ctx.mode;
     tx_hash_builder_t *hash_builder = ctx.hash_builder;
 
     const pool_registration_data_t *pool_registration = &parsed_cert->poolRegistration;
@@ -547,7 +547,7 @@ bool tx_process_certificates(buffer_t *buf, tx_processing_state_t *state) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     tx_processing_ctx_t ctx = tx_get_ctx();
     const tx_params_t *tx_params = ctx.tx_params;
-    const tx_processing_mode_t *mode = ctx.mode;
+    const tx_processing_mode_t *mode = &ctx.mode;
 
     if (tx_params->num_certificates == 0) {
         return true;

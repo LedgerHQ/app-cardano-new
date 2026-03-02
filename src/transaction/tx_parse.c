@@ -7,73 +7,14 @@
 #include "cardano_buffer.h"
 #include "cbor.h"
 #include "tx_parse.h"
-#include "tx_processing.h"
 #include "cardano_parsers.h"
 #include "tx.h"
 #include "utils.h"
 #include "assert.h"
 #include "tx_constants.h"
 #include "keyDerivation.h"
-#include "globals.h"
-#include "sign_tx_ctx.h"
-#include "io.h"
 
 #include <string.h>
-
-// ---------------------------------------------------------------------------
-// Mode validator
-// ---------------------------------------------------------------------------
-
-void validate_parse_tx_mode(const tx_processing_mode_t *mode) {
-    LEDGER_ASSERT(mode != NULL, "NULL mode");
-
-    LEDGER_ASSERT(!mode->run_ui_rendering || !mode->run_hash_builder,
-                  "run_ui_rendering implies !run_hash_builder");
-    LEDGER_ASSERT(!mode->run_hash_builder || mode->run_validation,
-                  "run_hash_builder implies run_validation");
-    LEDGER_ASSERT(!mode->run_ui_planning || mode->run_validation,
-                  "run_ui_planning implies run_validation");
-}
-
-// ---------------------------------------------------------------------------
-// Context helpers
-// ---------------------------------------------------------------------------
-
-void tx_processing_state_init(const tx_processing_mode_t *mode, warning_bits_t *warning_bits) {
-    validate_parse_tx_mode(mode);
-    LEDGER_ASSERT(warning_bits != NULL, "NULL warning_bits");
-
-    tx_processing_state_t *state = &tx_body_ctx()->processing_state;
-    explicit_bzero(state, sizeof(*state));
-
-    tx_body_ctx()->parse_mode = *mode;
-    state->mode = &tx_body_ctx()->parse_mode;
-    state->warning_bits = warning_bits;
-
-    if (mode->run_hash_builder) {
-        txHashBuilder_init(&state->hash_builder, &G_context.tx_info.tx_params);
-        state->hash_builder_initialized = true;
-    }
-}
-
-tx_processing_ctx_t tx_get_ctx(void) {
-    tx_processing_state_t *state = &tx_body_ctx()->processing_state;
-    LEDGER_ASSERT(state->mode != NULL, "tx_processing_state not initialized");
-    LEDGER_ASSERT(state->warning_bits != NULL, "tx_processing_state not initialized (warnings)");
-    validate_parse_tx_mode(state->mode);
-
-    return (tx_processing_ctx_t){
-        .tx_params    = &G_context.tx_info.tx_params,
-        .mode         = state->mode,
-        .warning_bits = state->warning_bits,
-        .hash_builder = &state->hash_builder,
-    };
-}
-
-void tx_handle_parse_error(uint16_t swo) {
-    TRACE("tx_handle_parse_error swo=0x%04x", swo);
-    send_swo_and_reset(swo);
-}
 
 // ---------------------------------------------------------------------------
 // Parse-item helpers
@@ -284,121 +225,4 @@ bool parse_mint_token(buffer_t *buf, mint_token_t *out_mint_token) {
     out_mint_token->amount = token_amount;
     // out_mint_token->policyId is set by the caller from the outer asset group context
     return true;
-}
-
-// ---------------------------------------------------------------------------
-// Credential/DRep/voter conversion helpers (ext → hash-builder format)
-// ---------------------------------------------------------------------------
-
-credential_t credential_for_tx_hash_from_ext_credential(const ext_credential_t *credential) {
-    LEDGER_ASSERT(credential != NULL, "NULL credential");
-
-    credential_t result = {0};
-    switch (credential->type) {
-        case EXT_CREDENTIAL_KEY_PATH:
-            result.type = CREDENTIAL_KEY_HASH;
-            keyPathToKeyHash(&credential->keyPath, result.keyHash, SIZEOF(result.keyHash));
-            break;
-        case EXT_CREDENTIAL_KEY_HASH:
-            LEDGER_ASSERT(credential->keyHash != NULL, "NULL credential->keyHash");
-            result.type = CREDENTIAL_KEY_HASH;
-            memmove(result.keyHash, credential->keyHash, SIZEOF(result.keyHash));
-            break;
-        case EXT_CREDENTIAL_SCRIPT_HASH:
-            LEDGER_ASSERT(credential->scriptHash != NULL, "NULL credential->scriptHash");
-            result.type = CREDENTIAL_SCRIPT_HASH;
-            memmove(result.scriptHash, credential->scriptHash, SIZEOF(result.scriptHash));
-            break;
-        default:
-            LEDGER_ASSERT(false, "Unknown ext credential type");
-            break;
-    }
-
-    return result;
-}
-
-drep_t drep_for_tx_hash_from_ext_drep(const ext_drep_t *ext_drep) {
-    LEDGER_ASSERT(ext_drep != NULL, "NULL ext_drep");
-
-    drep_t result = {
-        .type = (drep_type_t) ext_drep->type,
-    };
-
-    switch (ext_drep->type) {
-        case EXT_DREP_KEY_PATH:
-            result.type = DREP_KEY_HASH;
-            keyPathToKeyHash(&ext_drep->keyPath, result.keyHash, SIZEOF(result.keyHash));
-            break;
-        case EXT_DREP_KEY_HASH:
-            LEDGER_ASSERT(ext_drep->keyHash != NULL, "NULL ext_drep->keyHash");
-            result.type = DREP_KEY_HASH;
-            memmove(result.keyHash, ext_drep->keyHash, SIZEOF(result.keyHash));
-            break;
-        case EXT_DREP_SCRIPT_HASH:
-            LEDGER_ASSERT(ext_drep->scriptHash != NULL, "NULL ext_drep->scriptHash");
-            result.type = DREP_SCRIPT_HASH;
-            memmove(result.scriptHash, ext_drep->scriptHash, SIZEOF(result.scriptHash));
-            break;
-        case EXT_DREP_ABSTAIN:
-            result.type = DREP_ABSTAIN;
-            break;
-        case EXT_DREP_NO_CONFIDENCE:
-            result.type = DREP_NO_CONFIDENCE;
-            break;
-        default:
-            LEDGER_ASSERT(false, "Unknown ext drep type");
-            break;
-    }
-
-    return result;
-}
-
-voter_t voter_for_tx_hash_from_ext_voter(const ext_voter_t *ext_voter) {
-    LEDGER_ASSERT(ext_voter != NULL, "NULL ext_voter");
-
-    voter_t voter = {0};
-    switch (ext_voter->type) {
-        case EXT_VOTER_COMMITTEE_HOT_KEY_PATH:
-            voter.type = VOTER_COMMITTEE_HOT_KEY_HASH;
-            keyPathToKeyHash(&ext_voter->keyPath, voter.keyHash, SIZEOF(voter.keyHash));
-            break;
-        case EXT_VOTER_DREP_KEY_PATH:
-            voter.type = VOTER_DREP_KEY_HASH;
-            keyPathToKeyHash(&ext_voter->keyPath, voter.keyHash, SIZEOF(voter.keyHash));
-            break;
-        case EXT_VOTER_STAKE_POOL_KEY_PATH:
-            voter.type = VOTER_STAKE_POOL_KEY_HASH;
-            keyPathToKeyHash(&ext_voter->keyPath, voter.keyHash, SIZEOF(voter.keyHash));
-            break;
-        case EXT_VOTER_COMMITTEE_HOT_KEY_HASH:
-            LEDGER_ASSERT(ext_voter->keyHash != NULL, "NULL committee hot key hash voter");
-            voter.type = VOTER_COMMITTEE_HOT_KEY_HASH;
-            memmove(voter.keyHash, ext_voter->keyHash, SIZEOF(voter.keyHash));
-            break;
-        case EXT_VOTER_DREP_KEY_HASH:
-            LEDGER_ASSERT(ext_voter->keyHash != NULL, "NULL drep key hash voter");
-            voter.type = VOTER_DREP_KEY_HASH;
-            memmove(voter.keyHash, ext_voter->keyHash, SIZEOF(voter.keyHash));
-            break;
-        case EXT_VOTER_STAKE_POOL_KEY_HASH:
-            LEDGER_ASSERT(ext_voter->keyHash != NULL, "NULL stake pool key hash voter");
-            voter.type = VOTER_STAKE_POOL_KEY_HASH;
-            memmove(voter.keyHash, ext_voter->keyHash, SIZEOF(voter.keyHash));
-            break;
-        case EXT_VOTER_COMMITTEE_HOT_SCRIPT_HASH:
-            LEDGER_ASSERT(ext_voter->scriptHash != NULL, "NULL committee hot script hash voter");
-            voter.type = VOTER_COMMITTEE_HOT_SCRIPT_HASH;
-            memmove(voter.scriptHash, ext_voter->scriptHash, SIZEOF(voter.scriptHash));
-            break;
-        case EXT_VOTER_DREP_SCRIPT_HASH:
-            LEDGER_ASSERT(ext_voter->scriptHash != NULL, "NULL drep script hash voter");
-            voter.type = VOTER_DREP_SCRIPT_HASH;
-            memmove(voter.scriptHash, ext_voter->scriptHash, SIZEOF(voter.scriptHash));
-            break;
-        default:
-            LEDGER_ASSERT(false, "Unknown ext voter type");
-            break;
-    }
-
-    return voter;
 }

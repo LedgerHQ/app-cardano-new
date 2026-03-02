@@ -19,8 +19,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         uint8_t *init_copy = malloc(size);
         if (init_copy != NULL) {
             memcpy(init_copy, data, size);
-            G_context.tx_info.raw_cvote_init_data = init_copy;
-            G_context.tx_info.raw_cvote_init_data_len = size;
+            G_context.tx_info.aux_data.raw_cvote_init_data = init_copy;
+            G_context.tx_info.aux_data.raw_cvote_init_data_len = size;
 
             cvote_aux_data_t aux_data = {0};
             if (cvote_parse_aux_data_init(&aux_data) == CVOTE_PARSER_OK) {
@@ -34,15 +34,11 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
                 }
             }
 
-            if (aux_data.destination.type == DESTINATION_DEVICE_OWNED &&
-                aux_data.destination.params != NULL) {
-                APP_MEM_FREE(aux_data.destination.params);
-                aux_data.destination.params = NULL;
-            }
+            // aux_data.destination.params is embedded by value; no cleanup needed.
 
             free(init_copy);
-            G_context.tx_info.raw_cvote_init_data = NULL;
-            G_context.tx_info.raw_cvote_init_data_len = 0;
+            G_context.tx_info.aux_data.raw_cvote_init_data = NULL;
+            G_context.tx_info.aux_data.raw_cvote_init_data_len = 0;
         }
     }
 
@@ -63,10 +59,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     };
     tx_output_destination_t destination = {0};
     (void) cvote_parse_destination(&destination_buffer, &destination);
-    if (destination.type == DESTINATION_DEVICE_OWNED && destination.params != NULL) {
-        APP_MEM_FREE(destination.params);
-        destination.params = NULL;
-    }
+    // destination.params is embedded by value; no cleanup needed.
 
     return 0;
 }

@@ -436,5 +436,5 @@ static inline void run_fixture_reject_aux_with_expert_mode(const tx_fixture_t *f
 // Accesses the body slot directly because this may be called in any tx state.
 static inline void tx_context_cleanup(void) {
     APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.body.raw_tx);
-    G_context.tx_info.body.planned_ui_pairs = 0;
+    G_context.tx_info.body.total_ui_pairs = 0;
 }

@@ -13,7 +13,7 @@
 /**
  * UI planning/rendering functions for individual transaction elements.
  *
- * Each function handles both passes (run_ui_planning and run_ui_rendering)
+ * Each function handles both passes (ui_count_pairs and ui_render)
  * for one parsed tx element. They take only the mode and the parsed element
  * (plus any extra scalars needed for formatting).
  *

@@ -66,9 +66,9 @@ uint16_t ui_pairs_get_count(void);
  * Render-window support for streaming chunk rendering.
  *
  * When rendering a chunk starting at pair index `from`, pairs with
- * g_render_cursor < from are skipped (no allocation). Pairs after OOM
- * are also skipped. g_render_cursor always increments exactly once per
- * UI_ADD_* call, keeping it in sync with planned_ui_pairs.
+ * g_pair_scan_index < from are skipped (no allocation). Pairs after OOM
+ * are also skipped. g_pair_scan_index always increments exactly once per
+ * UI_ADD_* call, keeping it in sync with total_ui_pairs.
  */
 void ui_render_window_init(uint16_t from);
 uint16_t ui_render_cursor_get(void);

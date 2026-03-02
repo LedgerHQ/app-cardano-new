@@ -10,5 +10,4 @@
 
 #include "ledger_assert.h"
 
-// TODO adding individual messages to all places where we use ASSERT might be overkill
 #define ASSERT(x) LEDGER_ASSERT((x), "probably a bug")

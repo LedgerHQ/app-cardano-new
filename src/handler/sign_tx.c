@@ -553,9 +553,9 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             }
 #endif
 
-            LEDGER_ASSERT(tx_body_ctx()->planned_ui_pairs > 0, "Invalid UI plan");
+            LEDGER_ASSERT(tx_body_ctx()->total_ui_pairs > 0, "Invalid UI plan");
 
-            bool ui_prepare_succeeded = tx_prepare_ui_review();
+            bool ui_prepare_succeeded = tx_render_ui_all();
             if (!ui_prepare_succeeded) {
                 tx_review_cleanup();
                 TRACE("TX UI preparation failed");

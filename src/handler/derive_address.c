@@ -71,6 +71,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
     }
 
     G_context.req_type = REQUEST_DERIVE_ADDRESS;
+    explicit_bzero(&G_context.derive_address_info, sizeof(G_context.derive_address_info));
     G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_NONE;
 
     derive_address_ctx_t *ctx = &G_context.derive_address_info;

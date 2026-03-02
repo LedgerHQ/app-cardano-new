@@ -20,16 +20,16 @@ ui_status_t g_ui_error_status = UI_STATUS_UNINITIALIZED;
 static uint16_t g_next_pair_index = 0;
 
 /// Render-window state for streaming chunk rendering.
-static uint16_t g_render_cursor = 0;   // increments for every UI_ADD_* call
-static uint16_t g_render_from   = 0;   // first pair index to actually materialise
+static uint16_t g_pair_scan_index = 0;  // increments for every UI_ADD_* call
+static uint16_t g_render_from     = 0;  // first pair index to actually materialise
 
 void ui_render_window_init(uint16_t from) {
     g_render_from = from;
-    g_render_cursor = 0;
+    g_pair_scan_index = 0;
 }
 
 uint16_t ui_render_cursor_get(void) {
-    return g_render_cursor;
+    return g_pair_scan_index;
 }
 
 bool ui_render_is_chunked(void) {
@@ -37,12 +37,14 @@ bool ui_render_is_chunked(void) {
 }
 
 bool ui_render_should_skip(void) {
-    uint16_t current = g_render_cursor;
-    g_render_cursor++;
+    uint16_t current = g_pair_scan_index;
+    g_pair_scan_index++;
     // Skip if before the window or if OOM already set
     if (current < g_render_from) {
         return true;
     }
+    LEDGER_ASSERT(g_ui_error_status != UI_STATUS_UNINITIALIZED,
+                  "ui_reset_error_status() must be called before UI_ADD_* macros");
     if (g_ui_error_status != UI_STATUS_SUCCESS) {
         return true;
     }

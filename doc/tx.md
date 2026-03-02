@@ -58,7 +58,7 @@ Transaction processing uses a 2-phase architecture to ensure security and correc
 
 The validation phase enforces security policies, computes the Blake2b-256 transaction hash, and plans the UI display in a single streaming pass via the state machine in `tx_hash_builder.c`.
 
-**Primary Function:** `tx_validate_from_raw(...)`
+**Primary Function:** `tx_validate(...)`
 
 This function:
 1. Iterates through transaction fields in canonical CBOR order (keys 0-22).
@@ -72,18 +72,19 @@ This function:
 
 **Key Design:** Validation, hashing, and UI planning cannot be easily separated because canonical CBOR checking requires the full hash builder state machine, and UI element counts depend on security policy results.
 
-### Phase 2: UI Formatting (`tx_ui_format.c`)
+### Phase 2: UI Formatting (`tx_ui_render.c`)
 
 Once the transaction is hashed and the UI plan is populated, Phase 2 formats the transaction into human-readable NBGL UI pairs using helper modules:
 
-- **`tx_ui_format.c`**: Main formatting logic that builds NBGL key-value pairs for display.
+- **`tx_ui_render.c`**: Main rendering logic that builds NBGL key-value pairs for display.
   - Formats ADA amounts and native token quantities using decimal places from token registry.
   - Converts raw data (addresses, certificate details) into user-friendly strings.
   - Identifies "change" outputs (device-owned addresses) to minimize unnecessary confirmations.
   - Builds UI pairs in the same field order and count as planned during Phase 1.
   - Frees parsed transaction data after formatting.
 
-- **`tx_ui_helpers.c`**: Helper functions for transaction UI formatting (address formatting, token formatting, etc.).
+- **`tx_ui_render_outputs.c`**: Rendering logic for transaction outputs.
+- **`tx_ui_render_certificates.c`**: Rendering logic for certificate types.
 - **`ui_formatters.c`**: Low-level formatting functions for addresses, amounts, and other primitive types.
 
 **CRITICAL SYNCHRONIZATION REQUIREMENT:** The number of UI pairs added in Phase 2 MUST EXACTLY MATCH the count from Phase 1. This is verified by runtime assertions to prevent UI display bugs.

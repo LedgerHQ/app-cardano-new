@@ -242,6 +242,7 @@ void handler_sign_cvote(buffer_t *cdata, uint8_t p1) {
                 return;
             }
             G_context.req_type = REQUEST_CVOTE;
+            explicit_bzero(&G_context.cvote_info, sizeof(G_context.cvote_info));
             if (!ensure_sign_cvote_state(VOTECAST_STATE_NONE)) {
                 return;
             }

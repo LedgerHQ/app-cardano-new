@@ -78,12 +78,11 @@ set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/transaction/tx_parse_certificates.c
     ${CARDANO_PATH}/src/transaction/tx_parse_outputs.c
     ${CARDANO_PATH}/src/transaction/tx_processing.c
+    ${CARDANO_PATH}/src/transaction/tx_processing_certificates.c
     ${CARDANO_PATH}/src/transaction/tx_processing_outputs.c
-    ${CARDANO_PATH}/src/transaction/tx_processing_pool_registration.c
-    ${CARDANO_PATH}/src/transaction/tx_ui_strings.c
-    ${CARDANO_PATH}/src/transaction/tx_ui_strings_certificates.c
-    ${CARDANO_PATH}/src/transaction/tx_parse_certificates.c
-    ${CARDANO_PATH}/src/transaction/tx_parse_outputs.c
+    ${CARDANO_PATH}/src/transaction/tx_ui_render.c
+    ${CARDANO_PATH}/src/transaction/tx_ui_render_certificates.c
+    ${CARDANO_PATH}/src/transaction/tx_ui_render_outputs.c
     ${CARDANO_PATH}/src/transaction/tx_utils.c
     ${CARDANO_PATH}/src/transaction/tx_hash_builder.c
     ${CARDANO_PATH}/src/ui/menu.c
@@ -96,7 +95,7 @@ set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/ui/ui_display_tx.c
     ${CARDANO_PATH}/src/ui/ui_display_witness.c
     ${CARDANO_PATH}/src/ui/ui_sign_msg.c
-    ${CARDANO_PATH}/src/ui/tx_ui_helpers.c
+    ${CARDANO_PATH}/src/ui/ui_address_fields.c
     ${CARDANO_PATH}/src/ui/ui_formatters.c
     ${CARDANO_PATH}/src/ui/ui_utils.c
     ${CARDANO_PATH}/src/ui/ui_warnings.c

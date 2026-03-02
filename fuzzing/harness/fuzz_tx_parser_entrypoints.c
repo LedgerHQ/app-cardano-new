@@ -70,10 +70,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         case 1: {
             tx_output_destination_t destination = {0};
             (void) parse_output_destination(&parse_buffer, &destination);
-            if (destination.type == DESTINATION_DEVICE_OWNED && destination.params != NULL) {
-                APP_MEM_FREE(destination.params);
-                destination.params = NULL;
-            }
+            // destination.params is embedded by value; no cleanup needed.
             break;
         }
         case 2: {
@@ -82,15 +79,13 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
             break;
         }
         case 3: {
-            output_datum_t *datum = NULL;
-            (void) parse_output_datum(&parse_buffer, &datum, SWO_TX_PARSING_FAIL_OUTPUTS);
-            APP_MEM_FREE(datum);
+            output_datum_t datum = {0};
+            (void) parse_output_datum(&parse_buffer, &datum);
             break;
         }
         case 4: {
-            ref_script_t *ref_script = NULL;
-            (void) parse_output_ref_script(&parse_buffer, &ref_script, SWO_TX_PARSING_FAIL_OUTPUTS);
-            APP_MEM_FREE(ref_script);
+            ref_script_t ref_script = {0};
+            (void) parse_output_ref_script(&parse_buffer, &ref_script);
             break;
         }
         case 5: {

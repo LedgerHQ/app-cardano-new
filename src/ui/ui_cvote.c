@@ -66,9 +66,11 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy, warning_bits_t w
     }
 
     // Format all fields and check for errors
+    ui_reset_error_status();
     if (!ui_pairs_init(4)) {
         TRACE("Failed to initialize pairs");
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+        return;
     }
 
     UI_ADD_FORMAT1(UI_STATIC_LABEL("Witness"),

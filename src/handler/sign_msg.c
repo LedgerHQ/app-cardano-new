@@ -498,7 +498,7 @@ void finalize_sign_msg(void) {
     // User confirmed - send response
     sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
 
-    // Response format (matching old app):
+    // Response format (matching legacy app-cardano repository):
     // [64 bytes: signature] [32 bytes: witnessKey] [4 bytes: addressFieldSize BE]
     // [addressFieldSize bytes: addressField]
     uint8_t response_buffer[ED25519_SIGNATURE_LENGTH + PUBLIC_KEY_LENGTH + 4 + MAX_ADDRESS_LENGTH];
@@ -532,6 +532,7 @@ void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
                 return;
             }
             G_context.req_type = REQUEST_SIGN_MSG;
+            explicit_bzero(&G_context.sign_msg_info, sizeof(G_context.sign_msg_info));
             G_context.state.sign_msg_state = SIGN_MSG_STATE_INIT;
             signMsg_handle_init(cdata);
             break;

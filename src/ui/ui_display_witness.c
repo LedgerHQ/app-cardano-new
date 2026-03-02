@@ -21,7 +21,6 @@
 #include "securityPolicy.h"
 #include "menu.h"
 #include "mem.h"
-#include "tx_parse.h"
 #include "ui_utils.h"
 #include "sign_tx.h"
 

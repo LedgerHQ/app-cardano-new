@@ -55,7 +55,7 @@ static void test_compute_tx_hash_and_plan_ui_counts_ttl(void **state) {
     };
     bool result = tx_validate(&tx_buffer);
     assert_true(result);
-    assert_true(tx_body_ctx()->planned_ui_pairs >= 2);
+    assert_true(tx_body_ctx()->total_ui_pairs >= 2);
 }
 
 int main(void) {

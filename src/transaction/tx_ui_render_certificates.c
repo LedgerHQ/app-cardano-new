@@ -14,8 +14,8 @@
 #include "mem.h"
 #include "tx_certificate_types.h"
 #include "tx_credential_types.h"
-#include "tx_ui_plan.h"
-#include "tx_ui_strings_certificates.h"
+#include "tx_ui_pair_counts.h"
+#include "tx_ui_render_certificates.h"
 #include "ui_constants.h"
 #include "ui_formatters.h"
 #include "ui_utils.h"
@@ -146,12 +146,11 @@ static void render_drep(const ext_drep_t *drep, const char *label) {
 
 static void plan_or_render_anchor(const tx_processing_mode_t *mode, const anchor_t *anchor) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
-    LEDGER_ASSERT(anchor != NULL, "NULL anchor");
-    LEDGER_ASSERT(anchor->isIncluded, "plan_or_render_anchor called with anchor not included");
+    LEDGER_ASSERT(anchor != NULL && anchor->isIncluded, "NULL anchor or anchor not included");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_ANCHOR;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_ANCHOR;
+    } else if (mode->ui_render) {
         START_COUNT();
         if (anchor->urlLength == 0) {
             LEDGER_ASSERT(
@@ -195,9 +194,9 @@ static void render_certificate_header(certificate_type_t type) {
 
 static void plan_or_render_certificate_stake_registration(
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_REGISTRATION;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_REGISTRATION;
+    } else if (mode->ui_render) {
         START_COUNT();
         render_certificate_header(certificate_data->type);
         render_stake_credential(&certificate_data->stakeCredential);
@@ -207,9 +206,9 @@ static void plan_or_render_certificate_stake_registration(
 
 static void plan_or_render_certificate_stake_deregistration(
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_DEREGISTRATION;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_DEREGISTRATION;
+    } else if (mode->ui_render) {
         START_COUNT();
         render_certificate_header(certificate_data->type);
         render_stake_credential(&certificate_data->stakeCredential);
@@ -219,9 +218,9 @@ static void plan_or_render_certificate_stake_deregistration(
 
 static void plan_or_render_certificate_stake_registration_conway(
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_REGISTRATION_CONWAY;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_REGISTRATION_CONWAY;
+    } else if (mode->ui_render) {
         START_COUNT();
         render_certificate_header(certificate_data->type);
         render_stake_credential(&certificate_data->stakeCredential);
@@ -232,9 +231,9 @@ static void plan_or_render_certificate_stake_registration_conway(
 
 static void plan_or_render_certificate_stake_deregistration_conway(
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_DEREGISTRATION_CONWAY;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_DEREGISTRATION_CONWAY;
+    } else if (mode->ui_render) {
         START_COUNT();
         render_certificate_header(certificate_data->type);
         render_stake_credential(&certificate_data->stakeCredential);
@@ -245,9 +244,9 @@ static void plan_or_render_certificate_stake_deregistration_conway(
 
 static void plan_or_render_certificate_stake_delegation(
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_DELEGATION;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_DELEGATION;
+    } else if (mode->ui_render) {
         START_COUNT();
         render_certificate_header(certificate_data->type);
         render_stake_credential(&certificate_data->stakeCredential);
@@ -263,9 +262,9 @@ static void plan_or_render_certificate_stake_delegation(
 
 static void plan_or_render_certificate_vote_delegation(
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_CERTIFICATE_VOTE_DELEGATION;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_VOTE_DELEGATION;
+    } else if (mode->ui_render) {
         START_COUNT();
         render_certificate_header(certificate_data->type);
         render_voter_credential(&certificate_data->stakeCredential);
@@ -278,9 +277,9 @@ static void plan_or_render_certificate_stake_pool_and_drep_delegation(
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
     LEDGER_ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL,
                   "Missing combined delegation pool hash");
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION;
+    } else if (mode->ui_render) {
         START_COUNT();
         render_certificate_header(certificate_data->type);
         render_stake_credential(&certificate_data->stakeCredential);
@@ -299,10 +298,10 @@ static void plan_or_render_certificate_account_registration_delegation_to_stake_
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
     LEDGER_ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL,
                   "Missing combined delegation pool hash");
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs +=
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs +=
             UI_PAIRS_CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL;
-    } else if (mode->run_ui_rendering) {
+    } else if (mode->ui_render) {
         START_COUNT();
         render_certificate_header(certificate_data->type);
         render_stake_credential(&certificate_data->stakeCredential);
@@ -319,10 +318,10 @@ static void plan_or_render_certificate_account_registration_delegation_to_stake_
 
 static void plan_or_render_certificate_account_registration_delegation_to_drep(
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs +=
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs +=
             UI_PAIRS_CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP;
-    } else if (mode->run_ui_rendering) {
+    } else if (mode->ui_render) {
         START_COUNT();
         render_certificate_header(certificate_data->type);
         render_stake_credential(&certificate_data->stakeCredential);
@@ -336,10 +335,10 @@ static void plan_or_render_certificate_account_registration_delegation_to_stake_
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
     LEDGER_ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL,
                   "Missing combined delegation pool hash");
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs +=
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs +=
             UI_PAIRS_CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP;
-    } else if (mode->run_ui_rendering) {
+    } else if (mode->ui_render) {
         START_COUNT();
         render_certificate_header(certificate_data->type);
         render_stake_credential(&certificate_data->stakeCredential);
@@ -357,9 +356,9 @@ static void plan_or_render_certificate_account_registration_delegation_to_stake_
 
 static void plan_or_render_certificate_authorize_committee_hot(
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_CERTIFICATE_AUTHORIZE_COMMITTEE_HOT;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_AUTHORIZE_COMMITTEE_HOT;
+    } else if (mode->ui_render) {
         START_COUNT();
         render_certificate_header(certificate_data->type);
         render_committee_cold_credential(&certificate_data->coldCredential);
@@ -370,9 +369,9 @@ static void plan_or_render_certificate_authorize_committee_hot(
 
 static void plan_or_render_certificate_resign_committee_cold(
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_CERTIFICATE_RESIGN_COMMITTEE_COLD;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_RESIGN_COMMITTEE_COLD;
+    } else if (mode->ui_render) {
         START_COUNT();
         render_certificate_header(certificate_data->type);
         render_committee_cold_credential(&certificate_data->coldCredential);
@@ -382,9 +381,9 @@ static void plan_or_render_certificate_resign_committee_cold(
 
 static void plan_or_render_certificate_drep_registration(
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_CERTIFICATE_DREP_REGISTRATION;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_DREP_REGISTRATION;
+    } else if (mode->ui_render) {
         START_COUNT();
         render_certificate_header(certificate_data->type);
         render_drep_credential(&certificate_data->dRepCredential);
@@ -395,9 +394,9 @@ static void plan_or_render_certificate_drep_registration(
 
 static void plan_or_render_certificate_drep_deregistration(
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_CERTIFICATE_DREP_DEREGISTRATION;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_DREP_DEREGISTRATION;
+    } else if (mode->ui_render) {
         START_COUNT();
         render_certificate_header(certificate_data->type);
         render_drep_credential(&certificate_data->dRepCredential);
@@ -408,9 +407,9 @@ static void plan_or_render_certificate_drep_deregistration(
 
 static void plan_or_render_certificate_drep_update(
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_CERTIFICATE_DREP_UPDATE;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_DREP_UPDATE;
+    } else if (mode->ui_render) {
         START_COUNT();
         render_certificate_header(certificate_data->type);
         render_drep_credential(&certificate_data->dRepCredential);
@@ -420,9 +419,9 @@ static void plan_or_render_certificate_drep_update(
 
 static void plan_or_render_certificate_pool_retirement(
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_CERTIFICATE_POOL_RETIREMENT;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_POOL_RETIREMENT;
+    } else if (mode->ui_render) {
         const ext_credential_t *pool_credential = &certificate_data->poolCredential;
         uint8_t pool_key_hash[POOL_KEY_HASH_LENGTH] = {0};
         STATIC_ASSERT(ADDRESS_KEY_HASH_LENGTH == POOL_KEY_HASH_LENGTH,
@@ -461,9 +460,9 @@ static void plan_or_render_certificate_pool_retirement(
 
 void plan_or_render_pool_registration_header(const tx_processing_mode_t *mode,
                                              certificate_type_t type) {
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_CERTIFICATE_POOL_REGISTRATION_BASE;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_POOL_REGISTRATION_BASE;
+    } else if (mode->ui_render) {
         START_COUNT();
         render_certificate_header(type);
         CHECK_COUNT(UI_PAIRS_CERTIFICATE_POOL_REGISTRATION_BASE);
@@ -472,9 +471,9 @@ void plan_or_render_pool_registration_header(const tx_processing_mode_t *mode,
 
 void plan_or_render_pool_id(const tx_processing_mode_t *mode, const pool_id_t *pool_id) {
     LEDGER_ASSERT(pool_id != NULL, "NULL pool_id");
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_POOL_ID;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_POOL_ID;
+    } else if (mode->ui_render) {
         START_COUNT();
         uint8_t pool_key_hash[POOL_KEY_HASH_LENGTH] = {0};
         switch (pool_id->keyReferenceType) {
@@ -500,9 +499,9 @@ void plan_or_render_pool_id(const tx_processing_mode_t *mode, const pool_id_t *p
 
 void plan_or_render_pool_vrf_key_hash(const tx_processing_mode_t *mode, const uint8_t *vrf_key_hash) {
     LEDGER_ASSERT(vrf_key_hash != NULL, "NULL vrf_key_hash");
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_POOL_VRF_KEY;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_POOL_VRF_KEY;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT3(UI_STATIC_LABEL("VRF key hash"),
                        MAX_BECH32_STRING_LENGTH,
@@ -517,9 +516,9 @@ void plan_or_render_pool_vrf_key_hash(const tx_processing_mode_t *mode, const ui
 void plan_or_render_pool_financials(const tx_processing_mode_t *mode,
                                     const pool_registration_data_t *pool_registration) {
     LEDGER_ASSERT(pool_registration != NULL, "NULL pool_registration");
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_POOL_FIXED;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_POOL_FIXED;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Pledge"),
                        MAX_ADA_AMOUNT_STRING_LENGTH,
@@ -542,9 +541,9 @@ void plan_or_render_pool_reward_account(const tx_processing_mode_t *mode,
                                         uint8_t network_id,
                                         const pool_reward_account_t *reward_account) {
     LEDGER_ASSERT(reward_account != NULL, "NULL reward_account");
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_POOL_REWARD_ACCOUNT;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_POOL_REWARD_ACCOUNT;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Pool reward address", "Reward addr"),
                        MAX_HUMAN_ADDRESS_LENGTH,
@@ -559,9 +558,9 @@ void plan_or_render_pool_owner(const tx_processing_mode_t *mode,
                                uint8_t network_id,
                                const ext_credential_t *owner_credential) {
     LEDGER_ASSERT(owner_credential != NULL, "NULL owner_credential");
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_POOL_OWNER;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_POOL_OWNER;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Owner reward address", "Owner addr"),
                        MAX_HUMAN_ADDRESS_LENGTH,
@@ -573,9 +572,9 @@ void plan_or_render_pool_owner(const tx_processing_mode_t *mode,
 }
 
 void plan_or_render_pool_no_owners(const tx_processing_mode_t *mode) {
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_POOL_NO_OWNERS;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_POOL_NO_OWNERS;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_STATIC(UI_STATIC_LABEL("Pool owners"), UI_STATIC_LABEL("(none)"));
         CHECK_COUNT(UI_PAIRS_POOL_NO_OWNERS);
@@ -607,9 +606,9 @@ void plan_or_render_pool_relay(const tx_processing_mode_t *mode,
                                uint16_t relay_index,
                                const pool_relay_t *relay) {
     LEDGER_ASSERT(relay != NULL, "NULL relay");
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += count_pool_relay_ui_pairs(relay);
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += count_pool_relay_ui_pairs(relay);
+    } else if (mode->ui_render) {
         START_COUNT();
         uint16_t expected_pairs = count_pool_relay_ui_pairs(relay);
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Relay"),
@@ -669,9 +668,9 @@ void plan_or_render_pool_relay(const tx_processing_mode_t *mode,
 }
 
 void plan_or_render_pool_no_relays(const tx_processing_mode_t *mode) {
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_POOL_NO_RELAYS;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_POOL_NO_RELAYS;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_STATIC(UI_STATIC_LABEL("Pool relays"), UI_STATIC_LABEL("(none)"));
         CHECK_COUNT(UI_PAIRS_POOL_NO_RELAYS);
@@ -681,9 +680,9 @@ void plan_or_render_pool_no_relays(const tx_processing_mode_t *mode) {
 void plan_or_render_pool_metadata(const tx_processing_mode_t *mode,
                                   const pool_metadata_t *pool_metadata) {
     LEDGER_ASSERT(pool_metadata != NULL, "NULL pool_metadata");
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_POOL_METADATA;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_POOL_METADATA;
+    } else if (mode->ui_render) {
         START_COUNT();
         if (pool_metadata->urlSize == 0) {
             UI_ADD_STATIC(UI_LABEL_BY_SCREEN("Pool metadata url", "Metadata url"),
@@ -705,9 +704,9 @@ void plan_or_render_pool_metadata(const tx_processing_mode_t *mode,
 }
 
 void plan_or_render_pool_no_metadata(const tx_processing_mode_t *mode) {
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_POOL_NO_METADATA;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_POOL_NO_METADATA;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_STATIC(UI_STATIC_LABEL("Metadata"), UI_STATIC_LABEL("(none)"));
         CHECK_COUNT(UI_PAIRS_POOL_NO_METADATA);

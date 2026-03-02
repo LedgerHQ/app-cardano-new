@@ -1,11 +1,11 @@
 /* SPDX-FileCopyrightText: 2025 Vacuumlabs */
 /* SPDX-License-Identifier: Apache-2.0 */
 
-#include "tx_ui_helpers.h"
+#include "ui_address_fields.h"
 #include "ui_utils.h"
 #include "ui_constants.h"
 #include "ui_formatters.h"
-#include "tx_ui_plan.h"
+#include "tx_ui_pair_counts.h"
 #include "addressUtilsShelley.h"
 #include "bip44.h"
 #include "bech32.h"

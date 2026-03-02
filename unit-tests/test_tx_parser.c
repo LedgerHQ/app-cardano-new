@@ -126,8 +126,8 @@ static void test_process_inputs_field_pass1_success(void **state) {
     tx_processing_mode_t mode = {
         .run_validation = true,
         .run_hash_builder = false,
-        .run_ui_planning = true,
-        .run_ui_rendering = false,
+        .ui_count_pairs = true,
+        .ui_render = false,
     };
     warning_bits_t warnings = 0;
     tx_processing_state_init(&mode, &warnings);
@@ -135,7 +135,7 @@ static void test_process_inputs_field_pass1_success(void **state) {
     bool ok = tx_process_inputs(&buf, &tx_body_ctx()->processing_state);
     assert_true(ok);
     assert_int_equal(buf.offset, sizeof(raw_input));
-    assert_int_equal(tx_body_ctx()->planned_ui_pairs, 0);  // ordinary mode hides inputs
+    assert_int_equal(tx_body_ctx()->total_ui_pairs, 0);  // ordinary mode hides inputs
 }
 
 static void test_process_inputs_field_parse_error_sends_inputs_swo(void **state) {
@@ -155,8 +155,8 @@ static void test_process_inputs_field_parse_error_sends_inputs_swo(void **state)
     tx_processing_mode_t mode = {
         .run_validation = true,
         .run_hash_builder = false,
-        .run_ui_planning = true,
-        .run_ui_rendering = false,
+        .ui_count_pairs = true,
+        .ui_render = false,
     };
     warning_bits_t warnings = 0;
     tx_processing_state_init(&mode, &warnings);
@@ -187,8 +187,8 @@ static void test_process_collateral_inputs_field_pass1_success(void **state) {
     tx_processing_mode_t mode = {
         .run_validation = true,
         .run_hash_builder = false,
-        .run_ui_planning = true,
-        .run_ui_rendering = false,
+        .ui_count_pairs = true,
+        .ui_render = false,
     };
     warning_bits_t warnings = 0;
     tx_processing_state_init(&mode, &warnings);
@@ -196,7 +196,7 @@ static void test_process_collateral_inputs_field_pass1_success(void **state) {
     bool ok = tx_process_collateral_inputs(&buf, &tx_body_ctx()->processing_state);
     assert_true(ok);
     assert_int_equal(buf.offset, sizeof(raw_input));
-    assert_int_equal(tx_body_ctx()->planned_ui_pairs, 0);  // non-expert mode hides collateral inputs
+    assert_int_equal(tx_body_ctx()->total_ui_pairs, 0);  // non-expert mode hides collateral inputs
 }
 
 static void test_process_reference_inputs_field_parse_error_sends_reference_swo(void **state) {
@@ -216,8 +216,8 @@ static void test_process_reference_inputs_field_parse_error_sends_reference_swo(
     tx_processing_mode_t mode = {
         .run_validation = true,
         .run_hash_builder = false,
-        .run_ui_planning = true,
-        .run_ui_rendering = false,
+        .ui_count_pairs = true,
+        .ui_render = false,
     };
     warning_bits_t warnings = 0;
     tx_processing_state_init(&mode, &warnings);
@@ -251,8 +251,8 @@ static void test_process_required_signers_field_pass1_success(void **state) {
     tx_processing_mode_t mode = {
         .run_validation = true,
         .run_hash_builder = false,
-        .run_ui_planning = true,
-        .run_ui_rendering = false,
+        .ui_count_pairs = true,
+        .ui_render = false,
     };
     warning_bits_t warnings = 0;
     tx_processing_state_init(&mode, &warnings);
@@ -260,7 +260,7 @@ static void test_process_required_signers_field_pass1_success(void **state) {
     bool ok = tx_process_required_signers(&buf, &tx_body_ctx()->processing_state);
     assert_true(ok);
     assert_int_equal(buf.offset, sizeof(raw_signer));
-    assert_int_equal(tx_body_ctx()->planned_ui_pairs, 0);  // non-expert mode hides required signers
+    assert_int_equal(tx_body_ctx()->total_ui_pairs, 0);  // non-expert mode hides required signers
 }
 
 static void test_process_required_signers_field_parse_error_sends_required_swo(void **state) {
@@ -280,8 +280,8 @@ static void test_process_required_signers_field_parse_error_sends_required_swo(v
     tx_processing_mode_t mode = {
         .run_validation = true,
         .run_hash_builder = false,
-        .run_ui_planning = true,
-        .run_ui_rendering = false,
+        .ui_count_pairs = true,
+        .ui_render = false,
     };
     warning_bits_t warnings = 0;
     tx_processing_state_init(&mode, &warnings);
@@ -310,8 +310,8 @@ static void test_mode_allows_rendering_with_validation(void **state) {
     tx_processing_mode_t mode = {
         .run_validation = true,
         .run_hash_builder = false,
-        .run_ui_planning = false,
-        .run_ui_rendering = true,
+        .ui_count_pairs = false,
+        .ui_render = true,
     };
     warning_bits_t warnings = 0;
     tx_processing_state_init(&mode, &warnings);
@@ -397,7 +397,7 @@ static void test_validate_from_raw_success(void **state) {
 
     assert_true(ok);
     assert_int_equal(buf.offset, sizeof(raw_tx));
-    assert_true(tx_body_ctx()->planned_ui_pairs >= (UI_PAIRS_OUTPUT_BASE + UI_PAIRS_FEE));
+    assert_true(tx_body_ctx()->total_ui_pairs >= (UI_PAIRS_OUTPUT_BASE + UI_PAIRS_FEE));
 
     bool hash_nonzero = false;
     for (size_t i = 0; i < TX_HASH_LENGTH; i++) {
@@ -513,7 +513,7 @@ static void test_validate_from_raw_with_tokens_and_mint_success(void **state) {
 
     assert_true(ok);
     assert_int_equal(buf.offset, sizeof(raw_tx));
-    assert_int_equal(tx_body_ctx()->planned_ui_pairs, 9);  // output base + output token + fee + mint summary + mint token
+    assert_int_equal(tx_body_ctx()->total_ui_pairs, 9);  // output base + output token + fee + mint summary + mint token
 }
 
 int main(void) {

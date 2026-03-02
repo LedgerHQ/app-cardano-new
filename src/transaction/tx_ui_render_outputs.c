@@ -9,9 +9,9 @@
 #include "cardano_tokens.h"
 #include "globals.h"
 #include "sign_tx_ctx.h"
-#include "tx_ui_helpers.h"
-#include "tx_ui_plan.h"
-#include "tx_ui_strings_outputs.h"
+#include "ui_address_fields.h"
+#include "tx_ui_pair_counts.h"
+#include "tx_ui_render_outputs.h"
 #include "tx_utils.h"
 #include "ui_constants.h"
 #include "ui_formatters.h"
@@ -23,12 +23,12 @@ void tx_ui_plan_or_render_output(const tx_processing_mode_t *mode,
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(output_desc != NULL, "NULL output_desc");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_OUTPUT_BASE;
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_OUTPUT_BASE;
         if (output_desc->destination.type == DESTINATION_DEVICE_OWNED) {
-            tx_body_ctx()->planned_ui_pairs += UI_PAIRS_OUTPUT_DEVICE_OWNED;
+            tx_body_ctx()->total_ui_pairs += UI_PAIRS_OUTPUT_DEVICE_OWNED;
         }
-    } else if (mode->run_ui_rendering) {
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Output"),
                        MAX_UINT64_STRING_LENGTH,
@@ -59,12 +59,12 @@ void tx_ui_plan_or_render_collateral_output_address(const tx_processing_mode_t *
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(output_desc != NULL, "NULL output_desc");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_COLLATERAL_OUTPUT_ADDRESS;
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_COLLATERAL_OUTPUT_ADDRESS;
         if (output_desc->destination.type == DESTINATION_DEVICE_OWNED) {
-            tx_body_ctx()->planned_ui_pairs += UI_PAIRS_COLLATERAL_OUTPUT_DEVICE_OWNED;
+            tx_body_ctx()->total_ui_pairs += UI_PAIRS_COLLATERAL_OUTPUT_DEVICE_OWNED;
         }
-    } else if (mode->run_ui_rendering) {
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Collateral address", "Coll address"),
                        MAX_HUMAN_ADDRESS_LENGTH,
@@ -87,9 +87,9 @@ void tx_ui_plan_or_render_collateral_output_amount(const tx_processing_mode_t *m
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(output_desc != NULL, "NULL output_desc");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_COLLATERAL_OUTPUT_AMOUNT;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_COLLATERAL_OUTPUT_AMOUNT;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Collateral amount", "Coll amount"),
                        MAX_ADA_AMOUNT_STRING_LENGTH,
@@ -106,9 +106,9 @@ void tx_ui_plan_or_render_output_token(const tx_processing_mode_t *mode,
     LEDGER_ASSERT(policy_id != NULL, "NULL policy_id");
     LEDGER_ASSERT(token != NULL, "NULL token");
 
-    if (mode->run_ui_planning) {
+    if (mode->ui_count_pairs) {
         // Pair count added in the caller (total_token_count known there)
-    } else if (mode->run_ui_rendering) {
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT3(UI_STATIC_LABEL("Fingerprint"),
                        MAX_TOKEN_FINGERPRINT_STRING_LENGTH,
@@ -132,9 +132,9 @@ void tx_ui_plan_or_render_output_datum(const tx_processing_mode_t *mode,
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(datum != NULL, "NULL datum");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_OUTPUT_DATUM;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_OUTPUT_DATUM;
+    } else if (mode->ui_render) {
         START_COUNT();
         if (datum->type == DATUM_HASH) {
             UI_ADD_FORMAT3(UI_STATIC_LABEL("Datum hash"),
@@ -159,9 +159,9 @@ void tx_ui_plan_or_render_output_ref_script(const tx_processing_mode_t *mode,
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(ref_script != NULL, "NULL ref_script");
 
-    if (mode->run_ui_planning) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_OUTPUT_REF_SCRIPT;
-    } else if (mode->run_ui_rendering) {
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_OUTPUT_REF_SCRIPT;
+    } else if (mode->ui_render) {
         START_COUNT();
         UI_ADD_FORMAT2(UI_STATIC_LABEL("Script"),
                        MAX_REFERENCE_SCRIPT_STRING_LENGTH,

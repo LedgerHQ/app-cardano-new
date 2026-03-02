@@ -41,22 +41,15 @@ bool cbor_canonical_tracker_check_and_advance(cbor_canonical_tracker_t *tracker,
 
 /**
  * Declare a canonical ordering tracker in the current scope.
- * Must appear before any ENFORCE_CANONICAL_ORDERING_CHECK using the same name.
+ * Must appear before any CBOR_CANONICAL_CHECK using the same name.
  */
-#define ENFORCE_CANONICAL_ORDERING_START(tracker_name) \
+#define CBOR_CANONICAL_START(tracker_name) \
     cbor_canonical_tracker_t tracker_name = {.previous_key = {0}, .previous_key_length = 0, .has_previous = false}
 
 /**
- * Check that next_key maintains canonical ordering relative to the previous key
- * seen by tracker_name. On failure, calls tx_handle_parse_error(error_swo) and
- * returns false from the enclosing function.
+ * Evaluate to true if next_key maintains canonical ordering relative to the
+ * previous key seen by tracker_name, and advance the tracker.
+ * Evaluates to false (without side effects) on ordering violation.
  */
-#define ENFORCE_CANONICAL_ORDERING_CHECK(tracker_name, next_key, next_key_length, error_swo) \
-    do { \
-        if (!cbor_canonical_tracker_check_and_advance(&(tracker_name), \
-                                                      (next_key), \
-                                                      (next_key_length))) { \
-            tx_handle_parse_error(error_swo); \
-            return false; \
-        } \
-    } while (0)
+#define CBOR_CANONICAL_CHECK(tracker_name, next_key, next_key_length) \
+    cbor_canonical_tracker_check_and_advance(&(tracker_name), (next_key), (next_key_length))

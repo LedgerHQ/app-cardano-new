@@ -30,9 +30,9 @@
 #include "ui_warnings.h"
 #include "ui_constants.h"
 #include "ui_formatters.h"
-#include "tx_ui_helpers.h"
-#include "tx_ui_strings.h"
-#include "tx_ui_strings_certificates.h"
+#include "ui_address_fields.h"
+#include "tx_ui_render.h"
+#include "tx_ui_render_certificates.h"
 #include "cardano_tokens.h"
 #include "bech32.h"
 #include "io.h"
@@ -46,6 +46,180 @@
 #include "swap_error_code_helpers.h"
 #endif
 
+
+// ---------------------------------------------------------------------------
+// Mode validator
+// ---------------------------------------------------------------------------
+
+void validate_parse_tx_mode(const tx_processing_mode_t *mode) {
+    LEDGER_ASSERT(mode != NULL, "NULL mode");
+
+    LEDGER_ASSERT(!mode->ui_render || !mode->run_hash_builder,
+                  "ui_render implies !run_hash_builder");
+    LEDGER_ASSERT(!mode->run_hash_builder || mode->run_validation,
+                  "run_hash_builder implies run_validation");
+    LEDGER_ASSERT(!mode->ui_count_pairs || mode->run_validation,
+                  "ui_count_pairs implies run_validation");
+}
+
+// ---------------------------------------------------------------------------
+// Context helpers
+// ---------------------------------------------------------------------------
+
+void tx_processing_state_init(const tx_processing_mode_t *mode, warning_bits_t *warning_bits) {
+    validate_parse_tx_mode(mode);
+    LEDGER_ASSERT(warning_bits != NULL, "NULL warning_bits");
+
+    tx_processing_state_t *state = &tx_body_ctx()->processing_state;
+    explicit_bzero(state, sizeof(*state));
+
+    tx_body_ctx()->processing_mode = *mode;
+    state->mode = &tx_body_ctx()->processing_mode;
+    state->warning_bits = warning_bits;
+
+    if (mode->run_hash_builder) {
+        txHashBuilder_init(&state->hash_builder, &G_context.tx_info.tx_params);
+        state->hash_builder_initialized = true;
+    }
+}
+
+tx_processing_ctx_t tx_get_ctx(void) {
+    tx_processing_state_t *state = &tx_body_ctx()->processing_state;
+    LEDGER_ASSERT(state->mode != NULL, "tx_processing_state not initialized");
+    LEDGER_ASSERT(state->warning_bits != NULL, "tx_processing_state not initialized (warnings)");
+    validate_parse_tx_mode(state->mode);
+
+    return (tx_processing_ctx_t){
+        .tx_params    = &G_context.tx_info.tx_params,
+        .mode         = *state->mode,
+        .warning_bits = state->warning_bits,
+        .hash_builder = &state->hash_builder,
+    };
+}
+
+void tx_handle_parse_error(uint16_t swo) {
+    TRACE("tx_handle_parse_error swo=0x%04x", swo);
+    send_swo_and_reset(swo);
+}
+
+// ---------------------------------------------------------------------------
+// Credential/DRep/voter conversion helpers (ext → hash-builder format)
+// ---------------------------------------------------------------------------
+
+credential_t credential_for_tx_hash_from_ext_credential(const ext_credential_t *credential) {
+    LEDGER_ASSERT(credential != NULL, "NULL credential");
+
+    credential_t result = {0};
+    switch (credential->type) {
+        case EXT_CREDENTIAL_KEY_PATH:
+            result.type = CREDENTIAL_KEY_HASH;
+            keyPathToKeyHash(&credential->keyPath, result.keyHash, SIZEOF(result.keyHash));
+            break;
+        case EXT_CREDENTIAL_KEY_HASH:
+            LEDGER_ASSERT(credential->keyHash != NULL, "NULL credential->keyHash");
+            result.type = CREDENTIAL_KEY_HASH;
+            memmove(result.keyHash, credential->keyHash, SIZEOF(result.keyHash));
+            break;
+        case EXT_CREDENTIAL_SCRIPT_HASH:
+            LEDGER_ASSERT(credential->scriptHash != NULL, "NULL credential->scriptHash");
+            result.type = CREDENTIAL_SCRIPT_HASH;
+            memmove(result.scriptHash, credential->scriptHash, SIZEOF(result.scriptHash));
+            break;
+        default:
+            LEDGER_ASSERT(false, "Unknown ext credential type");
+            break;
+    }
+
+    return result;
+}
+
+drep_t drep_for_tx_hash_from_ext_drep(const ext_drep_t *ext_drep) {
+    LEDGER_ASSERT(ext_drep != NULL, "NULL ext_drep");
+
+    drep_t result = {
+        .type = (drep_type_t) ext_drep->type,
+    };
+
+    switch (ext_drep->type) {
+        case EXT_DREP_KEY_PATH:
+            result.type = DREP_KEY_HASH;
+            keyPathToKeyHash(&ext_drep->keyPath, result.keyHash, SIZEOF(result.keyHash));
+            break;
+        case EXT_DREP_KEY_HASH:
+            LEDGER_ASSERT(ext_drep->keyHash != NULL, "NULL ext_drep->keyHash");
+            result.type = DREP_KEY_HASH;
+            memmove(result.keyHash, ext_drep->keyHash, SIZEOF(result.keyHash));
+            break;
+        case EXT_DREP_SCRIPT_HASH:
+            LEDGER_ASSERT(ext_drep->scriptHash != NULL, "NULL ext_drep->scriptHash");
+            result.type = DREP_SCRIPT_HASH;
+            memmove(result.scriptHash, ext_drep->scriptHash, SIZEOF(result.scriptHash));
+            break;
+        case EXT_DREP_ABSTAIN:
+            result.type = DREP_ABSTAIN;
+            break;
+        case EXT_DREP_NO_CONFIDENCE:
+            result.type = DREP_NO_CONFIDENCE;
+            break;
+        default:
+            LEDGER_ASSERT(false, "Unknown ext drep type");
+            break;
+    }
+
+    return result;
+}
+
+voter_t voter_for_tx_hash_from_ext_voter(const ext_voter_t *ext_voter) {
+    LEDGER_ASSERT(ext_voter != NULL, "NULL ext_voter");
+
+    voter_t voter = {0};
+    switch (ext_voter->type) {
+        case EXT_VOTER_COMMITTEE_HOT_KEY_PATH:
+            voter.type = VOTER_COMMITTEE_HOT_KEY_HASH;
+            keyPathToKeyHash(&ext_voter->keyPath, voter.keyHash, SIZEOF(voter.keyHash));
+            break;
+        case EXT_VOTER_DREP_KEY_PATH:
+            voter.type = VOTER_DREP_KEY_HASH;
+            keyPathToKeyHash(&ext_voter->keyPath, voter.keyHash, SIZEOF(voter.keyHash));
+            break;
+        case EXT_VOTER_STAKE_POOL_KEY_PATH:
+            voter.type = VOTER_STAKE_POOL_KEY_HASH;
+            keyPathToKeyHash(&ext_voter->keyPath, voter.keyHash, SIZEOF(voter.keyHash));
+            break;
+        case EXT_VOTER_COMMITTEE_HOT_KEY_HASH:
+            LEDGER_ASSERT(ext_voter->keyHash != NULL, "NULL committee hot key hash voter");
+            voter.type = VOTER_COMMITTEE_HOT_KEY_HASH;
+            memmove(voter.keyHash, ext_voter->keyHash, SIZEOF(voter.keyHash));
+            break;
+        case EXT_VOTER_DREP_KEY_HASH:
+            LEDGER_ASSERT(ext_voter->keyHash != NULL, "NULL drep key hash voter");
+            voter.type = VOTER_DREP_KEY_HASH;
+            memmove(voter.keyHash, ext_voter->keyHash, SIZEOF(voter.keyHash));
+            break;
+        case EXT_VOTER_STAKE_POOL_KEY_HASH:
+            LEDGER_ASSERT(ext_voter->keyHash != NULL, "NULL stake pool key hash voter");
+            voter.type = VOTER_STAKE_POOL_KEY_HASH;
+            memmove(voter.keyHash, ext_voter->keyHash, SIZEOF(voter.keyHash));
+            break;
+        case EXT_VOTER_COMMITTEE_HOT_SCRIPT_HASH:
+            LEDGER_ASSERT(ext_voter->scriptHash != NULL, "NULL committee hot script hash voter");
+            voter.type = VOTER_COMMITTEE_HOT_SCRIPT_HASH;
+            memmove(voter.scriptHash, ext_voter->scriptHash, SIZEOF(voter.scriptHash));
+            break;
+        case EXT_VOTER_DREP_SCRIPT_HASH:
+            LEDGER_ASSERT(ext_voter->scriptHash != NULL, "NULL drep script hash voter");
+            voter.type = VOTER_DREP_SCRIPT_HASH;
+            memmove(voter.scriptHash, ext_voter->scriptHash, SIZEOF(voter.scriptHash));
+            break;
+        default:
+            LEDGER_ASSERT(false, "Unknown ext voter type");
+            break;
+    }
+
+    return voter;
+}
+
+// ---------------------------------------------------------------------------
 
 static void add_ui_network_details(const tx_params_t *tx_params) {
     LEDGER_ASSERT(tx_params != NULL, "NULL tx_params");
@@ -66,7 +240,7 @@ bool tx_process_inputs(buffer_t *buf, tx_processing_state_t *state) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     tx_processing_ctx_t ctx = tx_get_ctx();
 
-    if (ctx.mode->run_hash_builder) {
+    if (ctx.mode.run_hash_builder) {
         LEDGER_ASSERT(state->hash_builder_initialized, "Hash builder not initialized");
         txHashBuilder_enterInputs(ctx.hash_builder);
     }
@@ -78,16 +252,16 @@ bool tx_process_inputs(buffer_t *buf, tx_processing_state_t *state) {
             return false;
         }
 
-        if (ctx.mode->run_validation) {
+        if (ctx.mode.run_validation) {
             security_policy_t input_policy = policyForSignTxInput(
                 ctx.tx_params->txSigningMode,
                 &parsed_input,
                 ctx.warning_bits);
 
-            APPLY_POLICY(input_policy, tx_ui_plan_or_render_input, ctx.mode, &parsed_input);
+            APPLY_POLICY(input_policy, tx_ui_plan_or_render_input, &ctx.mode, &parsed_input);
         }
 
-        if (ctx.mode->run_hash_builder) {
+        if (ctx.mode.run_hash_builder) {
             txHashBuilder_addInput(ctx.hash_builder, &parsed_input);
         }
     }
@@ -103,7 +277,7 @@ bool tx_process_collateral_inputs(buffer_t *buf, tx_processing_state_t *state) {
         return true;
     }
 
-    if (ctx.mode->run_hash_builder) {
+    if (ctx.mode.run_hash_builder) {
         LEDGER_ASSERT(state->hash_builder_initialized, "Hash builder not initialized");
         txHashBuilder_enterCollateralInputs(ctx.hash_builder);
     }
@@ -115,17 +289,17 @@ bool tx_process_collateral_inputs(buffer_t *buf, tx_processing_state_t *state) {
             return false;
         }
 
-        if (ctx.mode->run_validation) {
+        if (ctx.mode.run_validation) {
             security_policy_t collateral_input_policy = policyForSignTxCollateralInput(
                 ctx.tx_params->txSigningMode,
                 ctx.tx_params->includeTotalCollateral,
                 &parsed_input,
                 ctx.warning_bits);
 
-            APPLY_POLICY(collateral_input_policy, tx_ui_plan_or_render_collateral_input, ctx.mode, &parsed_input);
+            APPLY_POLICY(collateral_input_policy, tx_ui_plan_or_render_collateral_input, &ctx.mode, &parsed_input);
         }
 
-        if (ctx.mode->run_hash_builder) {
+        if (ctx.mode.run_hash_builder) {
             txHashBuilder_addCollateralInput(ctx.hash_builder, &parsed_input);
         }
     }
@@ -141,7 +315,7 @@ bool tx_process_reference_inputs(buffer_t *buf, tx_processing_state_t *state) {
         return true;
     }
 
-    if (ctx.mode->run_hash_builder) {
+    if (ctx.mode.run_hash_builder) {
         LEDGER_ASSERT(state->hash_builder_initialized, "Hash builder not initialized");
         txHashBuilder_enterReferenceInputs(ctx.hash_builder);
     }
@@ -153,16 +327,16 @@ bool tx_process_reference_inputs(buffer_t *buf, tx_processing_state_t *state) {
             return false;
         }
 
-        if (ctx.mode->run_validation) {
+        if (ctx.mode.run_validation) {
             security_policy_t reference_input_policy = policyForSignTxReferenceInput(
                 ctx.tx_params->txSigningMode,
                 &parsed_input,
                 ctx.warning_bits);
 
-            APPLY_POLICY(reference_input_policy, tx_ui_plan_or_render_reference_input, ctx.mode, &parsed_input);
+            APPLY_POLICY(reference_input_policy, tx_ui_plan_or_render_reference_input, &ctx.mode, &parsed_input);
         }
 
-        if (ctx.mode->run_hash_builder) {
+        if (ctx.mode.run_hash_builder) {
             txHashBuilder_addReferenceInput(ctx.hash_builder, &parsed_input);
         }
     }
@@ -180,22 +354,22 @@ static bool tx_process_fee(buffer_t *buf, tx_processing_state_t *state) {
         return false;
     }
 
-    if (ctx.mode->run_validation) {
+    if (ctx.mode.run_validation) {
         security_policy_t fee_policy = policyForSignTxFee(
             ctx.tx_params->txSigningMode,
             parsed_fee,
             ctx.warning_bits);
-        APPLY_POLICY(fee_policy, tx_ui_plan_or_render_fee, ctx.mode, parsed_fee);
+        APPLY_POLICY(fee_policy, tx_ui_plan_or_render_fee, &ctx.mode, parsed_fee);
     }
 #ifdef HAVE_SWAP
-    if (ctx.mode->run_validation &&
+    if (ctx.mode.run_validation &&
         G_called_from_swap &&
         !swap_check_fee_validity(parsed_fee)) {
         swap_reject_and_exit(SWAP_EC_ERROR_WRONG_FEES, SWAP_APP_CODE_DEFAULT);
     }
 #endif
 
-    if (ctx.mode->run_hash_builder) {
+    if (ctx.mode.run_hash_builder) {
         txHashBuilder_addFee(&state->hash_builder, parsed_fee);
     }
     return true;
@@ -215,12 +389,12 @@ static bool tx_process_ttl(buffer_t *buf, tx_processing_state_t *state) {
         return false;
     }
 
-    if (ctx.mode->run_validation) {
+    if (ctx.mode.run_validation) {
         security_policy_t ttl_policy = policyForSignTxTtl(parsed_ttl, ctx.warning_bits);
-        APPLY_POLICY(ttl_policy, tx_ui_plan_or_render_ttl, ctx.mode, parsed_ttl);
+        APPLY_POLICY(ttl_policy, tx_ui_plan_or_render_ttl, &ctx.mode, parsed_ttl);
     }
 
-    if (ctx.mode->run_hash_builder) {
+    if (ctx.mode.run_hash_builder) {
         txHashBuilder_addTtl(&state->hash_builder, parsed_ttl);
     }
 
@@ -231,7 +405,7 @@ static bool tx_process_withdrawals(buffer_t *buf, tx_processing_state_t *state) 
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     tx_processing_ctx_t ctx = tx_get_ctx();
     const tx_params_t *tx_params = ctx.tx_params;
-    const tx_processing_mode_t *mode = ctx.mode;
+    const tx_processing_mode_t *mode = &ctx.mode;
 
     if (tx_params->num_withdrawals == 0) {
         return true;
@@ -320,13 +494,13 @@ static bool tx_process_aux_data_hash(tx_processing_state_t *state) {
         return true;
     }
 
-    if (ctx.mode->run_validation) {
+    if (ctx.mode.run_validation) {
         security_policy_t aux_data_policy = policyForSignTxAuxData(ctx.tx_params->auxDataType,
                                                                    ctx.warning_bits);
-        APPLY_POLICY(aux_data_policy, tx_ui_plan_or_render_aux_data_hash, ctx.mode, ctx.tx_params->auxDataHash);
+        APPLY_POLICY(aux_data_policy, tx_ui_plan_or_render_aux_data_hash, &ctx.mode, ctx.tx_params->auxDataHash);
     }
 
-    if (ctx.mode->run_hash_builder) {
+    if (ctx.mode.run_hash_builder) {
         txHashBuilder_addAuxData(&state->hash_builder,
                                  ctx.tx_params->auxDataHash,
                                  AUX_DATA_HASH_LENGTH);
@@ -349,13 +523,13 @@ static bool tx_process_validity_interval_start(buffer_t *buf, tx_processing_stat
         return false;
     }
 
-    if (ctx.mode->run_validation) {
+    if (ctx.mode.run_validation) {
         security_policy_t validity_interval_start_policy = policyForSignTxValidityIntervalStart(
             ctx.warning_bits);
-        APPLY_POLICY(validity_interval_start_policy, tx_ui_plan_or_render_validity_interval_start, ctx.mode, validity_interval_start);
+        APPLY_POLICY(validity_interval_start_policy, tx_ui_plan_or_render_validity_interval_start, &ctx.mode, validity_interval_start);
     }
 
-    if (ctx.mode->run_hash_builder) {
+    if (ctx.mode.run_hash_builder) {
         txHashBuilder_addValidityIntervalStart(&state->hash_builder, validity_interval_start);
     }
 
@@ -384,11 +558,11 @@ static bool tx_process_mint_tokens(buffer_t *buf,
                                          parsed_mint_token.assetNameLen,
                                          SWO_TX_PARSING_FAIL_CANONICAL_ORDER);
 
-        if (ctx.mode->run_validation) {
-            APPLY_POLICY(mint_policy, tx_ui_plan_or_render_mint_token, ctx.mode, &parsed_mint_token);
+        if (ctx.mode.run_validation) {
+            APPLY_POLICY(mint_policy, tx_ui_plan_or_render_mint_token, &ctx.mode, &parsed_mint_token);
         }
 
-        if (ctx.mode->run_hash_builder) {
+        if (ctx.mode.run_hash_builder) {
             txHashBuilder_addMint_token(&state->hash_builder,
                                         parsed_mint_token.assetName,
                                         parsed_mint_token.assetNameLen,
@@ -403,7 +577,7 @@ static bool tx_process_mint(buffer_t *buf, tx_processing_state_t *state) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     tx_processing_ctx_t ctx = tx_get_ctx();
     const tx_params_t *tx_params = ctx.tx_params;
-    const tx_processing_mode_t *mode = ctx.mode;
+    const tx_processing_mode_t *mode = &ctx.mode;
 
     if (tx_params->num_mint_asset_groups == 0) {
         return true;
@@ -472,14 +646,14 @@ static bool tx_process_script_data_hash(buffer_t *buf, tx_processing_state_t *st
         return false;
     }
 
-    if (ctx.mode->run_validation) {
+    if (ctx.mode.run_validation) {
         security_policy_t script_data_hash_policy = policyForSignTxScriptDataHash(
             ctx.tx_params->txSigningMode,
             ctx.warning_bits);
-        APPLY_POLICY(script_data_hash_policy, tx_ui_plan_or_render_script_data_hash, ctx.mode, script_data_hash);
+        APPLY_POLICY(script_data_hash_policy, tx_ui_plan_or_render_script_data_hash, &ctx.mode, script_data_hash);
     }
 
-    if (ctx.mode->run_hash_builder) {
+    if (ctx.mode.run_hash_builder) {
         txHashBuilder_addScriptDataHash(&state->hash_builder,
                                         script_data_hash,
                                         SCRIPT_DATA_HASH_LENGTH);
@@ -492,7 +666,7 @@ bool tx_process_required_signers(buffer_t *buf, tx_processing_state_t *state) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     tx_processing_ctx_t ctx = tx_get_ctx();
     const tx_params_t *tx_params = ctx.tx_params;
-    const tx_processing_mode_t *mode = ctx.mode;
+    const tx_processing_mode_t *mode = &ctx.mode;
 
     tx_hash_builder_t *hash_builder = ctx.hash_builder;
 
@@ -556,7 +730,7 @@ static bool tx_process_network_id(tx_processing_state_t *state) {
         return true;
     }
 
-    if (ctx.mode->run_hash_builder) {
+    if (ctx.mode.run_hash_builder) {
         txHashBuilder_addNetworkId(&state->hash_builder, ctx.tx_params->networkId);
     }
 
@@ -577,13 +751,13 @@ static bool tx_process_total_collateral(buffer_t *buf, tx_processing_state_t *st
         return false;
     }
 
-    if (ctx.mode->run_validation) {
+    if (ctx.mode.run_validation) {
         security_policy_t total_collateral_policy = policyForSignTxTotalCollateral(
             ctx.warning_bits);
-        APPLY_POLICY(total_collateral_policy, tx_ui_plan_or_render_total_collateral, ctx.mode, total_collateral);
+        APPLY_POLICY(total_collateral_policy, tx_ui_plan_or_render_total_collateral, &ctx.mode, total_collateral);
     }
 
-    if (ctx.mode->run_hash_builder) {
+    if (ctx.mode.run_hash_builder) {
         txHashBuilder_addTotalCollateral(&state->hash_builder, total_collateral);
     }
 
@@ -595,18 +769,18 @@ static bool tx_process_vote(tx_processing_state_t *state,
                              security_policy_t voter_policy) {
     tx_processing_ctx_t ctx = tx_get_ctx();
 
-    if (ctx.mode->run_validation) {
-        APPLY_POLICY(voter_policy, tx_ui_plan_or_render_vote, ctx.mode, parsed_vote);
+    if (ctx.mode.run_validation) {
+        APPLY_POLICY(voter_policy, tx_ui_plan_or_render_vote, &ctx.mode, parsed_vote);
     }
 
-    if (ctx.mode->run_validation && parsed_vote->anchor.isIncluded) {
+    if (ctx.mode.run_validation && parsed_vote->anchor.isIncluded) {
         security_policy_t anchor_policy = policyForSignTxAnchor(
             &parsed_vote->anchor,
             ctx.warning_bits);
-        APPLY_POLICY(anchor_policy, tx_ui_plan_or_render_vote_anchor, ctx.mode, &parsed_vote->anchor);
+        APPLY_POLICY(anchor_policy, tx_ui_plan_or_render_vote_anchor, &ctx.mode, &parsed_vote->anchor);
     }
 
-    if (ctx.mode->run_hash_builder) {
+    if (ctx.mode.run_hash_builder) {
         voting_procedure_t voting_procedure = {
             .vote = parsed_vote->voteOption,
             .anchor = parsed_vote->anchor,
@@ -653,7 +827,7 @@ static bool tx_process_voting_procedures(buffer_t *buf, tx_processing_state_t *s
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     tx_processing_ctx_t ctx = tx_get_ctx();
     const tx_params_t *tx_params = ctx.tx_params;
-    const tx_processing_mode_t *mode = ctx.mode;
+    const tx_processing_mode_t *mode = &ctx.mode;
 
     if (tx_params->num_voters == 0) {
         return true;
@@ -718,15 +892,15 @@ static bool tx_process_treasury(buffer_t *buf, tx_processing_state_t *state) {
         return false;
     }
 
-    if (ctx.mode->run_validation) {
+    if (ctx.mode.run_validation) {
         security_policy_t treasury_policy = policyForSignTxTreasury(
             ctx.tx_params->txSigningMode,
             treasury,
             ctx.warning_bits);
-        APPLY_POLICY(treasury_policy, tx_ui_plan_or_render_treasury, ctx.mode, treasury);
+        APPLY_POLICY(treasury_policy, tx_ui_plan_or_render_treasury, &ctx.mode, treasury);
     }
 
-    if (ctx.mode->run_hash_builder) {
+    if (ctx.mode.run_hash_builder) {
         txHashBuilder_addTreasury(&state->hash_builder, treasury);
     }
 
@@ -747,15 +921,15 @@ static bool tx_process_donation(buffer_t *buf, tx_processing_state_t *state) {
         return false;
     }
 
-    if (ctx.mode->run_validation) {
+    if (ctx.mode.run_validation) {
         security_policy_t donation_policy = policyForSignTxDonation(
             ctx.tx_params->txSigningMode,
             donation,
             ctx.warning_bits);
-        APPLY_POLICY(donation_policy, tx_ui_plan_or_render_donation, ctx.mode, donation);
+        APPLY_POLICY(donation_policy, tx_ui_plan_or_render_donation, &ctx.mode, donation);
     }
 
-    if (ctx.mode->run_hash_builder) {
+    if (ctx.mode.run_hash_builder) {
         txHashBuilder_addDonation(&state->hash_builder, donation);
     }
 
@@ -843,15 +1017,15 @@ bool tx_validate(buffer_t *buf) {
     tx_processing_mode_t mode = {
         .run_validation = true,
         .run_hash_builder = true,
-        .run_ui_planning = true,
-        .run_ui_rendering = false,
+        .ui_count_pairs = true,
+        .ui_render = false,
     };
     tx_processing_state_init(&mode, &tx_body_ctx()->warning_bits);
 
-    tx_body_ctx()->planned_ui_pairs = 0;
+    tx_body_ctx()->total_ui_pairs = 0;
 
     if (shouldShowNetworkDetails(tx_params)) {
-        tx_body_ctx()->planned_ui_pairs += UI_PAIRS_NETWORK_DETAILS;
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_NETWORK_DETAILS;
     }
 
     tx_processing_state_t *state = &tx_body_ctx()->processing_state;
@@ -869,8 +1043,8 @@ bool tx_validate(buffer_t *buf) {
         policyForSignTxDisplayTxHash(tx_params->txSigningMode, &tx_body_ctx()->warning_bits);
     APPLY_POLICY(tx_hash_policy, tx_ui_plan_or_render_tx_hash, &mode, G_context.tx_info.tx_hash);
 
-    TRACE("tx_validate: planned_ui_pairs=%u, max_ui_pairs=%u",
-          tx_body_ctx()->planned_ui_pairs, MAX_UI_PAIRS);
+    TRACE("tx_validate: total_ui_pairs=%u, max_ui_pairs=%u",
+          tx_body_ctx()->total_ui_pairs, MAX_UI_PAIRS);
     return true;
 }
 
@@ -885,8 +1059,8 @@ bool tx_render_ui_chunk(uint16_t from) {
     tx_processing_mode_t mode = {
         .run_validation = true,
         .run_hash_builder = false,
-        .run_ui_planning = false,
-        .run_ui_rendering = true,
+        .ui_count_pairs = false,
+        .ui_render = true,
     };
     // Use a copy of warnings for the render pass so it cannot
     // accidentally change global warning state, and we can assert consistency.
@@ -918,18 +1092,18 @@ bool tx_render_ui_chunk(uint16_t from) {
     return true;
 }
 
-bool tx_prepare_ui_review(void) {
+bool tx_render_ui_all(void) {
     if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
         return false;
     }
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_HASHED, "UI prep called too early");
-    uint16_t planned_pairs = tx_body_ctx()->planned_ui_pairs;
+    uint16_t total_pairs = tx_body_ctx()->total_ui_pairs;
 
-    TRACE("Preparing TX review: planned_ui_pairs=%u max_ui_pairs=%u", planned_pairs, MAX_UI_PAIRS);
-    LEDGER_ASSERT(planned_pairs > 0, "UI pair count is zero - at minimum fee must be displayed");
+    TRACE("Preparing TX review: total_ui_pairs=%u max_ui_pairs=%u", total_pairs, MAX_UI_PAIRS);
+    LEDGER_ASSERT(total_pairs > 0, "UI pair count is zero - at minimum fee must be displayed");
 
     // Allocate the full slab; OOM during rendering is the natural chunk boundary.
-    uint16_t alloc_count = (planned_pairs <= MAX_UI_PAIRS) ? planned_pairs : MAX_UI_PAIRS;
+    uint16_t alloc_count = (total_pairs <= MAX_UI_PAIRS) ? total_pairs : MAX_UI_PAIRS;
 
     ui_reset_error_status();
     if (!ui_pairs_init(alloc_count)) {
@@ -947,21 +1121,21 @@ bool tx_prepare_ui_review(void) {
 
     if (ui_get_error_status() == UI_STATUS_SUCCESS) {
         // Everything fit in a single chunk — non-streaming path.
-        // cursor_after must equal planned_pairs: every UI_ADD_* increments g_render_cursor exactly
-        // once, so if no OOM occurred the render pass consumed all planned pairs.
-        LEDGER_ASSERT(cursor_after == planned_pairs, "cursor mismatch: render completed without OOM but cursor does not equal planned_pairs");
+        // cursor_after must equal total_pairs: every UI_ADD_* increments g_pair_scan_index exactly
+        // once, so if no OOM occurred the render pass consumed all total pairs.
+        LEDGER_ASSERT(cursor_after == total_pairs, "cursor mismatch: render completed without OOM but cursor does not equal total_pairs");
         tx_body_ctx()->streaming_mode = false;
-        TRACE("Non-streaming: planned=%u rendered=%u",
-              (unsigned) planned_pairs, (unsigned) ui_pairs_get_count());
-        LEDGER_ASSERT(ui_pairs_get_count() == planned_pairs, "UI pair count mismatch");
+        TRACE("Non-streaming: total=%u rendered=%u",
+              (unsigned) total_pairs, (unsigned) ui_pairs_get_count());
+        LEDGER_ASSERT(ui_pairs_get_count() == total_pairs, "UI pair count mismatch");
     } else {
         // Does not fit — streaming path. First chunk is already rendered.
         tx_body_ctx()->streaming_mode = true;
-        tx_body_ctx()->render_cursor = ui_pairs_get_count();
+        tx_body_ctx()->rendered_ui_pairs = ui_pairs_get_count();
         // Reset OOM status: it was expected as the chunk boundary signal.
         g_ui_error_status = UI_STATUS_SUCCESS;
-        TRACE("Streaming: first chunk rendered %u pairs, cursor_after=%u, planned=%u",
-              (unsigned) ui_pairs_get_count(), cursor_after, (unsigned) planned_pairs);
+        TRACE("Streaming: first chunk rendered %u pairs, cursor_after=%u, total=%u",
+              (unsigned) ui_pairs_get_count(), cursor_after, (unsigned) total_pairs);
     }
 
     // Finalize the pairs count for display (may be less than allocated).

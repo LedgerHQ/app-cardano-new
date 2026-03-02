@@ -15,9 +15,9 @@
  * Covers all certificate types except CERTIFICATE_STAKE_POOL_REGISTRATION,
  * which is handled separately by tx_processing_pool_registration.c.
  *
- * On the planning pass (mode->run_ui_planning), adds the appropriate pair count
+ * On the planning pass (mode->ui_count_pairs), adds the appropriate pair count
  * to G_context.tx_info.planned_ui_pairs.
- * On the rendering pass (mode->run_ui_rendering), renders all UI pairs for the
+ * On the rendering pass (mode->ui_render), renders all UI pairs for the
  * certificate.
  */
 void tx_ui_plan_or_render_certificate(const tx_processing_mode_t *mode,

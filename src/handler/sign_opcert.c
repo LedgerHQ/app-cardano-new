@@ -45,6 +45,7 @@ void handler_sign_opcert(buffer_t *cdata) {
     }
 
     G_context.req_type = REQUEST_SIGN_OPCERT;
+    explicit_bzero(&G_context.opcert_info, sizeof(G_context.opcert_info));
     G_context.state.opcert_state = OPCERT_STATE_NONE;
 
     G_context.opcert_info.raw_opcert_len = cdata->size;

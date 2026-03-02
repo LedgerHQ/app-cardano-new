@@ -16,7 +16,7 @@
 #include "ui_utils.h"
 #include "ui_warnings.h"
 #include "ui_display_address_derivation.h"
-#include "tx_ui_helpers.h"
+#include "ui_address_fields.h"
 // Called when long press button is touched or when reject footer is touched
 static void derive_address_review_choice(bool confirm) {
     TRACE("confirmed = %d", confirm);

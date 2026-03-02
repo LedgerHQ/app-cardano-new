@@ -73,4 +73,3 @@
 #define UI_PAIRS_TREASURY 1                      // key 21: "Treasury"
 #define UI_PAIRS_DONATION 1                      // key 22: "Donation"
 #define UI_PAIRS_TX_HASH 1                       // Transaction hash display
-
