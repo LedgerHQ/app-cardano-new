@@ -10,7 +10,6 @@
 #include "app_context.h"
 #include "tx_parse.h"
 #include "tx_parse_certificates.h"
-#include "tx_processing_certificates.h"
 #include "tx.h"
 #include "utils.h"
 #include "assert.h"
@@ -34,6 +33,10 @@
 
 #include <stdio.h>
 #include <string.h>
+
+void tx_handle_parse_error(uint16_t swo);
+credential_t credential_for_tx_hash_from_ext_credential(const ext_credential_t *credential);
+drep_t drep_for_tx_hash_from_ext_drep(const ext_drep_t *ext_drep);
 
 static void hash_certificate(tx_hash_builder_t *hash_builder,
                               const certificate_data_t *parsed_certificate_data) {
@@ -248,7 +251,7 @@ static security_policy_t determine_certificate_policy(certificate_type_t type,
                 warning_bits);
 
         case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP:
-            return policyForSignTxCertificateStakePoolAndDRepDelegation(
+            return policyForSignTxCertificateAccountRegistrationDelegationToStakePoolAndDRep(
                 tx_params->txSigningMode,
                 &parsed_certificate_data->stakeCredential,
                 &parsed_certificate_data->drep,
@@ -327,16 +330,17 @@ bool process_pool_registration_certificate(buffer_t *buf,
                                            tx_processing_state_t *state,
                                            const certificate_data_t *parsed_cert) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(state != NULL, "NULL state");
+    LEDGER_ASSERT(state != NULL && state->tx_params != NULL && state->warning_bits != NULL,
+                  "tx_processing_state not initialized");
     LEDGER_ASSERT(parsed_cert != NULL && parsed_cert->type == CERTIFICATE_STAKE_POOL_REGISTRATION,
                   "NULL or wrong certificate type");
 
     // buf is positioned at the start of owners data (after the fixed header fields
     // already parsed by parse_certificate_stake_pool_registration).
 
-    tx_processing_ctx_t ctx = tx_get_ctx();
-    const tx_processing_mode_t *mode = &ctx.mode;
-    tx_hash_builder_t *hash_builder = ctx.hash_builder;
+    const tx_params_t *tx_params = state->tx_params;
+    const tx_processing_mode_t *mode = &state->mode;
+    tx_hash_builder_t *hash_builder = &state->hash_builder;
 
     const pool_registration_data_t *pool_registration = &parsed_cert->poolRegistration;
     TRACE("Pool registration: owners=%u relays=%u",
@@ -358,35 +362,35 @@ bool process_pool_registration_certificate(buffer_t *buf,
 
     if (mode->run_validation) {
         security_policy_t certificate_policy = policyForSignTxStakePoolRegistrationInit(
-            ctx.tx_params->txSigningMode,
+            tx_params->txSigningMode,
             pool_registration->numPoolOwners,
             pool_registration->numRelays,
             path_owner_count,
-            ctx.warning_bits);
+            state->warning_bits);
         APPLY_POLICY(certificate_policy, plan_or_render_pool_registration_header, mode,
                      parsed_cert->type);
 
         security_policy_t pool_id_policy =
-            policyForSignTxStakePoolRegistrationPoolId(ctx.tx_params->txSigningMode,
+            policyForSignTxStakePoolRegistrationPoolId(tx_params->txSigningMode,
                                                        &parsed_cert->poolId,
-                                                       ctx.warning_bits);
+                                                       state->warning_bits);
         APPLY_POLICY(pool_id_policy, plan_or_render_pool_id, mode, &parsed_cert->poolId);
 
         security_policy_t vrf_policy =
-            policyForSignTxStakePoolRegistrationVrfKey(ctx.tx_params->txSigningMode,
-                                                       ctx.warning_bits);
+            policyForSignTxStakePoolRegistrationVrfKey(tx_params->txSigningMode,
+                                                       state->warning_bits);
         APPLY_POLICY(vrf_policy, plan_or_render_pool_vrf_key_hash, mode,
                      pool_registration->vrfKeyHash);
 
         plan_or_render_pool_financials(mode, pool_registration);
 
         security_policy_t reward_policy =
-            policyForSignTxStakePoolRegistrationRewardAccount(ctx.tx_params->txSigningMode,
-                                                               ctx.tx_params->networkId,
+            policyForSignTxStakePoolRegistrationRewardAccount(tx_params->txSigningMode,
+                                                               tx_params->networkId,
                                                                &pool_registration->rewardAccount,
-                                                               ctx.warning_bits);
+                                                               state->warning_bits);
         APPLY_POLICY(reward_policy, plan_or_render_pool_reward_account, mode,
-                     ctx.tx_params->networkId, &pool_registration->rewardAccount);
+                     tx_params->networkId, &pool_registration->rewardAccount);
     }
 
     // In OWNER signing mode, record the unique path owner as the witness key.
@@ -394,7 +398,7 @@ bool process_pool_registration_certificate(buffer_t *buf,
     // for OWNER mode, so the assert below is a guaranteed invariant, not a condition.
     // Done on the hash-builder pass (pass 1) only — not repeated on the UI render pass.
     if (mode->run_hash_builder &&
-        ctx.tx_params->txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER) {
+        tx_params->txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER) {
         LEDGER_ASSERT(!G_context.tx_info.pool_owner_path_present,
                       "Multiple pool registrations in owner mode");
         LEDGER_ASSERT(path_owner_count == 1, "Expected exactly one path owner in owner mode");
@@ -431,7 +435,7 @@ bool process_pool_registration_certificate(buffer_t *buf,
                                                              pool_registration->marginDenominator);
         uint8_t reward_account_buffer[REWARD_ACCOUNT_LENGTH] = {0};
         poolRewardAccountToBuffer(&pool_registration->rewardAccount,
-                                  ctx.tx_params->networkId,
+                                  tx_params->networkId,
                                   reward_account_buffer);
         txHashBuilder_poolRegistrationCertificate_rewardAccount(hash_builder,
                                                                 reward_account_buffer,
@@ -453,11 +457,11 @@ bool process_pool_registration_certificate(buffer_t *buf,
 
             if (mode->run_validation) {
                 security_policy_t owner_policy =
-                    policyForSignTxStakePoolRegistrationOwner(ctx.tx_params->txSigningMode,
+                    policyForSignTxStakePoolRegistrationOwner(tx_params->txSigningMode,
                                                               &owner_credential,
-                                                              ctx.warning_bits);
+                                                              state->warning_bits);
                 APPLY_POLICY(owner_policy, plan_or_render_pool_owner, mode,
-                             ctx.tx_params->networkId, &owner_credential);
+                             tx_params->networkId, &owner_credential);
             }
 
             if (mode->run_hash_builder) {
@@ -491,9 +495,9 @@ bool process_pool_registration_certificate(buffer_t *buf,
 
             if (mode->run_validation) {
                 security_policy_t relay_policy =
-                    policyForSignTxStakePoolRegistrationRelay(ctx.tx_params->txSigningMode,
+                    policyForSignTxStakePoolRegistrationRelay(tx_params->txSigningMode,
                                                               &relay,
-                                                              ctx.warning_bits);
+                                                              state->warning_bits);
                 APPLY_POLICY(relay_policy, plan_or_render_pool_relay, mode, relay_index, &relay);
             }
 
@@ -510,7 +514,7 @@ bool process_pool_registration_certificate(buffer_t *buf,
     if (!pool_registration->hasMetadata) {
         if (mode->run_validation) {
             security_policy_t no_metadata_policy =
-                policyForSignTxStakePoolRegistrationNoMetadata(ctx.warning_bits);
+                policyForSignTxStakePoolRegistrationNoMetadata(state->warning_bits);
             APPLY_POLICY(no_metadata_policy, plan_or_render_pool_no_metadata, mode);
         }
 
@@ -526,7 +530,7 @@ bool process_pool_registration_certificate(buffer_t *buf,
 
         if (mode->run_validation) {
             security_policy_t metadata_policy =
-                policyForSignTxStakePoolRegistrationMetadata(&pool_metadata, ctx.warning_bits);
+                policyForSignTxStakePoolRegistrationMetadata(&pool_metadata, state->warning_bits);
             APPLY_POLICY(metadata_policy, plan_or_render_pool_metadata, mode, &pool_metadata);
         }
 
@@ -545,15 +549,17 @@ bool process_pool_registration_certificate(buffer_t *buf,
 
 bool tx_process_certificates(buffer_t *buf, tx_processing_state_t *state) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
-    tx_processing_ctx_t ctx = tx_get_ctx();
-    const tx_params_t *tx_params = ctx.tx_params;
-    const tx_processing_mode_t *mode = &ctx.mode;
+    LEDGER_ASSERT(state != NULL && state->tx_params != NULL && state->warning_bits != NULL,
+                  "tx_processing_state not initialized");
+    const tx_params_t *tx_params = state->tx_params;
+    const tx_processing_mode_t *mode = &state->mode;
 
     if (tx_params->num_certificates == 0) {
         return true;
     }
 
     if (mode->run_hash_builder) {
+        G_context.tx_info.pool_owner_path_present = false;
         txHashBuilder_enterCertificates(&state->hash_builder);
     }
 
@@ -578,7 +584,7 @@ bool tx_process_certificates(buffer_t *buf, tx_processing_state_t *state) {
                 determine_certificate_policy(parsed_certificate_data.type,
                                              &parsed_certificate_data,
                                              tx_params,
-                                             ctx.warning_bits);
+                                             state->warning_bits);
 
             APPLY_POLICY(certificate_policy, tx_ui_plan_or_render_certificate, mode, &parsed_certificate_data);
 
@@ -588,7 +594,7 @@ bool tx_process_certificates(buffer_t *buf, tx_processing_state_t *state) {
                 // assertion in plan_or_render_anchor does not fire.
                 security_policy_t anchor_policy = policyForSignTxAnchor(
                     &parsed_certificate_data.anchor,
-                    ctx.warning_bits);
+                    state->warning_bits);
                 LEDGER_ASSERT(anchor_policy == POLICY_SHOW, "Unexpected anchor policy");
             }
         }

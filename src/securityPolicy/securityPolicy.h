@@ -80,7 +80,7 @@ security_policy_t policyForSignTxCollateralOutputTokens(security_policy_t output
 security_policy_t policyForSignTxFee(sign_tx_signingmode_t txSigningMode,
                                      uint64_t fee,
                                      warning_bits_t* w);
-security_policy_t policyForSignTxTtl(uint32_t ttl,
+security_policy_t policyForSignTxTtl(uint64_t ttl,
                                      warning_bits_t* w);
 security_policy_t policyForSignTxCertificateStaking(sign_tx_signingmode_t txSigningMode,
                                                     const certificate_type_t certificateType,
@@ -100,6 +100,11 @@ security_policy_t policyForSignTxCertificateAccountRegistrationDelegationToStake
     const ext_credential_t* stakeCredential,
     warning_bits_t* w);
 security_policy_t policyForSignTxCertificateAccountRegistrationDelegationToDRep(
+    sign_tx_signingmode_t txSigningMode,
+    const ext_credential_t* stakeCredential,
+    const ext_drep_t* drep,
+    warning_bits_t* w);
+security_policy_t policyForSignTxCertificateAccountRegistrationDelegationToStakePoolAndDRep(
     sign_tx_signingmode_t txSigningMode,
     const ext_credential_t* stakeCredential,
     const ext_drep_t* drep,

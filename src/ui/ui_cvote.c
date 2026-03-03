@@ -67,8 +67,11 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy, warning_bits_t w
 
     // Format all fields and check for errors
     ui_reset_error_status();
+    ui_render_session_t render_session = {0};
+    ui_render_session_begin(&render_session, 0);
     if (!ui_pairs_init(4)) {
         TRACE("Failed to initialize pairs");
+        ui_render_session_end();
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
     }
@@ -92,6 +95,7 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy, warning_bits_t w
                    format_decimal_amount,
                    ctx->payload_type_tag,
                    0);
+    ui_render_session_end();
     nbgl_useCaseAdvancedReview(TYPE_OPERATION,
                                g_pairsList,
                                &ICON_APP_CARDANO,

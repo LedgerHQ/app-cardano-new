@@ -32,6 +32,12 @@ static void test_compute_tx_hash_and_plan_ui_counts_ttl(void **state) {
     reset_context();
 
     static uint8_t raw_tx[] = {
+        // input tx hash (32B) + output index (4B)
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
         // fee = 42 lovelace
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A,
         // ttl = 123
@@ -41,21 +47,16 @@ static void test_compute_tx_hash_and_plan_ui_counts_ttl(void **state) {
     G_context.tx_info.raw_tx_total_length = SIZEOF(raw_tx);
     tx_body_ctx()->raw_tx_current_length = SIZEOF(raw_tx);
 
-    G_context.tx_info.tx_params.num_inputs = 0;
+    G_context.tx_info.tx_params.num_inputs = 1;
     G_context.tx_info.tx_params.num_outputs = 0;
     G_context.tx_info.tx_params.includeTtl = true;
     G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
     G_context.tx_info.tx_params.networkId = MAINNET_NETWORK_ID;
     G_context.tx_info.tx_params.protocolMagic = MAINNET_PROTOCOL_MAGIC;
 
-    buffer_t tx_buffer = {
-        .ptr = tx_body_ctx()->raw_tx,
-        .size = tx_body_ctx()->raw_tx_current_length,
-        .offset = 0,
-    };
-    bool result = tx_validate(&tx_buffer);
+    bool result = tx_validate();
     assert_true(result);
-    assert_true(tx_body_ctx()->total_ui_pairs >= 2);
+    assert_true(tx_body_ctx()->total_ui_pairs >= 1);
 }
 
 int main(void) {

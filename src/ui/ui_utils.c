@@ -19,30 +19,30 @@ ui_status_t g_ui_error_status = UI_STATUS_UNINITIALIZED;
 
 static uint16_t g_next_pair_index = 0;
 static bool g_pending_force_page_start = false;
+static ui_render_session_t *g_active_render_session = NULL;
 
-/// Render-window state for streaming chunk rendering.
-static uint16_t g_pair_scan_index = 0;  // increments for every UI_ADD_* call
-static uint16_t g_render_from     = 0;  // first pair index to actually materialise
-
-void ui_render_window_init(uint16_t from) {
-    g_render_from = from;
-    g_pair_scan_index = 0;
+void ui_render_session_begin(ui_render_session_t *session,
+                             uint16_t render_from_pair_index) {
+    LEDGER_ASSERT(session != NULL, "NULL render session");
+    LEDGER_ASSERT(g_active_render_session == NULL, "UI render session already active");
+    explicit_bzero(session, SIZEOF(*session));
+    session->render_from_pair_index = render_from_pair_index;
+    g_active_render_session = session;
 }
 
-uint16_t ui_render_cursor_get(void) {
-    return g_pair_scan_index;
-}
-
-bool ui_render_is_chunked(void) {
-    return g_render_from > 0;
+void ui_render_session_end(void) {
+    LEDGER_ASSERT(g_active_render_session != NULL, "No active UI render session");
+    g_active_render_session = NULL;
 }
 
 bool ui_render_should_skip(void) {
-    uint16_t current = g_pair_scan_index;
-    g_pair_scan_index++;
+    LEDGER_ASSERT(g_active_render_session != NULL,
+                  "UI_ADD_* called without active render session");
+    uint16_t current = g_active_render_session->next_pair_index;
+    g_active_render_session->next_pair_index++;
     // Skip if before the window
-    if (current < g_render_from) {
-        // Clear any pending force-new-page: the pair was already rendered in a previous chunk.
+    if (current < g_active_render_session->render_from_pair_index) {
+        // Clear any pending force-new-page: the pair was already rendered previously.
         g_pending_force_page_start = false;
         return true;
     }
@@ -55,6 +55,18 @@ bool ui_render_should_skip(void) {
         return true;
     }
     return false;
+}
+
+void ui_check_expected_pair_delta(uint16_t pairs_before, uint16_t expected) {
+    LEDGER_ASSERT(g_active_render_session != NULL,
+                  "CHECK_COUNT called without active render session");
+    if (g_ui_error_status == UI_STATUS_SUCCESS &&
+        g_active_render_session->render_from_pair_index == 0) {
+        uint16_t actual_delta = ui_pairs_get_count() - pairs_before;
+        LEDGER_ASSERT(actual_delta == expected,
+                      "UI pairs mismatch: expected %d, actual %d",
+                      expected, actual_delta);
+    }
 }
 
 /**
@@ -129,6 +141,7 @@ void ui_all_cleanup(void) {
 }
 
 uint16_t ui_pairs_get_count(void) {
+    LEDGER_ASSERT(g_next_pair_index <= MAX_UI_PAIRS, "g_next_pair_index overflow");
     return g_next_pair_index;
 }
 

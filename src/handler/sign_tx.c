@@ -532,14 +532,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_CHUNKS, "Bad state before parse");
             G_context.state.tx_state = TX_STATE_RECEIVED;
 
-            LEDGER_ASSERT(tx_body_ctx()->raw_tx != NULL, "Raw transaction buffer missing");
-
-            buffer_t buf = {
-                .ptr = tx_body_ctx()->raw_tx,
-                .size = tx_body_ctx()->raw_tx_current_length,
-                .offset = 0
-            };
-            if (!tx_validate(&buf)) {
+            if (!tx_validate()) {
                 return;
             }
 
@@ -548,7 +541,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 #ifdef HAVE_SWAP
             if (G_called_from_swap) {
                 // In swap mode there is no interactive transaction review, so we intentionally
-                // skip TX_STATE_UI_PREPARED and transition directly to TX_STATE_APPROVED.
+                // skip TX_STATE_UI_REVIEW and transition directly to TX_STATE_APPROVED.
                 // Consequently, finalize_sign_tx() is not used in this flow.
                 // Null raw_tx while body slot is still valid, before the union is repurposed.
                 tx_body_ctx()->raw_tx = NULL;
@@ -564,15 +557,14 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 
             LEDGER_ASSERT(tx_body_ctx()->total_ui_pairs > 0, "Invalid UI plan");
 
-            bool ui_prepare_succeeded = tx_render_ui_all();
-            if (!ui_prepare_succeeded) {
+            bool tx_ui_prepared = tx_render_ui_all();
+            if (!tx_ui_prepared) {
                 tx_review_cleanup();
                 TRACE("TX UI preparation failed");
                 send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
                 return;
             }
 
-            G_context.state.tx_state = TX_STATE_UI_PREPARED;
             apdu_response_deferred();
             ui_display_transaction();
             return;
@@ -586,7 +578,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 
 void finalize_sign_tx(void) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
-    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_UI_PREPARED, "Bad tx_state");
+    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_UI_REVIEW, "Bad tx_state");
 
     // Transition body -> witness slot. Null raw_tx while body slot is still valid,
     // before the union is repurposed. Then initialize witness sub-state.

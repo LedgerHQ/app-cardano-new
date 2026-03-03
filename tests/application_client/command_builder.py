@@ -954,8 +954,8 @@ class CommandBuilder:
         data.extend(params.margin.numerator.to_bytes(8, "big"))
         data.extend(params.margin.denominator.to_bytes(8, "big"))
         data.extend(self._serialize_pool_key_reference(params.rewardAccount))
-        data.append(len(params.poolOwners))
-        data.append(len(params.relays))
+        data.extend(len(params.poolOwners).to_bytes(2, "big"))
+        data.extend(len(params.relays).to_bytes(2, "big"))
         data.append(FLAG_INCLUDED_YES if params.metadata is not None else FLAG_INCLUDED_NO)
         for owner in params.poolOwners:
             credential = self._pool_key_to_credential(owner)

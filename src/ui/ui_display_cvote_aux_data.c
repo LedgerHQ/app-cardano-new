@@ -227,6 +227,8 @@ static uint16_t cvote_initial_pairs_count(const cvote_aux_data_t *aux_data) {
 
 static bool cvote_add_initial_pairs(cvote_aux_data_t *aux_data) {
     LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
+    ui_render_session_t render_session = {0};
+    ui_render_session_begin(&render_session, 0);
 
     START_COUNT();
     if (aux_data->ui_show.vote_key) {
@@ -275,13 +277,17 @@ static bool cvote_add_initial_pairs(cvote_aux_data_t *aux_data) {
                    aux_data->ui_delegations_total);
 
     CHECK_COUNT(cvote_initial_pairs_count(aux_data));
-    return (ui_get_error_status() == UI_STATUS_SUCCESS);
+    bool result = (ui_get_error_status() == UI_STATUS_SUCCESS);
+    ui_render_session_end();
+    return result;
 }
 
 static bool cvote_add_delegation_pairs(cvote_aux_data_t *aux_data,
                                        const cvote_credential_t *credential,
                                        uint32_t weight) {
     LEDGER_ASSERT(credential != NULL, "NULL delegation credential");
+    ui_render_session_t render_session = {0};
+    ui_render_session_begin(&render_session, 0);
 
     START_COUNT();
     LEDGER_ASSERT(aux_data != NULL && aux_data->ui_delegations_shown < aux_data->ui_delegations_total, "Delegation count exceeded");
@@ -299,6 +305,7 @@ static bool cvote_add_delegation_pairs(cvote_aux_data_t *aux_data,
     switch (delegation_policy) {
         case POLICY_DENY:
             TRACE("CVote delegation policy denied");
+            ui_render_session_end();
             send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
             return false;
         case POLICY_SHOW: {
@@ -327,7 +334,9 @@ static bool cvote_add_delegation_pairs(cvote_aux_data_t *aux_data,
             LEDGER_ASSERT(false, "Unknown delegation policy");
     }
 
-    return (ui_get_error_status() == UI_STATUS_SUCCESS);
+    bool result = (ui_get_error_status() == UI_STATUS_SUCCESS);
+    ui_render_session_end();
+    return result;
 }
 
 static bool cvote_init_pairs_for_streaming_page(cvote_aux_data_t *aux_data) {

@@ -20,6 +20,9 @@
  * Naming: tx_ui_plan_or_render_<element>(mode, parsed_<element>, ...)
  */
 
+void tx_ui_plan_or_render_network_details(const tx_processing_mode_t *mode,
+                                          const tx_params_t *tx_params);
+
 void tx_ui_plan_or_render_input(const tx_processing_mode_t *mode, const tx_input_t *parsed_input);
 
 void tx_ui_plan_or_render_collateral_input(const tx_processing_mode_t *mode,

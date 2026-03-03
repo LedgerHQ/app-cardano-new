@@ -1070,7 +1070,7 @@ security_policy_t policyForSignTxFee(sign_tx_signingmode_t txSigningMode,
 
 // ======================================= TTL =======================================
 
-security_policy_t policyForSignTxTtl(uint32_t ttl MARK_UNUSED, warning_bits_t *w) {
+security_policy_t policyForSignTxTtl(uint64_t ttl MARK_UNUSED, warning_bits_t *w) {
     POLICY_INIT();
     // TTL value is intentionally ignored; only expert mode controls whether TTL is shown.
     SHOW_IF(is_expert_mode());
@@ -1231,6 +1231,16 @@ security_policy_t policyForSignTxCertificateAccountRegistrationDelegationToStake
 }
 
 security_policy_t policyForSignTxCertificateAccountRegistrationDelegationToDRep(
+    sign_tx_signingmode_t txSigningMode,
+    const ext_credential_t* stakeCredential,
+    const ext_drep_t* drep,
+    warning_bits_t *w) {
+    POLICY_INIT();
+    RETURN(_combine_policies(_policyForSignTxCertificateDRep(txSigningMode, drep, w),
+                             _policyForSignTxCertificateStakeCredential(txSigningMode, stakeCredential, w)));
+}
+
+security_policy_t policyForSignTxCertificateAccountRegistrationDelegationToStakePoolAndDRep(
     sign_tx_signingmode_t txSigningMode,
     const ext_credential_t* stakeCredential,
     const ext_drep_t* drep,

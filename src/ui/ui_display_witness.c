@@ -54,11 +54,12 @@ void ui_display_witness(const bip44_path_t* witnessPath,
     TRACE("=== ui_display_witness START ===");
     TRACE("securityPolicy: %d", securityPolicy);
 
-    if (G_context.state.tx_state != TX_STATE_APPROVED || G_context.req_type != REQUEST_SIGN_TRANSACTION) {
-        TRACE("Bad state detected - returning error");
-        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
-        return;
-    }
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION,
+                  "ui_display_witness called with wrong request type: %d",
+                  G_context.req_type);
+    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_APPROVED,
+                  "ui_display_witness called in wrong tx state: %d",
+                  G_context.state.tx_state);
 
     bool isUnusual = warning_bits_has(warnings, WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH);
 

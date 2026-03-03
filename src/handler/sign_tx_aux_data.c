@@ -227,6 +227,7 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
     if (!cvote_aux_data_validate(aux_data)) {
         TRACE("CVote AUX_DATA validation failed");
         APP_MEM_FREE_AND_NULL((void **) &tx_aux_data_ctx()->raw_cvote_init_data);
+        tx_aux_data_ctx()->raw_cvote_init_data_len = 0;
         send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
         return;
     }

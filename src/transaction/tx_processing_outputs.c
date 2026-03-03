@@ -6,7 +6,6 @@
 #include "app_context.h"
 #include "tx_parse.h"
 #include "tx_parse_outputs.h"
-#include "tx_processing_outputs.h"
 #include "tx.h"
 #include "utils.h"
 #include "assert.h"
@@ -32,6 +31,8 @@
 #include "swap_lib.h"
 #include "swap_error_code_helpers.h"
 #endif
+
+void tx_handle_parse_error(uint16_t swo);
 
 // ---------------------------------------------------------------------------
 // Hash builder helpers (address bytes conversion for hashing)
@@ -70,10 +71,12 @@ static void hash_add_output_top_level(tx_hash_builder_t *tx_hash_builder,
 static bool tx_process_output(buffer_t *output_buf,
                                       uint16_t output_index,
                                       tx_processing_state_t *state) {
-    tx_processing_ctx_t ctx = tx_get_ctx();
-    const tx_params_t *tx_params = ctx.tx_params;
-    const tx_processing_mode_t *mode = &ctx.mode;
-    tx_hash_builder_t *hash_builder = ctx.hash_builder;
+    LEDGER_ASSERT(output_buf != NULL, "NULL output_buf");
+    LEDGER_ASSERT(state != NULL && state->tx_params != NULL && state->warning_bits != NULL,
+                  "tx_processing_state not initialized");
+    const tx_params_t *tx_params = state->tx_params;
+    const tx_processing_mode_t *mode = &state->mode;
+    tx_hash_builder_t *hash_builder = &state->hash_builder;
 
     // --- 1. Parse top-level output fields ---
     tx_output_description_t output_desc = {0};
@@ -107,11 +110,11 @@ static bool tx_process_output(buffer_t *output_buf,
             tx_params->txSigningMode,
             tx_params->networkId,
             tx_params->protocolMagic,
-            ctx.warning_bits);
+            state->warning_bits);
         APPLY_POLICY(output_policy, tx_ui_plan_or_render_output, mode, output_index, &output_desc);
 
-        datum_policy = policyForSignTxOutputDatumHash(output_policy, ctx.warning_bits);
-        ref_script_policy = policyForSignTxOutputRefScript(output_policy, ctx.warning_bits);
+        datum_policy = policyForSignTxOutputDatumHash(output_policy, state->warning_bits);
+        ref_script_policy = policyForSignTxOutputRefScript(output_policy, state->warning_bits);
 
         if (output_policy == POLICY_HIDE) {
             LEDGER_ASSERT(datum_policy == POLICY_HIDE,
@@ -244,11 +247,15 @@ static bool tx_process_output(buffer_t *output_buf,
 /**
  * Process the collateral return output from output_buf.
  */
-static bool tx_process_collateral_return_output(buffer_t *output_buf) {
-    tx_processing_ctx_t ctx = tx_get_ctx();
-    const tx_params_t *tx_params = ctx.tx_params;
-    const tx_processing_mode_t *mode = &ctx.mode;
-    tx_hash_builder_t *hash_builder = ctx.hash_builder;
+static bool tx_process_collateral_return_output(buffer_t *output_buf, tx_processing_state_t *state) {
+    LEDGER_ASSERT(output_buf != NULL, "NULL output_buf");
+    LEDGER_ASSERT(state != NULL, "NULL state");
+    const tx_params_t *tx_params = state->tx_params;
+    warning_bits_t *warning_bits = state->warning_bits;
+    LEDGER_ASSERT(tx_params != NULL, "NULL state->tx_params");
+    LEDGER_ASSERT(warning_bits != NULL, "NULL state->warning_bits");
+    const tx_processing_mode_t *mode = &state->mode;
+    tx_hash_builder_t *hash_builder = &state->hash_builder;
 
     // --- 1. Parse top-level output fields ---
     tx_output_description_t output_desc = {0};
@@ -270,23 +277,23 @@ static bool tx_process_collateral_return_output(buffer_t *output_buf) {
             tx_params->networkId,
             tx_params->protocolMagic,
             tx_params->includeTotalCollateral,
-            ctx.warning_bits);
+            warning_bits);
 
         if (output_policy == POLICY_SHOW && output_desc.numAssetGroups > 0) {
-            warning_bits_set(ctx.warning_bits, WARNING_BIT_COLLATERAL_OUTPUT_WARNING);
+            warning_bits_set(warning_bits, WARNING_BIT_COLLATERAL_OUTPUT_WARNING);
         }
         APPLY_POLICY(output_policy, tx_ui_plan_or_render_collateral_output_address, mode, &output_desc);
 
         collateral_ada_policy = policyForSignTxCollateralOutputAdaAmount(
             output_policy,
             tx_params->includeTotalCollateral,
-            ctx.warning_bits);
+            warning_bits);
         APPLY_POLICY(collateral_ada_policy, tx_ui_plan_or_render_collateral_output_amount, mode, &output_desc);
 
         collateral_tokens_policy = policyForSignTxCollateralOutputTokens(
             output_policy,
             &output_desc,
-            ctx.warning_bits);
+            warning_bits);
     }
 
     // --- 3. Hash top-level ---
@@ -369,12 +376,12 @@ static bool tx_process_collateral_return_output(buffer_t *output_buf) {
 
 bool tx_process_outputs(buffer_t *buf, tx_processing_state_t *state) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
-    tx_processing_ctx_t ctx = tx_get_ctx();
-    const tx_params_t *tx_params = ctx.tx_params;
-    const tx_processing_mode_t *mode = &ctx.mode;
+    LEDGER_ASSERT(state != NULL, "NULL state");
+    const tx_params_t *tx_params = state->tx_params;
+    LEDGER_ASSERT(tx_params != NULL, "tx_processing_state not initialized");
+    const tx_processing_mode_t *mode = &state->mode;
 
     if (mode->run_hash_builder) {
-        LEDGER_ASSERT(state->hash_builder_initialized, "Hash builder not initialized");
         txHashBuilder_enterOutputs(&state->hash_builder);
     }
 
@@ -416,10 +423,12 @@ bool tx_process_outputs(buffer_t *buf, tx_processing_state_t *state) {
     return true;
 }
 
-bool tx_process_collateral_output(buffer_t *buf) {
+bool tx_process_collateral_output(buffer_t *buf, tx_processing_state_t *state) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
-    tx_processing_ctx_t ctx = tx_get_ctx();
-    const tx_params_t *tx_params = ctx.tx_params;
+    LEDGER_ASSERT(state != NULL, "NULL state");
+
+    const tx_params_t *tx_params = state->tx_params;
+    LEDGER_ASSERT(tx_params != NULL, "tx_processing_state not initialized");
 
     if (!tx_params->includeCollateralOutput) {
         return true;
@@ -439,7 +448,7 @@ bool tx_process_collateral_output(buffer_t *buf) {
         .offset = 0,
     };
 
-    if (!tx_process_collateral_return_output(&output_buf)) {
+    if (!tx_process_collateral_return_output(&output_buf, state)) {
         return false;
     }
 

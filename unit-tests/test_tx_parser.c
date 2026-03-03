@@ -19,6 +19,13 @@
 #include "mem.h"
 #include "app_context.h"
 
+void tx_handle_parse_error(uint16_t swo);
+void tx_processing_setup_state(const tx_processing_mode_t *mode, warning_bits_t *warning_bits);
+bool tx_process_inputs(buffer_t *buf, tx_processing_state_t *state);
+bool tx_process_collateral_inputs(buffer_t *buf, tx_processing_state_t *state);
+bool tx_process_required_signers(buffer_t *buf, tx_processing_state_t *state);
+bool tx_process_reference_inputs(buffer_t *buf, tx_processing_state_t *state);
+
 #define TEST_HEAP_SIZE (23 * 1024)
 static uint8_t test_heap[TEST_HEAP_SIZE];
 static uint16_t g_last_sw = 0;
@@ -52,11 +59,6 @@ static void test_parse_tx_fails_on_missing_inputs(void **state) {
     reset_test_context();
 
     uint8_t empty_tx = 0;
-    buffer_t buf = {
-        .ptr = &empty_tx,
-        .size = 0,
-        .offset = 0,
-    };
     // num_inputs=0 with ORDINARY_TX would be denied by policyForSignTxInit (no inputs = no replay
     // protection). Use num_inputs=1 so init policy passes; the empty buffer then fails at inputs.
     G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
@@ -64,8 +66,11 @@ static void test_parse_tx_fails_on_missing_inputs(void **state) {
     G_context.tx_info.tx_params.protocolMagic = MAINNET_PROTOCOL_MAGIC;
     G_context.tx_info.tx_params.num_inputs = 1;
     G_context.tx_info.tx_params.num_outputs = 0;
+    tx_body_ctx()->raw_tx = &empty_tx;
+    G_context.tx_info.raw_tx_total_length = 0;
+    tx_body_ctx()->raw_tx_current_length = 0;
     apdu_response_begin(INS_SIGN_TX);
-    bool ok = tx_validate(&buf);
+    bool ok = tx_validate();
     apdu_response_assert_sent_or_deferred();
     assert_false(ok);
     assert_int_equal(g_last_sw, SWO_TX_PARSING_FAIL_INPUTS);
@@ -130,7 +135,7 @@ static void test_process_inputs_field_pass1_success(void **state) {
         .ui_render = false,
     };
     warning_bits_t warnings = 0;
-    tx_processing_state_init(&mode, &warnings);
+    tx_processing_setup_state(&mode, &warnings);
 
     bool ok = tx_process_inputs(&buf, &tx_body_ctx()->processing_state);
     assert_true(ok);
@@ -159,7 +164,7 @@ static void test_process_inputs_field_parse_error_sends_inputs_swo(void **state)
         .ui_render = false,
     };
     warning_bits_t warnings = 0;
-    tx_processing_state_init(&mode, &warnings);
+    tx_processing_setup_state(&mode, &warnings);
 
     apdu_response_begin(INS_SIGN_TX);
     bool ok = tx_process_inputs(&buf, &tx_body_ctx()->processing_state);
@@ -191,7 +196,7 @@ static void test_process_collateral_inputs_field_pass1_success(void **state) {
         .ui_render = false,
     };
     warning_bits_t warnings = 0;
-    tx_processing_state_init(&mode, &warnings);
+    tx_processing_setup_state(&mode, &warnings);
 
     bool ok = tx_process_collateral_inputs(&buf, &tx_body_ctx()->processing_state);
     assert_true(ok);
@@ -220,7 +225,7 @@ static void test_process_reference_inputs_field_parse_error_sends_reference_swo(
         .ui_render = false,
     };
     warning_bits_t warnings = 0;
-    tx_processing_state_init(&mode, &warnings);
+    tx_processing_setup_state(&mode, &warnings);
 
     apdu_response_begin(INS_SIGN_TX);
     bool ok = tx_process_reference_inputs(&buf, &tx_body_ctx()->processing_state);
@@ -255,7 +260,7 @@ static void test_process_required_signers_field_pass1_success(void **state) {
         .ui_render = false,
     };
     warning_bits_t warnings = 0;
-    tx_processing_state_init(&mode, &warnings);
+    tx_processing_setup_state(&mode, &warnings);
 
     bool ok = tx_process_required_signers(&buf, &tx_body_ctx()->processing_state);
     assert_true(ok);
@@ -284,7 +289,7 @@ static void test_process_required_signers_field_parse_error_sends_required_swo(v
         .ui_render = false,
     };
     warning_bits_t warnings = 0;
-    tx_processing_state_init(&mode, &warnings);
+    tx_processing_setup_state(&mode, &warnings);
 
     apdu_response_begin(INS_SIGN_TX);
     bool ok = tx_process_required_signers(&buf, &tx_body_ctx()->processing_state);
@@ -314,7 +319,7 @@ static void test_mode_allows_rendering_with_validation(void **state) {
         .ui_render = true,
     };
     warning_bits_t warnings = 0;
-    tx_processing_state_init(&mode, &warnings);
+    tx_processing_setup_state(&mode, &warnings);
 
     bool ok = tx_process_inputs(&buf, &tx_body_ctx()->processing_state);
     assert_true(ok);
@@ -380,23 +385,19 @@ static void test_validate_from_raw_success(void **state) {
 
     assert_int_equal(offset, sizeof(raw_tx));
 
-    buffer_t buf = {
-        .ptr = raw_tx,
-        .size = sizeof(raw_tx),
-        .offset = 0,
-    };
-
     G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
     G_context.tx_info.tx_params.networkId = MAINNET_NETWORK_ID;
     G_context.tx_info.tx_params.protocolMagic = MAINNET_PROTOCOL_MAGIC;
     G_context.tx_info.tx_params.num_inputs = 1;
     G_context.tx_info.tx_params.num_outputs = 1;
     G_context.tx_info.tx_params.includeTtl = false;
+    tx_body_ctx()->raw_tx = raw_tx;
+    G_context.tx_info.raw_tx_total_length = sizeof(raw_tx);
+    tx_body_ctx()->raw_tx_current_length = sizeof(raw_tx);
 
-    bool ok = tx_validate(&buf);
+    bool ok = tx_validate();
 
     assert_true(ok);
-    assert_int_equal(buf.offset, sizeof(raw_tx));
     assert_true(tx_body_ctx()->total_ui_pairs >= (UI_PAIRS_OUTPUT_BASE + UI_PAIRS_FEE));
 
     bool hash_nonzero = false;
@@ -495,12 +496,6 @@ static void test_validate_from_raw_with_tokens_and_mint_success(void **state) {
 
     assert_int_equal(offset, sizeof(raw_tx));
 
-    buffer_t buf = {
-        .ptr = raw_tx,
-        .size = sizeof(raw_tx),
-        .offset = 0,
-    };
-
     G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
     G_context.tx_info.tx_params.networkId = MAINNET_NETWORK_ID;
     G_context.tx_info.tx_params.protocolMagic = MAINNET_PROTOCOL_MAGIC;
@@ -508,11 +503,13 @@ static void test_validate_from_raw_with_tokens_and_mint_success(void **state) {
     G_context.tx_info.tx_params.num_outputs = 1;
     G_context.tx_info.tx_params.includeTtl = false;
     G_context.tx_info.tx_params.num_mint_asset_groups = 1;
+    tx_body_ctx()->raw_tx = raw_tx;
+    G_context.tx_info.raw_tx_total_length = sizeof(raw_tx);
+    tx_body_ctx()->raw_tx_current_length = sizeof(raw_tx);
 
-    bool ok = tx_validate(&buf);
+    bool ok = tx_validate();
 
     assert_true(ok);
-    assert_int_equal(buf.offset, sizeof(raw_tx));
     assert_int_equal(tx_body_ctx()->total_ui_pairs, 9);  // output base + output token + fee + mint summary + mint token
 }
 

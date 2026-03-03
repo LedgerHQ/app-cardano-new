@@ -24,4 +24,4 @@ bool tx_process_outputs(buffer_t *buf, tx_processing_state_t *state);
  *
  * @return true on success or if no collateral output, false on error
  */
-bool tx_process_collateral_output(buffer_t *buf);
+bool tx_process_collateral_output(buffer_t *buf, tx_processing_state_t *state);

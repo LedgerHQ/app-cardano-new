@@ -22,7 +22,7 @@
  *
  * CHUNK_FULL and OUT_OF_MEMORY are mutually exclusive: once one is set, the other must not be set.
  * Note: Once set to error/chunk-full state, cannot be changed back to success via ui_set_error_status;
- * streaming code resets directly via g_ui_error_status = UI_STATUS_SUCCESS.
+ * streaming code must call ui_reset_error_status() before rendering the next chunk.
  */
 typedef enum {
     UI_STATUS_UNINITIALIZED = 0,
@@ -36,11 +36,18 @@ extern ui_status_t g_ui_error_status;
 extern nbgl_contentTagValue_t *g_pairs;
 extern nbgl_contentTagValueList_t *g_pairsList;
 
+typedef struct {
+    uint16_t render_from_pair_index;  /// first UI pair index to render in this session
+    uint16_t next_pair_index;         /// increments for every UI_ADD_* attempt
+} ui_render_session_t;
+
 /**
  * Maximum number of UI pairs that can be displayed.
  * Also used as the limit for the allocation tracker.
  */
 #define MAX_UI_PAIRS 250
+
+STATIC_ASSERT(MAX_UI_PAIRS <= UINT8_MAX, "MAX_UI_PAIRS must fit in uint8_t");
 
 /**
  * Initialize UI error status to SUCCESS before starting UI formatting
@@ -67,41 +74,23 @@ void ui_free_pairs(void);
 void ui_all_cleanup(void);
 uint16_t ui_pairs_get_count(void);
 
-/**
- * Render-window support for streaming chunk rendering.
- *
- * When rendering a chunk starting at pair index `from`, pairs with
- * g_pair_scan_index < from are skipped (no allocation). Pairs after OOM
- * are also skipped. g_pair_scan_index always increments exactly once per
- * UI_ADD_* call, keeping it in sync with total_ui_pairs.
- */
-void ui_render_window_init(uint16_t from);
-uint16_t ui_render_cursor_get(void);
+void ui_render_session_begin(ui_render_session_t *session,
+                             uint16_t render_from_pair_index);
+void ui_render_session_end(void);
 
 /**
  * Check whether the current pair should be skipped.
- * Always increments the render cursor. Returns true if the pair
+ * Always increments the next UI pair index. Returns true if the pair
  * should be skipped (before window or OOM already set).
  */
 bool ui_render_should_skip(void);
-
-/**
- * Returns true when rendering a chunk that starts after pair 0
- * (i.e., pairs before the window may be skipped).
- */
-bool ui_render_is_chunked(void);
+void ui_check_expected_pair_delta(uint16_t pairs_before, uint16_t expected);
 
 // UI pair count verification macros for transaction formatting.
 // CHECK_COUNT is a no-op when OOM is set or when rendering a non-first chunk
 // (pairs before the window are skipped, so counts won't match).
 #define START_COUNT() uint16_t _pairs_before = ui_pairs_get_count()
-#define CHECK_COUNT(expected) do { \
-    if (g_ui_error_status == UI_STATUS_SUCCESS && !ui_render_is_chunked()) { \
-        LEDGER_ASSERT(ui_pairs_get_count() - _pairs_before == (expected), \
-                      "UI pairs mismatch: expected %d, actual %d", \
-                      (expected), ui_pairs_get_count() - _pairs_before); \
-    } \
-} while(0)
+#define CHECK_COUNT(expected) ui_check_expected_pair_delta(_pairs_before, (uint16_t) (expected))
 
 #ifdef __GNUC__
 #define UI_STATIC_LABEL(label) ((void)sizeof(char[__builtin_constant_p(label) ? 1 : -1]), (label))

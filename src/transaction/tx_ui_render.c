@@ -10,6 +10,7 @@
 #include "sign_tx_ctx.h"
 #include "keyDerivation.h"
 #include "securityWarnings.h"
+#include "securityPolicy.h"
 #include "tx_certificate_types.h"
 #include "tx_credential_types.h"
 #include "tx_ui_pair_counts.h"
@@ -18,6 +19,31 @@
 #include "ui_formatters.h"
 #include "ui_utils.h"
 #include "cardano_tokens.h"
+
+void tx_ui_plan_or_render_network_details(const tx_processing_mode_t *mode,
+                                          const tx_params_t *tx_params) {
+    LEDGER_ASSERT(mode != NULL, "NULL mode");
+    LEDGER_ASSERT(tx_params != NULL, "NULL tx_params");
+
+    if (!shouldShowNetworkDetails(tx_params)) {
+        return;
+    }
+
+    if (mode->ui_count_pairs) {
+        tx_body_ctx()->total_ui_pairs += UI_PAIRS_NETWORK_DETAILS;
+    } else if (mode->ui_render) {
+        START_COUNT();
+        UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Network ID", "Net ID"),
+                       MAX_UINT64_STRING_LENGTH,
+                       format_uint64,
+                       (uint64_t) tx_params->networkId);
+        UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Protocol magic", "Prot magic"),
+                       MAX_UINT64_STRING_LENGTH,
+                       format_uint64,
+                       (uint64_t) tx_params->protocolMagic);
+        CHECK_COUNT(UI_PAIRS_NETWORK_DETAILS);
+    }
+}
 
 void tx_ui_plan_or_render_input(const tx_processing_mode_t *mode, const tx_input_t *parsed_input) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");

@@ -36,7 +36,7 @@ typedef enum {
     TX_STATE_CHUNKS,       /// receiving transaction chunks
     TX_STATE_RECEIVED,     /// all chunks received, waiting to parse
     TX_STATE_HASHED,       /// hash computed, UI plan ready
-    TX_STATE_UI_PREPARED,  /// UI strings prepared
+    TX_STATE_UI_REVIEW,  /// transaction review in progress (full or streaming)
     TX_STATE_APPROVED      /// user approved, waiting for witnesses
 } tx_state_e;
 
@@ -101,7 +101,7 @@ typedef struct {
     uint8_t tx_hash[TX_HASH_LENGTH];
 
     uint16_t num_witnesses;         /// Total witnesses requested by host; not decremented during signing.
-    uint16_t raw_tx_total_length;   /// Advertised raw tx size from INIT APDU; must survive aux_data stage.
+    uint16_t raw_tx_total_length;   /// Advertised raw tx size from INIT APDU (must survive AUX_DATA stage).
 
     /**
      * Fields that must survive across all stages (body + witnesses).
@@ -114,7 +114,7 @@ typedef struct {
     /**
      * Per-stage context. Only one slot is valid at a time, gated by tx_state:
      *   TX_STATE_AUX_DATA                          -> aux_data
-     *   TX_STATE_CHUNKS .. TX_STATE_UI_PREPARED    -> body
+     *   TX_STATE_CHUNKS .. TX_STATE_UI_REVIEW    -> body
      *   TX_STATE_APPROVED                          -> witness
      *
      * Access exclusively via tx_aux_data_ctx() / tx_body_ctx() / tx_witness_ctx()
@@ -129,7 +129,7 @@ typedef struct {
             warning_bits_t cvote_warning_bits;   /// CVote AUX_DATA warnings only
         } aux_data;
 
-        /// Valid during TX_STATE_CHUNKS .. TX_STATE_UI_PREPARED. Zeroed atomically at tx init.
+        /// Valid during TX_STATE_CHUNKS .. TX_STATE_UI_REVIEW. Zeroed atomically at tx init.
         struct {
             uint8_t *raw_tx;
             size_t raw_tx_current_length;        /// Actual received length so far
@@ -137,8 +137,6 @@ typedef struct {
             uint16_t total_ui_pairs;
             uint16_t rendered_ui_pairs;         /// Number of pairs rendered so far (start of next chunk)
             bool     streaming_mode;            /// True when using streaming NBGL API
-            /// Per-pass processing mode; set by tx_processing_state_init() before each pass.
-            tx_processing_mode_t processing_mode;
             /// Mutable parse state; lives in globals to keep tx_hash_builder_t off the stack.
             tx_processing_state_t processing_state;
         } body;

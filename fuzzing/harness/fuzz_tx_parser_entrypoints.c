@@ -60,11 +60,10 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
             tx_params->includeTreasury = (flags & 0x20) != 0;
             tx_params->includeDonation = (flags & 0x40) != 0;
 
-            parse_buffer.ptr = (uint8_t *) (data + 10);
-            parse_buffer.size = size - 10;
-            parse_buffer.offset = 0;
+            G_context.tx_info.body.raw_tx = (uint8_t *) (data + 10);
+            G_context.tx_info.raw_tx_total_length = (uint16_t) (size - 10);
 
-            (void) tx_validate(&parse_buffer);
+            (void) tx_validate();
             break;
         }
         case 1: {

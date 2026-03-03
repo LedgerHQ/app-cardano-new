@@ -36,7 +36,9 @@ static inline void _trace_warning_bit(warning_bit_e bit) {
 #define _trace_warning_bit(bit) do { (void)(bit); } while(0)
 #endif
 
+static inline void warning_bits_set(warning_bits_t* warnings, warning_bit_e bit) __attribute__((nonnull(1)));
 static inline void warning_bits_set(warning_bits_t* warnings, warning_bit_e bit) {
+    LEDGER_ASSERT(warnings != NULL, "NULL warnings");
     *warnings |= (warning_bits_t)1 << bit;
     _trace_warning_bit(bit);
 }
@@ -46,6 +48,7 @@ static inline bool warning_bits_has(warning_bits_t warnings, warning_bit_e bit) 
 }
 
 static inline bool warning_bits_is_empty(const warning_bits_t* warnings) {
+    LEDGER_ASSERT(warnings != NULL, "NULL warnings");
     return *warnings == 0;
 }
 

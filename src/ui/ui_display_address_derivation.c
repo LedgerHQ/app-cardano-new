@@ -49,6 +49,8 @@ static void derive_address_review_choice(bool confirm) {
 
 static ui_status_t format_address_fields(const address_params_t *params, warning_bits_t warnings) {
     ui_reset_error_status();
+    ui_render_session_t render_session = {0};
+    ui_render_session_begin(&render_session, 0);
     const bool hasWarning = (warnings != 0);
 
     switch (params->type) {
@@ -112,10 +114,13 @@ static ui_status_t format_address_fields(const address_params_t *params, warning
         }
 
         default:
+            ui_render_session_end();
             LEDGER_ASSERT(false, "Unsupported address type: %d", params->type);
             return UI_STATUS_OUT_OF_MEMORY;
     }
-    return ui_get_error_status();
+    ui_status_t status = ui_get_error_status();
+    ui_render_session_end();
+    return status;
 }
 
 static void ui_displayAddressReview(const char *title,

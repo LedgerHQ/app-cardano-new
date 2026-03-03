@@ -233,8 +233,11 @@ void display_complex_script_content(ui_native_script_type scriptType) {
         expectedPairs += UI_PAIRS_POSITION;
     }
     ui_reset_error_status();
+    ui_render_session_t render_session = {0};
+    ui_render_session_begin(&render_session, 0);
     if (!ui_pairs_init(expectedPairs)) {
         TRACE("Failed to initialize pairs");
+        ui_render_session_end();
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
     }
@@ -262,6 +265,7 @@ void display_complex_script_content(ui_native_script_type scriptType) {
                    format_remaining,
                    ctx->complexScripts[ctx->level].remainingScripts);
     CHECK_COUNT(expectedPairs);
+    ui_render_session_end();
 
     nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
 }
@@ -293,8 +297,11 @@ void ui_display_native_script_hash(void) {
                 expectedPairs += UI_PAIRS_POSITION;
             }
             ui_reset_error_status();
+            ui_render_session_t render_session = {0};
+            ui_render_session_begin(&render_session, 0);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
+                ui_render_session_end();
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
@@ -311,6 +318,7 @@ void ui_display_native_script_hash(void) {
                            format_bip44_path,
                            &ctx->scriptContent.pubkeyPath);
             CHECK_COUNT(expectedPairs);
+            ui_render_session_end();
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
             break;
@@ -323,8 +331,11 @@ void ui_display_native_script_hash(void) {
                 expectedPairs += UI_PAIRS_POSITION;
             }
             ui_reset_error_status();
+            ui_render_session_t render_session = {0};
+            ui_render_session_begin(&render_session, 0);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
+                ui_render_session_end();
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
@@ -343,6 +354,7 @@ void ui_display_native_script_hash(void) {
                            ctx->scriptContent.pubkeyHash,
                            ADDRESS_KEY_HASH_LENGTH);
             CHECK_COUNT(expectedPairs);
+            ui_render_session_end();
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
             break;
@@ -355,8 +367,11 @@ void ui_display_native_script_hash(void) {
                 expectedPairs += UI_PAIRS_POSITION;
             }
             ui_reset_error_status();
+            ui_render_session_t render_session = {0};
+            ui_render_session_begin(&render_session, 0);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
+                ui_render_session_end();
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
@@ -374,6 +389,7 @@ void ui_display_native_script_hash(void) {
                            ctx->scriptContent.timelock,
                            0);
             CHECK_COUNT(expectedPairs);
+            ui_render_session_end();
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
             break;
@@ -386,8 +402,11 @@ void ui_display_native_script_hash(void) {
                 expectedPairs += UI_PAIRS_POSITION;
             }
             ui_reset_error_status();
+            ui_render_session_t render_session = {0};
+            ui_render_session_begin(&render_session, 0);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
+                ui_render_session_end();
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
@@ -405,6 +424,7 @@ void ui_display_native_script_hash(void) {
                            ctx->scriptContent.timelock,
                            0);
             CHECK_COUNT(expectedPairs);
+            ui_render_session_end();
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
             break;
@@ -412,8 +432,11 @@ void ui_display_native_script_hash(void) {
         case UI_SCRIPT_DISPLAY_BECH32: {
             const int expectedPairs = UI_PAIRS_SCRIPT_HASH;
             ui_reset_error_status();
+            ui_render_session_t render_session = {0};
+            ui_render_session_begin(&render_session, 0);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
+                ui_render_session_end();
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
@@ -425,6 +448,7 @@ void ui_display_native_script_hash(void) {
                            ctx->scriptHashBuffer,
                            SCRIPT_HASH_LENGTH);
             CHECK_COUNT(expectedPairs);
+            ui_render_session_end();
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList,
                                                 derive_native_script_hash_streaming_finish_continue);
@@ -433,8 +457,11 @@ void ui_display_native_script_hash(void) {
         case UI_SCRIPT_DISPLAY_POLICY_ID: {
             const int expectedPairs = UI_PAIRS_POLICY_ID;
             ui_reset_error_status();
+            ui_render_session_t render_session = {0};
+            ui_render_session_begin(&render_session, 0);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
+                ui_render_session_end();
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
@@ -445,6 +472,7 @@ void ui_display_native_script_hash(void) {
                            ctx->scriptHashBuffer,
                            SCRIPT_HASH_LENGTH);
             CHECK_COUNT(expectedPairs);
+            ui_render_session_end();
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList,
                                                 derive_native_script_hash_streaming_finish_continue);

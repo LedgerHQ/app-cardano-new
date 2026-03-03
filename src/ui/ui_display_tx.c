@@ -56,6 +56,18 @@ static void tx_review_choice(bool confirm) {
 // Forward declaration for streaming callbacks
 static void tx_streaming_continue_choice(bool confirm);
 
+static bool is_recoverable_streaming_chunk_boundary(ui_status_t render_status,
+                                                    uint16_t rendered_count) {
+    switch (render_status) {
+        case UI_STATUS_CHUNK_FULL:
+            return true;
+        case UI_STATUS_OUT_OF_MEMORY:
+            return rendered_count > 0;
+        default:
+            return false;
+    }
+}
+
 static void tx_streaming_start_choice(bool confirm) {
     if (!confirm) {
         tx_review_cleanup();
@@ -95,46 +107,59 @@ static void tx_streaming_continue_choice(bool confirm) {
         return;
     }
 
-    if (!tx_render_ui_chunk(next_from)) {
-        tx_review_cleanup();
-        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
-        return;
+    LEDGER_ASSERT(tx_render_ui_chunk(next_from),
+                  "Streaming tx_render_ui_chunk failed after successful validation");
+
+    uint16_t rendered_count = ui_pairs_get_count();
+    ui_status_t render_status = ui_get_error_status();
+    switch (render_status) {
+        case UI_STATUS_SUCCESS:
+            // Last chunk: remaining pairs fit in this slab.
+            break;
+        case UI_STATUS_CHUNK_FULL:
+        case UI_STATUS_OUT_OF_MEMORY:
+            if (is_recoverable_streaming_chunk_boundary(render_status, rendered_count)) {
+                // Intermediate boundary: clear status for the next chunk render.
+                ui_reset_error_status();
+                break;
+            }
+            tx_review_cleanup();
+            send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+            return;
+        case UI_STATUS_UNINITIALIZED:
+        default:
+            LEDGER_ASSERT(false, "Unexpected UI status after streaming chunk render");
+            return;
     }
 
-    // Update cursor for the next chunk.
-    uint16_t rendered_count = ui_pairs_get_count();
+    // Update next_ui_pair_index for the next chunk.
     if (rendered_count == 0) {
         // If nothing rendered, the single pair exceeds memory. This should
         // never happen in practice because individual UI strings are bounded and small, but without
-        // this guard the cursor would not advance and the app would loop forever on this chunk.
+        // this guard the next_ui_pair_index would not advance and the app would loop forever on this chunk.
         tx_review_cleanup();
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
     }
     tx_body_ctx()->rendered_ui_pairs = next_from + rendered_count;
 
-    // If the chunk hit the pairs limit, reset CHUNK_FULL — it is the expected boundary signal.
-    // If status is SUCCESS the remaining pairs fit in this chunk (it's the last one).
-    LEDGER_ASSERT(g_ui_error_status == UI_STATUS_CHUNK_FULL || g_ui_error_status == UI_STATUS_SUCCESS,
-                  "Unexpected UI status after streaming chunk render");
-    g_ui_error_status = UI_STATUS_SUCCESS;
-
     // Finalize the pairs count for display.
     LEDGER_ASSERT(g_pairsList != NULL, "NULL g_pairsList after rendering");
     g_pairsList->nbPairs = (uint8_t) rendered_count;
 
-    TRACE("Streaming chunk: from=%u rendered=%u cursor_after=%u total=%u",
+    TRACE("Streaming chunk: from=%u rendered=%u next_ui_pair_index=%u total=%u",
           next_from, rendered_count, tx_body_ctx()->rendered_ui_pairs, total);
 
     nbgl_useCaseReviewStreamingContinue(g_pairsList, tx_streaming_continue_choice);
 }
 
 void ui_display_transaction(void) {
-    if (G_context.req_type != REQUEST_SIGN_TRANSACTION || G_context.state.tx_state != TX_STATE_UI_PREPARED) {
-        G_context.state.tx_state = TX_STATE_NONE;
-        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
-        return;
-    }
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION,
+                  "ui_display_transaction called with wrong request type: %d",
+                  G_context.req_type);
+    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_UI_REVIEW,
+                  "ui_display_transaction called in wrong tx state: %d",
+                  G_context.state.tx_state);
 
     const char *review_subtitle = NULL;
     switch (G_context.tx_info.tx_params.txSigningMode) {

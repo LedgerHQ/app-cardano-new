@@ -693,19 +693,15 @@ bool parse_certificate_stake_pool_registration(buffer_t *buf,
             return false;
     }
 
-    uint8_t num_owners;
-    if (!buffer_read_u8(pool_reg_buf, &num_owners)) {
+    if (!buffer_read_u16(pool_reg_buf, &poolReg->numPoolOwners, BE)) {
         TRACE("Failed to read number of owners");
         return false;
     }
-    poolReg->numPoolOwners = num_owners;
 
-    uint8_t num_relays;
-    if (!buffer_read_u8(pool_reg_buf, &num_relays)) {
+    if (!buffer_read_u16(pool_reg_buf, &poolReg->numRelays, BE)) {
         TRACE("Failed to read number of relays");
         return false;
     }
-    poolReg->numRelays = num_relays;
 
     bool has_metadata = false;
     if (!buffer_read_flag_included(pool_reg_buf, &has_metadata)) {

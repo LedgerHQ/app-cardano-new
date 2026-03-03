@@ -60,11 +60,9 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
     TRACE("=== ui_display_pubkey START ===");
     TRACE("securityPolicy: %d", securityPolicy);
 
-    if (G_context.req_type != REQUEST_EXPORT_PUBKEY) {
-        TRACE("Bad request type detected - returning error");
-        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
-        return;
-    }
+    LEDGER_ASSERT(G_context.req_type == REQUEST_EXPORT_PUBKEY,
+                  "ui_display_pubkey called with wrong request type: %d",
+                  G_context.req_type);
 
     pubkey_ctx_t* pk = &G_context.pk_info;
 

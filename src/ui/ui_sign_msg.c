@@ -78,10 +78,13 @@ void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnin
     LEDGER_ASSERT(securityPolicy == POLICY_SHOW, "ui_display_sign_msg called with wrong security policy: %d", securityPolicy);
 
     ui_reset_error_status();
+    ui_render_session_t render_session = {0};
+    ui_render_session_begin(&render_session, 0);
 
     // Initialize pairs for display (6 fields)
     if (!ui_pairs_init(6)) {
         TRACE("Failed to initialize pairs");
+        ui_render_session_end();
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
     }
@@ -120,6 +123,7 @@ void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnin
             break;
         }
         default:
+            ui_render_session_end();
             LEDGER_ASSERT(false, "Invalid address field type");
             return;
     }
@@ -163,13 +167,16 @@ void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnin
         case UI_STATUS_SUCCESS:
             break;
         case UI_STATUS_OUT_OF_MEMORY:
+            ui_render_session_end();
             send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
             return;
         case UI_STATUS_UNINITIALIZED:
         default:
+            ui_render_session_end();
             LEDGER_ASSERT(false, "Unexpected UI status");
             return;
     }
+    ui_render_session_end();
 
     // Build warnings if any
     ui_status_t warning_status = ui_build_warnings(warnings);
