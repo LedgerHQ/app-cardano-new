@@ -139,13 +139,15 @@ policy_checked_return(const warning_bits_t *w,
 #define HIDE_UNLESS(expr) \
     if (!(expr)) RETURN(POLICY_HIDE)
 
-static inline void mark_unusual_key_derivation(warning_bits_t *w, const bip44_path_t *path) {
+static inline bool mark_unusual_key_derivation(warning_bits_t *w, const bip44_path_t *path) {
     LEDGER_ASSERT(w != NULL, "NULL w");
     LEDGER_ASSERT(path != NULL, "NULL path");
 
-    if (!bip44_isPathReasonable(path)) {
+    const bool is_unusual = !bip44_isPathReasonable(path);
+    if (is_unusual) {
         warning_bits_set(w, WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH);
     }
+    return is_unusual;
 }
 
 static security_policy_t _policyForGetExtendedPublicKey_silent(const bip44_path_t *path,
@@ -161,10 +163,7 @@ static security_policy_t _policyForGetExtendedPublicKey_silent(const bip44_path_
         case PATH_MULTISIG_STAKING_KEY:
         case PATH_CVOTE_ACCOUNT:
         case PATH_CVOTE_KEY:
-            if (!bip44_isPathReasonable(path)) {
-                mark_unusual_key_derivation(w, path);
-            }
-            SHOW_UNLESS(bip44_isPathReasonable(path));
+            SHOW_IF(mark_unusual_key_derivation(w, path));
             // we do not show these if user turned on silent key export
             HIDE();
             break;
@@ -177,9 +176,7 @@ static security_policy_t _policyForGetExtendedPublicKey_silent(const bip44_path_
             // these paths are rare and might give significant power
             // so we rather show them every time to alert the user
             // about his SW wallet asking about these keys
-            if (!bip44_isPathReasonable(path)) {
-                mark_unusual_key_derivation(w, path);
-            }
+            SHOW_IF(mark_unusual_key_derivation(w, path));
             SHOW();
             break;
 
@@ -216,9 +213,7 @@ security_policy_t policyForGetExtendedPublicKey(const bip44_path_t *path,
         case PATH_POOL_COLD_KEY:
         case PATH_CVOTE_ACCOUNT:
         case PATH_CVOTE_KEY:
-            if (!bip44_isPathReasonable(path)) {
-                mark_unusual_key_derivation(w, path);
-            }
+            SHOW_IF(mark_unusual_key_derivation(w, path));
             SHOW();
             break;
 
@@ -241,36 +236,24 @@ static security_policy_t _policyForDeriveAddress(const address_params_t *address
 
     switch (address_params->type) {
         case BASE_PAYMENT_KEY_STAKE_KEY:
-            if (!bip44_isPathReasonable(&address_params->paymentKeyPath)) {
-                mark_unusual_key_derivation(w, &address_params->paymentKeyPath);
-            }
-            SHOW_UNLESS(bip44_isPathReasonable(&address_params->paymentKeyPath));
+            SHOW_IF(mark_unusual_key_derivation(w, &address_params->paymentKeyPath));
 
-            if (addressParams_getStakingPartType(address_params) == STAKING_PART_KEY_PATH &&
-                !bip44_isPathReasonable(&address_params->stakingKeyPath)) {
-                mark_unusual_key_derivation(w, &address_params->stakingKeyPath);
+            if (addressParams_getStakingPartType(address_params) == STAKING_PART_KEY_PATH) {
+                SHOW_IF(mark_unusual_key_derivation(w, &address_params->stakingKeyPath));
             }
-            SHOW_IF(addressParams_getStakingPartType(address_params) == STAKING_PART_KEY_PATH &&
-                    !bip44_isPathReasonable(&address_params->stakingKeyPath));
             break;
 
         case BASE_PAYMENT_KEY_STAKE_SCRIPT:
         case POINTER_KEY:
         case ENTERPRISE_KEY:
         case BYRON:
-            if (!bip44_isPathReasonable(&address_params->paymentKeyPath)) {
-                mark_unusual_key_derivation(w, &address_params->paymentKeyPath);
-            }
-            SHOW_UNLESS(bip44_isPathReasonable(&address_params->paymentKeyPath));
+            SHOW_IF(mark_unusual_key_derivation(w, &address_params->paymentKeyPath));
             break;
 
         case BASE_PAYMENT_SCRIPT_STAKE_KEY:
         case REWARD_KEY:
             DENY_IF(addressParams_getStakingPartType(address_params) != STAKING_PART_KEY_PATH);
-            if (!bip44_isPathReasonable(&address_params->stakingKeyPath)) {
-                mark_unusual_key_derivation(w, &address_params->stakingKeyPath);
-            }
-            SHOW_UNLESS(bip44_isPathReasonable(&address_params->stakingKeyPath));
+            SHOW_IF(mark_unusual_key_derivation(w, &address_params->stakingKeyPath));
             break;
 
         case BASE_PAYMENT_SCRIPT_STAKE_SCRIPT:
@@ -751,9 +734,9 @@ static security_policy_t policyForSignTxOutputAddressParams(const tx_output_desc
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
         case SIGN_TX_SIGNINGMODE_ORDINARY_TX: {
             if (!is_standard_base_address(params)) {
-                mark_unusual_key_derivation(w, &params->paymentKeyPath);
+                SHOW_IF(mark_unusual_key_derivation(w, &params->paymentKeyPath));
                 if (addressParams_getStakingPartType(params) == STAKING_PART_KEY_PATH) {
-                    mark_unusual_key_derivation(w, &params->stakingKeyPath);
+                    SHOW_IF(mark_unusual_key_derivation(w, &params->stakingKeyPath));
                 }
                 SHOW();
             }
@@ -943,9 +926,9 @@ static security_policy_t policyForSignTxCollateralOutputAddressParams(
             if (isTotalCollateralIncluded) {
                 // change outputs can be hidden; show when paths look unusual
                 if (!is_standard_base_address(params)) {
-                    mark_unusual_key_derivation(w, &params->paymentKeyPath);
+                    SHOW_IF(mark_unusual_key_derivation(w, &params->paymentKeyPath));
                     if (addressParams_getStakingPartType(params) == STAKING_PART_KEY_PATH) {
-                        mark_unusual_key_derivation(w, &params->stakingKeyPath);
+                        SHOW_IF(mark_unusual_key_derivation(w, &params->stakingKeyPath));
                     }
                     SHOW();
                 } else {
@@ -1616,8 +1599,7 @@ security_policy_t policyForSignTxWithdrawal(sign_tx_signingmode_t txSigningMode,
             switch (txSigningMode) {
                 case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
                 case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
-                    mark_unusual_key_derivation(w, &stakeCredential->keyPath);
-                    SHOW_UNLESS(bip44_isPathReasonable(&stakeCredential->keyPath));
+                    SHOW_IF(mark_unusual_key_derivation(w, &stakeCredential->keyPath));
                     SHOW_IF(is_expert_mode());
                     HIDE();
                     break;
@@ -2043,10 +2025,7 @@ static inline security_policy_t _ordinaryWitnessPolicy(const bip44_path_t *path,
             // those belong to him in an ORDINARY txs thanks to
             // keys being displayed by paths instead of hashes)
             DENY_IF(violatesSingleAccountOrStoreIt(path));
-            if (!bip44_isPathReasonable(path)) {
-                mark_unusual_key_derivation(w, path);
-                SHOW();
-            }
+            SHOW_IF(mark_unusual_key_derivation(w, path));
             SHOW_IF(is_expert_mode());
             HIDE();
             break;
@@ -2059,14 +2038,14 @@ static inline security_policy_t _ordinaryWitnessPolicy(const bip44_path_t *path,
             // better to show them at least while they are new
             // in the future, we might want to hide some of them in non-expert mode
             DENY_IF(violatesSingleAccountOrStoreIt(path));
-            mark_unusual_key_derivation(w, path);
+            SHOW_IF(mark_unusual_key_derivation(w, path));
             SHOW();
             break;
 
         case PATH_POOL_COLD_KEY:
             // could be hidden perhaps, but it's safer to let the user to know
             // the SW wallet wants to sign with the stake pool key
-            mark_unusual_key_derivation(w, path);
+            SHOW_IF(mark_unusual_key_derivation(w, path));
             SHOW();
             break;
 
@@ -2096,7 +2075,7 @@ static inline security_policy_t _multisigWitnessPolicy(const bip44_path_t *path,
             // multisig key paths are allowed, but hiding them would make impossible for the user to
             // distinguish what funds are being spent (multisig UTXOs sharing a signer are not
             // necessarily interchangeable, because they may be governed by a different script)
-            mark_unusual_key_derivation(w, path);
+            SHOW_IF(mark_unusual_key_derivation(w, path));
             SHOW();
             break;
 
@@ -2129,7 +2108,7 @@ static inline security_policy_t _plutusWitnessPolicy(const bip44_path_t *path,
         case PATH_DREP_KEY:
         case PATH_COMMITTEE_COLD_KEY:
         case PATH_COMMITTEE_HOT_KEY:
-            mark_unusual_key_derivation(w, path);
+            SHOW_IF(mark_unusual_key_derivation(w, path));
             SHOW();
             break;
 
@@ -2166,7 +2145,7 @@ static inline security_policy_t _poolRegistrationOwnerWitnessPolicy(
                 // we must not allow witnesses because they might witness owners given by key hash
                 DENY();
             }
-            mark_unusual_key_derivation(w, witnessPath);
+            SHOW_IF(mark_unusual_key_derivation(w, witnessPath));
             SHOW();
             break;
 
@@ -2185,7 +2164,7 @@ static inline security_policy_t _poolRegistrationOperatorWitnessPolicy(const bip
         case PATH_POOL_COLD_KEY:
             // only ordinary payment key paths (because of inputs) and pool cold key path are
             // allowed
-            mark_unusual_key_derivation(w, path);
+            SHOW_IF(mark_unusual_key_derivation(w, path));
             // it might be safe to hide the witnesses, but txs related to stake pools
             // are rare, so it would not help much and might introduce some unknown risk
             SHOW();
@@ -2280,9 +2259,7 @@ security_policy_t policyForCVoteRegistrationVoteKey(const cvote_credential_t* cr
 
             DENY_UNLESS(bip44_classifyPath(&credential->keyPath) == PATH_CVOTE_KEY);
 
-            if (!bip44_isPathReasonable(&credential->keyPath)) {
-                mark_unusual_key_derivation(w, &credential->keyPath);
-            }
+            SHOW_IF(mark_unusual_key_derivation(w, &credential->keyPath));
             SHOW();
             break;
         }
@@ -2302,10 +2279,7 @@ security_policy_t policyForCVoteRegistrationStakingKey(const bip44_path_t *staki
 
     DENY_UNLESS(bip44_isOrdinaryStakingKeyPath(stakingKeyPath));
 
-    if (!bip44_isPathReasonable(stakingKeyPath)) {
-        mark_unusual_key_derivation(w, stakingKeyPath);
-    }
-    SHOW_UNLESS(bip44_isPathReasonable(stakingKeyPath));
+    SHOW_IF(mark_unusual_key_derivation(w, stakingKeyPath));
 
     SHOW();
 }
@@ -2375,9 +2349,7 @@ security_policy_t policyForSignOpCert(const bip44_path_t *poolColdKeyPath,
     LEDGER_ASSERT(poolColdKeyPath != NULL, "NULL poolColdKeyPath");
     switch (bip44_classifyPath(poolColdKeyPath)) {
         case PATH_POOL_COLD_KEY:
-            if (!bip44_isPathReasonable(poolColdKeyPath)) {
-                mark_unusual_key_derivation(w, poolColdKeyPath);
-            }
+            SHOW_IF(mark_unusual_key_derivation(w, poolColdKeyPath));
             SHOW();
             break;
 
@@ -2503,10 +2475,7 @@ security_policy_t policyForSignCVoteWitness(const bip44_path_t *path, warning_bi
 
     switch (bip44_classifyPath(path)) {
         case PATH_CVOTE_KEY:
-            if (!bip44_isPathReasonable(path)) {
-                mark_unusual_key_derivation(w, path);
-            }
-            SHOW_UNLESS(bip44_isPathReasonable(path));
+            SHOW_IF(mark_unusual_key_derivation(w, path));
             SHOW();
             break;
 
@@ -2544,11 +2513,6 @@ security_policy_t policyForSignMsg(const bip44_path_t *witnessPath,
             break;
     }
 
-    // Warn if the witness path is unusual
-    if (!bip44_isPathReasonable(witnessPath)) {
-        mark_unusual_key_derivation(w, witnessPath);
-    }
-
     if (addressFieldType == CIP8_ADDRESS_FIELD_ADDRESS) {
         DENY_UNLESS(isValidAddressParams(address_params));
 
@@ -2566,5 +2530,6 @@ security_policy_t policyForSignMsg(const bip44_path_t *witnessPath,
         }
     }
 
+    SHOW_IF(mark_unusual_key_derivation(w, witnessPath));
     SHOW();
 }

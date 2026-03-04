@@ -26,6 +26,12 @@ Format: -> means explanation why not a bug.
 * Init ordering nit: whether handlers set `G_context.req_type` before or after a local state check in INIT flow.
 -> not a bug by itself. Both patterns are acceptable when handler invariants hold and failures route through reset/deny paths. Prefer consistency within each handler/state machine over enforcing one global ordering rule.
 
+* "Redundant state check" right after setting state in handler flow (for example `derive_address` PARSED check) and CVote INIT check after `explicit_bzero(&G_context.cvote_info, ...)`.
+-> not a bug by itself. In `derive_address`, the immediate check is an intentional defensive invariant/style pattern. In CVote, zeroing `cvote_info` does not zero `state.cvote_state` (different global-context fields), so `ensure_sign_cvote_state(VOTECAST_STATE_NONE)` is a real precondition check.
+
+* `mark_unusual_key_derivation(...)` may look coupled to `bip44_isPathReasonable(...)` / SHOW behavior.
+-> not a bug by itself. Preferred style is to keep the link explicit at call sites with `SHOW_IF(mark_unusual_key_derivation(...))`, optionally followed by unconditional `SHOW()` when the field/path must always be shown anyway. This makes warning-vs-visibility behavior local and auditable.
+
 * Unreachable `default` in `switch` over enum/type value after prior strict validation.
 -> intentional defensive programming pattern. Keeping `ASSERT(false)`/`LEDGER_ASSERT(false, ...)` in logically unreachable branches documents invariants and catches unexpected state corruption or future regressions during development; this should not be downgraded to a normal runtime fallback just to remove "dead code". Also protects against memory-modified-in-the-middle attacks.
 
@@ -49,4 +55,3 @@ Format: -> means explanation why not a bug.
 
 * URL formatter enforces printable ASCII without spaces for displayed URLs.
 -> intentional display-safety policy. Percent-encoded URLs (including `%20`) are ASCII and allowed; non-ASCII/confusable URLs are intentionally rejected as not safely displayable without ambiguity.
-

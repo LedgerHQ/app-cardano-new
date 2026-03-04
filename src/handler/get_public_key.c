@@ -79,6 +79,9 @@ void handler_get_public_key(buffer_t *cdata) {
         return;
     }
 
+    // Precompute the public key before UI review:
+    // most requests are silently exported (POLICY_HIDE), and for POLICY_SHOW
+    // this avoids extra latency after user confirms export.
     deriveExtendedPublicKey(&G_context.pk_info.path, &G_context.pk_info.extPubKey);
     G_context.state.pubkey_state = PUBKEY_STATE_VALIDATED;
 
