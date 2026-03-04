@@ -202,6 +202,7 @@ static void signMsg_handle_init(buffer_t *cdata) {
                                                  ctx->addressFieldType,
                                                  &ctx->address_params,
                                                  &ctx->warnings);
+    ctx->signing_policy = policy;
     TRACE("Policy: %d", (int) policy);
     if (policy == POLICY_DENY) {
         TRACE("Policy denied");
@@ -498,9 +499,23 @@ static void signMsg_handle_confirm(buffer_t *cdata) {
         return;
     }
 
-    // Display UI for user confirmation
-    apdu_response_deferred();
-    ui_display_sign_msg(POLICY_SHOW, ctx->warnings);
+    switch (ctx->signing_policy) {
+        case POLICY_SHOW:
+            // Display UI for user confirmation
+            apdu_response_deferred();
+            ui_display_sign_msg(ctx->signing_policy, ctx->warnings);
+            return;
+
+        case POLICY_HIDE:
+            // Silently approve and return signature without UI.
+            finalize_sign_msg();
+            return;
+
+        case POLICY_DENY:
+        default:
+            LEDGER_ASSERT(false, "Invalid sign_msg policy at CONFIRM: %d", ctx->signing_policy);
+            return;
+    }
 }
 
 void finalize_sign_msg(void) {

@@ -12,6 +12,7 @@
 #include "cardano_constants.h"
 #include "bip32.h"
 #include "securityWarnings.h"
+#include "securityPolicyType.h"
 #include "cvote_types.h"
 #include "cvote_parser.h"
 #include "tx.h"
@@ -270,6 +271,7 @@ typedef struct {
     uint8_t addressField[MAX_ADDRESS_LENGTH];
     size_t addressFieldSize;
 
+    security_policy_t signing_policy;
     warning_bits_t warnings;
 } sign_msg_ctx_t;
 
