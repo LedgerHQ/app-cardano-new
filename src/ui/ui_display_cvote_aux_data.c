@@ -76,6 +76,7 @@ static void cvote_aux_data_review_choice(bool confirm) {
     if (!confirm) {
         TRACE("User rejected");
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
+        nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
         return;
     }
 
@@ -97,6 +98,7 @@ static void cvote_aux_data_streaming_continue_choice(bool confirm) {
         TRACE("User rejected");
         ui_free_warnings();
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
+        nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
         return;
     }
 

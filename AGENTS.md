@@ -21,6 +21,7 @@ For detailed analysis, see:
 - **Mimic Established Patterns:** Search the new app repository before copying logic from the old app.
 - **Style:** Use long, descriptive variable names.
 - **Security:** Use `STATIC_ASSERT` and `LEDGER_ASSERT` liberally for parameter validation and state machine invariants.
+- **Static-analysis-friendly null checks:** Prefer combined guards like `x != NULL && x->field ...` in conditions/assertions (including `LEDGER_ASSERT`) when dereferencing pointers, to keep `scan-build`/clang analyzer free of false-positive null-dereference warnings. Use function contracts like `__attribute__((nonnull(...)))` where appropriate (already used in this repo), and note the SDK `__clang_analyzer__` trick with `__attribute__((analyzer_noreturn))` (see `exceptions.h`) for analyzer-specific control-flow hints.
 - **Debugging:** Use `TRACE` (avoid `PRINTF`). For verbose/repetitive debug output, use **conditional guards** (see `doc/testing.md`):
   - Use `TRACE_MODULE()` for state tracking, loops, field-level parsing (compiled out unless guard is defined).
   - Keep `TRACE()` for critical errors and security-relevant information (always compiled in debug builds).

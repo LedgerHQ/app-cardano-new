@@ -45,7 +45,7 @@ void handler_debug_set_settings(const buffer_t *buf) {
     if ((expert_mode != SETTINGS_NO && expert_mode != SETTINGS_YES) ||
         (silent_export != SETTINGS_NO && silent_export != SETTINGS_YES)) {
         TRACE("DEBUG: Invalid setting values: expert=%d, silent=%d", expert_mode, silent_export);
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
+        send_swo_and_reset(SWO_INCORRECT_DATA);
         return;
     }
 

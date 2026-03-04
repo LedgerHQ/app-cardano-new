@@ -26,10 +26,19 @@
 
 #define OP_CERT_BODY_LENGTH (KES_PUBLIC_KEY_LENGTH + 8 + 8)
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_HANDLERS to trace handler-level flow.
+ */
+#ifdef TRACE_HANDLERS
+#define TRACE_MODULE(...) TRACE("[sign_opcert] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 static bool ensure_sign_opcert_init_request_state(void) {
     if (G_context.req_type != REQUEST_NONE) {
-        TRACE("SIGN_OPCERT init rejected: request already active (req_type=%d)",
-              G_context.req_type);
+        TRACE_MODULE("SIGN_OPCERT init rejected: request already active (req_type=%d)",
+                     G_context.req_type);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return false;
     }
@@ -48,8 +57,14 @@ void handler_sign_opcert(buffer_t *cdata) {
     explicit_bzero(&G_context.opcert_info, sizeof(G_context.opcert_info));
     G_context.state.opcert_state = OPCERT_STATE_NONE;
 
-    G_context.opcert_info.raw_opcert_len = cdata->size;
-    if (!buffer_move(cdata, G_context.opcert_info.raw_opcert, sizeof(G_context.opcert_info.raw_opcert))) {
+    G_context.opcert_info.raw_opcert_len = buffer_data_size(cdata);
+    if (G_context.opcert_info.raw_opcert_len > sizeof(G_context.opcert_info.raw_opcert)) {
+        send_swo_and_reset(SWO_INVALID_OPCERT_LENGTH);
+        return;
+    }
+    if (!buffer_move(cdata,
+                     G_context.opcert_info.raw_opcert,
+                     G_context.opcert_info.raw_opcert_len)) {
         send_swo_and_reset(SWO_INVALID_OPCERT_LENGTH);
         return;
     }
@@ -67,13 +82,13 @@ void handler_sign_opcert(buffer_t *cdata) {
 
     // Log parsed opcert details (path, KES period, issue counter)
     BIP44_PRINTF(&opcert->poolColdKeyPath);
-    TRACE("KES period = %llu", (unsigned long long) opcert->kesPeriod);
-    TRACE("issue counter = %llu", (unsigned long long) opcert->issueCounter);
+    TRACE_MODULE("KES period = %llu", (unsigned long long) opcert->kesPeriod);
+    TRACE_MODULE("issue counter = %llu", (unsigned long long) opcert->issueCounter);
 
     // Check security policy
     warning_bits_t warnings = 0;
     security_policy_t policy = policyForSignOpCert(&opcert->poolColdKeyPath, &warnings);
-    TRACE("Security policy: %d", policy);
+    TRACE_MODULE("Security policy: %d", policy);
     if (policy == POLICY_DENY) {
         TRACE("Security policy DENY - rejecting operation");
         send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);

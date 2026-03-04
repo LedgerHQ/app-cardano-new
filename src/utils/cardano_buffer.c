@@ -18,7 +18,7 @@ bool buffer_read_bytes_ptr(buffer_t *buffer, const uint8_t **destBuffer, size_t 
 }
 
 bool buffer_write_cbor_token(buffer_t *buffer, uint8_t type, uint64_t value) {
-    ASSERT(buffer_data_size(buffer) <= BUFFER_SIZE_PARANOIA);
+    ASSERT(buffer_data_size(buffer) < BUFFER_SIZE_PARANOIA);
 
     size_t written = 0;
     if (!cbor_writeToken(type, value,

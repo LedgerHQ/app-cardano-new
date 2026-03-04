@@ -11,8 +11,10 @@
 
 #ifdef TRACE_VOTECAST_HASH_BUILDER
 #define _TRACE(...) TRACE(__VA_ARGS__)
+#define _TRACE_BUFFER(...) TRACE_BUFFER(__VA_ARGS__)
 #else
 #define _TRACE(...)
+#define _TRACE_BUFFER(...) (void)0
 #endif  // TRACE_VOTECAST_HASH_BUILDER
 
 /*
@@ -28,7 +30,7 @@ usbtool).
 static void blake2b_256_append_buffer_tx_body(blake2b_256_context_t* hashCtx,
                                               const uint8_t* buffer,
                                               size_t bufferSize) {
-    TRACE_BUFFER(buffer, bufferSize);
+    _TRACE_BUFFER(buffer, bufferSize);
     blake2b_256_append(hashCtx, buffer, bufferSize);
 }
 

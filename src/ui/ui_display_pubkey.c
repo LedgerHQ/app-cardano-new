@@ -65,6 +65,11 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
                   G_context.req_type);
 
     pubkey_ctx_t* pk = &G_context.pk_info;
+    LEDGER_ASSERT(
+        warning_bits_except_mask(warnings,
+                                 warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)) == 0,
+        "Unexpected warning bits: 0x%08x",
+        (unsigned int) warnings);
 
     // Format path into static buffer
     bool pathFormatted = format_bip44_path(&pk->path,

@@ -60,6 +60,11 @@ void ui_display_witness(const bip44_path_t* witnessPath,
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_APPROVED,
                   "ui_display_witness called in wrong tx state: %d",
                   G_context.state.tx_state);
+    LEDGER_ASSERT(
+        warning_bits_except_mask(warnings,
+                                 warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)) == 0,
+        "Unexpected warning bits: 0x%08x",
+        (unsigned int) warnings);
 
     bool isUnusual = warning_bits_has(warnings, WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH);
 

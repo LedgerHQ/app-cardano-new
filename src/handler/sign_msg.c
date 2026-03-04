@@ -102,7 +102,7 @@ static bool is_msg_length_valid_for_sign_msg_init(uint32_t message_length,
 
 // ============================== INIT ==============================
 
-void signMsg_handle_init(buffer_t *cdata) {
+static void signMsg_handle_init(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata");
     LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_INIT, "Invalid sign_msg state");
 
@@ -249,7 +249,7 @@ void signMsg_handle_init(buffer_t *cdata) {
 
 // ============================== CHUNK ==============================
 
-void signMsg_handle_chunk(buffer_t *cdata) {
+static void signMsg_handle_chunk(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata");
     LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CHUNK, "Invalid sign_msg state");
 
@@ -379,8 +379,7 @@ static size_t create_protected_header(sign_msg_ctx_t *ctx,
     LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_TEXT, address_key_len), "CBOR write failed");
     LEDGER_ASSERT(buffer_write_bytes(&buffer, (const uint8_t *) address_key, address_key_len), "Buffer overflow");
 
-    // Value: address bytes
-    prepare_address_field(ctx);
+    // Value: address bytes prepared during CONFIRM handling.
     LEDGER_ASSERT(ctx->addressFieldSize > 0, "Address field not prepared");
 
     LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_BYTES, ctx->addressFieldSize), "CBOR write failed");
@@ -479,7 +478,7 @@ static void finalize_message_hash_to_context(sign_msg_ctx_t *ctx) {
     blake2b_224_finalize(&ctx->msgHashCtx, ctx->msgHash, SIZEOF(ctx->msgHash));
 }
 
-void signMsg_handle_confirm(buffer_t *cdata) {
+static void signMsg_handle_confirm(buffer_t *cdata) {
     LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CONFIRM, "Invalid sign_msg state");
     LEDGER_ASSERT(cdata != NULL, "NULL cdata");
 

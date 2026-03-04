@@ -44,7 +44,6 @@ static inline bool is_standard_base_address(const address_params_t *address_para
     CHECK(bip44_classifyPath(&address_params->paymentKeyPath) == PATH_ORDINARY_PAYMENT_KEY);
     CHECK(bip44_isPathReasonable(&address_params->paymentKeyPath));
 
-    CHECK(addressParams_getStakingPartType(address_params) == STAKING_PART_KEY_PATH);
     CHECK(bip44_classifyPath(&address_params->stakingKeyPath) == PATH_ORDINARY_STAKING_KEY);
     CHECK(bip44_isPathReasonable(&address_params->stakingKeyPath));
     // most SW wallets do not use multidelegation,
@@ -1587,6 +1586,7 @@ security_policy_t policyForSignTxStakePoolRegistrationNoMetadata(warning_bits_t 
 security_policy_t policyForSignTxAnchor(const anchor_t* anchor, warning_bits_t *w) {
     POLICY_INIT();
     LEDGER_ASSERT(anchor != NULL, "NULL anchor");
+    // Repeat NULL check to satisfy static analysis on LEDGER_ASSERT macro expansion.
     LEDGER_ASSERT(anchor != NULL && anchor->isIncluded,
                   "Anchor policy called on non-included anchor");
 
