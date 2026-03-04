@@ -252,6 +252,8 @@ typedef struct {
 
     blake2b_224_context_t msgHashCtx;
     uint8_t msgHash[CIP8_MSG_HASH_LENGTH];
+    uint8_t *sigStructureBuffer;
+    uint16_t sigStructureSize;
     uint8_t signature[ED25519_SIGNATURE_LENGTH];
     uint8_t witnessKey[PUBLIC_KEY_LENGTH];
     uint8_t addressField[MAX_ADDRESS_LENGTH];

@@ -392,9 +392,9 @@ static size_t create_protected_header(sign_msg_ctx_t *ctx,
     return protectedHeaderSize;
 }
 
-// Helper: build Sig_structure and sign it
+// Helper: build Sig_structure and store it in context for signing after user confirmation.
 // Returns false on allocation failures, true on success.
-static bool build_and_sign_sig_structure(sign_msg_ctx_t *ctx) {
+static bool build_sig_structure(sign_msg_ctx_t *ctx) {
     // Sig_structure = [
     //     context : "Signature1",
     //     body_protected : CBOR_encode(protectedHeader),
@@ -443,10 +443,6 @@ static bool build_and_sign_sig_structure(sign_msg_ctx_t *ctx) {
     LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_BYTES, 0), "CBOR write failed");
 
     // Element 4: payload (message hash or raw message)
-    // Finalize hash first
-    STATIC_ASSERT(SIZEOF(ctx->msgHash) * 8 == 224, "inconsistent message hash size");
-    blake2b_224_finalize(&ctx->msgHashCtx, ctx->msgHash, SIZEOF(ctx->msgHash));
-
     if (ctx->hashPayload) {
         // Payload is the hash
         LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_BYTES, SIZEOF(ctx->msgHash)), "CBOR write failed");
@@ -470,16 +466,17 @@ static bool build_and_sign_sig_structure(sign_msg_ctx_t *ctx) {
     // This check only guards against the degenerate 32-byte ambiguity with raw tx hashes.
     LEDGER_ASSERT(sigStructureSize != TX_HASH_LENGTH, "Sig_structure size equals TX_HASH_LENGTH");
 
-    // Sign the Sig_structure
-    signRawMessageWithPath(&ctx->signingPath,
-                           sigStructure,
-                           sigStructureSize,
-                           ctx->signature,
-                           SIZEOF(ctx->signature));
-
-    APP_MEM_FREE(sigStructure);
+    LEDGER_ASSERT(sigStructureSize <= UINT16_MAX, "Sig_structure too large");
+    ctx->sigStructureBuffer = sigStructure;
+    ctx->sigStructureSize = (uint16_t) sigStructureSize;
 
     return true;
+}
+
+static void finalize_message_hash_to_context(sign_msg_ctx_t *ctx) {
+    STATIC_ASSERT(SIZEOF(ctx->msgHash) * 8 == 224, "inconsistent message hash size");
+    LEDGER_ASSERT(ctx->remainingBytes == 0, "Message not fully received");
+    blake2b_224_finalize(&ctx->msgHashCtx, ctx->msgHash, SIZEOF(ctx->msgHash));
 }
 
 void signMsg_handle_confirm(buffer_t *cdata) {
@@ -494,8 +491,13 @@ void signMsg_handle_confirm(buffer_t *cdata) {
         return;
     }
 
-    // Build Sig_structure and sign it
-    if (!build_and_sign_sig_structure(ctx)) {
+    // Prepare address field and hash for review UI and later signing.
+    prepare_address_field(ctx);
+    LEDGER_ASSERT(ctx->addressFieldSize > 0, "Address field not prepared");
+    finalize_message_hash_to_context(ctx);
+
+    // Build Sig_structure before UI confirmation so finalize path is infallible.
+    if (!build_sig_structure(ctx)) {
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
     }
@@ -509,9 +511,21 @@ void finalize_sign_msg(void) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_MSG, "Bad req_type");
     LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CONFIRM, "Bad sign_msg state");
 
-    // User confirmed - send response
     sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
 
+    // User confirmed - sign already prepared Sig_structure.
+    LEDGER_ASSERT(ctx->sigStructureBuffer != NULL, "Sig_structure missing");
+    LEDGER_ASSERT(ctx->sigStructureSize > 0, "Sig_structure size missing");
+    signRawMessageWithPath(&ctx->signingPath,
+                           ctx->sigStructureBuffer,
+                           ctx->sigStructureSize,
+                           ctx->signature,
+                           SIZEOF(ctx->signature));
+    APP_MEM_FREE(ctx->sigStructureBuffer);
+    ctx->sigStructureBuffer = NULL;
+    ctx->sigStructureSize = 0;
+
+    // Send response.
     // Response format (matching legacy app-cardano repository):
     // [64 bytes: signature] [32 bytes: witnessKey] [4 bytes: addressFieldSize BE]
     // [addressFieldSize bytes: addressField]
