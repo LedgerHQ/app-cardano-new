@@ -51,14 +51,19 @@ static ui_status_t format_address_fields(const address_params_t *params, warning
     ui_reset_error_status();
     ui_render_session_t render_session = {0};
     ui_render_session_begin(&render_session, 0);
-    const bool hasWarning = (warnings != 0);
+    LEDGER_ASSERT(
+        warning_bits_except_mask(warnings,
+                                 warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)) == 0,
+        "Unexpected warning bits: 0x%08x",
+        (unsigned int) warnings);
+    const bool hasUnusualPathWarning = warning_bits_has(warnings, WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH);
 
     switch (params->type) {
         // Reward addresses: staking info only
         case REWARD_KEY:
         case REWARD_SCRIPT: {
             const int expectedPairs = DERIVE_ADDRESS_PAIRS_REWARD_ONLY +
-                                     (hasWarning ? DERIVE_ADDRESS_PAIRS_WARNING : 0);
+                                     (hasUnusualPathWarning ? DERIVE_ADDRESS_PAIRS_WARNING : 0);
 
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
@@ -67,7 +72,7 @@ static ui_status_t format_address_fields(const address_params_t *params, warning
 
             START_COUNT();
 
-            if (hasWarning) {
+            if (hasUnusualPathWarning) {
                 TRACE("Adding warning banner");
                 UI_ADD_STATIC(UI_STATIC_LABEL("Warning:"),
                               UI_STATIC_LABEL("Unusual request, be careful"));
@@ -92,7 +97,7 @@ static ui_status_t format_address_fields(const address_params_t *params, warning
         // Byron addresses: payment info + legacy (no staking)
         case BYRON: {
             const int expectedPairs = DERIVE_ADDRESS_PAIRS_PAYMENT_AND_STAKE +
-                                     (hasWarning ? DERIVE_ADDRESS_PAIRS_WARNING : 0);
+                                     (hasUnusualPathWarning ? DERIVE_ADDRESS_PAIRS_WARNING : 0);
 
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
@@ -101,7 +106,7 @@ static ui_status_t format_address_fields(const address_params_t *params, warning
 
             START_COUNT();
 
-            if (hasWarning) {
+            if (hasUnusualPathWarning) {
                 TRACE("Adding warning banner");
                 UI_ADD_STATIC(UI_STATIC_LABEL("Warning:"),
                               UI_STATIC_LABEL("Unusual request, be careful"));
