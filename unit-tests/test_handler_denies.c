@@ -60,6 +60,39 @@ static uint32_t harden(uint32_t value) {
     return value | HARDENED_BIP32;
 }
 
+static init_apdu_params_t make_default_init_apdu_params(void) {
+    return (init_apdu_params_t) {
+        .options = 0,
+        .networkId = MAINNET_NETWORK_ID,
+        .protocolMagic = MAINNET_PROTOCOL_MAGIC,
+        .signingMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX,
+        .numInputs = 0,
+        .numOutputs = 0,
+        .includeTtl = false,
+        .numCertificates = 0,
+        .numWithdrawals = 0,
+        .includeAuxData = false,
+        .auxDataType = AUX_DATA_TYPE_ARBITRARY_HASH,
+        .auxDataHash = NULL,
+        .auxDataHashLen = 0,
+        .includeValidityIntervalStart = false,
+        .numMintAssetGroups = 0,
+        .includeScriptDataHash = false,
+        .numCollateralInputs = 0,
+        .numRequiredSigners = 0,
+        .includeNetworkId = false,
+        .includeCollateralOutput = false,
+        .includeTotalCollateral = false,
+        .numReferenceInputs = 0,
+        .numVoters = 0,
+        .includeTreasury = false,
+        .includeDonation = false,
+        .numWitnesses = 0,
+        // Non-zero value required for valid INIT.
+        .rawTxTotalLength = 100,
+    };
+}
+
 static size_t write_bip44_path(uint8_t *out,
                                size_t out_size,
                                const uint32_t *path,
@@ -76,6 +109,17 @@ static size_t write_bip44_path(uint8_t *out,
         out[4 + i * 4] = (uint8_t) (value & 0xFF);
     }
     return required;
+}
+
+static size_t write_standard_payment_path(uint8_t *out, size_t out_size) {
+    const uint32_t path[] = {
+        harden(PURPOSE_SHELLEY),
+        harden(ADA_COIN_TYPE),
+        harden(0),
+        0,
+        0,
+    };
+    return write_bip44_path(out, out_size, path, sizeof(path) / sizeof(path[0]));
 }
 
 int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
@@ -103,35 +147,8 @@ static void test_tx_init_invalid_signing_mode(void **state) {
     reset_context();
 
     uint8_t init_raw[256];
-    init_apdu_params_t params = {
-        .options = 0,
-        .networkId = MAINNET_NETWORK_ID,
-        .protocolMagic = MAINNET_PROTOCOL_MAGIC,
-        .signingMode = 0xFF,
-        .numInputs = 0,
-        .numOutputs = 0,
-        .includeTtl = false,
-        .numCertificates = 0,
-        .numWithdrawals = 0,
-        .includeAuxData = false,
-        .auxDataType = AUX_DATA_TYPE_ARBITRARY_HASH,
-        .auxDataHash = NULL,
-        .auxDataHashLen = 0,
-        .includeValidityIntervalStart = false,
-        .numMintAssetGroups = 0,
-        .includeScriptDataHash = false,
-        .numCollateralInputs = 0,
-        .numRequiredSigners = 0,
-        .includeNetworkId = false,
-        .includeCollateralOutput = false,
-        .includeTotalCollateral = false,
-        .numReferenceInputs = 0,
-        .numVoters = 0,
-        .includeTreasury = false,
-        .includeDonation = false,
-        .numWitnesses = 0,
-        .rawTxTotalLength = 100,  // Non-zero value for valid INIT
-    };
+    init_apdu_params_t params = make_default_init_apdu_params();
+    params.signingMode = 0xFF;
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 
@@ -149,35 +166,7 @@ static void test_tx_init_trailing_bytes(void **state) {
     reset_context();
 
     uint8_t init_raw[256];
-    init_apdu_params_t params = {
-        .options = 0,
-        .networkId = MAINNET_NETWORK_ID,
-        .protocolMagic = MAINNET_PROTOCOL_MAGIC,
-        .signingMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX,
-        .numInputs = 0,
-        .numOutputs = 0,
-        .includeTtl = false,
-        .numCertificates = 0,
-        .numWithdrawals = 0,
-        .includeAuxData = false,
-        .auxDataType = AUX_DATA_TYPE_ARBITRARY_HASH,
-        .auxDataHash = NULL,
-        .auxDataHashLen = 0,
-        .includeValidityIntervalStart = false,
-        .numMintAssetGroups = 0,
-        .includeScriptDataHash = false,
-        .numCollateralInputs = 0,
-        .numRequiredSigners = 0,
-        .includeNetworkId = false,
-        .includeCollateralOutput = false,
-        .includeTotalCollateral = false,
-        .numReferenceInputs = 0,
-        .numVoters = 0,
-        .includeTreasury = false,
-        .includeDonation = false,
-        .numWitnesses = 0,
-        .rawTxTotalLength = 100,  // Non-zero value for valid INIT
-    };
+    init_apdu_params_t params = make_default_init_apdu_params();
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
     init_raw[init_len] = 0x00;
@@ -219,18 +208,8 @@ static void test_witness_trailing_bytes(void **state) {
     G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
     G_context.tx_info.tx_params.num_mint_asset_groups = 0;
 
-    uint32_t path[] = {
-        harden(PURPOSE_SHELLEY),
-        harden(ADA_COIN_TYPE),
-        harden(0),
-        0,
-        0,
-    };
     uint8_t path_raw[32];
-    size_t path_len = write_bip44_path(path_raw,
-                                       sizeof(path_raw),
-                                       path,
-                                       sizeof(path) / sizeof(path[0]));
+    size_t path_len = write_standard_payment_path(path_raw, sizeof(path_raw));
     path_raw[path_len] = 0x00;
 
     buffer_t witness_buf = {
@@ -246,18 +225,8 @@ static void test_get_public_key_trailing_bytes(void **state) {
     (void) state;
     reset_context();
 
-    uint32_t path[] = {
-        harden(PURPOSE_SHELLEY),
-        harden(ADA_COIN_TYPE),
-        harden(0),
-        0,
-        0,
-    };
     uint8_t path_raw[32];
-    size_t path_len = write_bip44_path(path_raw,
-                                       sizeof(path_raw),
-                                       path,
-                                       sizeof(path) / sizeof(path[0]));
+    size_t path_len = write_standard_payment_path(path_raw, sizeof(path_raw));
     path_raw[path_len] = 0x00;
 
     buffer_t pubkey_buf = {
@@ -281,18 +250,8 @@ static void test_handler_state_during_active_request(void **state) {
 
     // Test that witness handler properly validates state
     // This mimics the dispatcher's interleaving detection
-    uint32_t path[] = {
-        harden(PURPOSE_SHELLEY),
-        harden(ADA_COIN_TYPE),
-        harden(0),
-        0,
-        0,
-    };
     uint8_t path_raw[32];
-    size_t path_len = write_bip44_path(path_raw,
-                                       sizeof(path_raw),
-                                       path,
-                                       sizeof(path) / sizeof(path[0]));
+    size_t path_len = write_standard_payment_path(path_raw, sizeof(path_raw));
 
     // Attempting to call witness handler with wrong state should fail
     buffer_t witness_buf = {
@@ -319,35 +278,7 @@ static void test_opcert_signing_during_tx_signing(void **state) {
     // This would require attempting to call handler_sign_opcert, but we can verify
     // the state check by trying another tx operation that should fail
     uint8_t init_raw[256];
-    init_apdu_params_t params = {
-        .options = 0,
-        .networkId = MAINNET_NETWORK_ID,
-        .protocolMagic = MAINNET_PROTOCOL_MAGIC,
-        .signingMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX,
-        .numInputs = 0,
-        .numOutputs = 0,
-        .includeTtl = false,
-        .numCertificates = 0,
-        .numWithdrawals = 0,
-        .includeAuxData = false,
-        .auxDataType = AUX_DATA_TYPE_ARBITRARY_HASH,
-        .auxDataHash = NULL,
-        .auxDataHashLen = 0,
-        .includeValidityIntervalStart = false,
-        .numMintAssetGroups = 0,
-        .includeScriptDataHash = false,
-        .numCollateralInputs = 0,
-        .numRequiredSigners = 0,
-        .includeNetworkId = false,
-        .includeCollateralOutput = false,
-        .includeTotalCollateral = false,
-        .numReferenceInputs = 0,
-        .numVoters = 0,
-        .includeTreasury = false,
-        .includeDonation = false,
-        .numWitnesses = 0,
-        .rawTxTotalLength = 100,  // Non-zero value for valid INIT
-    };
+    init_apdu_params_t params = make_default_init_apdu_params();
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 
@@ -373,18 +304,8 @@ static void test_witness_extraction_with_wrong_state(void **state) {
     G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
     G_context.tx_info.tx_params.num_mint_asset_groups = 0;
 
-    uint32_t path[] = {
-        harden(PURPOSE_SHELLEY),
-        harden(ADA_COIN_TYPE),
-        harden(0),
-        0,
-        0,
-    };
     uint8_t path_raw[32];
-    size_t path_len = write_bip44_path(path_raw,
-                                       sizeof(path_raw),
-                                       path,
-                                       sizeof(path) / sizeof(path[0]));
+    size_t path_len = write_standard_payment_path(path_raw, sizeof(path_raw));
 
     buffer_t witness_buf = {
         .ptr = path_raw,
@@ -402,35 +323,9 @@ static void test_multiple_reinit_attempts(void **state) {
     // First successful init
     reset_context();
     uint8_t init_raw[256];
-    init_apdu_params_t params = {
-        .options = 0,
-        .networkId = MAINNET_NETWORK_ID,
-        .protocolMagic = MAINNET_PROTOCOL_MAGIC,
-        .signingMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX,
-        .numInputs = 1,  // At least one input required for replay protection
-        .numOutputs = 0,
-        .includeTtl = false,
-        .numCertificates = 0,
-        .numWithdrawals = 0,
-        .includeAuxData = false,
-        .auxDataType = AUX_DATA_TYPE_ARBITRARY_HASH,
-        .auxDataHash = NULL,
-        .auxDataHashLen = 0,
-        .includeValidityIntervalStart = false,
-        .numMintAssetGroups = 0,
-        .includeScriptDataHash = false,
-        .numCollateralInputs = 0,
-        .numRequiredSigners = 0,
-        .includeNetworkId = false,
-        .includeCollateralOutput = false,
-        .includeTotalCollateral = false,
-        .numReferenceInputs = 0,
-        .numVoters = 0,
-        .includeTreasury = false,
-        .includeDonation = false,
-        .numWitnesses = 0,
-        .rawTxTotalLength = 100,  // Non-zero value for valid INIT
-    };
+    init_apdu_params_t params = make_default_init_apdu_params();
+    // At least one input required for replay protection.
+    params.numInputs = 1;
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 

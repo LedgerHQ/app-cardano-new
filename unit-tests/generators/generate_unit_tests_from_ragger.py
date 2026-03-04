@@ -443,7 +443,7 @@ def _verify_ragger_test_coverage() -> None:
     covered_coverage = []
     for func_name in sorted(ragger_test_funcs):
         # Some ragger tests expand into indexed unit tests. Match both the exact
-        # function name and generated prefixes while treating reject/deny as aliases.
+        # function name and generated prefixes.
         candidate_function_names = _candidate_function_names_for_coverage_match(func_name)
         found = any(
             candidate_name in unit_tests_content or f"{candidate_name}_" in unit_tests_content

@@ -64,6 +64,11 @@ static uint32_t harden(uint32_t value) {
     return value | HARDENED_BIP32;
 }
 
+static void setup_active_sign_tx_request(tx_state_e tx_state) {
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    G_context.state.tx_state = tx_state;
+}
+
 static size_t write_bip44_path(uint8_t *out,
                                size_t out_size,
                                const uint32_t *path,
@@ -83,12 +88,22 @@ static size_t write_bip44_path(uint8_t *out,
     return required;
 }
 
+static size_t write_standard_payment_path(uint8_t *out, size_t out_size) {
+    const uint32_t path[] = {
+        harden(PURPOSE_SHELLEY),
+        harden(ADA_COIN_TYPE),
+        harden(0),
+        0,
+        0,
+    };
+    return write_bip44_path(out, out_size, path, sizeof(path) / sizeof(path[0]));
+}
+
 static void test_sign_tx_init_deny_when_request_is_active(void **state) {
     (void) state;
     reset_test_context();
 
-    G_context.req_type = REQUEST_SIGN_TRANSACTION;
-    G_context.state.tx_state = TX_STATE_NONE;
+    setup_active_sign_tx_request(TX_STATE_NONE);
     uint8_t dummy = 0;
     buffer_t init_buf = {
         .ptr = &dummy,
@@ -124,8 +139,7 @@ static void test_sign_tx_confirm_stops_after_chunk_error(void **state) {
 
     // Mimic an in-progress request with invalid chunk state:
     // handle_tx_data_chunk() returns error and resets context.
-    G_context.req_type = REQUEST_SIGN_TRANSACTION;
-    G_context.state.tx_state = TX_STATE_NONE;
+    setup_active_sign_tx_request(TX_STATE_NONE);
 
     uint8_t chunk[1] = {0x00};
     buffer_t confirm_buf = {
@@ -144,21 +158,12 @@ static void test_sign_tx_witness_deny_before_approved_state(void **state) {
     (void) state;
     reset_test_context();
 
-    G_context.req_type = REQUEST_SIGN_TRANSACTION;
-    G_context.state.tx_state = TX_STATE_NONE;
+    setup_active_sign_tx_request(TX_STATE_NONE);
     G_context.tx_info.num_witnesses = 1;
     G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
 
-    uint32_t path[] = {
-        harden(PURPOSE_SHELLEY),
-        harden(ADA_COIN_TYPE),
-        harden(0),
-        0,
-        0,
-    };
     uint8_t path_raw[32] = {0};
-    size_t path_len =
-        write_bip44_path(path_raw, sizeof(path_raw), path, sizeof(path) / sizeof(path[0]));
+    size_t path_len = write_standard_payment_path(path_raw, sizeof(path_raw));
 
     buffer_t witness_buf = {
         .ptr = path_raw,
