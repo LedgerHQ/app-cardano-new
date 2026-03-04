@@ -42,6 +42,7 @@ void getWitness(const bip44_path_t* path,
                 uint8_t* outBuffer,
                 size_t outSize) {
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
+    ASSERT(outSize == ED25519_SIGNATURE_LENGTH);
 
     signRawMessageWithPath(path, hashBuffer, hashSize, outBuffer, outSize);
 }
@@ -53,6 +54,7 @@ void getCVoteRegistrationSignature(const bip44_path_t* path,
                                    size_t outSize) {
     ASSERT(payloadHashSize == CVOTE_REGISTRATION_PAYLOAD_HASH_LENGTH);
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
+    ASSERT(outSize == ED25519_SIGNATURE_LENGTH);
 
     signRawMessageWithPath(path, payloadHashBuffer, payloadHashSize, outBuffer, outSize);
 }

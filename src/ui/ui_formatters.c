@@ -195,7 +195,6 @@ static bool format_validity_boundary_mainnet(uint64_t slotNumber, char *out, siz
     }
 
     LEDGER_ASSERT(written > 0, "snprintf epoch/slot formatting failed");
-    LEDGER_ASSERT((size_t)written < outSize, "snprintf epoch/slot formatting truncated");
     LEDGER_ASSERT((size_t)written + 1 < outSize, "Epoch/slot string does not fit in output buffer");
 
     return true;

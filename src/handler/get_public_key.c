@@ -64,6 +64,7 @@ void handler_get_public_key(buffer_t *cdata) {
         TRACE("Get pubkey APDU not fully consumed");
         return;
     }
+    G_context.state.pubkey_state = PUBKEY_STATE_PARSED;
 
     // Log the requested path for easier debugging.
     BIP44_PRINTF(&G_context.pk_info.path);
@@ -79,6 +80,7 @@ void handler_get_public_key(buffer_t *cdata) {
     }
 
     deriveExtendedPublicKey(&G_context.pk_info.path, &G_context.pk_info.extPubKey);
+    G_context.state.pubkey_state = PUBKEY_STATE_VALIDATED;
 
     apdu_response_deferred();
     ui_display_pubkey(policy, warnings);
@@ -86,6 +88,8 @@ void handler_get_public_key(buffer_t *cdata) {
 
 void finalize_pubkey_export(void) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_EXPORT_PUBKEY, "Bad req_type");
+    LEDGER_ASSERT(G_context.state.pubkey_state == PUBKEY_STATE_VALIDATED, "Bad pubkey state");
+    G_context.state.pubkey_state = PUBKEY_STATE_APPROVED;
 
     // Send the extended public key back to the client
     apdu_response_send_data((uint8_t*) &G_context.pk_info.extPubKey,

@@ -120,7 +120,7 @@ static void cvote_streaming_display_current_page(void) {
 
 static bool cvote_start_streaming_review(cvote_aux_data_t *aux_data) {
     LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
-    LEDGER_ASSERT(aux_data != NULL && !aux_data->ui_streaming.review_started, "Streaming review already started");
+    LEDGER_ASSERT(!aux_data->ui_streaming.review_started, "Streaming review already started");
 
     LEDGER_ASSERT(warning_bits_except_mask(tx_aux_data_ctx()->cvote_warning_bits, CVOTE_AUX_DATA_WARNING_BITS_MASK) == 0, "Transaction warnings leaked into CVote warning bits - cvote_warning_bits should only contain CVote AUX_DATA warnings");
 

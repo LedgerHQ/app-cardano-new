@@ -367,10 +367,7 @@ static size_t create_protected_header(sign_msg_ctx_t *ctx,
 
     // Value: -8 (algorithm EdDSA)
     // cbor_writeToken expects the actual negative value, not the CBOR-encoded form
-    int64_t negValue = -8;
-    uint64_t negValueAsU64;
-    STATIC_ASSERT(SIZEOF(negValue) == SIZEOF(negValueAsU64), "size mismatch");
-    memmove(&negValueAsU64, &negValue, SIZEOF(negValue));
+    uint64_t negValueAsU64 = cbor_token_value_from_negative_i64(-8);
     LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_NEGATIVE, negValueAsU64), "CBOR write failed");
 
     // Key: "address" (text string)

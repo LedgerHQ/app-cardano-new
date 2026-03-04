@@ -85,6 +85,17 @@ typedef enum {
 } sign_msg_state_e;
 
 /**
+ * State machine for extended public key export operation.
+ * Tracks parsing, policy validation and export finalization.
+ */
+typedef enum {
+    PUBKEY_STATE_NONE = 0,
+    PUBKEY_STATE_PARSED,
+    PUBKEY_STATE_VALIDATED,
+    PUBKEY_STATE_APPROVED,
+} pubkey_state_e;
+
+/**
  * Tracks stored account metadata for the single-account security model.
  */
 typedef struct {
@@ -272,6 +283,7 @@ typedef struct {
         derive_address_state_e derive_address_state;
         cvote_state_e cvote_state;
         sign_msg_state_e sign_msg_state;
+        pubkey_state_e pubkey_state;
     } state;
 
     union {

@@ -36,10 +36,11 @@ void deriveExtendedPublicKey(const bip44_path_t* path, extendedPublicKey_t* out)
     STATIC_ASSERT(SIZEOF(*out) == CHAIN_CODE_LENGTH + PUBLIC_KEY_LENGTH, "bad ext pub key size");
 
     // Sanity check
-    ASSERT(path->length <= ARRAY_LEN(path->path));
+    LEDGER_ASSERT(path->length <= ARRAY_LEN(path->path), "BIP44 path length out of bounds");
 
     // if the path is invalid, it's a bug in previous validation
-    ASSERT(policyForDerivePrivateKey(path) != POLICY_DENY);
+    LEDGER_ASSERT(policyForDerivePrivateKey(path) != POLICY_DENY,
+                  "Private key derivation denied by security policy");
 
     crypto_get_pubkey(path->path, path->length, rawPubkey, chainCode);
 

@@ -48,6 +48,8 @@ enum {
 typedef struct {
     uint8_t type;
     uint8_t width;  // Contains number of *additional* bytes carrying the value
+    // For CBOR_TYPE_NEGATIVE, this stores the signed semantic value in two's-complement
+    // bit representation inside uint64_t. Use cbor_token_value_from_negative_i64() to encode.
     uint64_t value;
 } cbor_token_t;
 
@@ -57,9 +59,12 @@ typedef cbor_token_t token_t;  // legacy
 // On success, the buffer is written with the serialized token
 bool cbor_writeToken(uint8_t type, uint64_t value, uint8_t* buffer, size_t bufferSize, size_t* out_size);
 
+// Convert a negative int64_t to the token value representation expected by cbor_writeToken
+// for CBOR_TYPE_NEGATIVE.
+uint64_t cbor_token_value_from_negative_i64(int64_t negativeValue);
+
 // Parse a single CBOR token from buffer
 // Returns true on success and sets *out_token
 // Returns false on any error (truncated buffer, invalid token, etc.)
 // Does not modify output parameter on error
 bool cbor_parseToken(const uint8_t* buf, size_t size, cbor_token_t* out_token);
-

@@ -133,6 +133,16 @@ bool cbor_parseToken(const uint8_t* buf, size_t size, cbor_token_t* out_token) {
     return true;
 }
 
+uint64_t cbor_token_value_from_negative_i64(int64_t negativeValue) {
+    ASSERT(negativeValue < 0);
+
+    uint64_t encodedValue;
+    STATIC_ASSERT(SIZEOF(encodedValue) == SIZEOF(negativeValue),
+                  "incompatible signed and unsigned type sizes");
+    memmove(&encodedValue, &negativeValue, SIZEOF(encodedValue));
+    return encodedValue;
+}
+
 bool cbor_writeToken(uint8_t type, uint64_t value, uint8_t* buffer, size_t bufferSize, size_t* out_size) {
     ASSERT(bufferSize < BUFFER_SIZE_PARANOIA);
     ASSERT(out_size != NULL);

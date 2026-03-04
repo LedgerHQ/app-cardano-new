@@ -67,8 +67,8 @@ typedef struct {
 bool buffer_read_cvote_credential(buffer_t *buf, cvote_credential_t *credential);
 
 // Parse CVote destination (device-owned params or third-party address pointer).
-// For DESTINATION_DEVICE_OWNED, params are dynamically allocated and must be freed
-// or transferred to storage by the caller.
+// For DESTINATION_DEVICE_OWNED, params are parsed in place from APDU-owned buffer
+// and must be copied by the caller before reset if longer lifetime is needed.
 // For DESTINATION_THIRD_PARTY, destination.address points to raw buffer.
 cvote_parser_status_t cvote_parse_destination(buffer_t *buf,
                                               tx_output_destination_t *destination);
