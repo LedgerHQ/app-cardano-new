@@ -1932,10 +1932,12 @@ security_policy_t policyForSignTxVotingProcedure(sign_tx_signingmode_t txSigning
 
                 case EXT_VOTER_COMMITTEE_HOT_KEY_PATH:
                     DENY_UNLESS(bip44_isCommitteeHotKeyPath(&voter->keyPath));
+                    DENY_IF(violatesSingleAccountOrStoreIt(&voter->keyPath));
                     break;
 
                 case EXT_VOTER_DREP_KEY_PATH:
                     DENY_UNLESS(bip44_isDRepKeyPath(&voter->keyPath));
+                    DENY_IF(violatesSingleAccountOrStoreIt(&voter->keyPath));
                     break;
 
                 case EXT_VOTER_STAKE_POOL_KEY_PATH:
