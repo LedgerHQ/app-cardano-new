@@ -21,7 +21,7 @@
 
 #define P1_ADDRESS_RETURN  0x20
 // ======================================================================
-// Address Derivation Rejection Test Fixtures
+// Address Derivation Deny Test Fixtures
 // ======================================================================
 
 
@@ -33,7 +33,7 @@
 // Spending: m/44'/1815'/1'
 // ----------------------------------------------------------------------
 
-static const uint8_t DERIVE_ADDRESS_REJECT_001_DERIVE_ADDRESS_PATH_TOO_SHORT_APDU[] = {
+static const uint8_t DERIVE_ADDRESS_DENY_001_DERIVE_ADDRESS_PATH_TOO_SHORT_APDU[] = {
     0x08, 0x2D, 0x96, 0x4A, 0x09, 0x03, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
     0x00, 0x01, 0x11,
 };
@@ -47,7 +47,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_001_DERIVE_ADDRESS_PATH_TOO_SHORT_APD
 // Spending: m/44'/1815'/1'/5/10'
 // ----------------------------------------------------------------------
 
-static const uint8_t DERIVE_ADDRESS_REJECT_002_DERIVE_ADDRESS_INVALID_PATH_APDU[] = {
+static const uint8_t DERIVE_ADDRESS_DENY_002_DERIVE_ADDRESS_INVALID_PATH_APDU[] = {
     0x08, 0x2D, 0x96, 0x4A, 0x09, 0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
     0x00, 0x01, 0x00, 0x00, 0x00, 0x05, 0x80, 0x00, 0x00, 0x0A, 0x11,
 };
@@ -61,7 +61,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_002_DERIVE_ADDRESS_INVALID_PATH_APDU[
 // Spending: m/1852'/1815'/1'/0/10
 // ----------------------------------------------------------------------
 
-static const uint8_t DERIVE_ADDRESS_REJECT_003_DERIVE_ADDRESS_BYRON_WITH_SHELLEY_PATH_APDU[] = {
+static const uint8_t DERIVE_ADDRESS_DENY_003_DERIVE_ADDRESS_BYRON_WITH_SHELLEY_PATH_APDU[] = {
     0x08, 0x2D, 0x96, 0x4A, 0x09, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
     0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x11,
 };
@@ -76,7 +76,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_003_DERIVE_ADDRESS_BYRON_WITH_SHELLEY
 // Staking: m/1852'/1815'/1'/2/0
 // ----------------------------------------------------------------------
 
-static const uint8_t DERIVE_ADDRESS_REJECT_004_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_BYRON_SPENDING_PATH_APDU[] = {
+static const uint8_t DERIVE_ADDRESS_DENY_004_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_BYRON_SPENDING_PATH_APDU[] = {
     0x00, 0x01, 0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x01, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x22, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07,
     0x17, 0x80, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,
@@ -92,7 +92,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_004_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_
 // Staking: m/1852'/1815'/1'/2/0
 // ----------------------------------------------------------------------
 
-static const uint8_t DERIVE_ADDRESS_REJECT_005_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_WRONG_SPENDING_PATH_APDU[] = {
+static const uint8_t DERIVE_ADDRESS_DENY_005_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_WRONG_SPENDING_PATH_APDU[] = {
     0x00, 0x01, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x01, 0x00,
     0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x22, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07,
     0x17, 0x80, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,
@@ -108,7 +108,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_005_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_
 // Staking: m/1852'/1815'/1'/0/1
 // ----------------------------------------------------------------------
 
-static const uint8_t DERIVE_ADDRESS_REJECT_006_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_WRONG_STAKING_PATH_1_APDU[] = {
+static const uint8_t DERIVE_ADDRESS_DENY_006_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_WRONG_STAKING_PATH_1_APDU[] = {
     0x00, 0x01, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x01, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x22, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07,
     0x17, 0x80, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
@@ -124,7 +124,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_006_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_
 // Staking: 222a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277
 // ----------------------------------------------------------------------
 
-static const uint8_t DERIVE_ADDRESS_REJECT_007_DERIVE_ADDRESS_BASE_KEY_SCRIPT_WITH_BYRON_SPENDING_PATH_APDU[] = {
+static const uint8_t DERIVE_ADDRESS_DENY_007_DERIVE_ADDRESS_BASE_KEY_SCRIPT_WITH_BYRON_SPENDING_PATH_APDU[] = {
     0x02, 0x01, 0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x01, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x55, 0x22, 0x2A, 0x94, 0x6B, 0x9A, 0xD3, 0xD2, 0xDD,
     0xF0, 0x29, 0xD3, 0xA8, 0x28, 0xF0, 0x46, 0x8A, 0xEC, 0xE7, 0x68, 0x95, 0xF1, 0x5C, 0x9E, 0xFB,
@@ -141,7 +141,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_007_DERIVE_ADDRESS_BASE_KEY_SCRIPT_WI
 // Staking: 222a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277
 // ----------------------------------------------------------------------
 
-static const uint8_t DERIVE_ADDRESS_REJECT_008_DERIVE_ADDRESS_BASE_ADDRESS_SCRIPTHASH_KEYHASH_NOT_ALLOWED_APDU[] = {
+static const uint8_t DERIVE_ADDRESS_DENY_008_DERIVE_ADDRESS_BASE_ADDRESS_SCRIPTHASH_KEYHASH_NOT_ALLOWED_APDU[] = {
     0x01, 0x01, 0x12, 0x2A, 0x94, 0x6B, 0x9A, 0xD3, 0xD2, 0xDD, 0xF0, 0x29, 0xD3, 0xA8, 0x28, 0xF0,
     0x46, 0x8A, 0xEC, 0xE7, 0x68, 0x95, 0xF1, 0x5C, 0x9E, 0xFB, 0xD6, 0x9B, 0x42, 0x77, 0x33, 0x22,
     0x2A, 0x94, 0x6B, 0x9A, 0xD3, 0xD2, 0xDD, 0xF0, 0x29, 0xD3, 0xA8, 0x28, 0xF0, 0x46, 0x8A, 0xEC,
@@ -158,7 +158,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_008_DERIVE_ADDRESS_BASE_ADDRESS_SCRIP
 // Staking: 000000010000000200000003
 // ----------------------------------------------------------------------
 
-static const uint8_t DERIVE_ADDRESS_REJECT_009_DERIVE_ADDRESS_POINTER_WITH_BYRON_SPENDING_PATH_APDU[] = {
+static const uint8_t DERIVE_ADDRESS_DENY_009_DERIVE_ADDRESS_POINTER_WITH_BYRON_SPENDING_PATH_APDU[] = {
     0x04, 0x01, 0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x01, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x44, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02,
     0x00, 0x00, 0x00, 0x03,
@@ -174,7 +174,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_009_DERIVE_ADDRESS_POINTER_WITH_BYRON
 // Staking: 000000010000000200000003
 // ----------------------------------------------------------------------
 
-static const uint8_t DERIVE_ADDRESS_REJECT_010_DERIVE_ADDRESS_POINTER_WITH_WRONG_SPENDING_PATH_APDU[] = {
+static const uint8_t DERIVE_ADDRESS_DENY_010_DERIVE_ADDRESS_POINTER_WITH_WRONG_SPENDING_PATH_APDU[] = {
     0x04, 0x01, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x01, 0x00,
     0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x44, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02,
     0x00, 0x00, 0x00, 0x03,
@@ -189,7 +189,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_010_DERIVE_ADDRESS_POINTER_WITH_WRONG
 // Spending: m/44'/1815'/1'/0/0
 // ----------------------------------------------------------------------
 
-static const uint8_t DERIVE_ADDRESS_REJECT_011_DERIVE_ADDRESS_ENTERPRISE_WITH_BYRON_SPENDING_PATH_APDU[] = {
+static const uint8_t DERIVE_ADDRESS_DENY_011_DERIVE_ADDRESS_ENTERPRISE_WITH_BYRON_SPENDING_PATH_APDU[] = {
     0x06, 0x01, 0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x01, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x11,
 };
@@ -203,7 +203,7 @@ static const uint8_t DERIVE_ADDRESS_REJECT_011_DERIVE_ADDRESS_ENTERPRISE_WITH_BY
 // Spending: m/1852'/1815'/1'/2/0
 // ----------------------------------------------------------------------
 
-static const uint8_t DERIVE_ADDRESS_REJECT_012_DERIVE_ADDRESS_ENTERPRISE_WITH_WRONG_SPENDING_PATH_APDU[] = {
+static const uint8_t DERIVE_ADDRESS_DENY_012_DERIVE_ADDRESS_ENTERPRISE_WITH_WRONG_SPENDING_PATH_APDU[] = {
     0x06, 0x01, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x01, 0x00,
     0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x11,
 };
@@ -214,96 +214,96 @@ static const derive_address_fixture_t DERIVE_ADDRESS_DENY_FIXTURES[] = {
 {
     .name = "Derive_address_path_too_short",
     .p1 = P1_ADDRESS_RETURN,
-    .data = DERIVE_ADDRESS_REJECT_001_DERIVE_ADDRESS_PATH_TOO_SHORT_APDU,
-    .data_len = sizeof(DERIVE_ADDRESS_REJECT_001_DERIVE_ADDRESS_PATH_TOO_SHORT_APDU),
+    .data = DERIVE_ADDRESS_DENY_001_DERIVE_ADDRESS_PATH_TOO_SHORT_APDU,
+    .data_len = sizeof(DERIVE_ADDRESS_DENY_001_DERIVE_ADDRESS_PATH_TOO_SHORT_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 // Source: tests/standalone/input_files/derive_address.py > deny tests > Derive_address_invalid_path
 {
     .name = "Derive_address_invalid_path",
     .p1 = P1_ADDRESS_RETURN,
-    .data = DERIVE_ADDRESS_REJECT_002_DERIVE_ADDRESS_INVALID_PATH_APDU,
-    .data_len = sizeof(DERIVE_ADDRESS_REJECT_002_DERIVE_ADDRESS_INVALID_PATH_APDU),
+    .data = DERIVE_ADDRESS_DENY_002_DERIVE_ADDRESS_INVALID_PATH_APDU,
+    .data_len = sizeof(DERIVE_ADDRESS_DENY_002_DERIVE_ADDRESS_INVALID_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 // Source: tests/standalone/input_files/derive_address.py > deny tests > Derive_address_Byron_with_Shelley_path
 {
     .name = "Derive_address_Byron_with_Shelley_path",
     .p1 = P1_ADDRESS_RETURN,
-    .data = DERIVE_ADDRESS_REJECT_003_DERIVE_ADDRESS_BYRON_WITH_SHELLEY_PATH_APDU,
-    .data_len = sizeof(DERIVE_ADDRESS_REJECT_003_DERIVE_ADDRESS_BYRON_WITH_SHELLEY_PATH_APDU),
+    .data = DERIVE_ADDRESS_DENY_003_DERIVE_ADDRESS_BYRON_WITH_SHELLEY_PATH_APDU,
+    .data_len = sizeof(DERIVE_ADDRESS_DENY_003_DERIVE_ADDRESS_BYRON_WITH_SHELLEY_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 // Source: tests/standalone/input_files/derive_address.py > deny tests > Derive_address_base_key_key_with_Byron_spending_path
 {
     .name = "Derive_address_base_key_key_with_Byron_spending_path",
     .p1 = P1_ADDRESS_RETURN,
-    .data = DERIVE_ADDRESS_REJECT_004_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_BYRON_SPENDING_PATH_APDU,
-    .data_len = sizeof(DERIVE_ADDRESS_REJECT_004_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_BYRON_SPENDING_PATH_APDU),
+    .data = DERIVE_ADDRESS_DENY_004_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_BYRON_SPENDING_PATH_APDU,
+    .data_len = sizeof(DERIVE_ADDRESS_DENY_004_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_BYRON_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 // Source: tests/standalone/input_files/derive_address.py > deny tests > Derive_address_base_key_key_with_wrong_spending_path
 {
     .name = "Derive_address_base_key_key_with_wrong_spending_path",
     .p1 = P1_ADDRESS_RETURN,
-    .data = DERIVE_ADDRESS_REJECT_005_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_WRONG_SPENDING_PATH_APDU,
-    .data_len = sizeof(DERIVE_ADDRESS_REJECT_005_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_WRONG_SPENDING_PATH_APDU),
+    .data = DERIVE_ADDRESS_DENY_005_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_WRONG_SPENDING_PATH_APDU,
+    .data_len = sizeof(DERIVE_ADDRESS_DENY_005_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_WRONG_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 // Source: tests/standalone/input_files/derive_address.py > deny tests > Derive_address_base_key_key_with_wrong_staking_path_1
 {
     .name = "Derive_address_base_key_key_with_wrong_staking_path_1",
     .p1 = P1_ADDRESS_RETURN,
-    .data = DERIVE_ADDRESS_REJECT_006_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_WRONG_STAKING_PATH_1_APDU,
-    .data_len = sizeof(DERIVE_ADDRESS_REJECT_006_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_WRONG_STAKING_PATH_1_APDU),
+    .data = DERIVE_ADDRESS_DENY_006_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_WRONG_STAKING_PATH_1_APDU,
+    .data_len = sizeof(DERIVE_ADDRESS_DENY_006_DERIVE_ADDRESS_BASE_KEY_KEY_WITH_WRONG_STAKING_PATH_1_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 // Source: tests/standalone/input_files/derive_address.py > deny tests > Derive_address_base_key_script_with_Byron_spending_path
 {
     .name = "Derive_address_base_key_script_with_Byron_spending_path",
     .p1 = P1_ADDRESS_RETURN,
-    .data = DERIVE_ADDRESS_REJECT_007_DERIVE_ADDRESS_BASE_KEY_SCRIPT_WITH_BYRON_SPENDING_PATH_APDU,
-    .data_len = sizeof(DERIVE_ADDRESS_REJECT_007_DERIVE_ADDRESS_BASE_KEY_SCRIPT_WITH_BYRON_SPENDING_PATH_APDU),
+    .data = DERIVE_ADDRESS_DENY_007_DERIVE_ADDRESS_BASE_KEY_SCRIPT_WITH_BYRON_SPENDING_PATH_APDU,
+    .data_len = sizeof(DERIVE_ADDRESS_DENY_007_DERIVE_ADDRESS_BASE_KEY_SCRIPT_WITH_BYRON_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 // Source: tests/standalone/input_files/derive_address.py > deny tests > Derive_address_base_address_scripthash_keyhash_not_allowed
 {
     .name = "Derive_address_base_address_scripthash_keyhash_not_allowed",
     .p1 = P1_ADDRESS_RETURN,
-    .data = DERIVE_ADDRESS_REJECT_008_DERIVE_ADDRESS_BASE_ADDRESS_SCRIPTHASH_KEYHASH_NOT_ALLOWED_APDU,
-    .data_len = sizeof(DERIVE_ADDRESS_REJECT_008_DERIVE_ADDRESS_BASE_ADDRESS_SCRIPTHASH_KEYHASH_NOT_ALLOWED_APDU),
+    .data = DERIVE_ADDRESS_DENY_008_DERIVE_ADDRESS_BASE_ADDRESS_SCRIPTHASH_KEYHASH_NOT_ALLOWED_APDU,
+    .data_len = sizeof(DERIVE_ADDRESS_DENY_008_DERIVE_ADDRESS_BASE_ADDRESS_SCRIPTHASH_KEYHASH_NOT_ALLOWED_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 // Source: tests/standalone/input_files/derive_address.py > deny tests > Derive_address_pointer_with_Byron_spending_path
 {
     .name = "Derive_address_pointer_with_Byron_spending_path",
     .p1 = P1_ADDRESS_RETURN,
-    .data = DERIVE_ADDRESS_REJECT_009_DERIVE_ADDRESS_POINTER_WITH_BYRON_SPENDING_PATH_APDU,
-    .data_len = sizeof(DERIVE_ADDRESS_REJECT_009_DERIVE_ADDRESS_POINTER_WITH_BYRON_SPENDING_PATH_APDU),
+    .data = DERIVE_ADDRESS_DENY_009_DERIVE_ADDRESS_POINTER_WITH_BYRON_SPENDING_PATH_APDU,
+    .data_len = sizeof(DERIVE_ADDRESS_DENY_009_DERIVE_ADDRESS_POINTER_WITH_BYRON_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 // Source: tests/standalone/input_files/derive_address.py > deny tests > Derive_address_pointer_with_wrong_spending_path
 {
     .name = "Derive_address_pointer_with_wrong_spending_path",
     .p1 = P1_ADDRESS_RETURN,
-    .data = DERIVE_ADDRESS_REJECT_010_DERIVE_ADDRESS_POINTER_WITH_WRONG_SPENDING_PATH_APDU,
-    .data_len = sizeof(DERIVE_ADDRESS_REJECT_010_DERIVE_ADDRESS_POINTER_WITH_WRONG_SPENDING_PATH_APDU),
+    .data = DERIVE_ADDRESS_DENY_010_DERIVE_ADDRESS_POINTER_WITH_WRONG_SPENDING_PATH_APDU,
+    .data_len = sizeof(DERIVE_ADDRESS_DENY_010_DERIVE_ADDRESS_POINTER_WITH_WRONG_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 // Source: tests/standalone/input_files/derive_address.py > deny tests > Derive_address_enterprise_with_Byron_spending_path
 {
     .name = "Derive_address_enterprise_with_Byron_spending_path",
     .p1 = P1_ADDRESS_RETURN,
-    .data = DERIVE_ADDRESS_REJECT_011_DERIVE_ADDRESS_ENTERPRISE_WITH_BYRON_SPENDING_PATH_APDU,
-    .data_len = sizeof(DERIVE_ADDRESS_REJECT_011_DERIVE_ADDRESS_ENTERPRISE_WITH_BYRON_SPENDING_PATH_APDU),
+    .data = DERIVE_ADDRESS_DENY_011_DERIVE_ADDRESS_ENTERPRISE_WITH_BYRON_SPENDING_PATH_APDU,
+    .data_len = sizeof(DERIVE_ADDRESS_DENY_011_DERIVE_ADDRESS_ENTERPRISE_WITH_BYRON_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 // Source: tests/standalone/input_files/derive_address.py > deny tests > Derive_address_enterprise_with_wrong_spending_path
 {
     .name = "Derive_address_enterprise_with_wrong_spending_path",
     .p1 = P1_ADDRESS_RETURN,
-    .data = DERIVE_ADDRESS_REJECT_012_DERIVE_ADDRESS_ENTERPRISE_WITH_WRONG_SPENDING_PATH_APDU,
-    .data_len = sizeof(DERIVE_ADDRESS_REJECT_012_DERIVE_ADDRESS_ENTERPRISE_WITH_WRONG_SPENDING_PATH_APDU),
+    .data = DERIVE_ADDRESS_DENY_012_DERIVE_ADDRESS_ENTERPRISE_WITH_WRONG_SPENDING_PATH_APDU,
+    .data_len = sizeof(DERIVE_ADDRESS_DENY_012_DERIVE_ADDRESS_ENTERPRISE_WITH_WRONG_SPENDING_PATH_APDU),
     .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 };

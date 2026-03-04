@@ -13,69 +13,68 @@ from typing import Optional
 @dataclass(kw_only=True)
 class PubKeyTestCase:
     name: str
-    ledgerjs_name: Optional[str] = None
     path: Optional[str] = None
     nav: Optional[bool] = True
 
 # pylint: disable=line-too-long
 testsByron = [
-    PubKeyTestCase(name="Export_pubkey_byronpath_1", ledgerjs_name="byron/path 1", path="m/44'/1815'/1'"),
-    PubKeyTestCase(name="Export_pubkey_byronpath_2", ledgerjs_name="byron/path 2", path="m/44'/1815'/1'/0/55'"),
-    PubKeyTestCase(name="Export_pubkey_byronpath_3", ledgerjs_name="byron/path 3", path="m/44'/1815'/1'/0/12'"),
+    PubKeyTestCase(name="Export_pubkey_byronpath_1", path="m/44'/1815'/1'"),
+    PubKeyTestCase(name="Export_pubkey_byronpath_2", path="m/44'/1815'/1'/0/55'"),
+    PubKeyTestCase(name="Export_pubkey_byronpath_3", path="m/44'/1815'/1'/0/12'"),
 ]
 
 testsShelleyUsual = [
-    PubKeyTestCase(name="Export_pubkey_shelley_usual_path_0", ledgerjs_name="shelley usual/path 0", path="m/1852'/1815'/4'"),
-    PubKeyTestCase(name="Export_pubkey_shelley_usual_path_1", ledgerjs_name="shelley usual/path 1", path="m/1852'/1815'/0'/0/1"),
-    PubKeyTestCase(name="Export_pubkey_shelley_usual_path_2", ledgerjs_name="shelley usual/path 2", path="m/1852'/1815'/0'/2/0"),
-    PubKeyTestCase(name="Export_pubkey_shelley_usual_path_3", ledgerjs_name="shelley usual/path 3", path="m/1852'/1815'/0'/2/1001"),
-    PubKeyTestCase(name="Export_pubkey_shelley_usual_path_4", ledgerjs_name="shelley usual/path 4", path="m/1852'/1815'/0'/3/0"),
-    PubKeyTestCase(name="Export_pubkey_shelley_usual_path_5", ledgerjs_name="shelley usual/path 5", path="m/1852'/1815'/0'/4/0"),
-    PubKeyTestCase(name="Export_pubkey_shelley_usual_path_6", ledgerjs_name="shelley usual/path 6", path="m/1852'/1815'/1'/5/0"),
+    PubKeyTestCase(name="Export_pubkey_shelley_usual_path_0", path="m/1852'/1815'/4'"),
+    PubKeyTestCase(name="Export_pubkey_shelley_usual_path_1", path="m/1852'/1815'/0'/0/1"),
+    PubKeyTestCase(name="Export_pubkey_shelley_usual_path_2", path="m/1852'/1815'/0'/2/0"),
+    PubKeyTestCase(name="Export_pubkey_shelley_usual_path_3", path="m/1852'/1815'/0'/2/1001"),
+    PubKeyTestCase(name="Export_pubkey_shelley_usual_path_4", path="m/1852'/1815'/0'/3/0"),
+    PubKeyTestCase(name="Export_pubkey_shelley_usual_path_5", path="m/1852'/1815'/0'/4/0"),
+    PubKeyTestCase(name="Export_pubkey_shelley_usual_path_6", path="m/1852'/1815'/1'/5/0"),
 ]
 
 testsShelleyUnusual = [
-    PubKeyTestCase(name="Export_pubkey_shelley_unusual_path_1", ledgerjs_name="shelley unusual/path 1", path="m/1852'/1815'/101'"),
-    PubKeyTestCase(name="Export_pubkey_shelley_unusual_path_2", ledgerjs_name="shelley unusual/path 2", path="m/1852'/1815'/100'/0/1000001'"),
-    PubKeyTestCase(name="Export_pubkey_shelley_unusual_path_3", ledgerjs_name="shelley unusual/path 3", path="m/1852'/1815'/0'/2/1000001"),
-    PubKeyTestCase(name="Export_pubkey_shelley_unusual_path_4", ledgerjs_name="shelley unusual/path 4", path="m/1852'/1815'/101'/3/0"),
-    PubKeyTestCase(name="Export_pubkey_shelley_unusual_path_5", ledgerjs_name="shelley unusual/path 5", path="m/1852'/1815'/101'/4/0"),
-    PubKeyTestCase(name="Export_pubkey_shelley_unusual_path_6", ledgerjs_name="shelley unusual/path 6", path="m/1852'/1815'/101'/5/0"),
+    PubKeyTestCase(name="Export_pubkey_shelley_unusual_path_1", path="m/1852'/1815'/101'"),
+    PubKeyTestCase(name="Export_pubkey_shelley_unusual_path_2", path="m/1852'/1815'/100'/0/1000001'"),
+    PubKeyTestCase(name="Export_pubkey_shelley_unusual_path_3", path="m/1852'/1815'/0'/2/1000001"),
+    PubKeyTestCase(name="Export_pubkey_shelley_unusual_path_4", path="m/1852'/1815'/101'/3/0"),
+    PubKeyTestCase(name="Export_pubkey_shelley_unusual_path_5", path="m/1852'/1815'/101'/4/0"),
+    PubKeyTestCase(name="Export_pubkey_shelley_unusual_path_6", path="m/1852'/1815'/101'/5/0"),
 ]
 
 testsMultisig = [
-    PubKeyTestCase(name="Export_pubkey_multisig_account_path_0", ledgerjs_name=None, path="m/1854'/1815'/0'"),
-    PubKeyTestCase(name="Export_pubkey_multisig_payment_path_0", ledgerjs_name=None, path="m/1854'/1815'/0'/0/0"),
-    PubKeyTestCase(name="Export_pubkey_multisig_staking_path_0", ledgerjs_name=None, path="m/1854'/1815'/0'/2/0"),
+    PubKeyTestCase(name="Export_pubkey_multisig_account_path_0", path="m/1854'/1815'/0'"),
+    PubKeyTestCase(name="Export_pubkey_multisig_payment_path_0", path="m/1854'/1815'/0'/0/0"),
+    PubKeyTestCase(name="Export_pubkey_multisig_staking_path_0", path="m/1854'/1815'/0'/2/0"),
 ]
 
 testsColdKeys = [
-    PubKeyTestCase(name="Export_pubkey_cold_case", ledgerjs_name="cold case", path="m/1853'/1815'/0'/0'"),
+    PubKeyTestCase(name="Export_pubkey_cold_case", path="m/1853'/1815'/0'/0'"),
 ]
 
 testsCVoteKeysUsual = [
-    PubKeyTestCase(name="Export_pubkey_CVote_keys_path_2", ledgerjs_name="CVote keys/path 2", path="m/1694'/1815'/100'"),
+    PubKeyTestCase(name="Export_pubkey_CVote_keys_path_2", path="m/1694'/1815'/100'"),
 ]
 
 testsCVoteKeysUnusual = [
-    PubKeyTestCase(name="Export_pubkey_CVote_keys_path_1", ledgerjs_name="CVote keys/path 1", path="m/1694'/1815'/0'/0/1"),
-    PubKeyTestCase(name="Export_pubkey_CVote_keys_path_3", ledgerjs_name="CVote keys/path 3", path="m/1694'/1815'/101'"),
+    PubKeyTestCase(name="Export_pubkey_CVote_keys_path_1", path="m/1694'/1815'/0'/0/1"),
+    PubKeyTestCase(name="Export_pubkey_CVote_keys_path_3", path="m/1694'/1815'/101'"),
 ]
 
 testsDRepKeys = [
-    PubKeyTestCase(name="Export_pubkey_drep_key_path_0", ledgerjs_name=None, path="m/1852'/1815'/0'/3/0"),
+    PubKeyTestCase(name="Export_pubkey_drep_key_path_0", path="m/1852'/1815'/0'/3/0"),
 ]
 
 testsCommitteeColdKeys = [
-    PubKeyTestCase(name="Export_pubkey_committee_cold_key_path_0", ledgerjs_name=None, path="m/1852'/1815'/0'/4/0"),
+    PubKeyTestCase(name="Export_pubkey_committee_cold_key_path_0", path="m/1852'/1815'/0'/4/0"),
 ]
 
 testsCommitteeHotKeys = [
-    PubKeyTestCase(name="Export_pubkey_committee_hot_key_path_0", ledgerjs_name=None, path="m/1852'/1815'/0'/5/0"),
+    PubKeyTestCase(name="Export_pubkey_committee_hot_key_path_0", path="m/1852'/1815'/0'/5/0"),
 ]
 
 testsMintKeys = [
-    PubKeyTestCase(name="Export_pubkey_mint_key_path_0", ledgerjs_name=None, path="m/1855'/1815'/0'"),
+    PubKeyTestCase(name="Export_pubkey_mint_key_path_0", path="m/1855'/1815'/0'"),
 ]
 
 def _parse_bip44_path(path: str) -> list[tuple[int, bool]]:
@@ -134,17 +133,17 @@ testsSilentExport = [
 ]
 
 denyTestCases = [
-    PubKeyTestCase(name="Export_pubkey_path_shorter_than_3_indexes", ledgerjs_name="path shorter than 3 indexes", path="m/44'/1815'"),
-    PubKeyTestCase(name="Export_pubkey_path_not_matching_cold_key_structure", ledgerjs_name="path not matching cold key structure", path="m/1853'/1900'/0'/0/0"),
-    PubKeyTestCase(name="Export_pubkey_invalid_vote_key_path_1", ledgerjs_name="invalid vote key path 1", path="m/1694'/1815'/0'/1/0"),
-    PubKeyTestCase(name="Export_pubkey_invalid_vote_key_path_2", ledgerjs_name="invalid vote key path 2", path="m/1694'/1815'/17"),
-    PubKeyTestCase(name="Export_pubkey_invalid_vote_key_path_3", ledgerjs_name="invalid vote key path 3", path="m/1694'/1815'/0'/1"),
-    PubKeyTestCase(name="Export_pubkey_invalid_multisig_account_not_hardened", ledgerjs_name=None, path="m/1854'/1815'/0"),
-    PubKeyTestCase(name="Export_pubkey_invalid_multisig_chain", ledgerjs_name=None, path="m/1854'/1815'/0'/3/0"),
-    PubKeyTestCase(name="Export_pubkey_invalid_multisig_address_hardened", ledgerjs_name=None, path="m/1854'/1815'/0'/0/0'"),
-    PubKeyTestCase(name="Export_pubkey_invalid_mint_policy_not_hardened", ledgerjs_name=None, path="m/1855'/1815'/0"),
-    PubKeyTestCase(name="Export_pubkey_invalid_drep_chain", ledgerjs_name=None, path="m/1852'/1815'/0'/6/0"),
-    PubKeyTestCase(name="Export_pubkey_invalid_committee_cold_address_hardened", ledgerjs_name=None, path="m/1852'/1815'/0'/4/0'"),
-    PubKeyTestCase(name="Export_pubkey_invalid_committee_hot_account_not_hardened", ledgerjs_name=None, path="m/1852'/1815'/0/5/0"),
-    PubKeyTestCase(name="Export_pubkey_invalid_pool_cold_usecase", ledgerjs_name=None, path="m/1853'/1815'/1'/0'"),
+    PubKeyTestCase(name="Export_pubkey_path_shorter_than_3_indexes", path="m/44'/1815'"),
+    PubKeyTestCase(name="Export_pubkey_path_not_matching_cold_key_structure", path="m/1853'/1900'/0'/0/0"),
+    PubKeyTestCase(name="Export_pubkey_invalid_vote_key_path_1", path="m/1694'/1815'/0'/1/0"),
+    PubKeyTestCase(name="Export_pubkey_invalid_vote_key_path_2", path="m/1694'/1815'/17"),
+    PubKeyTestCase(name="Export_pubkey_invalid_vote_key_path_3", path="m/1694'/1815'/0'/1"),
+    PubKeyTestCase(name="Export_pubkey_invalid_multisig_account_not_hardened", path="m/1854'/1815'/0"),
+    PubKeyTestCase(name="Export_pubkey_invalid_multisig_chain", path="m/1854'/1815'/0'/3/0"),
+    PubKeyTestCase(name="Export_pubkey_invalid_multisig_address_hardened", path="m/1854'/1815'/0'/0/0'"),
+    PubKeyTestCase(name="Export_pubkey_invalid_mint_policy_not_hardened", path="m/1855'/1815'/0"),
+    PubKeyTestCase(name="Export_pubkey_invalid_drep_chain", path="m/1852'/1815'/0'/6/0"),
+    PubKeyTestCase(name="Export_pubkey_invalid_committee_cold_address_hardened", path="m/1852'/1815'/0'/4/0'"),
+    PubKeyTestCase(name="Export_pubkey_invalid_committee_hot_account_not_hardened", path="m/1852'/1815'/0/5/0"),
+    PubKeyTestCase(name="Export_pubkey_invalid_pool_cold_usecase", path="m/1853'/1815'/1'/0'"),
 ]

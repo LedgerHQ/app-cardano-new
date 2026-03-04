@@ -11,45 +11,45 @@ from common import (
 from paths import GENERATED_SIGN_TX_DIR
 
 SET_ORDER = [
-    "transactionInitRejectTestCases",
-    "addressParamsRejectTestCases",
-    "certificateRejectTestCases",
-    "certificateStakingRejectTestCases",
-    "certificateStakePoolRetirementRejectTestCases",
-    "withdrawalRejectTestCases",
-    "witnessRejectTestCases",
-    "singleAccountRejectTestCases",
-    "collateralOutputRejectTestCases",
+    "transactionInitDenyTestCases",
+    "addressParamsDenyTestCases",
+    "certificateDenyTestCases",
+    "certificateStakingDenyTestCases",
+    "certificateStakePoolRetirementDenyTestCases",
+    "withdrawalDenyTestCases",
+    "witnessDenyTestCases",
+    "singleAccountDenyTestCases",
+    "collateralOutputDenyTestCases",
     "testsInvalidTokenBundleOrdering",
-    "poolRegistrationOwnerRejectTestCases",
-    "stakePoolRegistrationPoolIdRejectTestCases",
-    "stakePoolRegistrationOwnerRejectTestCases",
-    "outputRejectTestCases",
-    "testsCVoteRegistrationRejects",
+    "poolRegistrationOwnerDenyTestCases",
+    "stakePoolRegistrationPoolIdDenyTestCases",
+    "stakePoolRegistrationOwnerDenyTestCases",
+    "outputDenyTestCases",
+    "testsCVoteRegistrationDenies",
     "invalidCertificates",
     "invalidPoolMetadataTestCases",
     "invalidRelayTestCases",
 ]
 
 SET_PREFIX = {
-    "transactionInitRejectTestCases": "REJECT_INIT",
-    "addressParamsRejectTestCases": "REJECT_ADDRESS",
-    "certificateRejectTestCases": "REJECT_CERT",
-    "certificateStakingRejectTestCases": "REJECT_CERT_STAKING",
-    "certificateStakePoolRetirementRejectTestCases": "REJECT_CERT_POOL_RETIRE",
-    "withdrawalRejectTestCases": "REJECT_WITHDRAWAL",
-    "witnessRejectTestCases": "REJECT_WITNESS",
-    "singleAccountRejectTestCases": "REJECT_SINGLE_ACCOUNT",
-    "collateralOutputRejectTestCases": "REJECT_COLLATERAL_OUTPUT",
-    "testsInvalidTokenBundleOrdering": "REJECT_MULTIASSET",
-    "poolRegistrationOwnerRejectTestCases": "REJECT_POOL_OWNER",
-    "stakePoolRegistrationPoolIdRejectTestCases": "REJECT_POOL_ID",
-    "stakePoolRegistrationOwnerRejectTestCases": "REJECT_POOL_OWNER",
-    "outputRejectTestCases": "REJECT_OUTPUT",
-    "testsCVoteRegistrationRejects": "REJECT_CVOTE",
-    "invalidCertificates": "REJECT_CERT_INVALID",
-    "invalidPoolMetadataTestCases": "REJECT_POOL_METADATA",
-    "invalidRelayTestCases": "REJECT_RELAY",
+    "transactionInitDenyTestCases": "DENY_INIT",
+    "addressParamsDenyTestCases": "DENY_ADDRESS",
+    "certificateDenyTestCases": "DENY_CERT",
+    "certificateStakingDenyTestCases": "DENY_CERT_STAKING",
+    "certificateStakePoolRetirementDenyTestCases": "DENY_CERT_POOL_RETIRE",
+    "withdrawalDenyTestCases": "DENY_WITHDRAWAL",
+    "witnessDenyTestCases": "DENY_WITNESS",
+    "singleAccountDenyTestCases": "DENY_SINGLE_ACCOUNT",
+    "collateralOutputDenyTestCases": "DENY_COLLATERAL_OUTPUT",
+    "testsInvalidTokenBundleOrdering": "DENY_MULTIASSET",
+    "poolRegistrationOwnerDenyTestCases": "DENY_POOL_OWNER",
+    "stakePoolRegistrationPoolIdDenyTestCases": "DENY_POOL_ID",
+    "stakePoolRegistrationOwnerDenyTestCases": "DENY_POOL_OWNER",
+    "outputDenyTestCases": "DENY_OUTPUT",
+    "testsCVoteRegistrationDenies": "DENY_CVOTE",
+    "invalidCertificates": "DENY_CERT_INVALID",
+    "invalidPoolMetadataTestCases": "DENY_POOL_METADATA",
+    "invalidRelayTestCases": "DENY_RELAY",
 }
 
 GENERATED_DENY_HEADER = GENERATED_SIGN_TX_DIR / "test_sign_tx_fixtures_deny.h"
@@ -60,42 +60,42 @@ def _build_deny_fixtures() -> str:
     from application_client.command_builder import CommandBuilder, P1Type, gather_witness_paths  # type: ignore
     from application_client.status_words import StatusWord  # type: ignore
     from standalone.input_files.signTx import (  # type: ignore
-        transactionInitRejectTestCases,
-        addressParamsRejectTestCases,
-        certificateRejectTestCases,
-        certificateStakingRejectTestCases,
-        certificateStakePoolRetirementRejectTestCases,
-        withdrawalRejectTestCases,
-        witnessRejectTestCases,
-        singleAccountRejectTestCases,
-        collateralOutputRejectTestCases,
+        transactionInitDenyTestCases,
+        addressParamsDenyTestCases,
+        certificateDenyTestCases,
+        certificateStakingDenyTestCases,
+        certificateStakePoolRetirementDenyTestCases,
+        withdrawalDenyTestCases,
+        witnessDenyTestCases,
+        singleAccountDenyTestCases,
+        collateralOutputDenyTestCases,
         testsInvalidTokenBundleOrdering,
-        poolRegistrationOwnerRejectTestCases,
-        stakePoolRegistrationPoolIdRejectTestCases,
-        stakePoolRegistrationOwnerRejectTestCases,
-        outputRejectTestCases,
-        testsCVoteRegistrationRejects,
+        poolRegistrationOwnerDenyTestCases,
+        stakePoolRegistrationPoolIdDenyTestCases,
+        stakePoolRegistrationOwnerDenyTestCases,
+        outputDenyTestCases,
+        testsCVoteRegistrationDenies,
         invalidCertificates,
         invalidPoolMetadataTestCases,
         invalidRelayTestCases,
     )
 
     fixtures_by_set: dict[str, list[Any]] = {
-        "transactionInitRejectTestCases": transactionInitRejectTestCases,
-        "addressParamsRejectTestCases": addressParamsRejectTestCases,
-        "certificateRejectTestCases": certificateRejectTestCases,
-        "certificateStakingRejectTestCases": certificateStakingRejectTestCases,
-        "certificateStakePoolRetirementRejectTestCases": certificateStakePoolRetirementRejectTestCases,
-        "withdrawalRejectTestCases": withdrawalRejectTestCases,
-        "witnessRejectTestCases": witnessRejectTestCases,
-        "singleAccountRejectTestCases": singleAccountRejectTestCases,
-        "collateralOutputRejectTestCases": collateralOutputRejectTestCases,
+        "transactionInitDenyTestCases": transactionInitDenyTestCases,
+        "addressParamsDenyTestCases": addressParamsDenyTestCases,
+        "certificateDenyTestCases": certificateDenyTestCases,
+        "certificateStakingDenyTestCases": certificateStakingDenyTestCases,
+        "certificateStakePoolRetirementDenyTestCases": certificateStakePoolRetirementDenyTestCases,
+        "withdrawalDenyTestCases": withdrawalDenyTestCases,
+        "witnessDenyTestCases": witnessDenyTestCases,
+        "singleAccountDenyTestCases": singleAccountDenyTestCases,
+        "collateralOutputDenyTestCases": collateralOutputDenyTestCases,
         "testsInvalidTokenBundleOrdering": testsInvalidTokenBundleOrdering,
-        "poolRegistrationOwnerRejectTestCases": poolRegistrationOwnerRejectTestCases,
-        "stakePoolRegistrationPoolIdRejectTestCases": stakePoolRegistrationPoolIdRejectTestCases,
-        "stakePoolRegistrationOwnerRejectTestCases": stakePoolRegistrationOwnerRejectTestCases,
-        "outputRejectTestCases": outputRejectTestCases,
-        "testsCVoteRegistrationRejects": testsCVoteRegistrationRejects,
+        "poolRegistrationOwnerDenyTestCases": poolRegistrationOwnerDenyTestCases,
+        "stakePoolRegistrationPoolIdDenyTestCases": stakePoolRegistrationPoolIdDenyTestCases,
+        "stakePoolRegistrationOwnerDenyTestCases": stakePoolRegistrationOwnerDenyTestCases,
+        "outputDenyTestCases": outputDenyTestCases,
+        "testsCVoteRegistrationDenies": testsCVoteRegistrationDenies,
         "invalidCertificates": invalidCertificates,
         "invalidPoolMetadataTestCases": invalidPoolMetadataTestCases,
         "invalidRelayTestCases": invalidRelayTestCases,
@@ -150,7 +150,7 @@ def _build_deny_fixtures() -> str:
         signing_mode = test_case.signingMode
         additional_paths = list(test_case.additionalWitnessPaths or [])
         builder = CommandBuilder()
-        if prefix == "REJECT_WITNESS":
+        if prefix == "DENY_WITNESS":
             witness_paths = list(additional_paths)
         else:
             witness_paths = gather_witness_paths(tx, signing_mode, additional_paths)
@@ -179,8 +179,8 @@ def _build_deny_fixtures() -> str:
             )
         expected_sw = test_case.expected_sw or StatusWord.SWO_SUCCESS
         expected_sw_name = expected_sw.name
-        expect_init_failure = prefix == "REJECT_INIT"
-        if prefix == "REJECT_ADDRESS":
+        expect_init_failure = prefix == "DENY_INIT"
+        if prefix == "DENY_ADDRESS":
             normalized_name = sanitize_name(test_case.name)
             if "POOL_OPERATOR_SPENDING_CHOICE_NOT_PATH" in normalized_name or "POOL_OWNER_UNCONDITIONALLY" in normalized_name:
                 expect_init_failure = True

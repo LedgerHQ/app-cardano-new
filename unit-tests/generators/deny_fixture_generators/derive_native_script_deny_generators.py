@@ -99,7 +99,7 @@ def _build_fixtures() -> str:
         
         header_lines.append(f"// ======================================================================")
         header_lines.append(f"// Test Case [{test_case_index}]: {test_case.name}")
-        header_lines.append(f"// Source: tests/standalone/input_files/native_script.py > reject tests")
+        header_lines.append(f"// Source: tests/standalone/input_files/native_script.py > deny tests")
         header_lines.append(f"// ======================================================================")
         header_lines.append("")
         
@@ -141,7 +141,7 @@ def _build_fixtures() -> str:
     for base_id, name, root_id, finish_apdu_array, nano_skip, expected_swo in test_case_root_identifiers:
         nano_skip_str = "true" if nano_skip else "false"
         # Add source traceability comment
-        header_lines.append(f"    // Source: tests/standalone/input_files/native_script.py > reject tests > {name}")
+        header_lines.append(f"    // Source: tests/standalone/input_files/native_script.py > deny tests > {name}")
         header_lines.append(f"    {{")
         header_lines.append(f'        .name = "{name}",')
         header_lines.append(f"        .root_script = (const native_script_t*)&{root_id},")

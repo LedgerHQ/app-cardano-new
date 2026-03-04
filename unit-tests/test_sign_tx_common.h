@@ -377,7 +377,7 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
         assert_read_buffer_unchanged_and_cleanup(&aux_init_buffer, fixture->aux_data_init_payload);
 
         if (g_last_response_sw == SWO_CONDITIONS_NOT_SATISFIED) {
-            goto reject_assertions;
+            goto expected_failure_assertions;
         }
         assert_int_equal(g_last_response_sw, SWO_SUCCESS);
 
@@ -392,7 +392,7 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
             run_sign_tx_aux_data_apdu(&aux_delegation_buffer.sdk_buffer, P2_AUX_DATA_DELEGATION);
             assert_read_buffer_unchanged_and_cleanup(&aux_delegation_buffer, delegation->payload);
             if (g_last_response_sw == SWO_CONDITIONS_NOT_SATISFIED) {
-                goto reject_assertions;
+                goto expected_failure_assertions;
             }
             assert_int_equal(g_last_response_sw, SWO_SUCCESS);
         }
@@ -410,7 +410,7 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
 
     run_sign_tx_body_chunked(fixture->raw_tx, fixture->raw_tx_len);
 
-reject_assertions:
+expected_failure_assertions:
     assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);

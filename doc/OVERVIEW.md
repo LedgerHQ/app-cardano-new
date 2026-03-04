@@ -58,7 +58,7 @@ The application is written in C and runs on Ledger devices (Stax, Flex, Nano X, 
 - **BIP44 Path Validation**: `policyForPrivateKey()` validates every BIP44 path before key derivation. Ensures paths follow allowed patterns and enforces the single-account constraint.
 - **Transaction Element Policies**: During transaction validation, each element (output, certificate, withdrawal, etc.) is checked via `policyFor*()` functions (e.g., `policyForOutput()`, `policyForCertificate()`).
 - **Policy Decisions**:
-  - `POLICY_DENY`: Reject immediately (security risk).
+  - `POLICY_DENY`: Deny immediately (security risk).
   - `POLICY_SHOW`: Display to user (increment UI pair count).
   - `POLICY_HIDE`: Don't display (only allowed when safe, e.g., change outputs).
 

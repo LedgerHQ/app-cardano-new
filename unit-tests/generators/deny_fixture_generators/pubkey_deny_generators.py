@@ -15,7 +15,7 @@ GENERATED_DENY_HEADER = GENERATED_PUBKEY_DIR / "test_pubkey_fixtures_deny.h"
 
 
 # ==============================================================================
-# Step 1: Load Rejection Test Cases from Ragger Tests
+# Step 1: Load Deny Test Cases from Ragger Tests
 # ==============================================================================
 
 def _load_pubkey_deny_test_cases() -> list[Any]:
@@ -32,7 +32,7 @@ def _load_pubkey_deny_test_cases() -> list[Any]:
 # Step 2: Serialize Test Case to APDU Command
 # ==============================================================================
 
-def _serialize_reject_test_case_to_apdu(test_case: Any) -> bytes:
+def _serialize_deny_test_case_to_apdu(test_case: Any) -> bytes:
     path = test_case.path
     parts = path.split("/")[1:]
     data = bytearray()
@@ -48,11 +48,11 @@ def _serialize_reject_test_case_to_apdu(test_case: Any) -> bytes:
 
 
 # ==============================================================================
-# Step 3: Generate C Code for Rejection Fixtures
+# Step 3: Generate C Code for Deny Fixtures
 # ==============================================================================
 
 
-def _generate_fixture_code_for_reject_test_case(
+def _generate_fixture_code_for_deny_test_case(
     test_case: Any,
     test_number: int,
 ) -> list[str]:
@@ -65,12 +65,12 @@ def _generate_fixture_code_for_reject_test_case(
     code_lines.append("// ----------------------------------------------------------------------")
     code_lines.append("")
 
-    payload_bytes = _serialize_reject_test_case_to_apdu(test_case)
+    payload_bytes = _serialize_deny_test_case_to_apdu(test_case)
 
     safe_test_name = sanitize_c_identifier(test_case.name)
 
     payload_array_name = (
-        f"PUBKEY_REJECT_{test_number:03d}_{safe_test_name}_APDU"
+        f"PUBKEY_DENY_{test_number:03d}_{safe_test_name}_APDU"
     )
     payload_array_code = format_bytes_as_c_array(
         payload_bytes,
@@ -114,7 +114,7 @@ def _build_deny_fixtures() -> str:
     ]
 
     for idx, test_case in enumerate(deny_test_cases):
-        header_lines.extend(_generate_fixture_code_for_reject_test_case(test_case, idx))
+        header_lines.extend(_generate_fixture_code_for_deny_test_case(test_case, idx))
 
     header_lines.append("static const pubkey_fixture_t PUBKEY_DENY_FIXTURES[] = {")
     for idx, test_case in enumerate(deny_test_cases):
@@ -125,10 +125,10 @@ def _build_deny_fixtures() -> str:
         header_lines.append("{")
         header_lines.append(f"    .name = \"{test_case.name}\",")
         header_lines.append(
-            f"    .data = PUBKEY_REJECT_{idx:03d}_{safe_test_name}_APDU,"
+            f"    .data = PUBKEY_DENY_{idx:03d}_{safe_test_name}_APDU,"
         )
         header_lines.append(
-            f"    .data_len = sizeof(PUBKEY_REJECT_{idx:03d}_{safe_test_name}_APDU),"
+            f"    .data_len = sizeof(PUBKEY_DENY_{idx:03d}_{safe_test_name}_APDU),"
         )
         header_lines.append("    .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,")
         header_lines.append("    .expected_response = NULL,")

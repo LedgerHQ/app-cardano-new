@@ -168,10 +168,10 @@ deactivate
 
 The test suite validates:
 - ✅ Valid swaps with different amounts
-- ✅ Invalid destination addresses (should reject)
-- ✅ Invalid amounts (should reject)
-- ✅ Invalid fees (should reject)
-- ✅ Invalid refund addresses (should reject)
+- ✅ Invalid destination addresses (should deny)
+- ✅ Invalid amounts (should deny)
+- ✅ Invalid fees (should deny)
+- ✅ Invalid refund addresses (should deny)
 - ✅ UI flow and snapshots
 
 ## Troubleshooting

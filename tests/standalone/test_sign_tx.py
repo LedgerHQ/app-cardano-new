@@ -37,19 +37,19 @@ from standalone.input_files.signTx import (  # type: ignore
     testsMultisig,
     poolRegistrationOwnerTestCases,
     poolRegistrationOperatorTestCases,
-    transactionInitRejectTestCases,
-    addressParamsRejectTestCases,
-    certificateRejectTestCases,
-    certificateStakingRejectTestCases,
-    certificateStakePoolRetirementRejectTestCases,
-    withdrawalRejectTestCases,
-    witnessRejectTestCases,
-    singleAccountRejectTestCases,
-    collateralOutputRejectTestCases,
+    transactionInitDenyTestCases,
+    addressParamsDenyTestCases,
+    certificateDenyTestCases,
+    certificateStakingDenyTestCases,
+    certificateStakePoolRetirementDenyTestCases,
+    withdrawalDenyTestCases,
+    witnessDenyTestCases,
+    singleAccountDenyTestCases,
+    collateralOutputDenyTestCases,
     testsInvalidTokenBundleOrdering,
-    poolRegistrationOwnerRejectTestCases,
-    stakePoolRegistrationPoolIdRejectTestCases,
-    stakePoolRegistrationOwnerRejectTestCases,
+    poolRegistrationOwnerDenyTestCases,
+    stakePoolRegistrationPoolIdDenyTestCases,
+    stakePoolRegistrationOwnerDenyTestCases,
     invalidCertificates,
     invalidPoolMetadataTestCases,
     invalidRelayTestCases,
@@ -264,19 +264,19 @@ def test_sign_tx(device: Device,
 
 # Collect all deny test cases
 all_deny_test_cases = (
-    transactionInitRejectTestCases +
-    addressParamsRejectTestCases +
-    certificateRejectTestCases +
-    certificateStakingRejectTestCases +
-    certificateStakePoolRetirementRejectTestCases +
-    withdrawalRejectTestCases +
-    witnessRejectTestCases +
-    singleAccountRejectTestCases +
-    collateralOutputRejectTestCases +
+    transactionInitDenyTestCases +
+    addressParamsDenyTestCases +
+    certificateDenyTestCases +
+    certificateStakingDenyTestCases +
+    certificateStakePoolRetirementDenyTestCases +
+    withdrawalDenyTestCases +
+    witnessDenyTestCases +
+    singleAccountDenyTestCases +
+    collateralOutputDenyTestCases +
     testsInvalidTokenBundleOrdering +
-    poolRegistrationOwnerRejectTestCases +
-    stakePoolRegistrationPoolIdRejectTestCases +
-    stakePoolRegistrationOwnerRejectTestCases +
+    poolRegistrationOwnerDenyTestCases +
+    stakePoolRegistrationPoolIdDenyTestCases +
+    stakePoolRegistrationOwnerDenyTestCases +
     invalidCertificates +
     invalidPoolMetadataTestCases +
     invalidRelayTestCases
@@ -291,7 +291,7 @@ all_deny_test_cases = (
 def test_sign_tx_deny(backend: BackendInterface,
                         scenario_navigator: NavigateWithScenario,
                         testCase: SignTxTestCase) -> None:
-    """Test that invalid transaction parameters are correctly rejected"""
+    """Test that invalid transaction parameters are correctly denied."""
 
     if testCase.unsuitable_in_ragger_reason is not None:
         pytest.skip(f"Unsuitable in ragger: {testCase.unsuitable_in_ragger_reason}")

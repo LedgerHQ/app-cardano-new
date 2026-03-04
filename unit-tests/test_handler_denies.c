@@ -91,7 +91,7 @@ int io_send_sw(uint16_t swo) {
 }
 
 // NBGL and UI mocks provided by cardano_sign_tx_core (nbgl_mock.c + real UI files)
-// These tests verify early rejection before UI is reached, so real UI is fine
+// These tests verify early denial before UI is reached, so real UI is fine
 
 void ui_display_pubkey(security_policy_t policy, warning_bits_t warnings) {
     (void) policy;
@@ -191,7 +191,7 @@ static void test_tx_init_trailing_bytes(void **state) {
     assert_int_equal(g_last_sw, SWO_WRONG_DATA_LENGTH);
 }
 
-static void test_tx_init_rejected_when_active(void **state) {
+static void test_tx_init_denied_when_active(void **state) {
     (void) state;
     reset_context();
 
@@ -456,7 +456,7 @@ int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_tx_init_invalid_signing_mode),
         cmocka_unit_test(test_tx_init_trailing_bytes),
-        cmocka_unit_test(test_tx_init_rejected_when_active),
+        cmocka_unit_test(test_tx_init_denied_when_active),
         cmocka_unit_test(test_witness_trailing_bytes),
         cmocka_unit_test(test_get_public_key_trailing_bytes),
         cmocka_unit_test(test_handler_state_during_active_request),

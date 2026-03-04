@@ -593,12 +593,12 @@ target_link_libraries(test_sign_tx_deny_tests PUBLIC cmocka gcov cardano_sign_tx
 target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
 add_test(test_sign_tx_deny_tests test_sign_tx_deny_tests)
 
-add_executable(test_handler_rejects
-    test_handler_rejects.c
+add_executable(test_handler_denies
+    test_handler_denies.c
     ../src/handler/get_public_key.c
 )
-target_link_libraries(test_handler_rejects PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_handler_rejects test_handler_rejects)
+target_link_libraries(test_handler_denies PUBLIC cmocka gcov cardano_sign_tx_core)
+add_test(test_handler_denies test_handler_denies)
 
 add_executable(test_dispatcher_interleaving
     test_dispatcher_interleaving.c

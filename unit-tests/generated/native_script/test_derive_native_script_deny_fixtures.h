@@ -32,7 +32,7 @@
 
 // ======================================================================
 // Test Case [0]: Native_script_PUBKEY invalid key path
-// Source: tests/standalone/input_files/native_script.py > reject tests
+// Source: tests/standalone/input_files/native_script.py > deny tests
 // ======================================================================
 
 // APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
@@ -63,7 +63,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC0_NATIVE_SCRIPT_PUBKEY_INVALID_KEY_PA
 
 // ======================================================================
 // Test Case [1]: Native_script_N_OF_K invalid required count higher than number of scripts
-// Source: tests/standalone/input_files/native_script.py > reject tests
+// Source: tests/standalone/input_files/native_script.py > deny tests
 // ======================================================================
 
 // N_OF_K (internal node): 1 of 0 children required
@@ -97,7 +97,7 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC1_NATIVE_SCRIPT_N_OF_K_INVALID_REQUIR
 // ======================================================================
 
 static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
-    // Source: tests/standalone/input_files/native_script.py > reject tests > Native_script_PUBKEY invalid key path
+    // Source: tests/standalone/input_files/native_script.py > deny tests > Native_script_PUBKEY invalid key path
     {
         .name = "Native_script_PUBKEY invalid key path",
         .root_script = (const native_script_t*)&SCRIPT_TC0_NATIVE_SCRIPT_PUBKEY_INVALID_KEY_PATH_C0,
@@ -106,7 +106,7 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC0_NATIVE_SCRIPT_PUBKEY_INVALID_KEY_PATH,
         .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC0_NATIVE_SCRIPT_PUBKEY_INVALID_KEY_PATH),
     },
-    // Source: tests/standalone/input_files/native_script.py > reject tests > Native_script_N_OF_K invalid required count higher than number of scripts
+    // Source: tests/standalone/input_files/native_script.py > deny tests > Native_script_N_OF_K invalid required count higher than number of scripts
     {
         .name = "Native_script_N_OF_K invalid required count higher than number of scripts",
         .root_script = (const native_script_t*)&SCRIPT_TC1_NATIVE_SCRIPT_N_OF_K_INVALID_REQUIRED_COUNT_HIGHER_THAN_NUMBER_OF_SCRIPTS_C0,

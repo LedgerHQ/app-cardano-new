@@ -64,7 +64,6 @@ class SignedData:
 @dataclass(kw_only=True)
 class ValidNativeScriptTestCase:
     name: str
-    ledgerjs_name: Optional[str] = None
     script: Optional[NativeScript] = None
     expected_in_unit_test: Optional[SignedData] = None
     displayFormat: Optional[NativeScriptHashDisplayFormat] = (
@@ -77,7 +76,6 @@ class ValidNativeScriptTestCase:
 ValidNativeScriptTestCases = [
     ValidNativeScriptTestCase(
         name="Native_script_PUBKEY_device_owned",
-        ledgerjs_name="PUBKEY - device owned",
         script=NativeScript(
             NativeScriptType.PUBKEY_DEVICE_OWNED,
             NativeScriptParamsPubkey("m/1852'/1815'/0'/0/0"),
@@ -87,7 +85,6 @@ ValidNativeScriptTestCases = [
     ),
     ValidNativeScriptTestCase(
         name="Native_script_PUBKEY_third_party",
-        ledgerjs_name="PUBKEY - third party",
         script=NativeScript(
             NativeScriptType.PUBKEY_THIRD_PARTY,
             NativeScriptParamsPubkey(
@@ -98,7 +95,6 @@ ValidNativeScriptTestCases = [
     ),
     ValidNativeScriptTestCase(
         name="Native_script_PUBKEY_third_party_script_hash_displayed_as_policy_id",
-        ledgerjs_name="PUBKEY - third party (script hash displayed as policy id)",
         script=NativeScript(
             NativeScriptType.PUBKEY_THIRD_PARTY,
             NativeScriptParamsPubkey(
@@ -110,7 +106,6 @@ ValidNativeScriptTestCases = [
     ),
     ValidNativeScriptTestCase(
         name="Native_script_ALL_script",
-        ledgerjs_name="ALL script",
         script=NativeScript(
             NativeScriptType.ALL,
             NativeScriptParamsScripts(
@@ -134,13 +129,11 @@ ValidNativeScriptTestCases = [
     ),
     ValidNativeScriptTestCase(
         name="Native_script_ALL_script_no_subscripts",
-        ledgerjs_name="ALL script (no subscripts)",
         script=NativeScript(NativeScriptType.ALL, NativeScriptParamsScripts()),
         expected_in_unit_test=SignedData("d441227553a0f1a965fee7d60a0f724b368dd1bddbc208730fccebcf"),
     ),
     ValidNativeScriptTestCase(
         name="Native_script_ANY_script",
-        ledgerjs_name="ANY script",
         script=NativeScript(
             NativeScriptType.ANY,
             NativeScriptParamsScripts(
@@ -164,13 +157,11 @@ ValidNativeScriptTestCases = [
     ),
     ValidNativeScriptTestCase(
         name="Native_script_ANY_script_no_subscripts",
-        ledgerjs_name="ANY script (no subscripts)",
         script=NativeScript(NativeScriptType.ANY, NativeScriptParamsScripts()),
         expected_in_unit_test=SignedData("52dc3d43b6d2465e96109ce75ab61abe5e9c1d8a3c9ce6ff8a3af528"),
     ),
     ValidNativeScriptTestCase(
         name="Native_script_N_OF_K_script",
-        ledgerjs_name="N_OF_K script",
         script=NativeScript(
             NativeScriptType.N_OF_K,
             NativeScriptParamsNofK(
@@ -195,19 +186,16 @@ ValidNativeScriptTestCases = [
     ),
     ValidNativeScriptTestCase(
         name="Native_script_N_OF_K_script_no_subscripts",
-        ledgerjs_name="N_OF_K script (no subscripts)",
         script=NativeScript(NativeScriptType.N_OF_K, NativeScriptParamsNofK(0)),
         expected_in_unit_test=SignedData("3530cc9ae7f2895111a99b7a02184dd7c0cea7424f1632d73951b1d7"),
     ),
     ValidNativeScriptTestCase(
         name="Native_script_INVALID_BEFORE_script",
-        ledgerjs_name="INVALID_BEFORE script",
         script=NativeScript(NativeScriptType.INVALID_BEFORE, NativeScriptParamsInvalid(42)),
         expected_in_unit_test=SignedData("2a25e608a683057e32ea38b50ce8875d5b34496b393da8d25d314c4e"),
     ),
     ValidNativeScriptTestCase(
         name="Native_script_INVALID_BEFORE_script_slot_is_a_big_number",
-        ledgerjs_name="INVALID_BEFORE script (slot is a big number)",
         script=NativeScript(
             NativeScriptType.INVALID_BEFORE,
             NativeScriptParamsInvalid(18446744073709551615),
@@ -216,13 +204,11 @@ ValidNativeScriptTestCases = [
     ),
     ValidNativeScriptTestCase(
         name="Native_script_INVALID_HEREAFTER_script",
-        ledgerjs_name="INVALID_HEREAFTER script",
         script=NativeScript(NativeScriptType.INVALID_HEREAFTER, NativeScriptParamsInvalid(42)),
         expected_in_unit_test=SignedData("1620dc65993296335183f23ff2f7747268168fabbeecbf24c8a20194"),
     ),
     ValidNativeScriptTestCase(
         name="Native_script_INVALID_HEREAFTER_script_slot_is_a_big_number",
-        ledgerjs_name="INVALID_HEREAFTER script (slot is a big number)",
         script=NativeScript(
             NativeScriptType.INVALID_HEREAFTER,
             NativeScriptParamsInvalid(18446744073709551615),
@@ -231,7 +217,6 @@ ValidNativeScriptTestCases = [
     ),
     ValidNativeScriptTestCase(
         name="Native_script_Nested_native_scripts",
-        ledgerjs_name="Nested native scripts",
         script=NativeScript(
             NativeScriptType.ALL,
             NativeScriptParamsScripts(
@@ -302,7 +287,6 @@ ValidNativeScriptTestCases = [
     ),
     ValidNativeScriptTestCase(
         name="Native_script_Nested native scripts #2",
-        ledgerjs_name="Native_script_Nested native scripts #2",
         script=NativeScript(
             NativeScriptType.ALL,
             NativeScriptParamsScripts(
@@ -334,7 +318,6 @@ ValidNativeScriptTestCases = [
     ),
     ValidNativeScriptTestCase(
         name="Native_script_Nested native scripts #3",
-        ledgerjs_name="Native_script_Nested native scripts #3",
         script=NativeScript(
             NativeScriptType.N_OF_K,
             NativeScriptParamsNofK(
@@ -369,7 +352,6 @@ ValidNativeScriptTestCases = [
 InvalidScriptTestCases = [
     ValidNativeScriptTestCase(
         name="Native_script_PUBKEY invalid key path",
-        ledgerjs_name=None,
         script=NativeScript(
             NativeScriptType.PUBKEY_DEVICE_OWNED,
             NativeScriptParamsPubkey("m/0/0/0/0/0/0"),
@@ -378,7 +360,6 @@ InvalidScriptTestCases = [
     ),
     ValidNativeScriptTestCase(
         name="Native_script_N_OF_K invalid required count higher than number of scripts",
-        ledgerjs_name=None,
         script=NativeScript(NativeScriptType.N_OF_K, NativeScriptParamsNofK(1)),
         expected_in_unit_test=SignedData(sw=StatusWord.SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_COUNT),
     ),

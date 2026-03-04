@@ -189,7 +189,6 @@ def _check_result(testCase: SignMsgTestCase, signature: bytes, public_key: bytes
         address = derive_address(
             DeriveAddressTestCase(
                 name="sign_message_keyhash",
-                ledgerjs_name=None,
                 netDesc=Mainnet,
                 addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
                 spendingValue=testCase.msgData.signingPath,

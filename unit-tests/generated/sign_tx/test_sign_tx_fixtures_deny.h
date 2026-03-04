@@ -22,8 +22,8 @@
 #include <stdbool.h>
 #include "dispatcher.h"  // For P1 constants
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Non_mainnet_protocol_magic
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_NON_MAINNET_PROTOCOL_MAGIC[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Non_mainnet_protocol_magic
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_NON_MAINNET_PROTOCOL_MAGIC[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -41,8 +41,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_NON_MAINNET_PROTOCOL_MA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Invalid_network_id
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_INVALID_NETWORK_ID[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Invalid_network_id
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_INVALID_NETWORK_ID[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -60,8 +60,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_INVALID_NETWORK_ID[] = 
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_too_few_certificates
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOO_FEW_CERTIFICATES[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_operator_too_few_certificates
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_TOO_FEW_CERTIFICATES[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -79,8 +79,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_too_few_certificates
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOO_FEW_CERTIFICATES[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_owner_too_few_certificates
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_TOO_FEW_CERTIFICATES[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -92,8 +92,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_too_many_certificates
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOO_MANY_CERTIFICATES[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_operator_too_many_certificates
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_TOO_MANY_CERTIFICATES[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -124,8 +124,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_too_many_certificates
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOO_MANY_CERTIFICATES[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_owner_too_many_certificates
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_TOO_MANY_CERTIFICATES[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -158,8 +158,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_too_many_withdrawals
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOO_MANY_WITHDRAWALS[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_operator_too_many_withdrawals
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_TOO_MANY_WITHDRAWALS[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -187,8 +187,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_too_many_withdrawals
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOO_MANY_WITHDRAWALS[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_owner_too_many_withdrawals
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_TOO_MANY_WITHDRAWALS[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -217,8 +217,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_mint_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_MINT_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_operator_mint_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_MINT_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -247,8 +247,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_mint_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_MINT_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_owner_mint_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_MINT_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -277,8 +277,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary_tx_collateral_inputs_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_COLLATERAL_INPUTS_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Ordinary_tx_collateral_inputs_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_ORDINARY_TX_COLLATERAL_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -297,8 +297,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_COLLATERAL_
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig_tx_collateral_inputs_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_COLLATERAL_INPUTS_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Multisig_tx_collateral_inputs_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_MULTISIG_TX_COLLATERAL_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -311,8 +311,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_COLLATERAL_
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_collateral_inputs_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_COLLATERAL_INPUTS_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_operator_collateral_inputs_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_COLLATERAL_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -340,8 +340,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_collateral_inputs_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_COLLATERAL_INPUTS_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_owner_collateral_inputs_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_COLLATERAL_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -376,8 +376,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_required_signers_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_REQUIRED_SIGNERS_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_operator_required_signers_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_REQUIRED_SIGNERS_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -405,8 +405,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_required_signers_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_REQUIRED_SIGNERS_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_owner_required_signers_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_REQUIRED_SIGNERS_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -441,8 +441,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary_tx_collateral_output_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_COLLATERAL_OUTPUT_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Ordinary_tx_collateral_output_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_ORDINARY_TX_COLLATERAL_OUTPUT_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -462,8 +462,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_COLLATERAL_
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig_tx_collateral_output_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_COLLATERAL_OUTPUT_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Multisig_tx_collateral_output_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_MULTISIG_TX_COLLATERAL_OUTPUT_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -477,8 +477,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_COLLATERAL_
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_collateral_output_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_COLLATERAL_OUTPUT_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_operator_collateral_output_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_COLLATERAL_OUTPUT_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -507,8 +507,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_collateral_output_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_COLLATERAL_OUTPUT_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_owner_collateral_output_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_COLLATERAL_OUTPUT_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -538,8 +538,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary_tx_total_collateral_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_TOTAL_COLLATERAL_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Ordinary_tx_total_collateral_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_ORDINARY_TX_TOTAL_COLLATERAL_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -557,8 +557,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_TOTAL_COLLA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig_tx_total_collateral_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_TOTAL_COLLATERAL_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Multisig_tx_total_collateral_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_MULTISIG_TX_TOTAL_COLLATERAL_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -570,8 +570,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_TOTAL_COLLA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_total_collateral_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOTAL_COLLATERAL_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_operator_total_collateral_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_TOTAL_COLLATERAL_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -593,8 +593,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_total_collateral_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOTAL_COLLATERAL_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_owner_total_collateral_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_TOTAL_COLLATERAL_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -622,8 +622,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary_tx_reference_inputs_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_REFERENCE_INPUTS_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Ordinary_tx_reference_inputs_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_ORDINARY_TX_REFERENCE_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -642,8 +642,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_REFERENCE_I
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig_tx_reference_inputs_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_REFERENCE_INPUTS_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Multisig_tx_reference_inputs_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_MULTISIG_TX_REFERENCE_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -656,8 +656,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_REFERENCE_I
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_reference_inputs_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_REFERENCE_INPUTS_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_operator_reference_inputs_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_REFERENCE_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -685,8 +685,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_reference_inputs_included
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_REFERENCE_INPUTS_INCLUDED[] = {
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_owner_reference_inputs_included
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_REFERENCE_INPUTS_INCLUDED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -716,8 +716,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward_address_key
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_KEY[] = {
+// Source: tests/standalone/input_files/signTx.py > addressParamsDenyTestCases > Reward_address_key
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_ADDRESS_REWARD_ADDRESS_KEY[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -734,8 +734,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_KEY[]
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward_address_script
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_SCRIPT[] = {
+// Source: tests/standalone/input_files/signTx.py > addressParamsDenyTestCases > Reward_address_script
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_ADDRESS_REWARD_ADDRESS_SCRIPT[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -753,8 +753,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_SCRIP
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No_spending_path_Ordinary_Tx_1
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORDINARY_TX_1[] = {
+// Source: tests/standalone/input_files/signTx.py > addressParamsDenyTestCases > No_spending_path_Ordinary_Tx_1
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_ADDRESS_NO_SPENDING_PATH_ORDINARY_TX_1[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -772,8 +772,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORD
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No_spending_path_Ordinary_Tx_2
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORDINARY_TX_2[] = {
+// Source: tests/standalone/input_files/signTx.py > addressParamsDenyTestCases > No_spending_path_Ordinary_Tx_2
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_ADDRESS_NO_SPENDING_PATH_ORDINARY_TX_2[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -791,8 +791,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORD
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool_operator_spending_choice_not_path
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OPERATOR_SPENDING_CHOICE_NOT_PATH[] = {
+// Source: tests/standalone/input_files/signTx.py > addressParamsDenyTestCases > Pool_operator_spending_choice_not_path
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_ADDRESS_POOL_OPERATOR_SPENDING_CHOICE_NOT_PATH[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -810,8 +810,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OPERATOR_SPENDI
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Multisig_unconditionally
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_MULTISIG_UNCONDITIONALLY[] = {
+// Source: tests/standalone/input_files/signTx.py > addressParamsDenyTestCases > Multisig_unconditionally
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_ADDRESS_MULTISIG_UNCONDITIONALLY[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -823,8 +823,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_MULTISIG_UNCONDITION
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool_owner_unconditionally
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OWNER_UNCONDITIONALLY[] = {
+// Source: tests/standalone/input_files/signTx.py > addressParamsDenyTestCases > Pool_owner_unconditionally
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_ADDRESS_POOL_OWNER_UNCONDITIONALLY[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -837,8 +837,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OWNER_UNCONDITI
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_registration_in_Ordinary_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_ORDINARY_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Pool_registration_in_Ordinary_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_POOL_REGISTRATION_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -860,8 +860,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_OR
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_registration_in_Multisig_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_MULTISIG_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Pool_registration_in_Multisig_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_POOL_REGISTRATION_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -877,8 +877,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_MU
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_registration_in_Plutus_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_PLUTUS_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Pool_registration_in_Plutus_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_POOL_REGISTRATION_IN_PLUTUS_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -900,8 +900,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_PL
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_retirement_in_Multisig_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_MULTISIG_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Pool_retirement_in_Multisig_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_POOL_RETIREMENT_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -914,8 +914,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_MULT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_registration_in_Pool_Registration_Operator
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_REGISTRATION_IN_POOL_REGISTRATION_OPERATOR[] = {
+// Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Stake_registration_in_Pool_Registration_Operator
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_STAKE_REGISTRATION_IN_POOL_REGISTRATION_OPERATOR[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -934,8 +934,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_REGISTRATION_IN_P
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_registration_in_Pool_Registration_Owner
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_REGISTRATION_IN_POOL_REGISTRATION_OWNER[] = {
+// Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Stake_registration_in_Pool_Registration_Owner
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_STAKE_REGISTRATION_IN_POOL_REGISTRATION_OWNER[] = {
     {
         .hex_payload =
     "003B01002B82D818582183581C9E1C71DE652EC8B85FEC296F0685CA3988781C"
@@ -947,8 +947,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_REGISTRATION_IN_P
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_deregistration_in_Pool_Registration_Operator
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DEREGISTRATION_IN_POOL_REGISTRATION_OPERATOR[] = {
+// Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Stake_deregistration_in_Pool_Registration_Operator
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_STAKE_DEREGISTRATION_IN_POOL_REGISTRATION_OPERATOR[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -973,8 +973,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DEREGISTRATION_IN
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_deregistration_in_Pool_Registration_Owner
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DEREGISTRATION_IN_POOL_REGISTRATION_OWNER[] = {
+// Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Stake_deregistration_in_Pool_Registration_Owner
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_STAKE_DEREGISTRATION_IN_POOL_REGISTRATION_OWNER[] = {
     {
         .hex_payload =
     "003B01002B82D818582183581C9E1C71DE652EC8B85FEC296F0685CA3988781C"
@@ -992,8 +992,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DEREGISTRATION_IN
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_delegation_in_Pool_Registration_Operator
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DELEGATION_IN_POOL_REGISTRATION_OPERATOR[] = {
+// Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Stake_delegation_in_Pool_Registration_Operator
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_STAKE_DELEGATION_IN_POOL_REGISTRATION_OPERATOR[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1018,8 +1018,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DELEGATION_IN_POO
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_delegation_in_Pool_Registration_Owner
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DELEGATION_IN_POOL_REGISTRATION_OWNER[] = {
+// Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Stake_delegation_in_Pool_Registration_Owner
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_STAKE_DELEGATION_IN_POOL_REGISTRATION_OWNER[] = {
     {
         .hex_payload =
     "003B01002B82D818582183581C9E1C71DE652EC8B85FEC296F0685CA3988781C"
@@ -1037,8 +1037,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DELEGATION_IN_POO
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_retirement_in_Pool_Registration_Operator
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL_REGISTRATION_OPERATOR[] = {
+// Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Pool_retirement_in_Pool_Registration_Operator
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_POOL_RETIREMENT_IN_POOL_REGISTRATION_OPERATOR[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1063,8 +1063,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_retirement_in_Pool_Registration_Owner
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL_REGISTRATION_OWNER[] = {
+// Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Pool_retirement_in_Pool_Registration_Owner
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_POOL_RETIREMENT_IN_POOL_REGISTRATION_OWNER[] = {
     {
         .hex_payload =
     "003B01002B82D818582183581C9E1C71DE652EC8B85FEC296F0685CA3988781C"
@@ -1083,8 +1083,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Script_hash_in_Ordinary_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_SCRIPT_HASH_IN_ORDINARY_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > certificateStakingDenyTestCases > Script_hash_in_Ordinary_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_STAKING_SCRIPT_HASH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1103,8 +1103,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_SCRIPT_HASH_IN_
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Non_staking_path_in_Ordinary_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_NON_STAKING_PATH_IN_ORDINARY_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > certificateStakingDenyTestCases > Non_staking_path_in_Ordinary_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_STAKING_NON_STAKING_PATH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1123,8 +1123,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_NON_STAKING_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Path_in_Multisig_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_PATH_IN_MULTISIG_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > certificateStakingDenyTestCases > Path_in_Multisig_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_STAKING_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1138,8 +1138,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_PATH_IN_MULTISI
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > certificateStakePoolRetirementRejectTestCases > Non_pool_cold_key_in_Ordinary_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIRE_NON_POOL_COLD_KEY_IN_ORDINARY_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > certificateStakePoolRetirementDenyTestCases > Non_pool_cold_key_in_Ordinary_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_POOL_RETIRE_NON_POOL_COLD_KEY_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1165,8 +1165,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIRE_NON_POOL_CO
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Reject_tx_with_invalid_canonical_ordering_of_withdrawals
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_REJECT_TX_WITH_INVALID_CANONICAL_ORDERING_OF_WITHDRAWALS[] = {
+// Source: tests/standalone/input_files/signTx.py > withdrawalDenyTestCases > Deny_tx_with_invalid_canonical_ordering_of_withdrawals
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_DENY_TX_WITH_INVALID_CANONICAL_ORDERING_OF_WITHDRAWALS[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1196,8 +1196,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_REJECT_TX_WITH_IN
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Script_hash_as_stake_credential_in_Ordinary_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_SCRIPT_HASH_AS_STAKE_CREDENTIAL_IN_ORDINARY_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > withdrawalDenyTestCases > Script_hash_as_stake_credential_in_Ordinary_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_SCRIPT_HASH_AS_STAKE_CREDENTIAL_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1216,8 +1216,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_SCRIPT_HASH_AS_ST
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Non_staking_path_as_stake_credential_in_Ordinary_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_NON_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_ORDINARY_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > withdrawalDenyTestCases > Non_staking_path_as_stake_credential_in_Ordinary_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_NON_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1236,8 +1236,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_NON_STAKING_PATH_
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Staking_path_as_stake_credential_in_Multisig_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_MULTISIG_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > withdrawalDenyTestCases > Staking_path_as_stake_credential_in_Multisig_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1250,8 +1250,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_STAKING_PATH_AS_S
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Non_staking_path_as_stake_credential_in_Plutus_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_NON_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_PLUTUS_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > withdrawalDenyTestCases > Non_staking_path_as_stake_credential_in_Plutus_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_NON_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_PLUTUS_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1271,8 +1271,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_NON_STAKING_PATH_
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_account_path_in_Ordinary_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PATH_IN_ORDINARY_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Ordinary_account_path_in_Ordinary_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_ACCOUNT_PATH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1290,8 +1290,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Ordinary_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_ORDINARY_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_account_path_in_Ordinary_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1309,8 +1309,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_spending_path_in_Ordinary_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PATH_IN_ORDINARY_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_spending_path_in_Ordinary_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_SPENDING_PATH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1328,8 +1328,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_staking_path_in_Ordinary_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PATH_IN_ORDINARY_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_staking_path_in_Ordinary_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_STAKING_PATH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1347,8 +1347,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint_path_in_Ordinary_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_ORDINARY_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Mint_path_in_Ordinary_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MINT_PATH_IN_ORDINARY_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1366,8 +1366,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_ORDINAR
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_account_path_in_Multisig_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PATH_IN_MULTISIG_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Ordinary_account_path_in_Multisig_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_ACCOUNT_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1385,8 +1385,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Multisig_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_MULTISIG_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_account_path_in_Multisig_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1404,8 +1404,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_spending_path_in_Multisig_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_SPENDING_PATH_IN_MULTISIG_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Ordinary_spending_path_in_Multisig_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_SPENDING_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1423,8 +1423,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_SPENDING_PA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_staking_path_in_Multisig_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_STAKING_PATH_IN_MULTISIG_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Ordinary_staking_path_in_Multisig_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_STAKING_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1442,8 +1442,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_STAKING_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint_path_in_Multisig_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_MULTISIG_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Mint_path_in_Multisig_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MINT_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1461,8 +1461,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_MULTISI
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Pool_cold_path_in_Multisig_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_POOL_COLD_PATH_IN_MULTISIG_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Pool_cold_path_in_Multisig_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_POOL_COLD_PATH_IN_MULTISIG_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1480,8 +1480,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_POOL_COLD_PATH_IN_MU
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_account_path_in_Plutus_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PATH_IN_PLUTUS_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Ordinary_account_path_in_Plutus_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_ACCOUNT_PATH_IN_PLUTUS_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1499,8 +1499,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Plutus_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_PLUTUS_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_account_path_in_Plutus_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_IN_PLUTUS_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1518,8 +1518,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Pool_Registration_Owner_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_account_path_in_Pool_Registration_Owner_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1547,8 +1547,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_spending_path_in_Pool_Registration_Owner_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_SPENDING_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Ordinary_spending_path_in_Pool_Registration_Owner_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_SPENDING_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1576,8 +1576,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_SPENDING_PA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_spending_path_in_Pool_Registration_Owner_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_spending_path_in_Pool_Registration_Owner_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_SPENDING_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1605,8 +1605,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_staking_path_in_Pool_Registration_Owner_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_staking_path_in_Pool_Registration_Owner_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_STAKING_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1634,8 +1634,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint_path_in_Pool_Registration_Owner_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Mint_path_in_Pool_Registration_Owner_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MINT_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1663,8 +1663,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_POOL_RE
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Pool_cold_path_in_Pool_Registration_Owner_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_POOL_COLD_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Pool_cold_path_in_Pool_Registration_Owner_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_POOL_COLD_PATH_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1692,8 +1692,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_POOL_COLD_PATH_IN_PO
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Pool_Registration_Operator_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_account_path_in_Pool_Registration_Operator_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1715,8 +1715,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_spending_path_in_Pool_Registration_Operator_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_spending_path_in_Pool_Registration_Operator_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_SPENDING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1738,8 +1738,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_staking_path_in_Pool_Registration_Operator_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_STAKING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Ordinary_staking_path_in_Pool_Registration_Operator_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_STAKING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1761,8 +1761,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_STAKING_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_staking_path_in_Pool_Registration_Operator_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_staking_path_in_Pool_Registration_Operator_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_STAKING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1784,8 +1784,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PAT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint_path_in_Pool_Registration_Operator_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Mint_path_in_Pool_Registration_Operator_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MINT_PATH_IN_POOL_REGISTRATION_OPERATOR_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1808,8 +1808,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_POOL_RE
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input_and_change_output_account_mismatch
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_CHANGE_OUTPUT_ACCOUNT_MISMATCH[] = {
+// Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Input_and_change_output_account_mismatch
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_INPUT_AND_CHANGE_OUTPUT_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1829,8 +1829,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_CHA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input_and_stake_deregistration_certificate_account_mismatch
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_STAKE_DEREGISTRATION_CERTIFICATE_ACCOUNT_MISMATCH[] = {
+// Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Input_and_stake_deregistration_certificate_account_mismatch
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_INPUT_AND_STAKE_DEREGISTRATION_CERTIFICATE_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1855,8 +1855,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_STA
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input_and_withdrawal_account_mismatch
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_WITHDRAWAL_ACCOUNT_MISMATCH[] = {
+// Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Input_and_withdrawal_account_mismatch
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_INPUT_AND_WITHDRAWAL_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1881,8 +1881,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_WIT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Change_output_and_stake_deregistration_account_mismatch
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_CHANGE_OUTPUT_AND_STAKE_DEREGISTRATION_ACCOUNT_MISMATCH[] = {
+// Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Change_output_and_stake_deregistration_account_mismatch
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_CHANGE_OUTPUT_AND_STAKE_DEREGISTRATION_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1909,8 +1909,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_CHANGE_OUTPUT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Change_output_and_withdrawal_account_mismatch
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_CHANGE_OUTPUT_AND_WITHDRAWAL_ACCOUNT_MISMATCH[] = {
+// Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Change_output_and_withdrawal_account_mismatch
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_CHANGE_OUTPUT_AND_WITHDRAWAL_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1937,8 +1937,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_CHANGE_OUTPUT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Stake_deregistration_certificate_and_withdrawal_account_mismatch
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_STAKE_DEREGISTRATION_CERTIFICATE_AND_WITHDRAWAL_ACCOUNT_MISMATCH[] = {
+// Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Stake_deregistration_certificate_and_withdrawal_account_mismatch
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_STAKE_DEREGISTRATION_CERTIFICATE_AND_WITHDRAWAL_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1970,8 +1970,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_STAKE_DEREGIS
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Byron_to_Shelley_transfer_input_account_mismatch
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_BYRON_TO_SHELLEY_TRANSFER_INPUT_ACCOUNT_MISMATCH[] = {
+// Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Byron_to_Shelley_transfer_input_account_mismatch
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_BYRON_TO_SHELLEY_TRANSFER_INPUT_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -1997,8 +1997,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_BYRON_TO_SHEL
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Byron_to_Shelley_transfer_output_account_mismatch
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_BYRON_TO_SHELLEY_TRANSFER_OUTPUT_ACCOUNT_MISMATCH[] = {
+// Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Byron_to_Shelley_transfer_output_account_mismatch
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_BYRON_TO_SHELLEY_TRANSFER_OUTPUT_ACCOUNT_MISMATCH[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2017,8 +2017,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_BYRON_TO_SHEL
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral_output_with_datum_hash
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_DATUM_HASH[] = {
+// Source: tests/standalone/input_files/signTx.py > collateralOutputDenyTestCases > Collateral_output_with_datum_hash
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_DATUM_HASH[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2039,8 +2039,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral_output_with_inline_datum
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_INLINE_DATUM[] = {
+// Source: tests/standalone/input_files/signTx.py > collateralOutputDenyTestCases > Collateral_output_with_inline_datum
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_INLINE_DATUM[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2086,8 +2086,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral_output_with_reference_script
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_REFERENCE_SCRIPT[] = {
+// Source: tests/standalone/input_files/signTx.py > collateralOutputDenyTestCases > Collateral_output_with_reference_script
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_REFERENCE_SCRIPT[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2109,8 +2109,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_asset_groups_are_not_ordered
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_ASSET_GROUPS_ARE_NOT_ORDERED[] = {
+// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_where_asset_groups_are_not_ordered
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_ASSET_GROUPS_ARE_NOT_ORDERED[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2131,8 +2131,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_A
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_asset_groups_are_not_unique
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_ASSET_GROUPS_ARE_NOT_UNIQUE[] = {
+// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_where_asset_groups_are_not_unique
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_ASSET_GROUPS_ARE_NOT_UNIQUE[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2153,8 +2153,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_A
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_alphabetical
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_ORDERED_ALPHABETICAL[] = {
+// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_where_tokens_within_an_asset_group_are_not_ordered_alphabetical
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_ORDERED_ALPHABETICAL[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2174,8 +2174,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_T
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_length
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_ORDERED_LENGTH[] = {
+// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_where_tokens_within_an_asset_group_are_not_ordered_length
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_ORDERED_LENGTH[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2195,8 +2195,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_T
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_tokens_within_an_asset_group_are_not_unique
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_UNIQUE[] = {
+// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_where_tokens_within_an_asset_group_are_not_unique
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_UNIQUE[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2216,8 +2216,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_T
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_policies
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WITH_MINT_FIELDS_WITH_INVALID_CANONICAL_ORDERING_OF_POLICIES[] = {
+// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_with_mint_fields_with_invalid_canonical_ordering_of_policies
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_MINT_FIELDS_WITH_INVALID_CANONICAL_ORDERING_OF_POLICIES[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2237,8 +2237,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WITH_MI
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_asset_names
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WITH_MINT_FIELDS_WITH_INVALID_CANONICAL_ORDERING_OF_ASSET_NAMES[] = {
+// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_with_mint_fields_with_invalid_canonical_ordering_of_asset_names
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_MINT_FIELDS_WITH_INVALID_CANONICAL_ORDERING_OF_ASSET_NAMES[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2257,8 +2257,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WITH_MI
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Different_index
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_DIFFERENT_INDEX[] = {
+// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Different_index
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DIFFERENT_INDEX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2298,8 +2298,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_DIFFERENT_INDEX[]
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Different_prefix
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_DIFFERENT_PREFIX[] = {
+// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Different_prefix
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DIFFERENT_PREFIX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2339,8 +2339,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_DIFFERENT_PREFIX[
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > No_path_given
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NO_PATH_GIVEN[] = {
+// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > No_path_given
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_NO_PATH_GIVEN[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2379,8 +2379,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NO_PATH_GIVEN[] =
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Invalid_numerator_denominator_relationship
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_INVALID_NUMERATOR_DENOMINATOR_RELATIONSHIP[] = {
+// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Invalid_numerator_denominator_relationship
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_INVALID_NUMERATOR_DENOMINATOR_RELATIONSHIP[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2418,8 +2418,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_INVALID_NUMERATOR
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdRejectTestCases > Path_sent_in_for_Pool_Registration_Owner_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_ID_PATH_SENT_IN_FOR_POOL_REGISTRATION_OWNER_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdDenyTestCases > Path_sent_in_for_Pool_Registration_Owner_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_ID_PATH_SENT_IN_FOR_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2456,8 +2456,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_ID_PATH_SENT_IN_FOR_POO
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdRejectTestCases > Hash_sent_in_for_Pool_Registration_Operator_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_ID_HASH_SENT_IN_FOR_POOL_REGISTRATION_OPERATOR_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdDenyTestCases > Hash_sent_in_for_Pool_Registration_Operator_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_ID_HASH_SENT_IN_FOR_POOL_REGISTRATION_OPERATOR_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2489,8 +2489,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_ID_HASH_SENT_IN_FOR_POO
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerRejectTestCases > Non_staking_path_for_Pool_Registration_Owner_Tx
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NON_STAKING_PATH_FOR_POOL_REGISTRATION_OWNER_TX[] = {
+// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerDenyTestCases > Non_staking_path_for_Pool_Registration_Owner_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_NON_STAKING_PATH_FOR_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2522,8 +2522,8 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NON_STAKING_PATH_
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > outputRejectTestCases > Legacy_output_with_inline_datum
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_OUTPUT_LEGACY_OUTPUT_WITH_INLINE_DATUM[] = {
+// Source: tests/standalone/input_files/signTx.py > outputDenyTestCases > Legacy_output_with_inline_datum
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_OUTPUT_LEGACY_OUTPUT_WITH_INLINE_DATUM[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2545,7 +2545,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_OUTPUT_LEGACY_OUTPUT_WITH_IN
 
 
 // Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool_registration_with_multiple_path_owners
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_INVALID_POOL_REGISTRATION_WITH_MULTIPLE_PATH_OWNERS[] = {
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_INVALID_POOL_REGISTRATION_WITH_MULTIPLE_PATH_OWNERS[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2584,7 +2584,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_INVALID_POOL_REGISTRATI
 };
 
 // Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool_registration_with_no_owners
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_INVALID_POOL_REGISTRATION_WITH_NO_OWNERS[] = {
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_INVALID_POOL_REGISTRATION_WITH_NO_OWNERS[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2610,7 +2610,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_CERT_INVALID_POOL_REGISTRATI
 
 
 // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool_metadata_url_too_long
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_URL_TOO_LONG[] = {
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_URL_TOO_LONG[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2645,7 +2645,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_
 };
 
 // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool_metadata_invalid_url
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_INVALID_URL[] = {
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_INVALID_URL[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2676,7 +2676,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_
 };
 
 // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool_metadata_invalid_hash_length
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_INVALID_HASH_LENGTH[] = {
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_INVALID_HASH_LENGTH[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2708,7 +2708,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_
 };
 
 // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool_metadata_missing_hash
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_MISSING_HASH[] = {
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_MISSING_HASH[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2740,7 +2740,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_
 
 
 // Source: tests/standalone/input_files/signTx.py > invalidRelayTestCases > SingleHostHostname_missing_dns
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_RELAY_SINGLEHOSTHOSTNAME_MISSING_DNS[] = {
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_RELAY_SINGLEHOSTHOSTNAME_MISSING_DNS[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2772,7 +2772,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_RELAY_SINGLEHOSTHOSTNAME_MIS
 };
 
 // Source: tests/standalone/input_files/signTx.py > invalidRelayTestCases > MultiHost_missing_dns
-static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_RELAY_MULTIHOST_MISSING_DNS[] = {
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_RELAY_MULTIHOST_MISSING_DNS[] = {
     {
         .hex_payload =
     "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
@@ -2805,1370 +2805,1370 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_RELAY_MULTIHOST_MISSING_DNS[
 
 
 static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Non_mainnet_protocol_magic
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Non_mainnet_protocol_magic
     {
-        .name = "[REJECT_INIT] Non_mainnet_protocol_magic",
+        .name = "[DENY_INIT] Non_mainnet_protocol_magic",
         .init_hex =
         "0000000000000000012D964A0803000100010200000000010100000100000000"
         "01010100000000010100010071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_NON_MAINNET_PROTOCOL_MAGIC,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_NON_MAINNET_PROTOCOL_MAGIC),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_NON_MAINNET_PROTOCOL_MAGIC,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_NON_MAINNET_PROTOCOL_MAGIC),
         .expected_sw = SWO_INVALID_PROTOCOL_MAGIC,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Invalid_network_id
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Invalid_network_id
     {
-        .name = "[REJECT_INIT] Invalid_network_id",
+        .name = "[DENY_INIT] Invalid_network_id",
         .init_hex =
         "0000000000000000102D964A0903000100010200000000010100000100000000"
         "01010100000000010100010071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_INVALID_NETWORK_ID,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_INVALID_NETWORK_ID),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_INVALID_NETWORK_ID,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_INVALID_NETWORK_ID),
         .expected_sw = SWO_INVALID_NETWORK_ID,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_too_few_certificates
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_operator_too_few_certificates
     {
-        .name = "[REJECT_INIT] Pool_registration_operator_too_few_certificates",
+        .name = "[DENY_INIT] Pool_registration_operator_too_few_certificates",
         .init_hex =
         "0000000000000000012D964A0905000100010200000000010100000100000000"
         "01010100000000010100010071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOO_FEW_CERTIFICATES,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOO_FEW_CERTIFICATES),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_TOO_FEW_CERTIFICATES,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_TOO_FEW_CERTIFICATES),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_too_few_certificates
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_owner_too_few_certificates
     {
-        .name = "[REJECT_INIT] Pool_registration_owner_too_few_certificates",
+        .name = "[DENY_INIT] Pool_registration_owner_too_few_certificates",
         .init_hex =
         "0000000000000000012D964A0904000100010200000000010100000100000000"
         "01010100000000010100000071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOO_FEW_CERTIFICATES,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOO_FEW_CERTIFICATES),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_TOO_FEW_CERTIFICATES,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_TOO_FEW_CERTIFICATES),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_too_many_certificates
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_operator_too_many_certificates
     {
-        .name = "[REJECT_INIT] Pool_registration_operator_too_many_certificates",
+        .name = "[DENY_INIT] Pool_registration_operator_too_many_certificates",
         .init_hex =
         "0000000000000000012D964A0905000100010200020000010100000100000000"
         "01010100000000010100010169",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOO_MANY_CERTIFICATES,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOO_MANY_CERTIFICATES),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_TOO_MANY_CERTIFICATES,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_TOO_MANY_CERTIFICATES),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_too_many_certificates
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_owner_too_many_certificates
     {
-        .name = "[REJECT_INIT] Pool_registration_owner_too_many_certificates",
+        .name = "[DENY_INIT] Pool_registration_owner_too_many_certificates",
         .init_hex =
         "0000000000000000012D964A0904000100010200020000010100000100000000"
         "010101000000000101000101A3",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOO_MANY_CERTIFICATES,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOO_MANY_CERTIFICATES),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_TOO_MANY_CERTIFICATES,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_TOO_MANY_CERTIFICATES),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_too_many_withdrawals
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_operator_too_many_withdrawals
     {
-        .name = "[REJECT_INIT] Pool_registration_operator_too_many_withdrawals",
+        .name = "[DENY_INIT] Pool_registration_operator_too_many_withdrawals",
         .init_hex =
         "0000000000000000012D964A0905000100010200010001010100000100000000"
         "01010100000000010100010112",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOO_MANY_WITHDRAWALS,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOO_MANY_WITHDRAWALS),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_TOO_MANY_WITHDRAWALS,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_TOO_MANY_WITHDRAWALS),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_too_many_withdrawals
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_owner_too_many_withdrawals
     {
-        .name = "[REJECT_INIT] Pool_registration_owner_too_many_withdrawals",
+        .name = "[DENY_INIT] Pool_registration_owner_too_many_withdrawals",
         .init_hex =
         "0000000000000000012D964A0904000100010200010001010100000100000000"
         "0101010000000001010001012F",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOO_MANY_WITHDRAWALS,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOO_MANY_WITHDRAWALS),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_TOO_MANY_WITHDRAWALS,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_TOO_MANY_WITHDRAWALS),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_mint_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_operator_mint_included
     {
-        .name = "[REJECT_INIT] Pool_registration_operator_mint_included",
+        .name = "[DENY_INIT] Pool_registration_operator_mint_included",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100010100000000"
         "0101010000000001010001011C",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_MINT_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_MINT_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_MINT_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_MINT_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_mint_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_owner_mint_included
     {
-        .name = "[REJECT_INIT] Pool_registration_owner_mint_included",
+        .name = "[DENY_INIT] Pool_registration_owner_mint_included",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100010100000000"
         "01010100000000010100010139",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_MINT_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_MINT_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_MINT_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_MINT_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary_tx_collateral_inputs_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Ordinary_tx_collateral_inputs_included
     {
-        .name = "[REJECT_INIT] Ordinary_tx_collateral_inputs_included",
+        .name = "[DENY_INIT] Ordinary_tx_collateral_inputs_included",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100010000"
         "01010100000000010100010095",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_COLLATERAL_INPUTS_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_COLLATERAL_INPUTS_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_ORDINARY_TX_COLLATERAL_INPUTS_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_ORDINARY_TX_COLLATERAL_INPUTS_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig_tx_collateral_inputs_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Multisig_tx_collateral_inputs_included
     {
-        .name = "[REJECT_INIT] Multisig_tx_collateral_inputs_included",
+        .name = "[DENY_INIT] Multisig_tx_collateral_inputs_included",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100010000"
         "01010100000000010100000095",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_COLLATERAL_INPUTS_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_COLLATERAL_INPUTS_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_MULTISIG_TX_COLLATERAL_INPUTS_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_MULTISIG_TX_COLLATERAL_INPUTS_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_collateral_inputs_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_operator_collateral_inputs_included
     {
-        .name = "[REJECT_INIT] Pool_registration_operator_collateral_inputs_included",
+        .name = "[DENY_INIT] Pool_registration_operator_collateral_inputs_included",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100010000"
         "01010100000000010100010111",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_COLLATERAL_INPUTS_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_COLLATERAL_INPUTS_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_COLLATERAL_INPUTS_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_COLLATERAL_INPUTS_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_collateral_inputs_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_owner_collateral_inputs_included
     {
-        .name = "[REJECT_INIT] Pool_registration_owner_collateral_inputs_included",
+        .name = "[DENY_INIT] Pool_registration_owner_collateral_inputs_included",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100010000"
         "0101010000000001010002012E",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_COLLATERAL_INPUTS_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_COLLATERAL_INPUTS_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_COLLATERAL_INPUTS_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_COLLATERAL_INPUTS_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_required_signers_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_operator_required_signers_included
     {
-        .name = "[REJECT_INIT] Pool_registration_operator_required_signers_included",
+        .name = "[DENY_INIT] Pool_registration_operator_required_signers_included",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000001"
         "01010100000000010100010103",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_REQUIRED_SIGNERS_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_REQUIRED_SIGNERS_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_REQUIRED_SIGNERS_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_REQUIRED_SIGNERS_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_required_signers_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_owner_required_signers_included
     {
-        .name = "[REJECT_INIT] Pool_registration_owner_required_signers_included",
+        .name = "[DENY_INIT] Pool_registration_owner_required_signers_included",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000001"
         "01010100000000010100020120",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_REQUIRED_SIGNERS_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_REQUIRED_SIGNERS_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_REQUIRED_SIGNERS_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_REQUIRED_SIGNERS_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary_tx_collateral_output_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Ordinary_tx_collateral_output_included
     {
-        .name = "[REJECT_INIT] Ordinary_tx_collateral_output_included",
+        .name = "[DENY_INIT] Ordinary_tx_collateral_output_included",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "010201000000000101000100BC",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_COLLATERAL_OUTPUT_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_COLLATERAL_OUTPUT_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_ORDINARY_TX_COLLATERAL_OUTPUT_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_ORDINARY_TX_COLLATERAL_OUTPUT_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig_tx_collateral_output_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Multisig_tx_collateral_output_included
     {
-        .name = "[REJECT_INIT] Multisig_tx_collateral_output_included",
+        .name = "[DENY_INIT] Multisig_tx_collateral_output_included",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "010201000000000101000000BC",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_COLLATERAL_OUTPUT_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_COLLATERAL_OUTPUT_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_MULTISIG_TX_COLLATERAL_OUTPUT_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_MULTISIG_TX_COLLATERAL_OUTPUT_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_collateral_output_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_operator_collateral_output_included
     {
-        .name = "[REJECT_INIT] Pool_registration_operator_collateral_output_included",
+        .name = "[DENY_INIT] Pool_registration_operator_collateral_output_included",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "01020100000000010100010138",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_COLLATERAL_OUTPUT_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_COLLATERAL_OUTPUT_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_COLLATERAL_OUTPUT_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_COLLATERAL_OUTPUT_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_collateral_output_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_owner_collateral_output_included
     {
-        .name = "[REJECT_INIT] Pool_registration_owner_collateral_output_included",
+        .name = "[DENY_INIT] Pool_registration_owner_collateral_output_included",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "01020100000000010100010155",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_COLLATERAL_OUTPUT_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_COLLATERAL_OUTPUT_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_COLLATERAL_OUTPUT_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_COLLATERAL_OUTPUT_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary_tx_total_collateral_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Ordinary_tx_total_collateral_included
     {
-        .name = "[REJECT_INIT] Ordinary_tx_total_collateral_included",
+        .name = "[DENY_INIT] Ordinary_tx_total_collateral_included",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "01010200000000010100010079",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_TOTAL_COLLATERAL_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_TOTAL_COLLATERAL_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_ORDINARY_TX_TOTAL_COLLATERAL_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_ORDINARY_TX_TOTAL_COLLATERAL_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig_tx_total_collateral_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Multisig_tx_total_collateral_included
     {
-        .name = "[REJECT_INIT] Multisig_tx_total_collateral_included",
+        .name = "[DENY_INIT] Multisig_tx_total_collateral_included",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "01010200000000010100000079",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_TOTAL_COLLATERAL_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_TOTAL_COLLATERAL_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_MULTISIG_TX_TOTAL_COLLATERAL_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_MULTISIG_TX_TOTAL_COLLATERAL_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_total_collateral_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_operator_total_collateral_included
     {
-        .name = "[REJECT_INIT] Pool_registration_operator_total_collateral_included",
+        .name = "[DENY_INIT] Pool_registration_operator_total_collateral_included",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "010102000000000101000100F5",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOTAL_COLLATERAL_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_TOTAL_COLLATERAL_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_TOTAL_COLLATERAL_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_TOTAL_COLLATERAL_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_total_collateral_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_owner_total_collateral_included
     {
-        .name = "[REJECT_INIT] Pool_registration_owner_total_collateral_included",
+        .name = "[DENY_INIT] Pool_registration_owner_total_collateral_included",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "01010200000000010100010112",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOTAL_COLLATERAL_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_TOTAL_COLLATERAL_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_TOTAL_COLLATERAL_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_TOTAL_COLLATERAL_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Ordinary_tx_reference_inputs_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Ordinary_tx_reference_inputs_included
     {
-        .name = "[REJECT_INIT] Ordinary_tx_reference_inputs_included",
+        .name = "[DENY_INIT] Ordinary_tx_reference_inputs_included",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "01010100010000010100010095",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_REFERENCE_INPUTS_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_ORDINARY_TX_REFERENCE_INPUTS_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_ORDINARY_TX_REFERENCE_INPUTS_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_ORDINARY_TX_REFERENCE_INPUTS_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Multisig_tx_reference_inputs_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Multisig_tx_reference_inputs_included
     {
-        .name = "[REJECT_INIT] Multisig_tx_reference_inputs_included",
+        .name = "[DENY_INIT] Multisig_tx_reference_inputs_included",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "01010100010000010100000095",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_REFERENCE_INPUTS_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_MULTISIG_TX_REFERENCE_INPUTS_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_MULTISIG_TX_REFERENCE_INPUTS_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_MULTISIG_TX_REFERENCE_INPUTS_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_operator_reference_inputs_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_operator_reference_inputs_included
     {
-        .name = "[REJECT_INIT] Pool_registration_operator_reference_inputs_included",
+        .name = "[DENY_INIT] Pool_registration_operator_reference_inputs_included",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "01010100010000010100010111",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_REFERENCE_INPUTS_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OPERATOR_REFERENCE_INPUTS_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_REFERENCE_INPUTS_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATOR_REFERENCE_INPUTS_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > transactionInitRejectTestCases > Pool_registration_owner_reference_inputs_included
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Pool_registration_owner_reference_inputs_included
     {
-        .name = "[REJECT_INIT] Pool_registration_owner_reference_inputs_included",
+        .name = "[DENY_INIT] Pool_registration_owner_reference_inputs_included",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010001000001010001012E",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_REFERENCE_INPUTS_INCLUDED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_INIT_POOL_REGISTRATION_OWNER_REFERENCE_INPUTS_INCLUDED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_REFERENCE_INPUTS_INCLUDED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_REFERENCE_INPUTS_INCLUDED),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward_address_key
+    // Source: tests/standalone/input_files/signTx.py > addressParamsDenyTestCases > Reward_address_key
     {
-        .name = "[REJECT_ADDRESS] Reward_address_key",
+        .name = "[DENY_ADDRESS] Reward_address_key",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010000000001010001005C",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_KEY,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_KEY),
+        .chunks = SIGN_TX_SEGMENTS_DENY_ADDRESS_REWARD_ADDRESS_KEY,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_ADDRESS_REWARD_ADDRESS_KEY),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Reward_address_script
+    // Source: tests/standalone/input_files/signTx.py > addressParamsDenyTestCases > Reward_address_script
     {
-        .name = "[REJECT_ADDRESS] Reward_address_script",
+        .name = "[DENY_ADDRESS] Reward_address_script",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "01010100000000010100010063",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_SCRIPT,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_ADDRESS_REWARD_ADDRESS_SCRIPT),
+        .chunks = SIGN_TX_SEGMENTS_DENY_ADDRESS_REWARD_ADDRESS_SCRIPT,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_ADDRESS_REWARD_ADDRESS_SCRIPT),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No_spending_path_Ordinary_Tx_1
+    // Source: tests/standalone/input_files/signTx.py > addressParamsDenyTestCases > No_spending_path_Ordinary_Tx_1
     {
-        .name = "[REJECT_ADDRESS] No_spending_path_Ordinary_Tx_1",
+        .name = "[DENY_ADDRESS] No_spending_path_Ordinary_Tx_1",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010000000001010001007F",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORDINARY_TX_1,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORDINARY_TX_1),
+        .chunks = SIGN_TX_SEGMENTS_DENY_ADDRESS_NO_SPENDING_PATH_ORDINARY_TX_1,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_ADDRESS_NO_SPENDING_PATH_ORDINARY_TX_1),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > No_spending_path_Ordinary_Tx_2
+    // Source: tests/standalone/input_files/signTx.py > addressParamsDenyTestCases > No_spending_path_Ordinary_Tx_2
     {
-        .name = "[REJECT_ADDRESS] No_spending_path_Ordinary_Tx_2",
+        .name = "[DENY_ADDRESS] No_spending_path_Ordinary_Tx_2",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "0101010000000001010001007F",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORDINARY_TX_2,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_ADDRESS_NO_SPENDING_PATH_ORDINARY_TX_2),
+        .chunks = SIGN_TX_SEGMENTS_DENY_ADDRESS_NO_SPENDING_PATH_ORDINARY_TX_2,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_ADDRESS_NO_SPENDING_PATH_ORDINARY_TX_2),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool_operator_spending_choice_not_path
+    // Source: tests/standalone/input_files/signTx.py > addressParamsDenyTestCases > Pool_operator_spending_choice_not_path
     {
-        .name = "[REJECT_ADDRESS] Pool_operator_spending_choice_not_path",
+        .name = "[DENY_ADDRESS] Pool_operator_spending_choice_not_path",
         .init_hex =
         "0000000000000000012D964A0905000100010200000000010100000100000000"
         "01010100000000010100010078",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OPERATOR_SPENDING_CHOICE_NOT_PATH,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OPERATOR_SPENDING_CHOICE_NOT_PATH),
+        .chunks = SIGN_TX_SEGMENTS_DENY_ADDRESS_POOL_OPERATOR_SPENDING_CHOICE_NOT_PATH,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_ADDRESS_POOL_OPERATOR_SPENDING_CHOICE_NOT_PATH),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Multisig_unconditionally
+    // Source: tests/standalone/input_files/signTx.py > addressParamsDenyTestCases > Multisig_unconditionally
     {
-        .name = "[REJECT_ADDRESS] Multisig_unconditionally",
+        .name = "[DENY_ADDRESS] Multisig_unconditionally",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "01010100000000010100000071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_ADDRESS_MULTISIG_UNCONDITIONALLY,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_ADDRESS_MULTISIG_UNCONDITIONALLY),
+        .chunks = SIGN_TX_SEGMENTS_DENY_ADDRESS_MULTISIG_UNCONDITIONALLY,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_ADDRESS_MULTISIG_UNCONDITIONALLY),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > addressParamsRejectTestCases > Pool_owner_unconditionally
+    // Source: tests/standalone/input_files/signTx.py > addressParamsDenyTestCases > Pool_owner_unconditionally
     {
-        .name = "[REJECT_ADDRESS] Pool_owner_unconditionally",
+        .name = "[DENY_ADDRESS] Pool_owner_unconditionally",
         .init_hex =
         "0000000000000000012D964A0904000100010200000000010100000100000000"
         "01010100000000010100000071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OWNER_UNCONDITIONALLY,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_ADDRESS_POOL_OWNER_UNCONDITIONALLY),
+        .chunks = SIGN_TX_SEGMENTS_DENY_ADDRESS_POOL_OWNER_UNCONDITIONALLY,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_ADDRESS_POOL_OWNER_UNCONDITIONALLY),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_registration_in_Ordinary_Tx
+    // Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Pool_registration_in_Ordinary_Tx
     {
-        .name = "[REJECT_CERT] Pool_registration_in_Ordinary_Tx",
+        .name = "[DENY_CERT] Pool_registration_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200010000010100000100000000"
         "010101000000000101000100ED",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_ORDINARY_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_ORDINARY_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_POOL_REGISTRATION_IN_ORDINARY_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_POOL_REGISTRATION_IN_ORDINARY_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_registration_in_Multisig_Tx
+    // Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Pool_registration_in_Multisig_Tx
     {
-        .name = "[REJECT_CERT] Pool_registration_in_Multisig_Tx",
+        .name = "[DENY_CERT] Pool_registration_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200010000010100000100000000"
         "010101000000000101000000ED",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_MULTISIG_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_MULTISIG_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_POOL_REGISTRATION_IN_MULTISIG_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_POOL_REGISTRATION_IN_MULTISIG_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_registration_in_Plutus_Tx
+    // Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Pool_registration_in_Plutus_Tx
     {
-        .name = "[REJECT_CERT] Pool_registration_in_Plutus_Tx",
+        .name = "[DENY_CERT] Pool_registration_in_Plutus_Tx",
         .init_hex =
         "0000000000000000012D964A0907000100010200010000010100000100000000"
         "010101000000000101000100ED",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_PLUTUS_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_POOL_REGISTRATION_IN_PLUTUS_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_POOL_REGISTRATION_IN_PLUTUS_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_POOL_REGISTRATION_IN_PLUTUS_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_retirement_in_Multisig_Tx
+    // Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Pool_retirement_in_Multisig_Tx
     {
-        .name = "[REJECT_CERT] Pool_retirement_in_Multisig_Tx",
+        .name = "[DENY_CERT] Pool_retirement_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200010000010100000100000000"
         "0101010000000001010000008C",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_MULTISIG_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_MULTISIG_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_POOL_RETIREMENT_IN_MULTISIG_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_POOL_RETIREMENT_IN_MULTISIG_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_registration_in_Pool_Registration_Operator
+    // Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Stake_registration_in_Pool_Registration_Operator
     {
-        .name = "[REJECT_CERT] Stake_registration_in_Pool_Registration_Operator",
+        .name = "[DENY_CERT] Stake_registration_in_Pool_Registration_Operator",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "01010100000000010100010088",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_REGISTRATION_IN_POOL_REGISTRATION_OPERATOR,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_REGISTRATION_IN_POOL_REGISTRATION_OPERATOR),
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_STAKE_REGISTRATION_IN_POOL_REGISTRATION_OPERATOR,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_STAKE_REGISTRATION_IN_POOL_REGISTRATION_OPERATOR),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_registration_in_Pool_Registration_Owner
+    // Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Stake_registration_in_Pool_Registration_Owner
     {
-        .name = "[REJECT_CERT] Stake_registration_in_Pool_Registration_Owner",
+        .name = "[DENY_CERT] Stake_registration_in_Pool_Registration_Owner",
         .init_hex =
         "0000000000000000012D964A0904000000010200010000010100000100000000"
         "01010100000000010100000064",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_REGISTRATION_IN_POOL_REGISTRATION_OWNER,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_REGISTRATION_IN_POOL_REGISTRATION_OWNER),
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_STAKE_REGISTRATION_IN_POOL_REGISTRATION_OWNER,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_STAKE_REGISTRATION_IN_POOL_REGISTRATION_OWNER),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_deregistration_in_Pool_Registration_Operator
+    // Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Stake_deregistration_in_Pool_Registration_Operator
     {
-        .name = "[REJECT_CERT] Stake_deregistration_in_Pool_Registration_Operator",
+        .name = "[DENY_CERT] Stake_deregistration_in_Pool_Registration_Operator",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "01010100000000010100020088",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DEREGISTRATION_IN_POOL_REGISTRATION_OPERATOR,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DEREGISTRATION_IN_POOL_REGISTRATION_OPERATOR),
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_STAKE_DEREGISTRATION_IN_POOL_REGISTRATION_OPERATOR,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_STAKE_DEREGISTRATION_IN_POOL_REGISTRATION_OPERATOR),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_deregistration_in_Pool_Registration_Owner
+    // Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Stake_deregistration_in_Pool_Registration_Owner
     {
-        .name = "[REJECT_CERT] Stake_deregistration_in_Pool_Registration_Owner",
+        .name = "[DENY_CERT] Stake_deregistration_in_Pool_Registration_Owner",
         .init_hex =
         "0000000000000000012D964A0904000000010200010000010100000100000000"
         "01010100000000010100010064",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DEREGISTRATION_IN_POOL_REGISTRATION_OWNER,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DEREGISTRATION_IN_POOL_REGISTRATION_OWNER),
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_STAKE_DEREGISTRATION_IN_POOL_REGISTRATION_OWNER,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_STAKE_DEREGISTRATION_IN_POOL_REGISTRATION_OWNER),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_delegation_in_Pool_Registration_Operator
+    // Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Stake_delegation_in_Pool_Registration_Operator
     {
-        .name = "[REJECT_CERT] Stake_delegation_in_Pool_Registration_Operator",
+        .name = "[DENY_CERT] Stake_delegation_in_Pool_Registration_Operator",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "01010100000000010100020088",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DELEGATION_IN_POOL_REGISTRATION_OPERATOR,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DELEGATION_IN_POOL_REGISTRATION_OPERATOR),
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_STAKE_DELEGATION_IN_POOL_REGISTRATION_OPERATOR,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_STAKE_DELEGATION_IN_POOL_REGISTRATION_OPERATOR),
         .expected_sw = SWO_TX_PARSING_FAIL_CERTIFICATES,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Stake_delegation_in_Pool_Registration_Owner
+    // Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Stake_delegation_in_Pool_Registration_Owner
     {
-        .name = "[REJECT_CERT] Stake_delegation_in_Pool_Registration_Owner",
+        .name = "[DENY_CERT] Stake_delegation_in_Pool_Registration_Owner",
         .init_hex =
         "0000000000000000012D964A0904000000010200010000010100000100000000"
         "01010100000000010100010064",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DELEGATION_IN_POOL_REGISTRATION_OWNER,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_STAKE_DELEGATION_IN_POOL_REGISTRATION_OWNER),
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_STAKE_DELEGATION_IN_POOL_REGISTRATION_OWNER,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_STAKE_DELEGATION_IN_POOL_REGISTRATION_OWNER),
         .expected_sw = SWO_TX_PARSING_FAIL_CERTIFICATES,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_retirement_in_Pool_Registration_Operator
+    // Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Pool_retirement_in_Pool_Registration_Operator
     {
-        .name = "[REJECT_CERT] Pool_retirement_in_Pool_Registration_Operator",
+        .name = "[DENY_CERT] Pool_retirement_in_Pool_Registration_Operator",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010000000001010002008C",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL_REGISTRATION_OPERATOR,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL_REGISTRATION_OPERATOR),
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_POOL_RETIREMENT_IN_POOL_REGISTRATION_OPERATOR,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_POOL_RETIREMENT_IN_POOL_REGISTRATION_OPERATOR),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateRejectTestCases > Pool_retirement_in_Pool_Registration_Owner
+    // Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases > Pool_retirement_in_Pool_Registration_Owner
     {
-        .name = "[REJECT_CERT] Pool_retirement_in_Pool_Registration_Owner",
+        .name = "[DENY_CERT] Pool_retirement_in_Pool_Registration_Owner",
         .init_hex =
         "0000000000000000012D964A0904000000010200010000010100000100000000"
         "01010100000000010100010068",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL_REGISTRATION_OWNER,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIREMENT_IN_POOL_REGISTRATION_OWNER),
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_POOL_RETIREMENT_IN_POOL_REGISTRATION_OWNER,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_POOL_RETIREMENT_IN_POOL_REGISTRATION_OWNER),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Script_hash_in_Ordinary_Tx
+    // Source: tests/standalone/input_files/signTx.py > certificateStakingDenyTestCases > Script_hash_in_Ordinary_Tx
     {
-        .name = "[REJECT_CERT_STAKING] Script_hash_in_Ordinary_Tx",
+        .name = "[DENY_CERT_STAKING] Script_hash_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200010000010100000100000000"
         "0101010000000001010001008F",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_SCRIPT_HASH_IN_ORDINARY_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_SCRIPT_HASH_IN_ORDINARY_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_STAKING_SCRIPT_HASH_IN_ORDINARY_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_STAKING_SCRIPT_HASH_IN_ORDINARY_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Non_staking_path_in_Ordinary_Tx
+    // Source: tests/standalone/input_files/signTx.py > certificateStakingDenyTestCases > Non_staking_path_in_Ordinary_Tx
     {
-        .name = "[REJECT_CERT_STAKING] Non_staking_path_in_Ordinary_Tx",
+        .name = "[DENY_CERT_STAKING] Non_staking_path_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200010000010100000100000000"
         "01010100000000010100010088",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_NON_STAKING_PATH_IN_ORDINARY_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_NON_STAKING_PATH_IN_ORDINARY_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_STAKING_NON_STAKING_PATH_IN_ORDINARY_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_STAKING_NON_STAKING_PATH_IN_ORDINARY_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateStakingRejectTestCases > Path_in_Multisig_Tx
+    // Source: tests/standalone/input_files/signTx.py > certificateStakingDenyTestCases > Path_in_Multisig_Tx
     {
-        .name = "[REJECT_CERT_STAKING] Path_in_Multisig_Tx",
+        .name = "[DENY_CERT_STAKING] Path_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200010000010100000100000000"
         "01010100000000010100000088",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_PATH_IN_MULTISIG_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_STAKING_PATH_IN_MULTISIG_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_STAKING_PATH_IN_MULTISIG_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_STAKING_PATH_IN_MULTISIG_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > certificateStakePoolRetirementRejectTestCases > Non_pool_cold_key_in_Ordinary_Tx
+    // Source: tests/standalone/input_files/signTx.py > certificateStakePoolRetirementDenyTestCases > Non_pool_cold_key_in_Ordinary_Tx
     {
-        .name = "[REJECT_CERT_POOL_RETIRE] Non_pool_cold_key_in_Ordinary_Tx",
+        .name = "[DENY_CERT_POOL_RETIRE] Non_pool_cold_key_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200010000010100000100000000"
         "0101010000000001010002008C",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIRE_NON_POOL_COLD_KEY_IN_ORDINARY_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_POOL_RETIRE_NON_POOL_COLD_KEY_IN_ORDINARY_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_POOL_RETIRE_NON_POOL_COLD_KEY_IN_ORDINARY_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_POOL_RETIRE_NON_POOL_COLD_KEY_IN_ORDINARY_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Reject_tx_with_invalid_canonical_ordering_of_withdrawals
+    // Source: tests/standalone/input_files/signTx.py > withdrawalDenyTestCases > Deny_tx_with_invalid_canonical_ordering_of_withdrawals
     {
-        .name = "[REJECT_WITHDRAWAL] Reject_tx_with_invalid_canonical_ordering_of_withdrawals",
+        .name = "[DENY_WITHDRAWAL] Deny_tx_with_invalid_canonical_ordering_of_withdrawals",
         .init_hex =
         "0000000000000000012D964A0903000100000200000002010100000100000000"
         "01010100000000010100030070",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_REJECT_TX_WITH_INVALID_CANONICAL_ORDERING_OF_WITHDRAWALS,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_REJECT_TX_WITH_INVALID_CANONICAL_ORDERING_OF_WITHDRAWALS),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_DENY_TX_WITH_INVALID_CANONICAL_ORDERING_OF_WITHDRAWALS,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_DENY_TX_WITH_INVALID_CANONICAL_ORDERING_OF_WITHDRAWALS),
         .expected_sw = SWO_TX_PARSING_FAIL_WITHDRAWALS,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Script_hash_as_stake_credential_in_Ordinary_Tx
+    // Source: tests/standalone/input_files/signTx.py > withdrawalDenyTestCases > Script_hash_as_stake_credential_in_Ordinary_Tx
     {
-        .name = "[REJECT_WITHDRAWAL] Script_hash_as_stake_credential_in_Ordinary_Tx",
+        .name = "[DENY_WITHDRAWAL] Script_hash_as_stake_credential_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200000001010100000100000000"
         "01010100000000010100010096",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_SCRIPT_HASH_AS_STAKE_CREDENTIAL_IN_ORDINARY_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_SCRIPT_HASH_AS_STAKE_CREDENTIAL_IN_ORDINARY_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_SCRIPT_HASH_AS_STAKE_CREDENTIAL_IN_ORDINARY_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_SCRIPT_HASH_AS_STAKE_CREDENTIAL_IN_ORDINARY_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Non_staking_path_as_stake_credential_in_Ordinary_Tx
+    // Source: tests/standalone/input_files/signTx.py > withdrawalDenyTestCases > Non_staking_path_as_stake_credential_in_Ordinary_Tx
     {
-        .name = "[REJECT_WITHDRAWAL] Non_staking_path_as_stake_credential_in_Ordinary_Tx",
+        .name = "[DENY_WITHDRAWAL] Non_staking_path_as_stake_credential_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200000001010100000100000000"
         "0101010000000001010001008F",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_NON_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_ORDINARY_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_NON_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_ORDINARY_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_NON_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_ORDINARY_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_NON_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_ORDINARY_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Staking_path_as_stake_credential_in_Multisig_Tx
+    // Source: tests/standalone/input_files/signTx.py > withdrawalDenyTestCases > Staking_path_as_stake_credential_in_Multisig_Tx
     {
-        .name = "[REJECT_WITHDRAWAL] Staking_path_as_stake_credential_in_Multisig_Tx",
+        .name = "[DENY_WITHDRAWAL] Staking_path_as_stake_credential_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200000001010100000100000000"
         "0101010000000001010000008F",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_MULTISIG_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_MULTISIG_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_MULTISIG_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_MULTISIG_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > withdrawalRejectTestCases > Non_staking_path_as_stake_credential_in_Plutus_Tx
+    // Source: tests/standalone/input_files/signTx.py > withdrawalDenyTestCases > Non_staking_path_as_stake_credential_in_Plutus_Tx
     {
-        .name = "[REJECT_WITHDRAWAL] Non_staking_path_as_stake_credential_in_Plutus_Tx",
+        .name = "[DENY_WITHDRAWAL] Non_staking_path_as_stake_credential_in_Plutus_Tx",
         .init_hex =
         "0000000000000000012D964A0907000100010200000001010100000100000000"
         "0101010000000001010001008F",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_NON_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_PLUTUS_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITHDRAWAL_NON_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_PLUTUS_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_NON_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_PLUTUS_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_NON_STAKING_PATH_AS_STAKE_CREDENTIAL_IN_PLUTUS_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_account_path_in_Ordinary_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Ordinary_account_path_in_Ordinary_Tx
     {
-        .name = "[REJECT_WITNESS] Ordinary_account_path_in_Ordinary_Tx",
+        .name = "[DENY_WITNESS] Ordinary_account_path_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "01010100000000010100010071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PATH_IN_ORDINARY_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PATH_IN_ORDINARY_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_ACCOUNT_PATH_IN_ORDINARY_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_ACCOUNT_PATH_IN_ORDINARY_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Ordinary_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_account_path_in_Ordinary_Tx
     {
-        .name = "[REJECT_WITNESS] Multisig_account_path_in_Ordinary_Tx",
+        .name = "[DENY_WITNESS] Multisig_account_path_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "01010100000000010100010071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_ORDINARY_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_ORDINARY_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_IN_ORDINARY_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_IN_ORDINARY_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_spending_path_in_Ordinary_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_spending_path_in_Ordinary_Tx
     {
-        .name = "[REJECT_WITNESS] Multisig_spending_path_in_Ordinary_Tx",
+        .name = "[DENY_WITNESS] Multisig_spending_path_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "01010100000000010100010071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PATH_IN_ORDINARY_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PATH_IN_ORDINARY_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_SPENDING_PATH_IN_ORDINARY_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_SPENDING_PATH_IN_ORDINARY_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_staking_path_in_Ordinary_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_staking_path_in_Ordinary_Tx
     {
-        .name = "[REJECT_WITNESS] Multisig_staking_path_in_Ordinary_Tx",
+        .name = "[DENY_WITNESS] Multisig_staking_path_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "01010100000000010100010071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PATH_IN_ORDINARY_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PATH_IN_ORDINARY_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_STAKING_PATH_IN_ORDINARY_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_STAKING_PATH_IN_ORDINARY_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint_path_in_Ordinary_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Mint_path_in_Ordinary_Tx
     {
-        .name = "[REJECT_WITNESS] Mint_path_in_Ordinary_Tx",
+        .name = "[DENY_WITNESS] Mint_path_in_Ordinary_Tx",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "01010100000000010100010071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_ORDINARY_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_ORDINARY_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_MINT_PATH_IN_ORDINARY_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_MINT_PATH_IN_ORDINARY_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_account_path_in_Multisig_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Ordinary_account_path_in_Multisig_Tx
     {
-        .name = "[REJECT_WITNESS] Ordinary_account_path_in_Multisig_Tx",
+        .name = "[DENY_WITNESS] Ordinary_account_path_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "01010100000000010100010071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PATH_IN_MULTISIG_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PATH_IN_MULTISIG_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_ACCOUNT_PATH_IN_MULTISIG_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_ACCOUNT_PATH_IN_MULTISIG_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Multisig_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_account_path_in_Multisig_Tx
     {
-        .name = "[REJECT_WITNESS] Multisig_account_path_in_Multisig_Tx",
+        .name = "[DENY_WITNESS] Multisig_account_path_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "01010100000000010100010071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_MULTISIG_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_MULTISIG_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_IN_MULTISIG_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_IN_MULTISIG_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_spending_path_in_Multisig_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Ordinary_spending_path_in_Multisig_Tx
     {
-        .name = "[REJECT_WITNESS] Ordinary_spending_path_in_Multisig_Tx",
+        .name = "[DENY_WITNESS] Ordinary_spending_path_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "01010100000000010100010071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_SPENDING_PATH_IN_MULTISIG_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_SPENDING_PATH_IN_MULTISIG_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_SPENDING_PATH_IN_MULTISIG_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_SPENDING_PATH_IN_MULTISIG_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_staking_path_in_Multisig_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Ordinary_staking_path_in_Multisig_Tx
     {
-        .name = "[REJECT_WITNESS] Ordinary_staking_path_in_Multisig_Tx",
+        .name = "[DENY_WITNESS] Ordinary_staking_path_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "01010100000000010100010071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_STAKING_PATH_IN_MULTISIG_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_STAKING_PATH_IN_MULTISIG_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_STAKING_PATH_IN_MULTISIG_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_STAKING_PATH_IN_MULTISIG_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint_path_in_Multisig_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Mint_path_in_Multisig_Tx
     {
-        .name = "[REJECT_WITNESS] Mint_path_in_Multisig_Tx",
+        .name = "[DENY_WITNESS] Mint_path_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "01010100000000010100010071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_MULTISIG_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_MULTISIG_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_MINT_PATH_IN_MULTISIG_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_MINT_PATH_IN_MULTISIG_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Pool_cold_path_in_Multisig_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Pool_cold_path_in_Multisig_Tx
     {
-        .name = "[REJECT_WITNESS] Pool_cold_path_in_Multisig_Tx",
+        .name = "[DENY_WITNESS] Pool_cold_path_in_Multisig_Tx",
         .init_hex =
         "0000000000000000012D964A0906000100010200000000010100000100000000"
         "01010100000000010100010071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_POOL_COLD_PATH_IN_MULTISIG_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_POOL_COLD_PATH_IN_MULTISIG_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_POOL_COLD_PATH_IN_MULTISIG_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_POOL_COLD_PATH_IN_MULTISIG_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_account_path_in_Plutus_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Ordinary_account_path_in_Plutus_Tx
     {
-        .name = "[REJECT_WITNESS] Ordinary_account_path_in_Plutus_Tx",
+        .name = "[DENY_WITNESS] Ordinary_account_path_in_Plutus_Tx",
         .init_hex =
         "0000000000000000012D964A0907000100010200000000010100000100000000"
         "01010100000000010100010071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PATH_IN_PLUTUS_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_ACCOUNT_PATH_IN_PLUTUS_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_ACCOUNT_PATH_IN_PLUTUS_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_ACCOUNT_PATH_IN_PLUTUS_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Plutus_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_account_path_in_Plutus_Tx
     {
-        .name = "[REJECT_WITNESS] Multisig_account_path_in_Plutus_Tx",
+        .name = "[DENY_WITNESS] Multisig_account_path_in_Plutus_Tx",
         .init_hex =
         "0000000000000000012D964A0907000100010200000000010100000100000000"
         "01010100000000010100010071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_PLUTUS_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_PLUTUS_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_IN_PLUTUS_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_IN_PLUTUS_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Pool_Registration_Owner_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_account_path_in_Pool_Registration_Owner_Tx
     {
-        .name = "[REJECT_WITNESS] Multisig_account_path_in_Pool_Registration_Owner_Tx",
+        .name = "[DENY_WITNESS] Multisig_account_path_in_Pool_Registration_Owner_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001010A",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_POOL_REGISTRATION_OWNER_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_POOL_REGISTRATION_OWNER_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_IN_POOL_REGISTRATION_OWNER_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_IN_POOL_REGISTRATION_OWNER_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_spending_path_in_Pool_Registration_Owner_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Ordinary_spending_path_in_Pool_Registration_Owner_Tx
     {
-        .name = "[REJECT_WITNESS] Ordinary_spending_path_in_Pool_Registration_Owner_Tx",
+        .name = "[DENY_WITNESS] Ordinary_spending_path_in_Pool_Registration_Owner_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001010A",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_SPENDING_PATH_IN_POOL_REGISTRATION_OWNER_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_SPENDING_PATH_IN_POOL_REGISTRATION_OWNER_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_SPENDING_PATH_IN_POOL_REGISTRATION_OWNER_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_SPENDING_PATH_IN_POOL_REGISTRATION_OWNER_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_spending_path_in_Pool_Registration_Owner_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_spending_path_in_Pool_Registration_Owner_Tx
     {
-        .name = "[REJECT_WITNESS] Multisig_spending_path_in_Pool_Registration_Owner_Tx",
+        .name = "[DENY_WITNESS] Multisig_spending_path_in_Pool_Registration_Owner_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001010A",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PATH_IN_POOL_REGISTRATION_OWNER_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PATH_IN_POOL_REGISTRATION_OWNER_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_SPENDING_PATH_IN_POOL_REGISTRATION_OWNER_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_SPENDING_PATH_IN_POOL_REGISTRATION_OWNER_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_staking_path_in_Pool_Registration_Owner_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_staking_path_in_Pool_Registration_Owner_Tx
     {
-        .name = "[REJECT_WITNESS] Multisig_staking_path_in_Pool_Registration_Owner_Tx",
+        .name = "[DENY_WITNESS] Multisig_staking_path_in_Pool_Registration_Owner_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001010A",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PATH_IN_POOL_REGISTRATION_OWNER_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PATH_IN_POOL_REGISTRATION_OWNER_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_STAKING_PATH_IN_POOL_REGISTRATION_OWNER_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_STAKING_PATH_IN_POOL_REGISTRATION_OWNER_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint_path_in_Pool_Registration_Owner_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Mint_path_in_Pool_Registration_Owner_Tx
     {
-        .name = "[REJECT_WITNESS] Mint_path_in_Pool_Registration_Owner_Tx",
+        .name = "[DENY_WITNESS] Mint_path_in_Pool_Registration_Owner_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001010A",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_POOL_REGISTRATION_OWNER_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_POOL_REGISTRATION_OWNER_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_MINT_PATH_IN_POOL_REGISTRATION_OWNER_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_MINT_PATH_IN_POOL_REGISTRATION_OWNER_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Pool_cold_path_in_Pool_Registration_Owner_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Pool_cold_path_in_Pool_Registration_Owner_Tx
     {
-        .name = "[REJECT_WITNESS] Pool_cold_path_in_Pool_Registration_Owner_Tx",
+        .name = "[DENY_WITNESS] Pool_cold_path_in_Pool_Registration_Owner_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001010A",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_POOL_COLD_PATH_IN_POOL_REGISTRATION_OWNER_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_POOL_COLD_PATH_IN_POOL_REGISTRATION_OWNER_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_POOL_COLD_PATH_IN_POOL_REGISTRATION_OWNER_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_POOL_COLD_PATH_IN_POOL_REGISTRATION_OWNER_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_account_path_in_Pool_Registration_Operator_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_account_path_in_Pool_Registration_Operator_Tx
     {
-        .name = "[REJECT_WITNESS] Multisig_account_path_in_Pool_Registration_Operator_Tx",
+        .name = "[DENY_WITNESS] Multisig_account_path_in_Pool_Registration_Operator_Tx",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "010101000000000101000100ED",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_POOL_REGISTRATION_OPERATOR_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_ACCOUNT_PATH_IN_POOL_REGISTRATION_OPERATOR_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_IN_POOL_REGISTRATION_OPERATOR_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_IN_POOL_REGISTRATION_OPERATOR_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_spending_path_in_Pool_Registration_Operator_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_spending_path_in_Pool_Registration_Operator_Tx
     {
-        .name = "[REJECT_WITNESS] Multisig_spending_path_in_Pool_Registration_Operator_Tx",
+        .name = "[DENY_WITNESS] Multisig_spending_path_in_Pool_Registration_Operator_Tx",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "010101000000000101000100ED",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_SPENDING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_SPENDING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_SPENDING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Ordinary_staking_path_in_Pool_Registration_Operator_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Ordinary_staking_path_in_Pool_Registration_Operator_Tx
     {
-        .name = "[REJECT_WITNESS] Ordinary_staking_path_in_Pool_Registration_Operator_Tx",
+        .name = "[DENY_WITNESS] Ordinary_staking_path_in_Pool_Registration_Operator_Tx",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "010101000000000101000100ED",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_STAKING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_ORDINARY_STAKING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_STAKING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_STAKING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Multisig_staking_path_in_Pool_Registration_Operator_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Multisig_staking_path_in_Pool_Registration_Operator_Tx
     {
-        .name = "[REJECT_WITNESS] Multisig_staking_path_in_Pool_Registration_Operator_Tx",
+        .name = "[DENY_WITNESS] Multisig_staking_path_in_Pool_Registration_Operator_Tx",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "010101000000000101000100ED",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_MULTISIG_STAKING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_STAKING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_STAKING_PATH_IN_POOL_REGISTRATION_OPERATOR_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > witnessRejectTestCases > Mint_path_in_Pool_Registration_Operator_Tx
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases > Mint_path_in_Pool_Registration_Operator_Tx
     {
-        .name = "[REJECT_WITNESS] Mint_path_in_Pool_Registration_Operator_Tx",
+        .name = "[DENY_WITNESS] Mint_path_in_Pool_Registration_Operator_Tx",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "010101000000000101000100ED",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_POOL_REGISTRATION_OPERATOR_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_WITNESS_MINT_PATH_IN_POOL_REGISTRATION_OPERATOR_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_MINT_PATH_IN_POOL_REGISTRATION_OPERATOR_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_MINT_PATH_IN_POOL_REGISTRATION_OPERATOR_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input_and_change_output_account_mismatch
+    // Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Input_and_change_output_account_mismatch
     {
-        .name = "[REJECT_SINGLE_ACCOUNT] Input_and_change_output_account_mismatch",
+        .name = "[DENY_SINGLE_ACCOUNT] Input_and_change_output_account_mismatch",
         .init_hex =
         "0000000000000000012D964A0903000100020200000000010100000100000000"
         "010101000000000101000100BC",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_CHANGE_OUTPUT_ACCOUNT_MISMATCH,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_CHANGE_OUTPUT_ACCOUNT_MISMATCH),
+        .chunks = SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_INPUT_AND_CHANGE_OUTPUT_ACCOUNT_MISMATCH,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_INPUT_AND_CHANGE_OUTPUT_ACCOUNT_MISMATCH),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input_and_stake_deregistration_certificate_account_mismatch
+    // Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Input_and_stake_deregistration_certificate_account_mismatch
     {
-        .name = "[REJECT_SINGLE_ACCOUNT] Input_and_stake_deregistration_certificate_account_mismatch",
+        .name = "[DENY_SINGLE_ACCOUNT] Input_and_stake_deregistration_certificate_account_mismatch",
         .init_hex =
         "0000000000000000012D964A0903000100010200010000010100000100000000"
         "01010100000000010100020096",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_STAKE_DEREGISTRATION_CERTIFICATE_ACCOUNT_MISMATCH,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_STAKE_DEREGISTRATION_CERTIFICATE_ACCOUNT_MISMATCH),
+        .chunks = SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_INPUT_AND_STAKE_DEREGISTRATION_CERTIFICATE_ACCOUNT_MISMATCH,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_INPUT_AND_STAKE_DEREGISTRATION_CERTIFICATE_ACCOUNT_MISMATCH),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Input_and_withdrawal_account_mismatch
+    // Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Input_and_withdrawal_account_mismatch
     {
-        .name = "[REJECT_SINGLE_ACCOUNT] Input_and_withdrawal_account_mismatch",
+        .name = "[DENY_SINGLE_ACCOUNT] Input_and_withdrawal_account_mismatch",
         .init_hex =
         "0000000000000000012D964A0903000100010200000001010100000100000000"
         "0101010000000001010002009D",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_WITHDRAWAL_ACCOUNT_MISMATCH,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_INPUT_AND_WITHDRAWAL_ACCOUNT_MISMATCH),
+        .chunks = SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_INPUT_AND_WITHDRAWAL_ACCOUNT_MISMATCH,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_INPUT_AND_WITHDRAWAL_ACCOUNT_MISMATCH),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Change_output_and_stake_deregistration_account_mismatch
+    // Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Change_output_and_stake_deregistration_account_mismatch
     {
-        .name = "[REJECT_SINGLE_ACCOUNT] Change_output_and_stake_deregistration_account_mismatch",
+        .name = "[DENY_SINGLE_ACCOUNT] Change_output_and_stake_deregistration_account_mismatch",
         .init_hex =
         "0000000000000000012D964A0903000100020200010000010100000100000000"
         "010101000000000101000200D3",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_CHANGE_OUTPUT_AND_STAKE_DEREGISTRATION_ACCOUNT_MISMATCH,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_CHANGE_OUTPUT_AND_STAKE_DEREGISTRATION_ACCOUNT_MISMATCH),
+        .chunks = SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_CHANGE_OUTPUT_AND_STAKE_DEREGISTRATION_ACCOUNT_MISMATCH,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_CHANGE_OUTPUT_AND_STAKE_DEREGISTRATION_ACCOUNT_MISMATCH),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Change_output_and_withdrawal_account_mismatch
+    // Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Change_output_and_withdrawal_account_mismatch
     {
-        .name = "[REJECT_SINGLE_ACCOUNT] Change_output_and_withdrawal_account_mismatch",
+        .name = "[DENY_SINGLE_ACCOUNT] Change_output_and_withdrawal_account_mismatch",
         .init_hex =
         "0000000000000000012D964A0903000100020200000001010100000100000000"
         "010101000000000101000200DA",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_CHANGE_OUTPUT_AND_WITHDRAWAL_ACCOUNT_MISMATCH,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_CHANGE_OUTPUT_AND_WITHDRAWAL_ACCOUNT_MISMATCH),
+        .chunks = SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_CHANGE_OUTPUT_AND_WITHDRAWAL_ACCOUNT_MISMATCH,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_CHANGE_OUTPUT_AND_WITHDRAWAL_ACCOUNT_MISMATCH),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Stake_deregistration_certificate_and_withdrawal_account_mismatch
+    // Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Stake_deregistration_certificate_and_withdrawal_account_mismatch
     {
-        .name = "[REJECT_SINGLE_ACCOUNT] Stake_deregistration_certificate_and_withdrawal_account_mismatch",
+        .name = "[DENY_SINGLE_ACCOUNT] Stake_deregistration_certificate_and_withdrawal_account_mismatch",
         .init_hex =
         "0000000000000000012D964A0903000100010200010001010100000100000000"
         "010101000000000101000300B4",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_STAKE_DEREGISTRATION_CERTIFICATE_AND_WITHDRAWAL_ACCOUNT_MISMATCH,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_STAKE_DEREGISTRATION_CERTIFICATE_AND_WITHDRAWAL_ACCOUNT_MISMATCH),
+        .chunks = SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_STAKE_DEREGISTRATION_CERTIFICATE_AND_WITHDRAWAL_ACCOUNT_MISMATCH,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_STAKE_DEREGISTRATION_CERTIFICATE_AND_WITHDRAWAL_ACCOUNT_MISMATCH),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Byron_to_Shelley_transfer_input_account_mismatch
+    // Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Byron_to_Shelley_transfer_input_account_mismatch
     {
-        .name = "[REJECT_SINGLE_ACCOUNT] Byron_to_Shelley_transfer_input_account_mismatch",
+        .name = "[DENY_SINGLE_ACCOUNT] Byron_to_Shelley_transfer_input_account_mismatch",
         .init_hex =
         "0000000000000000012D964A0903000200010200000000010100000100000000"
         "010101000000000101000200A3",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_BYRON_TO_SHELLEY_TRANSFER_INPUT_ACCOUNT_MISMATCH,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_BYRON_TO_SHELLEY_TRANSFER_INPUT_ACCOUNT_MISMATCH),
+        .chunks = SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_BYRON_TO_SHELLEY_TRANSFER_INPUT_ACCOUNT_MISMATCH,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_BYRON_TO_SHELLEY_TRANSFER_INPUT_ACCOUNT_MISMATCH),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > singleAccountRejectTestCases > Byron_to_Shelley_transfer_output_account_mismatch
+    // Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Byron_to_Shelley_transfer_output_account_mismatch
     {
-        .name = "[REJECT_SINGLE_ACCOUNT] Byron_to_Shelley_transfer_output_account_mismatch",
+        .name = "[DENY_SINGLE_ACCOUNT] Byron_to_Shelley_transfer_output_account_mismatch",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "01010100000000010100010071",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_BYRON_TO_SHELLEY_TRANSFER_OUTPUT_ACCOUNT_MISMATCH,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_SINGLE_ACCOUNT_BYRON_TO_SHELLEY_TRANSFER_OUTPUT_ACCOUNT_MISMATCH),
+        .chunks = SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_BYRON_TO_SHELLEY_TRANSFER_OUTPUT_ACCOUNT_MISMATCH,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_BYRON_TO_SHELLEY_TRANSFER_OUTPUT_ACCOUNT_MISMATCH),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral_output_with_datum_hash
+    // Source: tests/standalone/input_files/signTx.py > collateralOutputDenyTestCases > Collateral_output_with_datum_hash
     {
-        .name = "[REJECT_COLLATERAL_OUTPUT] Collateral_output_with_datum_hash",
+        .name = "[DENY_COLLATERAL_OUTPUT] Collateral_output_with_datum_hash",
         .init_hex =
         "0000000000000000012D964A0907000100010200000000010100000100000000"
         "010201000000000101000100DD",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_DATUM_HASH,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_DATUM_HASH),
+        .chunks = SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_DATUM_HASH,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_DATUM_HASH),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral_output_with_inline_datum
+    // Source: tests/standalone/input_files/signTx.py > collateralOutputDenyTestCases > Collateral_output_with_inline_datum
     {
-        .name = "[REJECT_COLLATERAL_OUTPUT] Collateral_output_with_inline_datum",
+        .name = "[DENY_COLLATERAL_OUTPUT] Collateral_output_with_inline_datum",
         .init_hex =
         "0000000000000000012D964A0907000100010200000000010100000100000000"
         "0102010000000001010001029F",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_INLINE_DATUM,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_INLINE_DATUM),
+        .chunks = SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_INLINE_DATUM,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_INLINE_DATUM),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > collateralOutputRejectTestCases > Collateral_output_with_reference_script
+    // Source: tests/standalone/input_files/signTx.py > collateralOutputDenyTestCases > Collateral_output_with_reference_script
     {
-        .name = "[REJECT_COLLATERAL_OUTPUT] Collateral_output_with_reference_script",
+        .name = "[DENY_COLLATERAL_OUTPUT] Collateral_output_with_reference_script",
         .init_hex =
         "0000000000000000012D964A0907000100010200000000010100000100000000"
         "010201000000000101000100D2",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_REFERENCE_SCRIPT,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_REFERENCE_SCRIPT),
+        .chunks = SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_REFERENCE_SCRIPT,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_REFERENCE_SCRIPT),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_asset_groups_are_not_ordered
+    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_where_asset_groups_are_not_ordered
     {
-        .name = "[REJECT_MULTIASSET] Reject_tx_where_asset_groups_are_not_ordered",
+        .name = "[DENY_MULTIASSET] Deny_tx_where_asset_groups_are_not_ordered",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "010101000000000101000100DD",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_ASSET_GROUPS_ARE_NOT_ORDERED,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_ASSET_GROUPS_ARE_NOT_ORDERED),
+        .chunks = SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_ASSET_GROUPS_ARE_NOT_ORDERED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_ASSET_GROUPS_ARE_NOT_ORDERED),
         .expected_sw = SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_asset_groups_are_not_unique
+    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_where_asset_groups_are_not_unique
     {
-        .name = "[REJECT_MULTIASSET] Reject_tx_where_asset_groups_are_not_unique",
+        .name = "[DENY_MULTIASSET] Deny_tx_where_asset_groups_are_not_unique",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "010101000000000101000100DD",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_ASSET_GROUPS_ARE_NOT_UNIQUE,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_ASSET_GROUPS_ARE_NOT_UNIQUE),
+        .chunks = SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_ASSET_GROUPS_ARE_NOT_UNIQUE,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_ASSET_GROUPS_ARE_NOT_UNIQUE),
         .expected_sw = SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_alphabetical
+    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_where_tokens_within_an_asset_group_are_not_ordered_alphabetical
     {
-        .name = "[REJECT_MULTIASSET] Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_alphabetical",
+        .name = "[DENY_MULTIASSET] Deny_tx_where_tokens_within_an_asset_group_are_not_ordered_alphabetical",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "010101000000000101000100BF",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_ORDERED_ALPHABETICAL,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_ORDERED_ALPHABETICAL),
+        .chunks = SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_ORDERED_ALPHABETICAL,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_ORDERED_ALPHABETICAL),
         .expected_sw = SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_length
+    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_where_tokens_within_an_asset_group_are_not_ordered_length
     {
-        .name = "[REJECT_MULTIASSET] Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_length",
+        .name = "[DENY_MULTIASSET] Deny_tx_where_tokens_within_an_asset_group_are_not_ordered_length",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "010101000000000101000100BD",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_ORDERED_LENGTH,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_ORDERED_LENGTH),
+        .chunks = SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_ORDERED_LENGTH,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_ORDERED_LENGTH),
         .expected_sw = SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_where_tokens_within_an_asset_group_are_not_unique
+    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_where_tokens_within_an_asset_group_are_not_unique
     {
-        .name = "[REJECT_MULTIASSET] Reject_tx_where_tokens_within_an_asset_group_are_not_unique",
+        .name = "[DENY_MULTIASSET] Deny_tx_where_tokens_within_an_asset_group_are_not_unique",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "010101000000000101000100BF",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_UNIQUE,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_UNIQUE),
+        .chunks = SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_UNIQUE,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_TOKENS_WITHIN_AN_ASSET_GROUP_ARE_NOT_UNIQUE),
         .expected_sw = SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_policies
+    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_with_mint_fields_with_invalid_canonical_ordering_of_policies
     {
-        .name = "[REJECT_MULTIASSET] Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_policies",
+        .name = "[DENY_MULTIASSET] Deny_tx_with_mint_fields_with_invalid_canonical_ordering_of_policies",
         .init_hex =
         "0000000000000000012D964A0903000100000200000000010100020100000000"
         "010101000000000101000100A7",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WITH_MINT_FIELDS_WITH_INVALID_CANONICAL_ORDERING_OF_POLICIES,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WITH_MINT_FIELDS_WITH_INVALID_CANONICAL_ORDERING_OF_POLICIES),
+        .chunks = SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_MINT_FIELDS_WITH_INVALID_CANONICAL_ORDERING_OF_POLICIES,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_MINT_FIELDS_WITH_INVALID_CANONICAL_ORDERING_OF_POLICIES),
         .expected_sw = SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_asset_names
+    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_with_mint_fields_with_invalid_canonical_ordering_of_asset_names
     {
-        .name = "[REJECT_MULTIASSET] Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_asset_names",
+        .name = "[DENY_MULTIASSET] Deny_tx_with_mint_fields_with_invalid_canonical_ordering_of_asset_names",
         .init_hex =
         "0000000000000000012D964A0903000100000200000000010100010100000000"
         "01010100000000010100010080",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WITH_MINT_FIELDS_WITH_INVALID_CANONICAL_ORDERING_OF_ASSET_NAMES,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_MULTIASSET_REJECT_TX_WITH_MINT_FIELDS_WITH_INVALID_CANONICAL_ORDERING_OF_ASSET_NAMES),
+        .chunks = SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_MINT_FIELDS_WITH_INVALID_CANONICAL_ORDERING_OF_ASSET_NAMES,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_MINT_FIELDS_WITH_INVALID_CANONICAL_ORDERING_OF_ASSET_NAMES),
         .expected_sw = SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Different_index
+    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Different_index
     {
-        .name = "[REJECT_POOL_OWNER] Different_index",
+        .name = "[DENY_POOL_OWNER] Different_index",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "010101000000000101000201C7",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_DIFFERENT_INDEX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_DIFFERENT_INDEX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DIFFERENT_INDEX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DIFFERENT_INDEX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Different_prefix
+    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Different_prefix
     {
-        .name = "[REJECT_POOL_OWNER] Different_prefix",
+        .name = "[DENY_POOL_OWNER] Different_prefix",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "010101000000000101000201C7",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_DIFFERENT_PREFIX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_DIFFERENT_PREFIX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DIFFERENT_PREFIX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DIFFERENT_PREFIX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > No_path_given
+    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > No_path_given
     {
-        .name = "[REJECT_POOL_OWNER] No_path_given",
+        .name = "[DENY_POOL_OWNER] No_path_given",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "010101000000000101000201B1",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NO_PATH_GIVEN,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NO_PATH_GIVEN),
+        .chunks = SIGN_TX_SEGMENTS_DENY_POOL_OWNER_NO_PATH_GIVEN,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_POOL_OWNER_NO_PATH_GIVEN),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerRejectTestCases > Invalid_numerator_denominator_relationship
+    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Invalid_numerator_denominator_relationship
     {
-        .name = "[REJECT_POOL_OWNER] Invalid_numerator_denominator_relationship",
+        .name = "[DENY_POOL_OWNER] Invalid_numerator_denominator_relationship",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010002016D",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_INVALID_NUMERATOR_DENOMINATOR_RELATIONSHIP,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_INVALID_NUMERATOR_DENOMINATOR_RELATIONSHIP),
+        .chunks = SIGN_TX_SEGMENTS_DENY_POOL_OWNER_INVALID_NUMERATOR_DENOMINATOR_RELATIONSHIP,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_POOL_OWNER_INVALID_NUMERATOR_DENOMINATOR_RELATIONSHIP),
         .expected_sw = SWO_TX_PARSING_FAIL_CERTIFICATES,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdRejectTestCases > Path_sent_in_for_Pool_Registration_Owner_Tx
+    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdDenyTestCases > Path_sent_in_for_Pool_Registration_Owner_Tx
     {
-        .name = "[REJECT_POOL_ID] Path_sent_in_for_Pool_Registration_Owner_Tx",
+        .name = "[DENY_POOL_ID] Path_sent_in_for_Pool_Registration_Owner_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "01010100000000010100020166",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_POOL_ID_PATH_SENT_IN_FOR_POOL_REGISTRATION_OWNER_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_POOL_ID_PATH_SENT_IN_FOR_POOL_REGISTRATION_OWNER_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_POOL_ID_PATH_SENT_IN_FOR_POOL_REGISTRATION_OWNER_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_POOL_ID_PATH_SENT_IN_FOR_POOL_REGISTRATION_OWNER_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdRejectTestCases > Hash_sent_in_for_Pool_Registration_Operator_Tx
+    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdDenyTestCases > Hash_sent_in_for_Pool_Registration_Operator_Tx
     {
-        .name = "[REJECT_POOL_ID] Hash_sent_in_for_Pool_Registration_Operator_Tx",
+        .name = "[DENY_POOL_ID] Hash_sent_in_for_Pool_Registration_Operator_Tx",
         .init_hex =
         "0000000000000000012D964A0905000100010200010000010100000100000000"
         "0101010000000001010001016D",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_POOL_ID_HASH_SENT_IN_FOR_POOL_REGISTRATION_OPERATOR_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_POOL_ID_HASH_SENT_IN_FOR_POOL_REGISTRATION_OPERATOR_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_POOL_ID_HASH_SENT_IN_FOR_POOL_REGISTRATION_OPERATOR_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_POOL_ID_HASH_SENT_IN_FOR_POOL_REGISTRATION_OPERATOR_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerRejectTestCases > Non_staking_path_for_Pool_Registration_Owner_Tx
+    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerDenyTestCases > Non_staking_path_for_Pool_Registration_Owner_Tx
     {
-        .name = "[REJECT_POOL_OWNER] Non_staking_path_for_Pool_Registration_Owner_Tx",
+        .name = "[DENY_POOL_OWNER] Non_staking_path_for_Pool_Registration_Owner_Tx",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001016D",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NON_STAKING_PATH_FOR_POOL_REGISTRATION_OWNER_TX,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NON_STAKING_PATH_FOR_POOL_REGISTRATION_OWNER_TX),
+        .chunks = SIGN_TX_SEGMENTS_DENY_POOL_OWNER_NON_STAKING_PATH_FOR_POOL_REGISTRATION_OWNER_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_POOL_OWNER_NON_STAKING_PATH_FOR_POOL_REGISTRATION_OWNER_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > outputRejectTestCases > Legacy_output_with_inline_datum
+    // Source: tests/standalone/input_files/signTx.py > outputDenyTestCases > Legacy_output_with_inline_datum
     {
-        .name = "[REJECT_OUTPUT] Legacy_output_with_inline_datum",
+        .name = "[DENY_OUTPUT] Legacy_output_with_inline_datum",
         .init_hex =
         "0000000000000000012D964A0903000100010200000000010100000100000000"
         "01010100000000010100010086",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_OUTPUT_LEGACY_OUTPUT_WITH_INLINE_DATUM,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_OUTPUT_LEGACY_OUTPUT_WITH_INLINE_DATUM),
+        .chunks = SIGN_TX_SEGMENTS_DENY_OUTPUT_LEGACY_OUTPUT_WITH_INLINE_DATUM,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_OUTPUT_LEGACY_OUTPUT_WITH_INLINE_DATUM),
         .expected_sw = SWO_TX_PARSING_FAIL_OUTPUTS,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool_registration_with_multiple_path_owners
     {
-        .name = "[REJECT_CERT_INVALID] pool_registration_with_multiple_path_owners",
+        .name = "[DENY_CERT_INVALID] pool_registration_with_multiple_path_owners",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "01010100000000010100020183",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_INVALID_POOL_REGISTRATION_WITH_MULTIPLE_PATH_OWNERS,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_INVALID_POOL_REGISTRATION_WITH_MULTIPLE_PATH_OWNERS),
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_INVALID_POOL_REGISTRATION_WITH_MULTIPLE_PATH_OWNERS,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_INVALID_POOL_REGISTRATION_WITH_MULTIPLE_PATH_OWNERS),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool_registration_with_no_owners
     {
-        .name = "[REJECT_CERT_INVALID] pool_registration_with_no_owners",
+        .name = "[DENY_CERT_INVALID] pool_registration_with_no_owners",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "01010100000000010100000157",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_CERT_INVALID_POOL_REGISTRATION_WITH_NO_OWNERS,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_CERT_INVALID_POOL_REGISTRATION_WITH_NO_OWNERS),
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_INVALID_POOL_REGISTRATION_WITH_NO_OWNERS,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_INVALID_POOL_REGISTRATION_WITH_NO_OWNERS),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool_metadata_url_too_long
     {
-        .name = "[REJECT_POOL_METADATA] pool_metadata_url_too_long",
+        .name = "[DENY_POOL_METADATA] pool_metadata_url_too_long",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "010101000000000101000101C5",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_URL_TOO_LONG,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_URL_TOO_LONG),
+        .chunks = SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_URL_TOO_LONG,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_URL_TOO_LONG),
         .expected_sw = SWO_TX_PARSING_FAIL_CERTIFICATES,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool_metadata_invalid_url
     {
-        .name = "[REJECT_POOL_METADATA] pool_metadata_invalid_url",
+        .name = "[DENY_POOL_METADATA] pool_metadata_invalid_url",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "01010100000000010100010144",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_INVALID_URL,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_INVALID_URL),
+        .chunks = SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_INVALID_URL,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_INVALID_URL),
         .expected_sw = SWO_TX_PARSING_FAIL_CERTIFICATES,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool_metadata_invalid_hash_length
     {
-        .name = "[REJECT_POOL_METADATA] pool_metadata_invalid_hash_length",
+        .name = "[DENY_POOL_METADATA] pool_metadata_invalid_hash_length",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001016C",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_INVALID_HASH_LENGTH,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_INVALID_HASH_LENGTH),
+        .chunks = SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_INVALID_HASH_LENGTH,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_INVALID_HASH_LENGTH),
         .expected_sw = SWO_TX_PARSING_FAIL_CERTIFICATES,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > invalidPoolMetadataTestCases > pool_metadata_missing_hash
     {
-        .name = "[REJECT_POOL_METADATA] pool_metadata_missing_hash",
+        .name = "[DENY_POOL_METADATA] pool_metadata_missing_hash",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "0101010000000001010001014D",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_MISSING_HASH,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_POOL_METADATA_POOL_METADATA_MISSING_HASH),
+        .chunks = SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_MISSING_HASH,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_MISSING_HASH),
         .expected_sw = SWO_TX_PARSING_FAIL_CERTIFICATES,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > invalidRelayTestCases > SingleHostHostname_missing_dns
     {
-        .name = "[REJECT_RELAY] SingleHostHostname_missing_dns",
+        .name = "[DENY_RELAY] SingleHostHostname_missing_dns",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "01010100000000010100010168",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_RELAY_SINGLEHOSTHOSTNAME_MISSING_DNS,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_RELAY_SINGLEHOSTHOSTNAME_MISSING_DNS),
+        .chunks = SIGN_TX_SEGMENTS_DENY_RELAY_SINGLEHOSTHOSTNAME_MISSING_DNS,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_RELAY_SINGLEHOSTHOSTNAME_MISSING_DNS),
         .expected_sw = SWO_TX_PARSING_FAIL_CERTIFICATES,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > invalidRelayTestCases > MultiHost_missing_dns
     {
-        .name = "[REJECT_RELAY] MultiHost_missing_dns",
+        .name = "[DENY_RELAY] MultiHost_missing_dns",
         .init_hex =
         "0000000000000000012D964A0904000100010200010000010100000100000000"
         "01010100000000010100010165",
-        .chunks = SIGN_TX_SEGMENTS_REJECT_RELAY_MULTIHOST_MISSING_DNS,
-        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_RELAY_MULTIHOST_MISSING_DNS),
+        .chunks = SIGN_TX_SEGMENTS_DENY_RELAY_MULTIHOST_MISSING_DNS,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_RELAY_MULTIHOST_MISSING_DNS),
         .expected_sw = SWO_TX_PARSING_FAIL_CERTIFICATES,
         .expect_init_failure = false,
         .skip_reason = NULL,

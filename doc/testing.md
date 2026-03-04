@@ -18,6 +18,19 @@ This is the main entry point for test documentation in the Cardano Ledger app.
   `../unit-tests/generators/generate_unit_tests_from_ragger.py`.
 - Run ragger and swap tests only when explicitly requested.
 
+## Terminology: Deny vs Reject
+
+Use these terms consistently across ragger tests, generator scripts, unit-test fixtures, and unit-test runners:
+
+- **Deny**: app-level refusal before user approval UI (NBGL review) is reached.
+  - Example: invalid input, forbidden path/signing mode combination, malformed APDU payload.
+  - Naming: use `deny` in test names, fixture sets, generated fixture labels, and runner names.
+- **Reject**: explicit user decision in UI to refuse an otherwise valid flow.
+  - Example: user taps reject on NBGL confirmation, or unit tests simulate that UI action.
+  - Naming: use `reject` only for user-decision paths and related NBGL/mock helpers.
+
+This distinction is required to avoid conflating security-policy/input validation failures with human confirmation refusals.
+
 ## Debugging & Tracing
 
 Excessive tracing strings in the debug version of the app can lead to the binary exceeding the available flash memory on the device. To mitigate this, the app uses **conditional tracing guards** for verbose or repetitive debug output.

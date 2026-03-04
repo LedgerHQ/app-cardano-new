@@ -46,7 +46,7 @@ def test_wrong_p1p2(backend: BackendInterface) -> None:
     assert e.value.status == StatusWord.SWO_INCORRECT_P1_P2
 
 
-def test_sign_tx_rejects_nonzero_legacy_p2_values(backend: BackendInterface) -> None:
+def test_sign_tx_deny_nonzero_legacy_p2_values(backend: BackendInterface) -> None:
     # Transaction body APDUs use P1-based staging; any non-zero P2 is invalid.
     with pytest.raises(ExceptionRAPDU) as e:
         backend.exchange(cla=CLA, ins=InsType.INS_SIGN_TX, p1=P1Type.P1_TX_INIT, p2=0x10, data=b"")

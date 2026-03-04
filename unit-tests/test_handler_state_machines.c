@@ -83,7 +83,7 @@ static size_t write_bip44_path(uint8_t *out,
     return required;
 }
 
-static void test_sign_tx_init_rejects_when_request_is_active(void **state) {
+static void test_sign_tx_init_deny_when_request_is_active(void **state) {
     (void) state;
     reset_test_context();
 
@@ -102,7 +102,7 @@ static void test_sign_tx_init_rejects_when_request_is_active(void **state) {
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
 }
 
-static void test_sign_tx_chunk_rejects_without_active_request(void **state) {
+static void test_sign_tx_chunk_deny_without_active_request(void **state) {
     (void) state;
     reset_test_context();
 
@@ -140,7 +140,7 @@ static void test_sign_tx_confirm_stops_after_chunk_error(void **state) {
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
 }
 
-static void test_sign_tx_witness_rejects_before_approved_state(void **state) {
+static void test_sign_tx_witness_deny_before_approved_state(void **state) {
     (void) state;
     reset_test_context();
 
@@ -173,10 +173,10 @@ static void test_sign_tx_witness_rejects_before_approved_state(void **state) {
 
 int main(void) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_sign_tx_init_rejects_when_request_is_active),
-        cmocka_unit_test(test_sign_tx_chunk_rejects_without_active_request),
+        cmocka_unit_test(test_sign_tx_init_deny_when_request_is_active),
+        cmocka_unit_test(test_sign_tx_chunk_deny_without_active_request),
         cmocka_unit_test(test_sign_tx_confirm_stops_after_chunk_error),
-        cmocka_unit_test(test_sign_tx_witness_rejects_before_approved_state),
+        cmocka_unit_test(test_sign_tx_witness_deny_before_approved_state),
     };
     return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }

@@ -24,14 +24,12 @@ class OpCertTestCase:
     name: str
     opCert: operationalCertificate
     has_warning: bool = False
-    ledgerjs_name: Optional[str] = None
 
 
 # pylint: disable=line-too-long
 opCertTestCases = [
     OpCertTestCase(
         name="Sign_opcert_should_correctly_sign_operational_certificate",
-        ledgerjs_name="Should correctly sign a basic operational certificate",
         opCert=operationalCertificate(
             "3d24bc547388cf2403fd978fc3d3a93d1f39acf68a9c00e40512084dc05f2822",
             47,
@@ -40,8 +38,7 @@ opCertTestCases = [
         ),
     ),
     OpCertTestCase(
-        name="Sign_opcert_should_correctly_sign_operational_certificate_with_warning",
-        ledgerjs_name=None,  # New test case added for warning path (no ledgerjs equivalent)
+        name="Sign_opcert_should_correctly_sign_operational_certificate_with_warning",  # New test case added for warning path (no ledgerjs equivalent)
         opCert=operationalCertificate(
             "3d24bc547388cf2403fd978fc3d3a93d1f39acf68a9c00e40512084dc05f2822",
             47,

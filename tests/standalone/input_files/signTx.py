@@ -409,7 +409,6 @@ class Witness:
 @dataclass(kw_only=True)
 class SignTxTestCase:
     name: str
-    ledgerjs_name: Optional[str] = None
     tx: Optional[Transaction] = None
     signingMode: Optional[TransactionSigningMode] = None
     txBody: Optional[str] = None
@@ -491,7 +490,6 @@ destinations: dict[str, TxOutputDestination] = {
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
             name="",
-            ledgerjs_name=None,
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
             spendingValue="m/1852'/1815'/0'/0/0",
@@ -502,7 +500,6 @@ destinations: dict[str, TxOutputDestination] = {
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
             name="",
-            ledgerjs_name=None,
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
             spendingValue="m/1852'/1815'/0'/0/0",
@@ -513,7 +510,6 @@ destinations: dict[str, TxOutputDestination] = {
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
             name="",
-            ledgerjs_name=None,
             netDesc=Mainnet,
             addrType=AddressType.ENTERPRISE_KEY,
             spendingValue="m/1852'/1815'/0'/0/0"
@@ -523,7 +519,6 @@ destinations: dict[str, TxOutputDestination] = {
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
             name="",
-            ledgerjs_name=None,
             netDesc=Mainnet,
             addrType=AddressType.POINTER_KEY,
             spendingValue="m/1852'/1815'/0'/0/0",
@@ -534,7 +529,6 @@ destinations: dict[str, TxOutputDestination] = {
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
             name="",
-            ledgerjs_name=None,
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
             spendingValue="m/1852'/1815'/456'/0/5000000",
@@ -545,7 +539,6 @@ destinations: dict[str, TxOutputDestination] = {
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
             name="",
-            ledgerjs_name=None,
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
             spendingValue="m/1852'/1815'/0'/0/0",
@@ -605,7 +598,6 @@ destinations: dict[str, TxOutputDestination] = {
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
             name="",
-            ledgerjs_name=None,
             netDesc=Mainnet,
             addrType=AddressType.REWARD_KEY,
             spendingValue="",
@@ -616,7 +608,6 @@ destinations: dict[str, TxOutputDestination] = {
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
             name="",
-            ledgerjs_name=None,
             netDesc=Mainnet,
             addrType=AddressType.REWARD_SCRIPT,
             spendingValue="",
@@ -627,62 +618,56 @@ destinations: dict[str, TxOutputDestination] = {
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
             name="",
-            ledgerjs_name=None,
             netDesc=Mainnet,
             addrType=AddressType.REWARD_KEY,
             spendingValue="",
             stakingValue="m/1852'/1815'/0'/2/0",
         ),
     ),
-    "reject1": TxOutputDestination(
+    "deny1": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
             name="",
-            ledgerjs_name=None,
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,
             spendingValue="29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd",
             stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
         ),
     ),
-    "reject2": TxOutputDestination(
+    "deny2": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
             name="",
-            ledgerjs_name=None,
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_SCRIPT,
             spendingValue="29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd",
             stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
         ),
     ),
-    "reject3": TxOutputDestination(
+    "deny3": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
             name="",
-            ledgerjs_name=None,
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,
             spendingValue="29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd",
             stakingValue="m/1852'/1815'/456'/2/0",
         ),
     ),
-    "reject4": TxOutputDestination(
+    "deny4": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
             name="",
-            ledgerjs_name=None,
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
             spendingValue="m/1852'/1815'/1'/0/0",
             stakingValue="m/1852'/1815'/0'/2/0",
         ),
     ),
-    "reject5": TxOutputDestination(
+    "deny5": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
             name="",
-            ledgerjs_name=None,
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
             spendingValue="m/1852'/1815'/1'/0/0",
@@ -1167,7 +1152,7 @@ mints: dict[str, List[AssetGroup]] = {
             [Token("74657374436f696e", 7878754), Token("75657374436f696e", -7878754)],
         )
     ],
-    "reject": [
+    "deny": [
         AssetGroup(
             "0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425",
             [Token("75657374436f696e", -7878754)],
@@ -1509,7 +1494,7 @@ certificates: dict[str, Certificate] = {
             ),
         ),
     ),
-    "rejectNoGivenPath": Certificate(
+    "denyNoGivenPath": Certificate(
         CertificateType.STAKE_POOL_REGISTRATION,
         PoolRegistrationParams(
             poolKeys["poolKeyHash"],
@@ -1531,7 +1516,7 @@ certificates: dict[str, Certificate] = {
             ),
         ),
     ),
-    "rejectInvalid1": Certificate(
+    "denyInvalid1": Certificate(
         CertificateType.STAKE_POOL_REGISTRATION,
         PoolRegistrationParams(
             poolKeys["poolKeyHash"],
@@ -1553,7 +1538,7 @@ certificates: dict[str, Certificate] = {
             ),
         ),
     ),
-    "rejectInvalid2": Certificate(
+    "denyInvalid2": Certificate(
         CertificateType.STAKE_POOL_REGISTRATION,
         PoolRegistrationParams(
             poolKeys["poolKeyHash"],
@@ -1575,7 +1560,7 @@ certificates: dict[str, Certificate] = {
             ),
         ),
     ),
-    "rejectInvalid3": Certificate(
+    "denyInvalid3": Certificate(
         CertificateType.STAKE_POOL_REGISTRATION,
         PoolRegistrationParams(
             poolKeys["poolKeyHash"],
@@ -1592,7 +1577,7 @@ certificates: dict[str, Certificate] = {
             ),
         ),
     ),
-    "rejectInvalid4": Certificate(
+    "denyInvalid4": Certificate(
         CertificateType.STAKE_POOL_REGISTRATION,
         PoolRegistrationParams(
             poolKeys["poolKeyHash"],
@@ -1608,7 +1593,7 @@ certificates: dict[str, Certificate] = {
             ),
         ),
     ),
-    "rejectInvalid5": Certificate(
+    "denyInvalid5": Certificate(
         CertificateType.STAKE_POOL_REGISTRATION,
         PoolRegistrationParams(
             poolKeys["poolKeyHash"],
@@ -1624,7 +1609,7 @@ certificates: dict[str, Certificate] = {
             ),
         ),
     ),
-    "rejectInvalid6": Certificate(
+    "denyInvalid6": Certificate(
         CertificateType.STAKE_POOL_REGISTRATION,
         PoolRegistrationParams(
             poolKeys["poolKeyHash"],
@@ -1641,7 +1626,7 @@ certificates: dict[str, Certificate] = {
             ),
         ),
     ),
-    "rejectInvalid7": Certificate(
+    "denyInvalid7": Certificate(
         CertificateType.STAKE_POOL_REGISTRATION,
         PoolRegistrationParams(
             poolKeys["poolKeyHash"],
@@ -1655,7 +1640,7 @@ certificates: dict[str, Certificate] = {
             PoolMetadataParams("https://www.vacuumlabs.com/sampleUrl.json", ""),
         ),
     ),
-    "rejectRelay1": Certificate(
+    "denyRelay1": Certificate(
         CertificateType.STAKE_POOL_REGISTRATION,
         PoolRegistrationParams(
             poolKeys["poolKeyHash"],
@@ -1677,7 +1662,7 @@ certificates: dict[str, Certificate] = {
             ),
         ),
     ),
-    "rejectRelay2": Certificate(
+    "denyRelay2": Certificate(
         CertificateType.STAKE_POOL_REGISTRATION,
         PoolRegistrationParams(
             poolKeys["poolKeyHash"],
@@ -1694,7 +1679,7 @@ certificates: dict[str, Certificate] = {
             ),
         ),
     ),
-    "rejectStakePool1": Certificate(
+    "denyStakePool1": Certificate(
         CertificateType.STAKE_POOL_REGISTRATION,
         PoolRegistrationParams(
             poolKeys["default"],
@@ -1711,7 +1696,7 @@ certificates: dict[str, Certificate] = {
             ),
         ),
     ),
-    "rejectStakePool2": Certificate(
+    "denyStakePool2": Certificate(
         CertificateType.STAKE_POOL_REGISTRATION,
         PoolRegistrationParams(
             poolKeys["default1"],
@@ -1736,7 +1721,6 @@ certificates: dict[str, Certificate] = {
 testsByron: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Sign_tx_with_thirdparty_Byron_mainnet_output",
-        ledgerjs_name="Sign tx with third-party Byron mainnet output",
         tx=Transaction(
             network=Mainnet, inputs=[inputs["utxoByron"]], outputs=[outputs["externalByronMainnet"]], fee=42, ttl=10
         ),
@@ -1745,7 +1729,6 @@ testsByron: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Sign_tx_with_thirdparty_Byron_Daedalus_mainnet_output",
-        ledgerjs_name="Sign tx with third-party Byron Daedalus mainnet output",
         tx=Transaction(
             network=Mainnet,
             inputs=[inputs["utxoByron"]],
@@ -1756,7 +1739,6 @@ testsByron: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Sign_tx_with_thirdparty_Byron_testnet_output",
-        ledgerjs_name="Sign tx with third-party Byron testnet output",
         tx=Transaction(
             network=Testnet, inputs=[inputs["utxoByron"]], outputs=[outputs["externalByronTestnet"]], fee=42, ttl=10
         ),
@@ -1769,7 +1751,6 @@ testsByron: List[SignTxTestCase] = [
 testsShelleyNoCertificates: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Sign_tx_without_outputs",
-        ledgerjs_name="Sign tx without outputs",
         tx=Transaction(network=Mainnet, inputs=[inputs["utxoShelley"]], outputs=[], fee=42, ttl=10),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a",
@@ -1777,7 +1758,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Sign_tx_with_258_tag_on_inputs",
-        ledgerjs_name="Sign tx with 258 tag on inputs",
         tx=Transaction(network=Mainnet, inputs=[inputs["utxoShelley"]], outputs=[], fee=42, ttl=10),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400d90102818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a",
@@ -1785,7 +1765,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Sign_tx_without_change_address",
-        ledgerjs_name="Sign tx without change address",
         tx=Transaction(
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
@@ -1796,7 +1775,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Sign_tx_with_change_base_address_with_staking_path",
-        ledgerjs_name="Sign tx with change base address with staking path",
         tx=Transaction(
             network=Mainnet,
             inputs=[inputs["utxoByron"]],
@@ -1807,7 +1785,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Sign_tx_with_change_base_address_with_staking_key_hash",
-        ledgerjs_name="Sign tx with change base address with staking key hash",
         tx=Transaction(
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
@@ -1821,7 +1798,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Sign_tx_with_enterprise_change_address",
-        ledgerjs_name="Sign tx with enterprise change address",
         tx=Transaction(
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
@@ -1832,7 +1808,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Sign_tx_with_pointer_change_address",
-        ledgerjs_name="Sign tx with pointer change address",
         tx=Transaction(
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
@@ -1843,7 +1818,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Sign_tx_with_nonreasonable_account_and_address",
-        ledgerjs_name="Sign tx with non-reasonable account and address",
         tx=Transaction(
             network=Mainnet,
             inputs=[inputs["utxoNonReasonable"]],
@@ -1859,7 +1833,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Sign_tx_with_path_based_withdrawal",
-        ledgerjs_name="Sign tx with path based withdrawal",
         tx=Transaction(
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
@@ -1878,7 +1851,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Sign_tx_with_auxiliary_data_hash",
-        ledgerjs_name="Sign tx with auxiliary data hash",
         tx=Transaction(
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
@@ -1896,7 +1868,6 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
 testsShelleyWithCertificates: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Sign_tx_with_a_stake_registration_path_certificate_preConway",
-        ledgerjs_name="Sign tx with a stake registration path certificate --- pre-Conway",
         tx=Transaction(
             network=Mainnet,
             inputs=[inputs["utxoShelley"]],
@@ -4135,12 +4106,11 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
 ]
 
 # =================
-# Rejects signTx
+# Denies signTx
 # =================
-transactionInitRejectTestCases: List[SignTxTestCase] = [
+transactionInitDenyTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Non_mainnet_protocol_magic",
-        ledgerjs_name="Non-mainnet protocol magic",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824072),
             inputs=[inputs["utxoShelley"]],
@@ -4152,7 +4122,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Invalid_network_id",
-        ledgerjs_name="Invalid network id",
         tx=Transaction(
             network=NetworkDesc(networkId=16, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -4164,7 +4133,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_operator_too_few_certificates",
-        ledgerjs_name="Pool registration (operator) - too few certificates",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -4177,7 +4145,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_owner_too_few_certificates",
-        ledgerjs_name="Pool registration (owner) - too few certificates",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -4190,7 +4157,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_operator_too_many_certificates",
-        ledgerjs_name="Pool registration (operator) - too many certificates",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -4242,7 +4208,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_owner_too_many_certificates",
-        ledgerjs_name="Pool registration (owner) - too many certificates",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -4306,7 +4271,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_operator_too_many_withdrawals",
-        ledgerjs_name="Pool registration (operator) - too many withdrawals",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -4348,7 +4312,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_owner_too_many_withdrawals",
-        ledgerjs_name="Pool registration (owner) - too many withdrawals",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -4396,7 +4359,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_operator_mint_included",
-        ledgerjs_name="Pool registration (operator) - mint included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -4435,7 +4397,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_owner_mint_included",
-        ledgerjs_name="Pool registration (owner) - mint included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -4480,7 +4441,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Ordinary_tx_collateral_inputs_included",
-        ledgerjs_name="Ordinary tx - collateral inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -4494,7 +4454,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Multisig_tx_collateral_inputs_included",
-        ledgerjs_name="Multisig tx - collateral inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -4507,7 +4466,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_operator_collateral_inputs_included",
-        ledgerjs_name="Pool registration (operator) - collateral inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -4541,7 +4499,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_owner_collateral_inputs_included",
-        ledgerjs_name="Pool registration (owner) - collateral inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -4581,7 +4538,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_operator_required_signers_included",
-        ledgerjs_name="Pool registration (operator) - required signers included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -4619,7 +4575,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_owner_required_signers_included",
-        ledgerjs_name="Pool registration (owner) - required signers included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -4663,7 +4618,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Ordinary_tx_collateral_output_included",
-        ledgerjs_name="Ordinary tx - collateral output included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -4687,7 +4641,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Multisig_tx_collateral_output_included",
-        ledgerjs_name="Multisig tx - collateral output included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -4711,7 +4664,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_operator_collateral_output_included",
-        ledgerjs_name="Pool registration (operator) - collateral output included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -4756,7 +4708,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_owner_collateral_output_included",
-        ledgerjs_name="Pool registration (owner) - collateral output included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -4807,7 +4758,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Ordinary_tx_total_collateral_included",
-        ledgerjs_name="Ordinary tx - total collateral included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -4820,7 +4770,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Multisig_tx_total_collateral_included",
-        ledgerjs_name="Multisig tx - total collateral included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -4833,7 +4782,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_operator_total_collateral_included",
-        ledgerjs_name="Pool registration (operator) - total collateral included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -4867,7 +4815,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_owner_total_collateral_included",
-        ledgerjs_name="Pool registration (owner) - total collateral included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -4907,7 +4854,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Ordinary_tx_reference_inputs_included",
-        ledgerjs_name="Ordinary tx - reference inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -4926,7 +4872,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Multisig_tx_reference_inputs_included",
-        ledgerjs_name="Multisig tx - reference inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -4945,7 +4890,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_operator_reference_inputs_included",
-        ledgerjs_name="Pool registration (operator) - reference inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -4985,7 +4929,6 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_owner_reference_inputs_included",
-        ledgerjs_name="Pool registration (owner) - reference inputs included",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -5031,10 +4974,9 @@ transactionInitRejectTestCases: List[SignTxTestCase] = [
     ),
 ]
 
-addressParamsRejectTestCases: List[SignTxTestCase] = [
+addressParamsDenyTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Reward_address_key",
-        ledgerjs_name="Reward address - key",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5050,7 +4992,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                             stakingValue="m/1852'/1815'/0'/2/0",
                             result="",
                             result_hex=None,
-                            ledgerjs_name=None,
                             nano_nav_confirm=None,
                             nano_nav_show=None,
                         ),
@@ -5068,7 +5009,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Reward_address_script",
-        ledgerjs_name="Reward address - script",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5084,7 +5024,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                             stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
                             result="",
                             result_hex=None,
-                            ledgerjs_name=None,
                             nano_nav_confirm=None,
                             nano_nav_show=None,
                         ),
@@ -5102,7 +5041,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="No_spending_path_Ordinary_Tx_1",
-        ledgerjs_name="No spending path - Ordinary Tx 1",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5118,7 +5056,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                             stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
                             result="",
                             result_hex=None,
-                            ledgerjs_name=None,
                             nano_nav_confirm=None,
                             nano_nav_show=None,
                         ),
@@ -5136,7 +5073,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="No_spending_path_Ordinary_Tx_2",
-        ledgerjs_name="No spending path - Ordinary Tx 2",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5152,7 +5088,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                             stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
                             result="",
                             result_hex=None,
-                            ledgerjs_name=None,
                             nano_nav_confirm=None,
                             nano_nav_show=None,
                         ),
@@ -5170,7 +5105,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_operator_spending_choice_not_path",
-        ledgerjs_name="Pool operator - spending choice not path",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5186,7 +5120,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                             stakingValue="m/1852'/1815'/456'/2/0",
                             result="",
                             result_hex=None,
-                            ledgerjs_name=None,
                             nano_nav_confirm=None,
                             nano_nav_show=None,
                         ),
@@ -5204,7 +5137,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Multisig_unconditionally",
-        ledgerjs_name="Multisig - unconditionally",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5220,7 +5152,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                             stakingValue="m/1852'/1815'/0'/2/0",
                             result="",
                             result_hex=None,
-                            ledgerjs_name=None,
                             nano_nav_confirm=None,
                             nano_nav_show=None,
                         ),
@@ -5238,7 +5169,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_owner_unconditionally",
-        ledgerjs_name="Pool owner - unconditionally",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -5254,7 +5184,6 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
                             stakingValue="m/1852'/1815'/0'/2/0",
                             result="",
                             result_hex=None,
-                            ledgerjs_name=None,
                             nano_nav_confirm=None,
                             nano_nav_show=None,
                         ),
@@ -5272,10 +5201,9 @@ addressParamsRejectTestCases: List[SignTxTestCase] = [
     ),
 ]
 
-certificateRejectTestCases: List[SignTxTestCase] = [
+certificateDenyTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Pool_registration_in_Ordinary_Tx",
-        ledgerjs_name="Pool registration in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5308,7 +5236,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_in_Multisig_Tx",
-        ledgerjs_name="Pool registration in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5341,7 +5268,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_registration_in_Plutus_Tx",
-        ledgerjs_name="Pool registration in Plutus Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5374,7 +5300,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_retirement_in_Multisig_Tx",
-        ledgerjs_name="Pool retirement in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5398,7 +5323,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Stake_registration_in_Pool_Registration_Operator",
-        ledgerjs_name="Stake registration in Pool Registration Operator",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5421,7 +5345,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Stake_registration_in_Pool_Registration_Owner",
-        ledgerjs_name="Stake registration in Pool Registration Owner",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[],
@@ -5444,7 +5367,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Stake_deregistration_in_Pool_Registration_Operator",
-        ledgerjs_name="Stake deregistration in Pool Registration Operator",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5467,7 +5389,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Stake_deregistration_in_Pool_Registration_Owner",
-        ledgerjs_name="Stake deregistration in Pool Registration Owner",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[],
@@ -5490,7 +5411,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Stake_delegation_in_Pool_Registration_Operator",
-        ledgerjs_name="Stake delegation in Pool Registration Operator",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5515,7 +5435,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Stake_delegation_in_Pool_Registration_Owner",
-        ledgerjs_name="Stake delegation in Pool Registration Owner",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[],
@@ -5540,7 +5459,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_retirement_in_Pool_Registration_Operator",
-        ledgerjs_name="Pool retirement in Pool Registration Operator",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5564,7 +5482,6 @@ certificateRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_retirement_in_Pool_Registration_Owner",
-        ledgerjs_name="Pool retirement in Pool Registration Owner",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[],
@@ -5588,10 +5505,9 @@ certificateRejectTestCases: List[SignTxTestCase] = [
     ),
 ]
 
-certificateStakingRejectTestCases: List[SignTxTestCase] = [
+certificateStakingDenyTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Script_hash_in_Ordinary_Tx",
-        ledgerjs_name="Script hash in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5614,7 +5530,6 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Non_staking_path_in_Ordinary_Tx",
-        ledgerjs_name="Non-staking path in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5637,7 +5552,6 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Path_in_Multisig_Tx",
-        ledgerjs_name="Path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5660,10 +5574,9 @@ certificateStakingRejectTestCases: List[SignTxTestCase] = [
     ),
 ]
 
-certificateStakePoolRetirementRejectTestCases: List[SignTxTestCase] = [
+certificateStakePoolRetirementDenyTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Non_pool_cold_key_in_Ordinary_Tx",
-        ledgerjs_name="Non-pool cold key in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5688,10 +5601,9 @@ certificateStakePoolRetirementRejectTestCases: List[SignTxTestCase] = [
     ),
 ]
 
-withdrawalRejectTestCases: List[SignTxTestCase] = [
+withdrawalDenyTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
-        name="Reject_tx_with_invalid_canonical_ordering_of_withdrawals",
-        ledgerjs_name="Reject tx with invalid canonical ordering of withdrawals",
+        name="Deny_tx_with_invalid_canonical_ordering_of_withdrawals",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5720,7 +5632,6 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Script_hash_as_stake_credential_in_Ordinary_Tx",
-        ledgerjs_name="Script hash as stake credential in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5741,7 +5652,6 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Non_staking_path_as_stake_credential_in_Ordinary_Tx",
-        ledgerjs_name="Non-staking path as stake credential in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5762,7 +5672,6 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Staking_path_as_stake_credential_in_Multisig_Tx",
-        ledgerjs_name="Staking path as stake credential in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5783,7 +5692,6 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Non_staking_path_as_stake_credential_in_Plutus_Tx",
-        ledgerjs_name="Non-staking path as stake credential in Plutus Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5804,10 +5712,9 @@ withdrawalRejectTestCases: List[SignTxTestCase] = [
     ),
 ]
 
-witnessRejectTestCases: List[SignTxTestCase] = [
+witnessDenyTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Ordinary_account_path_in_Ordinary_Tx",
-        ledgerjs_name="Ordinary account path in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5820,7 +5727,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Multisig_account_path_in_Ordinary_Tx",
-        ledgerjs_name="Multisig account path in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5833,7 +5739,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Multisig_spending_path_in_Ordinary_Tx",
-        ledgerjs_name="Multisig spending path in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5846,7 +5751,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Multisig_staking_path_in_Ordinary_Tx",
-        ledgerjs_name="Multisig staking path in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5859,7 +5763,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Mint_path_in_Ordinary_Tx",
-        ledgerjs_name="Mint path in Ordinary Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5872,7 +5775,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Ordinary_account_path_in_Multisig_Tx",
-        ledgerjs_name="Ordinary account path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5885,7 +5787,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Multisig_account_path_in_Multisig_Tx",
-        ledgerjs_name="Multisig account path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5898,7 +5799,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Ordinary_spending_path_in_Multisig_Tx",
-        ledgerjs_name="Ordinary spending path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5911,7 +5811,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Ordinary_staking_path_in_Multisig_Tx",
-        ledgerjs_name="Ordinary staking path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5924,7 +5823,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Mint_path_in_Multisig_Tx",
-        ledgerjs_name="Mint path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5937,7 +5835,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_cold_path_in_Multisig_Tx",
-        ledgerjs_name="Pool cold path in Multisig Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5950,7 +5847,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Ordinary_account_path_in_Plutus_Tx",
-        ledgerjs_name="Ordinary account path in Plutus Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5963,7 +5859,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Multisig_account_path_in_Plutus_Tx",
-        ledgerjs_name="Multisig account path in Plutus Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -5976,7 +5871,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Multisig_account_path_in_Pool_Registration_Owner_Tx",
-        ledgerjs_name="Multisig account path in Pool Registration (Owner) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -6016,7 +5910,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Ordinary_spending_path_in_Pool_Registration_Owner_Tx",
-        ledgerjs_name="Ordinary spending path in Pool Registration (Owner) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -6056,7 +5949,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Multisig_spending_path_in_Pool_Registration_Owner_Tx",
-        ledgerjs_name="Multisig spending path in Pool Registration (Owner) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -6096,7 +5988,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Multisig_staking_path_in_Pool_Registration_Owner_Tx",
-        ledgerjs_name="Multisig staking path in Pool Registration (Owner) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -6136,7 +6027,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Mint_path_in_Pool_Registration_Owner_Tx",
-        ledgerjs_name="Mint path in Pool Registration (Owner) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -6176,7 +6066,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Pool_cold_path_in_Pool_Registration_Owner_Tx",
-        ledgerjs_name="Pool cold path in Pool Registration (Owner) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -6216,7 +6105,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Multisig_account_path_in_Pool_Registration_Operator_Tx",
-        ledgerjs_name="Multisig account path in Pool Registration (Operator) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6250,7 +6138,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Multisig_spending_path_in_Pool_Registration_Operator_Tx",
-        ledgerjs_name="Multisig spending path in Pool Registration (Operator) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6284,7 +6171,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Ordinary_staking_path_in_Pool_Registration_Operator_Tx",
-        ledgerjs_name="Ordinary staking path in Pool Registration (Operator) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6318,7 +6204,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Multisig_staking_path_in_Pool_Registration_Operator_Tx",
-        ledgerjs_name="Multisig staking path in Pool Registration (Operator) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6352,7 +6237,6 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Mint_path_in_Pool_Registration_Operator_Tx",
-        ledgerjs_name="Mint path in Pool Registration (Operator) Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6386,10 +6270,9 @@ witnessRejectTestCases: List[SignTxTestCase] = [
     ),
 ]
 
-singleAccountRejectTestCases: List[SignTxTestCase] = [
+singleAccountDenyTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Input_and_change_output_account_mismatch",
-        ledgerjs_name="Input and change output account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6417,7 +6300,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                             stakingValue="m/1852'/1815'/0'/2/0",
                             result="",
                             result_hex=None,
-                            ledgerjs_name=None,
                             nano_nav_confirm=None,
                             nano_nav_show=None,
                         ),
@@ -6435,7 +6317,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Input_and_stake_deregistration_certificate_account_mismatch",
-        ledgerjs_name="Input and stake deregistration certificate account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6458,7 +6339,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Input_and_withdrawal_account_mismatch",
-        ledgerjs_name="Input and withdrawal account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6479,7 +6359,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Change_output_and_stake_deregistration_account_mismatch",
-        ledgerjs_name="Change output and stake deregistration account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6507,7 +6386,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                             stakingValue="m/1852'/1815'/0'/2/0",
                             result="",
                             result_hex=None,
-                            ledgerjs_name=None,
                             nano_nav_confirm=None,
                             nano_nav_show=None,
                         ),
@@ -6537,7 +6415,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Change_output_and_withdrawal_account_mismatch",
-        ledgerjs_name="Change output and withdrawal account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6565,7 +6442,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                             stakingValue="m/1852'/1815'/0'/2/0",
                             result="",
                             result_hex=None,
-                            ledgerjs_name=None,
                             nano_nav_confirm=None,
                             nano_nav_show=None,
                         ),
@@ -6593,7 +6469,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Stake_deregistration_certificate_and_withdrawal_account_mismatch",
-        ledgerjs_name="Stake deregistration certificate and withdrawal account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6626,7 +6501,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Byron_to_Shelley_transfer_input_account_mismatch",
-        ledgerjs_name="Byron to Shelley transfer input account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[
@@ -6663,7 +6537,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Byron_to_Shelley_transfer_output_account_mismatch",
-        ledgerjs_name="Byron to Shelley transfer output account mismatch",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoByron2"]],
@@ -6679,7 +6552,6 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
                             stakingValue="m/1852'/1815'/1'/2/0",
                             result="",
                             result_hex=None,
-                            ledgerjs_name=None,
                             nano_nav_confirm=None,
                             nano_nav_show=None,
                         ),
@@ -6697,10 +6569,9 @@ singleAccountRejectTestCases: List[SignTxTestCase] = [
     ),
 ]
 
-collateralOutputRejectTestCases: List[SignTxTestCase] = [
+collateralOutputDenyTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Collateral_output_with_datum_hash",
-        ledgerjs_name="Collateral output with datum hash",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6727,7 +6598,6 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Collateral_output_with_inline_datum",
-        ledgerjs_name="Collateral output with inline datum",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6755,7 +6625,6 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Collateral_output_with_reference_script",
-        ledgerjs_name="Collateral output with reference script",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6782,8 +6651,7 @@ collateralOutputRejectTestCases: List[SignTxTestCase] = [
 
 testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
     SignTxTestCase(
-        name="Reject_tx_where_asset_groups_are_not_ordered",
-        ledgerjs_name="Reject tx where asset groups are not ordered",
+        name="Deny_tx_where_asset_groups_are_not_ordered",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6816,8 +6684,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
     ),
     SignTxTestCase(
-        name="Reject_tx_where_asset_groups_are_not_unique",
-        ledgerjs_name="Reject tx where asset groups are not unique",
+        name="Deny_tx_where_asset_groups_are_not_unique",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6850,8 +6717,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
     ),
     SignTxTestCase(
-        name="Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_alphabetical",
-        ledgerjs_name="Reject tx where tokens within an asset group are not ordered - alphabetical",
+        name="Deny_tx_where_tokens_within_an_asset_group_are_not_ordered_alphabetical",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6883,8 +6749,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
     ),
     SignTxTestCase(
-        name="Reject_tx_where_tokens_within_an_asset_group_are_not_ordered_length",
-        ledgerjs_name="Reject tx where tokens within an asset group are not ordered - length",
+        name="Deny_tx_where_tokens_within_an_asset_group_are_not_ordered_length",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6916,8 +6781,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
     ),
     SignTxTestCase(
-        name="Reject_tx_where_tokens_within_an_asset_group_are_not_unique",
-        ledgerjs_name="Reject tx where tokens within an asset group are not unique",
+        name="Deny_tx_where_tokens_within_an_asset_group_are_not_unique",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6949,8 +6813,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
     ),
     SignTxTestCase(
-        name="Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_policies",
-        ledgerjs_name="Reject tx with mint fields with invalid canonical ordering of policies",
+        name="Deny_tx_with_mint_fields_with_invalid_canonical_ordering_of_policies",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -6977,8 +6840,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
     ),
     SignTxTestCase(
-        name="Reject_tx_with_mint_fields_with_invalid_canonical_ordering_of_asset_names",
-        ledgerjs_name="Reject tx with mint fields with invalid canonical ordering of asset names",
+        name="Deny_tx_with_mint_fields_with_invalid_canonical_ordering_of_asset_names",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -7002,10 +6864,9 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
     ),
 ]
 
-poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
+poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Different_index",
-        ledgerjs_name="Different index",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -7077,7 +6938,6 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Different_prefix",
-        ledgerjs_name="Different prefix",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -7149,7 +7009,6 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="No_path_given",
-        ledgerjs_name="No path given",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -7267,10 +7126,9 @@ poolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
     ),
 ]
 
-stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
+stakePoolRegistrationPoolIdDenyTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Path_sent_in_for_Pool_Registration_Owner_Tx",
-        ledgerjs_name="Path sent in for Pool Registration Owner Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -7319,7 +7177,6 @@ stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="Hash_sent_in_for_Pool_Registration_Operator_Tx",
-        ledgerjs_name="Hash sent in for Pool Registration Operator Tx",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -7369,7 +7226,7 @@ stakePoolRegistrationPoolIdRejectTestCases: List[SignTxTestCase] = [
     ),
 ]
 
-stakePoolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
+stakePoolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Non_staking_path_for_Pool_Registration_Owner_Tx",
         tx=Transaction(
@@ -7420,10 +7277,9 @@ stakePoolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
     ),
 ]
 
-outputRejectTestCases: List[SignTxTestCase] = [
+outputDenyTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Legacy_output_with_inline_datum",
-        ledgerjs_name="Legacy output with inline datum",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
@@ -7453,12 +7309,11 @@ outputRejectTestCases: List[SignTxTestCase] = [
     ),
 ]
 
-testsCVoteRegistrationRejects: List[SignTxTestCase] = []
+testsCVoteRegistrationDenies: List[SignTxTestCase] = []
 
 invalidCertificates: List[SignTxTestCase] = [
     SignTxTestCase(
         name="pool_registration_with_multiple_path_owners",
-        ledgerjs_name="pool registration with multiple path owners",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -7511,7 +7366,6 @@ invalidCertificates: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="pool_registration_with_no_owners",
-        ledgerjs_name="pool registration with no owners",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -7558,7 +7412,6 @@ invalidCertificates: List[SignTxTestCase] = [
 invalidPoolMetadataTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
         name="pool_metadata_url_too_long",
-        ledgerjs_name="pool metadata url too long",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -7608,7 +7461,6 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="pool_metadata_invalid_url",
-        ledgerjs_name="pool metadata invalid url",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -7658,7 +7510,6 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="pool_metadata_invalid_hash_length",
-        ledgerjs_name="pool metadata invalid hash length",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -7708,7 +7559,6 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="pool_metadata_missing_hash",
-        ledgerjs_name="pool metadata missing hash",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -7761,7 +7611,6 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
 invalidRelayTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
         name="SingleHostHostname_missing_dns",
-        ledgerjs_name="SingleHostHostname missing dns",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],
@@ -7811,7 +7660,6 @@ invalidRelayTestCases: List[SignTxTestCase] = [
     ),
     SignTxTestCase(
         name="MultiHost_missing_dns",
-        ledgerjs_name="MultiHost missing dns",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoMultisig"]],

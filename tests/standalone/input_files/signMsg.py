@@ -48,7 +48,6 @@ class SignMsgExpectedInUnitTest:
 @dataclass(kw_only=True)
 class SignMsgTestCase:
     name: str
-    ledgerjs_name: Optional[str] = None
     msgData: Optional[MessageData] = None
     nav: Optional[NavigationData] = None
     expected_in_unit_test: Optional[SignMsgExpectedInUnitTest] = None
@@ -130,7 +129,7 @@ def build_sign_msg_chunk_apdu_for_deny(test_case: SignMsgDenyTestCase, chunk_ind
 def build_sign_msg_confirm_apdu_for_deny(test_case: SignMsgDenyTestCase) -> bytes:
     """Build a CONFIRM APDU with optional manipulation for deny testing."""
     if test_case.send_confirm_with_payload:
-        # Add non-empty payload (should be rejected)
+        # Add non-empty payload (should be denied)
         payload = b'\xDE\xAD\xBE\xEF'
     else:
         payload = bytes()
@@ -146,7 +145,6 @@ def build_sign_msg_confirm_apdu_for_deny(test_case: SignMsgDenyTestCase) -> byte
 signMsgTestCases = [
     SignMsgTestCase(
         name="Sign_msg_empty_message_with_keyhash_as_address_field",
-        ledgerjs_name="msg01: Should correctly sign an empty message with keyhash as address field",
         msgData=MessageData(
             messageHex="",
             signingPath="m/1852'/1815'/0'/0/1",
@@ -170,7 +168,6 @@ signMsgTestCases = [
     ),
     SignMsgTestCase(
         name="Sign_msg_short_nonhashed_ascii_message_with_keyhash_as_address_field",
-        ledgerjs_name="msg02: Should correctly sign a short non-hashed ascii message with keyhash as address field",
         msgData=MessageData(
             messageHex="68656c6c6f20776f726c64",  # "hello world"
             signingPath="m/1852'/1815'/0'/0/1",
@@ -194,7 +191,6 @@ signMsgTestCases = [
     ),
     SignMsgTestCase(
         name="Sign_msg_short_hashed_ascii_message_with_keyhash_as_address_field",
-        ledgerjs_name="msg03: Should correctly sign a short hashed ascii message with keyhash as address field",
         msgData=MessageData(
             messageHex="68656c6c6f20776f726c64",  # "hello world"
             signingPath="m/1852'/1815'/0'/0/1",
@@ -218,7 +214,6 @@ signMsgTestCases = [
     ),
     SignMsgTestCase(
         name="Sign_msg_short_nonhashed_ascii_message_displayed_as_hex",
-        ledgerjs_name="msg04: Should correctly sign a short non-hashed ascii message displayed as hex",
         msgData=MessageData(
             messageHex="68656c6c6f20776f726c64",  # "hello world"
             signingPath="m/1852'/1815'/0'/4/0",
@@ -242,7 +237,6 @@ signMsgTestCases = [
     ),
     SignMsgTestCase(
         name="Sign_msg_short_nonhashed_hex_message_with_keyhash_as_address_field",
-        ledgerjs_name="msg05: Should correctly sign a short non-hashed hex message with keyhash as address field",
         msgData=MessageData(
             messageHex="ff656c6c6f20776f726c64",
             signingPath="m/1853'/1815'/0'/0'",
@@ -266,7 +260,6 @@ signMsgTestCases = [
     ),
     SignMsgTestCase(
         name="Sign_msg_short_hashed_hex_message_with_keyhash_as_address_field",
-        ledgerjs_name="msg06: Should correctly sign a short hashed hex message with keyhash as address field",
         msgData=MessageData(
             messageHex="ff656c6c6f20776f726c64",
             signingPath="m/1853'/1815'/0'/0'",
@@ -290,7 +283,6 @@ signMsgTestCases = [
     ),
     SignMsgTestCase(
         name="Sign_msg_198_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field",
-        ledgerjs_name="msg07: Should correctly sign a 198 bytes long non-hashed ascii message with keyhash as address field",
         msgData=MessageData(
             messageHex=f"{'6869' * 99}",
             signingPath="m/1852'/1815'/0'/3/0",
@@ -314,7 +306,6 @@ signMsgTestCases = [
     ),
     SignMsgTestCase(
         name="Sign_msg_99_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field",
-        ledgerjs_name="msg08: Should correctly sign a 99 bytes long non-hashed hex message with keyhash as address field",
         msgData=MessageData(
             messageHex=f"{'de' * 99}",
             signingPath="m/1852'/1815'/0'/3/0",
@@ -338,7 +329,6 @@ signMsgTestCases = [
     ),
     SignMsgTestCase(
         name="Sign_msg_1000_bytes_long_hashed_ascii_message_with_keyhash_as_address_field",
-        ledgerjs_name="msg09: Should correctly sign a 1000 bytes long hashed ascii message with keyhash as address field",
         msgData=MessageData(
             messageHex=f"{'6869' * 500}",
             signingPath="m/1852'/1815'/0'/3/0",
@@ -362,7 +352,6 @@ signMsgTestCases = [
     ),
     SignMsgTestCase(
         name="Sign_msg_349_bytes_long_hashed_hex_message_with_keyhash_as_address_field",
-        ledgerjs_name="msg10: Should correctly sign a 349 bytes long hashed hex message with keyhash as address field",
         msgData=MessageData(
             messageHex=f"{'fa' * 349}",
             signingPath="m/1852'/1815'/0'/3/0",
@@ -386,7 +375,6 @@ signMsgTestCases = [
     ),
     SignMsgTestCase(
         name="Sign_msg_short_nonhashed_hex_message_with_base_address_in_address_field",
-        ledgerjs_name="msg11: Should correctly sign a short non-hashed hex message with base address in address field",
         msgData=MessageData(
             messageHex="deadbeef",
             signingPath="m/1852'/1815'/0'/5/0",
@@ -395,7 +383,6 @@ signMsgTestCases = [
             addressFieldType=MessageAddressFieldType.ADDRESS,
             addressDesc=DeriveAddressTestCase(
                 name="",
-                ledgerjs_name=None,
                 netDesc=Mainnet,
                 addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
                 spendingValue="m/1852'/1815'/0'/0/1",
@@ -421,7 +408,6 @@ signMsgTestCases = [
     ),
     SignMsgTestCase(
         name="Sign_msg_short_nonhashed_hex_message_with_reward_address_in_address_field",
-        ledgerjs_name="msg12: Should correctly sign a short non-hashed hex message with reward address in address field",
         msgData=MessageData(
             messageHex="deadbeef",
             signingPath="m/1852'/1815'/0'/5/0",
@@ -430,7 +416,6 @@ signMsgTestCases = [
             addressFieldType=MessageAddressFieldType.ADDRESS,
             addressDesc=DeriveAddressTestCase(
                 name="",
-                ledgerjs_name=None,
                 netDesc=Mainnet,
                 addrType=AddressType.REWARD_KEY,
                 spendingValue="",
@@ -495,7 +480,6 @@ signMsgTestCases = [
     # --- Test with unusual BIP44 path (WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH) ---
     SignMsgTestCase(
         name="Sign_msg_unusual_path_with_high_address_index",
-        ledgerjs_name="msg13: Should correctly sign a message with unusual high address index and show warning",
         msgData=MessageData(
             messageHex="deadbeef",
             signingPath="m/1852'/1815'/0'/0/1000001",  # Address index > MAX_REASONABLE_ADDRESS (1000000)
@@ -745,7 +729,6 @@ signMsgDenyTestCases = [
             addressFieldType=MessageAddressFieldType.ADDRESS,
             addressDesc=DeriveAddressTestCase(
                 name="",
-                ledgerjs_name=None,
                 netDesc=Mainnet,
                 addrType=AddressType.POINTER_KEY,  # POINTER_KEY: parsing will fail due to missing blockchain pointer data
                 spendingValue="m/1852'/1815'/0'/0/1",
@@ -764,7 +747,6 @@ signMsgDenyTestCases = [
             addressFieldType=MessageAddressFieldType.ADDRESS,
             addressDesc=DeriveAddressTestCase(
                 name="",
-                ledgerjs_name=None,
                 netDesc=Mainnet,
                 addrType=AddressType.BYRON,  # BYRON not allowed by policyForSignMsg
                 spendingValue="m/44'/1815'/0'/0/1",
@@ -783,7 +765,6 @@ signMsgDenyTestCases = [
             addressFieldType=MessageAddressFieldType.ADDRESS,
             addressDesc=DeriveAddressTestCase(
                 name="",
-                ledgerjs_name=None,
                 netDesc=Mainnet,
                 addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,  # Payment script: parsing will fail due to missing script hash
                 spendingValue="",  # Scripts don't have paths

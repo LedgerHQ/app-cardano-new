@@ -31,7 +31,7 @@ void ui_display_native_script_hash(void) {
     apdu_response_send_data(NULL, 0, SWO_SUCCESS);
 }
 
-// Test: requiredScripts > remainingScripts rejection for N-of-K
+// Test: requiredScripts > remainingScripts denial for N-of-K
 static void test_n_of_k_required_greater_than_remaining(void **state) {
     (void) state;
     reset_context();
@@ -53,7 +53,7 @@ static void test_n_of_k_required_greater_than_remaining(void **state) {
     };
     run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
 
-    // Should be rejected with script count error
+    // Should be denied with script count error
     assert_int_equal(get_last_sw(), SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_COUNT);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
@@ -91,7 +91,7 @@ static void test_invalid_display_format(void **state) {
     };
     run_derive_native_script_apdu(&finish_buf, P1_NATIVE_SCRIPT_FINISH);
 
-    // Should be rejected with display format error
+    // Should be denied with display format error
     assert_int_equal(get_last_sw(), SWO_NATIVE_SCRIPT_PARSING_FAIL_DISPLAY_FORMAT);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
@@ -178,7 +178,7 @@ static void test_finish_with_remaining_scripts(void **state) {
     };
     run_derive_native_script_apdu(&finish_buf, P1_NATIVE_SCRIPT_FINISH);
 
-    // Should be rejected with nesting error
+    // Should be denied with nesting error
     assert_int_equal(get_last_sw(), SWO_NATIVE_SCRIPT_PARSING_FAIL_NESTING);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }

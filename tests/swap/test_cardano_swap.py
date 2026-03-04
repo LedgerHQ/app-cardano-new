@@ -54,7 +54,7 @@ class CardanoShelleySwapTests(ExchangeTestRunner):
     valid_fees_1 = 174345
     valid_fees_2 = 28
 
-    # Fake addresses for rejection testing
+    # Fake addresses for denial testing
     fake_refund = "abcdabcd"
     fake_refund_memo = ""
     fake_payout = "abcdabcd"
@@ -80,7 +80,7 @@ class CardanoShelleySwapTests(ExchangeTestRunner):
         import bech32
         _, data_part = bech32.bech32_decode(destination)
         if data_part is None:
-            # Not a valid bech32 address - pass as-is for rejection testing
+            # Not a valid bech32 address - pass as-is for denial testing
             return destination.encode().hex()
         destination_bytes = bytes(bech32.convertbits(data_part, 5, 8, False))
         return destination_bytes.hex()
@@ -163,19 +163,19 @@ class CardanoShelleySwapTests(ExchangeTestRunner):
             client.sign_tx_witness(witness_path)
 
 
-class CardanoShelleySwapRejectMultipleThirdPartyOutputs(CardanoShelleySwapTests):
+class CardanoShelleySwapDenyMultipleThirdPartyOutputs(CardanoShelleySwapTests):
     def perform_final_tx(self, destination, send_amount, fees, memo):
         tx = self._build_swap_tx(destination, send_amount, fees, third_party_output_count=2)
         client = CommandSender(self.backend)
 
-        # Must be rejected in swap mode with SWO_SWAP_CHECKING_FAIL.
+        # Must be denied in swap mode with SWO_SWAP_CHECKING_FAIL.
         client.sign_tx(
             tx,
             TransactionSigningMode.ORDINARY_TRANSACTION,
             on_review=None,
         )
 
-    def perform_test_swap_reject_multiple_third_party_outputs(self):
+    def perform_test_swap_deny_multiple_third_party_outputs(self):
         self.perform_valid_swap_from_custom(
             self.valid_destination_1,
             self.valid_send_amount_1,
@@ -194,7 +194,7 @@ class CardanoShelleySwapRejectMultipleThirdPartyOutputs(CardanoShelleySwapTests)
         self._assert_exchange_started_with_retry()
 
 
-class CardanoShelleySwapRejectDeniedWitness(CardanoShelleySwapTests):
+class CardanoShelleySwapDenyWitnessPoolColdPath(CardanoShelleySwapTests):
     def perform_final_tx(self, destination, send_amount, fees, memo):
         tx = self._build_swap_tx(destination, send_amount, fees, third_party_output_count=1)
         client = CommandSender(self.backend)
@@ -216,7 +216,7 @@ class CardanoShelleySwapRejectDeniedWitness(CardanoShelleySwapTests):
         for witness_path in witness_paths:
             client.sign_tx_witness(witness_path)
 
-    def perform_test_swap_reject_denied_witness_pool_cold_path(self):
+    def perform_test_swap_deny_witness_pool_cold_path(self):
         self.perform_valid_swap_from_custom(
             self.valid_destination_1,
             self.valid_send_amount_1,
@@ -241,18 +241,18 @@ class TestsCardanoSwap:
     def test_cardano_swap(self, backend, exchange_navigation_helper, test_to_run):
         CardanoShelleySwapTests(backend, exchange_navigation_helper).run_test(test_to_run)
 
-    def test_cardano_swap_reject_multiple_third_party_outputs(self, backend, exchange_navigation_helper):
-        CardanoShelleySwapRejectMultipleThirdPartyOutputs(
+    def test_cardano_swap_deny_multiple_third_party_outputs(self, backend, exchange_navigation_helper):
+        CardanoShelleySwapDenyMultipleThirdPartyOutputs(
             backend,
             exchange_navigation_helper,
-        ).run_test("swap_reject_multiple_third_party_outputs")
+        ).run_test("swap_deny_multiple_third_party_outputs")
 
-    def test_cardano_swap_reject_denied_witness_pool_cold_path(
+    def test_cardano_swap_deny_witness_pool_cold_path(
         self,
         backend,
         exchange_navigation_helper,
     ):
-        CardanoShelleySwapRejectDeniedWitness(
+        CardanoShelleySwapDenyWitnessPoolColdPath(
             backend,
             exchange_navigation_helper,
-        ).run_test("swap_reject_denied_witness_pool_cold_path")
+        ).run_test("swap_deny_witness_pool_cold_path")

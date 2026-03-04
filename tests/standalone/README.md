@@ -6,7 +6,7 @@ This directory contains the standalone functional test suite for the app (launch
 
 - Validate APDU flows end-to-end with device UI interaction.
 - Verify navigation and confirmation behavior.
-- Check user-visible behavior for normal and reject paths.
+- Check user-visible behavior for normal and deny paths.
 
 ## Quick Start
 

@@ -16,25 +16,25 @@ from paths import GENERATED_DERIVE_ADDRESS_DIR
 GENERATED_DENY_HEADER = GENERATED_DERIVE_ADDRESS_DIR / "test_address_derivation_fixtures_deny.h"
 
 # ==============================================================================
-# Step 1: Load Rejection Test Cases from Ragger Tests
+# Step 1: Load Deny Test Cases from Ragger Tests
 # ==============================================================================
 
 
 def _load_address_derivation_deny_test_cases() -> list[Any]:
     """
-    Load address derivation rejection test cases from ragger standalone tests.
+    Load address derivation deny test cases from ragger standalone tests.
 
-    These test cases verify that the device properly rejects invalid address
+    These test cases verify that the device properly denies invalid address
     derivation requests according to the security policy. Each test case
     represents a violation of BIP44 path validation or address type rules.
 
     Returns:
-        List of DeriveAddressTestCase objects that should be rejected
+        List of DeriveAddressTestCase objects that should be denied
     """
     _ensure_base58_module()
     _add_tests_to_sys_path()
 
-    # Import rejection test cases from ragger standalone input files
+    # Import deny test cases from ragger standalone input files
     from standalone.input_files.derive_address import (  # type: ignore
         denyTestCases,
     )
@@ -47,29 +47,29 @@ def _load_address_derivation_deny_test_cases() -> list[Any]:
 # ==============================================================================
 
 
-def _serialize_reject_test_case_to_apdu(test_case: Any) -> bytes:
+def _serialize_deny_test_case_to_apdu(test_case: Any) -> bytes:
     """
-    Serialize a rejection test case into APDU command bytes.
+    Serialize a deny test case into APDU command bytes.
 
     Uses CommandBuilder.derive_address() to serialize the test case with the
-    same logic used by ragger tests. This ensures we test rejection of properly
+    same logic used by ragger tests. This ensures we test deny of properly
     formatted APDUs that violate security policy (not malformed APDUs).
 
     Args:
-        test_case: DeriveAddressTestCase object from ragger reject tests
+        test_case: DeriveAddressTestCase object from ragger deny tests
 
     Returns:
         Complete APDU command bytes (including header)
 
     Note:
-        For rejection tests, P1 parameter doesn't matter since the request
-        should be rejected before display logic is reached.
+        For deny tests, P1 parameter doesn't matter since the request
+        should be denied before display logic is reached.
     """
     from application_client.command_builder import CommandBuilder, P1Type  # type: ignore
 
     command_builder = CommandBuilder()
 
-    # Use P1_ADDRESS_RETURN for rejection tests (simpler, display shouldn't be reached)
+    # Use P1_ADDRESS_RETURN for deny tests (simpler, display shouldn't be reached)
     complete_apdu_command = command_builder.derive_address(
         P1Type.P1_ADDRESS_RETURN,
         test_case,
@@ -79,7 +79,7 @@ def _serialize_reject_test_case_to_apdu(test_case: Any) -> bytes:
 
 
 # ==============================================================================
-# Step 3: Generate C Code for Rejection Fixtures
+# Step 3: Generate C Code for Deny Fixtures
 # ==============================================================================
 
 
@@ -137,26 +137,26 @@ def _generate_c_byte_array_for_apdu(
     return code_lines
 
 
-def _get_expected_rejection_reason(test_case: Any) -> str:
+def _get_expected_deny_reason(test_case: Any) -> str:
     """
-    Determine the expected rejection reason based on test case characteristics.
+    Determine the expected deny reason based on test case characteristics.
 
     This maps the test case to the expected error code from securityPolicy.c
     validation logic.
 
     Args:
-        test_case: DeriveAddressTestCase from reject tests
+        test_case: DeriveAddressTestCase from deny tests
 
     Returns:
-        String describing expected rejection reason (for documentation)
+        String describing expected deny reason (for documentation)
 
     Note:
-        The actual rejection is tested by verifying the handler returns an
+        The actual deny is tested by verifying the handler returns an
         error status code. This string is for human-readable documentation.
     """
     test_name_lower = test_case.name.lower()
 
-    # Map test characteristics to expected rejection reasons
+    # Map test characteristics to expected deny reasons
     if "path too short" in test_name_lower:
         return "SWO_SECURITY_CONDITION_NOT_SATISFIED"
     elif "invalid path" in test_name_lower:
@@ -174,31 +174,31 @@ def _get_expected_rejection_reason(test_case: Any) -> str:
         return "SWO_SECURITY_CONDITION_NOT_SATISFIED"
 
 
-def _generate_fixture_code_for_reject_test_case(
+def _generate_fixture_code_for_deny_test_case(
     test_case: Any,
     test_number: int,
 ) -> list[str]:
     """
-    Generate C code for a single address derivation rejection test fixture.
+    Generate C code for a single address derivation deny test fixture.
 
     Args:
-        test_case: DeriveAddressTestCase from ragger reject tests
+        test_case: DeriveAddressTestCase from ragger deny tests
         test_number: Sequential test number (1-based)
 
     Returns:
-        List of C code lines defining the rejection test fixture
+        List of C code lines defining the deny test fixture
     """
     code_lines = []
 
-    # Get expected rejection reason for documentation
-    rejection_reason = _get_expected_rejection_reason(test_case)
+    # Get expected deny reason for documentation
+    deny_reason = _get_expected_deny_reason(test_case)
 
     # Add descriptive comment header
     code_lines.append(
         "// ----------------------------------------------------------------------"
     )
     code_lines.append(f"// Deny Test {test_number}: {test_case.name}")
-    code_lines.append(f"// Expected deny SW: {rejection_reason}")
+    code_lines.append(f"// Expected deny SW: {deny_reason}")
     code_lines.append(f"// Address Type: {test_case.addrType.name}")
     code_lines.append(f"// Source: tests/standalone/input_files/derive_address.py > deny tests > {test_case.name}")
     code_lines.append(f"// Spending: {test_case.spendingValue}")
@@ -210,7 +210,7 @@ def _generate_fixture_code_for_reject_test_case(
     code_lines.append("")
 
     # Serialize test case to APDU command using CommandBuilder
-    apdu_command_bytes = _serialize_reject_test_case_to_apdu(test_case)
+    apdu_command_bytes = _serialize_deny_test_case_to_apdu(test_case)
 
     # Extract just the payload (skip the 5-byte APDU header: CLA, INS, P1, P2, Lc)
     payload_bytes = extract_apdu_payload(apdu_command_bytes)
@@ -220,7 +220,7 @@ def _generate_fixture_code_for_reject_test_case(
 
     # Generate C array for complete APDU command
     payload_array_name = (
-        f"DERIVE_ADDRESS_REJECT_{test_number:03d}_{safe_test_name}_APDU"
+        f"DERIVE_ADDRESS_DENY_{test_number:03d}_{safe_test_name}_APDU"
     )
     payload_array_code = _generate_c_byte_array_for_apdu(
         payload_bytes,
@@ -240,12 +240,12 @@ def _generate_fixture_code_for_reject_test_case(
 
 def _build_deny_fixtures_header() -> str:
     """
-    Generate complete C header file content for address derivation rejection fixtures.
+    Generate complete C header file content for address derivation deny fixtures.
 
     Returns:
         Complete C header file content as string
     """
-    # Load rejection test cases from ragger tests
+    # Load deny test cases from ragger tests
     deny_test_cases = _load_address_derivation_deny_test_cases()
 
     print(f"Generating deny fixtures for {len(deny_test_cases)} test cases...")
@@ -271,17 +271,17 @@ def _build_deny_fixtures_header() -> str:
         "",
         "#define P1_ADDRESS_RETURN  0x20",
         "// ======================================================================",
-        "// Address Derivation Rejection Test Fixtures",
+        "// Address Derivation Deny Test Fixtures",
         "// ======================================================================",
         "",
         "",
     ]
 
-    # Generate fixture code for each rejection test case
+    # Generate fixture code for each deny test case
     for test_number, test_case in enumerate(deny_test_cases, start=1):
         print(f"  [{test_number}/{len(deny_test_cases)}] {test_case.name}")
 
-        fixture_code = _generate_fixture_code_for_reject_test_case(
+        fixture_code = _generate_fixture_code_for_deny_test_case(
             test_case,
             test_number,
         )
@@ -296,10 +296,10 @@ def _build_deny_fixtures_header() -> str:
         # Extract just the payload (skip the 5-byte APDU header: CLA, INS, P1, P2, Lc)
         safe_test_name = sanitize_c_identifier(test_case.name)
         payload_array_name = (
-            f"DERIVE_ADDRESS_REJECT_{test_number:03d}_{safe_test_name}_APDU"
+            f"DERIVE_ADDRESS_DENY_{test_number:03d}_{safe_test_name}_APDU"
         )
         # Generate safe C identifier from test name
-        rejection_reason = _get_expected_rejection_reason(test_case)
+        deny_reason = _get_expected_deny_reason(test_case)
 
         # Add source traceability comment
         header_lines.append(f"// Source: tests/standalone/input_files/derive_address.py > deny tests > {test_case.name}")
@@ -309,7 +309,7 @@ def _build_deny_fixtures_header() -> str:
         header_lines.append(f"    .p1 = P1_ADDRESS_RETURN,")
         header_lines.append(f"    .data = {payload_array_name},")
         header_lines.append(f"    .data_len = sizeof({payload_array_name}),")
-        header_lines.append(f"    .check_expected = {rejection_reason},")
+        header_lines.append(f"    .check_expected = {deny_reason},")
         header_lines.append("},")
 
     header_lines.append("};")

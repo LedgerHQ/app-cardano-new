@@ -23,7 +23,6 @@ from application_client.app_def import (
 @dataclass(kw_only=True)
 class DeriveAddressTestCase:
     name: str
-    ledgerjs_name: Optional[str] = None
     netDesc: NetworkDesc = None
     addrType: AddressType = None
     spendingValue: str = ""  # spending path or keyHash
@@ -48,35 +47,30 @@ def pointer_to_str(blockIndex: int, txIndex: int, certificateIndex: int) -> str:
 byronTestCases = [
     DeriveAddressTestCase(
         name="Derive_address_byron_mainnet_1",
-        ledgerjs_name="mainnet 1",
         netDesc=Mainnet,
         addrType=AddressType.BYRON,
         spendingValue="m/44'/1815'/1'/0/55'",
     ),
     DeriveAddressTestCase(
         name="Derive_address_byron_mainnet_2",
-        ledgerjs_name="mainnet 2",
         netDesc=Mainnet,
         addrType=AddressType.BYRON,
         spendingValue="m/44'/1815'/1'/0/12'",
     ),
     DeriveAddressTestCase(
         name="Derive_address_byron_mainnet_3",
-        ledgerjs_name="mainnet 3",
         netDesc=Mainnet,
         addrType=AddressType.BYRON,
         spendingValue="m/44'/1815'/101'/0/12'",
     ),
     DeriveAddressTestCase(
         name="Derive_address_byron_mainnet_4",
-        ledgerjs_name="mainnet 4",
         netDesc=Mainnet,
         addrType=AddressType.BYRON,
         spendingValue="m/44'/1815'/0'/0/1000001'",
     ),
     DeriveAddressTestCase(
         name="Derive_address_byron_testnet_1",
-        ledgerjs_name="testnet 1",
         netDesc=Testnet,
         addrType=AddressType.BYRON,
         spendingValue="m/44'/1815'/1'/0/12'",
@@ -87,28 +81,24 @@ byronTestCases = [
 denyTestCases = [
     DeriveAddressTestCase(
         name="Derive_address_path_too_short",
-        ledgerjs_name="path too short",
         netDesc=Mainnet,
         addrType=AddressType.BYRON,
         spendingValue="m/44'/1815'/1'"
     ),
     DeriveAddressTestCase(
         name="Derive_address_invalid_path",
-        ledgerjs_name="invalid path",
         netDesc=Mainnet,
         addrType=AddressType.BYRON,
         spendingValue="m/44'/1815'/1'/5/10'"
     ),
     DeriveAddressTestCase(
         name="Derive_address_Byron_with_Shelley_path",
-        ledgerjs_name="Byron with Shelley path",
         netDesc=Mainnet,
         addrType=AddressType.BYRON,
         spendingValue="m/1852'/1815'/1'/0/10"
     ),
     DeriveAddressTestCase(
         name="Derive_address_base_key_key_with_Byron_spending_path",
-        ledgerjs_name="base key/key with Byron spending path",
         netDesc=Mainnet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
         spendingValue="m/44'/1815'/1'/0/1",
@@ -116,7 +106,6 @@ denyTestCases = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_base_key_key_with_wrong_spending_path",
-        ledgerjs_name="base key/key with wrong spending path",
         netDesc=Mainnet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
         spendingValue="m/1852'/1815'/1'/2/0",
@@ -124,7 +113,6 @@ denyTestCases = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_base_key_key_with_wrong_staking_path_1",
-        ledgerjs_name="base key/key with wrong staking path 1",
         netDesc=Mainnet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
         spendingValue="m/1852'/1815'/1'/0/0",
@@ -132,7 +120,6 @@ denyTestCases = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_base_key_script_with_Byron_spending_path",
-        ledgerjs_name="base key/script with Byron spending path",
         netDesc=Mainnet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_SCRIPT,
         spendingValue="m/44'/1815'/1'/0/1",
@@ -140,7 +127,6 @@ denyTestCases = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_base_address_scripthash_keyhash_not_allowed",
-        ledgerjs_name="base address scripthash/keyhash not allowed",
         netDesc=Mainnet,
         addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,
         spendingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
@@ -148,7 +134,6 @@ denyTestCases = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_pointer_with_Byron_spending_path",
-        ledgerjs_name="pointer with Byron spending path",
         netDesc=Mainnet,
         addrType=AddressType.POINTER_KEY,
         spendingValue="m/44'/1815'/1'/0/0",
@@ -156,7 +141,6 @@ denyTestCases = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_pointer_with_wrong_spending_path",
-        ledgerjs_name="pointer with wrong spending path",
         netDesc=Mainnet,
         addrType=AddressType.POINTER_KEY,
         spendingValue="m/1852'/1815'/1'/2/0",
@@ -164,14 +148,12 @@ denyTestCases = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_enterprise_with_Byron_spending_path",
-        ledgerjs_name="enterprise with Byron spending path",
         netDesc=Mainnet,
         addrType=AddressType.ENTERPRISE_KEY,
         spendingValue="m/44'/1815'/1'/0/0",
     ),
     DeriveAddressTestCase(
         name="Derive_address_enterprise_with_wrong_spending_path",
-        ledgerjs_name="enterprise with wrong spending path",
         netDesc=Mainnet,
         addrType=AddressType.ENTERPRISE_KEY,
         spendingValue="m/1852'/1815'/1'/2/0",
@@ -194,7 +176,6 @@ shelleyTestCasesNoConfirm = [
     # LedgerJS: base address path/path 1
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_base_path_path_1",
-        ledgerjs_name="base address path/path 1",
         netDesc=FakeNet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
         spendingValue="m/1852'/1815'/0'/0/1",
@@ -206,7 +187,6 @@ shelleyTestCasesNoConfirm = [
     # LedgerJS: base address path/path 2
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_base_path_path_2",
-        ledgerjs_name="base address path/path 2",
         netDesc=Testnet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
         spendingValue="m/1852'/1815'/0'/0/1",
@@ -218,7 +198,6 @@ shelleyTestCasesNoConfirm = [
     # LedgerJS: base address path/path multidelegation stake key usual
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_base_path_path_multidelegation",
-        ledgerjs_name="base address path/path multidelegation stake key usual",
         netDesc=Testnet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
         spendingValue="m/1852'/1815'/0'/0/1",
@@ -230,7 +209,6 @@ shelleyTestCasesNoConfirm = [
     # LedgerJS: base address path/keyHash 1
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_base_path_keyhash_1",
-        ledgerjs_name="base address path/keyHash 1",
         netDesc=Testnet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
         spendingValue="m/1852'/1815'/0'/0/1",
@@ -242,7 +220,6 @@ shelleyTestCasesNoConfirm = [
     # LedgerJS: base address path/keyHash 2
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_base_path_keyhash_2",
-        ledgerjs_name="base address path/keyHash 2",
         netDesc=FakeNet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
         spendingValue="m/1852'/1815'/0'/0/1",
@@ -254,7 +231,6 @@ shelleyTestCasesNoConfirm = [
     # LedgerJS: base address scriptHash/path
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_base_scripthash_path",
-        ledgerjs_name="base address scriptHash/path",
         netDesc=FakeNet,
         addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,
         spendingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
@@ -266,7 +242,6 @@ shelleyTestCasesNoConfirm = [
     # LedgerJS: base address scriptHash/path multidelegation
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_base_scripthash_path_multidelegation",
-        ledgerjs_name="base address scriptHash/path multidelegation",
         netDesc=FakeNet,
         addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,
         spendingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
@@ -278,7 +253,6 @@ shelleyTestCasesNoConfirm = [
     # LedgerJS: base address path/scriptHash
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_base_path_scripthash",
-        ledgerjs_name="base address path/scriptHash",
         netDesc=FakeNet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_SCRIPT,
         spendingValue="m/1852'/1815'/0'/0/1",
@@ -290,7 +264,6 @@ shelleyTestCasesNoConfirm = [
     # LedgerJS: base address scripthash/scriptHash
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_base_scripthash_scripthash",
-        ledgerjs_name="base address scriptHash/scriptHash",
         netDesc=FakeNet,
         addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_SCRIPT,
         spendingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
@@ -301,7 +274,6 @@ shelleyTestCasesNoConfirm = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_enterprise_path_1",
-        ledgerjs_name="enterprise path 1",
         netDesc=Testnet,
         addrType=AddressType.ENTERPRISE_KEY,
         spendingValue="m/1852'/1815'/0'/0/1",
@@ -309,7 +281,6 @@ shelleyTestCasesNoConfirm = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_enterprise_path_2",
-        ledgerjs_name="enterprise path 2",
         netDesc=FakeNet,
         addrType=AddressType.ENTERPRISE_KEY,
         spendingValue="m/1852'/1815'/0'/0/1",
@@ -317,7 +288,6 @@ shelleyTestCasesNoConfirm = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_enterprise_script_1",
-        ledgerjs_name="enterprise script 1",
         netDesc=Testnet,
         addrType=AddressType.ENTERPRISE_SCRIPT,
         spendingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
@@ -325,7 +295,6 @@ shelleyTestCasesNoConfirm = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_enterprise_script_2",
-        ledgerjs_name="enterprise script 2",
         netDesc=FakeNet,
         addrType=AddressType.ENTERPRISE_SCRIPT,
         spendingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
@@ -333,7 +302,6 @@ shelleyTestCasesNoConfirm = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_pointer_path_1",
-        ledgerjs_name="pointer path 1",
         netDesc=Testnet,
         addrType=AddressType.POINTER_KEY,
         spendingValue="m/1852'/1815'/0'/0/1",
@@ -342,7 +310,6 @@ shelleyTestCasesNoConfirm = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_pointer_path_2",
-        ledgerjs_name="pointer path 2",
         netDesc=FakeNet,
         addrType=AddressType.POINTER_KEY,
         spendingValue="m/1852'/1815'/0'/0/1",
@@ -351,7 +318,6 @@ shelleyTestCasesNoConfirm = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_pointer_path_3",
-        ledgerjs_name="pointer path 3",
         netDesc=FakeNet,
         addrType=AddressType.POINTER_KEY,
         spendingValue="m/1852'/1815'/0'/0/1",
@@ -360,7 +326,6 @@ shelleyTestCasesNoConfirm = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_pointer_script_1",
-        ledgerjs_name="pointer script 1",
         netDesc=Testnet,
         addrType=AddressType.POINTER_SCRIPT,
         spendingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
@@ -369,7 +334,6 @@ shelleyTestCasesNoConfirm = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_pointer_script_2",
-        ledgerjs_name="pointer script 2",
         netDesc=FakeNet,
         addrType=AddressType.POINTER_SCRIPT,
         spendingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
@@ -378,7 +342,6 @@ shelleyTestCasesNoConfirm = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_pointer_script_3",
-        ledgerjs_name="pointer script 3",
         netDesc=FakeNet,
         addrType=AddressType.POINTER_SCRIPT,
         spendingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
@@ -387,7 +350,6 @@ shelleyTestCasesNoConfirm = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_reward_path_1",
-        ledgerjs_name="reward path 1",
         netDesc=Testnet,
         addrType=AddressType.REWARD_KEY,
         spendingValue="",
@@ -396,7 +358,6 @@ shelleyTestCasesNoConfirm = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_reward_path_2",
-        ledgerjs_name="reward path 2",
         netDesc=FakeNet,
         addrType=AddressType.REWARD_KEY,
         spendingValue="",
@@ -406,7 +367,6 @@ shelleyTestCasesNoConfirm = [
     # LedgerJS: reward multidelegation usual
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_reward_multidelegation",
-        ledgerjs_name="reward multidelegation usual",
         netDesc=Testnet,
         addrType=AddressType.REWARD_KEY,
         spendingValue="",
@@ -417,7 +377,6 @@ shelleyTestCasesNoConfirm = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_reward_script_1",
-        ledgerjs_name="reward script 1",
         netDesc=Testnet,
         addrType=AddressType.REWARD_SCRIPT,
         spendingValue="",
@@ -426,7 +385,6 @@ shelleyTestCasesNoConfirm = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_reward_script_2",
-        ledgerjs_name="reward script 2",
         netDesc=FakeNet,
         addrType=AddressType.REWARD_SCRIPT,
         spendingValue="",
@@ -439,7 +397,6 @@ shelleyTestCasesWithConfirm = [
     # LedgerJS: base address path/path unusual spending path account
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_base_path_path_unusual_spending_account",
-        ledgerjs_name="base address path/path unusual spending path account",
         netDesc=FakeNet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
         spendingValue="m/1852'/1815'/101'/0/1",
@@ -452,7 +409,6 @@ shelleyTestCasesWithConfirm = [
     # LedgerJS: base address path/path unusual spending path address index
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_base_path_path_unusual_spending_index",
-        ledgerjs_name="base address path/path unusual spending path address index",
         netDesc=FakeNet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
         spendingValue="m/1852'/1815'/1'/0/1000001",
@@ -465,7 +421,6 @@ shelleyTestCasesWithConfirm = [
     # LedgerJS: base address path/path unusual staking path account
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_base_path_path_unusual_staking_account",
-        ledgerjs_name="base address path/path unusual staking path account",
         netDesc=FakeNet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
         spendingValue="m/1852'/1815'/10'/0/4",
@@ -478,7 +433,6 @@ shelleyTestCasesWithConfirm = [
     # LedgerJS: base address path/path multidelegation stake key unusual account
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_base_path_path_multidelegation_unusual_account",
-        ledgerjs_name="base address path/path multidelegation stake key unusual account",
         netDesc=FakeNet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
         spendingValue="m/1852'/1815'/0'/0/1",
@@ -491,7 +445,6 @@ shelleyTestCasesWithConfirm = [
     # LedgerJS: base address path/path multidelegation stake key unusual index
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_base_path_path_multidelegation_unusual_index",
-        ledgerjs_name="base address path/path multidelegation stake key unusual index",
         netDesc=FakeNet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
         spendingValue="m/1852'/1815'/0'/0/1",
@@ -504,7 +457,6 @@ shelleyTestCasesWithConfirm = [
     # LedgerJS: base address path/keyHash unusual account
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_base_path_keyhash_unusual_account",
-        ledgerjs_name="base address path/keyHash unusual account",
         netDesc=Testnet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
         spendingValue="m/1852'/1815'/101'/0/1",
@@ -517,7 +469,6 @@ shelleyTestCasesWithConfirm = [
     # LedgerJS: base address path/keyHash unusual address index
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_base_path_keyhash_unusual_index",
-        ledgerjs_name="base address path/keyHash unusual address index",
         netDesc=Testnet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
         spendingValue="m/1852'/1815'/0'/0/1'",
@@ -530,7 +481,6 @@ shelleyTestCasesWithConfirm = [
     # LedgerJS: base address scripthash/path unusual account
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_base_scripthash_path_unusual_account",
-        ledgerjs_name="base address scriptHash/path unusual account",
         netDesc=Testnet,
         addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,
         spendingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
@@ -543,7 +493,6 @@ shelleyTestCasesWithConfirm = [
     # LedgerJS: base address path/scriptHash unusual account
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_base_path_scripthash_unusual_account",
-        ledgerjs_name="base address path/scriptHash unusual account",
         netDesc=Testnet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_SCRIPT,
         spendingValue="m/1852'/1815'/101'/0/1",
@@ -556,7 +505,6 @@ shelleyTestCasesWithConfirm = [
     # LedgerJS: base address path/scriptHash unusual address index
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_base_path_scripthash_unusual_index",
-        ledgerjs_name="base address path/scriptHash unusual address index",
         netDesc=Testnet,
         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_SCRIPT,
         spendingValue="m/1852'/1815'/0'/0/1'",
@@ -569,7 +517,6 @@ shelleyTestCasesWithConfirm = [
     # LedgerJS: pointer address unusual account
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_pointer_unusual_account",
-        ledgerjs_name="pointer address unusual account",
         netDesc=Testnet,
         addrType=AddressType.POINTER_KEY,
         spendingValue="m/1852'/1815'/1000'/0/1",
@@ -582,7 +529,6 @@ shelleyTestCasesWithConfirm = [
     # LedgerJS: pointer address unusual address index
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_pointer_unusual_index",
-        ledgerjs_name="pointer address unusual address index",
         netDesc=Testnet,
         addrType=AddressType.POINTER_KEY,
         spendingValue="m/1852'/1815'/0'/0/1'",
@@ -594,7 +540,6 @@ shelleyTestCasesWithConfirm = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_reward_multidelegation_unusual_account",
-        ledgerjs_name="reward multidelegation unusual account",
         netDesc=Testnet,
         addrType=AddressType.REWARD_KEY,
         spendingValue="",
@@ -606,7 +551,6 @@ shelleyTestCasesWithConfirm = [
     ),
     DeriveAddressTestCase(
         name="Derive_address_shelley_testnet_reward_multidelegation_unusual_index",
-        ledgerjs_name="reward multidelegation unusual index",
         netDesc=Testnet,
         addrType=AddressType.REWARD_KEY,
         spendingValue="",
@@ -617,7 +561,6 @@ shelleyTestCasesWithConfirm = [
     # LedgerJS: reward path unusual account
     DeriveAddressTestCase(
         name="Derive_address_shelley_fakenet_reward_unusual_account",
-        ledgerjs_name="reward path unusual account",
         netDesc=FakeNet,
         addrType=AddressType.REWARD_KEY,
         spendingValue="",
