@@ -67,7 +67,7 @@
 #define UI_PAIRS_COLLATERAL_OUTPUT_AMOUNT 1      // key 16: "Collateral amount" (if shown)
 #define UI_PAIRS_TOTAL_COLLATERAL 1              // key 17: "Total collateral"
 #define UI_PAIRS_REFERENCE_INPUT 1               // key 18: "Ref input"
-#define UI_PAIRS_VOTER 1                         // key 19: Voter credential (Committee hot key, DRep key, SPO key)
+#define UI_PAIRS_VOTER 2                         // key 19: "Voter" index header + voter credential (Committee hot key, DRep key, SPO key)
 #define UI_PAIRS_VOTE 3                          // key 19: "Gov action tx hash", "Gov action index", "Vote"
 #define UI_PAIRS_ANCHOR 2                        // key 19: "Anchor URL", "Anchor hash" (if anchor included)
 #define UI_PAIRS_TREASURY 1                      // key 21: "Treasury"

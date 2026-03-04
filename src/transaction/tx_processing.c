@@ -231,7 +231,7 @@ bool tx_process_inputs(buffer_t *buf, tx_processing_state_t *state) {
                 &parsed_input,
                 state->warning_bits);
 
-            APPLY_POLICY(input_policy, tx_ui_plan_or_render_input, mode, &parsed_input);
+            APPLY_POLICY(input_policy, tx_ui_plan_or_render_input, mode, &parsed_input, input_index);
         }
 
         if (mode->run_hash_builder) {
@@ -270,7 +270,7 @@ bool tx_process_collateral_inputs(buffer_t *buf, tx_processing_state_t *state) {
                 &parsed_input,
                 state->warning_bits);
 
-            APPLY_POLICY(collateral_input_policy, tx_ui_plan_or_render_collateral_input, mode, &parsed_input);
+            APPLY_POLICY(collateral_input_policy, tx_ui_plan_or_render_collateral_input, mode, &parsed_input, input_index);
         }
 
         if (mode->run_hash_builder) {
@@ -308,7 +308,7 @@ bool tx_process_reference_inputs(buffer_t *buf, tx_processing_state_t *state) {
                 &parsed_input,
                 state->warning_bits);
 
-            APPLY_POLICY(reference_input_policy, tx_ui_plan_or_render_reference_input, mode, &parsed_input);
+            APPLY_POLICY(reference_input_policy, tx_ui_plan_or_render_reference_input, mode, &parsed_input, input_index);
         }
 
         if (mode->run_hash_builder) {
@@ -667,7 +667,7 @@ bool tx_process_required_signers(buffer_t *buf, tx_processing_state_t *state) {
                 &parsed_required_signer,
                 state->warning_bits);
 
-            APPLY_POLICY(signer_policy, tx_ui_plan_or_render_required_signer, mode, &parsed_required_signer);
+            APPLY_POLICY(signer_policy, tx_ui_plan_or_render_required_signer, mode, &parsed_required_signer, signer_index);
         }
 
         if (mode->run_hash_builder) {
@@ -828,7 +828,7 @@ static bool tx_process_voting_procedures(buffer_t *buf, tx_processing_state_t *s
                 tx_params->txSigningMode,
                 &parsed_voter,
                 state->warning_bits);
-            APPLY_POLICY(voter_policy, tx_ui_plan_or_render_voter, mode, &parsed_voter);
+            APPLY_POLICY(voter_policy, tx_ui_plan_or_render_voter, mode, &parsed_voter, voter_index);
         }
 
         voter_t voter_for_hashbuilder = voter_for_tx_hash_from_ext_voter(&parsed_voter);

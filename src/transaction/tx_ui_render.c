@@ -45,7 +45,9 @@ void tx_ui_plan_or_render_network_details(const tx_processing_mode_t *mode,
     }
 }
 
-void tx_ui_plan_or_render_input(const tx_processing_mode_t *mode, const tx_input_t *parsed_input) {
+void tx_ui_plan_or_render_input(const tx_processing_mode_t *mode,
+                                const tx_input_t *parsed_input,
+                                uint16_t input_index) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_input != NULL, "NULL parsed_input");
 
@@ -53,7 +55,9 @@ void tx_ui_plan_or_render_input(const tx_processing_mode_t *mode, const tx_input
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_INPUT;
     } else if (mode->ui_render) {
         START_COUNT();
-        ui_pairs_force_new_page();
+        if (input_index == 0) {
+            ui_pairs_force_new_page();
+        }
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Input"),
                        MAX_INPUT_DISPLAY_STRING_LENGTH,
                        format_input_with_index,
@@ -63,7 +67,8 @@ void tx_ui_plan_or_render_input(const tx_processing_mode_t *mode, const tx_input
 }
 
 void tx_ui_plan_or_render_collateral_input(const tx_processing_mode_t *mode,
-                                           const tx_input_t *parsed_input) {
+                                           const tx_input_t *parsed_input,
+                                           uint16_t input_index) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_input != NULL, "NULL parsed_input");
 
@@ -71,7 +76,9 @@ void tx_ui_plan_or_render_collateral_input(const tx_processing_mode_t *mode,
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_COLLATERAL_INPUT;
     } else if (mode->ui_render) {
         START_COUNT();
-        ui_pairs_force_new_page();
+        if (input_index == 0) {
+            ui_pairs_force_new_page();
+        }
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Coll input"),
                        MAX_INPUT_DISPLAY_STRING_LENGTH,
                        format_input_with_index,
@@ -81,7 +88,8 @@ void tx_ui_plan_or_render_collateral_input(const tx_processing_mode_t *mode,
 }
 
 void tx_ui_plan_or_render_reference_input(const tx_processing_mode_t *mode,
-                                          const tx_input_t *parsed_input) {
+                                          const tx_input_t *parsed_input,
+                                          uint16_t input_index) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_input != NULL, "NULL parsed_input");
 
@@ -89,7 +97,9 @@ void tx_ui_plan_or_render_reference_input(const tx_processing_mode_t *mode,
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_REFERENCE_INPUT;
     } else if (mode->ui_render) {
         START_COUNT();
-        ui_pairs_force_new_page();
+        if (input_index == 0) {
+            ui_pairs_force_new_page();
+        }
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Ref input"),
                        MAX_INPUT_DISPLAY_STRING_LENGTH,
                        format_input_with_index,
@@ -99,7 +109,8 @@ void tx_ui_plan_or_render_reference_input(const tx_processing_mode_t *mode,
 }
 
 void tx_ui_plan_or_render_required_signer(const tx_processing_mode_t *mode,
-                                          const required_signer_t *parsed_required_signer) {
+                                          const required_signer_t *parsed_required_signer,
+                                          uint16_t signer_index) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_required_signer != NULL, "NULL parsed_required_signer");
 
@@ -107,6 +118,9 @@ void tx_ui_plan_or_render_required_signer(const tx_processing_mode_t *mode,
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_REQUIRED_SIGNER;
     } else if (mode->ui_render) {
         START_COUNT();
+        if (signer_index == 0) {
+            ui_pairs_force_new_page();
+        }
         switch (parsed_required_signer->type) {
             case REQUIRED_SIGNER_WITH_HASH:
                 UI_ADD_FORMAT3(UI_STATIC_LABEL("Required signer"),
@@ -138,6 +152,7 @@ void tx_ui_plan_or_render_mint_summary(const tx_processing_mode_t *mode,
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_MINT_SUMMARY;
     } else if (mode->ui_render) {
         START_COUNT();
+        ui_pairs_force_new_page();
         UI_ADD_FORMAT1(UI_STATIC_LABEL("Mint"),
                        MAX_MINT_SUMMARY_STRING_LENGTH,
                        format_mint_summary,
@@ -313,7 +328,9 @@ void tx_ui_plan_or_render_total_collateral(const tx_processing_mode_t *mode,
     }
 }
 
-void tx_ui_plan_or_render_voter(const tx_processing_mode_t *mode, const ext_voter_t *parsed_voter) {
+void tx_ui_plan_or_render_voter(const tx_processing_mode_t *mode,
+                                const ext_voter_t *parsed_voter,
+                                uint16_t voter_index) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_voter != NULL, "NULL parsed_voter");
 
@@ -322,6 +339,10 @@ void tx_ui_plan_or_render_voter(const tx_processing_mode_t *mode, const ext_vote
     } else if (mode->ui_render) {
         START_COUNT();
         ui_pairs_force_new_page();
+        UI_ADD_FORMAT1(UI_STATIC_LABEL("Voter"),
+                       MAX_UINT64_STRING_LENGTH,
+                       format_index_with_prefix,
+                       (uint32_t) voter_index + 1);
         switch (parsed_voter->type) {
             case EXT_VOTER_COMMITTEE_HOT_KEY_PATH:
                 UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Committee hot key", "Cmte hot key"),

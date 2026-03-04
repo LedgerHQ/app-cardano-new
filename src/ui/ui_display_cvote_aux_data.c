@@ -293,6 +293,7 @@ static bool cvote_add_delegation_pairs(cvote_aux_data_t *aux_data,
     LEDGER_ASSERT(aux_data != NULL && aux_data->ui_delegations_shown < aux_data->ui_delegations_total, "Delegation count exceeded");
     aux_data->ui_delegations_shown++;
     uint16_t delegation_index = aux_data->ui_delegations_shown;
+    ui_pairs_force_new_page();
 
     // Validate delegation policy (per-delegation check for streaming UI)
     warning_bits_t vote_key_warnings = 0;

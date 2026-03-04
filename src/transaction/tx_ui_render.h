@@ -23,16 +23,21 @@
 void tx_ui_plan_or_render_network_details(const tx_processing_mode_t *mode,
                                           const tx_params_t *tx_params);
 
-void tx_ui_plan_or_render_input(const tx_processing_mode_t *mode, const tx_input_t *parsed_input);
+void tx_ui_plan_or_render_input(const tx_processing_mode_t *mode,
+                                const tx_input_t *parsed_input,
+                                uint16_t input_index);
 
 void tx_ui_plan_or_render_collateral_input(const tx_processing_mode_t *mode,
-                                           const tx_input_t *parsed_input);
+                                           const tx_input_t *parsed_input,
+                                           uint16_t input_index);
 
 void tx_ui_plan_or_render_reference_input(const tx_processing_mode_t *mode,
-                                          const tx_input_t *parsed_input);
+                                          const tx_input_t *parsed_input,
+                                          uint16_t input_index);
 
 void tx_ui_plan_or_render_required_signer(const tx_processing_mode_t *mode,
-                                          const required_signer_t *parsed_required_signer);
+                                          const required_signer_t *parsed_required_signer,
+                                          uint16_t signer_index);
 
 void tx_ui_plan_or_render_mint_summary(const tx_processing_mode_t *mode,
                                        uint16_t num_mint_asset_groups);
@@ -60,7 +65,9 @@ void tx_ui_plan_or_render_script_data_hash(const tx_processing_mode_t *mode,
 void tx_ui_plan_or_render_total_collateral(const tx_processing_mode_t *mode,
                                            uint64_t total_collateral);
 
-void tx_ui_plan_or_render_voter(const tx_processing_mode_t *mode, const ext_voter_t *parsed_voter);
+void tx_ui_plan_or_render_voter(const tx_processing_mode_t *mode,
+                                const ext_voter_t *parsed_voter,
+                                uint16_t voter_index);
 
 void tx_ui_plan_or_render_vote(const tx_processing_mode_t *mode, const vote_item_t *parsed_vote);
 
