@@ -51,6 +51,10 @@
 // ---------------------------------------------------------------------------
 
 static void tx_processing_mode_validate(const tx_processing_mode_t *mode) __attribute__((nonnull(1)));
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnonnull-compare"
+#endif
 static void tx_processing_mode_validate(const tx_processing_mode_t *mode) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
 
@@ -61,6 +65,9 @@ static void tx_processing_mode_validate(const tx_processing_mode_t *mode) {
     LEDGER_ASSERT(!mode->ui_count_pairs || mode->run_validation,
                   "ui_count_pairs implies run_validation");
 }
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
 static void tx_processing_state_assert_initialized(const tx_processing_state_t *state) {
     LEDGER_ASSERT(state != NULL && state->tx_params != NULL && state->warning_bits != NULL,

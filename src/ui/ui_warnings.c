@@ -68,6 +68,36 @@ ui_status_t ui_build_warnings(warning_bits_t warnings) {
         return UI_STATUS_OUT_OF_MEMORY;
     }
 
+    if (icons == NULL || titles == NULL || subtexts == NULL || details == NULL) {
+        LEDGER_ASSERT(false, "warning allocations unexpectedly NULL");
+        if (icons != NULL) {
+            APP_MEM_FREE((void *) icons);
+        }
+        if (titles != NULL) {
+            APP_MEM_FREE((void *) titles);
+        }
+        if (subtexts != NULL) {
+            APP_MEM_FREE((void *) subtexts);
+        }
+        if (details != NULL) {
+            APP_MEM_FREE(details);
+        }
+        if (intro != NULL) {
+            APP_MEM_FREE(intro);
+        }
+        if (review != NULL) {
+            APP_MEM_FREE(review);
+        }
+        if (info != NULL) {
+            APP_MEM_FREE(info);
+        }
+        if (g_warning != NULL) {
+            APP_MEM_FREE(g_warning);
+        }
+        g_warning = NULL;
+        return UI_STATUS_OUT_OF_MEMORY;
+    }
+
     for (size_t i = 0; i < warning_count; i++) {
         const warning_definition_t *def = (const warning_definition_t *) PIC(warning_defs[i]);
         const char *title = (const char *) PIC(def->title);

@@ -64,6 +64,7 @@ For detailed analysis, see:
 - **Memory Safety:** Check for potential memory leaks, overflows, or excessive stack usage.
 - **UI Logic:** Ensure that UI display items follow the order of items in the transaction body and display format/encoding is consistent with old app.
 - **Instruction Interleaving:** Confirm that handlers correctly guard against instruction interleaving attacks.
+- **Review Baseline:** Treat [doc/non_bugs.md](doc/non_bugs.md) as a maintained list of known non-issues and intentional tradeoffs; do not re-report listed items as bugs.
 
 ## Additional Resources
 - **BOLOS SDK:** `/opt/ledger-secure-sdk` (underlying library).

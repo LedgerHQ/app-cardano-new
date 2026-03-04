@@ -193,6 +193,12 @@ static bool tx_process_output(buffer_t *output_buf,
             tx_handle_parse_error(SWO_TX_PARSING_FAIL_OUTPUTS);
             return false;
         }
+        // Inline datum is valid only for Babbage map outputs.
+        // Reject it explicitly as parse error for legacy outputs.
+        if (datum.type == DATUM_INLINE && output_desc.format == ARRAY_LEGACY) {
+            tx_handle_parse_error(SWO_TX_PARSING_FAIL_OUTPUTS);
+            return false;
+        }
 
         if (mode->run_validation) {
             APPLY_POLICY(datum_policy, tx_ui_plan_or_render_output_datum, mode, &datum);

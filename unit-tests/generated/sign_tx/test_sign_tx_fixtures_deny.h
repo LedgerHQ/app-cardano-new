@@ -2522,6 +2522,26 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NON_STAKING_PATH_
 };
 
 
+// Source: tests/standalone/input_files/signTx.py > outputRejectTestCases > Legacy_output_with_inline_datum
+static const apdu_segment_t SIGN_TX_SEGMENTS_REJECT_OUTPUT_LEGACY_OUTPUT_WITH_INLINE_DATUM[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000005001003901EB0BAA5E570CFFBE2934DB29DF0B6A3D7C0430EE65D4"
+    "C3A7AB2FEFB91BC428E4720702EBD5DAB4FB175324C192DC9BB76CC5DA956E3C"
+    "8DFF00000000000004D20002010000010004DEADBEEF00000000000298100000"
+    "00000000000A",
+        .p1 = P1_TX_CONFIRM,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .more = false,
+    },
+};
+
 
 
 // Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool_registration_with_multiple_path_owners
@@ -4042,6 +4062,18 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .chunks = SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NON_STAKING_PATH_FOR_POOL_REGISTRATION_OWNER_TX,
         .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_POOL_OWNER_NON_STAKING_PATH_FOR_POOL_REGISTRATION_OWNER_TX),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > outputRejectTestCases > Legacy_output_with_inline_datum
+    {
+        .name = "[REJECT_OUTPUT] Legacy_output_with_inline_datum",
+        .init_hex =
+        "0000000000000000012D964A0903000100010200000000010100000100000000"
+        "01010100000000010100010086",
+        .chunks = SIGN_TX_SEGMENTS_REJECT_OUTPUT_LEGACY_OUTPUT_WITH_INLINE_DATUM,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_REJECT_OUTPUT_LEGACY_OUTPUT_WITH_INLINE_DATUM),
+        .expected_sw = SWO_TX_PARSING_FAIL_OUTPUTS,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },

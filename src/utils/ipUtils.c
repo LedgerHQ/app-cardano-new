@@ -86,7 +86,7 @@ void inet_ntop6(const uint8_t* src, char* dst, size_t dstSize) {
      */
     explicit_bzero(words, sizeof words);
     for (int i = 0; i < NS_IN6ADDRSZ; i += 2) {
-        ASSERT((unsigned int) (i / 2) < SIZEOF(words));
+        ASSERT((unsigned int) (i / 2) < ARRAY_LEN(words));
         words[i / 2] = (src[i] << 8) | src[i + 1];
     }
     best.base = -1;
@@ -94,7 +94,7 @@ void inet_ntop6(const uint8_t* src, char* dst, size_t dstSize) {
     best.len = 0;
     cur.len = 0;
     for (int i = 0; i < (NS_IN6ADDRSZ / NS_INT16SZ); i++) {
-        ASSERT((unsigned int) i < SIZEOF(words));
+        ASSERT((unsigned int) i < ARRAY_LEN(words));
         if (words[i] == 0) {
             if (cur.base == -1)
                 cur.base = i, cur.len = 1;

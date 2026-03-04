@@ -347,7 +347,7 @@ bool parse_certificate_drep_update(buffer_t *buf,
 }
 
 /// Helper to parse pool ID (operator key - hash or path)
-static uint16_t _parse_pool_id(buffer_t *buf, pool_id_t *pool_id) {
+static bool _parse_pool_id(buffer_t *buf, pool_id_t *pool_id) {
     uint8_t pool_id_type_wire;
     if (!buffer_read_u8(buf, &pool_id_type_wire)) {
         TRACE("Failed to read pool id type");
@@ -593,17 +593,16 @@ bool parse_certificate_stake_pool_registration(buffer_t *buf,
     pool_registration_data_t *poolReg = &cert_data->poolRegistration;
     explicit_bzero(poolReg, sizeof(*poolReg));
 
-    uint16_t payload_length = 0;
-    if (!buffer_read_u16(buf, &payload_length, BE) ||
-        !buffer_can_read(buf, payload_length)) {
+    if (!buffer_read_u16(buf, &poolReg->payloadLength, BE) ||
+        !buffer_can_read(buf, poolReg->payloadLength)) {
         TRACE("Failed to read pool registration payload length");
         return false;
     }
-    TRACE_MODULE("payload_length=%u", payload_length);
+    TRACE_MODULE("payload_length=%u", poolReg->payloadLength);
 
     buffer_t pool_registration_payload_buffer = {
         .ptr = buffer_get_cur(buf),
-        .size = payload_length,
+        .size = poolReg->payloadLength,
         .offset = 0,
     };
     buffer_t *pool_reg_buf = &pool_registration_payload_buffer;
@@ -709,15 +708,16 @@ bool parse_certificate_stake_pool_registration(buffer_t *buf,
         return false;
     }
     poolReg->hasMetadata = has_metadata;
-    TRACE_MODULE("numPoolOwners=%u numRelays=%u hasMetadata=%u", num_owners, num_relays, has_metadata);
+    TRACE_MODULE("numPoolOwners=%u numRelays=%u hasMetadata=%u",
+                 poolReg->numPoolOwners,
+                 poolReg->numRelays,
+                 has_metadata);
 
-    // Advance the outer buf past the fixed header fields we consumed from pool_reg_buf,
-    // leaving buf positioned at the start of the owners data for process_pool_registration_certificate.
-    size_t header_consumed = pool_reg_buf->offset;
-    if (!buffer_seek_cur(buf, header_consumed)) {
-        TRACE("Failed to advance buffer to owners data");
-        return false;
-    }
+    // Keep outer buf at payload start. The processing stage will parse the whole
+    // payload inside a bounded sub-buffer and then advance the outer cursor by
+    // exactly payloadLength.
+    LEDGER_ASSERT(pool_reg_buf->offset <= UINT16_MAX, "Pool registration header too long");
+    poolReg->fixedHeaderLength = (uint16_t) pool_reg_buf->offset;
 
     return true;
 }

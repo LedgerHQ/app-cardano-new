@@ -225,6 +225,12 @@ static uint16_t cvote_initial_pairs_count(const cvote_aux_data_t *aux_data) {
     return pair_count;
 }
 
+static uint32_t cvote_total_pairs_count(const cvote_aux_data_t *aux_data) {
+    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
+    return (uint32_t) cvote_initial_pairs_count(aux_data) +
+           ((uint32_t) aux_data->remaining_delegations * (uint32_t) CVOTE_DELEGATION_UI_PAIRS_MAX);
+}
+
 static bool cvote_add_initial_pairs(cvote_aux_data_t *aux_data) {
     LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
     ui_render_session_t render_session = {0};
@@ -373,8 +379,12 @@ bool ui_cvote_aux_data_init_non_streaming(cvote_aux_data_t *aux_data) {
                   "Non-streaming CVote UI init in wrong state: %d",
                   aux_data != NULL ? aux_data->state : -1);
 
-    uint16_t total_pair_count = cvote_initial_pairs_count(aux_data) +
-                                (aux_data->remaining_delegations * CVOTE_DELEGATION_UI_PAIRS_MAX);
+    uint32_t total_pair_count_u32 = cvote_total_pairs_count(aux_data);
+    LEDGER_ASSERT(total_pair_count_u32 <= MAX_UI_PAIRS,
+                  "Non-streaming pair count exceeds max: %u",
+                  (unsigned) total_pair_count_u32);
+    LEDGER_ASSERT(total_pair_count_u32 <= UINT16_MAX, "Pair count exceeds uint16 range");
+    uint16_t total_pair_count = (uint16_t) total_pair_count_u32;
 
     ui_reset_error_status();
     if (!ui_pairs_init(total_pair_count)) {
@@ -401,8 +411,7 @@ void ui_cvote_aux_data_init_vars(cvote_aux_data_t *aux_data) {
     explicit_bzero(&aux_data->ui_streaming, sizeof(aux_data->ui_streaming));
 
     // Determine if streaming is forced: too many UI pairs
-    uint16_t total_pair_count = cvote_initial_pairs_count(aux_data) +
-                                (aux_data->remaining_delegations * CVOTE_DELEGATION_UI_PAIRS_MAX);
+    uint32_t total_pair_count = cvote_total_pairs_count(aux_data);
     aux_data->ui_streaming.on = (total_pair_count > MAX_UI_PAIRS);
 }
 

@@ -5,7 +5,7 @@
 #include "derive_native_script_hash_builder.h"
 #include "cardano_constants.h"
 
-#define TRACE_NATIVE_SCRIPT_HASH_BUILDER
+// #define TRACE_NATIVE_SCRIPT_HASH_BUILDER
 
 #ifdef TRACE_NATIVE_SCRIPT_HASH_BUILDER
 #define _TRACE(...)        TRACE(__VA_ARGS__)
@@ -114,6 +114,7 @@ void nativeScriptHashBuilder_init(native_script_hash_builder_t* builder) {
         APPEND_CBOR(CBOR_TYPE_UNSIGNED, type);                                                    \
         APPEND_CBOR(CBOR_TYPE_ARRAY, remainingScripts);                                           \
                                                                                                   \
+        LEDGER_ASSERT(builder->level + 1 < MAX_SCRIPT_DEPTH, "Native script nesting too deep");  \
         builder->level++;                                                                         \
         builder->remainingScripts[builder->level] = remainingScripts;                             \
         _TRACE("appended CBOR");                                                     \
@@ -148,6 +149,7 @@ void nativeScriptHashBuilder_startComplexScript_n_of_k(native_script_hash_builde
     APPEND_CBOR(CBOR_TYPE_UNSIGNED, requiredScripts);
     APPEND_CBOR(CBOR_TYPE_ARRAY, remainingScripts);
 
+    LEDGER_ASSERT(builder->level + 1 < MAX_SCRIPT_DEPTH, "Native script nesting too deep");
     builder->level++;
     builder->remainingScripts[builder->level] = remainingScripts;
 

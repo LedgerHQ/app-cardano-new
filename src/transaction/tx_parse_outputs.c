@@ -149,7 +149,6 @@ uint16_t parse_output_top_level(buffer_t* buf,
         TRACE("Ref script present in non-Babbage output");
         return parseFailureSwo;
     }
-
     out_description->includeDatum = datum_present;
     out_description->includeRefScript = ref_script_present;
 
@@ -234,6 +233,14 @@ bool parse_output_datum(buffer_t* buf, output_datum_t* datum) {
                 TRACE("Failed to read inline datum size");
                 return false;
             }
+            // Inline datum payload is encoded as data = #6.24(bytes .cbor plutus_data)
+            // (see doc/conway.cddl). The bytestring must therefore contain a complete CBOR
+            // item representing plutus_data. Zero-length bytes cannot encode any CBOR item,
+            // so accepting datum_size == 0 would violate the CDDL and admit malformed data.
+            if (datum_size == 0) {
+                TRACE("Inline datum size must be non-zero");
+                return false;
+            }
             datum->inline_datum.length = datum_size;
 
             if (!buffer_read_bytes_ptr(buf, &datum->inline_datum.buffer, datum_size)) {
@@ -261,6 +268,13 @@ bool parse_output_ref_script(buffer_t* buf, ref_script_t* ref_script) {
     uint16_t script_size;
     if (!buffer_read_u16(buf, &script_size, BE)) {
         TRACE("Failed to read ref script size");
+        return false;
+    }
+    // Reference scripts are encoded as script_ref = #6.24(bytes .cbor script)
+    // (see doc/conway.cddl). The bytestring must embed a full CBOR value of type script.
+    // A zero-length bytestring cannot contain a CBOR item, so script_size == 0 is invalid.
+    if (script_size == 0) {
+        TRACE("Reference script size must be non-zero");
         return false;
     }
     ref_script->size = script_size;

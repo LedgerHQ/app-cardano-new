@@ -174,7 +174,7 @@ static void test_format_pool_margin(void **state) {
         uint64_t denominator;
         const char *expected;
     } testVectors[] = {
-        {500, 10000, "5.0 %"},
+        {500, 10000, "5.00 %"},
         {123, 10000, "1.23 %"},
         {1, 3, "33.33 %"},
     };

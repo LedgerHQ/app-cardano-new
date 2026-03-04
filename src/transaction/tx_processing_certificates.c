@@ -335,14 +335,27 @@ bool process_pool_registration_certificate(buffer_t *buf,
     LEDGER_ASSERT(parsed_cert != NULL && parsed_cert->type == CERTIFICATE_STAKE_POOL_REGISTRATION,
                   "NULL or wrong certificate type");
 
-    // buf is positioned at the start of owners data (after the fixed header fields
-    // already parsed by parse_certificate_stake_pool_registration).
+    // buf is positioned at the start of the pool registration payload.
 
     const tx_params_t *tx_params = state->tx_params;
     const tx_processing_mode_t *mode = &state->mode;
     tx_hash_builder_t *hash_builder = &state->hash_builder;
 
     const pool_registration_data_t *pool_registration = &parsed_cert->poolRegistration;
+    if (pool_registration->payloadLength < pool_registration->fixedHeaderLength) {
+        tx_handle_parse_error(SWO_TX_PARSING_FAIL_CERTIFICATES);
+        return false;
+    }
+    buffer_t pool_payload_buf = {
+        .ptr = buffer_get_cur(buf),
+        .size = pool_registration->payloadLength,
+        .offset = 0,
+    };
+    if (!buffer_seek_cur(&pool_payload_buf, pool_registration->fixedHeaderLength)) {
+        tx_handle_parse_error(SWO_TX_PARSING_FAIL_CERTIFICATES);
+        return false;
+    }
+
     TRACE("Pool registration: owners=%u relays=%u",
           (unsigned) pool_registration->numPoolOwners,
           (unsigned) pool_registration->numRelays);
@@ -352,7 +365,7 @@ bool process_pool_registration_certificate(buffer_t *buf,
     // and the first path owner to extract the witness key in OWNER signing mode.
     uint32_t path_owner_count = 0;
     ext_credential_t first_path_owner = {0};
-    if (!scan_pool_owners_for_path_witnesses(*buf,
+    if (!scan_pool_owners_for_path_witnesses(pool_payload_buf,
                                              pool_registration->numPoolOwners,
                                              &path_owner_count,
                                              &first_path_owner)) {
@@ -443,14 +456,14 @@ bool process_pool_registration_certificate(buffer_t *buf,
         txHashBuilder_addPoolRegistrationCertificate_enterOwners(hash_builder);
     }
 
-    // Owners — buf is positioned at start of owners data
+    // Owners
     TRACE("Processing %u owners", (unsigned) pool_registration->numPoolOwners);
     if (pool_registration->numPoolOwners > 0) {
         for (uint16_t owner_index = 0;
              owner_index < pool_registration->numPoolOwners;
              owner_index++) {
             ext_credential_t owner_credential = {0};
-            if (!buffer_read_credential(buf, &owner_credential)) {
+            if (!buffer_read_credential(&pool_payload_buf, &owner_credential)) {
                 tx_handle_parse_error(SWO_TX_PARSING_FAIL_CERTIFICATES);
                 return false;
             }
@@ -478,7 +491,7 @@ bool process_pool_registration_certificate(buffer_t *buf,
         plan_or_render_pool_no_owners(mode);
     }
 
-    // Relays — buf is now positioned at start of relays data
+    // Relays
     if (mode->run_hash_builder) {
         txHashBuilder_addPoolRegistrationCertificate_enterRelays(hash_builder);
     }
@@ -488,7 +501,7 @@ bool process_pool_registration_certificate(buffer_t *buf,
              relay_index < pool_registration->numRelays;
              relay_index++) {
             pool_relay_t relay = {0};
-            if (!parse_pool_relay(buf, &relay)) {
+            if (!parse_pool_relay(&pool_payload_buf, &relay)) {
                 tx_handle_parse_error(SWO_TX_PARSING_FAIL_CERTIFICATES);
                 return false;
             }
@@ -510,7 +523,7 @@ bool process_pool_registration_certificate(buffer_t *buf,
         plan_or_render_pool_no_relays(mode);
     }
 
-    // Metadata — buf is now positioned at metadata (presence known from header)
+    // Metadata (presence known from header)
     if (!pool_registration->hasMetadata) {
         if (mode->run_validation) {
             security_policy_t no_metadata_policy =
@@ -523,7 +536,7 @@ bool process_pool_registration_certificate(buffer_t *buf,
         }
     } else {
         pool_metadata_t pool_metadata = {0};
-        if (!parse_pool_metadata(buf, &pool_metadata)) {
+        if (!parse_pool_metadata(&pool_payload_buf, &pool_metadata)) {
             tx_handle_parse_error(SWO_TX_PARSING_FAIL_CERTIFICATES);
             return false;
         }
@@ -542,6 +555,17 @@ bool process_pool_registration_certificate(buffer_t *buf,
                 pool_metadata.hash,
                 POOL_METADATA_HASH_LENGTH);
         }
+    }
+
+    // The payload sub-buffer must be consumed exactly.
+    if (buffer_can_read(&pool_payload_buf, 1)) {
+        tx_handle_parse_error(SWO_TX_PARSING_FAIL_CERTIFICATES);
+        return false;
+    }
+    // Advance outer transaction buffer by the exact payload length.
+    if (!buffer_seek_cur(buf, pool_registration->payloadLength)) {
+        tx_handle_parse_error(SWO_TX_PARSING_FAIL_CERTIFICATES);
+        return false;
     }
 
     return true;

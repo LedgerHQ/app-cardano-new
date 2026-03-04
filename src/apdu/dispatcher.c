@@ -90,6 +90,13 @@ void apdu_dispatcher(const command_t *cmd) {
             break;
     }
 
+    if (cmd->cla != CLA) {
+        TRACE("Invalid CLA: got=0x%02x expected=0x%02x", cmd->cla, CLA);
+        apdu_response_send_sw(SWO_INVALID_CLA);
+        apdu_response_assert_sent_or_deferred();
+        return;
+    }
+
     // Guard against instruction interleaving attacks
     // If an operation is in progress, only allow the same instruction to continue
     if (G_context.req_type != REQUEST_NONE) {
@@ -121,12 +128,6 @@ void apdu_dispatcher(const command_t *cmd) {
         }
     }
 #endif
-
-    if (cmd->cla != CLA) {
-        send_swo_and_reset(SWO_INVALID_CLA);
-        apdu_response_assert_sent_or_deferred();
-        return;
-    }
 
     // Create data buffer upfront from APDU data
     buffer_t data_buffer = {.ptr = cmd->data, .size = cmd->lc, .offset = 0};

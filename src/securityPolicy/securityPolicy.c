@@ -944,6 +944,10 @@ static security_policy_t policyForSignTxCollateralOutputAddressParams(
             if (isTotalCollateralIncluded) {
                 // change outputs can be hidden; show when paths look unusual
                 if (!is_standard_base_address(params)) {
+                    mark_unusual_key_derivation(w, &params->paymentKeyPath);
+                    if (addressParams_getStakingPartType(params) == STAKING_PART_KEY_PATH) {
+                        mark_unusual_key_derivation(w, &params->stakingKeyPath);
+                    }
                     SHOW();
                 } else {
                     HIDE();
@@ -1126,7 +1130,7 @@ static bool _forbiddenCredential(sign_tx_signingmode_t txSigningMode,
     return false;
 }
 
-security_policy_t _policyForSignTxCertificateStakeCredential(
+static security_policy_t _policyForSignTxCertificateStakeCredential(
     sign_tx_signingmode_t txSigningMode,
     const ext_credential_t* stakeCredential,
     warning_bits_t *w) {
@@ -2480,7 +2484,9 @@ size_t warning_bits_to_definitions(warning_bits_t w,
         const char *title = (const char *) PIC(def->title);
         const char *description = (const char *) PIC(def->description);
         if (title == NULL || description == NULL || description[0] == '\0') {
-            continue;
+            TRACE("Missing warning definition for bit %d", bit);
+            LEDGER_ASSERT(false, "Missing warning definition");
+            return count;
         }
         definitions[count++] = def;
     }

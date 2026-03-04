@@ -158,6 +158,7 @@ static struct {
     uint64_t startSlotNumber;
     uint64_t startEpoch;
     uint64_t slotsInEpoch;
+    // Must remain sorted by descending startSlotNumber.
 } EPOCH_SLOTS_CONFIG[] = {{4492800, 208, 432000}, {0, 0, 21600}};
 
 static bool format_validity_boundary_mainnet(uint64_t slotNumber, char *out, size_t outSize) {
@@ -171,6 +172,7 @@ static bool format_validity_boundary_mainnet(uint64_t slotNumber, char *out, siz
         LEDGER_ASSERT(i < ARRAY_LEN(EPOCH_SLOTS_CONFIG), "Slot number exceeds configured epoch boundaries");
     }
 
+    // Intentional redundant post-condition check: keeps this invariant explicit for auditability.
     LEDGER_ASSERT(slotNumber >= EPOCH_SLOTS_CONFIG[i].startSlotNumber, "Invalid slot number for epoch");
 
     uint64_t startSlotNumber = EPOCH_SLOTS_CONFIG[i].startSlotNumber;
@@ -228,12 +230,21 @@ bool format_validity_boundary(uint64_t slotNumber,
  * Format pool profit margin as percentage
  */
 bool format_pool_margin(uint64_t numerator, uint64_t denominator, char *out, size_t outSize) {
-    // Convert to percentage (0-10000 basis points)
-    uint64_t margin_percentage = (10000 * numerator + (denominator / 2)) / denominator;
-    unsigned int percentage = (unsigned int) margin_percentage;
+    LEDGER_ASSERT(outSize < BUFFER_SIZE_PARANOIA, "Output buffer size exceeds paranoia limit");
+    LEDGER_ASSERT(denominator > 0, "Pool margin denominator is zero");
+    LEDGER_ASSERT(numerator <= UINT64_MAX / 10000, "Pool margin numerator overflow");
 
-    STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(percentage)), "signed type for %u");
-    int written = snprintf(out, outSize, "%u.%u %%", percentage / 100, percentage % 100);
+    // Convert to percentage (0-10000 basis points), rounded to nearest basis point.
+    uint64_t margin_percentage_basis_points = (10000 * numerator + (denominator / 2)) / denominator;
+    uint64_t integer_part = margin_percentage_basis_points / 100;
+    uint64_t fractional_part = margin_percentage_basis_points % 100;
+
+    STATIC_ASSERT(sizeof(unsigned long long) >= sizeof(uint64_t), "unsigned long long too small");
+    int written = snprintf(out,
+                           outSize,
+                           "%llu.%02llu %%",
+                           (unsigned long long) integer_part,
+                           (unsigned long long) fractional_part);
     LEDGER_ASSERT(written > 0, "snprintf pool margin formatting failed");
     return (size_t)written + 1 < outSize; // checks for truncation
 }

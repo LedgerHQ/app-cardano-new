@@ -42,16 +42,16 @@ bool buffer_read_cvote_credential(buffer_t *buf, cvote_credential_t *credential)
         return false;
     }
 
-    credential->type = (cvote_credential_type_t) cred_type;
-
     switch (cred_type) {
         case CVOTE_CREDENTIAL_KEY_PATH:
+            credential->type = CVOTE_CREDENTIAL_KEY_PATH;
             if (!buffer_read_bip44_path(buf, &credential->keyPath)) {
                 TRACE("Failed to read CVote BIP44 path");
                 return false;
             }
             break;
         case CVOTE_CREDENTIAL_KEY:
+            credential->type = CVOTE_CREDENTIAL_KEY;
             // CVote: reads 32-byte public key per CIP-36
             if (!buffer_read_bytes_ptr(buf, &credential->publicKey, PUBLIC_KEY_LENGTH)) {
                 TRACE("Failed to read CVote public key");

@@ -149,7 +149,7 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
     if (ui_render_should_skip()) break; \
     char *_buf = NULL; \
     const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
-    if (!allocate_zeroed((void **) &_buf, _buf_size)) { \
+    if (!allocate_zeroed((void **) &_buf, _buf_size) || _buf == NULL) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \
@@ -180,7 +180,7 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
     if (ui_render_should_skip()) break; \
     char *_buf = NULL; \
     const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
-    if (!allocate_zeroed((void **) &_buf, _buf_size)) { \
+    if (!allocate_zeroed((void **) &_buf, _buf_size) || _buf == NULL) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \
@@ -212,7 +212,7 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
     if (ui_render_should_skip()) break; \
     char *_buf = NULL; \
     const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
-    if (!allocate_zeroed((void **) &_buf, _buf_size)) { \
+    if (!allocate_zeroed((void **) &_buf, _buf_size) || _buf == NULL) { \
         ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
         break; \
     } \

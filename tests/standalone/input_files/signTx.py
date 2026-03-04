@@ -7420,7 +7420,38 @@ stakePoolRegistrationOwnerRejectTestCases: List[SignTxTestCase] = [
     ),
 ]
 
-outputRejectTestCases: List[SignTxTestCase] = []
+outputRejectTestCases: List[SignTxTestCase] = [
+    SignTxTestCase(
+        name="Legacy_output_with_inline_datum",
+        ledgerjs_name="Legacy output with inline datum",
+        tx=Transaction(
+            network=NetworkDesc(networkId=1, protocol=764824073),
+            inputs=[inputs["utxoShelley"]],
+            outputs=[
+                TxOutputAlonzo(
+                    destination=TxOutputDestination(
+                        type=TxOutputDestinationType.THIRD_PARTY,
+                        params=ThirdPartyAddressParams(
+                            addressHex="01eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff"
+                        ),
+                    ),
+                    amount=1234,
+                    format=TxOutputFormat.ARRAY_LEGACY,
+                    tokenBundle=[],
+                    datum=Datum(
+                        type=DatumType.INLINE,
+                        datumHex="deadbeef",
+                    ),
+                )
+            ],
+            fee=170000,
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_TX_PARSING_FAIL_OUTPUTS,
+        deny_before_review=True,
+    ),
+]
 
 testsCVoteRegistrationRejects: List[SignTxTestCase] = []
 

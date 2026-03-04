@@ -85,6 +85,12 @@ typedef struct {
 } pool_metadata_t;
 
 typedef struct {
+    // Wire-level payload envelope size for CERTIFICATE_STAKE_POOL_REGISTRATION.
+    // Used to enforce strict parsing boundaries.
+    uint16_t payloadLength;
+    // Number of bytes consumed by the fixed pool registration header
+    // (before owners/relays/metadata).
+    uint16_t fixedHeaderLength;
     const uint8_t* vrfKeyHash;
     uint64_t pledge;
     uint64_t cost;

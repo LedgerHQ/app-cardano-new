@@ -82,6 +82,9 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
+    if (deny_unconsumed_bytes(cdata, SWO_WRONG_DATA_LENGTH)) {
+        return;
+    }
     // Copy any hash pointers into context-owned storage so they survive beyond this APDU
     address_params_copyHashesToStorage(&ctx->address_params,
                                      &ctx->hashStorage);

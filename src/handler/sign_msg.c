@@ -42,6 +42,10 @@
 // - up to 5 bytes payload bstr length header
 // Conservative fixed overhead (covers all CBOR tokens + protectedHeader).
 #define SIG_STRUCTURE_OVERHEAD 256
+// Keep a compile-time margin tied to MAX_ADDRESS_LENGTH to catch future growth.
+#define SIG_STRUCTURE_OVERHEAD_MIN_REQUIRED (MAX_ADDRESS_LENGTH + 40)
+STATIC_ASSERT(SIG_STRUCTURE_OVERHEAD >= SIG_STRUCTURE_OVERHEAD_MIN_REQUIRED,
+              "SIG_STRUCTURE_OVERHEAD is too small");
 
 static bool ensure_sign_msg_request_type(request_type_e required_request_type) {
     if (G_context.req_type != required_request_type) {
@@ -297,15 +301,6 @@ void signMsg_handle_chunk(buffer_t *cdata) {
             return;
         }
 
-        // ASCII validation on this chunk
-        if (ctx->isAscii) {
-            if (!str_isUnambiguousAscii(ctx->msgBuffer + writeOffset, chunkSize_u32)) {
-                TRACE("ASCII validation failed");
-                send_swo_and_reset(SWO_SIGN_MSG_INVALID_ASCII);
-                return;
-            }
-        }
-
         // Add chunk to hash
         blake2b_224_append(&ctx->msgHashCtx, ctx->msgBuffer + writeOffset, chunkSize_u32);
     }
@@ -315,6 +310,14 @@ void signMsg_handle_chunk(buffer_t *cdata) {
 
     // Transition to CONFIRM if all bytes received
     if (ctx->remainingBytes == 0) {
+        if (ctx->isAscii && ctx->msgLength > 0) {
+            LEDGER_ASSERT(ctx->msgBuffer != NULL, "Message buffer not allocated");
+            if (!str_isUnambiguousAscii(ctx->msgBuffer, ctx->msgLength)) {
+                TRACE("ASCII validation failed for full message");
+                send_swo_and_reset(SWO_SIGN_MSG_INVALID_ASCII);
+                return;
+            }
+        }
         G_context.state.sign_msg_state = SIGN_MSG_STATE_CONFIRM;
     }
 
@@ -452,7 +455,9 @@ static bool build_and_sign_sig_structure(sign_msg_ctx_t *ctx) {
         // Payload is the raw message from accumulated buffer
         LEDGER_ASSERT(ctx->remainingBytes == 0, "Message not fully received");
         LEDGER_ASSERT(buffer_write_cbor_token(&buffer, CBOR_TYPE_BYTES, ctx->msgLength), "CBOR write failed");
-        LEDGER_ASSERT(buffer_write_bytes(&buffer, ctx->msgBuffer, ctx->msgLength), "Buffer overflow");
+        if (ctx->msgLength > 0) {
+            LEDGER_ASSERT(buffer_write_bytes(&buffer, ctx->msgBuffer, ctx->msgLength), "Buffer overflow");
+        }
     }
 
     const size_t sigStructureSize = buffer.offset;

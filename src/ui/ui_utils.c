@@ -122,6 +122,7 @@ void ui_free_pairs(void) {
                   "ui_pairs_force_new_page() called but no pair was added after it");
     g_pending_force_page_start = false;
     if (g_pairs != NULL) {
+        // g_pairs[i].item points to static labels (UI_STATIC_LABEL), so only values are owned/freed here.
         for (uint16_t i = 0; i < g_next_pair_index; i++) {
             if (g_pairs[i].value != NULL) {
                 APP_MEM_FREE((void *) g_pairs[i].value);

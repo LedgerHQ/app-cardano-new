@@ -183,7 +183,7 @@ bool cbor_writeToken(uint8_t type, uint64_t value, uint8_t* buffer, size_t buffe
 
     // Warning(ppershing): It might be tempting but we don't want to call stream_appendData() twice
     // Instead we have to construct the whole buffer at once to make append operation atomic.
-    #define u1be_write(buffer, value) (buffer)[0] = (value);
+    #define u1be_write(buffer, value) (buffer)[0] = (value)
 
     if (value < VALUE_W1_UPPER_THRESHOLD) {
         CHECK_BUF_LEN(1);
@@ -218,4 +218,3 @@ bool cbor_writeToken(uint8_t type, uint64_t value, uint8_t* buffer, size_t buffe
     #undef u1be_write
 #undef CHECK_BUF_LEN
 }
-

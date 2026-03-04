@@ -141,18 +141,25 @@ void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnin
         } else {
             UI_ADD_STATIC(UI_LABEL_BY_SCREEN("Message (hex)", "Msg (hex)"), UI_STATIC_LABEL("(empty)"));
         }
-    } else if (ctx->isAscii) {
-        UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Message (ASCII)", "Msg (ASCII)"),
-                       ctx->msgLength,
-                       format_ascii_chunk,
-                       ctx->msgBuffer,
-                       ctx->msgLength);
     } else {
-        UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Message (hex)", "Msg (hex)"),
-                       2 * ctx->msgLength + 1,
-                       format_hex_bytes,
-                       ctx->msgBuffer,
-                       ctx->msgLength);
+        if (ctx->msgBuffer == NULL) {
+            LEDGER_ASSERT(false, "Message buffer not allocated");
+            ui_render_session_end();
+            return;
+        }
+        if (ctx->isAscii) {
+            UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Message (ASCII)", "Msg (ASCII)"),
+                           ctx->msgLength,
+                           format_ascii_chunk,
+                           ctx->msgBuffer,
+                           ctx->msgLength);
+        } else {
+            UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Message (hex)", "Msg (hex)"),
+                           2 * ctx->msgLength + 1,
+                           format_hex_bytes,
+                           ctx->msgBuffer,
+                           ctx->msgLength);
+        }
     }
 
     // Field 6: Message hash (always computed)

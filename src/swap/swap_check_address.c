@@ -55,15 +55,20 @@ void swap_handle_check_address(check_address_parameters_t *params) {
             // Base address with payment key from the path and staking key
             // derived from the same account (chain=2, index=0)
             addressParams.type = BASE_PAYMENT_KEY_STAKE_KEY;
+            // Swap integration is intentionally mainnet-only (legacy app behavior).
             addressParams.networkId = MAINNET_NETWORK_ID;
             addressParams.paymentPartType = PAYMENT_PART_KEY_PATH;
             memcpy(&addressParams.paymentKeyPath, &pathSpec, sizeof(bip44_path_t));
             addressParams.stakingPartType = STAKING_PART_KEY_PATH;
             memcpy(&addressParams.stakingKeyPath, &pathSpec, sizeof(bip44_path_t));
+            LEDGER_ASSERT(pathSpec.length >= BIP44_I_ADDRESS + 1,
+                          "Swap path too short for staking key derivation");
             // The default staking key path is the same as the payment key path,
             // except for the chain and address index elements
             addressParams.stakingKeyPath.path[BIP44_I_CHAIN] = 2;
             addressParams.stakingKeyPath.path[BIP44_I_ADDRESS] = 0;
+            LEDGER_ASSERT(bip44_classifyPath(&addressParams.stakingKeyPath) == PATH_ORDINARY_STAKING_KEY,
+                          "Invalid staking key path in swap check");
 
             derivedAddressLength = deriveAddress(&addressParams,
                                                  rawAddressBuffer,
