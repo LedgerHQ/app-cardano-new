@@ -53,6 +53,7 @@ from standalone.input_files.signTx import (  # type: ignore
     invalidCertificates,
     invalidPoolMetadataTestCases,
     invalidRelayTestCases,
+    testsCVoteRegistrationDenies,
     SignTxTestCase,
     TxAuxiliaryDataType,
     ThirdPartyAddressParams,
@@ -279,7 +280,8 @@ all_deny_test_cases = (
     stakePoolRegistrationOwnerDenyTestCases +
     invalidCertificates +
     invalidPoolMetadataTestCases +
-    invalidRelayTestCases
+    invalidRelayTestCases +
+    testsCVoteRegistrationDenies
 )
 
 

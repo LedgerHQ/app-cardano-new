@@ -137,6 +137,13 @@ cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
             return CVOTE_PARSER_INVALID_FORMAT;
     }
 
+    // CIP15 does not support delegations (only a single vote key in init payload)
+    if (out_data->format == CIP15 && out_data->remaining_delegations != 0) {
+        TRACE("CVote init: CIP15 must have 0 delegations, got %u",
+              out_data->remaining_delegations);
+        return CVOTE_PARSER_INVALID_FORMAT;
+    }
+
     // Parse staking credential using CVote-specific credential reader
     // (reads 32-byte public keys for KEY_HASH type, not 28-byte key hashes)
     // Pointers stored into raw_buffer (no manual allocation needed!)

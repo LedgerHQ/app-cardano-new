@@ -7309,7 +7309,62 @@ outputDenyTestCases: List[SignTxTestCase] = [
     ),
 ]
 
-testsCVoteRegistrationDenies: List[SignTxTestCase] = []
+testsCVoteRegistrationDenies: List[SignTxTestCase] = [
+    SignTxTestCase(
+        name="CIP15_registration_with_delegations_rejected",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            auxiliaryData=TxAuxiliaryData(
+                TxAuxiliaryDataType.CIP36_REGISTRATION,
+                TxAuxiliaryDataCIP36(
+                    CIP36VoteRegistrationFormat.CIP_15,
+                    "m/1852'/1815'/0'/2/0",
+                    destinations["internalBaseWithStakingPath"],
+                    1454448,
+                    "4b19e27ffc006ace16592311c4d2f0cafc255eaa47a6178ff540c0a46d07027c",
+                    delegations=[
+                        CIP36VoteDelegation(
+                            type=CIP36VoteDelegationType.KEY,
+                            votingKeyPath="4b19e27ffc006ace16592311c4d2f0cafc255eaa47a6178ff540c0a46d07027c",
+                            weight=1,
+                        ),
+                    ],
+                ),
+            ),
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_CVOTE_AUX_DATA_PARSING_FAIL,
+        deny_before_review=True,
+        unsuitable_in_ragger_reason=None,
+    ),
+    SignTxTestCase(
+        name="CIP36_registration_with_staking_key_as_raw_pubkey",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            auxiliaryData=TxAuxiliaryData(
+                TxAuxiliaryDataType.CIP36_REGISTRATION,
+                TxAuxiliaryDataCIP36(
+                    CIP36VoteRegistrationFormat.CIP_36,
+                    "4b19e27ffc006ace16592311c4d2f0cafc255eaa47a6178ff540c0a46d07027c",
+                    destinations["internalBaseWithStakingPath"],
+                    1454448,
+                    "4b19e27ffc006ace16592311c4d2f0cafc255eaa47a6178ff540c0a46d07027c",
+                    votingPurpose=0,
+                ),
+            ),
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        deny_before_review=True,
+        unsuitable_in_ragger_reason=None,
+    ),
+]
 
 invalidCertificates: List[SignTxTestCase] = [
     SignTxTestCase(
@@ -7706,3 +7761,4 @@ invalidRelayTestCases: List[SignTxTestCase] = [
         deny_before_review=True,
     ),
 ]
+

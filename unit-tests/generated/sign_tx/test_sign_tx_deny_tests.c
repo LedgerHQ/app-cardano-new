@@ -13,6 +13,7 @@
 #include <cmocka.h>
 
 #include "handler/sign_tx.h"
+#include "handler/sign_tx_aux_data.h"
 #include "buffer.h"
 #include "cardano_swo.h"
 #include "globals.h"
@@ -70,9 +71,16 @@ static inline void run_sign_tx_witness_apdu(buffer_t *buffer) {
     apdu_response_assert_sent_or_deferred();
 }
 
+static inline void run_sign_tx_aux_data_apdu(buffer_t *buffer, uint8_t p2) {
+    apdu_response_begin(INS_SIGN_TX);
+    handler_sign_tx_aux_data(buffer, p2);
+    apdu_response_assert_sent_or_deferred();
+}
+
 typedef struct {
     const char *hex_payload;
     uint8_t p1;
+    uint8_t p2;
     bool more;
 } apdu_segment_t;
 
@@ -127,7 +135,11 @@ static void run_sign_tx_deny_fixture(const sign_tx_deny_fixture_t *fixture) {
 
     assert_int_equal(g_last_sw, SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
-    assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
+    if (fixture->chunk_count > 0 && fixture->chunks[0].p1 == P1_TX_AUX_DATA) {
+        assert_int_equal(G_context.state.tx_state, TX_STATE_AUX_DATA);
+    } else {
+        assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
+    }
 
     bool failure_seen = false;
     for (size_t i = 0; i < fixture->chunk_count; i++) {
@@ -142,6 +154,8 @@ static void run_sign_tx_deny_fixture(const sign_tx_deny_fixture_t *fixture) {
         g_last_sw = 0;
         if (segment->p1 == P1_TX_SIGN_WITNESS) {
             run_sign_tx_witness_apdu(&chunk_buf);
+        } else if (segment->p1 == P1_TX_AUX_DATA) {
+            run_sign_tx_aux_data_apdu(&chunk_buf, segment->p2);
         } else {
             run_sign_tx_apdu(&chunk_buf, segment->p1);
         }

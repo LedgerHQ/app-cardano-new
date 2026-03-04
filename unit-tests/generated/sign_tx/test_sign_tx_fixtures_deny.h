@@ -31,12 +31,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_NON_MAINNET_PROTOCOL_MAGI
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -50,12 +52,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_INVALID_NETWORK_ID[] = {
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -69,12 +73,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATO
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -88,6 +94,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_T
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -105,6 +112,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATO
     "0000000000000000000100F12345678901234567890123456789012345678901"
     "2345678901234567000000000103007902058000073C80000717",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -114,12 +122,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATO
     "00000000000000000000000100F1234567890123456789012345678901234567"
     "890123456789012345670000000001",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -137,6 +147,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_T
     "000000000000000000000000000000000100F123456789012345678901234567"
     "890123456789012345678901234567000100000102058000073C",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -148,12 +159,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_T
     "0123456789012345678901234567000100000102058000073C80000717800000"
     "000000000200000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -171,18 +184,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATO
     "0000000000000000000100F12345678901234567890123456789012345678901"
     "2345678901234567000000000100000000000003E80129FB5FD4",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
         .hex_payload =
     "AA8CADD6705ACC8263CEE0FC62EDCA5AC38DB593FEC2F9FD",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -200,6 +216,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_T
     "000000000000000000000000000000000100F123456789012345678901234567"
     "890123456789012345678901234567000100000102058000073C",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -207,12 +224,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_T
     "8000071780000000000000020000000000000000000003E80129FB5FD4AA8CAD"
     "D6705ACC8263CEE0FC62EDCA5AC38DB593FEC2F9FD",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -230,6 +249,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATO
     "0000000000000000000100F12345678901234567890123456789012345678901"
     "234567890123456700000000010D63E8D2C5A00CBCFFBDF91124",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -237,12 +257,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATO
     "87C443466E1EA7D8C834DF5AC5C42500010875657374436F696EFFFFFFFFFF87"
     "C79E",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -260,6 +282,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_M
     "000000000000000000000000000000000100F123456789012345678901234567"
     "890123456789012345678901234567000100000102058000073C",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -267,12 +290,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_M
     "800007178000000000000002000000000D63E8D2C5A00CBCFFBDF9112487C443"
     "466E1EA7D8C834DF5AC5C42500010875657374436F696EFFFFFFFFFF87C79E",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -287,12 +312,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_ORDINARY_TX_COLLATERAL_IN
     "00000000000000002A000000000000000A3B40265111D8BB3C3C608D95B3A0BF"
     "83461ACE32D79336579A1939B3AAD1C0B700000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -307,6 +334,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_MULTISIG_TX_COLLATERAL_IN
     "00000000000000002A000000000000000A3B40265111D8BB3C3C608D95B3A0BF"
     "83461ACE32D79336579A1939B3AAD1C0B700000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -324,18 +352,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATO
     "0000000000000000000100F12345678901234567890123456789012345678901"
     "234567890123456700000000013B40265111D8BB3C3C608D95B3",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
         .hex_payload =
     "A0BF83461ACE32D79336579A1939B3AAD1C0B700000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -353,6 +384,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_C
     "000000000000000000000000000000000100F123456789012345678901234567"
     "890123456789012345678901234567000100000102058000073C",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -360,18 +392,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_C
     "800007178000000000000002000000003B40265111D8BB3C3C608D95B3A0BF83"
     "461ACE32D79336579A1939B3AAD1C0B700000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -389,18 +424,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATO
     "0000000000000000000100F12345678901234567890123456789012345678901"
     "2345678901234567000000000100058000073C80000717800000",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
         .hex_payload =
     "000000000000000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -418,6 +456,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_R
     "000000000000000000000000000000000100F123456789012345678901234567"
     "890123456789012345678901234567000100000102058000073C",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -425,18 +464,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_R
     "8000071780000000000000020000000000058000073C80000717800000000000"
     "000000000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -452,12 +494,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_ORDINARY_TX_COLLATERAL_OU
     "1ABB4F62BC455E217D4A51FDE909FA9AEA545443AC53C046CF6A42095E3C6031"
     "0FA802771D0672F8FE2D1861138B0900000000000000010001010000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -473,6 +517,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_MULTISIG_TX_COLLATERAL_OU
     "1ABB4F62BC455E217D4A51FDE909FA9AEA545443AC53C046CF6A42095E3C6031"
     "0FA802771D0672F8FE2D1861138B0900000000000000010001010000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -490,6 +535,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATO
     "0000000000000000000100F12345678901234567890123456789012345678901"
     "234567890123456700000000010049010039017CB05FCE110FB9",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -497,12 +543,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATO
     "99F01ABB4F62BC455E217D4A51FDE909FA9AEA545443AC53C046CF6A42095E3C"
     "60310FA802771D0672F8FE2D1861138B0900000000000000010001010000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -520,6 +568,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_C
     "000000000000000000000000000000000100F123456789012345678901234567"
     "890123456789012345678901234567000100000102058000073C",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -528,12 +577,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_C
     "BB4F62BC455E217D4A51FDE909FA9AEA545443AC53C046CF6A42095E3C60310F"
     "A802771D0672F8FE2D1861138B0900000000000000010001010000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -547,12 +598,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_ORDINARY_TX_TOTAL_COLLATE
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A0000000000000008",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -566,6 +619,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_MULTISIG_TX_TOTAL_COLLATE
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A0000000000000008",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -583,12 +637,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATO
     "0000000000000000000100F12345678901234567890123456789012345678901"
     "234567890123456700000000010000000000000008",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -606,18 +662,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_T
     "000000000000000000000000000000000100F123456789012345678901234567"
     "890123456789012345678901234567000100000102058000073C",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
         .hex_payload =
     "800007178000000000000002000000000000000000000008",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -632,12 +691,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_ORDINARY_TX_REFERENCE_INP
     "00000000000000002A000000000000000A3B40265111D8BB3C3C608D95B3A0BF"
     "83461ACE32D79336579A1939B3AAD1C0B700000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -652,6 +713,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_MULTISIG_TX_REFERENCE_INP
     "00000000000000002A000000000000000A3B40265111D8BB3C3C608D95B3A0BF"
     "83461ACE32D79336579A1939B3AAD1C0B700000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -669,18 +731,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OPERATO
     "0000000000000000000100F12345678901234567890123456789012345678901"
     "234567890123456700000000013B40265111D8BB3C3C608D95B3",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
         .hex_payload =
     "A0BF83461ACE32D79336579A1939B3AAD1C0B700000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -698,6 +763,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_R
     "000000000000000000000000000000000100F123456789012345678901234567"
     "890123456789012345678901234567000100000102058000073C",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -705,12 +771,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_POOL_REGISTRATION_OWNER_R
     "800007178000000000000002000000003B40265111D8BB3C3C608D95B3A0BF83"
     "461ACE32D79336579A1939B3AAD1C0B700000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -724,12 +792,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_ADDRESS_REWARD_ADDRESS_KEY[] =
     "000000000026020E0122058000073C8000071780000000000000020000000000"
     "0000000000000A0001010000000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -743,12 +813,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_ADDRESS_REWARD_ADDRESS_SCRIPT[
     "9EFBD69B4277000000000000000A0001010000000000000000002A0000000000"
     "00000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -762,12 +834,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_ADDRESS_NO_SPENDING_PATH_ORDIN
     "93FEC2F9FD33122A946B9AD3D2DDF029D3A828F0468AECE76895F15C9EFBD69B"
     "427700000000002DD2E80001010000000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -781,12 +855,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_ADDRESS_NO_SPENDING_PATH_ORDIN
     "93FEC2F9FD55122A946B9AD3D2DDF029D3A828F0468AECE76895F15C9EFBD69B"
     "427700000000002DD2E80001010000000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -800,12 +876,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_ADDRESS_POOL_OPERATOR_SPENDING
     "FBD69B427722058000073C80000717800001C800000002000000000000000000"
     "00000A0001010000000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -819,6 +897,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_ADDRESS_MULTISIG_UNCONDITIONAL
     "8000073C8000071780000000000000020000000000000000006CA79300010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -832,6 +911,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_ADDRESS_POOL_OWNER_UNCONDITION
     "8000073C8000071780000000000000020000000000000000006CA79300010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -850,12 +930,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_POOL_REGISTRATION_IN_ORDI
     "0000000000000000000100F12345678901234567890123456789012345678901"
     "23456789012345670000000001",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -873,6 +955,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_POOL_REGISTRATION_IN_MULT
     "0000000000000000000100F12345678901234567890123456789012345678901"
     "23456789012345670000000001",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -890,12 +973,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_POOL_REGISTRATION_IN_PLUT
     "0000000000000000000100F12345678901234567890123456789012345678901"
     "23456789012345670000000001",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -910,6 +995,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_POOL_RETIREMENT_IN_MULTIS
     "00000000000000002A000000000000000A0402048000073D8000071780000000"
     "80000001000000000000002A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -924,12 +1010,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_STAKE_REGISTRATION_IN_POO
     "00000000000000002A000000000000000A0002058000073C8000071780000000"
     "0000000200000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -943,6 +1031,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_STAKE_REGISTRATION_IN_POO
     "000000002A000000000000000A0002058000073C800007178000000000000002"
     "00000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -957,18 +1046,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_STAKE_DEREGISTRATION_IN_P
     "00000000000000002A000000000000000A0102058000073C8000071780000000"
     "0000000200000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -982,12 +1074,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_STAKE_DEREGISTRATION_IN_P
     "000000002A000000000000000A0102058000073C800007178000000000000002"
     "00000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1002,18 +1096,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_STAKE_DELEGATION_IN_POOL_
     "00000000000000002A000000000000000A0202058000073C8000071780000000"
     "0000000200000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1027,12 +1124,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_STAKE_DELEGATION_IN_POOL_
     "000000002A000000000000000A0202058000073C800007178000000000000002"
     "00000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1047,18 +1146,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_POOL_RETIREMENT_IN_POOL_R
     "00000000000000002A000000000000000A0402048000073D8000071780000000"
     "80000001000000000000002A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "048000073D800007178000000080000001",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1072,12 +1174,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_POOL_RETIREMENT_IN_POOL_R
     "000000002A000000000000000A0402048000073D800007178000000080000001"
     "000000000000002A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "048000073D800007178000000080000001",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1093,12 +1197,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_STAKING_SCRIPT_HASH_IN_OR
     "00000000000000002A000000000000000A000129FB5FD4AA8CADD6705ACC8263"
     "CEE0FC62EDCA5AC38DB593FEC2F9FD",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1113,12 +1219,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_STAKING_NON_STAKING_PATH_
     "00000000000000002A000000000000000A0002058000073C8000071780000000"
     "0000000000000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1133,6 +1241,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_STAKING_PATH_IN_MULTISIG_
     "00000000000000002A000000000000000A0002058000073C8000071780000000"
     "0000000200000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1148,18 +1257,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_POOL_RETIRE_NON_POOL_COLD
     "00000000000000002A000000000000000A0402048000073D8000071780000000"
     "00000000000000000000002A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "048000073D800007178000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1174,24 +1286,28 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_DENY_TX_WITH_INVALI
     "073C80000717800000000000000200000001000000000000823502058000073C"
     "80000717800000000000000200000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000001",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1206,12 +1322,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_SCRIPT_HASH_AS_STAK
     "00000000000000002A000000000000000A00000000000003E80129FB5FD4AA8C"
     "ADD6705ACC8263CEE0FC62EDCA5AC38DB593FEC2F9FD",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1226,12 +1344,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_NON_STAKING_PATH_AS
     "00000000000000002A000000000000000A00000000000003E802058000073C80"
     "000717800000000000000000000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1246,6 +1366,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_STAKING_PATH_AS_STA
     "00000000000000002A000000000000000A00000000000003E802058000073C80"
     "000717800000000000000200000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1260,12 +1381,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_NON_STAKING_PATH_AS
     "00000000000000002A000000000000000A00000000000003E802058000073C80"
     "000717800000000000000000000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1280,12 +1403,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_ACCOUNT_PATH_
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "038000073C8000071780000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1299,12 +1424,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "038000073E8000071780000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1318,12 +1445,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_SPENDING_PATH
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073E80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1337,12 +1466,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_STAKING_PATH_
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073E80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1356,12 +1487,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MINT_PATH_IN_ORDINARY_
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "038000073F8000071780000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1375,12 +1508,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_ACCOUNT_PATH_
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "038000073C8000071780000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1394,12 +1529,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "038000073E8000071780000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1413,12 +1550,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_SPENDING_PATH
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1432,12 +1571,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_STAKING_PATH_
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1451,12 +1592,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MINT_PATH_IN_MULTISIG_
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "038000073F8000071780000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1470,12 +1613,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_POOL_COLD_PATH_IN_MULT
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "048000073D800007178000000080000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1489,12 +1634,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_ACCOUNT_PATH_
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "038000073C8000071780000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1508,12 +1655,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_
     "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "038000073E8000071780000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1531,18 +1680,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_
     "000000000000000000000000000000000100F123456789012345678901234567"
     "890123456789012345678901234567000100000102058000073C",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
         .hex_payload =
     "80000717800000000000000200000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "038000073E8000071780000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1560,18 +1712,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_SPENDING_PATH
     "000000000000000000000000000000000100F123456789012345678901234567"
     "890123456789012345678901234567000100000102058000073C",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
         .hex_payload =
     "80000717800000000000000200000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1589,18 +1744,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_SPENDING_PATH
     "000000000000000000000000000000000100F123456789012345678901234567"
     "890123456789012345678901234567000100000102058000073C",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
         .hex_payload =
     "80000717800000000000000200000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073E80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1618,18 +1776,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_STAKING_PATH_
     "000000000000000000000000000000000100F123456789012345678901234567"
     "890123456789012345678901234567000100000102058000073C",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
         .hex_payload =
     "80000717800000000000000200000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073E80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1647,18 +1808,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MINT_PATH_IN_POOL_REGI
     "000000000000000000000000000000000100F123456789012345678901234567"
     "890123456789012345678901234567000100000102058000073C",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
         .hex_payload =
     "80000717800000000000000200000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "038000073F8000071780000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1676,18 +1840,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_POOL_COLD_PATH_IN_POOL
     "000000000000000000000000000000000100F123456789012345678901234567"
     "890123456789012345678901234567000100000102058000073C",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
         .hex_payload =
     "80000717800000000000000200000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "048000073D800007178000000080000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1705,12 +1872,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_ACCOUNT_PATH_
     "0000000000000000000100F12345678901234567890123456789012345678901"
     "23456789012345670000000001",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "038000073E8000071780000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1728,12 +1897,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_SPENDING_PATH
     "0000000000000000000100F12345678901234567890123456789012345678901"
     "23456789012345670000000001",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073E80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1751,12 +1922,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_ORDINARY_STAKING_PATH_
     "0000000000000000000100F12345678901234567890123456789012345678901"
     "23456789012345670000000001",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1774,12 +1947,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MULTISIG_STAKING_PATH_
     "0000000000000000000100F12345678901234567890123456789012345678901"
     "23456789012345670000000001",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073E80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1797,12 +1972,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_MINT_PATH_IN_POOL_REGI
     "0000000000000000000100F12345678901234567890123456789012345678901"
     "23456789012345670000000001",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "038000073F8000071780000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1819,12 +1996,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_INPUT_AND_CHANG
     "01000000000000000022058000073C8000071780000000000000020000000000"
     "000000006CA7930001010000000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1839,18 +2018,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_INPUT_AND_STAKE
     "8DFF00000000000000010001010000000000000000002A000000000000000A01"
     "02058000073C80000717800000010000000200000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000010000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1865,18 +2047,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_INPUT_AND_WITHD
     "8DFF00000000000000010001010000000000000000002A000000000000000A00"
     "000000000003E802058000073C80000717800000010000000200000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000010000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1893,18 +2078,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_CHANGE_OUTPUT_A
     "000000006CA7930001010000000000000000002A000000000000000A01020580"
     "00073C80000717800000010000000200000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000010000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1921,18 +2109,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_CHANGE_OUTPUT_A
     "000000006CA7930001010000000000000000002A000000000000000A00000000"
     "000003E802058000073C80000717800000010000000200000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000010000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1948,24 +2139,28 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_STAKE_DEREGISTR
     "02058000073C8000071780000000000000020000000000000000000003E80205"
     "8000073C80000717800000010000000200000000",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000010000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -1981,18 +2176,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_BYRON_TO_SHELLE
     "179E28DD419E00000000000000010001010000000000000000002A0000000000"
     "00000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000002C80000717800000010000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000010000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2006,12 +2204,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_BYRON_TO_SHELLE
     "8000073C8000071780000001000000020000000000000000006CA79300010100"
     "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000002C80000717800000010000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2029,12 +2229,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_O
     "572310E265EDB31330448B36B7179E00000000006CA793000201000000FFD4D0"
     "09F554BA4FD8ED1F1D703244819861A9D34FD4753BCF3FF32F043CE188",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2052,6 +2254,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_O
     "B8240C5470B47C159597B6F71D78C7FC99D1D8D911CB19B8F50211938EF361A2"
     "2D30CD8F6354EC50E99A7D3CF3E06797ED4AF3D358E01B2A957C",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -2065,6 +2268,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_O
     "803F3FD64873F11355305D9DB309F4A2A6673CC408A06B8827A5EDEF7B0FD874"
     "2627FB8AA102A084B7DB72FCB5C3D1BF437E2A936B738902A9C0",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -2076,12 +2280,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_O
     "7AB0DE943E8A96E26A24C4996F7B07FAD437829FEE5BC3496192608D4C04AC64"
     "2CDEC7BDBB8A948AD1D434",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2098,12 +2304,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_O
     "572310E265EDB31330448B36B7179E00000000006CA79301010200000014DEAD"
     "BEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2121,12 +2329,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_ASSET
     "92FFEE938BE03E9BAE5657982A74E9014EB4960108C9E23A5B39000108756424"
     "7542686911000000000000002F000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2143,12 +2353,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_ASSET
     "92FFEE938BE03E9BAE5657982A74E9014EB4960108C9E23A5B39000108756424"
     "7542686911000000000000002F000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2164,12 +2376,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_TOKEN
     "014EB4960108C9E23A5B390002087564247542686911000000000000002F0874"
     "652474436F696E0000000000783862000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2185,12 +2399,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_TOKEN
     "014EB4960108C9E23A5B390002087564247542686911000000000000002F0675"
     "64247542680000000000783862000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2206,12 +2422,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WHERE_TOKEN
     "014EB4960108C9E23A5B390002087564247542686911000000000000002F0875"
     "642475426869110000000000783862000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2227,12 +2445,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_MINT_F
     "7EAE28AF2208BE856F7A119668AE52A49B73725E326DC16579DCC37300010000"
     "00000000000001",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2246,12 +2466,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_MINT_F
     "68AE52A49B73725E326DC16579DCC37400021C1E349C9BDEA19FD6C147626A52"
     "60BC44B71635F398B67C59881DF209FFFFFFFFFFFFFFFF000000000000000001",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2270,6 +2492,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DIFFERENT_INDEX[] =
     "00000BA43B7400000000001443FD000000000000000003000000000000006400"
     "E1794D9B3408C9FB67B950A48A0690F070F117E9978F7FC1D120",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -2282,18 +2505,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DIFFERENT_INDEX[] =
     "616D706C6555726C2E6A736F6ECDB714FD722C24AEB10C93DBB0FF03BD478344"
     "1CD5BA2A8B6F373390520535BB",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000001",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2311,6 +2537,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DIFFERENT_PREFIX[] 
     "00000BA43B7400000000001443FD000000000000000003000000000000006400"
     "E1794D9B3408C9FB67B950A48A0690F070F117E9978F7FC1D120",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -2323,18 +2550,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DIFFERENT_PREFIX[] 
     "616D706C6555726C2E6A736F6ECDB714FD722C24AEB10C93DBB0FF03BD478344"
     "1CD5BA2A8B6F373390520535BB",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073E80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2352,6 +2582,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_NO_PATH_GIVEN[] = {
     "00000BA43B7400000000001443FD000000000000000003000000000000006400"
     "E1794D9B3408C9FB67B950A48A0690F070F117E9978F7FC1D120",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -2363,18 +2594,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_NO_PATH_GIVEN[] = {
     "6C6162732E636F6D2F73616D706C6555726C2E6A736F6ECDB714FD722C24AEB1"
     "0C93DBB0FF03BD4783441CD5BA2A8B6F373390520535BB",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073E80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2392,6 +2626,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_INVALID_NUMERATOR_D
     "00000BA43B7400000000001443FD000000000000000003000000000000000100"
     "E1794D9B3408C9FB67B950A48A0690F070F117E9978F7FC1D120",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -2401,18 +2636,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_INVALID_NUMERATOR_D
     "2E636F6D2F73616D706C6555726C2E6A736F6ECDB714FD722C24AEB10C93DBB0"
     "FF03BD4783441CD5BA2A8B6F373390520535BB",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073E80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2431,6 +2669,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_ID_PATH_SENT_IN_FOR_POOL_
     "000000001443FD000000000000000003000000000000006400E1794D9B3408C9"
     "FB67B950A48A0690F070F117E9978F7FC1D120FC58AD00010001",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -2440,18 +2679,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_ID_PATH_SENT_IN_FOR_POOL_
     "6D706C6555726C2E6A736F6ECDB714FD722C24AEB10C93DBB0FF03BD4783441C"
     "D5BA2A8B6F373390520535BB",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2469,6 +2711,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_ID_HASH_SENT_IN_FOR_POOL_
     "00000BA43B7400000000001443FD000000000000000003000000000000006400"
     "E1794D9B3408C9FB67B950A48A0690F070F117E9978F7FC1D120",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -2478,12 +2721,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_ID_HASH_SENT_IN_FOR_POOL_
     "2E636F6D2F73616D706C6555726C2E6A736F6ECDB714FD722C24AEB10C93DBB0"
     "FF03BD4783441CD5BA2A8B6F373390520535BB",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2502,6 +2747,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_NON_STAKING_PATH_FO
     "00000BA43B7400000000001443FD000000000000000003000000000000006400"
     "E1794D9B3408C9FB67B950A48A0690F070F117E9978F7FC1D120",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -2511,12 +2757,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_NON_STAKING_PATH_FO
     "2E636F6D2F73616D706C6555726C2E6A736F6ECDB714FD722C24AEB10C93DBB0"
     "FF03BD4783441CD5BA2A8B6F373390520535BB",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2532,16 +2780,89 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_OUTPUT_LEGACY_OUTPUT_WITH_INLI
     "8DFF00000000000004D20002010000010004DEADBEEF00000000000298100000"
     "00000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000000000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
 
+
+// Source: tests/standalone/input_files/signTx.py > testsCVoteRegistrationDenies > CIP15_registration_with_delegations_rejected
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CVOTE_CIP15_REGISTRATION_WITH_DELEGATIONS_REJECTED[] = {
+    {
+        .hex_payload =
+    "01000102058000073C8000071780000000000000020000000002000105800007"
+    "3C8000071780000000000000000000000022058000073C800007178000000000"
+    "000002000000000000000000163170004B19E27FFC006ACE16592311C4D2F0CA"
+    "FC255EAA47A6178FF540C0A46D07027C",
+        .p1 = P1_TX_AUX_DATA,
+        .p2 = P2_AUX_DATA_INIT,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "004B19E27FFC006ACE16592311C4D2F0CAFC255EAA47A6178FF540C0A46D0702"
+    "7C00000001",
+        .p1 = P1_TX_AUX_DATA,
+        .p2 = P2_AUX_DATA_DELEGATION,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000003B020001058000073C800007178000000000000000000000002205"
+    "8000073C8000071780000000000000020000000000000000006CA79300010100"
+    "00000000000000002A000000000000000A",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+// Source: tests/standalone/input_files/signTx.py > testsCVoteRegistrationDenies > CIP36_registration_with_staking_key_as_raw_pubkey
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CVOTE_CIP36_REGISTRATION_WITH_STAKING_KEY_AS_RAW_PUBKEY[] = {
+    {
+        .hex_payload =
+    "020000004B19E27FFC006ACE16592311C4D2F0CAFC255EAA47A6178FF540C0A4"
+    "6D07027C020001058000073C8000071780000000000000000000000022058000"
+    "073C800007178000000000000002000000000000000000163170000000000000"
+    "0000004B19E27FFC006ACE16592311C4D2F0CAFC255EAA47A6178FF540C0A46D"
+    "07027C",
+        .p1 = P1_TX_AUX_DATA,
+        .p2 = P2_AUX_DATA_INIT,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000003B020001058000073C800007178000000000000000000000002205"
+    "8000073C8000071780000000000000020000000000000000006CA79300010100"
+    "00000000000000002A000000000000000A",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
 
 
 // Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool_registration_with_multiple_path_owners
@@ -2557,6 +2878,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_INVALID_POOL_REGISTRATION
     "00000BA43B7400000000001443FD000000000000000003000000000000006400"
     "E1794D9B3408C9FB67B950A48A0690F070F117E9978F7FC1D120",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -2567,18 +2889,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_INVALID_POOL_REGISTRATION
     "6555726C2E6A736F6ECDB714FD722C24AEB10C93DBB0FF03BD4783441CD5BA2A"
     "8B6F373390520535BB",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000001",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2596,6 +2921,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_INVALID_POOL_REGISTRATION
     "00000BA43B7400000000001443FD000000000000000003000000000000006400"
     "E1794D9B3408C9FB67B950A48A0690F070F117E9978F7FC1D120",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -2604,6 +2930,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_INVALID_POOL_REGISTRATION
     "76616375756D6C6162732E636F6D2F73616D706C6555726C2E6A736F6ECDB714"
     "FD722C24AEB10C93DBB0FF03BD4783441CD5BA2A8B6F373390520535BB",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2622,6 +2949,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_UR
     "00000BA43B7400000000001443FD000000000000000003000000000000006400"
     "E1794D9B3408C9FB67B950A48A0690F070F117E9978F7FC1D120",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -2634,12 +2962,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_UR
     "6161616161616161616161CDB714FD722C24AEB10C93DBB0FF03BD4783441CD5"
     "BA2A8B6F373390520535BB",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2657,6 +2987,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_IN
     "00000BA43B7400000000001443FD000000000000000003000000000000006400"
     "E1794D9B3408C9FB67B950A48A0690F070F117E9978F7FC1D120",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -2665,12 +2996,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_IN
     "0BB80236E44B9A0100010A6BF124F217D0E5A0A8ADB1DBD8540E1334280D49AB"
     "861127868339F43B3948",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2688,6 +3021,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_IN
     "00000BA43B7400000000001443FD000000000000000003000000000000006400"
     "E1794D9B3408C9FB67B950A48A0690F070F117E9978F7FC1D120",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -2697,12 +3031,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_IN
     "2E636F6D2F73616D706C6555726C2E6A736F6E6BF124F217D0E5A0A8ADB1DBD8"
     "540E1334280D49AB861127868339F43B3948",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2720,6 +3056,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_MI
     "00000BA43B7400000000001443FD000000000000000003000000000000006400"
     "E1794D9B3408C9FB67B950A48A0690F070F117E9978F7FC1D120",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -2728,12 +3065,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_METADATA_POOL_METADATA_MI
     "0BB80236E44B9A01002968747470733A2F2F7777772E76616375756D6C616273"
     "2E636F6D2F73616D706C6555726C2E6A736F6E",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2752,6 +3091,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_RELAY_SINGLEHOSTHOSTNAME_MISSI
     "00000BA43B7400000000001443FD000000000000000003000000000000006400"
     "E1794D9B3408C9FB67B950A48A0690F070F117E9978F7FC1D120",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -2761,12 +3101,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_RELAY_SINGLEHOSTHOSTNAME_MISSI
     "73616D706C6555726C2E6A736F6ECDB714FD722C24AEB10C93DBB0FF03BD4783"
     "441CD5BA2A8B6F373390520535BB",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -2784,6 +3126,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_RELAY_MULTIHOST_MISSING_DNS[] 
     "00000BA43B7400000000001443FD000000000000000003000000000000006400"
     "E1794D9B3408C9FB67B950A48A0690F070F117E9978F7FC1D120",
         .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
         .more = true,
     },
     {
@@ -2793,12 +3136,14 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_RELAY_MULTIHOST_MISSING_DNS[] 
     "706C6555726C2E6A736F6ECDB714FD722C24AEB10C93DBB0FF03BD4783441CD5"
     "BA2A8B6F373390520535BB",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
         .more = false,
     },
     {
         .hex_payload =
     "058000073C80000717800000000000000200000000",
         .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
         .more = false,
     },
 };
@@ -4074,6 +4419,30 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .chunks = SIGN_TX_SEGMENTS_DENY_OUTPUT_LEGACY_OUTPUT_WITH_INLINE_DATUM,
         .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_OUTPUT_LEGACY_OUTPUT_WITH_INLINE_DATUM),
         .expected_sw = SWO_TX_PARSING_FAIL_OUTPUTS,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > testsCVoteRegistrationDenies > CIP15_registration_with_delegations_rejected
+    {
+        .name = "[DENY_CVOTE] CIP15_registration_with_delegations_rejected",
+        .init_hex =
+        "0000000000000000012D964A0903000100010200000000020101000001000000"
+        "0001010100000000010100010071",
+        .chunks = SIGN_TX_SEGMENTS_DENY_CVOTE_CIP15_REGISTRATION_WITH_DELEGATIONS_REJECTED,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CVOTE_CIP15_REGISTRATION_WITH_DELEGATIONS_REJECTED),
+        .expected_sw = SWO_CVOTE_AUX_DATA_PARSING_FAIL,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > testsCVoteRegistrationDenies > CIP36_registration_with_staking_key_as_raw_pubkey
+    {
+        .name = "[DENY_CVOTE] CIP36_registration_with_staking_key_as_raw_pubkey",
+        .init_hex =
+        "0000000000000000012D964A0903000100010200000000020101000001000000"
+        "0001010100000000010100010071",
+        .chunks = SIGN_TX_SEGMENTS_DENY_CVOTE_CIP36_REGISTRATION_WITH_STAKING_KEY_AS_RAW_PUBKEY,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CVOTE_CIP36_REGISTRATION_WITH_STAKING_KEY_AS_RAW_PUBKEY),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },

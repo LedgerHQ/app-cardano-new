@@ -108,6 +108,11 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
     }
 
     // 2. Staking key
+    if (aux_data->staking_credential.type != CVOTE_CREDENTIAL_KEY_PATH) {
+        TRACE("CVote staking key must be KEY_PATH, got type %u", aux_data->staking_credential.type);
+        return false;
+    }
+
     security_policy_t staking_key_policy = policyForCVoteRegistrationStakingKey(
         &aux_data->staking_credential.keyPath,
         &tx_aux_data_ctx()->cvote_warning_bits);

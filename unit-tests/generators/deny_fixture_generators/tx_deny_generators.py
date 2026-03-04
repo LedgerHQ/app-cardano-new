@@ -57,7 +57,13 @@ GENERATED_DENY_HEADER = GENERATED_SIGN_TX_DIR / "test_sign_tx_fixtures_deny.h"
 
 def _build_deny_fixtures() -> str:
     _add_tests_to_sys_path()
-    from application_client.command_builder import CommandBuilder, P1Type, gather_witness_paths  # type: ignore
+    from application_client.command_builder import (  # type: ignore
+        CommandBuilder,
+        P1Type,
+        P2Type,
+        gather_witness_paths,
+    )
+    from standalone.input_files.signTx import TxAuxiliaryDataCIP36, TxAuxiliaryDataType  # type: ignore
     from application_client.status_words import StatusWord  # type: ignore
     from standalone.input_files.signTx import (  # type: ignore
         transactionInitDenyTestCases,
@@ -129,6 +135,7 @@ def _build_deny_fixtures() -> str:
     @dataclass(frozen=True)
     class ChunkInfo:
         p1: int
+        p2: int
         more: bool
         hex_payload: str
 
@@ -163,16 +170,43 @@ def _build_deny_fixtures() -> str:
         chunks = [
             ChunkInfo(
                 p1=chunk[2],
+                p2=chunk[3],
                 more=chunk[2] != P1Type.P1_TX_CONFIRM,
                 hex_payload=chunk[5:].hex().upper(),
             )
             for chunk in builder.serialize_transaction_chunks(tx)
         ]
+        if tx.auxiliaryData is not None and tx.auxiliaryData.type == TxAuxiliaryDataType.CIP36_REGISTRATION:
+            aux_params = tx.auxiliaryData.params
+            if not isinstance(aux_params, TxAuxiliaryDataCIP36):
+                raise ValueError("Expected TxAuxiliaryDataCIP36 params for CIP36 registration")
+            aux_chunks: list[ChunkInfo] = []
+            aux_init_apdu = builder.sign_tx_aux_data_init(tx, aux_params)
+            aux_chunks.append(
+                ChunkInfo(
+                    p1=aux_init_apdu[2],
+                    p2=aux_init_apdu[3],
+                    more=False,
+                    hex_payload=aux_init_apdu[5:].hex().upper(),
+                )
+            )
+            for delegation in aux_params.delegations:
+                delegation_apdu = builder.sign_tx_aux_data_delegation(delegation)
+                aux_chunks.append(
+                    ChunkInfo(
+                        p1=delegation_apdu[2],
+                        p2=delegation_apdu[3],
+                        more=False,
+                        hex_payload=delegation_apdu[5:].hex().upper(),
+                    )
+                )
+            chunks = aux_chunks + chunks
         for path in witness_paths:
             witness_apdu = builder.sign_tx_witness(path)
             chunks.append(
                 ChunkInfo(
                     p1=P1Type.P1_TX_SIGN_WITNESS,
+                    p2=P2Type.P2_UNUSED,
                     more=False,
                     hex_payload=witness_apdu[5:].hex().upper(),
                 )
@@ -206,6 +240,11 @@ def _build_deny_fixtures() -> str:
         0x12: "P1_TX_CONFIRM",
         0x13: "P1_TX_AUX_DATA",
         0x1F: "P1_TX_SIGN_WITNESS",
+    }
+    P2_CONSTANTS = {
+        int(P2Type.P2_UNUSED): "P2_UNUSED",
+        int(P2Type.P2_AUX_DATA_INIT): "P2_AUX_DATA_INIT",
+        int(P2Type.P2_AUX_DATA_DELEGATION): "P2_AUX_DATA_DELEGATION",
     }
 
     def generate_header(fixtures: dict[str, list[FixtureInfo]]) -> str:
@@ -245,7 +284,9 @@ def _build_deny_fixtures() -> str:
                     lines.append("        .hex_payload =")
                     lines.extend(to_hex_lines(chunk.hex_payload, append_comma=True))
                     p1_constant = P1_CONSTANTS.get(chunk.p1, f"0x{chunk.p1:02X}")
+                    p2_constant = P2_CONSTANTS.get(chunk.p2, f"0x{chunk.p2:02X}")
                     lines.append(f"        .p1 = {p1_constant},")
+                    lines.append(f"        .p2 = {p2_constant},")
                     lines.append(f"        .more = {'true' if chunk.more else 'false'},")
                     lines.append("    },")
                 lines.append("};")
