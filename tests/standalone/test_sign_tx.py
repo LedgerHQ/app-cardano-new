@@ -154,6 +154,27 @@ def _run_sign_tx_test(device: Device,
             return False
         return purpose in (44, 1852)
 
+    def _is_unusual_witness_path_for_navigation(witness_path: str) -> bool:
+        # Keep this aligned with Ledger-side "reasonable path" behavior for ordinary witnesses.
+        # We need this to decide whether witness confirmation UI is expected.
+        path_elements = witness_path.replace("'", "").split("/")
+        if len(path_elements) < 5:
+            return False
+        try:
+            purpose = int(path_elements[1])
+            account = int(path_elements[3])
+            chain = int(path_elements[4]) if len(path_elements) > 5 else 0
+        except ValueError:
+            return False
+
+        if purpose > 1852:
+            return True
+        if account > 100:
+            return True
+        if chain > 2:
+            return True
+        return False
+
     # Step 4: Get witness signatures
     # After user approval, request signatures for all witness paths
     for path_idx, path in enumerate(witness_paths):
@@ -165,9 +186,8 @@ def _run_sign_tx_test(device: Device,
         path_elements = path.replace("'", "").split("/")
         if len(path_elements) > 1:
             try:
-                purpose = int(path_elements[1])
-                # Unusual purpose (not 1852 for Shelley) or unusual change address
-                if purpose > 1852 or (len(path_elements) > 4 and int(path_elements[4]) > 2):
+                # Unusual purpose/account/change must force witness confirmation navigation.
+                if _is_unusual_witness_path_for_navigation(path):
                     moves += [NavInsID.BOTH_CLICK] * 2
                 elif isinstance(testCase.tx.outputs[0].destination.params, ThirdPartyAddressParams):
                     # Third-party addresses don't need extra moves

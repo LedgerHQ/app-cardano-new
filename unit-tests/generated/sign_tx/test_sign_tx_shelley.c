@@ -229,6 +229,26 @@ static void test_sign_tx_with_path_based_withdrawal_reject_tx_expert_on(void **s
     run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL, true);
 }
 
+static void test_sign_tx_with_unusual_path_based_withdrawal_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_UNUSUAL_PATH_BASED_WITHDRAWAL, false);
+}
+
+static void test_sign_tx_with_unusual_path_based_withdrawal_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_UNUSUAL_PATH_BASED_WITHDRAWAL, false);
+}
+
+static void test_sign_tx_with_unusual_path_based_withdrawal_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_UNUSUAL_PATH_BASED_WITHDRAWAL, true);
+}
+
+static void test_sign_tx_with_unusual_path_based_withdrawal_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_UNUSUAL_PATH_BASED_WITHDRAWAL, true);
+}
+
 static void test_sign_tx_with_auxiliary_data_hash_expert_off(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_SHELLEY_SIGN_TX_WITH_AUXILIARY_DATA_HASH, false);
@@ -291,6 +311,10 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_path_based_withdrawal_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_path_based_withdrawal_expert_on),
         cmocka_unit_test(test_sign_tx_with_path_based_withdrawal_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_with_unusual_path_based_withdrawal_expert_off),
+        cmocka_unit_test(test_sign_tx_with_unusual_path_based_withdrawal_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_with_unusual_path_based_withdrawal_expert_on),
+        cmocka_unit_test(test_sign_tx_with_unusual_path_based_withdrawal_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_auxiliary_data_hash_expert_off),
         cmocka_unit_test(test_sign_tx_with_auxiliary_data_hash_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_auxiliary_data_hash_expert_on),

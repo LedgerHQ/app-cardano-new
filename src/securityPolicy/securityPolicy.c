@@ -1616,9 +1616,8 @@ security_policy_t policyForSignTxWithdrawal(sign_tx_signingmode_t txSigningMode,
             switch (txSigningMode) {
                 case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
                 case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
-                    if (is_expert_mode()) {
-                        mark_unusual_key_derivation(w, &stakeCredential->keyPath);
-                    }
+                    mark_unusual_key_derivation(w, &stakeCredential->keyPath);
+                    SHOW_UNLESS(bip44_isPathReasonable(&stakeCredential->keyPath));
                     SHOW_IF(is_expert_mode());
                     HIDE();
                     break;

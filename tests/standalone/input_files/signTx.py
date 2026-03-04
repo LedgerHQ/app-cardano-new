@@ -1850,6 +1850,25 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a05a1581de11d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c186f",
     ),
     SignTxTestCase(
+        name="Sign_tx_with_unusual_path_based_withdrawal",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoNonReasonable"]],
+            outputs=[outputs["externalByronMainnet"]],
+            withdrawals=[
+                Withdrawal(
+                    CredentialParams(
+                        CredentialParamsType.KEY_PATH, "m/1852'/1815'/456'/2/0"
+                    ),
+                    111,
+                )
+            ],
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a05a1581de1e260546c20562e598fb761f419dad27edcd49f4ee4f0540b8e40d4d5186f",
+        expected_warnings=[WarningBit.WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH],
+    ),
+    SignTxTestCase(
         name="Sign_tx_with_auxiliary_data_hash",
         tx=Transaction(
             network=Mainnet,
@@ -7761,4 +7780,3 @@ invalidRelayTestCases: List[SignTxTestCase] = [
         deny_before_review=True,
     ),
 ]
-
