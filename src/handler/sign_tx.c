@@ -181,9 +181,6 @@ static bool read_aux_data_params(buffer_t *cdata, tx_params_t *tx_params) {
  */
 static void handle_tx_init_apdu(buffer_t *cdata) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata");
-    // Zero the entire transaction context atomically before tx init.
-    // No stage accessor is valid yet (tx_state == TX_STATE_NONE at this point).
-    explicit_bzero(&G_context.tx_info, sizeof(G_context.tx_info));
     tx_params_t *tx_params = &G_context.tx_info.tx_params;
 
     if (!read_tx_options(cdata, tx_params)) {
@@ -487,7 +484,9 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             }
 #endif
             G_context.req_type = REQUEST_SIGN_TRANSACTION;
-            G_context.state.tx_state = TX_STATE_NONE;
+            // Keep top-level handler structure consistent with other handlers:
+            // zero request context immediately after setting req_type.
+            explicit_bzero(&G_context.tx_info, sizeof(G_context.tx_info));
             handle_tx_init_apdu(cdata);
             return;
 

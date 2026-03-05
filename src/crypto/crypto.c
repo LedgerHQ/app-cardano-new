@@ -84,14 +84,15 @@ void crypto_eddsa_sign(const uint32_t* path,
                        const uint8_t* hash,
                        size_t hash_len,
                        uint8_t* sig,
-                       size_t sig_len) {
+                       size_t expected_sig_len) {
 
     LEDGER_ASSERT(path != NULL, "NULL path");
     LEDGER_ASSERT(path_len > 0, "path is empty");
     LEDGER_ASSERT(hash != NULL, "NULL hash");
     LEDGER_ASSERT(hash_len > 0, "hash_len is zero");
     LEDGER_ASSERT(sig != NULL, "NULL sig");
-    LEDGER_ASSERT(sig_len == ED25519_SIGNATURE_LENGTH, "expected_sig_len must equal ED25519_SIGNATURE_LENGTH");
+    LEDGER_ASSERT(expected_sig_len == ED25519_SIGNATURE_LENGTH,
+                  "expected_sig_len must equal ED25519_SIGNATURE_LENGTH");
 
     cx_ecfp_256_extended_private_key_t privkey = {0};
     cx_err_t error = CX_OK;
@@ -101,7 +102,7 @@ void crypto_eddsa_sign(const uint32_t* path,
         size_t size;
         CX_CHECK(cx_ecdomain_parameters_length(CX_CURVE_Ed25519, &size));
         size_t computed_sig_len = size * 2;
-        LEDGER_ASSERT(computed_sig_len == sig_len, "unexpected signature length");
+        LEDGER_ASSERT(computed_sig_len == expected_sig_len, "unexpected signature length");
     }
 
     // Derive private key according to BIP32 path
@@ -112,7 +113,7 @@ void crypto_eddsa_sign(const uint32_t* path,
                                     hash,
                                     hash_len,
                                     sig,
-                                    sig_len));
+                                    expected_sig_len));
 
 end:
     explicit_bzero(&privkey, sizeof(privkey));
@@ -120,7 +121,7 @@ end:
     // CX_CHECK above would set the value of `error` in case of error
     if (error != CX_OK) {
         // wipe possibly modified sig buffer, unsafe to let anyone read it
-        explicit_bzero(sig, sig_len);
+        explicit_bzero(sig, expected_sig_len);
         LEDGER_ASSERT(!error, "crypto_eddsa_sign failed with error 0x%X", error);
     }
 }
