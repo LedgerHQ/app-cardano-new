@@ -40,6 +40,7 @@ static void render_credential(const ext_credential_t *credential,
                            &credential->keyPath);
             break;
         case EXT_CREDENTIAL_KEY_HASH:
+            LEDGER_ASSERT(credential->keyHash != NULL, "NULL credential->keyHash");
             UI_ADD_FORMAT3(key_hash_label,
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
@@ -48,6 +49,7 @@ static void render_credential(const ext_credential_t *credential,
                            ADDRESS_KEY_HASH_LENGTH);
             break;
         case EXT_CREDENTIAL_SCRIPT_HASH:
+            LEDGER_ASSERT(credential->scriptHash != NULL, "NULL credential->scriptHash");
             UI_ADD_FORMAT3(script_hash_label,
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
@@ -433,6 +435,7 @@ static void plan_or_render_certificate_pool_retirement(
                 keyPathToKeyHash(&pool_credential->keyPath, pool_key_hash, sizeof(pool_key_hash));
                 break;
             case EXT_CREDENTIAL_KEY_HASH:
+                LEDGER_ASSERT(pool_credential->keyHash != NULL, "NULL pool credential key hash");
                 memcpy(pool_key_hash, pool_credential->keyHash, POOL_KEY_HASH_LENGTH);
                 break;
             default:

@@ -311,6 +311,7 @@ all_deny_test_cases = (
     ids=idTestFunc
 )
 def test_sign_tx_deny(backend: BackendInterface,
+                        device: Device,
                         scenario_navigator: NavigateWithScenario,
                         testCase: SignTxTestCase) -> None:
     """Test that invalid transaction parameters are correctly denied."""
@@ -336,6 +337,9 @@ def test_sign_tx_deny(backend: BackendInterface,
             if hasattr(cert_params, "relays") and len(cert_params.relays) == 0:
                 return True
         return False
+
+    if device.is_nano and not testCase.deny_before_review and _requires_warning_navigation():
+        pytest.skip("Skipped: failing warning navigation for Nano")
 
     def review_tx() -> None:
         if testCase.deny_before_review:

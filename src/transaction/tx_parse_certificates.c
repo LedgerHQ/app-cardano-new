@@ -378,6 +378,53 @@ static bool _parse_pool_id(buffer_t *buf, pool_id_t *pool_id) {
     return true;
 }
 
+static bool _parse_required_relay_dns_name(buffer_t *buf,
+                                           pool_relay_t *relay,
+                                           const char *missing_dns_message MARK_UNUSED,
+                                           const char *empty_dns_message MARK_UNUSED) {
+    bool dns_included = false;
+    if (!buffer_read_flag_included(buf, &dns_included)) {
+        TRACE("Failed to read dns inclusion flag");
+        return false;
+    }
+    if (!dns_included) {
+        TRACE_MODULE("%s", missing_dns_message);
+        return false;
+    }
+
+    uint8_t dns_length = 0;
+    if (!buffer_read_u8(buf, &dns_length)) {
+        TRACE("Failed to read dns name length");
+        return false;
+    }
+    relay->dnsNameSize = dns_length;
+
+    if (dns_length > 0) {
+        if (dns_length > MAX_DNS_NAME_LENGTH) {
+            TRACE("DNS name too long: %u", (unsigned) dns_length);
+            return false;
+        }
+        if (!buffer_read_bytes_ptr(buf, &relay->dnsName, dns_length)) {
+            TRACE("Failed to read dns name");
+            return false;
+        }
+        ASSERT(relay->dnsName != NULL);
+    } else {
+        relay->dnsName = NULL;
+    }
+
+    if (relay->dnsNameSize == 0) {
+        TRACE_MODULE("%s", empty_dns_message);
+        return false;
+    }
+    if (!str_isUnambiguousAscii(relay->dnsName, relay->dnsNameSize)) {
+        TRACE_MODULE("DNS name must be unambiguous ASCII");
+        return false;
+    }
+    TRACE_MODULE("dns_len=%u", dns_length);
+    return true;
+}
+
 bool parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
     uint8_t relay_type;
     if (!buffer_read_u8(buf, &relay_type)) {
@@ -389,6 +436,8 @@ bool parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
     switch (relay_type) {
         case RELAY_SINGLE_HOST_IP: {
             relay->format = RELAY_SINGLE_HOST_IP;
+            relay->dnsName = NULL;
+            relay->dnsNameSize = 0;
 
             bool port_included = false;
             if (!buffer_read_flag_included(buf, &port_included)) {
@@ -446,6 +495,10 @@ bool parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
         }
         case RELAY_SINGLE_HOST_NAME: {
             relay->format = RELAY_SINGLE_HOST_NAME;
+            relay->ipv4.isNull = true;
+            relay->ipv4.ip = NULL;
+            relay->ipv6.isNull = true;
+            relay->ipv6.ip = NULL;
 
             bool port_included = false;
             if (!buffer_read_flag_included(buf, &port_included)) {
@@ -466,90 +519,31 @@ bool parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
                 return false;
             }
 
-            bool dns_included = false;
-            if (!buffer_read_flag_included(buf, &dns_included)) {
-                TRACE("Failed to read dns inclusion flag");
+            if (!_parse_required_relay_dns_name(
+                    buf,
+                    relay,
+                    "Relay single host name must have a DNS name",
+                    "Relay single host name must have a non-empty DNS name")) {
                 return false;
             }
-            if (!dns_included) {
-                TRACE_MODULE("Relay single host name must have a DNS name");
-                return false;
-            }
-            uint8_t dns_len;
-            if (!buffer_read_u8(buf, &dns_len)) {
-                TRACE("Failed to read dns name length");
-                return false;
-            }
-            relay->dnsNameSize = dns_len;
-
-            if (dns_len > 0) {
-                if (dns_len > MAX_DNS_NAME_LENGTH) {
-                    TRACE("DNS name too long: %u", (unsigned) dns_len);
-                    return false;
-                }
-                if (!buffer_read_bytes_ptr(buf, &relay->dnsName, dns_len)) {
-                    TRACE("Failed to read dns name");
-                    return false;
-                }
-                ASSERT(relay->dnsName != NULL);
-            } else {
-                relay->dnsName = NULL;
-            }
-            if (relay->dnsNameSize == 0) {
-                TRACE_MODULE("Relay single host name must have a non-empty DNS name");
-                return false;
-            }
-            if (!str_isUnambiguousAscii(relay->dnsName, relay->dnsNameSize)) {
-                TRACE_MODULE("DNS name must be unambiguous ASCII");
-                return false;
-            }
-            TRACE_MODULE("dns_len=%u", dns_len);
             break;
         }
         case RELAY_MULTIPLE_HOST_NAME: {
             relay->format = RELAY_MULTIPLE_HOST_NAME;
             relay->port.isNull = true;
+            relay->port.number = 0;
             relay->ipv4.isNull = true;
+            relay->ipv4.ip = NULL;
             relay->ipv6.isNull = true;
+            relay->ipv6.ip = NULL;
 
-            bool dns_included = false;
-            if (!buffer_read_flag_included(buf, &dns_included)) {
-                TRACE("Failed to read dns inclusion flag");
+            if (!_parse_required_relay_dns_name(
+                    buf,
+                    relay,
+                    "Relay multiple host name must have a DNS name",
+                    "Relay multiple host name must have a non-empty DNS name")) {
                 return false;
             }
-            if (!dns_included) {
-                TRACE_MODULE("Relay multiple host name must have a DNS name");
-                return false;
-            }
-            uint8_t dns_len;
-            if (!buffer_read_u8(buf, &dns_len)) {
-                TRACE("Failed to read dns name length");
-                return false;
-            }
-            relay->dnsNameSize = dns_len;
-
-            if (dns_len > 0) {
-                if (dns_len > MAX_DNS_NAME_LENGTH) {
-                    TRACE("DNS name too long: %u", (unsigned) dns_len);
-                    return false;
-                }
-                if (!buffer_read_bytes_ptr(buf, &relay->dnsName, dns_len)) {
-                    TRACE("Failed to read dns name");
-                    return false;
-                }
-                ASSERT(relay->dnsName != NULL);
-            } else {
-                relay->dnsName = NULL;
-            }
-            if (relay->dnsNameSize == 0) {
-                TRACE_MODULE("Relay multiple host name must have a non-empty DNS name");
-                return false;
-            }
-            if (!str_isUnambiguousAscii(relay->dnsName, relay->dnsNameSize)) {
-                TRACE_MODULE("DNS name must be unambiguous ASCII");
-                return false;
-            }
-            TRACE_MODULE("dns_len=%u", dns_len);
             break;
         }
         default:

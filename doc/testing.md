@@ -22,8 +22,9 @@ This is the main entry point for test documentation in the Cardano Ledger app.
 
 Use these terms consistently across ragger tests, generator scripts, unit-test fixtures, and unit-test runners:
 
-- **Deny**: app-level refusal before user approval UI (NBGL review) is reached.
-  - Example: invalid input, forbidden path/signing mode combination, malformed APDU payload.
+- **Deny**: app-level refusal (non-`9000`) enforced by app policy/validation.
+  - This may happen before review UI, during review flow processing, or later in witness phase after review approval.
+  - Example: invalid input, forbidden path/signing mode combination, malformed APDU payload, witness-path policy failure.
   - Naming: use `deny` in test names, fixture sets, generated fixture labels, and runner names.
 - **Reject**: explicit user decision in UI to refuse an otherwise valid flow.
   - Example: user taps reject on NBGL confirmation, or unit tests simulate that UI action.

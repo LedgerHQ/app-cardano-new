@@ -386,7 +386,7 @@ void tx_ui_plan_or_render_voter(const tx_processing_mode_t *mode,
                 break;
             case EXT_VOTER_DREP_SCRIPT_HASH:
                 LEDGER_ASSERT(parsed_voter->scriptHash != NULL, "NULL drep script hash voter");
-                UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("DRep script hash", "DRep scrpt hash"),
+                UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("DRep script hash", "DRep script"),
                                MAX_BECH32_STRING_LENGTH,
                                format_bech32,
                                "drep_script",

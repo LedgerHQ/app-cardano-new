@@ -149,7 +149,8 @@ void inet_ntop6(const uint8_t* src, char* dst, size_t dstSize) {
     ASSERT(tp < tmp + SIZEOF(tmp));
     *tp++ = '\0';
 
-    ASSERT(strlen(tmp) + 1 <= dstSize);
+    size_t tmp_length = strlen(tmp);
+    ASSERT(tmp_length + 1 <= dstSize);
 
-    strncpy(dst, tmp, dstSize);
+    memcpy(dst, tmp, tmp_length + 1);
 }

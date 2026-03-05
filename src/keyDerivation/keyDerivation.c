@@ -15,6 +15,8 @@
 static void extractRawPublicKey(uint8_t rawPubkey[static ED25519_PUBKEY_UNCOMPRESSED_LENGTH], uint8_t* outBuffer, size_t outSize) {
     // copy public key little endian to big endian
     ASSERT(outSize == PUBLIC_KEY_LENGTH);
+    STATIC_ASSERT(PUBLIC_KEY_LENGTH < ED25519_PUBKEY_UNCOMPRESSED_LENGTH,
+                  "public key length must fit uncompressed key");
 
     uint8_t i;
     for (i = 0; i < PUBLIC_KEY_LENGTH; i++) {

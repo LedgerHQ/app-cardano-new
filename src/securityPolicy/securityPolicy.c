@@ -818,7 +818,6 @@ security_policy_t policyForSignTxOutputDatumHash(security_policy_t outputPolicy,
     switch (outputPolicy) {
         case POLICY_DENY:
             LEDGER_ASSERT(false, "Output policy DENY should not reach datum policy");
-            DENY();
             break;
         case POLICY_SHOW:
             SHOW_IF(is_expert_mode());
@@ -840,7 +839,6 @@ security_policy_t policyForSignTxOutputRefScript(security_policy_t outputPolicy,
     switch (outputPolicy) {
         case POLICY_DENY:
             LEDGER_ASSERT(false, "Output policy DENY should not reach ref script policy");
-            DENY();
             break;
         case POLICY_SHOW:
             SHOW_IF(is_expert_mode());
@@ -1923,6 +1921,7 @@ security_policy_t policyForSignTxVotingProcedure(sign_tx_signingmode_t txSigning
                     break;
 
                 case EXT_VOTER_STAKE_POOL_KEY_PATH:
+                    // Pool cold keys are exempt from single-account constraint.
                     DENY_UNLESS(bip44_isPoolColdKeyPath(&voter->keyPath));
                     break;
 
@@ -2200,6 +2199,7 @@ static inline security_policy_t _swapWitnessPolicy(const sign_tx_signingmode_t t
             DENY();
             break;
     }
+    DENY();  // should not be reached
 }
 
 // For each transaction witness
