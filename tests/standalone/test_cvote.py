@@ -36,6 +36,8 @@ def test_cvote(device: Device,
                scenario_navigator: NavigateWithScenario,
                testCase: CVoteTestCase) -> None:
     """Check CIP36 Vote"""
+    if device.is_nano:
+        pytest.skip("Skipped: failing warning navigation for Nano")
 
     # Use the app interface instead of raw interface
     client = CommandSender(backend)

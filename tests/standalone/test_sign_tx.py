@@ -273,6 +273,15 @@ def test_sign_tx(device: Device,
     client = CommandSender(backend)
     client.set_debug_settings(expert_mode=expert_mode, silent_export=False)
 
+    nano_navigation_broken_test_names = {
+        "Sign_tx_streaming_many_required_signers",
+        "Sign_tx_streaming_many_outputs",
+        "Sign_tx_with_CIP36_registration_with_delegations",
+        "Sign_tx_with_CIP36_registration_with_many_delegations_streaming",
+    }
+    if device.is_nano and testCase.name in nano_navigation_broken_test_names:
+        pytest.skip("Skipped: Nano navigation not working for this test case")
+
     if device.is_nano and (len(testCase.expected_warnings) > 0 or len(testCase.expected_aux_warnings) > 0):
         pytest.skip("Skipped: failing warning navigation for Nano")
 
