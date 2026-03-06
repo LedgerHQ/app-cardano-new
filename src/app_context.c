@@ -20,6 +20,47 @@ typedef struct {
 
 static apdu_response_state_t G_apdu_response_state = {0};
 
+static void free_request_owned_buffers(void) {
+    switch (G_context.req_type) {
+        case REQUEST_SIGN_TRANSACTION:
+            switch (G_context.state.tx_state) {
+                case TX_STATE_AUX_DATA:
+                    APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.aux_data.raw_cvote_init_data);
+                    break;
+                case TX_STATE_CHUNKS:
+                case TX_STATE_RECEIVED:
+                case TX_STATE_HASHED:
+                case TX_STATE_UI_REVIEW:
+                    APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.body.raw_tx);
+                    break;
+                case TX_STATE_NONE:
+                case TX_STATE_APPROVED:
+                    break;
+                default:
+                    LEDGER_ASSERT(false, "Unknown tx state");
+                    break;
+            }
+            break;
+
+        case REQUEST_SIGN_MSG:
+            APP_MEM_FREE_AND_NULL((void **) &G_context.sign_msg_info.msgBuffer);
+            APP_MEM_FREE_AND_NULL((void **) &G_context.sign_msg_info.sigStructureBuffer);
+            break;
+
+        case REQUEST_NONE:
+        case REQUEST_EXPORT_PUBKEY:
+        case REQUEST_SIGN_OPCERT:
+        case REQUEST_DERIVE_ADDRESS:
+        case REQUEST_DERIVE_NATIVE_SCRIPT_HASH:
+        case REQUEST_CVOTE:
+            break;
+
+        default:
+            LEDGER_ASSERT(false, "Unknown request type");
+            break;
+    }
+}
+
 void apdu_response_begin(command_e instruction) {
     // Deferred APDUs are completed in two steps:
     // 1) handler marks "deferred" (response will be sent from UX callback),
@@ -83,6 +124,7 @@ void reset_app_context(void) {
     TRACE("reset_app_context");
 
     ui_all_cleanup();
+    free_request_owned_buffers();
 
     // Reset the SDK allocator to wipe all transient memory
     LEDGER_ASSERT(mem_utils_reset_app_heap(), "Failed to reset memory allocator");

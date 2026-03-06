@@ -542,8 +542,8 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
                 // In swap mode there is no interactive transaction review, so we intentionally
                 // skip TX_STATE_UI_REVIEW and transition directly to TX_STATE_APPROVED.
                 // Consequently, finalize_sign_tx() is not used in this flow.
-                // Null raw_tx while body slot is still valid, before the union is repurposed.
-                tx_body_ctx()->raw_tx = NULL;
+                // Free raw_tx while body slot is still valid, before the union is repurposed.
+                APP_MEM_FREE_AND_NULL((void **) &tx_body_ctx()->raw_tx);
                 G_context.state.tx_state = TX_STATE_APPROVED;
                 tx_witness_ctx()->current_witness = 0;
                 apdu_response_send_data(
@@ -579,9 +579,9 @@ void finalize_sign_tx(void) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_UI_REVIEW, "Bad tx_state");
 
-    // Transition body -> witness slot. Null raw_tx while body slot is still valid,
+    // Transition body -> witness slot. Free raw_tx while body slot is still valid,
     // before the union is repurposed. Then initialize witness sub-state.
-    tx_body_ctx()->raw_tx = NULL;
+    APP_MEM_FREE_AND_NULL((void **) &tx_body_ctx()->raw_tx);
     G_context.state.tx_state = TX_STATE_APPROVED;
     tx_witness_ctx()->current_witness = 0;
     apdu_response_send_data(G_context.tx_info.tx_hash, SIZEOF(G_context.tx_info.tx_hash), SWO_SUCCESS);
