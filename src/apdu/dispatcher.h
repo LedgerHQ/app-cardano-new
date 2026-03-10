@@ -15,9 +15,9 @@
  * command constants aligned with the Python helpers.
  */
 typedef enum {
-    INS_NONE = 0x00,
+    INS_NONE = -1,
     INS_GET_SERIAL = 0x01,
-    INS_GET_VERSION = 0x03,
+    INS_GET_VERSION = 0x00,
     INS_GET_APP_NAME = 0x04,
     INS_GET_PUBLIC_KEY = 0x10,
     INS_DERIVE_ADDRESS = 0x11,
@@ -47,43 +47,35 @@ typedef enum {
 
 /**
  * Parameter 1 (P1) values for APDU commands.
- * Organized hierarchically: 0x1x for transactions, 0x2x for address, 0x3x for opcert, 0x4x for
- * native scripts.
+ * Values are interpreted per-INS; duplicate numeric values across different
+ * commands are allowed.
  *
  * Matches `tests/application_client/command_builder.py::P1Type`.
  */
 typedef enum {
     P1_UNUSED = 0x00,
 
-    // Transaction-related P1 values (0x1x range)
     P1_TX_INIT = 0x10,          // Start of transaction data
     P1_TX_CHUNK = 0x11,         // More transaction data chunks follow
     P1_TX_CONFIRM = 0x12,       // Last chunk of transaction data / confirmation
     P1_TX_AUX_DATA = 0x13,      // CVote auxiliary data APDU
-    P1_TX_SIGN_WITNESS = 0x1F,  // Transaction witness signing (legacy)
+    P1_TX_SIGN_WITNESS = 0x0F,  // Transaction witness signing
 
-    // Address derivation P1 values (0x2x range)
-    P1_ADDRESS_RETURN = 0x20,   // Return address without display
-    P1_ADDRESS_DISPLAY = 0x21,  // Display address on screen before returning
+    P1_ADDRESS_RETURN = 0x01,   // Return address without display
+    P1_ADDRESS_DISPLAY = 0x02,  // Display address on screen before returning
 
-    // Operational certificate P1 values (0x3x range)
-    // (No multi-step parameters needed for opcert)
+    P1_NATIVE_SCRIPT_INIT = 0x00,           // Initialize: start request and UI streaming
+    P1_NATIVE_SCRIPT_START_COMPLEX = 0x01,  // Start a complex script (ALL/ANY/N-of-K)
+    P1_NATIVE_SCRIPT_ADD_SIMPLE = 0x02,     // Add a simple script (pubkey/timelock)
+    P1_NATIVE_SCRIPT_FINISH = 0x03,         // Finish script tree and compute hash
 
-    // Native script hash derivation P1 values (0x4x range)
-    P1_NATIVE_SCRIPT_INIT = 0x40,           // Initialize: start request and UI streaming
-    P1_NATIVE_SCRIPT_START_COMPLEX = 0x41,  // Start a complex script (ALL/ANY/N-of-K)
-    P1_NATIVE_SCRIPT_ADD_SIMPLE = 0x42,     // Add a simple script (pubkey/timelock)
-    P1_NATIVE_SCRIPT_FINISH = 0x43,         // Finish script tree and compute hash
-
-    // Cvote P1 values (0x5x range)
     P1_CVOTE_INIT = 0x50,     // Initialize votecast signing
     P1_CVOTE_CHUNK = 0x51,    // Votecast data chunk
     P1_CVOTE_CONFIRM = 0x52,  // Confirm votecast details
 
-    // Message signing P1 values (0x6x range, CIP-8)
-    P1_SIGN_MSG_INIT = 0x60,     // Initialize message signing
-    P1_SIGN_MSG_CHUNK = 0x61,    // Message data chunk
-    P1_SIGN_MSG_CONFIRM = 0x62,  // Confirm and sign message
+    P1_SIGN_MSG_INIT = 0x01,     // Initialize message signing
+    P1_SIGN_MSG_CHUNK = 0x02,    // Message data chunk
+    P1_SIGN_MSG_CONFIRM = 0x03,  // Confirm and sign message
 } p1_e;
 
 /**

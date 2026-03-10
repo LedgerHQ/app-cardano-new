@@ -12,6 +12,7 @@ from common import (
     format_bytes_as_c_array,
 )
 from paths import GENERATED_DERIVE_ADDRESS_DIR
+from application_client.command_builder import P1Type
 
 GENERATED_DENY_HEADER = GENERATED_DERIVE_ADDRESS_DIR / "test_address_derivation_fixtures_deny.h"
 
@@ -269,7 +270,7 @@ def _build_deny_fixtures_header() -> str:
         '#include "test_fixture_types.h"',
         '#include "cardano_swo.h"',
         "",
-        "#define P1_ADDRESS_RETURN  0x20",
+        f"#define P1_ADDRESS_RETURN  0x{int(P1Type.P1_ADDRESS_RETURN):02X}",
         "// ======================================================================",
         "// Address Derivation Deny Test Fixtures",
         "// ======================================================================",

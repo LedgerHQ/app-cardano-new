@@ -3,7 +3,6 @@
 
 from dataclasses import dataclass
 from typing import Any
-from enum import Enum
 
 from common import (
     write_file_safe,
@@ -14,16 +13,11 @@ from common import (
     format_bytes_as_c_array,
 )
 from paths import GENERATED_DERIVE_ADDRESS_DIR
-
 FIXTURES_FILE = GENERATED_DERIVE_ADDRESS_DIR / "test_derive_address_fixtures.h"
 
 # ==============================================================================
 # Step 1: Load Test Cases from Ragger Tests
 # ==============================================================================
-
-class P1DisplayType(Enum):
-    P1_ADDRESS_RETURN = "P1_ADDRESS_RETURN"
-    P1_ADDRESS_DISPLAY = "P1_ADDRESS_DISPLAY"
 
 @dataclass(frozen=True)
 class TestCaseCategory:
@@ -58,32 +52,32 @@ def _load_address_derivation_test_cases() -> tuple[dict[str, list[Any]], dict[st
     categorized_test_cases = {
         # Byron addresses with P1_ADDRESS_RETURN (no user confirmation required)
         "test_derive_address_byron": TestCaseCategory(
-            p1_value=P1DisplayType.P1_ADDRESS_RETURN.value,
+            p1_value="P1_ADDRESS_RETURN",
             type="byronTestCases",
             test_cases=byronTestCases
         ),
         "test_derive_address_byron_show": TestCaseCategory(
-            p1_value=P1DisplayType.P1_ADDRESS_DISPLAY.value,
+            p1_value="P1_ADDRESS_DISPLAY",
             type="byronTestCases",
             test_cases=byronTestCases
         ),
         "test_derive_address_shelley": TestCaseCategory(
-            p1_value=P1DisplayType.P1_ADDRESS_RETURN.value,
+            p1_value="P1_ADDRESS_RETURN",
             type="shelleyTestCasesNoConfirm",
             test_cases=shelleyTestCasesNoConfirm
         ),
         "test_derive_address_shelley_confirm": TestCaseCategory(
-            p1_value=P1DisplayType.P1_ADDRESS_RETURN.value,
+            p1_value="P1_ADDRESS_RETURN",
             type="shelleyTestCasesWithConfirm",
             test_cases=shelleyTestCasesWithConfirm
         ),
         "test_derive_address_shelley_show_no_confirm": TestCaseCategory(
-            p1_value=P1DisplayType.P1_ADDRESS_DISPLAY.value,
+            p1_value="P1_ADDRESS_DISPLAY",
             type="shelleyTestCasesNoConfirm",
             test_cases=shelleyTestCasesNoConfirm
         ),
         "test_derive_address_shelley_show_with_confirm": TestCaseCategory(
-            p1_value=P1DisplayType.P1_ADDRESS_DISPLAY.value,
+            p1_value="P1_ADDRESS_DISPLAY",
             type="shelleyTestCasesWithConfirm",
             test_cases=shelleyTestCasesWithConfirm
         ),

@@ -20,7 +20,7 @@ If this document conflicts with code, code wins.
 ## Supported Commands (`INS`)
 
 - `0x01` `INS_GET_SERIAL`
-- `0x03` `INS_GET_VERSION`
+- `0x00` `INS_GET_VERSION`
 - `0x04` `INS_GET_APP_NAME`
 - `0x10` `INS_GET_PUBLIC_KEY`
 - `0x11` `INS_DERIVE_ADDRESS`
@@ -43,14 +43,20 @@ If this document conflicts with code, code wins.
   - `P1_CVOTE_CHUNK` (`0x51`)
   - `P1_CVOTE_CONFIRM` (`0x52`)
 - `SIGN_MSG` uses:
-  - `P1_SIGN_MSG_INIT` (`0x60`)
-  - `P1_SIGN_MSG_CHUNK` (`0x61`)
-  - `P1_SIGN_MSG_CONFIRM` (`0x62`)
+  - `P1_SIGN_MSG_INIT` (`0x01`)
+  - `P1_SIGN_MSG_CHUNK` (`0x02`)
+  - `P1_SIGN_MSG_CONFIRM` (`0x03`)
 - Native script hash flow uses:
-  - `P1_NATIVE_SCRIPT_INIT` (`0x40`)
-  - `P1_NATIVE_SCRIPT_START_COMPLEX` (`0x41`)
-  - `P1_NATIVE_SCRIPT_ADD_SIMPLE` (`0x42`)
-  - `P1_NATIVE_SCRIPT_FINISH` (`0x43`)
+  - `P1_NATIVE_SCRIPT_INIT` (`0x00`)
+  - `P1_NATIVE_SCRIPT_START_COMPLEX` (`0x01`)
+  - `P1_NATIVE_SCRIPT_ADD_SIMPLE` (`0x02`)
+  - `P1_NATIVE_SCRIPT_FINISH` (`0x03`)
+
+- `DERIVE_ADDRESS` uses:
+  - `P1_ADDRESS_RETURN` (`0x01`)
+  - `P1_ADDRESS_DISPLAY` (`0x02`)
+- `SIGN_TX` witness signing uses:
+  - `P1_TX_SIGN_WITNESS` (`0x0F`)
 
 Notes:
 - `P2_AUX_DATA_INIT` (`0x36`) and `P2_AUX_DATA_DELEGATION` (`0x37`) are used with tx aux-data flow.
@@ -60,4 +66,3 @@ Notes:
 
 The app uses SDK ISO-7816 words and Cardano-specific words.
 For integration and troubleshooting, use `src/cardano_swo.h` as the primary table.
-

@@ -233,13 +233,13 @@ def _build_deny_fixtures() -> str:
             source_file="tests/standalone/input_files/signTx.py",
         )
 
-    # Map P1 values to symbolic constants from dispatcher.h
+    # Map P1/P2 values to symbolic constants from command_builder/dispatcher.h
     P1_CONSTANTS = {
-        0x10: "P1_TX_INIT",
-        0x11: "P1_TX_CHUNK",
-        0x12: "P1_TX_CONFIRM",
-        0x13: "P1_TX_AUX_DATA",
-        0x1F: "P1_TX_SIGN_WITNESS",
+        int(P1Type.P1_TX_INIT): "P1_TX_INIT",
+        int(P1Type.P1_TX_CHUNK): "P1_TX_CHUNK",
+        int(P1Type.P1_TX_CONFIRM): "P1_TX_CONFIRM",
+        int(P1Type.P1_TX_AUX_DATA): "P1_TX_AUX_DATA",
+        int(P1Type.P1_TX_SIGN_WITNESS): "P1_TX_SIGN_WITNESS",
     }
     P2_CONSTANTS = {
         int(P2Type.P2_UNUSED): "P2_UNUSED",

@@ -6,9 +6,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 import re
-from typing import Mapping
-
-from enum import IntEnum
+from typing import Mapping, Any
 
 ROOT = Path(__file__).resolve().parents[2]
 TESTS_ROOT = ROOT / "tests"
@@ -34,7 +32,7 @@ def _parse_defines(path: Path) -> Mapping[str, int]:
 def _parse_enum(path: Path) -> Mapping[str, int]:
     values: dict[str, int] = {}
     for line in path.read_text().splitlines():
-        for match in re.finditer(r"(\w+)\s*=\s*(0x[0-9A-Fa-f]+|\d+)", line):
+        for match in re.finditer(r"(\w+)\s*=\s*(-?(?:0x[0-9A-Fa-f]+|\d+))", line):
             values[match.group(1)] = int(match.group(2), 0)
     return values
 
@@ -87,7 +85,7 @@ def _cvote_types_header_path() -> Path:
 
 
 def _assert_dispatcher_enum_prefix(prefix: str,
-                                   enum_cls: type[IntEnum],
+                                   enum_cls: type[Any],
                                    dispatcher_values: Mapping[str, int]) -> None:
     for name, value in dispatcher_values.items():
         if not name.startswith(prefix):
