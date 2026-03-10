@@ -79,6 +79,13 @@ For detailed analysis, see:
     - [fuzzing/FUZZING.md](fuzzing/FUZZING.md): Fuzzing harnesses and usage.
 
 ## Testing Workflow
+### Python Environment
+- **Default Python environment for repo tooling:** use `tests/standalone/venv` for Python work related to `tests/standalone/`, `tests/application_client/`, and `unit-tests/generators/`.
+- **Do not rely on system `python3`** for those workflows; missing packages and import-path mismatches are common outside the venv.
+- **Typical activation:** `source tests/standalone/venv/bin/activate`
+- **When running from `unit-tests/`:** activate via `source ../tests/standalone/venv/bin/activate`
+- **When running unit-test generators from `unit-tests/`:** ensure imports resolve from `tests/` as well, e.g. `PYTHONPATH=..:../tests python3 generators/generate_unit_tests_from_ragger.py`
+
 - **When C code is modified:** run unit tests. Use unit test build as proxy for real app build. Use `-j8` for make, not `-j$(nproc)`.
 - **After unit tests pass:** check fuzzing build as an additional compile-health gate.
 - **When `tests/standalone` ragger inputs or `application_client/` are modified:** run `unit-tests/generators/generate_unit_tests_from_ragger.py` (using `tests/standalone/venv` to have virtual env for python with all the required packages), then run unit tests to verify generated outputs are up to date and passing. The generator depends on `application_client/`, so any change there must be reflected by regenerated unit-test fixtures.

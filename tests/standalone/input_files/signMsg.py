@@ -9,12 +9,13 @@ This module provides Ragger tests for Sign Message
 
 from enum import IntEnum
 from typing import List, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from ragger.navigator import NavInsID
 
 from standalone.input_files.derive_address import DeriveAddressTestCase
 from application_client.app_def import AddressType, Mainnet
+from application_client.security_warnings import WarningBit
 from application_client.status_words import StatusWord
 from application_client.command_builder import CommandBuilder, InsType, P1Type, P2Type
 
@@ -51,7 +52,7 @@ class SignMsgTestCase:
     msgData: Optional[MessageData] = None
     nav: Optional[NavigationData] = None
     expected_in_unit_test: Optional[SignMsgExpectedInUnitTest] = None
-    has_warning: bool = False
+    expected_warnings: List[WarningBit] = field(default_factory=list)
 
 @dataclass(kw_only=True)
 class SignMsgDenyTestCase:
@@ -487,7 +488,7 @@ signMsgTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH],
     ),
 ]
 

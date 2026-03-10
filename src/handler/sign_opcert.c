@@ -95,6 +95,7 @@ void handler_sign_opcert(buffer_t *cdata) {
         return;
     }
 
+    G_context.opcert_info.warnings = warnings;
     G_context.state.opcert_state = OPCERT_STATE_VALIDATED;
     apdu_response_deferred();
     ui_display_opcert(policy, warnings);

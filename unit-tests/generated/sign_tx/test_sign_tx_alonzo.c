@@ -89,6 +89,26 @@ static void test_sign_tx_with_change_output_as_array_reject_tx_expert_on(void **
     run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_CHANGE_OUTPUT_AS_ARRAY, true);
 }
 
+static void test_sign_tx_with_maximum_warning_count_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT, false);
+}
+
+static void test_sign_tx_with_maximum_warning_count_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT, false);
+}
+
+static void test_sign_tx_with_maximum_warning_count_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT, true);
+}
+
+static void test_sign_tx_with_maximum_warning_count_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT, true);
+}
+
 static void test_sign_tx_with_datum_hash_in_output_as_array_expert_off(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY, false);
@@ -343,6 +363,10 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_change_output_as_array_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_change_output_as_array_expert_on),
         cmocka_unit_test(test_sign_tx_with_change_output_as_array_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_with_maximum_warning_count_expert_off),
+        cmocka_unit_test(test_sign_tx_with_maximum_warning_count_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_with_maximum_warning_count_expert_on),
+        cmocka_unit_test(test_sign_tx_with_maximum_warning_count_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_expert_off),
         cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_expert_on),

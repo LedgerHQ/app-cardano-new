@@ -11,6 +11,7 @@ import pytest
 
 from ledgered.devices import Device
 from ragger.backend import BackendInterface
+from ragger.navigator import Navigator
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
 from application_client.status_words import StatusWord
@@ -19,7 +20,7 @@ from application_client.response_unpacker import unpack_sign_opcert_response
 
 from standalone.input_files.signOpCert import opCertTestCases, OpCertTestCase
 
-from standalone.utils import idTestFunc, verify_signature
+from standalone.utils import idTestFunc, review_approve_with_warning, verify_signature
 
 
 @pytest.mark.parametrize(
@@ -29,6 +30,7 @@ from standalone.utils import idTestFunc, verify_signature
 )
 def test_opCert(device: Device,
                 backend: BackendInterface,
+                navigator: Navigator,
                 scenario_navigator: NavigateWithScenario,
                 testCase: OpCertTestCase) -> None:
     """Check Sign Operational Certificate"""
@@ -38,13 +40,14 @@ def test_opCert(device: Device,
 
     with client.sign_opcert_async(testCase):
         test_name = testCase.name
-        if testCase.has_warning:
-            if device.is_nano:
-                # TODO: navigation for warning does not work for Nano yet.
-                pytest.skip("TODO navigation for warning does not work for Nano")
-            scenario_navigator.review_approve_with_warning(
+        if len(testCase.expected_warnings) > 0:
+            review_approve_with_warning(
+                device,
+                navigator,
+                scenario_navigator,
                 test_name=test_name,
-                custom_screen_text="Sign certificate",
+                target_text="Sign certificate",
+                warnings=testCase.expected_warnings,
             )
         else:
             scenario_navigator.review_approve(

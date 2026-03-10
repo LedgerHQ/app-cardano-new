@@ -20,6 +20,11 @@ typedef struct {
 
 static apdu_response_state_t G_apdu_response_state = {0};
 
+static void apdu_response_state_reset(void) {
+    explicit_bzero(&G_apdu_response_state, SIZEOF(G_apdu_response_state));
+    G_apdu_response_state.instruction = INS_NONE;
+}
+
 static void free_request_owned_buffers(void) {
     switch (G_context.req_type) {
         case REQUEST_SIGN_TRANSACTION:
@@ -69,7 +74,7 @@ void apdu_response_begin(command_e instruction) {
     // before tracking a new APDU.
     if (G_apdu_response_state.response_sent &&
         G_apdu_response_state.response_deferred_to_ux) {
-        explicit_bzero(&G_apdu_response_state, SIZEOF(G_apdu_response_state));
+        apdu_response_state_reset();
     }
 
     LEDGER_ASSERT(!G_apdu_response_state.response_sent &&
@@ -96,7 +101,7 @@ void apdu_response_assert_sent_or_deferred(void) {
                   G_apdu_response_state.instruction);
 
     if (G_apdu_response_state.response_sent) {
-        explicit_bzero(&G_apdu_response_state, SIZEOF(G_apdu_response_state));
+        apdu_response_state_reset();
     }
 }
 
@@ -149,6 +154,11 @@ void reset_app_context(void) {
     if (!G_apdu_response_state.response_sent &&
         G_apdu_response_state.response_deferred_to_ux) {
         G_apdu_response_state.response_sent = true;
+    }
+
+    if (!G_apdu_response_state.response_sent &&
+        !G_apdu_response_state.response_deferred_to_ux) {
+        G_apdu_response_state.instruction = INS_NONE;
     }
 }
 

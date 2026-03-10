@@ -14,6 +14,7 @@ import cbor
 from ragger.backend import BackendInterface
 from ragger.error import ExceptionRAPDU
 from ledgered.devices import Device
+from ragger.navigator import Navigator
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
 from application_client.app_def import AddressType, Mainnet
@@ -32,7 +33,7 @@ from standalone.input_files.signMsg import (
 
 from standalone.test_derive_address import DeriveAddressTestCase
 
-from standalone.utils import idTestFunc, get_device_pubkey, verify_signature, derive_address
+from standalone.utils import idTestFunc, get_device_pubkey, verify_signature, derive_address, review_approve_with_warning
 
 
 @pytest.mark.parametrize(
@@ -42,6 +43,7 @@ from standalone.utils import idTestFunc, get_device_pubkey, verify_signature, de
 )
 def test_sign_message(device: Device,
                       backend: BackendInterface,
+                      navigator: Navigator,
                       scenario_navigator: NavigateWithScenario,
                       testCase: SignMsgTestCase) -> None:
     """Check Sign Message"""
@@ -49,14 +51,15 @@ def test_sign_message(device: Device,
     # Use the app interface instead of raw interface
     client = CommandSender(backend)
 
-    if device.is_nano:
-        # TODO: navigation for sign msg does not work for Nano yet.
-        pytest.skip("TODO navigation for sign msg does not work for Nano")
-
     def review_msg() -> None:
-        if testCase.has_warning:
-            scenario_navigator.review_approve_with_warning(
+        if len(testCase.expected_warnings) > 0:
+            review_approve_with_warning(
+                device,
+                navigator,
+                scenario_navigator,
                 test_name=testCase.name,
+                target_text="Sign message",
+                warnings=testCase.expected_warnings,
             )
         else:
             scenario_navigator.review_approve(

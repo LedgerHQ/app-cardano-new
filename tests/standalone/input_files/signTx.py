@@ -3589,6 +3589,68 @@ testsAlonzo: List[SignTxTestCase] = [
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a",
         expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL, WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH],
     ),
+    # Dedicated dense-warning fixture for warning-details snapshot coverage.
+    SignTxTestCase(
+        name="Sign_tx_with_maximum_warning_count",
+        tx=Transaction(
+            network=FakeNet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[
+                TxOutputBabbage(
+                    destinations["externalShelleyBaseScripthashKeyhashFakenet"],
+                    7120787,
+                    tokenBundle=[
+                        AssetGroup(
+                            "75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39",
+                            [Token("7564247542686911", 47), Token("7564247542686912", 7878754)],
+                        )
+                    ],
+                )
+            ],
+            fee=6000001,
+            certificates=[
+                Certificate(
+                    CertificateType.DREP_UPDATE,
+                    DRepUpdateParams(
+                        CredentialParams(
+                            CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/3/0"
+                        ),
+                        AnchorParams(
+                            "",
+                            "1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef",
+                        ),
+                    ),
+                )
+            ],
+            collateralOutput=TxOutputBabbage(
+                TxOutputDestination(
+                    TxOutputDestinationType.THIRD_PARTY,
+                    ThirdPartyAddressParams(
+                        "037cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
+                    ),
+                ),
+                7120787,
+                tokenBundle=[
+                    AssetGroup(
+                        "75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39",
+                        [Token("7564247542686911", 47)],
+                    )
+                ],
+            ),
+        ),
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a2005839135e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a00783862021a005b8d81030a048183128200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1826058201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef10a2005839037cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b0901821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a1487564247542686911182f",
+        expected_warnings=[
+            WarningBit.WARNING_BIT_NETWORK_UNUSUAL,
+            WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
+            WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
+            WarningBit.WARNING_BIT_COLLATERAL_OUTPUT_WARNING,
+            WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
+            WarningBit.WARNING_BIT_OUTPUT_MISSING_DATUM,
+            WarningBit.WARNING_BIT_EMPTY_ANCHOR_URL,
+            WarningBit.WARNING_BIT_HIGH_FEE,
+        ],
+    ),
     SignTxTestCase(
         name="Sign_tx_with_datum_hash_in_output_as_array",
         tx=Transaction(

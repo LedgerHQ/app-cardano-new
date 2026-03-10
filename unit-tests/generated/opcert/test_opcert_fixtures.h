@@ -9,12 +9,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-
-typedef struct {
-    const char *name;
-    const uint8_t *payload;
-    size_t payload_len;
-} opcert_fixture_t;
+#include "test_fixture_types.h"
 
 static const uint8_t OPCERT_FIXTURE_SIGN_OPCERT_SHOULD_CORRECTLY_SIGN_OPERATIONAL_CERTIFICATE_PAYLOAD[] = {
     0x3D, 0x24, 0xBC, 0x54, 0x73, 0x88, 0xCF, 0x24, 0x03, 0xFD, 0x97, 0x8F, 0xC3, 0xD3, 0xA9, 0x3D,
@@ -37,10 +32,12 @@ static const opcert_fixture_t OPCERT_FIXTURES[] = {
     .name = "Sign_opcert_should_correctly_sign_operational_certificate",
     .payload = OPCERT_FIXTURE_SIGN_OPCERT_SHOULD_CORRECTLY_SIGN_OPERATIONAL_CERTIFICATE_PAYLOAD,
     .payload_len = sizeof(OPCERT_FIXTURE_SIGN_OPCERT_SHOULD_CORRECTLY_SIGN_OPERATIONAL_CERTIFICATE_PAYLOAD),
+    .expected_warning_bits = 0,
 },
 {
     .name = "Sign_opcert_should_correctly_sign_operational_certificate_with_warning",
     .payload = OPCERT_FIXTURE_SIGN_OPCERT_SHOULD_CORRECTLY_SIGN_OPERATIONAL_CERTIFICATE_WITH_WARNING_PAYLOAD,
     .payload_len = sizeof(OPCERT_FIXTURE_SIGN_OPCERT_SHOULD_CORRECTLY_SIGN_OPERATIONAL_CERTIFICATE_WITH_WARNING_PAYLOAD),
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH),
 },
 };

@@ -37,10 +37,6 @@ def test_pubkey_confirm(device: Device,
     # Use the app interface instead of raw interface
     client = CommandSender(backend)
 
-    if device.is_nano:
-        # TODO: navigation for pubkey export does not work for Nano yet.
-        pytest.skip("TODO navigation for pubkey export does not work for Nano")
-
     # Force silent pubkey export off so confirmation is required for each key.
     settings_set(
         device,

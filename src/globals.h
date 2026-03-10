@@ -172,6 +172,7 @@ typedef struct {
     uint8_t raw_opcert[MAX_OPCERT_LENGTH];
     size_t raw_opcert_len;
     parsed_opcert_t opcert;
+    warning_bits_t warnings;
     uint8_t signature[ED25519_SIGNATURE_LENGTH];
 } sign_opcert_ctx_t;
 

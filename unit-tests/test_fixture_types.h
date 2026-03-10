@@ -105,8 +105,16 @@ typedef struct {
     const uint8_t *confirm_data;
     size_t confirm_data_len;
     uint16_t check_expected;
+    warning_bits_t expected_warning_bits;
     const sign_msg_expected_t *expected;
 } sign_msg_fixture_t;
+
+typedef struct {
+    const char *name;
+    const uint8_t *payload;
+    size_t payload_len;
+    warning_bits_t expected_warning_bits;
+} opcert_fixture_t;
 
 
 

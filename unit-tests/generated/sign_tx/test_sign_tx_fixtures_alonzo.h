@@ -16,7 +16,7 @@
 //   - Source file and era
 //   - Original Ragger test name
 //
-// Total tests in this era: 14
+// Total tests in this era: 15
 
 #pragma once
 
@@ -178,7 +178,108 @@ static const tx_fixture_t FIXTURE_ALONZO_SIGN_TX_WITH_CHANGE_OUTPUT_AS_ARRAY = {
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
-// Test 2: Sign_tx_with_datum_hash_in_output_as_array
+// Test 2: Sign_tx_with_maximum_warning_count
+// Source: tests/standalone/input_files/signTx.py > alonzo era tests
+//
+static const uint8_t FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT_RAW_TX[] = {
+    0x3B, 0x40, 0x26, 0x51, 0x11, 0xD8, 0xBB, 0x3C, 0x3C, 0x60, 0x8D, 0x95, 0xB3, 0xA0, 0xBF, 0x83,
+    0x46, 0x1A, 0xCE, 0x32, 0xD7, 0x93, 0x36, 0x57, 0x9A, 0x19, 0x39, 0xB3, 0xAA, 0xD1, 0xC0, 0xB7,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x89, 0x01, 0x00, 0x39, 0x13, 0x5E, 0x2F, 0x08, 0x0E, 0xB9, 0x3B,
+    0xAD, 0x86, 0xD4, 0x01, 0x54, 0x5E, 0x0C, 0xE5, 0xF2, 0x22, 0x10, 0x96, 0xD6, 0x47, 0x7E, 0x11,
+    0xE6, 0x64, 0x39, 0x22, 0xFA, 0x8D, 0x2E, 0xD4, 0x95, 0x23, 0x4D, 0xC0, 0xD6, 0x67, 0xC1, 0x31,
+    0x6F, 0xF8, 0x4E, 0x57, 0x23, 0x10, 0xE2, 0x65, 0xED, 0xB3, 0x13, 0x30, 0x44, 0x8B, 0x36, 0xB7,
+    0x17, 0x9E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x6C, 0xA7, 0x93, 0x01, 0x01, 0x01, 0x00, 0x01, 0x75,
+    0xA2, 0x92, 0xFF, 0xEE, 0x93, 0x8B, 0xE0, 0x3E, 0x9B, 0xAE, 0x56, 0x57, 0x98, 0x2A, 0x74, 0xE9,
+    0x01, 0x4E, 0xB4, 0x96, 0x01, 0x08, 0xC9, 0xE2, 0x3A, 0x5B, 0x39, 0x00, 0x02, 0x08, 0x75, 0x64,
+    0x24, 0x75, 0x42, 0x68, 0x69, 0x11, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x08, 0x75,
+    0x64, 0x24, 0x75, 0x42, 0x68, 0x69, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x78, 0x38, 0x62, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x5B, 0x8D, 0x81, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x12,
+    0x02, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x1A, 0xFD, 0x02, 0x8B, 0x50, 0x4C, 0x36,
+    0x68, 0x10, 0x2B, 0x12, 0x9B, 0x37, 0xA8, 0x6C, 0x09, 0xA2, 0x87, 0x2F, 0x76, 0x74, 0x1D, 0xC7,
+    0xA6, 0x8E, 0x21, 0x49, 0xC8, 0xDE, 0xAD, 0xBE, 0xEF, 0x00, 0x78, 0x01, 0x00, 0x39, 0x03, 0x7C,
+    0xB0, 0x5F, 0xCE, 0x11, 0x0F, 0xB9, 0x99, 0xF0, 0x1A, 0xBB, 0x4F, 0x62, 0xBC, 0x45, 0x5E, 0x21,
+    0x7D, 0x4A, 0x51, 0xFD, 0xE9, 0x09, 0xFA, 0x9A, 0xEA, 0x54, 0x54, 0x43, 0xAC, 0x53, 0xC0, 0x46,
+    0xCF, 0x6A, 0x42, 0x09, 0x5E, 0x3C, 0x60, 0x31, 0x0F, 0xA8, 0x02, 0x77, 0x1D, 0x06, 0x72, 0xF8,
+    0xFE, 0x2D, 0x18, 0x61, 0x13, 0x8B, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x6C, 0xA7, 0x93, 0x01,
+    0x01, 0x01, 0x00, 0x01, 0x75, 0xA2, 0x92, 0xFF, 0xEE, 0x93, 0x8B, 0xE0, 0x3E, 0x9B, 0xAE, 0x56,
+    0x57, 0x98, 0x2A, 0x74, 0xE9, 0x01, 0x4E, 0xB4, 0x96, 0x01, 0x08, 0xC9, 0xE2, 0x3A, 0x5B, 0x39,
+    0x00, 0x01, 0x08, 0x75, 0x64, 0x24, 0x75, 0x42, 0x68, 0x69, 0x11, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x2F,
+};
+
+static const uint8_t FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0xA6, 0x06, 0x48, 0x7D, 0xEE, 0x7A, 0x39, 0xF9, 0x3A, 0x49, 0x0F, 0xD8, 0x72, 0xB8, 0x77, 0xBD,
+    0x3B, 0xC6, 0x18, 0xE4, 0xFB, 0x7C, 0x99, 0x21, 0x42, 0xF8, 0xE0, 0xE5, 0xF1, 0x5E, 0x5A, 0x1E,
+    0xFA, 0x61, 0x28, 0x9D, 0x99, 0x1D, 0x59, 0x19, 0x66, 0x2E, 0x6F, 0x38, 0x12, 0xDF, 0x17, 0xDD,
+    0x4C, 0xA6, 0x78, 0x04, 0xA7, 0x1B, 0xF9, 0xC1, 0x35, 0x9F, 0x80, 0x45, 0xED, 0x79, 0x7A, 0xBE,
+};
+
+static const uint8_t FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT_WITNESS_1_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x03, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT_WITNESS_1_EXPECTED_SIGNATURE[] = {
+    0xA6, 0x06, 0x48, 0x7D, 0xEE, 0x7A, 0x39, 0xF9, 0x39, 0x49, 0x0F, 0xD8, 0x72, 0xB8, 0x77, 0xBD,
+    0x3B, 0xC6, 0x18, 0xE4, 0xFB, 0x7C, 0x99, 0x21, 0x42, 0xF8, 0xE0, 0xE5, 0xF2, 0x5E, 0x5A, 0x1E,
+    0xFA, 0x61, 0x28, 0x9D, 0x99, 0x1D, 0x59, 0x19, 0x66, 0x2E, 0x6F, 0x38, 0x12, 0xDF, 0x17, 0xDD,
+    0x4F, 0xA6, 0x78, 0x04, 0xA7, 0x1B, 0xF9, 0xC1, 0x35, 0x9F, 0x80, 0x45, 0xED, 0x79, 0x7A, 0xBE,
+};
+
+static const witness_payload_t FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT_WITNESS_0_EXPECTED_SIGNATURE },
+    { .payload = FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT_WITNESS_1_PAYLOAD, .payload_len = sizeof(FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT_WITNESS_1_PAYLOAD), .expected_signature = FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT_WITNESS_1_EXPECTED_SIGNATURE },
+};
+
+static const tx_fixture_t FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT = {
+    .name = "Sign_tx_with_maximum_warning_count",
+    .raw_tx = FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT_RAW_TX,
+    .raw_tx_len = sizeof(FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT_RAW_TX),
+    .tx_body_cbor_hex = "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a2005839135e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a00783862021a005b8d81030a048183128200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1826058201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef10a2005839037cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b0901821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a1487564247542686911182f",
+    .expected_hash_hex = "3fa7efd547d792d597e7a0e8c30ac4899970af5c7ec1229dff415fa5309c995a",
+    .signing_mode = 7,
+    .network_id = 3,
+    .protocol_magic = 47,
+    .num_inputs = 1,
+    .num_outputs = 1,
+    .num_witnesses = 2,
+    .witness_payloads = FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT_WITNESS_PAYLOADS,
+    .witness_payload_count = 2,
+    .num_certificates = 1,
+    .num_withdrawals = 0,
+    .num_mint_asset_groups = 0,
+    .include_ttl = true,
+    .include_validity_interval_start = false,
+    .include_aux_data_hash = false,
+    .aux_data_type = 0,
+    .aux_data_init_payload = NULL,
+    .aux_data_init_payload_len = 0,
+    .aux_data_delegations = NULL,
+    .aux_data_delegation_count = 0,
+    .include_script_data_hash = false,
+    .num_collateral_inputs = 0,
+    .num_required_signers = 0,
+    .include_network_id = false,
+    .include_collateral_output = true,
+    .include_total_collateral = false,
+    .num_reference_inputs = 0,
+    .num_voters = 0,
+    .include_treasury = false,
+    .treasury = 0,
+    .include_donation = false,
+    .donation = 0,
+    .aux_data_hash_hex = NULL,
+    .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_NETWORK_UNUSUAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_COLLATERAL_OUTPUT_WARNING) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH) | ((warning_bits_t)1 << WARNING_BIT_OUTPUT_MISSING_DATUM) | ((warning_bits_t)1 << WARNING_BIT_EMPTY_ANCHOR_URL) | ((warning_bits_t)1 << WARNING_BIT_HIGH_FEE),
+};
+
+// Test 3: Sign_tx_with_datum_hash_in_output_as_array
 // Source: tests/standalone/input_files/signTx.py > alonzo era tests
 //
 static const uint8_t FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_RAW_TX[] = {
@@ -252,7 +353,7 @@ static const tx_fixture_t FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_AR
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_NETWORK_UNUSUAL),
 };
 
-// Test 3: Sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl
+// Test 4: Sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl
 // Source: tests/standalone/input_files/signTx.py > alonzo era tests
 //
 static const uint8_t FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_FAKENET_BIG_TTL_RAW_TX[] = {
@@ -326,7 +427,7 @@ static const tx_fixture_t FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_AR
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_NETWORK_UNUSUAL),
 };
 
-// Test 4: Sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000
+// Test 5: Sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000
 // Source: tests/standalone/input_files/signTx.py > alonzo era tests
 //
 static const uint8_t FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_MAINNET_BIG_TTL_EPOCH_OVER_1000000_RAW_TX[] = {
@@ -400,7 +501,7 @@ static const tx_fixture_t FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_AR
     .expected_warning_bits = 0,
 };
 
-// Test 5: Sign_tx_with_datum_hash_in_output_as_array_with_tokens
+// Test 6: Sign_tx_with_datum_hash_in_output_as_array_with_tokens
 // Source: tests/standalone/input_files/signTx.py > alonzo era tests
 //
 static const uint8_t FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_WITH_TOKENS_RAW_TX[] = {
@@ -478,7 +579,7 @@ static const tx_fixture_t FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_AR
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_NETWORK_UNUSUAL),
 };
 
-// Test 6: Sign_tx_with_missing_datum_hash_in_output_with_tokens
+// Test 7: Sign_tx_with_missing_datum_hash_in_output_with_tokens
 // Source: tests/standalone/input_files/signTx.py > alonzo era tests
 //
 static const uint8_t FIXTURE_ALONZO_SIGN_TX_WITH_MISSING_DATUM_HASH_IN_OUTPUT_WITH_TOKENS_RAW_TX[] = {
@@ -554,7 +655,7 @@ static const tx_fixture_t FIXTURE_ALONZO_SIGN_TX_WITH_MISSING_DATUM_HASH_IN_OUTP
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_NETWORK_UNUSUAL) | ((warning_bits_t)1 << WARNING_BIT_OUTPUT_MISSING_DATUM),
 };
 
-// Test 7: Sign_tx_with_collateral_inputs
+// Test 8: Sign_tx_with_collateral_inputs
 // Source: tests/standalone/input_files/signTx.py > alonzo era tests
 //
 static const uint8_t FIXTURE_ALONZO_SIGN_TX_WITH_COLLATERAL_INPUTS_RAW_TX[] = {
@@ -637,7 +738,7 @@ static const tx_fixture_t FIXTURE_ALONZO_SIGN_TX_WITH_COLLATERAL_INPUTS = {
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
-// Test 8: Sign_tx_with_collateral_inputs_shelley
+// Test 9: Sign_tx_with_collateral_inputs_shelley
 // Source: tests/standalone/input_files/signTx.py > alonzo era tests
 //
 static const uint8_t FIXTURE_ALONZO_SIGN_TX_WITH_COLLATERAL_INPUTS_SHELLEY_RAW_TX[] = {
@@ -707,7 +808,7 @@ static const tx_fixture_t FIXTURE_ALONZO_SIGN_TX_WITH_COLLATERAL_INPUTS_SHELLEY 
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
-// Test 9: Sign_tx_with_required_signers_mixed
+// Test 10: Sign_tx_with_required_signers_mixed
 // Source: tests/standalone/input_files/signTx.py > alonzo era tests
 //
 static const uint8_t FIXTURE_ALONZO_SIGN_TX_WITH_REQUIRED_SIGNERS_MIXED_RAW_TX[] = {
@@ -778,7 +879,7 @@ static const tx_fixture_t FIXTURE_ALONZO_SIGN_TX_WITH_REQUIRED_SIGNERS_MIXED = {
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
-// Test 10: Sign_tx_with_mint_path_in_a_required_signer
+// Test 11: Sign_tx_with_mint_path_in_a_required_signer
 // Source: tests/standalone/input_files/signTx.py > alonzo era tests
 //
 static const uint8_t FIXTURE_ALONZO_SIGN_TX_WITH_MINT_PATH_IN_A_REQUIRED_SIGNER_RAW_TX[] = {
@@ -862,7 +963,7 @@ static const tx_fixture_t FIXTURE_ALONZO_SIGN_TX_WITH_MINT_PATH_IN_A_REQUIRED_SI
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
-// Test 11: Sign_tx_with_key_hash_in_stake_credential
+// Test 12: Sign_tx_with_key_hash_in_stake_credential
 // Source: tests/standalone/input_files/signTx.py > alonzo era tests
 //
 static const uint8_t FIXTURE_ALONZO_SIGN_TX_WITH_KEY_HASH_IN_STAKE_CREDENTIAL_RAW_TX[] = {
@@ -936,7 +1037,7 @@ static const tx_fixture_t FIXTURE_ALONZO_SIGN_TX_WITH_KEY_HASH_IN_STAKE_CREDENTI
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
-// Test 12: Sign_tx_Full_test_for_trezor_feature_parity
+// Test 13: Sign_tx_Full_test_for_trezor_feature_parity
 // Source: tests/standalone/input_files/signTx.py > alonzo era tests
 //
 static const uint8_t FIXTURE_ALONZO_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_RAW_TX[] = {
@@ -1047,7 +1148,7 @@ static const tx_fixture_t FIXTURE_ALONZO_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PA
     .expected_warning_bits = 0,
 };
 
-// Test 13: Sign_tx_with_multidelegation_keys_in_all_tx_elements
+// Test 14: Sign_tx_with_multidelegation_keys_in_all_tx_elements
 // Source: tests/standalone/input_files/signTx.py > alonzo era tests
 //
 static const uint8_t FIXTURE_ALONZO_SIGN_TX_WITH_MULTIDELEGATION_KEYS_IN_ALL_TX_ELEMENTS_RAW_TX[] = {

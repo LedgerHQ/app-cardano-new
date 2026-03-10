@@ -24,6 +24,15 @@ def _load_opcert_test_cases() -> Sequence[object]:
     return opCertTestCases
 
 
+def _warning_expr_from_test_case(test_case: object) -> str:
+    expected_warnings = getattr(test_case, "expected_warnings", [])
+    if expected_warnings:
+        return " | ".join(
+            f"((warning_bits_t)1 << {bit.name})" for bit in expected_warnings
+        )
+    return "0"
+
+
 def generate_opcert_fixtures() -> None:
     print("Generating opcert fixtures...")
 
@@ -42,12 +51,7 @@ def generate_opcert_fixtures() -> None:
         "",
         "#include <stdint.h>",
         "#include <stddef.h>",
-        "",
-        "typedef struct {",
-        "    const char *name;",
-        "    const uint8_t *payload;",
-        "    size_t payload_len;",
-        "} opcert_fixture_t;",
+        "#include \"test_fixture_types.h\"",
         "",
     ]
 
@@ -65,6 +69,7 @@ def generate_opcert_fixtures() -> None:
             f"    .name = \"{test_case.name}\",",
             f"    .payload = {array_name},",
             f"    .payload_len = sizeof({array_name}),",
+            f"    .expected_warning_bits = {_warning_expr_from_test_case(test_case)},",
             "},",
         ]
         fixture_entries.append("\n".join(entry_lines))

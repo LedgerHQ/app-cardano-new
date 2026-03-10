@@ -7,7 +7,10 @@
 This module provides Ragger tests for Sign Operational Certificate
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List
+
+from application_client.security_warnings import WarningBit
 
 
 @dataclass
@@ -22,7 +25,7 @@ class operationalCertificate:
 class OpCertTestCase:
     name: str
     opCert: operationalCertificate
-    has_warning: bool = False
+    expected_warnings: List[WarningBit] = field(default_factory=list)
 
 
 # pylint: disable=line-too-long
@@ -44,6 +47,6 @@ opCertTestCases = [
             42,
             "m/1853'/1815'/0'/1000001'",
         ),
-        has_warning=True,
+        expected_warnings=[WarningBit.WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH],
     ),
 ]

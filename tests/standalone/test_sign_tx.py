@@ -16,7 +16,7 @@ from application_client.status_words import StatusWord
 from application_client.command_builder import gather_witness_paths
 from application_client.command_sender import CommandSender
 from application_client.response_unpacker import unpack_sign_tx_witness_response
-from standalone.utils import verify_signature, idTestFunc
+from standalone.utils import verify_signature, idTestFunc, review_approve_with_warning
 from standalone.settings import SettingID, SettingValue, settings_set
 from standalone.input_files.signTx import (  # type: ignore
     testsByron,
@@ -97,7 +97,14 @@ def _run_sign_tx_test(device: Device,
             if testCase.tx.auxiliaryData.type == TxAuxiliaryDataType.CIP36_REGISTRATION:
                 test_name = f"{testCase.name}-{mode_str}/cvote_review"
                 if len(testCase.expected_aux_warnings) > 0:
-                    scenario_navigator.review_approve_with_warning(test_name=test_name, custom_screen_text="Confirm")
+                    review_approve_with_warning(
+                        device,
+                        navigator,
+                        scenario_navigator,
+                        test_name=test_name,
+                        target_text="Confirm vote delegation",
+                        warnings=testCase.expected_aux_warnings,
+                    )
                 else:
                     scenario_navigator.review_approve(test_name=test_name, custom_screen_text="Confirm")
 
@@ -113,7 +120,14 @@ def _run_sign_tx_test(device: Device,
                 text="Sign transaction",
             )
         elif len(testCase.expected_warnings) > 0:
-            scenario_navigator.review_approve_with_warning(test_name=test_name, custom_screen_text="Sign transaction")
+            review_approve_with_warning(
+                device,
+                navigator,
+                scenario_navigator,
+                test_name=test_name,
+                target_text="Sign transaction",
+                warnings=testCase.expected_warnings,
+            )
         else:
             scenario_navigator.review_approve(test_name=test_name, custom_screen_text="Sign transaction")
 
@@ -133,7 +147,6 @@ def _run_sign_tx_test(device: Device,
                                screen_change_before_first_instruction=False,
                                screen_change_after_last_instruction=False)
 
-    witness_paths = gather_witness_paths(tx, testCase.signingMode, testCase.additionalWitnessPaths or [])
     tx_hash = client.sign_tx(
         tx=tx,
         signing_mode=testCase.signingMode,
@@ -143,7 +156,6 @@ def _run_sign_tx_test(device: Device,
         on_cvote_review=review_cvote,
         on_advance=review_advance
     )
-    print(f"Witness paths: {witness_paths}")
 
     def _is_ordinary_witness_path(witness_path: str) -> bool:
         path_elements = witness_path.replace("'", "").split("/")
@@ -178,6 +190,9 @@ def _run_sign_tx_test(device: Device,
 
     # Step 4: Get witness signatures
     # After user approval, request signatures for all witness paths
+    witness_paths = gather_witness_paths(tx, testCase.signingMode, testCase.additionalWitnessPaths or [])
+    print(f"Witness paths: {witness_paths}")
+
     for path_idx, path in enumerate(witness_paths):
         # Determine navigation moves based on path and transaction properties
         # (adapted from Shelley app's _signTx_setWitnesses logic)
@@ -279,18 +294,6 @@ def test_sign_tx(device: Device,
         backend=backend,
     )
 
-    nano_navigation_broken_test_names = {
-        "Sign_tx_streaming_many_required_signers",
-        "Sign_tx_streaming_many_outputs",
-        "Sign_tx_with_CIP36_registration_with_delegations",
-        "Sign_tx_with_CIP36_registration_with_many_delegations_streaming",
-    }
-    if device.is_nano and testCase.name in nano_navigation_broken_test_names:
-        pytest.skip("Skipped: Nano navigation not working for this test case")
-
-    if device.is_nano and (len(testCase.expected_warnings) > 0 or len(testCase.expected_aux_warnings) > 0):
-        pytest.skip("Skipped: failing warning navigation for Nano")
-
     try:
         _run_sign_tx_test(device, backend, navigator, scenario_navigator, testCase, expert_mode=expert_mode)
     except Exception as e:
@@ -327,6 +330,7 @@ all_deny_test_cases = (
 )
 def test_sign_tx_deny(backend: BackendInterface,
                         device: Device,
+                        navigator: Navigator,
                         scenario_navigator: NavigateWithScenario,
                         testCase: SignTxTestCase) -> None:
     """Test that invalid transaction parameters are correctly denied."""
@@ -353,16 +357,18 @@ def test_sign_tx_deny(backend: BackendInterface,
                 return True
         return False
 
-    if device.is_nano and not testCase.deny_before_review and _requires_warning_navigation():
-        pytest.skip("Skipped: failing warning navigation for Nano")
-
     def review_tx() -> None:
         if testCase.deny_before_review:
             return
 
         if _requires_warning_navigation():
-            scenario_navigator.review_approve_with_warning(
+            review_approve_with_warning(
+                device,
+                navigator,
+                scenario_navigator,
                 test_name=f"{testCase.name}-deny/review",
+                target_text="Sign transaction",
+                warnings=testCase.expected_warnings,
                 do_comparison=False,
             )
         else:

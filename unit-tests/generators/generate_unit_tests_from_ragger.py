@@ -14,6 +14,17 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+_THIS_FILE = Path(__file__).resolve()
+_GENERATORS_DIR = _THIS_FILE.parent
+_UNIT_TESTS_DIR = _GENERATORS_DIR.parent
+_REPO_ROOT = _UNIT_TESTS_DIR.parent
+_TESTS_DIR = _REPO_ROOT / "tests"
+
+for import_root in (_UNIT_TESTS_DIR, _REPO_ROOT, _TESTS_DIR):
+    import_root_str = str(import_root)
+    if import_root_str not in sys.path:
+        sys.path.insert(0, import_root_str)
+
 from common import UNIT_TESTS_DIR
 from paths import (
     REPO_ROOT,

@@ -22,7 +22,7 @@ from application_client.response_unpacker import (
 
 from standalone.input_files.cvote import cvoteTestCases, CVoteTestCase
 
-from standalone.utils import idTestFunc, verify_signature
+from standalone.utils import idTestFunc, review_approve_with_warning, verify_signature
 
 
 @pytest.mark.parametrize(
@@ -36,9 +36,6 @@ def test_cvote(device: Device,
                scenario_navigator: NavigateWithScenario,
                testCase: CVoteTestCase) -> None:
     """Check CIP36 Vote"""
-    if device.is_nano:
-        pytest.skip("Skipped: failing warning navigation for Nano")
-
     # Use the app interface instead of raw interface
     client = CommandSender(backend)
 
@@ -49,7 +46,7 @@ def test_cvote(device: Device,
     _cvote_init(client, testCase)
 
     # Send the CONFIRM APDU (which includes witness path and triggers signing)
-    votecast_hash, signature = _cvote_confirm(scenario_navigator, client, testCase)
+    votecast_hash, signature = _cvote_confirm(device, navigator, scenario_navigator, client, testCase)
 
     # Verify the hash matches the expected Blake2b-256 hash of the votecast data
     import hashlib
@@ -84,7 +81,9 @@ def _cvote_init(client: CommandSender,
     assert response and response.status == StatusWord.SWO_SUCCESS
 
 
-def _cvote_confirm(scenario_navigator: NavigateWithScenario,
+def _cvote_confirm(device: Device,
+                   navigator: Navigator,
+                   scenario_navigator: NavigateWithScenario,
                    client: CommandSender,
                    testCase: CVoteTestCase) -> tuple[bytes, bytes]:
     """cVOTE CONFIRM and SIGN
@@ -100,7 +99,14 @@ def _cvote_confirm(scenario_navigator: NavigateWithScenario,
 
     with client.sign_cip36_confirm_async(testCase):
         test_name = f"{testCase.name}/cvote_confirm"
-        scenario_navigator.review_approve_with_warning(test_name=test_name, custom_screen_text="Sign vote")
+        review_approve_with_warning(
+            device,
+            navigator,
+            scenario_navigator,
+            test_name=test_name,
+            target_text="Sign vote",
+            warnings=testCase.expected_warnings,
+        )
     # Check the status (Asynchronous)
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS

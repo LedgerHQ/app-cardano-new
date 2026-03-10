@@ -15,6 +15,15 @@ from paths import GENERATED_SIGN_MSG_DIR
 FIXTURES_FILE = GENERATED_SIGN_MSG_DIR / "test_sign_msg_fixtures.h"
 
 
+def _warning_expr_from_test_case(test_case: Any) -> str:
+    expected_warnings = getattr(test_case, "expected_warnings", [])
+    if expected_warnings:
+        return " | ".join(
+            f"((warning_bits_t)1 << {bit.name})" for bit in expected_warnings
+        )
+    return "0"
+
+
 # ==============================================================================
 # Step 1: Load Test Cases from Ragger Tests
 # ==============================================================================
@@ -307,6 +316,9 @@ def _build_fixtures() -> str:
             header_lines.append("    .confirm_data = NULL,")
             header_lines.append("    .confirm_data_len = 0,")
         header_lines.append("    .check_expected = SWO_SUCCESS,")
+        header_lines.append(
+            f"    .expected_warning_bits = {_warning_expr_from_test_case(test_case)},"
+        )
         expected_struct_name = fixture_expected_structs[idx]
         if expected_struct_name:
             header_lines.append(

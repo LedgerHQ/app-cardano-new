@@ -961,6 +961,7 @@ static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
     .confirm_data = NULL,
     .confirm_data_len = 0,
     .check_expected = SWO_SUCCESS,
+    .expected_warning_bits = 0,
     .expected = &SIGN_MSG_000_SIGN_MSG_EMPTY_MESSAGE_WITH_KEYHASH_AS_ADDRESS_FIELD_EXPECTED,
 },
 // Source: tests/standalone/input_files/signMsg.py > Sign_msg_short_nonhashed_ascii_message_with_keyhash_as_address_field
@@ -973,6 +974,7 @@ static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
     .confirm_data = NULL,
     .confirm_data_len = 0,
     .check_expected = SWO_SUCCESS,
+    .expected_warning_bits = 0,
     .expected = &SIGN_MSG_001_SIGN_MSG_SHORT_NONHASHED_ASCII_MESSAGE_WITH_KEYHASH_AS_ADDRESS_FIELD_EXPECTED,
 },
 // Source: tests/standalone/input_files/signMsg.py > Sign_msg_short_hashed_ascii_message_with_keyhash_as_address_field
@@ -985,6 +987,7 @@ static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
     .confirm_data = NULL,
     .confirm_data_len = 0,
     .check_expected = SWO_SUCCESS,
+    .expected_warning_bits = 0,
     .expected = &SIGN_MSG_002_SIGN_MSG_SHORT_HASHED_ASCII_MESSAGE_WITH_KEYHASH_AS_ADDRESS_FIELD_EXPECTED,
 },
 // Source: tests/standalone/input_files/signMsg.py > Sign_msg_short_nonhashed_ascii_message_displayed_as_hex
@@ -997,6 +1000,7 @@ static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
     .confirm_data = NULL,
     .confirm_data_len = 0,
     .check_expected = SWO_SUCCESS,
+    .expected_warning_bits = 0,
     .expected = &SIGN_MSG_003_SIGN_MSG_SHORT_NONHASHED_ASCII_MESSAGE_DISPLAYED_AS_HEX_EXPECTED,
 },
 // Source: tests/standalone/input_files/signMsg.py > Sign_msg_short_nonhashed_hex_message_with_keyhash_as_address_field
@@ -1009,6 +1013,7 @@ static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
     .confirm_data = NULL,
     .confirm_data_len = 0,
     .check_expected = SWO_SUCCESS,
+    .expected_warning_bits = 0,
     .expected = &SIGN_MSG_004_SIGN_MSG_SHORT_NONHASHED_HEX_MESSAGE_WITH_KEYHASH_AS_ADDRESS_FIELD_EXPECTED,
 },
 // Source: tests/standalone/input_files/signMsg.py > Sign_msg_short_hashed_hex_message_with_keyhash_as_address_field
@@ -1021,6 +1026,7 @@ static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
     .confirm_data = NULL,
     .confirm_data_len = 0,
     .check_expected = SWO_SUCCESS,
+    .expected_warning_bits = 0,
     .expected = &SIGN_MSG_005_SIGN_MSG_SHORT_HASHED_HEX_MESSAGE_WITH_KEYHASH_AS_ADDRESS_FIELD_EXPECTED,
 },
 // Source: tests/standalone/input_files/signMsg.py > Sign_msg_198_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field
@@ -1033,6 +1039,7 @@ static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
     .confirm_data = NULL,
     .confirm_data_len = 0,
     .check_expected = SWO_SUCCESS,
+    .expected_warning_bits = 0,
     .expected = &SIGN_MSG_006_SIGN_MSG_198_BYTES_LONG_NONHASHED_ASCII_MESSAGE_WITH_KEYHASH_AS_ADDRESS_FIELD_EXPECTED,
 },
 // Source: tests/standalone/input_files/signMsg.py > Sign_msg_99_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field
@@ -1045,6 +1052,7 @@ static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
     .confirm_data = NULL,
     .confirm_data_len = 0,
     .check_expected = SWO_SUCCESS,
+    .expected_warning_bits = 0,
     .expected = &SIGN_MSG_007_SIGN_MSG_99_BYTES_LONG_NONHASHED_HEX_MESSAGE_WITH_KEYHASH_AS_ADDRESS_FIELD_EXPECTED,
 },
 // Source: tests/standalone/input_files/signMsg.py > Sign_msg_1000_bytes_long_hashed_ascii_message_with_keyhash_as_address_field
@@ -1057,6 +1065,7 @@ static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
     .confirm_data = NULL,
     .confirm_data_len = 0,
     .check_expected = SWO_SUCCESS,
+    .expected_warning_bits = 0,
     .expected = &SIGN_MSG_008_SIGN_MSG_1000_BYTES_LONG_HASHED_ASCII_MESSAGE_WITH_KEYHASH_AS_ADDRESS_FIELD_EXPECTED,
 },
 // Source: tests/standalone/input_files/signMsg.py > Sign_msg_349_bytes_long_hashed_hex_message_with_keyhash_as_address_field
@@ -1069,6 +1078,7 @@ static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
     .confirm_data = NULL,
     .confirm_data_len = 0,
     .check_expected = SWO_SUCCESS,
+    .expected_warning_bits = 0,
     .expected = &SIGN_MSG_009_SIGN_MSG_349_BYTES_LONG_HASHED_HEX_MESSAGE_WITH_KEYHASH_AS_ADDRESS_FIELD_EXPECTED,
 },
 // Source: tests/standalone/input_files/signMsg.py > Sign_msg_short_nonhashed_hex_message_with_base_address_in_address_field
@@ -1081,6 +1091,7 @@ static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
     .confirm_data = NULL,
     .confirm_data_len = 0,
     .check_expected = SWO_SUCCESS,
+    .expected_warning_bits = 0,
     .expected = &SIGN_MSG_010_SIGN_MSG_SHORT_NONHASHED_HEX_MESSAGE_WITH_BASE_ADDRESS_IN_ADDRESS_FIELD_EXPECTED,
 },
 // Source: tests/standalone/input_files/signMsg.py > Sign_msg_short_nonhashed_hex_message_with_reward_address_in_address_field
@@ -1093,6 +1104,7 @@ static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
     .confirm_data = NULL,
     .confirm_data_len = 0,
     .check_expected = SWO_SUCCESS,
+    .expected_warning_bits = 0,
     .expected = &SIGN_MSG_011_SIGN_MSG_SHORT_NONHASHED_HEX_MESSAGE_WITH_REWARD_ADDRESS_IN_ADDRESS_FIELD_EXPECTED,
 },
 // Source: tests/standalone/input_files/signMsg.py > Sign_msg_257_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field
@@ -1105,6 +1117,7 @@ static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
     .confirm_data = NULL,
     .confirm_data_len = 0,
     .check_expected = SWO_SUCCESS,
+    .expected_warning_bits = 0,
     .expected = NULL,
 },
 // Source: tests/standalone/input_files/signMsg.py > Sign_msg_1000_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field
@@ -1117,6 +1130,7 @@ static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
     .confirm_data = NULL,
     .confirm_data_len = 0,
     .check_expected = SWO_SUCCESS,
+    .expected_warning_bits = 0,
     .expected = NULL,
 },
 // Source: tests/standalone/input_files/signMsg.py > Sign_msg_257_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field
@@ -1129,6 +1143,7 @@ static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
     .confirm_data = NULL,
     .confirm_data_len = 0,
     .check_expected = SWO_SUCCESS,
+    .expected_warning_bits = 0,
     .expected = NULL,
 },
 // Source: tests/standalone/input_files/signMsg.py > Sign_msg_1000_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field
@@ -1141,6 +1156,7 @@ static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
     .confirm_data = NULL,
     .confirm_data_len = 0,
     .check_expected = SWO_SUCCESS,
+    .expected_warning_bits = 0,
     .expected = NULL,
 },
 // Source: tests/standalone/input_files/signMsg.py > Sign_msg_unusual_path_with_high_address_index
@@ -1153,6 +1169,7 @@ static const sign_msg_fixture_t SIGN_MSG_FIXTURES[] = {
     .confirm_data = NULL,
     .confirm_data_len = 0,
     .check_expected = SWO_SUCCESS,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH),
     .expected = NULL,
 },
 };

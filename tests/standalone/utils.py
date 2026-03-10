@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from pathlib import Path
-from typing import List, Tuple, Union
+from typing import List, Sequence, Tuple, Union
 import re
 import hashlib
 
@@ -13,6 +13,9 @@ from bip_utils import Bip44, Bip44Coins, Bip44Changes, Bip39SeedGenerator
 from bip_utils.bip.bip32.bip32_path import Bip32Path, Bip32PathParser
 
 from ragger.bip import calculate_public_key_and_chaincode, CurveChoice
+from ragger.navigator import Navigator, NavInsID, NavIns
+from ragger.navigator.navigation_scenario import NavigateWithScenario
+from ledgered.devices import Device
 
 from ragger.bip.seed import SPECULOS_MNEMONIC
 
@@ -91,6 +94,94 @@ def idTestFunc(testCase: Union[DeriveAddressTestCase, PubKeyTestCase, CVoteTestC
         Test case name
     """
     return testCase.name
+
+
+def review_approve_with_warning(device: Device,
+                                navigator: Navigator,
+                                scenario_navigator: NavigateWithScenario,
+                                test_name: str,
+                                target_text: str,
+                                warnings: Sequence[object],
+                                do_comparison: bool = True,
+                                warning_path: str = "warning",
+                                warning_clicks: int = 3) -> None:
+    if not device.is_nano:
+        detail_navigation = [NavInsID.RIGHT_HEADER_TAP]
+        if len(warnings) > 3:
+            detail_navigation += [
+                NavIns(NavInsID.CHOICE_CHOOSE, (4, )),
+                NavInsID.LEFT_HEADER_TAP,
+            ]
+        detail_navigation += [NavInsID.LEFT_HEADER_TAP]
+
+        if do_comparison:
+            navigator.navigate_and_compare(
+                scenario_navigator.screenshot_path,
+                f"{test_name}/{warning_path}/details",
+                detail_navigation,
+            )
+            navigator.navigate_and_compare(
+                scenario_navigator.screenshot_path,
+                f"{test_name}/{warning_path}",
+                [NavInsID.USE_CASE_CHOICE_REJECT],
+                screen_change_before_first_instruction=False,
+                screen_change_after_last_instruction=False,
+            )
+            navigator.navigate_until_text_and_compare(
+                navigate_instruction=NavInsID.USE_CASE_REVIEW_NEXT,
+                validation_instructions=[
+                    NavInsID.USE_CASE_REVIEW_CONFIRM,
+                    NavInsID.USE_CASE_STATUS_DISMISS,
+                ],
+                text=r"^Hold to sign$",
+                path=scenario_navigator.screenshot_path,
+                test_case_name=test_name,
+                screen_change_before_first_instruction=True,
+            )
+        else:
+            navigator.navigate(detail_navigation)
+            navigator.navigate(
+                [NavInsID.USE_CASE_CHOICE_REJECT],
+                screen_change_before_first_instruction=False,
+                screen_change_after_last_instruction=False,
+            )
+            navigator.navigate_until_text(
+                navigate_instruction=NavInsID.USE_CASE_REVIEW_NEXT,
+                validation_instructions=[
+                    NavInsID.USE_CASE_REVIEW_CONFIRM,
+                    NavInsID.USE_CASE_STATUS_DISMISS,
+                ],
+                text=r"^Hold to sign$",
+                screen_change_before_first_instruction=True,
+            )
+        return
+
+    if do_comparison:
+        navigator.navigate_and_compare(
+            scenario_navigator.screenshot_path,
+            f"{test_name}/{warning_path}",
+            [NavInsID.RIGHT_CLICK] * warning_clicks,
+            screen_change_after_last_instruction=False,
+        )
+        navigator.navigate_until_text_and_compare(
+            navigate_instruction=NavInsID.RIGHT_CLICK,
+            validation_instructions=[NavInsID.BOTH_CLICK],
+            text=target_text,
+            path=scenario_navigator.screenshot_path,
+            test_case_name=test_name,
+            screen_change_before_first_instruction=False,
+        )
+    else:
+        navigator.navigate(
+            [NavInsID.RIGHT_CLICK] * warning_clicks,
+            screen_change_after_last_instruction=False,
+        )
+        navigator.navigate_until_text(
+            navigate_instruction=NavInsID.RIGHT_CLICK,
+            validation_instructions=[NavInsID.BOTH_CLICK],
+            text=target_text,
+            screen_change_before_first_instruction=False,
+        )
 
 
 

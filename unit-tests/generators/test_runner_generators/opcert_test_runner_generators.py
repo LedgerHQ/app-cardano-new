@@ -37,6 +37,7 @@ def _build_file_header() -> str:
 #include "globals.h"
 #include "../src/securityPolicy/securityPolicy.h"
 #include "handler/sign_opcert.h"
+#include "opcert_parse.h"
 #include "opcert/opcert_types.h"
 #include "test_opcert_fixtures.h"
 #include "app_context.h"
@@ -78,7 +79,21 @@ void reset_opcert_context(void) {
 
 static void run_opcert_fixture(const opcert_fixture_t *fixture) {
     assert_non_null(fixture);
+    assert_non_null(fixture->payload);
     reset_opcert_context();
+
+    parsed_opcert_t parsed = {0};
+    buffer_t parsed_buffer = {
+        .ptr = (uint8_t *) fixture->payload,
+        .size = fixture->payload_len,
+        .offset = 0,
+    };
+    assert_true(parse_opcert(&parsed_buffer, &parsed));
+    warning_bits_t warnings = 0;
+    security_policy_t policy = policyForSignOpCert(&parsed.poolColdKeyPath, &warnings);
+    assert_int_not_equal(policy, POLICY_DENY);
+    assert_int_equal(warnings, fixture->expected_warning_bits);
+
     test_read_buffer_t opcert_buffer = make_test_read_buffer(fixture->payload, fixture->payload_len);
     apdu_response_begin(INS_SIGN_OPCERT);
     handler_sign_opcert(&opcert_buffer.sdk_buffer);
