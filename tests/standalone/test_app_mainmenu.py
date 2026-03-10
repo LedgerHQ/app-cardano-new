@@ -1,8 +1,10 @@
 # SPDX-FileCopyrightText: 2025-2026 Vacuumlabs
 # SPDX-License-Identifier: Apache-2.0
 
-from ledgered.devices import DeviceType, Device
-from ragger.navigator import Navigator, NavInsID, NavIns
+from ledgered.devices import Device
+from ragger.navigator import Navigator, NavInsID
+
+from standalone.settings import SettingID, settings_toggle
 
 
 # In this test we check the behavior of the device main menu
@@ -10,52 +12,12 @@ def test_app_mainmenu(device: Device,
                       navigator: Navigator,
                       test_name: str,
                       default_screenshot_path: str) -> None:
-    # Navigate in the main menu
-    instructions = []
-    if device.is_nano:
-        # TODO update according to new menu
-        instructions += [
-            NavInsID.RIGHT_CLICK,
-            NavInsID.BOTH_CLICK,
-            NavInsID.BOTH_CLICK,
-            NavInsID.RIGHT_CLICK,
-            NavInsID.BOTH_CLICK,
-            NavInsID.RIGHT_CLICK,
-            NavInsID.BOTH_CLICK,
-            NavInsID.RIGHT_CLICK,
-            NavInsID.BOTH_CLICK,
-            NavInsID.RIGHT_CLICK,
-            NavInsID.RIGHT_CLICK,
-            NavInsID.BOTH_CLICK,
-        ]
-    elif device.type is DeviceType.STAX:
-        instructions += [
-            NavInsID.USE_CASE_HOME_SETTINGS,
-            NavIns(NavInsID.TOUCH, (200, 113)),
-            NavIns(NavInsID.TOUCH, (200, 261)),
-            NavInsID.USE_CASE_SETTINGS_NEXT,
-            NavInsID.USE_CASE_SETTINGS_MULTI_PAGE_EXIT
-        ]
-    elif device.type is DeviceType.FLEX:
-        instructions += [
-            NavInsID.USE_CASE_HOME_SETTINGS,
-            NavIns(NavInsID.TOUCH, (200, 113)),
-            NavIns(NavInsID.TOUCH, (200, 300)),
-            NavInsID.USE_CASE_SETTINGS_NEXT,
-            NavInsID.USE_CASE_SETTINGS_MULTI_PAGE_EXIT
-        ]
-    elif device.type is DeviceType.APEX_P:
-        instructions += [
-            NavInsID.USE_CASE_HOME_SETTINGS,
-            NavIns(NavInsID.TOUCH, (243, 90)),
-            NavIns(NavInsID.TOUCH, (243, 211)),
-            NavInsID.USE_CASE_SETTINGS_NEXT,
-            NavInsID.USE_CASE_SETTINGS_MULTI_PAGE_EXIT
-        ]
+    # Toggle both settings to exercise the full menu
+    settings_toggle(device, navigator, [SettingID.SILENT_PUBKEY_EXPORT, SettingID.EXPERT_MODE])
 
-    assert len(instructions) > 0
-    # TODO put back the original version after we resolve golden snapshot creation
-    # navigator.navigate_and_compare(default_screenshot_path, test_name, instructions,
-    #                                screen_change_before_first_instruction=False)
-    navigator.navigate_and_compare(None, test_name, instructions,
-                                   screen_change_before_first_instruction=False)
+    if not device.is_nano:
+        # Touch devices need to navigate to the info page and back
+        navigator.navigate([NavInsID.USE_CASE_HOME_SETTINGS,
+                            NavInsID.USE_CASE_SETTINGS_NEXT,
+                            NavInsID.USE_CASE_SETTINGS_MULTI_PAGE_EXIT],
+                           screen_change_before_first_instruction=False)

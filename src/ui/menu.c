@@ -24,8 +24,8 @@ static const char* const INFO_TYPES[SETTING_INFO_NB] = {"Version", "Developer"};
 static const char* const INFO_CONTENTS[SETTING_INFO_NB] = {APPVERSION, "Vacuumlabs"};
 
 // settings switches definitions
-enum { EXPERT_MODE_TOKEN = FIRST_USER_TOKEN, SILENT_PUBKEY_EXPORT_TOKEN };
-enum { EXPERT_MODE_ID = 0, SILENT_PUBKEY_EXPORT_ID, SETTINGS_SWITCHES_NB };
+enum { SILENT_PUBKEY_EXPORT_TOKEN = FIRST_USER_TOKEN, EXPERT_MODE_TOKEN };
+enum { SILENT_PUBKEY_EXPORT_ID = 0, EXPERT_MODE_ID, SETTINGS_SWITCHES_NB };
 
 static nbgl_contentSwitch_t switches[SETTINGS_SWITCHES_NB] = {0};
 
@@ -58,20 +58,20 @@ static void controls_callback(int token, uint8_t index, int page) {
 
     uint8_t switch_value;
     switch (token) {
-        case EXPERT_MODE_TOKEN:
-            // toggle the switch value
-            switch_value = flip_bool_setting(N_storage.expert_mode_enabled);
-            switches[EXPERT_MODE_ID].initState = (nbgl_state_t) switch_value;
-            // store the new setting value in NVM
-            nvm_write((void*) &N_storage.expert_mode_enabled, &switch_value, 1);
-            break;
-
         case SILENT_PUBKEY_EXPORT_TOKEN:
             // toggle the switch value
             switch_value = flip_bool_setting(N_storage.silent_pubkey_export_enabled);
             switches[SILENT_PUBKEY_EXPORT_ID].initState = (nbgl_state_t) switch_value;
             // store the new setting value in NVM
             nvm_write((void*) &N_storage.silent_pubkey_export_enabled, &switch_value, 1);
+            break;
+
+        case EXPERT_MODE_TOKEN:
+            // toggle the switch value
+            switch_value = flip_bool_setting(N_storage.expert_mode_enabled);
+            switches[EXPERT_MODE_ID].initState = (nbgl_state_t) switch_value;
+            // store the new setting value in NVM
+            nvm_write((void*) &N_storage.expert_mode_enabled, &switch_value, 1);
             break;
 
         default:
@@ -82,18 +82,6 @@ static void controls_callback(int token, uint8_t index, int page) {
 // home page definition
 void ui_menu_main(void) {
     // Initialize switches data
-    switches[EXPERT_MODE_ID].initState = (nbgl_state_t) N_storage.expert_mode_enabled;
-    switches[EXPERT_MODE_ID].text = "Expert mode";
-#ifdef SCREEN_SIZE_WALLET
-    switches[EXPERT_MODE_ID].subText = "Show expert details in transactions";
-#else
-    switches[EXPERT_MODE_ID].subText = "Show expert\ntx details";
-#endif
-    switches[EXPERT_MODE_ID].token = EXPERT_MODE_TOKEN;
-#ifdef HAVE_PIEZO_SOUND
-    switches[EXPERT_MODE_ID].tuneId = TUNE_TAP_CASUAL;
-#endif
-
     switches[SILENT_PUBKEY_EXPORT_ID].initState = (nbgl_state_t) N_storage.silent_pubkey_export_enabled;
 #ifdef SCREEN_SIZE_WALLET
     switches[SILENT_PUBKEY_EXPORT_ID].text = "Silent public key export";
@@ -105,6 +93,18 @@ void ui_menu_main(void) {
     switches[SILENT_PUBKEY_EXPORT_ID].token = SILENT_PUBKEY_EXPORT_TOKEN;
 #ifdef HAVE_PIEZO_SOUND
     switches[SILENT_PUBKEY_EXPORT_ID].tuneId = TUNE_TAP_CASUAL;
+#endif
+
+    switches[EXPERT_MODE_ID].initState = (nbgl_state_t) N_storage.expert_mode_enabled;
+    switches[EXPERT_MODE_ID].text = "Expert mode";
+#ifdef SCREEN_SIZE_WALLET
+    switches[EXPERT_MODE_ID].subText = "Show technical details in transactions";
+#else
+    switches[EXPERT_MODE_ID].subText = "Show technical\ntx details";
+#endif
+    switches[EXPERT_MODE_ID].token = EXPERT_MODE_TOKEN;
+#ifdef HAVE_PIEZO_SOUND
+    switches[EXPERT_MODE_ID].tuneId = TUNE_TAP_CASUAL;
 #endif
 
     TRACE("Calling nbgl_useCaseHomeAndSettings(APPNAME), expert=%d, silentPubkey=%d",

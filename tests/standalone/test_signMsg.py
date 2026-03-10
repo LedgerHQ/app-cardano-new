@@ -14,7 +14,6 @@ import cbor
 from ragger.backend import BackendInterface
 from ragger.error import ExceptionRAPDU
 from ledgered.devices import Device
-from ragger.navigator import Navigator
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
 from application_client.app_def import AddressType, Mainnet
@@ -43,7 +42,6 @@ from standalone.utils import idTestFunc, get_device_pubkey, verify_signature, de
 )
 def test_sign_message(device: Device,
                       backend: BackendInterface,
-                      navigator: Navigator,
                       scenario_navigator: NavigateWithScenario,
                       testCase: SignMsgTestCase) -> None:
     """Check Sign Message"""

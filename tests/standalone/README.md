@@ -29,6 +29,7 @@ pytest -v --tb=short --device nanox --display
 - In `test_sign_tx_deny`, some deny cases are witness-phase policy denials: tx review is approved first, then deny is expected on `SIGN_TX_WITNESS`.
 - In this repository workflow, ragger tests are run only on explicit request.
 - Build the app first; if automated app build is unavailable, use the unit-tests build flow as a compile-health proxy.
+- Parallel runs with `pytest-xdist` are supported for the Speculos backend. The standalone `conftest.py` assigns deterministic per-worker Speculos API/APDU ports automatically, so `-n <workers>` can be used without port collisions.
 
 ## Useful Options
 
@@ -42,6 +43,10 @@ pytest -v --tb=short --device nanox --display
 --display
 --golden_run
 --no-nav
+-n <workers>
+--lf
+--ff
+--last-failed-no-failures <all|none>
 --collect-only -q
 --timeout <seconds>
 --log_apdu_file <path>
@@ -55,6 +60,15 @@ pytest tests/standalone/test_sign_tx.py --device nanosp -k "Byron" -v --tb=short
 
 # Debug navigation manually in Speculos (no automatic navigation)
 pytest tests/standalone/test_sign_tx.py --device nanosp --display --no-nav
+
+# Run tests in parallel with pytest-xdist
+pytest tests/standalone/test_sign_tx.py --device stax -n 2
+
+# Rerun only tests that failed in the previous pytest run
+pytest --lf --device stax -v --tb=short
+
+# Run previously failed tests first, then continue with the rest
+pytest --ff --device stax -v --tb=short
 
 # Regenerate snapshots after intended UI changes
 pytest tests/standalone/test_sign_tx.py --device stax --golden_run

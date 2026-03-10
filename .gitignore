@@ -33,6 +33,9 @@ doc/latex
 # Virtual env for sideload (macOS and Windows)
 ledger/
 
+# VS Code workspace state managed by Ledger extension
+.vscode/settings.json
+
 # Helper script git clone
 tests/swap/.test_dependencies/app-exchange/
 tests/swap/.test_dependencies/app-ethereum/

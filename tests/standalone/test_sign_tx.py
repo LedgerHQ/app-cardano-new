@@ -17,6 +17,7 @@ from application_client.command_builder import gather_witness_paths
 from application_client.command_sender import CommandSender
 from application_client.response_unpacker import unpack_sign_tx_witness_response
 from standalone.utils import verify_signature, idTestFunc
+from standalone.settings import SettingID, SettingValue, settings_set
 from standalone.input_files.signTx import (  # type: ignore
     testsByron,
     testsMary,
@@ -259,19 +260,24 @@ def test_sign_tx(device: Device,
                  expert_mode: bool) -> None:
     """Test transaction signing under a specific expert mode setting.
 
-    NOTE: This test assumes a DEBUG build because it uses the debug settings APDU.
-    For production builds, drop the debug APDU call and run only the standard UI flow.
-
     Each run performs:
-    1. Set expert mode via debug APDU (only works with DEBUG builds)
+    1. Toggle expert mode via settings menu navigation (if needed)
     2. Send init APDU with transaction description
     3. Send transaction data in unpacked format
     4. User approves transaction
     5. Request witness signature
     """
 
-    client = CommandSender(backend)
-    client.set_debug_settings(expert_mode=expert_mode, silent_export=False)
+    # Force the requested expert-mode state via the on-device settings menu.
+    settings_set(
+        device,
+        navigator,
+        {
+            SettingID.EXPERT_MODE: SettingValue.ENABLED if expert_mode else SettingValue.DISABLED,
+            SettingID.SILENT_PUBKEY_EXPORT: SettingValue.ENABLED,
+        },
+        backend=backend,
+    )
 
     nano_navigation_broken_test_names = {
         "Sign_tx_streaming_many_required_signers",

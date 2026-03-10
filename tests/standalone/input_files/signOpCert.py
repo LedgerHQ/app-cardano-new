@@ -8,7 +8,6 @@ This module provides Ragger tests for Sign Operational Certificate
 """
 
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass

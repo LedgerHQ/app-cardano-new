@@ -46,10 +46,10 @@ def test_cvote(device: Device,
     original_votecast_data = bytes.fromhex(testCase.cVote.voteCastDataHex)
 
     # Send the INIT APDU
-    _cvote_init(device, navigator, client, testCase)
+    _cvote_init(client, testCase)
 
     # Send the CONFIRM APDU (which includes witness path and triggers signing)
-    votecast_hash, signature = _cvote_confirm(device, navigator, scenario_navigator, client, testCase)
+    votecast_hash, signature = _cvote_confirm(scenario_navigator, client, testCase)
 
     # Verify the hash matches the expected Blake2b-256 hash of the votecast data
     import hashlib
@@ -61,9 +61,7 @@ def test_cvote(device: Device,
     verify_signature(testCase.cVote.witnessPath, signature, votecast_hash)
 
 
-def _cvote_init(device: Device,
-                navigator: Navigator,
-                client: CommandSender,
+def _cvote_init(client: CommandSender,
                 testCase: CVoteTestCase) -> None:
     """cVOTE INIT
 
@@ -86,16 +84,12 @@ def _cvote_init(device: Device,
     assert response and response.status == StatusWord.SWO_SUCCESS
 
 
-def _cvote_confirm(device: Device,
-                   navigator: Navigator,
-                   scenario_navigator: NavigateWithScenario,
+def _cvote_confirm(scenario_navigator: NavigateWithScenario,
                    client: CommandSender,
                    testCase: CVoteTestCase) -> tuple[bytes, bytes]:
     """cVOTE CONFIRM and SIGN
 
     Args:
-        device (Device): The device instance
-        navigator (Navigator): The navigator instance
         scenario_navigator (NavigateWithScenario): the NavigateWithScenario instance
         client (CommandSender): The command sender instance
         testCase (CVoteTestCase): The test case

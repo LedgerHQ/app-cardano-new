@@ -8,7 +8,6 @@ This module provides Ragger tests for CIP-36 Vote check
 """
 
 from dataclasses import dataclass
-from typing import Optional
 
 MAX_CIP36_PAYLOAD_SIZE = 250
 

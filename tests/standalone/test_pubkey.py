@@ -16,6 +16,7 @@ from application_client.response_unpacker import unpack_get_pubkey_response
 from standalone.input_files.pubkey import PubKeyTestCase, denyTestCases, testsByron, testsShelleyUsual, testsShelleyUnusual, testsMultisig, testsColdKeys, testsCVoteKeysUsual, testsCVoteKeysUnusual, testsDRepKeys, testsCommitteeColdKeys, testsCommitteeHotKeys, testsMintKeys, testsSilentExport
 
 from standalone.utils import idTestFunc, get_device_pubkey
+from standalone.settings import SettingID, SettingValue, settings_set
 
 @pytest.mark.parametrize(
     "testCase",
@@ -40,9 +41,16 @@ def test_pubkey_confirm(device: Device,
         # TODO: navigation for pubkey export does not work for Nano yet.
         pytest.skip("TODO navigation for pubkey export does not work for Nano")
 
-    # Turn off silent pubkey export via debug APDU, confirmation will be asked for each key
-    # This only works with DEBUG builds; keeps expert mode in its default state (off)
-    client.set_debug_settings(expert_mode=False, silent_export=False)
+    # Force silent pubkey export off so confirmation is required for each key.
+    settings_set(
+        device,
+        navigator,
+        {
+            SettingID.SILENT_PUBKEY_EXPORT: SettingValue.DISABLED,
+            SettingID.EXPERT_MODE: SettingValue.DISABLED,
+        },
+        backend=backend,
+    )
     with client.get_pubkey_async(testCase.path):
         if testCase.nav:
             scenario_navigator.address_review_approve(test_name=testCase.name, custom_screen_text="Export")
@@ -61,14 +69,24 @@ def test_pubkey_confirm(device: Device,
     testsSilentExport,
     ids=idTestFunc
 )
-def test_pubkey_without_confirmation(backend: BackendInterface, testCase: PubKeyTestCase) -> None:
+def test_pubkey_without_confirmation(device: Device,
+                                     backend: BackendInterface,
+                                     navigator: Navigator,
+                                     testCase: PubKeyTestCase) -> None:
     """Check Public Key without confirmation"""
 
     # Use the app interface instead of raw interface
     client = CommandSender(backend)
 
-    # Ensure silent export is enabled to avoid dependence on persistent settings.
-    client.set_debug_settings(expert_mode=False, silent_export=True)
+    settings_set(
+        device,
+        navigator,
+        {
+            SettingID.SILENT_PUBKEY_EXPORT: SettingValue.ENABLED,
+            SettingID.EXPERT_MODE: SettingValue.DISABLED,
+        },
+        backend=backend,
+    )
 
     with client.get_pubkey_async(testCase.path):
         pass

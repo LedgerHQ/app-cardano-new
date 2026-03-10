@@ -5,6 +5,7 @@ from typing import Callable, Generator, List, Optional
 from contextlib import contextmanager
 
 from ragger.backend.interface import BackendInterface, RAPDU
+from ragger.error import ExceptionRAPDU
 
 
 from standalone.input_files.signOpCert import OpCertTestCase
@@ -264,7 +265,7 @@ class CommandSender:
         Raises:
             AssertionError: If the command fails or returns unexpected status
         """
-        response = self._exchange(self._cmd_builder.debug_set_settings(expert_mode, silent_export))
+        response = self.try_set_debug_settings(expert_mode, silent_export)
 
         if response.status != StatusWord.SWO_SUCCESS:
             raise AssertionError(f"Debug set settings failed: {hex(response.status)}")
@@ -286,6 +287,13 @@ class CommandSender:
             )
 
         return response
+
+    def try_set_debug_settings(self, expert_mode: bool, silent_export: bool) -> RAPDU:
+        """Send the debug settings APDU and return the raw response."""
+        try:
+            return self._exchange(self._cmd_builder.debug_set_settings(expert_mode, silent_export))
+        except ExceptionRAPDU as err:
+            return RAPDU(data=err.data, status=err.status)
 
     @contextmanager
     def derive_address_async(self, p1: P1Type, test_case: DeriveAddressTestCase) -> Generator[None, None, None]:
