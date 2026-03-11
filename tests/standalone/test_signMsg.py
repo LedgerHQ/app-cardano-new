@@ -14,7 +14,7 @@ import cbor
 from ragger.backend import BackendInterface
 from ragger.error import ExceptionRAPDU
 from ledgered.devices import Device
-from ragger.navigator import Navigator
+from ragger.navigator import Navigator, NavInsID
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
 from application_client.app_def import AddressType, Mainnet
@@ -33,7 +33,15 @@ from standalone.input_files.signMsg import (
 
 from standalone.test_derive_address import DeriveAddressTestCase
 
-from standalone.utils import idTestFunc, get_device_pubkey, verify_signature, derive_address, review_approve_with_warning
+from standalone.utils import (
+    idTestFunc,
+    get_device_pubkey,
+    verify_signature,
+    derive_address,
+    review_approve,
+    nano_navigate_until_text_relaxed,
+    NavContext,
+)
 
 
 @pytest.mark.parametrize(
@@ -50,21 +58,27 @@ def test_sign_message(device: Device,
 
     # Use the app interface instead of raw interface
     client = CommandSender(backend)
+    nav_ctx = NavContext(device, navigator, scenario_navigator)
 
     def review_msg() -> None:
-        if len(testCase.expected_warnings) > 0:
-            review_approve_with_warning(
-                device,
-                navigator,
-                scenario_navigator,
-                test_name=testCase.name,
-                target_text="Sign message",
-                warnings=testCase.expected_warnings,
+        if device.is_nano and len(testCase.expected_warnings) == 0:
+            nano_navigate_until_text_relaxed(
+                backend=backend,
+                navigator=navigator,
+                navigate_instruction=NavInsID.RIGHT_CLICK,
+                validation_instructions=[NavInsID.BOTH_CLICK],
+                text=r"^Sign message$",
+                screen_change_before_first_instruction=True,
             )
-        else:
-            scenario_navigator.review_approve(
-                test_name=testCase.name,
-            )
+            return
+
+        review_approve(
+            nav_ctx,
+            test_name=testCase.name,
+            target_text="Sign message" if not testCase.expected_warnings else r"^Reject operation$",
+            warnings=testCase.expected_warnings,
+            nano_review_instructions=[NavInsID.LEFT_CLICK, NavInsID.BOTH_CLICK],
+        )
 
     signedData = client.sign_msg(testCase, on_review=review_msg)
 

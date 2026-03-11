@@ -45,7 +45,7 @@ typedef struct {
  * Maximum number of UI pairs that can be displayed.
  * Also used as the limit for the allocation tracker.
  */
-#define MAX_UI_PAIRS 250
+#define MAX_UI_PAIRS 255
 
 STATIC_ASSERT(MAX_UI_PAIRS <= UINT8_MAX, "MAX_UI_PAIRS must fit in uint8_t");
 

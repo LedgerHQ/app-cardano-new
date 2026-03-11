@@ -31,6 +31,8 @@ from .client_constants_check import (
     assert_setting_value_constants_match,
 )
 
+NANO_STREAMING_TIMEOUT_SECONDS = 600
+
 ###########################
 ### CONFIGURATION START ###
 ###########################
@@ -87,3 +89,25 @@ def additional_speculos_arguments() -> list[str]:
     api_port = 5000 + worker_index * 10
     apdu_port = api_port + 1
     return ["--api-port", str(api_port), "--apdu-port", str(apdu_port)]
+
+
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+    """Apply targeted timeout overrides for slow parameterized scenarios."""
+    for item in items:
+        callspec = getattr(item, "callspec", None)
+        if callspec is None:
+            continue
+
+        device_name = callspec.id.split("-", 1)[0]
+        if not device_name.startswith("nano"):
+            continue
+
+        test_case = callspec.params.get("testCase")
+        test_case_name = getattr(test_case, "name", None)
+        if test_case_name is None:
+            continue
+
+        if "streaming" not in test_case_name.lower():
+            continue
+
+        item.add_marker(pytest.mark.timeout(NANO_STREAMING_TIMEOUT_SECONDS))

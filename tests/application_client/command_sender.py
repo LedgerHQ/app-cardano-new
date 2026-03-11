@@ -168,7 +168,6 @@ class CommandSender:
         if has_delegations:
             if on_advance:
                 with self._exchange_async(self._cmd_builder.sign_tx_aux_data_init(tx, aux_params)):
-                    # Move over registration and first delegation review screens.
                     on_advance(2)
                 response = self.get_async_response()
                 if response is None:

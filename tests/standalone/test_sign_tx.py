@@ -16,7 +16,14 @@ from application_client.status_words import StatusWord
 from application_client.command_builder import gather_witness_paths
 from application_client.command_sender import CommandSender
 from application_client.response_unpacker import unpack_sign_tx_witness_response
-from standalone.utils import verify_signature, idTestFunc, review_approve_with_warning
+from standalone.utils import (
+    verify_signature,
+    idTestFunc,
+    review_approve,
+    choice_approve,
+    nano_navigate_until_text_relaxed,
+    NavContext,
+)
 from standalone.settings import SettingID, SettingValue, settings_set
 from standalone.input_files.signTx import (  # type: ignore
     testsByron,
@@ -62,6 +69,9 @@ from standalone.input_files.signTx import (  # type: ignore
 )
 
 
+CVOTE_AUX_REVIEW_STREAMING_MAX_UI_PAIRS = 255  # Keep in sync with src/ui/ui_utils.h:MAX_UI_PAIRS
+
+
 def _run_sign_tx_test(device: Device,
                       backend: BackendInterface,
                       navigator: Navigator,
@@ -83,6 +93,7 @@ def _run_sign_tx_test(device: Device,
     print(f"Running test in {mode_str} mode: {testCase.name}")
     print(f"{'='*60}")
 
+    nav_ctx = NavContext(device, navigator, scenario_navigator)
     client = CommandSender(backend)
     tx = testCase.tx
 
@@ -90,49 +101,167 @@ def _run_sign_tx_test(device: Device,
     expected_cbor = bytes.fromhex(testCase.txBody)
     expected_hash = blake2b(expected_cbor, digest_size=32).digest()
     print(f"Expected tx hash: {expected_hash.hex()}")
+    auxiliary_data = testCase.tx.auxiliaryData
+    is_cip36_auxiliary_review = (
+        auxiliary_data is not None and
+        auxiliary_data.type == TxAuxiliaryDataType.CIP36_REGISTRATION
+    )
 
     def review_cvote() -> None:
         # CVote auxiliary data review (if present)
-        if testCase.tx.auxiliaryData is not None:
-            if testCase.tx.auxiliaryData.type == TxAuxiliaryDataType.CIP36_REGISTRATION:
-                test_name = f"{testCase.name}-{mode_str}/cvote_review"
-                if len(testCase.expected_aux_warnings) > 0:
-                    review_approve_with_warning(
-                        device,
-                        navigator,
-                        scenario_navigator,
-                        test_name=test_name,
-                        target_text="Confirm vote delegation",
-                        warnings=testCase.expected_aux_warnings,
-                    )
-                else:
-                    scenario_navigator.review_approve(test_name=test_name, custom_screen_text="Confirm")
+        if not is_cip36_auxiliary_review:
+            return
+
+        test_name = f"{testCase.name}-{mode_str}/cvote_review"
+        if device.is_nano and not testCase.expected_aux_warnings:
+            nano_navigate_until_text_relaxed(
+                backend=backend,
+                navigator=navigator,
+                navigate_instruction=NavInsID.RIGHT_CLICK,
+                validation_instructions=[NavInsID.BOTH_CLICK],
+                text=r"^Confirm vote",
+                screen_change_before_first_instruction=True,
+            )
+            return
+
+        if not device.is_nano:
+            if testCase.expected_aux_warnings:
+                detail_navigation = [NavInsID.RIGHT_HEADER_TAP]
+                if len(testCase.expected_aux_warnings) > 3:
+                    detail_navigation += [
+                        NavIns(NavInsID.CHOICE_CHOOSE, (4, )),
+                        NavInsID.LEFT_HEADER_TAP,
+                    ]
+                detail_navigation += [NavInsID.LEFT_HEADER_TAP]
+
+                navigator.navigate_and_compare(
+                    scenario_navigator.screenshot_path,
+                    f"{test_name}/warning/details",
+                    detail_navigation,
+                )
+                navigator.navigate_and_compare(
+                    scenario_navigator.screenshot_path,
+                    f"{test_name}/warning",
+                    [NavInsID.USE_CASE_CHOICE_REJECT],
+                    screen_change_before_first_instruction=False,
+                    screen_change_after_last_instruction=False,
+                )
+
+            navigator.navigate_until_text_and_compare(
+                navigate_instruction=NavInsID.USE_CASE_REVIEW_NEXT,
+                validation_instructions=[],
+                text=r"^Hold to sign$",
+                path=scenario_navigator.screenshot_path,
+                test_case_name=test_name,
+                screen_change_before_first_instruction=True,
+            )
+            navigator.navigate(
+                [NavInsID.USE_CASE_REVIEW_CONFIRM],
+                screen_change_before_first_instruction=False,
+                screen_change_after_last_instruction=False,
+            )
+            return
+
+        review_approve(
+            nav_ctx,
+            test_name=test_name,
+            target_text=r"^Confirm vote" if not testCase.expected_aux_warnings else r"^Reject operation$",
+            warnings=testCase.expected_aux_warnings,
+            nano_review_instructions=(
+                [NavInsID.LEFT_CLICK, NavInsID.BOTH_CLICK]
+                if testCase.expected_aux_warnings
+                else None
+            ),
+        )
 
     def review_tx() -> None:
         # Main transaction review
         test_name = f"{testCase.name}-{mode_str}/review"
         if testCase.tx_streaming:
-            # Streaming tx review: navigate through intermediate chunks without snapshots,
-            # then capture only the final "Sign transaction" screen.
-            navigator.navigate_until_text(
-                navigate_instruction=NavInsID.USE_CASE_REVIEW_NEXT,
-                validation_instructions=[NavInsID.USE_CASE_REVIEW_CONFIRM],
-                text="Sign transaction",
-            )
+            if device.is_nano:
+                nano_navigate_until_text_relaxed(
+                    backend=backend,
+                    navigator=navigator,
+                    navigate_instruction=NavInsID.RIGHT_CLICK,
+                    validation_instructions=[NavInsID.BOTH_CLICK],
+                    text=r"^Sign transaction$",
+                    screen_change_before_first_instruction=True,
+                )
+            else:
+                # Streaming tx review: navigate through intermediate chunks without snapshots,
+                # then capture only the final "Sign transaction" screen.
+                navigator.navigate_until_text(
+                    navigate_instruction=NavInsID.USE_CASE_REVIEW_NEXT,
+                    validation_instructions=[NavInsID.USE_CASE_REVIEW_CONFIRM],
+                    text="Sign transaction",
+                )
         elif len(testCase.expected_warnings) > 0:
-            review_approve_with_warning(
-                device,
-                navigator,
-                scenario_navigator,
+            review_approve(
+                nav_ctx,
                 test_name=test_name,
-                target_text="Sign transaction",
                 warnings=testCase.expected_warnings,
+                target_text="Sign transaction",
+            )
+        elif device.is_nano:
+            navigator.navigate_until_text(
+                navigate_instruction=NavInsID.RIGHT_CLICK,
+                validation_instructions=[NavInsID.BOTH_CLICK],
+                text=r"^Sign transaction$",
+                screen_change_before_first_instruction=True,
             )
         else:
-            scenario_navigator.review_approve(test_name=test_name, custom_screen_text="Sign transaction")
+            review_approve(
+                nav_ctx,
+                test_name=test_name,
+                target_text="Sign transaction",
+            )
+
+    def _is_cip36_aux_review_streaming() -> bool:
+        if not is_cip36_auxiliary_review:
+            return False
+
+        aux_params = auxiliary_data.params
+        pair_count = 1  # "Delegations"
+        pair_count += 1  # "Staking key"
+        pair_count += 1  # "Rewards go to"
+        pair_count += 1  # "Nonce"
+        if aux_params.votingPurpose is not None:
+            pair_count += 1
+        if aux_params.voteKey is not None:
+            pair_count += 1
+            if isinstance(aux_params.voteKey, str) and aux_params.voteKey.startswith("m/"):
+                vote_key_path = aux_params.voteKey.replace("'", "").split("/")
+                try:
+                    account = int(vote_key_path[3]) if len(vote_key_path) > 3 else 0
+                except ValueError:
+                    account = 0
+                if account > 100:
+                    pair_count += 1
+
+        pair_count += 4 * len(aux_params.delegations)
+        return pair_count > CVOTE_AUX_REVIEW_STREAMING_MAX_UI_PAIRS
 
     def review_advance(nb_steps: int = 1) -> None:
         if device.is_nano:
+            if is_cip36_auxiliary_review:
+                if not _is_cip36_aux_review_streaming():
+                    return
+                if nb_steps == 2:
+                    nano_navigate_until_text_relaxed(
+                        backend=backend,
+                        navigator=navigator,
+                        navigate_instruction=NavInsID.RIGHT_CLICK,
+                        validation_instructions=[NavInsID.RIGHT_CLICK],
+                        text=r"^Delegations$",
+                        screen_change_before_first_instruction=False,
+                    )
+                else:
+                    navigator.navigate(
+                        [NavInsID.RIGHT_CLICK] * 4,
+                        screen_change_before_first_instruction=False,
+                        screen_change_after_last_instruction=False,
+                    )
+                return
             # Nano review pages can split long values across extra screens.
             # Use a Nano-specific advancement strategy.
             # `nb_steps == 2` is used for AUX init (registration + first delegation).
@@ -213,7 +342,7 @@ def _run_sign_tx_test(device: Device,
                 elif testCase.signingMode in (TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
                                               TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR):
                     moves += [NavInsID.BOTH_CLICK]
-                elif testCase.tx.auxiliaryData is not None and testCase.tx.auxiliaryData.type != TxAuxiliaryDataType.CIP36_REGISTRATION:
+                elif auxiliary_data is not None and auxiliary_data.type != TxAuxiliaryDataType.CIP36_REGISTRATION:
                     # Other auxiliary data (not CIP36/Catalyst) may need extra moves
                     # CIP36 witnesses with reasonable paths use POLICY_HIDE in non-expert mode
                     moves += [NavInsID.BOTH_CLICK] * 3
@@ -239,7 +368,11 @@ def _run_sign_tx_test(device: Device,
         with client.sign_tx_witness_async(path):
             if should_confirm_witness:
                 test_name = f"{testCase.name}-{mode_str}/witness_{path_idx}"
-                scenario_navigator.address_review_approve(test_name=test_name)
+                choice_approve(
+                    nav_ctx,
+                    test_name=test_name,
+                    confirm_text=r"^Confirm$",
+                )
             else:
                 pass
 
@@ -338,6 +471,7 @@ def test_sign_tx_deny(backend: BackendInterface,
     if testCase.unsuitable_in_ragger_reason is not None:
         pytest.skip(f"Unsuitable in ragger: {testCase.unsuitable_in_ragger_reason}")
 
+    nav_ctx = NavContext(device, navigator, scenario_navigator)
     client = CommandSender(backend)
 
     def _requires_warning_navigation() -> bool:
@@ -362,17 +496,24 @@ def test_sign_tx_deny(backend: BackendInterface,
             return
 
         if _requires_warning_navigation():
-            review_approve_with_warning(
-                device,
-                navigator,
-                scenario_navigator,
+            review_approve(
+                nav_ctx,
                 test_name=f"{testCase.name}-deny/review",
-                target_text="Sign transaction",
                 warnings=testCase.expected_warnings,
+                has_warning_screen=True,
                 do_comparison=False,
+                target_text="Sign transaction",
+            )
+        elif device.is_nano:
+            navigator.navigate_until_text(
+                navigate_instruction=NavInsID.RIGHT_CLICK,
+                validation_instructions=[NavInsID.BOTH_CLICK],
+                text=r"^Sign transaction$",
+                screen_change_before_first_instruction=True,
             )
         else:
-            scenario_navigator.review_approve(
+            review_approve(
+                nav_ctx,
                 test_name=f"{testCase.name}-deny/review",
                 do_comparison=False,
             )

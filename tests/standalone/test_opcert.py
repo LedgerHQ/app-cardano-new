@@ -20,7 +20,7 @@ from application_client.response_unpacker import unpack_sign_opcert_response
 
 from standalone.input_files.signOpCert import opCertTestCases, OpCertTestCase
 
-from standalone.utils import idTestFunc, review_approve_with_warning, verify_signature
+from standalone.utils import idTestFunc, review_approve, verify_signature, NavContext
 
 
 @pytest.mark.parametrize(
@@ -38,22 +38,15 @@ def test_opCert(device: Device,
     # Use the app interface instead of raw interface
     client = CommandSender(backend)
 
+    nav_ctx = NavContext(device, navigator, scenario_navigator)
     with client.sign_opcert_async(testCase):
         test_name = testCase.name
-        if len(testCase.expected_warnings) > 0:
-            review_approve_with_warning(
-                device,
-                navigator,
-                scenario_navigator,
-                test_name=test_name,
-                target_text="Sign certificate",
-                warnings=testCase.expected_warnings,
-            )
-        else:
-            scenario_navigator.review_approve(
-                test_name=test_name,
-                custom_screen_text="Sign certificate",
-            )
+        review_approve(
+            nav_ctx,
+            test_name=test_name,
+            target_text="Sign certificate",
+            warnings=testCase.expected_warnings,
+        )
     # Check the status (Asynchronous)
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS

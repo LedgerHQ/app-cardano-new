@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import List, Sequence, Tuple, Union
 import re
 import hashlib
+from time import time
 
 from ecdsa.curves import Ed25519
 from ecdsa.keys import VerifyingKey
@@ -18,6 +19,7 @@ from ragger.navigator.navigation_scenario import NavigateWithScenario
 from ledgered.devices import Device
 
 from ragger.bip.seed import SPECULOS_MNEMONIC
+from ragger.backend import BackendInterface
 
 from application_client.app_def import AddressType
 
@@ -29,6 +31,160 @@ from standalone.input_files.signMsg import SignMsgTestCase
 
 
 ROOT_SCREENSHOT_PATH = Path(__file__).parent.resolve()
+NANO_CHOICE_CONFIRM_INSTRUCTIONS = [NavInsID.BOTH_CLICK]
+NANO_REVIEW_CONFIRM_INSTRUCTIONS = [NavInsID.LEFT_CLICK, NavInsID.BOTH_CLICK]
+
+_REJECT_TEXT = r"^Reject operation$"
+_WARNING_PATH = "warning"
+_WARNING_CLICKS = 3
+
+
+class NavContext:
+    """Bundles the device/navigator/scenario_navigator triple passed to every navigation helper."""
+
+    def __init__(self, device: Device, navigator: Navigator,
+                 scenario_navigator: NavigateWithScenario) -> None:
+        self.device = device
+        self.navigator = navigator
+        self.scenario_navigator = scenario_navigator
+
+    @property
+    def is_nano(self) -> bool:
+        return self.device.is_nano
+
+    @property
+    def screenshot_path(self) -> Path:
+        return self.scenario_navigator.screenshot_path
+
+
+def _nano_instructions(instructions: Sequence[object] | None,
+                       default: Sequence[object]) -> Sequence[object]:
+    return list(instructions) if instructions is not None else default
+
+
+def nano_navigate_without_waits(backend: BackendInterface,
+                                navigator: Navigator,
+                                instructions: Sequence[object],
+                                timeout: float = 10.0,
+                                screen_change_before_first_instruction: bool = True) -> None:
+    wait_for_screen_change = getattr(backend, "wait_for_screen_change", None)
+    if screen_change_before_first_instruction and callable(wait_for_screen_change):
+        wait_for_screen_change(timeout)
+
+    for instruction in instructions:
+        navigator.navigate(
+            [instruction],
+            timeout=timeout,
+            screen_change_before_first_instruction=False,
+            screen_change_after_last_instruction=False,
+        )
+
+
+def nano_navigate_until_text_relaxed(backend: BackendInterface,
+                                     navigator: Navigator,
+                                     navigate_instruction: object,
+                                     validation_instructions: Sequence[object],
+                                     text: str,
+                                     timeout: float = 300.0,
+                                     screen_change_before_first_instruction: bool = True) -> None:
+    compare_screen_with_text = getattr(backend, "compare_screen_with_text", None)
+    wait_for_screen_change = getattr(backend, "wait_for_screen_change", None)
+
+    if not callable(compare_screen_with_text) or not callable(wait_for_screen_change):
+        navigator.navigate_until_text(
+            navigate_instruction=navigate_instruction,
+            validation_instructions=validation_instructions,
+            text=text,
+            timeout=int(timeout),
+            screen_change_before_first_instruction=screen_change_before_first_instruction,
+            screen_change_after_last_instruction=False,
+        )
+        return
+
+    if screen_change_before_first_instruction:
+        wait_for_screen_change(timeout)
+
+    deadline = time() + timeout
+    while not compare_screen_with_text(text):
+        remaining = deadline - time()
+        if remaining <= 0:
+            raise TimeoutError(f"Timeout waiting for text {text}")
+
+        nano_navigate_without_waits(
+            backend,
+            navigator,
+            [navigate_instruction],
+            timeout=min(remaining, 10.0),
+            screen_change_before_first_instruction=False,
+        )
+
+        remaining = deadline - time()
+        if remaining <= 0:
+            raise TimeoutError(f"Timeout waiting for text {text}")
+
+        try:
+            wait_for_screen_change(min(remaining, 1.0))
+        except TimeoutError:
+            # Some Nano NBGL streaming boundaries consume the action without a
+            # screenshot delta that Speculos detects reliably. Re-check screen
+            # text on the next loop iteration instead of failing immediately.
+            pass
+
+    nano_navigate_without_waits(
+        backend,
+        navigator,
+        validation_instructions,
+        timeout=min(max(deadline - time(), 0.1), 10.0),
+        screen_change_before_first_instruction=False,
+    )
+
+
+def _navigate_maybe_compare(ctx: NavContext,
+                            test_name: str,
+                            instructions: Sequence[object],
+                            do_comparison: bool = True,
+                            **kwargs) -> None:
+    """Navigate with or without golden screenshot comparison."""
+    if do_comparison:
+        ctx.navigator.navigate_and_compare(
+            ctx.screenshot_path,
+            test_name,
+            instructions,
+            **kwargs,
+        )
+    else:
+        ctx.navigator.navigate(
+            instructions,
+            **kwargs,
+        )
+
+
+def _navigate_until_text_optional_compare(ctx: NavContext,
+                                          test_name: str,
+                                          navigate_instruction: object,
+                                          validation_instructions: Sequence[object],
+                                          text: str,
+                                          do_comparison: bool = True,
+                                          screen_change_before_first_instruction: bool = True,
+                                          screen_change_after_last_instruction: bool = True) -> None:
+    if do_comparison:
+        ctx.navigator.navigate_until_text_and_compare(
+            navigate_instruction=navigate_instruction,
+            validation_instructions=validation_instructions,
+            text=text,
+            path=ctx.screenshot_path,
+            test_case_name=test_name,
+            screen_change_before_first_instruction=screen_change_before_first_instruction,
+            screen_change_after_last_instruction=screen_change_after_last_instruction,
+        )
+    else:
+        ctx.navigator.navigate_until_text(
+            navigate_instruction=navigate_instruction,
+            validation_instructions=validation_instructions,
+            text=text,
+            screen_change_before_first_instruction=screen_change_before_first_instruction,
+            screen_change_after_last_instruction=screen_change_after_last_instruction,
+        )
 
 
 # Check if a signature of a given message is valid
@@ -96,16 +252,13 @@ def idTestFunc(testCase: Union[DeriveAddressTestCase, PubKeyTestCase, CVoteTestC
     return testCase.name
 
 
-def review_approve_with_warning(device: Device,
-                                navigator: Navigator,
-                                scenario_navigator: NavigateWithScenario,
-                                test_name: str,
-                                target_text: str,
-                                warnings: Sequence[object],
-                                do_comparison: bool = True,
-                                warning_path: str = "warning",
-                                warning_clicks: int = 3) -> None:
-    if not device.is_nano:
+def _review_approve_with_warning(ctx: NavContext,
+                                 test_name: str,
+                                 target_text: str,
+                                 warnings: Sequence[object],
+                                 do_comparison: bool = True,
+                                 nano_review_instructions: Sequence[object] | None = None) -> None:
+    if not ctx.is_nano:
         detail_navigation = [NavInsID.RIGHT_HEADER_TAP]
         if len(warnings) > 3:
             detail_navigation += [
@@ -114,76 +267,113 @@ def review_approve_with_warning(device: Device,
             ]
         detail_navigation += [NavInsID.LEFT_HEADER_TAP]
 
-        if do_comparison:
-            navigator.navigate_and_compare(
-                scenario_navigator.screenshot_path,
-                f"{test_name}/{warning_path}/details",
-                detail_navigation,
-            )
-            navigator.navigate_and_compare(
-                scenario_navigator.screenshot_path,
-                f"{test_name}/{warning_path}",
-                [NavInsID.USE_CASE_CHOICE_REJECT],
-                screen_change_before_first_instruction=False,
-                screen_change_after_last_instruction=False,
-            )
-            navigator.navigate_until_text_and_compare(
-                navigate_instruction=NavInsID.USE_CASE_REVIEW_NEXT,
-                validation_instructions=[
-                    NavInsID.USE_CASE_REVIEW_CONFIRM,
-                    NavInsID.USE_CASE_STATUS_DISMISS,
-                ],
-                text=r"^Hold to sign$",
-                path=scenario_navigator.screenshot_path,
-                test_case_name=test_name,
-                screen_change_before_first_instruction=True,
-            )
-        else:
-            navigator.navigate(detail_navigation)
-            navigator.navigate(
-                [NavInsID.USE_CASE_CHOICE_REJECT],
-                screen_change_before_first_instruction=False,
-                screen_change_after_last_instruction=False,
-            )
-            navigator.navigate_until_text(
-                navigate_instruction=NavInsID.USE_CASE_REVIEW_NEXT,
-                validation_instructions=[
-                    NavInsID.USE_CASE_REVIEW_CONFIRM,
-                    NavInsID.USE_CASE_STATUS_DISMISS,
-                ],
-                text=r"^Hold to sign$",
-                screen_change_before_first_instruction=True,
-            )
+        _navigate_maybe_compare(ctx, f"{test_name}/{_WARNING_PATH}/details",
+                                detail_navigation, do_comparison)
+        _navigate_maybe_compare(ctx, f"{test_name}/{_WARNING_PATH}",
+                                [NavInsID.USE_CASE_CHOICE_REJECT], do_comparison,
+                                screen_change_before_first_instruction=False,
+                                screen_change_after_last_instruction=False)
+        _navigate_until_text_optional_compare(
+            ctx,
+            test_name=test_name,
+            navigate_instruction=NavInsID.USE_CASE_REVIEW_NEXT,
+            validation_instructions=[
+                NavInsID.USE_CASE_REVIEW_CONFIRM,
+                NavInsID.USE_CASE_STATUS_DISMISS,
+            ],
+            text=r"^Hold to sign$",
+            do_comparison=do_comparison,
+            screen_change_before_first_instruction=True,
+        )
         return
 
-    if do_comparison:
-        navigator.navigate_and_compare(
-            scenario_navigator.screenshot_path,
-            f"{test_name}/{warning_path}",
-            [NavInsID.RIGHT_CLICK] * warning_clicks,
-            screen_change_after_last_instruction=False,
-        )
-        navigator.navigate_until_text_and_compare(
-            navigate_instruction=NavInsID.RIGHT_CLICK,
-            validation_instructions=[NavInsID.BOTH_CLICK],
-            text=target_text,
-            path=scenario_navigator.screenshot_path,
-            test_case_name=test_name,
-            screen_change_before_first_instruction=False,
-        )
-    else:
-        navigator.navigate(
-            [NavInsID.RIGHT_CLICK] * warning_clicks,
-            screen_change_after_last_instruction=False,
-        )
-        navigator.navigate_until_text(
-            navigate_instruction=NavInsID.RIGHT_CLICK,
-            validation_instructions=[NavInsID.BOTH_CLICK],
-            text=target_text,
-            screen_change_before_first_instruction=False,
-        )
+    nano_review_instructions = _nano_instructions(nano_review_instructions,
+                                                  [NavInsID.BOTH_CLICK])
+
+    # Nano NBGL warning/review flows are fragile under screenshot comparison and
+    # can time out while waiting for intermediate screen changes. Drive them
+    # without golden comparisons regardless of do_comparison.
+    ctx.navigator.navigate(
+        [NavInsID.RIGHT_CLICK] * _WARNING_CLICKS,
+        screen_change_after_last_instruction=False,
+    )
+    ctx.navigator.navigate_until_text(
+        navigate_instruction=NavInsID.RIGHT_CLICK,
+        validation_instructions=nano_review_instructions,
+        text=target_text,
+        screen_change_before_first_instruction=False,
+    )
 
 
+def review_approve(ctx: NavContext,
+                   test_name: str,
+                   target_text: str | None = None,
+                   warnings: Sequence[object] = (),
+                   has_warning_screen: bool = False,
+                   do_comparison: bool = True,
+                   nano_review_instructions: Sequence[object] | None = None) -> None:
+    if has_warning_screen or warnings:
+        _review_approve_with_warning(
+            ctx,
+            test_name=test_name,
+            target_text=target_text if target_text is not None else _REJECT_TEXT,
+            warnings=warnings,
+            do_comparison=do_comparison,
+            nano_review_instructions=nano_review_instructions,
+        )
+        return
+
+    if not ctx.is_nano:
+        ctx.scenario_navigator.review_approve(
+            test_name=test_name,
+            custom_screen_text=target_text,
+            do_comparison=do_comparison,
+        )
+        return
+
+    if target_text is not None:
+        _navigate_until_text_optional_compare(
+            ctx,
+            test_name=test_name,
+            navigate_instruction=NavInsID.RIGHT_CLICK,
+            validation_instructions=_nano_instructions(nano_review_instructions,
+                                                       NANO_CHOICE_CONFIRM_INSTRUCTIONS),
+            text=target_text,
+            do_comparison=do_comparison,
+        )
+        return
+
+    _navigate_until_text_optional_compare(
+        ctx,
+        test_name=test_name,
+        navigate_instruction=NavInsID.RIGHT_CLICK,
+        validation_instructions=_nano_instructions(nano_review_instructions,
+                                                   NANO_REVIEW_CONFIRM_INSTRUCTIONS),
+        text=_REJECT_TEXT,
+        do_comparison=do_comparison,
+    )
+
+
+def choice_approve(ctx: NavContext,
+                   test_name: str,
+                   confirm_text: str,
+                   do_comparison: bool = True) -> None:
+    if not ctx.is_nano:
+        _navigate_maybe_compare(
+            ctx, test_name,
+            [NavInsID.USE_CASE_CHOICE_CONFIRM, NavInsID.USE_CASE_STATUS_DISMISS],
+            do_comparison,
+        )
+        return
+
+    _navigate_until_text_optional_compare(
+        ctx,
+        test_name=test_name,
+        navigate_instruction=NavInsID.RIGHT_CLICK,
+        validation_instructions=NANO_CHOICE_CONFIRM_INSTRUCTIONS,
+        text=confirm_text,
+        do_comparison=do_comparison,
+    )
 
 
 def derive_address(testCase: DeriveAddressTestCase) -> Union[bytes, str]:

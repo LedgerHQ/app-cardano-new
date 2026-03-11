@@ -15,7 +15,7 @@ from application_client.response_unpacker import unpack_get_pubkey_response
 
 from standalone.input_files.pubkey import PubKeyTestCase, denyTestCases, testsByron, testsShelleyUsual, testsShelleyUnusual, testsMultisig, testsColdKeys, testsCVoteKeysUsual, testsCVoteKeysUnusual, testsDRepKeys, testsCommitteeColdKeys, testsCommitteeHotKeys, testsMintKeys, testsSilentExport
 
-from standalone.utils import idTestFunc, get_device_pubkey
+from standalone.utils import idTestFunc, get_device_pubkey, choice_approve, NavContext
 from standalone.settings import SettingID, SettingValue, settings_set
 
 @pytest.mark.parametrize(
@@ -47,9 +47,12 @@ def test_pubkey_confirm(device: Device,
         },
         backend=backend,
     )
+    nav_ctx = NavContext(device, navigator, scenario_navigator)
     with client.get_pubkey_async(testCase.path):
         if testCase.nav:
-            scenario_navigator.address_review_approve(test_name=testCase.name, custom_screen_text="Export")
+            choice_approve(nav_ctx,
+                           test_name=testCase.name,
+                           confirm_text=r"^Export$")
         else:
             pass
     # Check the status (Asynchronous)

@@ -202,7 +202,7 @@ void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnin
     nbgl_useCaseAdvancedReview(reviewOperationType,
                                g_pairsList,
                                &ICON_APP_CARDANO,
-                               "Sign message",
+                               "Review message",
                                "CIP-8",
                                "Sign message",
                                NULL,

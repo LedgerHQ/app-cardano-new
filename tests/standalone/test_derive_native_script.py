@@ -8,6 +8,7 @@ This module provides Ragger tests for Derive Native Script Hash check
 """
 
 import hashlib
+import re
 
 import cbor2  # type: ignore
 import pytest
@@ -24,8 +25,11 @@ from application_client.response_unpacker import unpack_derive_native_script_has
 from standalone.input_files.native_script import ValidNativeScriptTestCases, ValidNativeScriptTestCase
 from standalone.input_files.native_script import NativeScript, NativeScriptType
 from standalone.input_files.native_script import NativeScriptParamsScripts, NativeScriptParamsNofK
-
-from standalone.utils import idTestFunc, get_device_pubkey
+from standalone.utils import (
+    idTestFunc,
+    get_device_pubkey,
+    nano_navigate_without_waits,
+)
 
 
 def _resolve_key_hash(script: NativeScript) -> bytes:
@@ -86,6 +90,35 @@ def _compute_expected_script_hash(script: NativeScript) -> str:
     return hashlib.blake2b(b'\x00' + serialized, digest_size=28).hexdigest()
 
 
+def _native_script_step_final_label(script: NativeScript) -> str:
+    if script.type in (NativeScriptType.ALL, NativeScriptType.ANY):
+        assert isinstance(script.params, NativeScriptParamsScripts)
+        return rf"^{len(script.params.scripts)} nested scripts$"
+    if script.type == NativeScriptType.N_OF_K:
+        assert isinstance(script.params, NativeScriptParamsNofK)
+        return rf"^{len(script.params.scripts)} nested scripts$"
+    if script.type == NativeScriptType.PUBKEY_DEVICE_OWNED:
+        assert hasattr(script.params, "key")
+        return rf"^{re.escape(script.params.key)}$"
+    if script.type == NativeScriptType.PUBKEY_THIRD_PARTY:
+        return r"^Pubkey hash \(2/2\)$"
+    if script.type == NativeScriptType.INVALID_BEFORE:
+        assert hasattr(script.params, "slot")
+        return rf"^{script.params.slot}$"
+    if script.type == NativeScriptType.INVALID_HEREAFTER:
+        assert hasattr(script.params, "slot")
+        return rf"^{script.params.slot}$"
+    raise ValueError(f"Unexpected native script type: {script.type}")
+
+
+def _native_script_step_right_clicks(script: NativeScript) -> int | None:
+    if script.type in (NativeScriptType.INVALID_BEFORE, NativeScriptType.INVALID_HEREAFTER):
+        assert hasattr(script.params, "slot")
+        if script.params.slot > 0xFFFFFFFF:
+            return 3
+    return None
+
+
 @pytest.mark.parametrize(
     "testCase",
     ValidNativeScriptTestCases,
@@ -102,7 +135,7 @@ def test_derive_native_script_hash(device: Device,
     client = CommandSender(backend)
 
     _deriveNativeScriptHash_init(device, navigator, client)
-    _deriveNativeScriptHash_addScript(device, navigator, client, testCase.script, False)
+    _deriveNativeScriptHash_addScript(device, navigator, client, testCase.script)
 
     _deriveNativeScriptHash_finishWholeNativeScript(device, navigator, scenario_navigator, client, testCase)
 
@@ -110,7 +143,15 @@ def _deriveNativeScriptHash_init(device: Device,
                                  navigator: Navigator,
                                  client: CommandSender) -> None:
     with client.derive_script_init_async():
-        if not device.is_nano:
+        if device.is_nano:
+            navigator.navigate_until_text(
+                navigate_instruction=NavInsID.RIGHT_CLICK,
+                validation_instructions=[NavInsID.RIGHT_CLICK],
+                text=r"^Review Script$",
+                screen_change_before_first_instruction=True,
+                screen_change_after_last_instruction=False,
+            )
+        else:
             navigator.navigate(
                 [NavInsID.USE_CASE_REVIEW_TAP], screen_change_before_first_instruction=False
             )
@@ -122,8 +163,7 @@ def _deriveNativeScriptHash_init(device: Device,
 def _deriveNativeScriptHash_addScript(device: Device,
                                       navigator: Navigator,
                                       client: CommandSender,
-                                      script: NativeScript,
-                                      complex_nav: bool) -> None:
+                                      script: NativeScript) -> None:
     """Send the different add commands
 
     Args:
@@ -131,23 +171,21 @@ def _deriveNativeScriptHash_addScript(device: Device,
         navigator (Navigator): The navigator instance
         client (CommandSender): The command sender instance
         script (NativeScript): The test case
-        complex_nav (bool): The complex navigation flag
     """
 
     if script.type in [NativeScriptType.ALL, NativeScriptType.ANY, NativeScriptType.N_OF_K]:
-        _deriveScriptHash_startComplexScript(device, navigator, client, script, complex_nav)
+        _deriveScriptHash_startComplexScript(device, navigator, client, script)
         assert isinstance(script.params, (NativeScriptParamsScripts, NativeScriptParamsNofK))
         for subscript in script.params.scripts:
-            _deriveNativeScriptHash_addScript(device, navigator, client, subscript, True)
+            _deriveNativeScriptHash_addScript(device, navigator, client, subscript)
     else:
-        _deriveNativeScriptHash_addSimpleScript(device, navigator, client, script, complex_nav)
+        _deriveNativeScriptHash_addSimpleScript(device, navigator, client, script)
 
 
 def _deriveNativeScriptHash_addSimpleScript(device: Device,
                                             navigator: Navigator,
                                             client: CommandSender,
-                                            script: NativeScript,
-                                            complex_nav: bool) -> None:
+                                            script: NativeScript) -> None:
     """Send the add command for a simple script
 
     Args:
@@ -155,33 +193,29 @@ def _deriveNativeScriptHash_addSimpleScript(device: Device,
         navigator (Navigator): The navigator instance
         client (CommandSender): The command sender instance
         script (NativeScript): The script
-        complex_nav (bool): The complex navigation flag
     """
 
     with client.derive_script_add_simple_async(script):
-        """
-            moves = []
-            if device.is_nano:
-                if complex_nav:
-                    moves += [NavInsID.BOTH_CLICK]
-                if complex_nav or script.type == NativeScriptType.PUBKEY_THIRD_PARTY:
-                    moves += [NavInsID.RIGHT_CLICK]
-                moves += [NavInsID.BOTH_CLICK]
-                #navigator.navigate(moves)
+        if device.is_nano:
+            step_right_clicks = _native_script_step_right_clicks(script)
+            if step_right_clicks is None:
+                navigator.navigate_until_text(
+                    navigate_instruction=NavInsID.RIGHT_CLICK,
+                    validation_instructions=[NavInsID.RIGHT_CLICK],
+                    text=_native_script_step_final_label(script),
+                    screen_change_before_first_instruction=True,
+                    screen_change_after_last_instruction=False,
+                )
             else:
-                if complex_nav:
-                    moves += [NavInsID.TAPPABLE_CENTER_TAP]
-                moves += [NavInsID.SWIPE_CENTER_TO_LEFT]
-                #navigator.navigate(moves,
-                #                   screen_change_before_first_instruction=False,
-                #                   screen_change_after_last_instruction=False)
-        """
-
-        moves = []
-        moves += [NavInsID.USE_CASE_REVIEW_TAP]
-        if not device.is_nano:
+                nano_navigate_without_waits(
+                    backend=client.backend,
+                    navigator=navigator,
+                    instructions=[NavInsID.RIGHT_CLICK] * step_right_clicks,
+                    screen_change_before_first_instruction=True,
+                )
+        else:
             navigator.navigate(
-                moves, screen_change_before_first_instruction=False
+                [NavInsID.USE_CASE_REVIEW_TAP], screen_change_before_first_instruction=False
             )
 
     # Check the status (Asynchronous)
@@ -192,8 +226,7 @@ def _deriveNativeScriptHash_addSimpleScript(device: Device,
 def _deriveScriptHash_startComplexScript(device: Device,
                                          navigator: Navigator,
                                          client: CommandSender,
-                                         script: NativeScript,
-                                         complex_nav: bool) -> None:
+                                         script: NativeScript) -> None:
     """Send the add command for a complex script
 
     Args:
@@ -201,30 +234,20 @@ def _deriveScriptHash_startComplexScript(device: Device,
         client (CommandSender): The command sender instance
         navigator (Navigator): The navigator instance
         script (NativeScript): The script
-        complex_nav (bool): The complex navigation flag
     """
 
     with client.derive_script_add_complex_async(script):
-        """
-        moves = []
         if device.is_nano:
-            if complex_nav:
-                moves += [NavInsID.BOTH_CLICK]
-            if complex_nav or isinstance(script.params, NativeScriptParamsPubkey):
-                moves += [NavInsID.RIGHT_CLICK]
-            moves += [NavInsID.BOTH_CLICK]
+            navigator.navigate_until_text(
+                navigate_instruction=NavInsID.RIGHT_CLICK,
+                validation_instructions=[NavInsID.RIGHT_CLICK],
+                text=_native_script_step_final_label(script),
+                screen_change_before_first_instruction=True,
+                screen_change_after_last_instruction=False,
+            )
         else:
-            if complex_nav:
-                moves += [NavInsID.TAPPABLE_CENTER_TAP]
-            moves += [NavInsID.SWIPE_CENTER_TO_LEFT]
-        navigator.navigate(moves)
-        """
-
-        moves = []
-        moves += [NavInsID.USE_CASE_REVIEW_TAP]
-        if not device.is_nano:
             navigator.navigate(
-                moves, screen_change_before_first_instruction=False
+                [NavInsID.USE_CASE_REVIEW_TAP], screen_change_before_first_instruction=False
             )
 
     # Check the status (Asynchronous)
@@ -249,34 +272,17 @@ def _deriveNativeScriptHash_finishWholeNativeScript(device: Device,
     """
 
     with client.derive_script_finish_async(testCase.displayFormat):
-        """
         if device.is_nano:
-            moves = []
-            if testCase.script.type in (NativeScriptType.INVALID_BEFORE, NativeScriptType.INVALID_HEREAFTER):
-                if testCase.script.params.slot > 1000:
-                    moves += [NavInsID.RIGHT_CLICK]
-            elif testCase.displayFormat != NativeScriptHashDisplayFormat.POLICY_ID and \
-                not (testCase.script.type == NativeScriptType.N_OF_K and testCase.script.params.requiredCount > 0):
-                moves += [NavInsID.RIGHT_CLICK]
-            moves += [NavInsID.BOTH_CLICK]
-
-            navigator.navigate(moves)
-        else:
-            scenario_navigator.address_review_approve(do_comparison=False)
-        """
-        """
-        moves = []
-        if not device.is_nano:
-            navigator.navigate(
-                moves, screen_change_before_first_instruction=False
+            navigator.navigate_until_text(
+                navigate_instruction=NavInsID.RIGHT_CLICK,
+                validation_instructions=[NavInsID.BOTH_CLICK],
+                text=r"^Confirm hash$",
+                screen_change_before_first_instruction=True,
             )
-        """
-        moves = []
-        moves += [NavInsID.USE_CASE_REVIEW_TAP]
-        moves += [NavInsID.USE_CASE_REVIEW_CONFIRM]
-        if not device.is_nano:
+        else:
             navigator.navigate(
-                moves, screen_change_before_first_instruction=False
+                [NavInsID.USE_CASE_REVIEW_TAP, NavInsID.USE_CASE_REVIEW_CONFIRM],
+                screen_change_before_first_instruction=False,
             )
     # Check the status (Asynchronous)
     response = client.get_async_response()

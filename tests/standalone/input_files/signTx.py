@@ -3802,11 +3802,11 @@ testsAlonzo: List[SignTxTestCase] = [
 ]
 
 testsStreaming: List[SignTxTestCase] = [
-    # Streaming test: 700 required signers to exceed MAX_UI_PAIRS (250) and trigger streaming NBGL review.
+    # Streaming test: 700 required signers to exceed MAX_UI_PAIRS (255) and trigger streaming NBGL review.
     # Per hash-type signer: 1 byte (type) + 28 bytes (hash) = 29 bytes raw; 1 UI pair.
     # Fixed overhead: 1 input (36B) + fee (8B) + TTL (8B) = 52 bytes.
     # Total raw: 700*29 + 52 = 20,352 bytes < MAX_TX_BUFFER_SIZE (21,504).
-    # Total UI pairs: 700 + input(1) + fee(1) + TTL(1) + network_id(2) + tx_hash(1) = 706 > 250.
+    # Total UI pairs: 700 + input(1) + fee(1) + TTL(1) + network_id(2) + tx_hash(1) = 706 > 255.
     # txBody: map(6){0: tagged-set([utxoShelley:0]), 1: [], 2: fee=42, 3: ttl=10,
     #             14: tagged-set(700 hashes), 15: networkId=1}
     # prefix: map header + key0 (input) + key1 (empty outputs) + key2 (fee) + key3 (ttl) + key14 header
@@ -3823,7 +3823,7 @@ testsStreaming: List[SignTxTestCase] = [
         ),
         tx_streaming=True,
     ),
-    # Streaming test: 90 third-party outputs to exceed MAX_UI_PAIRS (250).
+    # Streaming test: 90 third-party outputs to exceed MAX_UI_PAIRS (255).
     # Per simple third-party output: 2B (length) + 1B (type) + 2B (addr len) + 57B (addr) + 8B (amount)
     #   + 1B (format) + 1B (datum) + 1B (ref_script) + 2B (tokens) = 75 bytes raw; 3 UI pairs.
     # Total raw: 90*75 + 52 = 6,802 bytes.

@@ -123,7 +123,7 @@ void tx_ui_plan_or_render_required_signer(const tx_processing_mode_t *mode,
         }
         switch (parsed_required_signer->type) {
             case REQUIRED_SIGNER_WITH_HASH:
-                UI_ADD_FORMAT3(UI_STATIC_LABEL("Required signer"),
+                UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Required signer", "Req signer"),
                                MAX_BECH32_STRING_LENGTH,
                                format_bech32,
                                "req_signer_vkh",
@@ -131,7 +131,7 @@ void tx_ui_plan_or_render_required_signer(const tx_processing_mode_t *mode,
                                ADDRESS_KEY_HASH_LENGTH);
                 break;
             case REQUIRED_SIGNER_WITH_PATH:
-                UI_ADD_FORMAT1(UI_STATIC_LABEL("Required signer"),
+                UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Required signer", "Req signer"),
                                MAX_BIP44_PATH_STRING_LENGTH,
                                format_bip44_path,
                                &parsed_required_signer->keyPath);

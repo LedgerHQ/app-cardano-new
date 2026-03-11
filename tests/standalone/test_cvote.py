@@ -14,6 +14,7 @@ from ledgered.devices import Device
 from ragger.navigator import Navigator
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
+
 from application_client.status_words import StatusWord
 from application_client.command_sender import CommandSender
 from application_client.response_unpacker import (
@@ -22,7 +23,7 @@ from application_client.response_unpacker import (
 
 from standalone.input_files.cvote import cvoteTestCases, CVoteTestCase
 
-from standalone.utils import idTestFunc, review_approve_with_warning, verify_signature
+from standalone.utils import idTestFunc, review_approve, verify_signature, NavContext
 
 
 @pytest.mark.parametrize(
@@ -46,7 +47,8 @@ def test_cvote(device: Device,
     _cvote_init(client, testCase)
 
     # Send the CONFIRM APDU (which includes witness path and triggers signing)
-    votecast_hash, signature = _cvote_confirm(device, navigator, scenario_navigator, client, testCase)
+    nav_ctx = NavContext(device, navigator, scenario_navigator)
+    votecast_hash, signature = _cvote_confirm(nav_ctx, client, testCase)
 
     # Verify the hash matches the expected Blake2b-256 hash of the votecast data
     import hashlib
@@ -81,15 +83,13 @@ def _cvote_init(client: CommandSender,
     assert response and response.status == StatusWord.SWO_SUCCESS
 
 
-def _cvote_confirm(device: Device,
-                   navigator: Navigator,
-                   scenario_navigator: NavigateWithScenario,
+def _cvote_confirm(nav_ctx: NavContext,
                    client: CommandSender,
                    testCase: CVoteTestCase) -> tuple[bytes, bytes]:
     """cVOTE CONFIRM and SIGN
 
     Args:
-        scenario_navigator (NavigateWithScenario): the NavigateWithScenario instance
+        nav_ctx (NavContext): Navigation context
         client (CommandSender): The command sender instance
         testCase (CVoteTestCase): The test case
 
@@ -99,10 +99,8 @@ def _cvote_confirm(device: Device,
 
     with client.sign_cip36_confirm_async(testCase):
         test_name = f"{testCase.name}/cvote_confirm"
-        review_approve_with_warning(
-            device,
-            navigator,
-            scenario_navigator,
+        review_approve(
+            nav_ctx,
             test_name=test_name,
             target_text="Sign vote",
             warnings=testCase.expected_warnings,
