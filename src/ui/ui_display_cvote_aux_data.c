@@ -43,6 +43,11 @@
 
 static const char cvote_review_title[] = "Review vote delegation";
 
+typedef enum {
+    CVOTE_DELEGATION_UI_RESULT_OK = 0,
+    CVOTE_DELEGATION_UI_RESULT_ERROR_SENT = 1,
+} cvote_delegation_ui_result_t;
+
 // Helper to check if this is the last streaming page
 static inline bool cvote_is_last_chunk(const cvote_aux_data_t *aux_data) {
     uint16_t remaining = aux_data->ui_delegations_total - aux_data->ui_delegations_shown;
@@ -290,9 +295,10 @@ static bool cvote_add_initial_pairs(cvote_aux_data_t *aux_data) {
     return result;
 }
 
-static bool cvote_add_delegation_pairs(cvote_aux_data_t *aux_data,
-                                       const cvote_credential_t *credential,
-                                       uint32_t weight) {
+static cvote_delegation_ui_result_t cvote_add_delegation_pairs(
+    cvote_aux_data_t *aux_data,
+    const cvote_credential_t *credential,
+    uint32_t weight) {
     LEDGER_ASSERT(credential != NULL, "NULL delegation credential");
     ui_render_session_t render_session = {0};
     ui_render_session_begin(&render_session, 0);
@@ -301,7 +307,6 @@ static bool cvote_add_delegation_pairs(cvote_aux_data_t *aux_data,
     LEDGER_ASSERT(aux_data != NULL && aux_data->ui_delegations_shown < aux_data->ui_delegations_total, "Delegation count exceeded");
     aux_data->ui_delegations_shown++;
     uint16_t delegation_index = aux_data->ui_delegations_shown;
-    ui_pairs_force_new_page();
 
     // Validate delegation policy (per-delegation check for streaming UI)
     warning_bits_t vote_key_warnings = 0;
@@ -316,7 +321,7 @@ static bool cvote_add_delegation_pairs(cvote_aux_data_t *aux_data,
             TRACE("CVote delegation policy denied");
             ui_render_session_end();
             send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
-            return false;
+            return CVOTE_DELEGATION_UI_RESULT_ERROR_SENT;
         case POLICY_SHOW: {
             // Add UI pairs for this delegation
             uint16_t expected_pairs = CVOTE_DELEGATION_UI_PAIRS +
@@ -324,6 +329,7 @@ static bool cvote_add_delegation_pairs(cvote_aux_data_t *aux_data,
                                                         WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)
                                            ? CVOTE_DELEGATION_WARNING_UI_PAIRS
                                            : 0);
+            ui_pairs_force_new_page();
             UI_ADD_FORMAT1(UI_STATIC_LABEL("Delegation"),
                            MAX_DELEGATION_INDEX_STRING_LENGTH,
                            format_cvote_delegation_index,
@@ -343,9 +349,10 @@ static bool cvote_add_delegation_pairs(cvote_aux_data_t *aux_data,
             LEDGER_ASSERT(false, "Unknown delegation policy");
     }
 
-    bool result = (ui_get_error_status() == UI_STATUS_SUCCESS);
+    ui_status_t result = ui_get_error_status();
     ui_render_session_end();
-    return result;
+    LEDGER_ASSERT(result == UI_STATUS_SUCCESS, "Unexpected UI status: %d", result);
+    return CVOTE_DELEGATION_UI_RESULT_OK;
 }
 
 static bool cvote_init_pairs_for_streaming_page(cvote_aux_data_t *aux_data) {
@@ -453,7 +460,7 @@ void ui_cvote_aux_data_streaming_show_initial_page(cvote_aux_data_t *aux_data) {
     cvote_streaming_display_current_page();
 }
 
-void ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
+bool ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
                                                 const cvote_credential_t *credential,
                                                 uint32_t weight) {
     LEDGER_ASSERT(aux_data != NULL && aux_data->ui_streaming.on, "Called with streaming disabled");
@@ -468,33 +475,33 @@ void ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
 
     // Initialize pairs for this delegation page
     if (!cvote_init_pairs_for_streaming_page(aux_data)) {
-        return; // Error already sent
+        return false; // Error already sent
     }
 
-    if (!cvote_add_delegation_pairs(aux_data, credential, weight)) {
-        // Policy DENY sends error inside cvote_add_delegation_pairs
-        // If we get here and it failed, it's a memory issue
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return;
+    if (cvote_add_delegation_pairs(aux_data, credential, weight) ==
+        CVOTE_DELEGATION_UI_RESULT_ERROR_SENT) {
+        return false;
     }
 
     // Display this delegation immediately.
     cvote_streaming_display_current_page();
+    return true;
 }
 
-void ui_cvote_aux_data_add_delegation_non_streaming(cvote_aux_data_t *aux_data,
-                                                     const cvote_credential_t *credential,
-                                                     uint32_t weight) {
+bool ui_cvote_aux_data_add_delegation_non_streaming(cvote_aux_data_t *aux_data,
+                                                    const cvote_credential_t *credential,
+                                                    uint32_t weight) {
     LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
     LEDGER_ASSERT(credential != NULL, "NULL credential");
     LEDGER_ASSERT(aux_data != NULL && !aux_data->ui_streaming.on, "Called with streaming enabled");
     LEDGER_ASSERT(aux_data != NULL && aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS, "ui_cvote_aux_data_add_delegation_non_streaming called in wrong state: %d", aux_data->state);
 
-    if (!cvote_add_delegation_pairs(aux_data, credential, weight)) {
-        // Policy DENY sends error inside cvote_add_delegation_pairs
-        // If we get here and it failed, it's a memory issue
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+    if (cvote_add_delegation_pairs(aux_data, credential, weight) ==
+        CVOTE_DELEGATION_UI_RESULT_ERROR_SENT) {
+        return false;
     }
+
+    return true;
 }
 
 void ui_cvote_aux_data_show_non_streaming_final_review(cvote_aux_data_t *aux_data) {
