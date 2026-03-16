@@ -47,7 +47,7 @@ static void derive_address_review_choice(bool confirm) {
 #define DERIVE_ADDRESS_PAIRS_PAYMENT_AND_STAKE  2  // Payment + Staking info
 #define DERIVE_ADDRESS_PAIRS_WARNING            1  // Warning banner
 
-static ui_status_t format_address_fields(const address_params_t *params, warning_bits_t warnings) {
+static void format_address_fields(const address_params_t *params, warning_bits_t warnings) {
     ui_reset_error_status();
     ui_render_session_t render_session = {0};
     ui_render_session_begin(&render_session, 0);
@@ -66,8 +66,9 @@ static ui_status_t format_address_fields(const address_params_t *params, warning
                                      (hasUnusualPathWarning ? DERIVE_ADDRESS_PAIRS_WARNING : 0);
 
             if (!ui_pairs_init(expectedPairs)) {
-                TRACE("Failed to initialize pairs");
-                return UI_STATUS_OUT_OF_MEMORY;
+                ui_render_session_end();
+                LEDGER_ASSERT(false, "Failed to initialize pairs");
+                return;
             }
 
             START_COUNT();
@@ -100,8 +101,9 @@ static ui_status_t format_address_fields(const address_params_t *params, warning
                                      (hasUnusualPathWarning ? DERIVE_ADDRESS_PAIRS_WARNING : 0);
 
             if (!ui_pairs_init(expectedPairs)) {
-                TRACE("Failed to initialize pairs");
-                return UI_STATUS_OUT_OF_MEMORY;
+                ui_render_session_end();
+                LEDGER_ASSERT(false, "Failed to initialize pairs");
+                return;
             }
 
             START_COUNT();
@@ -121,31 +123,19 @@ static ui_status_t format_address_fields(const address_params_t *params, warning
         default:
             ui_render_session_end();
             LEDGER_ASSERT(false, "Unsupported address type: %d", params->type);
-            return UI_STATUS_OUT_OF_MEMORY;
+            return;
     }
     ui_status_t status = ui_get_error_status();
     ui_render_session_end();
-    return status;
+    LEDGER_ASSERT(status == UI_STATUS_SUCCESS, "Unexpected UI status: %d", status);
 }
 
 static void ui_displayAddressReview(const char *title,
                                     const char *subtitle,
-                                    nbgl_choiceCallback_t callback,
+    nbgl_choiceCallback_t callback,
                                     warning_bits_t warnings) {
     derive_address_ctx_t *ctx = &G_context.derive_address_info;
-    ui_status_t status = format_address_fields(&ctx->address_params, warnings);
-
-    switch (status) {
-        case UI_STATUS_SUCCESS:
-            break;
-        case UI_STATUS_OUT_OF_MEMORY:
-            send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-            return;
-        case UI_STATUS_UNINITIALIZED:
-        default:
-            LEDGER_ASSERT(false, "Unexpected UI status: %d", status);
-            return;
-    }
+    format_address_fields(&ctx->address_params, warnings);
 
     LEDGER_ASSERT(ctx->address.length <= MAX_HUMAN_ADDRESS_LENGTH, "Address length too large");
 
