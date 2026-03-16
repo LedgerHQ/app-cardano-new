@@ -26,6 +26,15 @@ static void cvote_buffer_cleanup(void) {
     ui_all_cleanup();
 }
 
+static void cvote_finish_rendering_or_fail(void) {
+    ui_status_t render_status = ui_get_error_status();
+    ui_render_session_end();
+
+    LEDGER_ASSERT(render_status == UI_STATUS_SUCCESS,
+                  "Unexpected UI status: %d",
+                  render_status);
+}
+
 static void cvote_review_choice(bool confirm) {
     // CLEANUP
     cvote_buffer_cleanup();
@@ -95,7 +104,8 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy, warning_bits_t w
                    format_decimal_amount,
                    ctx->payload_type_tag,
                    0);
-    ui_render_session_end();
+    cvote_finish_rendering_or_fail();
+
     nbgl_useCaseAdvancedReview(TYPE_OPERATION,
                                g_pairsList,
                                &ICON_APP_CARDANO,
