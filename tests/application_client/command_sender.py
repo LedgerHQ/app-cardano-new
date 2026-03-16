@@ -167,8 +167,9 @@ class CommandSender:
 
         if has_delegations:
             if on_advance:
-                with self._exchange_async(self._cmd_builder.sign_tx_aux_data_init(tx, aux_params)):
-                    on_advance(2)
+                with self._exchange_async(self._cmd_builder.sign_tx_aux_data_init(tx, aux_params)) as has_data_available:
+                    if not has_data_available:
+                        on_advance(2)
                 response = self.get_async_response()
                 if response is None:
                     raise AssertionError("No response from AUX_DATA init")
@@ -179,8 +180,9 @@ class CommandSender:
 
             for delegation in aux_params.delegations[:-1]:
                 if on_advance:
-                    with self._exchange_async(self._cmd_builder.sign_tx_aux_data_delegation(delegation)):
-                        on_advance(1)
+                    with self._exchange_async(self._cmd_builder.sign_tx_aux_data_delegation(delegation)) as has_data_available:
+                        if not has_data_available:
+                            on_advance(1)
                     response = self.get_async_response()
                     if response is None:
                         raise AssertionError("No response from AUX_DATA delegation")
@@ -190,8 +192,8 @@ class CommandSender:
                     raise AssertionError(f"AUX_DATA registration failed: {hex(response.status)}")
 
             last_delegation = aux_params.delegations[-1]
-            with self._exchange_async(self._cmd_builder.sign_tx_aux_data_delegation(last_delegation)):
-                if on_review:
+            with self._exchange_async(self._cmd_builder.sign_tx_aux_data_delegation(last_delegation)) as has_data_available:
+                if on_review and not has_data_available:
                     on_review()
 
             response = self.get_async_response()
@@ -200,8 +202,8 @@ class CommandSender:
             if response.status != StatusWord.SWO_SUCCESS:
                 raise AssertionError(f"AUX_DATA registration failed: {hex(response.status)}")
         else:
-            with self._exchange_async(self._cmd_builder.sign_tx_aux_data_init(tx, aux_params)):
-                if on_review:
+            with self._exchange_async(self._cmd_builder.sign_tx_aux_data_init(tx, aux_params)) as has_data_available:
+                if on_review and not has_data_available:
                     on_review()
 
             response = self.get_async_response()
@@ -386,6 +388,9 @@ class CommandSender:
         with self._exchange_async(self._cmd_builder.sign_cvote_init(testCase)):
             yield
 
+    def has_sign_cip36_chunks(self, testCase: CVoteTestCase) -> bool:
+        return len(self._cmd_builder.sign_cvote_chunk(testCase)) > 0
+
 
     def sign_cip36_chunk(self, testCase: CVoteTestCase) -> RAPDU:
         """APDU CIP36 Vote - INIT step
@@ -398,9 +403,13 @@ class CommandSender:
         """
 
         chunks = self._cmd_builder.sign_cvote_chunk(testCase)
+        if not chunks:
+            raise AssertionError("No CIP-36 CHUNK APDUs to send")
+
         for chunk in chunks[:-1]:
             resp = self._exchange(chunk)
-            assert resp.status == StatusWord.SWO_SUCCESS
+            if resp.status != StatusWord.SWO_SUCCESS:
+                raise AssertionError(f"CIP-36 chunk failed: {hex(resp.status)}")
         return self._exchange(chunks[-1])
 
 

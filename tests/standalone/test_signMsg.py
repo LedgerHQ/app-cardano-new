@@ -126,8 +126,8 @@ def test_sign_message_deny(backend: BackendInterface, testCase: SignMsgDenyTestC
         # Memory overflow during INIT validation (SWO_INSUFFICIENT_MEMORY)
         (testCase.expected_status == StatusWord.SWO_INSUFFICIENT_MEMORY and
          (msg_len > 65535 or  # Exceeds UINT16_MAX
-          (not testCase.msgData.isAscii and msg_len > 32767) or  # Non-ASCII hex buffer overflow
-          (not testCase.msgData.hashPayload and msg_len > 65200)))  # Non-hashed sig_structure overflow
+          (not testCase.msgData.isAscii and msg_len >= 32767) or  # Non-ASCII hex buffer overflow
+          (not testCase.msgData.hashPayload and msg_len >= 65280)))  # Non-hashed sig_structure overflow
     )
 
     if expect_init_failure:

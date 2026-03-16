@@ -69,10 +69,6 @@ from standalone.input_files.signTx import (  # type: ignore
 )
 
 
-def cvote_aux_review_streaming_max_ui_pairs(device: Device) -> int:
-    return 127 if device.is_nano else 255
-
-
 def _reason_applies_to_device(device: Device, reason: str) -> tuple[bool, str]:
     if reason.startswith("nano:"):
         return device.is_nano, reason[len("nano:"):].strip()
@@ -239,26 +235,27 @@ def _run_sign_tx_test(device: Device,
         if not is_cip36_auxiliary_review:
             return False
 
-        aux_params = auxiliary_data.params
+        auxiliary_params = auxiliary_data.params
         pair_count = 1  # "Delegations"
         pair_count += 1  # "Staking key"
         pair_count += 1  # "Rewards go to"
         pair_count += 1  # "Nonce"
-        if aux_params.votingPurpose is not None:
+        if auxiliary_params.votingPurpose is not None:
             pair_count += 1
-        if aux_params.voteKey is not None:
+        if auxiliary_params.voteKey is not None:
             pair_count += 1
-            if isinstance(aux_params.voteKey, str) and aux_params.voteKey.startswith("m/"):
-                vote_key_path = aux_params.voteKey.replace("'", "").split("/")
+            if isinstance(auxiliary_params.voteKey, str) and auxiliary_params.voteKey.startswith("m/"):
+                vote_key_path = auxiliary_params.voteKey.replace("'", "").split("/")
                 try:
-                    account = int(vote_key_path[3]) if len(vote_key_path) > 3 else 0
+                    account_index = int(vote_key_path[3]) if len(vote_key_path) > 3 else 0
                 except ValueError:
-                    account = 0
-                if account > 100:
+                    account_index = 0
+                if account_index > 100:
                     pair_count += 1
 
-        pair_count += 4 * len(aux_params.delegations)
-        return pair_count > cvote_aux_review_streaming_max_ui_pairs(device)
+        pair_count += 4 * len(auxiliary_params.delegations)
+        max_ui_pairs = 127 if device.is_nano else 255
+        return pair_count > max_ui_pairs
 
     def review_advance(nb_steps: int = 1) -> None:
         if device.is_nano:
@@ -342,46 +339,26 @@ def _run_sign_tx_test(device: Device,
     print(f"Witness paths: {witness_paths}")
 
     for path_idx, path in enumerate(witness_paths):
-        # Determine navigation moves based on path and transaction properties
-        # (adapted from Shelley app's _signTx_setWitnesses logic)
-        moves = []
-
-        # Parse path to check for unusual paths (non-standard accounts or change addresses)
-        path_elements = path.replace("'", "").split("/")
-        if len(path_elements) > 1:
-            try:
-                # Unusual purpose/account/change must force witness confirmation navigation.
-                if _is_unusual_witness_path_for_navigation(path):
-                    moves += [NavInsID.BOTH_CLICK] * 2
-                elif isinstance(testCase.tx.outputs[0].destination.params, ThirdPartyAddressParams):
-                    # Third-party addresses don't need extra moves
-                    pass
-                elif testCase.signingMode == TransactionSigningMode.PLUTUS_TRANSACTION:
-                    moves += [NavInsID.BOTH_CLICK] * 2
-                elif testCase.signingMode in (TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-                                              TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR):
-                    moves += [NavInsID.BOTH_CLICK]
-                elif auxiliary_data is not None and auxiliary_data.type != TxAuxiliaryDataType.CIP36_REGISTRATION:
-                    # Other auxiliary data (not CIP36/Catalyst) may need extra moves
-                    # CIP36 witnesses with reasonable paths use POLICY_HIDE in non-expert mode
-                    moves += [NavInsID.BOTH_CLICK] * 3
-            except (ValueError, IndexError):
-                # If path parsing fails, use no extra moves
-                pass
-
         # Pool registration witnesses (owner/operator) always need confirmation.
         pool_or_plutus_modes = (
             TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
             TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
             TransactionSigningMode.PLUTUS_TRANSACTION,
         )
+        witness_has_non_hidden_review = (
+            _is_unusual_witness_path_for_navigation(path)
+            or testCase.signingMode in pool_or_plutus_modes
+            or (
+                len(testCase.tx.outputs) > 0
+                and not isinstance(testCase.tx.outputs[0].destination.params, ThirdPartyAddressParams)
+                and auxiliary_data is not None
+                and auxiliary_data.type != TxAuxiliaryDataType.CIP36_REGISTRATION
+            )
+        )
         should_confirm_witness = (
-            testCase.signingMode in pool_or_plutus_modes
-            or len(moves) > 0
+            witness_has_non_hidden_review
             or (expert_mode and _is_ordinary_witness_path(path))
         )
-        if should_confirm_witness and device.is_nano and len(moves) == 0:
-            moves = [NavInsID.BOTH_CLICK]
 
         # Each witness requires explicit confirmation on the device
         with client.sign_tx_witness_async(path):

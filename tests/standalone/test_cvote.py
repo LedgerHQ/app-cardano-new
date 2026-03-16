@@ -77,10 +77,11 @@ def _cvote_init(client: CommandSender,
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS
 
-    # Send the CHUNK APDUs
-    response = client.sign_cip36_chunk(testCase)
-    # Check the status
-    assert response and response.status == StatusWord.SWO_SUCCESS
+    if client.has_sign_cip36_chunks(testCase):
+        # Send the CHUNK APDUs
+        response = client.sign_cip36_chunk(testCase)
+        # Check the status
+        assert response and response.status == StatusWord.SWO_SUCCESS
 
 
 def _cvote_confirm(nav_ctx: NavContext,

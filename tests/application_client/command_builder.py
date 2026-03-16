@@ -298,17 +298,17 @@ class CommandBuilder:
                    p1: int = P1Type.P1_UNUSED,
                    p2: int = P2Type.P2_UNUSED,
                    cdata: bytes = bytes()) -> bytes:
+        if len(cdata) > MAX_UINT8:
+            raise ValueError(
+                f"Extended-length APDUs are not supported: payload length {len(cdata)}"
+            )
+
         header = bytearray()
         header.append(CLA)
         header.append(ins)
         header.append(p1)
         header.append(p2)
-        if len(cdata) < 256:
-            header.append(len(cdata))
-        else:
-            header.append(0)
-            header.append((len(cdata) >> 8) & 0xFF)
-            header.append(len(cdata) & 0xFF)
+        header.append(len(cdata))
         return header + cdata
 
     def get_version(self) -> bytes:
@@ -405,13 +405,12 @@ class CommandBuilder:
         #    Full length of voteCastDataHex (4B)
         #    voteCastDataHex (first chunk, up to 250 B)
         data = bytes()
+        payload_hex = testCase.cVote.voteCastDataHex
         # 2 hex chars per byte
-        data_size = int(len(testCase.cVote.voteCastDataHex) / 2)
-        chunk_size = min(MAX_CIP36_PAYLOAD_SIZE * 2, len(testCase.cVote.voteCastDataHex))
+        data_size = int(len(payload_hex) / 2)
+        chunk_size = min(MAX_CIP36_PAYLOAD_SIZE * 2, len(payload_hex))
         data += data_size.to_bytes(4, "big")
-        data += bytes.fromhex(testCase.cVote.voteCastDataHex[:chunk_size])
-        # Remove the data sent in this step
-        testCase.cVote.voteCastDataHex = testCase.cVote.voteCastDataHex[chunk_size:]
+        data += bytes.fromhex(payload_hex[:chunk_size])
         return self._serialize(InsType.INS_SIGN_CVOTE, P1Type.P1_CVOTE_INIT, P2Type.P2_UNUSED, data)
 
 
@@ -428,7 +427,7 @@ class CommandBuilder:
         # Serialization format:
         #    voteCastDataHex (following data, up to MAX_CIP36_PAYLOAD_SIZE B each)
         chunks = []
-        payload = testCase.cVote.voteCastDataHex
+        payload = testCase.cVote.voteCastDataHex[MAX_CIP36_PAYLOAD_SIZE * 2:]
         max_payload_size = MAX_CIP36_PAYLOAD_SIZE * 2 # 2 hex chars per byte
         while len(payload) > 0:
             chunks.append(self._serialize(InsType.INS_SIGN_CVOTE,
