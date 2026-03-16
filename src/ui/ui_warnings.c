@@ -114,13 +114,25 @@ static bool build_wallet_warning_details_page(const warning_definition_t *const 
     size_t row_count = warnings_on_page + (has_more_warnings ? 1 : 0);
 
     if (!allocate_zeroed((void **) &icons, sizeof(nbgl_icon_details_t *) * row_count) ||
-        !allocate_zeroed((void **) &titles, sizeof(const char *) * row_count) ||
-        !allocate_zeroed((void **) &subtexts, sizeof(const char *) * row_count) ||
-        !allocate_zeroed((void **) &details, sizeof(nbgl_warningDetails_t) * row_count)) {
-        if (icons != NULL) APP_MEM_FREE((void *) icons);
-        if (titles != NULL) APP_MEM_FREE((void *) titles);
-        if (subtexts != NULL) APP_MEM_FREE((void *) subtexts);
-        if (details != NULL) APP_MEM_FREE(details);
+        icons == NULL) {
+        return false;
+    }
+    if (!allocate_zeroed((void **) &titles, sizeof(const char *) * row_count) ||
+        titles == NULL) {
+        APP_MEM_FREE((void *) icons);
+        return false;
+    }
+    if (!allocate_zeroed((void **) &subtexts, sizeof(const char *) * row_count) ||
+        subtexts == NULL) {
+        APP_MEM_FREE((void *) icons);
+        APP_MEM_FREE((void *) titles);
+        return false;
+    }
+    if (!allocate_zeroed((void **) &details, sizeof(nbgl_warningDetails_t) * row_count) ||
+        details == NULL) {
+        APP_MEM_FREE((void *) icons);
+        APP_MEM_FREE((void *) titles);
+        APP_MEM_FREE((void *) subtexts);
         return false;
     }
 

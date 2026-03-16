@@ -419,7 +419,6 @@ class SignTxTestCase:
     expected_aux_warnings: List[WarningBit] = field(default_factory=list)  # Warnings in auxiliary data (CVote) review
     # TODO: Debug navigation
     unsuitable_in_ragger_reason: Optional[str] = None  # If set, explains why this vector is unsuitable for direct ragger execution
-    unsuitable_on_nano_in_ragger_reason: Optional[str] = None
     deny_before_review: bool = False  # For deny tests that fail before review UI is displayed
     tx_streaming: bool = False  # True when the tx body review uses NBGL streaming (multiple chunks)
 
@@ -3538,19 +3537,24 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
 # =================
 # signTxPlutus
 # =================
-_tx_streaming_many_required_signers = Transaction(
-    network=Mainnet,
-    inputs=[inputs["utxoShelley"]],
-    outputs=[],
-    requiredSigners=[
-        RequiredSigner(
-            TxRequiredSignerType.HASH,
-            f"{i:0>8x}646c67fb467f8a5425e9c752e1e262b0420ba4b638f39514",
-        )
-        for i in range(700)
-    ],
-    includeNetworkId=True,
-)
+def _make_tx_streaming_many_required_signers(required_signer_count: int) -> Transaction:
+    return Transaction(
+        network=Mainnet,
+        inputs=[inputs["utxoShelley"]],
+        outputs=[],
+        requiredSigners=[
+            RequiredSigner(
+                TxRequiredSignerType.HASH,
+                f"{i:0>8x}646c67fb467f8a5425e9c752e1e262b0420ba4b638f39514",
+            )
+            for i in range(required_signer_count)
+        ],
+        includeNetworkId=True,
+    )
+
+
+_tx_streaming_many_required_signers = _make_tx_streaming_many_required_signers(700)
+_tx_streaming_many_required_signers_nano = _make_tx_streaming_many_required_signers(256)
 
 _tx_streaming_many_outputs = Transaction(
     network=Mainnet,
@@ -3820,6 +3824,20 @@ testsStreaming: List[SignTxTestCase] = [
         txBody=(
             "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0e9902bc"
             + "".join(f"581c{i:0>8x}646c67fb467f8a5425e9c752e1e262b0420ba4b638f39514" for i in range(700))
+            + "0f01"
+        ),
+        tx_streaming=True,
+        unsuitable_in_ragger_reason="nano: Wallet-sized 700-signer review is reserved for large-screen devices",
+    ),
+    # Nano-focused streaming copy: 256 required signers still exceeds both Nano (127) and wallet (255)
+    # review slabs while staying well below the tx buffer limit.
+    SignTxTestCase(
+        name="Sign_tx_streaming_many_required_signers_nano",
+        tx=_tx_streaming_many_required_signers_nano,
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody=(
+            "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0e990100"
+            + "".join(f"581c{i:0>8x}646c67fb467f8a5425e9c752e1e262b0420ba4b638f39514" for i in range(256))
             + "0f01"
         ),
         tx_streaming=True,

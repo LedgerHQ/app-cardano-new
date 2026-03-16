@@ -69,7 +69,26 @@ from standalone.input_files.signTx import (  # type: ignore
 )
 
 
-CVOTE_AUX_REVIEW_STREAMING_MAX_UI_PAIRS = 255  # Keep in sync with src/ui/ui_utils.h:MAX_UI_PAIRS
+def cvote_aux_review_streaming_max_ui_pairs(device: Device) -> int:
+    return 127 if device.is_nano else 255
+
+
+def _reason_applies_to_device(device: Device, reason: str) -> tuple[bool, str]:
+    if reason.startswith("nano:"):
+        return device.is_nano, reason[len("nano:"):].strip()
+    if reason.startswith("non_nano:"):
+        return (not device.is_nano), reason[len("non_nano:"):].strip()
+    if reason.startswith("all:"):
+        return True, reason[len("all:"):].strip()
+    return True, reason
+
+
+def skip_in_ragger(device: Device, reasons: list[str | None]) -> None:
+    for reason in reasons:
+        if reason is not None:
+            applies, message = _reason_applies_to_device(device, reason)
+            if applies:
+                pytest.skip(f"Unsuitable in ragger: {message}")
 
 
 def _run_sign_tx_test(device: Device,
@@ -239,7 +258,7 @@ def _run_sign_tx_test(device: Device,
                     pair_count += 1
 
         pair_count += 4 * len(aux_params.delegations)
-        return pair_count > CVOTE_AUX_REVIEW_STREAMING_MAX_UI_PAIRS
+        return pair_count > cvote_aux_review_streaming_max_ui_pairs(device)
 
     def review_advance(nb_steps: int = 1) -> None:
         if device.is_nano:
@@ -415,6 +434,12 @@ def test_sign_tx(device: Device,
     4. User approves transaction
     5. Request witness signature
     """
+    skip_in_ragger(
+        device,
+        [
+            testCase.unsuitable_in_ragger_reason,
+        ],
+    )
 
     # Force the requested expert-mode state via the on-device settings menu.
     settings_set(
@@ -468,8 +493,12 @@ def test_sign_tx_deny(backend: BackendInterface,
                         testCase: SignTxTestCase) -> None:
     """Test that invalid transaction parameters are correctly denied."""
 
-    if testCase.unsuitable_in_ragger_reason is not None:
-        pytest.skip(f"Unsuitable in ragger: {testCase.unsuitable_in_ragger_reason}")
+    skip_in_ragger(
+        device,
+        [
+            testCase.unsuitable_in_ragger_reason,
+        ],
+    )
 
     nav_ctx = NavContext(device, navigator, scenario_navigator)
     client = CommandSender(backend)

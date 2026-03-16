@@ -69,6 +69,26 @@ static void test_sign_tx_streaming_many_required_signers_reject_tx_expert_on(voi
     run_fixture_reject_tx_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_STREAMING_MANY_REQUIRED_SIGNERS, true);
 }
 
+static void test_sign_tx_streaming_many_required_signers_nano_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_STREAMING_MANY_REQUIRED_SIGNERS_NANO, false);
+}
+
+static void test_sign_tx_streaming_many_required_signers_nano_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_STREAMING_MANY_REQUIRED_SIGNERS_NANO, false);
+}
+
+static void test_sign_tx_streaming_many_required_signers_nano_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_STREAMING_MANY_REQUIRED_SIGNERS_NANO, true);
+}
+
+static void test_sign_tx_streaming_many_required_signers_nano_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_STREAMING_MANY_REQUIRED_SIGNERS_NANO, true);
+}
+
 static void test_sign_tx_streaming_many_outputs_expert_off(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_STREAMING_MANY_OUTPUTS, false);
@@ -99,6 +119,10 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_streaming_many_required_signers_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_streaming_many_required_signers_expert_on),
         cmocka_unit_test(test_sign_tx_streaming_many_required_signers_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_streaming_many_required_signers_nano_expert_off),
+        cmocka_unit_test(test_sign_tx_streaming_many_required_signers_nano_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_streaming_many_required_signers_nano_expert_on),
+        cmocka_unit_test(test_sign_tx_streaming_many_required_signers_nano_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_streaming_many_outputs_expert_off),
         cmocka_unit_test(test_sign_tx_streaming_many_outputs_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_streaming_many_outputs_expert_on),
