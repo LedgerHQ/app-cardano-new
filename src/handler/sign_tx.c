@@ -406,7 +406,6 @@ static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
     LEDGER_ASSERT(cdata != NULL, "NULL cdata");
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_CHUNKS, "Invalid state for chunk reception");
     const size_t chunk_size = buffer_data_size(cdata);
-
     if (is_final_chunk) {
         if (chunk_size == 0 || chunk_size > MAX_SIGN_TX_CHUNK_SIZE) {
             TRACE("Invalid final tx chunk size: chunk=%u, allowed=[1,%u]",
@@ -457,7 +456,6 @@ static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
     }
     tx_body_ctx()->raw_tx_current_length += chunk_size;
     TRACE("Copied %u bytes, total: %u", (unsigned) chunk_size, (unsigned) tx_body_ctx()->raw_tx_current_length);
-
     return true;
 }
 

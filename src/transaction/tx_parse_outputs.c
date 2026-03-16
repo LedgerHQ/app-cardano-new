@@ -18,6 +18,7 @@
 #define TRACE_MODULE(...) (void)0  // Compiled out
 #endif
 
+__noinline_due_to_stack__
 uint16_t parse_output_destination(buffer_t* buf, tx_output_destination_t* destination) {
     LEDGER_ASSERT(buf != NULL, "NULL buf");
     LEDGER_ASSERT(destination != NULL, "NULL destination");

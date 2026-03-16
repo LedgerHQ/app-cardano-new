@@ -119,8 +119,10 @@ typedef struct {
     uint8_t stakingHash[ADDRESS_KEY_HASH_LENGTH];
 } address_params_hashes_storage_t;
 
+__noinline_due_to_stack__
 size_t deriveAddress(const address_params_t* address_params, uint8_t* outBuffer, size_t outSize);
 
+__noinline_due_to_stack__
 size_t constructRewardAddressFromKeyPath(const bip44_path_t* path,
                                                                    uint8_t networkId,
                                                                    uint8_t* outBuffer,
@@ -131,6 +133,7 @@ typedef enum {
     REWARD_HASH_SOURCE_SCRIPT,
 } reward_address_hash_source_t;
 
+__noinline_due_to_stack__
 size_t constructRewardAddressFromHash(uint8_t networkId,
                                                                 reward_address_hash_source_t source,
                                                                 const uint8_t* hashBuffer,
@@ -141,12 +144,13 @@ size_t constructRewardAddressFromHash(uint8_t networkId,
 bool format_blockchain_pointer(blockchainPointer_t blockchainPointer, char* out, size_t outSize);
 
 bool format_address_human_readable(const uint8_t* address, size_t addressSize, char* out, size_t outSize);
-
+__noinline_due_to_stack__
 bool format_reward_account_from_credential(uint8_t networkId,
                                            const ext_credential_t* credential,
                                            char* out,
                                            size_t outSize);
 
+__noinline_due_to_stack__
 bool format_pool_reward_account(uint8_t networkId,
                                 const pool_reward_account_t* rewardAccount,
                                 char* out,

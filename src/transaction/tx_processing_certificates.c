@@ -3,6 +3,7 @@
 
 #include "buffer.h"
 #include "lists.h"
+#include "mem.h"
 
 #include "os.h"
 
@@ -446,13 +447,14 @@ bool process_pool_registration_certificate(buffer_t *buf,
                                                              pool_registration->cost,
                                                              pool_registration->marginNumerator,
                                                              pool_registration->marginDenominator);
-        uint8_t reward_account_buffer[REWARD_ACCOUNT_LENGTH] = {0};
+        uint8_t *reward_account_buffer = tx_alloc_temp_buffer_or_fail(REWARD_ACCOUNT_LENGTH);
         poolRewardAccountToBuffer(&pool_registration->rewardAccount,
                                   tx_params->networkId,
                                   reward_account_buffer);
         txHashBuilder_poolRegistrationCertificate_rewardAccount(hash_builder,
                                                                 reward_account_buffer,
-                                                                SIZEOF(reward_account_buffer));
+                                                                REWARD_ACCOUNT_LENGTH);
+        APP_MEM_FREE_AND_NULL((void **) &reward_account_buffer);
         txHashBuilder_addPoolRegistrationCertificate_enterOwners(hash_builder);
     }
 

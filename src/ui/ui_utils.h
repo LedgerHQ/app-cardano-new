@@ -42,10 +42,16 @@ typedef struct {
 } ui_render_session_t;
 
 /**
- * Maximum number of UI pairs that can be displayed.
- * Also used as the limit for the allocation tracker.
+ * Maximum number of UI pairs allocated for one review slab on the current screen class.
+ *
+ * Wallet devices can use the full 255-pair slab. Nano devices use a smaller slab to fit the
+ * tighter temporary-memory budget and rely on streaming for larger reviews.
  */
+#ifdef SCREEN_SIZE_WALLET
 #define MAX_UI_PAIRS 255
+#else
+#define MAX_UI_PAIRS 127
+#endif
 
 STATIC_ASSERT(MAX_UI_PAIRS <= UINT8_MAX, "MAX_UI_PAIRS must fit in uint8_t");
 

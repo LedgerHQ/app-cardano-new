@@ -83,6 +83,9 @@
  */
 #define MARK_UNUSED __attribute__((unused, deprecated))
 
+// Keep selected functions out of line when stack usage matters on constrained targets.
+#define __noinline_due_to_stack__ __attribute__((noinline))
+
 #define IS_SIGNED_TYPE(type) (((type)(-1)) < 0)
 
 

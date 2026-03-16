@@ -33,6 +33,8 @@ For detailed analysis, see:
     - `TRACE_CVOTE`: Catalyst voting parsing (`src/cvote/cvote_parser.c`).
     - `TRACE_AUX_DATA_HASH_BUILDER`, `TRACE_VOTECAST_HASH_BUILDER`, `TRACE_NATIVE_SCRIPT_HASH_BUILDER`: Hash builders.
 - **Memory Management:** Be extremely mindful of scarce memory. Global context data should be strictly necessary.
+- **Stack Discipline:** Ledger targets, especially Nano X, are sensitive to stack pressure. Use `__noinline_due_to_stack__` from `src/utils/utils.h` for helpers with large local buffers or helpers that commonly compose into stack-heavy call chains, particularly in address derivation / formatting and transaction parsing / formatting paths. Put the attribute on its own line immediately above the function declaration / definition. Prefer this over adding temporary global scratch buffers unless there is a stronger architectural reason.
+- **Temporary Buffers:** For short-lived byte buffers in tx/UI code, a tiny local helper such as `alloc_temp_buffer_or_fail()` using `APP_MEM_CALLOC`/`APP_MEM_FREE_AND_NULL` is acceptable when the allocation/free stay tightly scoped and improve stack usage.
 - **Imports:** Organize imports logically and avoid forward declarations.
 - **Legacy Code:** Identify and propose removal of any boilerplate leftovers.
 - **Use cheap fast model to gather context if possible (e.g. Haiku)**.

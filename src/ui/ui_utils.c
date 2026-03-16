@@ -150,6 +150,7 @@ void ui_pairs_force_new_page(void) {
     g_pending_force_page_start = true;
 }
 
+__noinline_due_to_stack__
 bool ui_pairs_add_static_label_impl(const char* label, char* tmp_buf, bool shrink) {
     LEDGER_ASSERT(label != NULL && label[0] != '\0', "Invalid UI label");
     LEDGER_ASSERT(tmp_buf != NULL && tmp_buf[0] != '\0', "Invalid UI value");
@@ -157,15 +158,18 @@ bool ui_pairs_add_static_label_impl(const char* label, char* tmp_buf, bool shrin
     #ifdef DEBUG
     {
         size_t len = strlen(tmp_buf);
-        const size_t preview_len = 256;
-        char value_preview[257] = {0};  // 256 chars + null terminator
-        memcpy(value_preview, tmp_buf, len > preview_len ? preview_len : len);
+        enum {
+            VALUE_PREVIEW_LEN = 256,
+        };
+        char value_preview[VALUE_PREVIEW_LEN + 1];
+        explicit_bzero(value_preview, SIZEOF(value_preview));
+        memcpy(value_preview, tmp_buf, len > VALUE_PREVIEW_LEN ? VALUE_PREVIEW_LEN : len);
 
         TRACE("Adding pair %u: label='%s' value='%s%s (length = %u)'",
               g_next_pair_index,
               label,
               value_preview,
-              len > preview_len ? "..." : "",
+              len > VALUE_PREVIEW_LEN ? "..." : "",
               len);
     }
     #endif

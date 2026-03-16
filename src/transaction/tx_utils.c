@@ -2,11 +2,22 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 
 #include "tx_utils.h"
+
+#include <stddef.h>
 #include <string.h>
+
+#include "mem.h"
 #include "globals.h"
 #include "bip44.h"
 #include "assert.h"
 #include "utils.h"
+
+uint8_t *tx_alloc_temp_buffer_or_fail(size_t size) {
+    uint8_t *buffer = NULL;
+    bool allocated = APP_MEM_CALLOC((void **) &buffer, (uint16_t) size);
+    LEDGER_ASSERT(allocated && buffer != NULL, "Temporary buffer allocation failed");
+    return buffer;
+}
 
 bool violatesSingleAccountOrStoreIt(const bip44_path_t* path) {
     LEDGER_ASSERT(path != NULL, "NULL path");
@@ -87,17 +98,21 @@ bool tx_output_destination_to_address_bytes(const tx_output_destination_t* desti
     }
 }
 
+__noinline_due_to_stack__
 bool format_tx_output_destination_human_readable(const tx_output_destination_t* destination,
                                                  char* out,
                                                  size_t outSize) {
-    uint8_t addressBytes[MAX_ADDRESS_LENGTH] = {0};
+    uint8_t *addressBytes = tx_alloc_temp_buffer_or_fail(MAX_ADDRESS_LENGTH);
     size_t addressLength = 0;
     if (!tx_output_destination_to_address_bytes(destination,
                                                 addressBytes,
-                                                SIZEOF(addressBytes),
+                                                MAX_ADDRESS_LENGTH,
                                                 &addressLength)) {
+        APP_MEM_FREE_AND_NULL((void **) &addressBytes);
         return false;
     }
 
-    return format_address_human_readable(addressBytes, addressLength, out, outSize);
+    bool formatted = format_address_human_readable(addressBytes, addressLength, out, outSize);
+    APP_MEM_FREE_AND_NULL((void **) &addressBytes);
+    return formatted;
 }

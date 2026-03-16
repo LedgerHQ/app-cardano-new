@@ -418,7 +418,8 @@ static bool tx_process_withdrawals(buffer_t *buf, tx_processing_state_t *state) 
 
         // Optimization: calculate reward address only when needed (canonical check or hashing)
         if (mode->run_validation || mode->run_hash_builder) {
-            uint8_t reward_address[REWARD_ACCOUNT_LENGTH] = {0};
+            uint8_t *reward_address = tx_alloc_temp_buffer_or_fail(REWARD_ACCOUNT_LENGTH);
+
             size_t reward_address_length = 0;
             switch (parsed_withdrawal.stakeCredential.type) {
                 case EXT_CREDENTIAL_KEY_PATH:
@@ -426,7 +427,7 @@ static bool tx_process_withdrawals(buffer_t *buf, tx_processing_state_t *state) 
                         &parsed_withdrawal.stakeCredential.keyPath,
                         tx_params->networkId,
                         reward_address,
-                        SIZEOF(reward_address));
+                        REWARD_ACCOUNT_LENGTH);
                     break;
                 case EXT_CREDENTIAL_KEY_HASH:
                     reward_address_length = constructRewardAddressFromHash(
@@ -435,7 +436,7 @@ static bool tx_process_withdrawals(buffer_t *buf, tx_processing_state_t *state) 
                         parsed_withdrawal.stakeCredential.keyHash,
                         ADDRESS_KEY_HASH_LENGTH,
                         reward_address,
-                        SIZEOF(reward_address));
+                        REWARD_ACCOUNT_LENGTH);
                     break;
                 case EXT_CREDENTIAL_SCRIPT_HASH:
                     reward_address_length = constructRewardAddressFromHash(
@@ -444,7 +445,7 @@ static bool tx_process_withdrawals(buffer_t *buf, tx_processing_state_t *state) 
                         parsed_withdrawal.stakeCredential.scriptHash,
                         SCRIPT_HASH_LENGTH,
                         reward_address,
-                        SIZEOF(reward_address));
+                        REWARD_ACCOUNT_LENGTH);
                     break;
                 default:
                     LEDGER_ASSERT(false, "Unknown withdrawal credential type");
@@ -463,6 +464,8 @@ static bool tx_process_withdrawals(buffer_t *buf, tx_processing_state_t *state) 
                                             reward_address_length,
                                             parsed_withdrawal.amount);
             }
+
+            APP_MEM_FREE_AND_NULL((void **) &reward_address);
         }
     }
 
@@ -789,15 +792,16 @@ static bool tx_process_votes(buffer_t *buf,
             return false;
         }
 
-        uint8_t gov_action_key[MAX_CBOR_GOV_ACTION_MAP_KEY_SIZE] = {0};
+        uint8_t *gov_action_key = tx_alloc_temp_buffer_or_fail(MAX_CBOR_GOV_ACTION_MAP_KEY_SIZE);
         size_t gov_action_key_length = txHashBuilder_serializeGovActionKey(
             &parsed_vote.govActionId,
             gov_action_key,
-            SIZEOF(gov_action_key));
+            MAX_CBOR_GOV_ACTION_MAP_KEY_SIZE);
         ENFORCE_CANONICAL_ORDERING_CHECK(vote_key_tracker,
                                          gov_action_key,
                                          gov_action_key_length,
                                          SWO_TX_PARSING_FAIL_VOTING_PROCEDURES);
+        APP_MEM_FREE_AND_NULL((void **) &gov_action_key);
 
         if (!tx_process_vote(state, &parsed_vote, voter_policy)) {
             return false;
@@ -839,15 +843,16 @@ static bool tx_process_voting_procedures(buffer_t *buf, tx_processing_state_t *s
         }
 
         voter_t voter_for_hashbuilder = voter_for_tx_hash_from_ext_voter(&parsed_voter);
-        uint8_t voter_key[MAX_CBOR_VOTER_MAP_KEY_SIZE] = {0};
+        uint8_t *voter_key = tx_alloc_temp_buffer_or_fail(MAX_CBOR_VOTER_MAP_KEY_SIZE);
         size_t voter_key_length = txHashBuilder_serializeVoterKey(
             &voter_for_hashbuilder,
             voter_key,
-            SIZEOF(voter_key));
+            MAX_CBOR_VOTER_MAP_KEY_SIZE);
         ENFORCE_CANONICAL_ORDERING_CHECK(voter_key_tracker,
                                          voter_key,
                                          voter_key_length,
                                          SWO_TX_PARSING_FAIL_VOTING_PROCEDURES);
+        APP_MEM_FREE_AND_NULL((void **) &voter_key);
 
         if (mode->run_hash_builder) {
             txHashBuilder_addVoter(&state->hash_builder, &voter_for_hashbuilder, num_votes);

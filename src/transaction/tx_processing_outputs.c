@@ -4,6 +4,7 @@
 #include "buffer.h"
 #include "cardano_swo.h"
 #include "app_context.h"
+#include "mem.h"
 #include "tx_parse.h"
 #include "tx_parse_outputs.h"
 #include "tx.h"
@@ -41,24 +42,28 @@ void tx_handle_parse_error(uint16_t swo);
 typedef void (*hash_add_output_fn_t)(tx_hash_builder_t *builder,
                                      const tx_output_description_t *output);
 
+__noinline_due_to_stack__
 static void hash_add_output_top_level(tx_hash_builder_t *tx_hash_builder,
                                       const tx_output_description_t *output_description,
                                       hash_add_output_fn_t hash_fn) {
     LEDGER_ASSERT(tx_hash_builder != NULL, "NULL tx_hash_builder");
     LEDGER_ASSERT(output_description != NULL, "NULL output_description");
 
-    uint8_t address_bytes[MAX_ADDRESS_LENGTH] = {0};
+    uint8_t *address_bytes = tx_alloc_temp_buffer_or_fail(MAX_ADDRESS_LENGTH);
+
     size_t address_size = 0;
     bool destination_parsed = tx_output_destination_to_address_bytes(
         &output_description->destination,
         address_bytes,
-        SIZEOF(address_bytes),
+        MAX_ADDRESS_LENGTH,
         &address_size);
     LEDGER_ASSERT(destination_parsed, "Failed to build output address bytes for hashing");
 
     tx_output_description_t hash_description = *output_description;
     hash_description.destination = tx_output_destination_make_third_party(address_bytes, address_size);
     hash_fn(tx_hash_builder, &hash_description);
+
+    APP_MEM_FREE_AND_NULL((void **) &address_bytes);
 }
 
 // ---------------------------------------------------------------------------
@@ -411,7 +416,6 @@ bool tx_process_outputs(buffer_t *buf, tx_processing_state_t *state) {
                                        state)) {
             return false;
         }
-
         if (!buffer_seek_cur(buf, output_length)) {
             tx_handle_parse_error(SWO_TX_PARSING_FAIL_OUTPUTS);
             return false;

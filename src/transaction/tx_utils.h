@@ -4,6 +4,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
 #include "tx.h"
@@ -28,6 +29,14 @@
  *   false if the path is acceptable or was stored successfully
  */
 bool violatesSingleAccountOrStoreIt(const bip44_path_t* path);
+
+/**
+ * Allocate a zeroed temporary buffer from app memory or fail hard.
+ *
+ * Intended for short-lived transaction/UI helpers that move work off the stack on Ledger
+ * devices with tighter stack budgets.
+ */
+uint8_t *tx_alloc_temp_buffer_or_fail(size_t size);
 
 /**
  * Resolve a transaction output destination into raw address bytes.

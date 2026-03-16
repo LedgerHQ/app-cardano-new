@@ -126,6 +126,7 @@ static bool is_staking_part_consistent_with_address_type(const address_params_t*
 #undef CONSISTENT_WITH
 }
 
+__noinline_due_to_stack__
 static bool buffer_write_pubkey_hash(
     buffer_t* buf,
     const bip44_path_t* keyDerivationPath) {
@@ -219,6 +220,7 @@ static size_t deriveAddress_reward(const address_params_t* address_params,
     return out.offset;
 }
 
+__noinline_due_to_stack__
 size_t constructRewardAddressFromKeyPath(const bip44_path_t* path,
                                          uint8_t networkId,
                                          uint8_t* outBuffer,
@@ -236,6 +238,7 @@ size_t constructRewardAddressFromKeyPath(const bip44_path_t* path,
     return deriveAddress_reward(&address_paramsStub, outBuffer, outSize);
 }
 
+__noinline_due_to_stack__
 size_t constructRewardAddressFromHash(uint8_t networkId,
                                       reward_address_hash_source_t source,
                                       const uint8_t* hashBuffer,
@@ -264,6 +267,7 @@ size_t constructRewardAddressFromHash(uint8_t networkId,
     return out.offset;
 }
 
+__noinline_due_to_stack__
 size_t deriveAddress(const address_params_t* address_params, uint8_t* outBuffer, size_t outSize) {
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
     ASSERT(isValidAddressParams(address_params));
@@ -384,6 +388,7 @@ bool format_address_human_readable(const uint8_t* address,
     }
 }
 
+__noinline_due_to_stack__
 bool format_reward_account_from_credential(uint8_t networkId,
                                            const ext_credential_t* credential,
                                            char* out,
@@ -441,6 +446,7 @@ bool format_reward_account_from_credential(uint8_t networkId,
     );
 }
 
+__noinline_due_to_stack__
 bool format_pool_reward_account(uint8_t networkId,
                                 const pool_reward_account_t* rewardAccount,
                                 char* out,

@@ -50,6 +50,16 @@ The application is written in C and runs on Ledger devices (Stax, Flex, Nano X, 
 - **`parsers/`**: Generic parsing utilities for CBOR and other formats.
 - **`utils/`**: Helper utilities (`textUtils`, `cbor`, `buffer_write`, `ipUtils`, `assert`).
 
+### Stack Usage Discipline
+
+Ledger targets have materially different stack limits, and Nano X is tight enough that otherwise-correct code can corrupt adjacent state when multiple stack-heavy helpers get inlined into one call chain.
+
+- Use `__noinline_due_to_stack__` from `src/utils/utils.h` on helpers that keep large local buffers or are common stack-pressure concentrators, especially address derivation / address formatting helpers and transaction-output parsing / formatting helpers.
+- Put `__noinline_due_to_stack__` on a separate line immediately above the function declaration / definition.
+- Treat this as a correctness requirement, not a style preference: if a function gains a substantial local array or starts composing other stack-heavy helpers, consider adding the attribute before investigating more invasive memory changes.
+- Prefer this over introducing temporary global scratch buffers unless there is a stronger reason, because globals increase coupling and can hide the original stack-shape problem.
+- For short-lived byte buffers in tx/UI paths, a tiny helper such as `alloc_temp_buffer_or_fail()` backed by `APP_MEM_CALLOC`/`APP_MEM_FREE_AND_NULL` is acceptable when it keeps stack pressure low and the allocation/free stay in the same function or helper-sized scope.
+
 ## 2. Security Policy System
 
 **Critical Component:** The `securityPolicy/` module is the cornerstone of the app's security model. Every operation that uses cryptographic keys or displays transaction data must pass through security policy validation.

@@ -419,6 +419,7 @@ class SignTxTestCase:
     expected_aux_warnings: List[WarningBit] = field(default_factory=list)  # Warnings in auxiliary data (CVote) review
     # TODO: Debug navigation
     unsuitable_in_ragger_reason: Optional[str] = None  # If set, explains why this vector is unsuitable for direct ragger execution
+    unsuitable_on_nano_in_ragger_reason: Optional[str] = None
     deny_before_review: bool = False  # For deny tests that fail before review UI is displayed
     tx_streaming: bool = False  # True when the tx body review uses NBGL streaming (multiple chunks)
 
