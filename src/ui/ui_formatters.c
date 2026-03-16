@@ -427,8 +427,8 @@ bool format_asset_fingerprint_bech32(const uint8_t *policyId,
         fingerprintBuffer,
         sizeof(fingerprintBuffer));
 
-    // Encode fingerprint bytes as bech32 with "asset" prefix
-    return format_bech32("asset", fingerprintBuffer, sizeof(fingerprintBuffer), out, outSize);
+    return format_bech32(
+        BECH32_PREFIX_ASSET_FINGERPRINT, fingerprintBuffer, sizeof(fingerprintBuffer), out, outSize);
 }
 
 /**

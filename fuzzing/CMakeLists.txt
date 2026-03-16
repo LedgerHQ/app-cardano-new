@@ -45,7 +45,7 @@ set(CARDANO_PATH ${CMAKE_SOURCE_DIR}/..)
 set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/addressUtils/addressUtilsByron.c
     ${CARDANO_PATH}/src/addressUtils/addressUtilsShelley.c
-    ${CARDANO_PATH}/src/addressUtils/bech32.c
+    ${CARDANO_PATH}/src/bech32/bech32.c
     ${CARDANO_PATH}/src/addressUtils/bip44.c
     ${CARDANO_PATH}/src/apdu/dispatcher.c
     ${CARDANO_PATH}/src/cardano_tokens/cardano_tokens.c
@@ -122,6 +122,7 @@ target_include_directories(
          ${CMAKE_SOURCE_DIR}/mock
          ${CMAKE_SOURCE_DIR}/include
          ${CARDANO_PATH}/src
+         ${CARDANO_PATH}/src/bech32
          ${CARDANO_PATH}/src/addressUtils
          ${CARDANO_PATH}/src/apdu
          ${CARDANO_PATH}/src/cardano_tokens

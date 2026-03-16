@@ -141,7 +141,7 @@ void tx_ui_plan_or_render_output_datum(const tx_processing_mode_t *mode,
             UI_ADD_FORMAT3(UI_STATIC_LABEL("Datum hash"),
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
-                           "datum",
+                           BECH32_PREFIX_DATUM_HASH,
                            datum->hash,
                            OUTPUT_DATUM_HASH_LENGTH);
         } else {

@@ -11,7 +11,7 @@
 #include <cmocka.h>
 
 #include "cardano_tokens/cardano_tokens.h"
-#include "addressUtils/bech32.h"
+#include "bech32.h"
 #include "hexUtils.h"
 
 // Test abs_int64
@@ -84,7 +84,11 @@ static void test_asset_fingerprint(void **state) {
                                     sizeof(fingerprintBytes));
 
         char fingerprint[200] = {0};
-        bool success_bech32 = format_bech32("asset", fingerprintBytes, sizeof(fingerprintBytes), fingerprint, sizeof(fingerprint));
+        bool success_bech32 = format_bech32(BECH32_PREFIX_ASSET_FINGERPRINT,
+                                            fingerprintBytes,
+                                            sizeof(fingerprintBytes),
+                                            fingerprint,
+                                            sizeof(fingerprint));
         assert_true(success_bech32);
 
         assert_string_equal(fingerprint, testVectors[i].expectedBech32);

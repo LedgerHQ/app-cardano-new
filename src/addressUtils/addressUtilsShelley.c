@@ -366,7 +366,9 @@ bool format_address_human_readable(const uint8_t* address,
         case REWARD_KEY:
         case REWARD_SCRIPT:
             {
-                const char* hrp = (networkId == TESTNET_NETWORK_ID) ? "stake_test" : "stake";
+                const char* hrp = (networkId == TESTNET_NETWORK_ID)
+                                      ? BECH32_PREFIX_TESTNET_STAKE_ADDRESS
+                                      : BECH32_PREFIX_STAKE_ADDRESS;
                 bool encoded = format_bech32(hrp, address, addressSize, out, outSize);
                 if (!encoded) {
                     return false;
@@ -377,7 +379,9 @@ bool format_address_human_readable(const uint8_t* address,
 
         default:  // all other shelley addresses
             {
-                const char* hrp = (networkId == TESTNET_NETWORK_ID) ? "addr_test" : "addr";
+                const char* hrp = (networkId == TESTNET_NETWORK_ID)
+                                      ? BECH32_PREFIX_TESTNET_ADDRESS
+                                      : BECH32_PREFIX_ADDRESS;
                 bool encoded = format_bech32(hrp, address, addressSize, out, outSize);
                 if (!encoded) {
                     return false;

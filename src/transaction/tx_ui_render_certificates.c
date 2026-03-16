@@ -66,45 +66,45 @@ static void render_stake_credential(const ext_credential_t *credential) {
     render_credential(credential,
                       UI_STATIC_LABEL("Stake key"),
                       UI_STATIC_LABEL("Stake key hash"),
-                      "stake_vkh",
+                      BECH32_PREFIX_STAKE_KEY_HASH,
                       UI_LABEL_BY_SCREEN("Stake script hash", "Stake script"),
-                      "script");
+                      BECH32_PREFIX_SCRIPT_HASH);
 }
 
 static void render_voter_credential(const ext_credential_t *credential) {
     render_credential(credential,
                       UI_STATIC_LABEL("Voter"),
                       UI_STATIC_LABEL("Voter hash"),
-                      "stake_vkh",
+                      BECH32_PREFIX_STAKE_KEY_HASH,
                       UI_LABEL_BY_SCREEN("Voter script hash", "Voter script"),
-                      "script");
+                      BECH32_PREFIX_SCRIPT_HASH);
 }
 
 static void render_drep_credential(const ext_credential_t *credential) {
     render_credential(credential,
                       UI_STATIC_LABEL("DRep key"),
                       UI_STATIC_LABEL("DRep key hash"),
-                      "drep_vkh",
+                      BECH32_PREFIX_DREP_KEY_HASH,
                       UI_LABEL_BY_SCREEN("DRep script hash", "DRep script"),
-                      "drep_script");
+                      BECH32_PREFIX_DREP_SCRIPT_HASH);
 }
 
 static void render_committee_cold_credential(const ext_credential_t *credential) {
     render_credential(credential,
                       UI_LABEL_BY_SCREEN("Committee cold key", "Cmte cold key"),
                       UI_LABEL_BY_SCREEN("Committee cold key hash", "Cmte cold key"),
-                      "cc_cold_vkh",
+                      BECH32_PREFIX_COMMITTEE_COLD_KEY_HASH,
                       UI_LABEL_BY_SCREEN("Committee cold script hash", "Cmte cold script"),
-                      "cc_cold_script");
+                      BECH32_PREFIX_COMMITTEE_COLD_SCRIPT_HASH);
 }
 
 static void render_committee_hot_credential(const ext_credential_t *credential) {
     render_credential(credential,
                       UI_LABEL_BY_SCREEN("Committee hot key", "Cmte hot key"),
                       UI_LABEL_BY_SCREEN("Committee hot key hash", "Cmte hot key"),
-                      "cc_hot_vkh",
+                      BECH32_PREFIX_COMMITTEE_HOT_KEY_HASH,
                       UI_LABEL_BY_SCREEN("Committee hot script hash", "Cmte hot script"),
-                      "cc_hot_script");
+                      BECH32_PREFIX_COMMITTEE_HOT_SCRIPT_HASH);
 }
 
 static void render_drep(const ext_drep_t *drep, const char *label) {
@@ -120,7 +120,7 @@ static void render_drep(const ext_drep_t *drep, const char *label) {
             UI_ADD_FORMAT3(label,
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
-                           "drep_vkh",
+                           BECH32_PREFIX_DREP_KEY_HASH,
                            drep->keyHash,
                            ADDRESS_KEY_HASH_LENGTH);
             break;
@@ -129,7 +129,7 @@ static void render_drep(const ext_drep_t *drep, const char *label) {
             UI_ADD_FORMAT3(label,
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
-                           "drep_script",
+                           BECH32_PREFIX_DREP_SCRIPT_HASH,
                            drep->scriptHash,
                            SCRIPT_HASH_LENGTH);
             break;
@@ -166,10 +166,9 @@ static void plan_or_render_anchor(const tx_processing_mode_t *mode, const anchor
                            anchor->url,
                            anchor->urlLength);
         }
-        UI_ADD_FORMAT3(UI_STATIC_LABEL("Anchor hash"),
-                       MAX_BECH32_STRING_LENGTH,
-                       format_bech32,
-                       "anchor",
+        UI_ADD_FORMAT2(UI_STATIC_LABEL("Anchor hash"),
+                       MAX_ANCHOR_HASH_STRING_LENGTH,
+                       format_hex_bytes,
                        anchor->hash,
                        ANCHOR_HASH_LENGTH);
         CHECK_COUNT(UI_PAIRS_ANCHOR);
@@ -256,7 +255,7 @@ static void plan_or_render_certificate_stake_delegation(
         UI_ADD_FORMAT3(UI_STATIC_LABEL("Pool"),
                        MAX_BECH32_STRING_LENGTH,
                        format_bech32,
-                       "pool",
+                       BECH32_PREFIX_POOL_ID,
                        certificate_data->poolKeyHash,
                        POOL_KEY_HASH_LENGTH);
         CHECK_COUNT(UI_PAIRS_CERTIFICATE_STAKE_DELEGATION);
@@ -289,7 +288,7 @@ static void plan_or_render_certificate_stake_pool_and_drep_delegation(
         UI_ADD_FORMAT3(UI_STATIC_LABEL("Pool"),
                        MAX_BECH32_STRING_LENGTH,
                        format_bech32,
-                       "pool",
+                       BECH32_PREFIX_POOL_ID,
                        certificate_data->combinedDelegPoolKeyHash,
                        POOL_KEY_HASH_LENGTH);
         render_drep(&certificate_data->drep, UI_STATIC_LABEL("DRep"));
@@ -311,7 +310,7 @@ static void plan_or_render_certificate_account_registration_delegation_to_stake_
         UI_ADD_FORMAT3(UI_STATIC_LABEL("Pool"),
                        MAX_BECH32_STRING_LENGTH,
                        format_bech32,
-                       "pool",
+                       BECH32_PREFIX_POOL_ID,
                        certificate_data->combinedDelegPoolKeyHash,
                        POOL_KEY_HASH_LENGTH);
         render_deposit(certificate_data->deposit);
@@ -348,7 +347,7 @@ static void plan_or_render_certificate_account_registration_delegation_to_stake_
         UI_ADD_FORMAT3(UI_STATIC_LABEL("Pool"),
                        MAX_BECH32_STRING_LENGTH,
                        format_bech32,
-                       "pool",
+                       BECH32_PREFIX_POOL_ID,
                        certificate_data->combinedDelegPoolKeyHash,
                        POOL_KEY_HASH_LENGTH);
         render_drep(&certificate_data->drep, UI_STATIC_LABEL("DRep"));
@@ -447,7 +446,7 @@ static void plan_or_render_certificate_pool_retirement(
         UI_ADD_FORMAT3(UI_STATIC_LABEL("Pool ID"),
                        MAX_BECH32_STRING_LENGTH,
                        format_bech32,
-                       "pool",
+                       BECH32_PREFIX_POOL_ID,
                        pool_key_hash,
                        POOL_KEY_HASH_LENGTH);
         UI_ADD_FORMAT1(UI_LABEL_BY_SCREEN("Retirement epoch", "Retire epoch"),
@@ -494,7 +493,7 @@ void plan_or_render_pool_id(const tx_processing_mode_t *mode, const pool_id_t *p
         UI_ADD_FORMAT3(UI_STATIC_LABEL("Pool ID"),
                        MAX_BECH32_STRING_LENGTH,
                        format_bech32,
-                       "pool",
+                       BECH32_PREFIX_POOL_ID,
                        pool_key_hash,
                        POOL_KEY_HASH_LENGTH);
         CHECK_COUNT(UI_PAIRS_POOL_ID);
@@ -510,7 +509,7 @@ void plan_or_render_pool_vrf_key_hash(const tx_processing_mode_t *mode, const ui
         UI_ADD_FORMAT3(UI_STATIC_LABEL("VRF key hash"),
                        MAX_BECH32_STRING_LENGTH,
                        format_bech32,
-                       "vrf_vk",
+                       BECH32_PREFIX_VRF_KEY_HASH,
                        vrf_key_hash,
                        VRF_KEY_HASH_LENGTH);
         CHECK_COUNT(UI_PAIRS_POOL_VRF_KEY);

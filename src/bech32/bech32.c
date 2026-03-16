@@ -22,6 +22,7 @@
 // modified by Vacuumlabs
 
 #include <string.h>
+
 #include "assert.h"
 #include "utils.h"
 #include "bech32.h"
@@ -116,7 +117,7 @@ bool format_bech32(const char* hrp,
     }
     ASSERT(maxOutputSize < BUFFER_SIZE_PARANOIA);
 
-    uint8_t data5bit[(8 * MAX_BECH32_BYTES_LENGTH + 4) / 5] = {0};  // ceiling of (8/5 * MAX_BYTES_LEN) = 104
+    uint8_t data5bit[(8 * MAX_BECH32_BYTES_LENGTH + 4) / 5] = {0};
     size_t data5bitLength = 0;
     {
         const int OUTBITS = 5;

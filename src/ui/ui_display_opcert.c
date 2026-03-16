@@ -65,12 +65,12 @@ static ui_status_t format_opcert_fields(const parsed_opcert_t* opcert) {
     UI_ADD_FORMAT3(UI_STATIC_LABEL("Pool ID"),
                    MAX_BECH32_STRING_LENGTH,
                    format_bech32,
-                   "pool", poolKeyHash, POOL_KEY_HASH_LENGTH);
+                   BECH32_PREFIX_POOL_ID, poolKeyHash, POOL_KEY_HASH_LENGTH);
 
     UI_ADD_FORMAT3(UI_STATIC_LABEL("KES public key"),
                    MAX_BECH32_STRING_LENGTH,
                    format_bech32,
-                   "kes_vk", opcert->kesPublicKey, KES_PUBLIC_KEY_LENGTH);
+                   BECH32_PREFIX_KES_VERIFICATION_KEY, opcert->kesPublicKey, KES_PUBLIC_KEY_LENGTH);
 
     UI_ADD_FORMAT1(UI_STATIC_LABEL("KES period"),
                    MAX_UINT64_STRING_LENGTH,

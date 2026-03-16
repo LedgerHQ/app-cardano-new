@@ -126,7 +126,7 @@ void tx_ui_plan_or_render_required_signer(const tx_processing_mode_t *mode,
                 UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Required signer", "Req signer"),
                                MAX_BECH32_STRING_LENGTH,
                                format_bech32,
-                               "req_signer_vkh",
+                               BECH32_PREFIX_REQUIRED_SIGNER_HASH,
                                parsed_required_signer->keyHash,
                                ADDRESS_KEY_HASH_LENGTH);
                 break;
@@ -305,7 +305,7 @@ void tx_ui_plan_or_render_script_data_hash(const tx_processing_mode_t *mode,
         UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Script data hash", "Script hash"),
                        MAX_BECH32_STRING_LENGTH,
                        format_bech32,
-                       "script_data",
+                       BECH32_PREFIX_SCRIPT_DATA_HASH,
                        script_data_hash,
                        SCRIPT_DATA_HASH_LENGTH);
         CHECK_COUNT(UI_PAIRS_SCRIPT_DATA_HASH);
@@ -355,7 +355,7 @@ void tx_ui_plan_or_render_voter(const tx_processing_mode_t *mode,
                 UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Committee hot key hash", "Cmte hot key"),
                                MAX_BECH32_STRING_LENGTH,
                                format_bech32,
-                               "cc_hot_vkh",
+                               BECH32_PREFIX_COMMITTEE_HOT_KEY_HASH,
                                parsed_voter->keyHash,
                                ADDRESS_KEY_HASH_LENGTH);
                 break;
@@ -365,7 +365,7 @@ void tx_ui_plan_or_render_voter(const tx_processing_mode_t *mode,
                 UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Committee hot script hash", "Cmte hot script"),
                                MAX_BECH32_STRING_LENGTH,
                                format_bech32,
-                               "cc_hot_script",
+                               BECH32_PREFIX_COMMITTEE_HOT_SCRIPT_HASH,
                                parsed_voter->scriptHash,
                                SCRIPT_HASH_LENGTH);
                 break;
@@ -380,7 +380,7 @@ void tx_ui_plan_or_render_voter(const tx_processing_mode_t *mode,
                 UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("DRep key hash", "DRep key hash"),
                                MAX_BECH32_STRING_LENGTH,
                                format_bech32,
-                               "drep_vkh",
+                               BECH32_PREFIX_DREP_KEY_HASH,
                                parsed_voter->keyHash,
                                ADDRESS_KEY_HASH_LENGTH);
                 break;
@@ -389,7 +389,7 @@ void tx_ui_plan_or_render_voter(const tx_processing_mode_t *mode,
                 UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("DRep script hash", "DRep script"),
                                MAX_BECH32_STRING_LENGTH,
                                format_bech32,
-                               "drep_script",
+                               BECH32_PREFIX_DREP_SCRIPT_HASH,
                                parsed_voter->scriptHash,
                                SCRIPT_HASH_LENGTH);
                 break;
@@ -404,7 +404,7 @@ void tx_ui_plan_or_render_voter(const tx_processing_mode_t *mode,
                 UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Stake pool key hash", "Pool key hash"),
                                MAX_BECH32_STRING_LENGTH,
                                format_bech32,
-                               "pool",
+                               BECH32_PREFIX_POOL_ID,
                                parsed_voter->keyHash,
                                ADDRESS_KEY_HASH_LENGTH);
                 break;
@@ -462,10 +462,9 @@ void tx_ui_plan_or_render_vote_anchor(const tx_processing_mode_t *mode, const an
                            anchor->url,
                            anchor->urlLength);
         }
-        UI_ADD_FORMAT3(UI_STATIC_LABEL("Anchor hash"),
-                       MAX_BECH32_STRING_LENGTH,
-                       format_bech32,
-                       "anchor",
+        UI_ADD_FORMAT2(UI_STATIC_LABEL("Anchor hash"),
+                       MAX_ANCHOR_HASH_STRING_LENGTH,
+                       format_hex_bytes,
                        anchor->hash,
                        ANCHOR_HASH_LENGTH);
         CHECK_COUNT(UI_PAIRS_ANCHOR);

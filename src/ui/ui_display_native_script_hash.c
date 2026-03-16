@@ -350,7 +350,7 @@ void ui_display_native_script_hash(void) {
             UI_ADD_FORMAT3(UI_STATIC_LABEL("Pubkey hash"),
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
-                           "addr_shared_vkh",
+                           BECH32_PREFIX_SHARED_ADDRESS_KEY_HASH,
                            ctx->scriptContent.pubkeyHash,
                            ADDRESS_KEY_HASH_LENGTH);
             CHECK_COUNT(expectedPairs);
@@ -444,7 +444,7 @@ void ui_display_native_script_hash(void) {
             UI_ADD_FORMAT3(UI_STATIC_LABEL("Script hash"),
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
-                           "script",
+                           BECH32_PREFIX_SCRIPT_HASH,
                            ctx->scriptHashBuffer,
                            SCRIPT_HASH_LENGTH);
             CHECK_COUNT(expectedPairs);

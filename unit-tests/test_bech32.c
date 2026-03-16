@@ -10,7 +10,7 @@
 
 #include <cmocka.h>
 
-#include "addressUtils/bech32.h"
+#include "bech32.h"
 #include "hexUtils.h"
 
 static void test_bech32_empty_prefix(void **state) {
@@ -118,7 +118,8 @@ static void test_bech32_cardano_address(void **state) {
     assert_true(success);
 
     char outputStr[300] = {0};
-    bool formatted = format_bech32("addr", inputBuffer, inputSize, outputStr, sizeof(outputStr));
+    bool formatted = format_bech32(
+        BECH32_PREFIX_ADDRESS, inputBuffer, inputSize, outputStr, sizeof(outputStr));
     assert_true(formatted);
     size_t outputLen = strlen(outputStr);
 
@@ -151,7 +152,7 @@ static void test_bech32_large_payload(void **state) {
 static void test_bech32_small_buffer(void **state) {
     (void) state;
 
-    const char* hrp = "addr";
+    const char* hrp = BECH32_PREFIX_ADDRESS;
     uint8_t inputBuffer[10] = {0};
     // Expected length approx: 4 (hrp) + 1 + ceil(8*10/5)=16 + 6 = 27 chars
     char outputStr[10] = {0}; // Too small
