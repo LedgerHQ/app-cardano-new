@@ -4232,6 +4232,17 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_INVALID_NETWORK_ID,
     ),
     SignTxTestCase(
+        name="Zero_inputs",
+        tx=Transaction(
+            network=NetworkDesc(networkId=1, protocol=764824073),
+            inputs=[],
+            outputs=[outputs["inlineByronMainnet3003112"]],
+            ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    ),
+    SignTxTestCase(
         name="Pool_registration_operator_too_few_certificates",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
@@ -5447,7 +5458,7 @@ certificateDenyTestCases: List[SignTxTestCase] = [
         name="Stake_registration_in_Pool_Registration_Owner",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[],
+            inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
             certificates=[
                 Certificate(
@@ -5491,7 +5502,7 @@ certificateDenyTestCases: List[SignTxTestCase] = [
         name="Stake_deregistration_in_Pool_Registration_Owner",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[],
+            inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
             certificates=[
                 Certificate(
@@ -5537,7 +5548,7 @@ certificateDenyTestCases: List[SignTxTestCase] = [
         name="Stake_delegation_in_Pool_Registration_Owner",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[],
+            inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
             certificates=[
                 Certificate(
@@ -5584,7 +5595,7 @@ certificateDenyTestCases: List[SignTxTestCase] = [
         name="Pool_retirement_in_Pool_Registration_Owner",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[],
+            inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
             certificates=[
                 Certificate(

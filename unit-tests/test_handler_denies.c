@@ -180,6 +180,26 @@ static void test_tx_init_trailing_bytes(void **state) {
     assert_int_equal(g_last_sw, SWO_WRONG_DATA_LENGTH);
 }
 
+static void test_tx_init_zero_inputs_denied_for_pool_registration_owner(void **state) {
+    (void) state;
+    reset_context();
+
+    uint8_t init_raw[256];
+    init_apdu_params_t params = make_default_init_apdu_params();
+    params.signingMode = SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER;
+    params.numCertificates = 1;
+    size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
+    assert_true(init_len > 0);
+
+    buffer_t init_buf = {
+        .ptr = init_raw,
+        .size = init_len,
+        .offset = 0,
+    };
+    run_sign_tx_apdu(&init_buf, P1_TX_INIT);
+    assert_int_equal(g_last_sw, SWO_SECURITY_CONDITION_NOT_SATISFIED);
+}
+
 static void test_tx_init_denied_when_active(void **state) {
     (void) state;
     reset_context();
@@ -351,6 +371,7 @@ int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_tx_init_invalid_signing_mode),
         cmocka_unit_test(test_tx_init_trailing_bytes),
+        cmocka_unit_test(test_tx_init_zero_inputs_denied_for_pool_registration_owner),
         cmocka_unit_test(test_tx_init_denied_when_active),
         cmocka_unit_test(test_witness_trailing_bytes),
         cmocka_unit_test(test_get_public_key_trailing_bytes),

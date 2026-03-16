@@ -428,10 +428,7 @@ security_policy_t policyForSignTxInit(const tx_params_t *txParams,
 
     // At least one input is required for certificate replay protection:
     // the input uniquely identifies the transaction by consuming a UTxO.
-    // Exception: pool registration owner mode — the owner is only a co-signer
-    // and does not need to control any inputs in the transaction.
-    DENY_IF(txParams->num_inputs == 0 &&
-            txParams->txSigningMode != SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER);
+    DENY_IF(txParams->num_inputs == 0);
 
     // certain combinations of tx body elements are forbidden
     // mostly because of potential cross-witnessing
