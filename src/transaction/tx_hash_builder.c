@@ -715,9 +715,9 @@ void txHashBuilder_addOutput_referenceScript_dataChunk(tx_hash_builder_t* builde
                                                        const uint8_t* buffer,
                                                        size_t bufferSize) {
     ASSERT(builder->outputData.outputState == TX_OUTPUT_SCRIPT_REFERENCE_CHUNKS);
-    { BUILDER_APPEND_DATA(buffer, bufferSize); }
     ASSERT(bufferSize <= builder->outputData.referenceScriptData.remainingBytes);
     builder->outputData.referenceScriptData.remainingBytes -= bufferSize;
+    { BUILDER_APPEND_DATA(buffer, bufferSize); }
 }
 
 static void txHashBuilder_assertCanLeaveOutputs(tx_hash_builder_t* builder) {
@@ -2162,10 +2162,12 @@ void txHashBuilder_addVoter(tx_hash_builder_t* builder,
 
     ASSERT(builder->state == TX_HASH_BUILDER_IN_VOTING_PROCEDURES);
     ASSERT(builder->remainingVoters > 0);
+    ASSERT(builder->remainingVotesPerVoter == 0);
     ASSERT(numVotes > 0);
 
     // Assert no KEY_PATH variants (must be converted before calling)
     builder->remainingVoters--;
+    builder->remainingVotesPerVoter = numVotes;
 
     // voter - Array(2)[Unsigned[voter type], Bytes[key or script hash]]
     BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 2);
@@ -2199,6 +2201,8 @@ void txHashBuilder_addVote(tx_hash_builder_t* builder,
     _TRACE("state = %d", builder->state);
 
     ASSERT(builder->state == TX_HASH_BUILDER_IN_VOTING_PROCEDURES);
+    ASSERT(builder->remainingVotesPerVoter > 0);
+    builder->remainingVotesPerVoter--;
 
     // governance action id - Array(2)[Bytes[hash], Unsigned[index]]
     BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 2);
@@ -2222,11 +2226,13 @@ static void txHashBuilder_assertCanLeaveVotingProcedures(tx_hash_builder_t* buil
         case TX_HASH_BUILDER_IN_VOTING_PROCEDURES:
             // make sure there are no more voting procedures to process
             ASSERT(builder->remainingVoters == 0);
+            ASSERT(builder->remainingVotesPerVoter == 0);
             break;
 
         default:
             // make sure no voting procedures are expected
             ASSERT(builder->remainingVoters == 0);
+            ASSERT(builder->remainingVotesPerVoter == 0);
             // assert we can leave the previous state
             txHashBuilder_assertCanLeaveReferenceInputs(builder);
             break;

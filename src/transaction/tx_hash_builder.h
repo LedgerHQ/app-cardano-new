@@ -106,6 +106,7 @@ typedef struct {
     uint16_t remainingRequiredSigners;
     uint16_t remainingReferenceInputs;
     uint16_t remainingVoters;
+    uint16_t remainingVotesPerVoter;
     bool includeTtl;
     bool includeAuxData;
     bool includeValidityIntervalStart;
