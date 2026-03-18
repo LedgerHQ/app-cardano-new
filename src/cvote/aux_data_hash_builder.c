@@ -150,7 +150,7 @@ void auxDataHashBuilder_cVoteRegistration_addVoteKey(aux_data_hash_builder_t* bu
 }
 
 void auxDataHashBuilder_cVoteRegistration_enterDelegations(aux_data_hash_builder_t* builder,
-                                                           size_t numDelegations) {
+                                                           uint16_t numDelegations) {
     _TRACE("state = %d", builder->state);
 
     builder->cVoteRegistrationData.remainingDelegations = numDelegations;

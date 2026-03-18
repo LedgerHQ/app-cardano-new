@@ -60,7 +60,7 @@ void auxDataHashBuilder_cVoteRegistration_addVoteKey(aux_data_hash_builder_t* bu
                                                      const uint8_t* votePubKeyBuffer,
                                                      size_t votePubKeySize);
 void auxDataHashBuilder_cVoteRegistration_enterDelegations(aux_data_hash_builder_t* builder,
-                                                           size_t numDelegations);
+                                                           uint16_t numDelegations);
 void auxDataHashBuilder_cVoteRegistration_addDelegation(aux_data_hash_builder_t* builder,
                                                         const uint8_t* votePubKeyBuffer,
                                                         size_t votePubKeySize,

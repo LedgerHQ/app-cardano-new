@@ -327,11 +327,13 @@ static bool isNetworkUsual(uint32_t networkId, uint32_t protocolMagic) {
 // true iff tx contains an element with network id
 static bool isTxNetworkIdVerifiable(bool includeNetworkId,
                                     uint32_t numOutputs,
+                                    bool includeCollateralOutput,
                                     uint32_t numWithdrawals,
                                     sign_tx_signingmode_t txSigningMode) {
     if (includeNetworkId) return true;
 
     if (numOutputs > 0) return true;
+    if (includeCollateralOutput) return true;
     if (numWithdrawals > 0) return true;
 
     switch (txSigningMode) {
@@ -351,6 +353,7 @@ bool shouldShowNetworkDetails(const tx_params_t* txParams) {
     const bool is_network_id_verifiable = isTxNetworkIdVerifiable(
         txParams->includeNetworkId,
         txParams->num_outputs,
+        txParams->includeCollateralOutput,
         txParams->num_withdrawals,
         txParams->txSigningMode
     );
@@ -397,10 +400,11 @@ static inline void set_missing_script_data_hash_warning(warning_bits_t *w,
 static inline void set_network_not_verifiable_warning(warning_bits_t *w,
                                                       bool includeNetworkId,
                                                       uint32_t numOutputs,
+                                                      bool includeCollateralOutput,
                                                       uint32_t numWithdrawals,
                                                       sign_tx_signingmode_t txSigningMode) {
 
-    if (!isTxNetworkIdVerifiable(includeNetworkId, numOutputs, numWithdrawals, txSigningMode)) {
+    if (!isTxNetworkIdVerifiable(includeNetworkId, numOutputs, includeCollateralOutput, numWithdrawals, txSigningMode)) {
         warning_bits_set(w, WARNING_BIT_NETWORK_NOT_VERIFIABLE);
     }
 }
@@ -482,6 +486,7 @@ security_policy_t policyForSignTxInit(const tx_params_t *txParams,
         w,
         txParams->includeNetworkId,
         txParams->num_outputs,
+        txParams->includeCollateralOutput,
         txParams->num_withdrawals,
         txParams->txSigningMode);
     set_network_unusual_warning(
@@ -563,6 +568,8 @@ static bool is_addressBytes_suitable_for_tx_output(const uint8_t *addressBuffer,
             }
 
             default: {
+                // unsupported address types are rejected
+                CHECK(isSupportedAddressType(addressType));
                 // shelley types allowed in output
                 const uint8_t addressNetworkId = getNetworkId(addressBuffer[0]);
                 CHECK(addressNetworkId == networkId);
