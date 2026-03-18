@@ -134,6 +134,10 @@ bool parse_voter_votes_header(buffer_t *buf,
         TRACE("Failed to read number of votes");
         return false;
     }
+    if (*out_num_votes == 0) {
+        TRACE("Zero votes in voter entry");
+        return false;
+    }
 
     return true;
 }

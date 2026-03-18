@@ -601,6 +601,10 @@ static bool tx_process_mint(buffer_t *buf, tx_processing_state_t *state) {
             tx_handle_parse_error(SWO_TX_PARSING_FAIL_MINT);
             return false;
         }
+        if (number_of_tokens == 0) {
+            tx_handle_parse_error(SWO_TX_PARSING_FAIL_MINT);
+            return false;
+        }
 
         if (mode->run_hash_builder) {
             txHashBuilder_addMint_tokenGroup(&state->hash_builder,

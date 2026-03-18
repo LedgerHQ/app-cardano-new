@@ -55,3 +55,6 @@ Format: -> means explanation why not a bug.
 
 * URL formatter enforces printable ASCII without spaces for displayed URLs.
 -> intentional display-safety policy. Percent-encoded URLs (including `%20`) are ASCII and allowed; non-ASCII/confusable URLs are intentionally rejected as not safely displayable without ambiguity.
+
+* `aux_data_hash_builder.c` trace buffers (`AUX_DATA_TRACE_BUFFER_SIZE` / `CVOTE_PAYLOAD_TRACE_BUFFER_SIZE`) are only 4 KiB each and will assert if a high-delegation CIP-36 registration overflows them.
+-> intentional. Buffers are debug-only (compiled in only under `-DTRACE_AUX_DATA_HASH_BUILDER`, never in production). The assert-on-overflow is deliberate: if a developer enables tracing and hits the limit, they get a loud failure rather than silent truncation of the trace, and can decide how to proceed. Production hashing is unaffected.

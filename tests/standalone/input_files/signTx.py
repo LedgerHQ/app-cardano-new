@@ -6973,6 +6973,68 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
         txBody="",
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
     ),
+    SignTxTestCase(
+        name="Deny_tx_with_voter_with_zero_votes",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            votingProcedures=[
+                VoterVotes(
+                    Voter(VoterType.DREP_KEY_PATH, "m/1852'/1815'/0'/3/0"), []
+                )
+            ],
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_TX_PARSING_FAIL_VOTING_PROCEDURES,
+    ),
+    SignTxTestCase(
+        name="Deny_tx_with_mint_token_group_with_zero_tokens",
+        tx=Transaction(
+            network=NetworkDesc(networkId=1, protocol=764824073),
+            inputs=[inputs["utxoShelley"]],
+            outputs=[],
+            mint=[
+                AssetGroup(
+                    policyIdHex="7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc374",
+                    tokens=[],
+                )
+            ],
+            ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_TX_PARSING_FAIL_MINT,
+    ),
+    SignTxTestCase(
+        name="Deny_tx_with_output_token_group_with_zero_tokens",
+        tx=Transaction(
+            network=NetworkDesc(networkId=1, protocol=764824073),
+            inputs=[inputs["utxoShelley"]],
+            outputs=[
+                TxOutputAlonzo(
+                    destination=TxOutputDestination(
+                        type=TxOutputDestinationType.THIRD_PARTY,
+                        params=ThirdPartyAddressParams(
+                            addressHex="01eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff"
+                        ),
+                    ),
+                    amount=1234,
+                    format=TxOutputFormat.ARRAY_LEGACY,
+                    tokenBundle=[
+                        AssetGroup(
+                            policyIdHex="75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39",
+                            tokens=[],
+                        ),
+                    ],
+                    datum=None,
+                )
+            ],
+            ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_TX_PARSING_FAIL_OUTPUTS,
+    ),
 ]
 
 poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [

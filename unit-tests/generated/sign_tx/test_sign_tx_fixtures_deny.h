@@ -2495,6 +2495,77 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_MINT_F
     },
 };
 
+// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_with_voter_with_zero_votes
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_VOTER_WITH_ZERO_VOTES[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000003B01002B82D818582183581C9E1C71DE652EC8B85FEC296F0685CA"
+    "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
+    "00000000000000002A000000000000000A66058000073C800007178000000000"
+    "000003000000000000",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000300000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_with_mint_token_group_with_zero_tokens
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_MINT_TOKEN_GROUP_WITH_ZERO_TOKENS[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000000000000000002A000000000000000A7EAE28AF2208BE856F7A1196"
+    "68AE52A49B73725E326DC16579DCC3740000",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+// Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_with_output_token_group_with_zero_tokens
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_OUTPUT_TOKEN_GROUP_WITH_ZERO_TOKENS[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000006701003901EB0BAA5E570CFFBE2934DB29DF0B6A3D7C0430EE65D4"
+    "C3A7AB2FEFB91BC428E4720702EBD5DAB4FB175324C192DC9BB76CC5DA956E3C"
+    "8DFF00000000000004D2000101000175A292FFEE938BE03E9BAE5657982A74E9"
+    "014EB4960108C9E23A5B390000000000000000002A000000000000000A",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
 
 // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Different_index
 static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DIFFERENT_INDEX[] = {
@@ -4352,6 +4423,42 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .chunks = SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_MINT_FIELDS_WITH_INVALID_CANONICAL_ORDERING_OF_ASSET_NAMES,
         .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_MINT_FIELDS_WITH_INVALID_CANONICAL_ORDERING_OF_ASSET_NAMES),
         .expected_sw = SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_with_voter_with_zero_votes
+    {
+        .name = "[DENY_MULTIASSET] Deny_tx_with_voter_with_zero_votes",
+        .init_hex =
+        "0000000000000000012D964A0903000100010200000000010100000100000000"
+        "01010100000001010100020089",
+        .chunks = SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_VOTER_WITH_ZERO_VOTES,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_VOTER_WITH_ZERO_VOTES),
+        .expected_sw = SWO_TX_PARSING_FAIL_VOTING_PROCEDURES,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_with_mint_token_group_with_zero_tokens
+    {
+        .name = "[DENY_MULTIASSET] Deny_tx_with_mint_token_group_with_zero_tokens",
+        .init_hex =
+        "0000000000000000012D964A0903000100000200000000010100010100000000"
+        "01010100000000010100010052",
+        .chunks = SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_MINT_TOKEN_GROUP_WITH_ZERO_TOKENS,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_MINT_TOKEN_GROUP_WITH_ZERO_TOKENS),
+        .expected_sw = SWO_TX_PARSING_FAIL_MINT,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > testsInvalidTokenBundleOrdering > Deny_tx_with_output_token_group_with_zero_tokens
+    {
+        .name = "[DENY_MULTIASSET] Deny_tx_with_output_token_group_with_zero_tokens",
+        .init_hex =
+        "0000000000000000012D964A0903000100010200000000010100000100000000"
+        "0101010000000001010001009D",
+        .chunks = SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_OUTPUT_TOKEN_GROUP_WITH_ZERO_TOKENS,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_OUTPUT_TOKEN_GROUP_WITH_ZERO_TOKENS),
+        .expected_sw = SWO_TX_PARSING_FAIL_OUTPUTS,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },

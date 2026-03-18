@@ -170,6 +170,10 @@ bool parse_output_asset_group(buffer_t* buf, output_asset_group_t* out_group) {
         TRACE("Failed to read number of tokens in group");
         return false;
     }
+    if (out_group->numTokens == 0) {
+        TRACE("Zero tokens in asset group");
+        return false;
+    }
 
     return true;
 }
