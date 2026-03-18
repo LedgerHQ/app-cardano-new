@@ -1078,8 +1078,8 @@ bool tx_render_ui_chunk(uint16_t from) {
     tx_processing_setup_state(&render_mode, &render_run_warnings);
 
     // Set the render session: pairs before `from` are skipped, OOM stops the chunk.
-    ui_render_session_t render_session = {0};
-    ui_render_session_begin(&render_session, from);
+    ui_render_session_t session = {0};
+    ui_render_session_begin(&session, from);
 
     tx_processing_state_t *state = &tx_body_ctx()->processing_state;
     if (!tx_plan_or_render_ui_for_tx_body(&buf, state)) {

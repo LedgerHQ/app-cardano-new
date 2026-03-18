@@ -26,15 +26,6 @@ static void cvote_buffer_cleanup(void) {
     ui_all_cleanup();
 }
 
-static void cvote_finish_rendering_or_fail(void) {
-    ui_status_t render_status = ui_get_error_status();
-    ui_render_session_end();
-
-    LEDGER_ASSERT(render_status == UI_STATUS_SUCCESS,
-                  "Unexpected UI status: %d",
-                  render_status);
-}
-
 static void cvote_review_choice(bool confirm) {
     // CLEANUP
     cvote_buffer_cleanup();
@@ -75,12 +66,11 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy, warning_bits_t w
     }
 
     // Format all fields and check for errors
-    ui_reset_error_status();
-    ui_render_session_t render_session = {0};
-    ui_render_session_begin(&render_session, 0);
+    ui_render_session_t session = {0};
+    ui_render_scope_begin(&session);
     if (!ui_pairs_init(4)) {
         TRACE("Failed to initialize pairs");
-        ui_render_session_end();
+        ui_render_scope_end();
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
     }
@@ -104,7 +94,10 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy, warning_bits_t w
                    format_decimal_amount,
                    ctx->payload_type_tag,
                    0);
-    cvote_finish_rendering_or_fail();
+    ui_status_t render_status = ui_render_scope_end();
+    LEDGER_ASSERT(render_status == UI_STATUS_SUCCESS,
+                  "Unexpected UI status: %d",
+                  render_status);
 
     nbgl_useCaseAdvancedReview(TYPE_OPERATION,
                                g_pairsList,

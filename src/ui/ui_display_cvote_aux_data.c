@@ -240,8 +240,8 @@ static uint32_t cvote_total_pairs_count(const cvote_aux_data_t *aux_data) {
 
 static bool cvote_add_initial_pairs(cvote_aux_data_t *aux_data) {
     LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
-    ui_render_session_t render_session = {0};
-    ui_render_session_begin(&render_session, 0);
+    ui_render_session_t session = {0};
+    ui_render_scope_begin(&session);
 
     START_COUNT();
     if (aux_data->ui_show.vote_key) {
@@ -290,9 +290,7 @@ static bool cvote_add_initial_pairs(cvote_aux_data_t *aux_data) {
                    aux_data->ui_delegations_total);
 
     CHECK_COUNT(cvote_initial_pairs_count(aux_data));
-    bool result = (ui_get_error_status() == UI_STATUS_SUCCESS);
-    ui_render_session_end();
-    return result;
+    return (ui_render_scope_end() == UI_STATUS_SUCCESS);
 }
 
 static cvote_delegation_ui_result_t cvote_add_delegation_pairs(
@@ -300,8 +298,8 @@ static cvote_delegation_ui_result_t cvote_add_delegation_pairs(
     const cvote_credential_t *credential,
     uint32_t weight) {
     LEDGER_ASSERT(credential != NULL, "NULL delegation credential");
-    ui_render_session_t render_session = {0};
-    ui_render_session_begin(&render_session, 0);
+    ui_render_session_t session = {0};
+    ui_render_scope_begin(&session);
 
     START_COUNT();
     LEDGER_ASSERT(aux_data != NULL && aux_data->ui_delegations_shown < aux_data->ui_delegations_total, "Delegation count exceeded");
@@ -319,7 +317,7 @@ static cvote_delegation_ui_result_t cvote_add_delegation_pairs(
     switch (delegation_policy) {
         case POLICY_DENY:
             TRACE("CVote delegation policy denied");
-            ui_render_session_end();
+            ui_render_scope_end();
             send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
             return CVOTE_DELEGATION_UI_RESULT_ERROR_SENT;
         case POLICY_SHOW: {
@@ -349,8 +347,7 @@ static cvote_delegation_ui_result_t cvote_add_delegation_pairs(
             LEDGER_ASSERT(false, "Unknown delegation policy");
     }
 
-    ui_status_t result = ui_get_error_status();
-    ui_render_session_end();
+    ui_status_t result = ui_render_scope_end();
     LEDGER_ASSERT(result == UI_STATUS_SUCCESS, "Unexpected UI status: %d", result);
     return CVOTE_DELEGATION_UI_RESULT_OK;
 }
@@ -371,7 +368,6 @@ static bool cvote_init_pairs_for_streaming_page(cvote_aux_data_t *aux_data) {
           MAX_UI_PAIRS,
           cvote_is_last_chunk(aux_data));
 
-    ui_reset_error_status();
     if (!ui_pairs_init(pair_count)) {
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return false;
@@ -395,7 +391,6 @@ bool ui_cvote_aux_data_init_non_streaming(cvote_aux_data_t *aux_data) {
     LEDGER_ASSERT(total_pair_count_u32 <= UINT16_MAX, "Pair count exceeds uint16 range");
     uint16_t total_pair_count = (uint16_t) total_pair_count_u32;
 
-    ui_reset_error_status();
     if (!ui_pairs_init(total_pair_count)) {
         TRACE("CVote UI: failed to initialize pairs");
         return false;
@@ -438,7 +433,6 @@ void ui_cvote_aux_data_streaming_show_initial_page(cvote_aux_data_t *aux_data) {
           initial_pairs,
           MAX_UI_PAIRS);
 
-    ui_reset_error_status();
     if (!ui_pairs_init(initial_pairs)) {
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;

@@ -85,6 +85,25 @@ void ui_render_session_begin(ui_render_session_t *session,
 void ui_render_session_end(void);
 
 /**
+ * Scoped render helpers — bundle the 3-step open/close protocol:
+ *   begin: ui_reset_error_status() + ui_render_session_begin()
+ *   end:   ui_get_error_status()   + ui_render_session_end()
+ *
+ * Prevents mismatched reset/begin and get-status/end ordering.
+ */
+static inline void ui_render_scope_begin(ui_render_session_t *session) {
+    ui_reset_error_status();
+    explicit_bzero(session, sizeof(*session));
+    ui_render_session_begin(session, 0);
+}
+
+static inline ui_status_t ui_render_scope_end(void) {
+    ui_status_t status = ui_get_error_status();
+    ui_render_session_end();
+    return status;
+}
+
+/**
  * Check whether the current pair should be skipped.
  * Always increments the next UI pair index. Returns true if the pair
  * should be skipped (before window or OOM already set).

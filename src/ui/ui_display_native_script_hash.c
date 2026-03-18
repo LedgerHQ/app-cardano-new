@@ -203,15 +203,6 @@ static void derive_native_script_hash_streaming_finish_continue(bool confirm) {
 #define UI_PAIRS_SCRIPT_HASH  1
 #define UI_PAIRS_POLICY_ID    1
 
-static void native_script_finish_rendering_or_fail(void) {
-    ui_status_t render_status = ui_get_error_status();
-    ui_render_session_end();
-
-    LEDGER_ASSERT(render_status == UI_STATUS_SUCCESS,
-                  "Unexpected UI status: %d",
-                  render_status);
-}
-
 void display_complex_script_content(ui_native_script_type scriptType) {
     TRACE("display_complex_script_content");
 
@@ -240,12 +231,11 @@ void display_complex_script_content(ui_native_script_type scriptType) {
     if (required_position) {
         expectedPairs += UI_PAIRS_POSITION;
     }
-    ui_reset_error_status();
-    ui_render_session_t render_session = {0};
-    ui_render_session_begin(&render_session, 0);
+    ui_render_session_t session = {0};
+    ui_render_scope_begin(&session);
     if (!ui_pairs_init(expectedPairs)) {
         TRACE("Failed to initialize pairs");
-        ui_render_session_end();
+        ui_render_scope_end();
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
     }
@@ -273,7 +263,9 @@ void display_complex_script_content(ui_native_script_type scriptType) {
                    format_remaining,
                    ctx->complexScripts[ctx->level].remainingScripts);
     CHECK_COUNT(expectedPairs);
-    native_script_finish_rendering_or_fail();
+    ui_status_t render_status = ui_render_scope_end();
+    LEDGER_ASSERT(render_status == UI_STATUS_SUCCESS,
+                  "Unexpected UI status: %d", render_status);
 
     nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
 }
@@ -304,12 +296,11 @@ void ui_display_native_script_hash(void) {
             if (required_position) {
                 expectedPairs += UI_PAIRS_POSITION;
             }
-            ui_reset_error_status();
-            ui_render_session_t render_session = {0};
-            ui_render_session_begin(&render_session, 0);
+            ui_render_session_t session = {0};
+    ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
-                ui_render_session_end();
+                ui_render_scope_end();
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
@@ -326,7 +317,9 @@ void ui_display_native_script_hash(void) {
                            format_bip44_path,
                            &ctx->scriptContent.pubkeyPath);
             CHECK_COUNT(expectedPairs);
-            native_script_finish_rendering_or_fail();
+            ui_status_t render_status_pubkey_path = ui_render_scope_end();
+            LEDGER_ASSERT(render_status_pubkey_path == UI_STATUS_SUCCESS,
+                          "Unexpected UI status: %d", render_status_pubkey_path);
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
             break;
@@ -338,12 +331,11 @@ void ui_display_native_script_hash(void) {
             if (required_position) {
                 expectedPairs += UI_PAIRS_POSITION;
             }
-            ui_reset_error_status();
-            ui_render_session_t render_session = {0};
-            ui_render_session_begin(&render_session, 0);
+            ui_render_session_t session = {0};
+    ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
-                ui_render_session_end();
+                ui_render_scope_end();
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
@@ -362,7 +354,9 @@ void ui_display_native_script_hash(void) {
                            ctx->scriptContent.pubkeyHash,
                            ADDRESS_KEY_HASH_LENGTH);
             CHECK_COUNT(expectedPairs);
-            native_script_finish_rendering_or_fail();
+            ui_status_t render_status_pubkey_hash = ui_render_scope_end();
+            LEDGER_ASSERT(render_status_pubkey_hash == UI_STATUS_SUCCESS,
+                          "Unexpected UI status: %d", render_status_pubkey_hash);
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
             break;
@@ -374,12 +368,11 @@ void ui_display_native_script_hash(void) {
             if (required_position) {
                 expectedPairs += UI_PAIRS_POSITION;
             }
-            ui_reset_error_status();
-            ui_render_session_t render_session = {0};
-            ui_render_session_begin(&render_session, 0);
+            ui_render_session_t session = {0};
+    ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
-                ui_render_session_end();
+                ui_render_scope_end();
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
@@ -397,7 +390,9 @@ void ui_display_native_script_hash(void) {
                            ctx->scriptContent.timelock,
                            0);
             CHECK_COUNT(expectedPairs);
-            native_script_finish_rendering_or_fail();
+            ui_status_t render_status_invalid_before = ui_render_scope_end();
+            LEDGER_ASSERT(render_status_invalid_before == UI_STATUS_SUCCESS,
+                          "Unexpected UI status: %d", render_status_invalid_before);
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
             break;
@@ -409,12 +404,11 @@ void ui_display_native_script_hash(void) {
             if (required_position) {
                 expectedPairs += UI_PAIRS_POSITION;
             }
-            ui_reset_error_status();
-            ui_render_session_t render_session = {0};
-            ui_render_session_begin(&render_session, 0);
+            ui_render_session_t session = {0};
+    ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
-                ui_render_session_end();
+                ui_render_scope_end();
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
@@ -432,19 +426,20 @@ void ui_display_native_script_hash(void) {
                            ctx->scriptContent.timelock,
                            0);
             CHECK_COUNT(expectedPairs);
-            native_script_finish_rendering_or_fail();
+            ui_status_t render_status_invalid_hereafter = ui_render_scope_end();
+            LEDGER_ASSERT(render_status_invalid_hereafter == UI_STATUS_SUCCESS,
+                          "Unexpected UI status: %d", render_status_invalid_hereafter);
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
             break;
         }
         case UI_SCRIPT_DISPLAY_BECH32: {
             const int expectedPairs = UI_PAIRS_SCRIPT_HASH;
-            ui_reset_error_status();
-            ui_render_session_t render_session = {0};
-            ui_render_session_begin(&render_session, 0);
+            ui_render_session_t session = {0};
+    ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
-                ui_render_session_end();
+                ui_render_scope_end();
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
@@ -456,7 +451,9 @@ void ui_display_native_script_hash(void) {
                            ctx->scriptHashBuffer,
                            SCRIPT_HASH_LENGTH);
             CHECK_COUNT(expectedPairs);
-            native_script_finish_rendering_or_fail();
+            ui_status_t render_status_bech32 = ui_render_scope_end();
+            LEDGER_ASSERT(render_status_bech32 == UI_STATUS_SUCCESS,
+                          "Unexpected UI status: %d", render_status_bech32);
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList,
                                                 derive_native_script_hash_streaming_finish_continue);
@@ -464,12 +461,11 @@ void ui_display_native_script_hash(void) {
         }
         case UI_SCRIPT_DISPLAY_POLICY_ID: {
             const int expectedPairs = UI_PAIRS_POLICY_ID;
-            ui_reset_error_status();
-            ui_render_session_t render_session = {0};
-            ui_render_session_begin(&render_session, 0);
+            ui_render_session_t session = {0};
+    ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE("Failed to initialize pairs");
-                ui_render_session_end();
+                ui_render_scope_end();
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
@@ -480,7 +476,9 @@ void ui_display_native_script_hash(void) {
                            ctx->scriptHashBuffer,
                            SCRIPT_HASH_LENGTH);
             CHECK_COUNT(expectedPairs);
-            native_script_finish_rendering_or_fail();
+            ui_status_t render_status_policy_id = ui_render_scope_end();
+            LEDGER_ASSERT(render_status_policy_id == UI_STATUS_SUCCESS,
+                          "Unexpected UI status: %d", render_status_policy_id);
 
             nbgl_useCaseReviewStreamingContinue(g_pairsList,
                                                 derive_native_script_hash_streaming_finish_continue);

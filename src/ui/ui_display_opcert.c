@@ -43,14 +43,12 @@ static void opcert_buffer_cleanup(void) {
  * @return UI_STATUS_SUCCESS on success, UI_STATUS_OUT_OF_MEMORY on allocation failure
  */
 static ui_status_t format_opcert_fields(const parsed_opcert_t* opcert) {
-    ui_reset_error_status();
-    ui_render_session_t render_session = {0};
-    ui_render_session_begin(&render_session, 0);
+    ui_render_session_t session = {0};
+    ui_render_scope_begin(&session);
 
     if (!ui_pairs_init(5)) {
         TRACE("Failed to initialize pairs");
-        ui_render_session_end();
-        return UI_STATUS_OUT_OF_MEMORY;
+        return ui_render_scope_end();
     }
 
     // Format and add all opcert fields using unified macros
@@ -82,9 +80,7 @@ static ui_status_t format_opcert_fields(const parsed_opcert_t* opcert) {
                    format_uint64,
                    opcert->issueCounter);
 
-    ui_status_t status = ui_get_error_status();
-    ui_render_session_end();
-    return status;
+    return ui_render_scope_end();
 }
 
 static void opcert_review_choice(bool confirm) {
