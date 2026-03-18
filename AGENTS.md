@@ -45,6 +45,7 @@ For detailed analysis, see:
 - **Do NOT remove original comments** explaining crucial details without confirmation.
 - **Do NOT perform git operations** (modifications/writes).
 - **Do NOT install anything**.
+- **Do NOT add extended-length APDU support.** This app uses short-form APDUs only (5-byte header, Lc ≤ 255). Do not modify `unit-tests/generators/common.py::extract_apdu_payload()` or any parser/generator to handle the extended-length case.
 
 ### License Comment Policy
 - **Preserve attribution:** Apache-2.0 requires preserving copyright/attribution notices from upstream code.

@@ -587,6 +587,10 @@ add_executable(test_security_policy_collateral test_security_policy_collateral.c
 target_link_libraries(test_security_policy_collateral PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_security_policy_collateral test_security_policy_collateral)
 
+add_executable(test_security_policy_witness test_security_policy_witness.c)
+target_link_libraries(test_security_policy_witness PUBLIC cmocka gcov cardano_sign_tx_core)
+add_test(test_security_policy_witness test_security_policy_witness)
+
 foreach(target IN LISTS TEST_EXECUTABLES)
     target_link_libraries(${target} PUBLIC mock_printf)
 endforeach()
@@ -669,6 +673,12 @@ add_executable(test_sign_cvote_nbgl_reject
 )
 target_link_libraries(test_sign_cvote_nbgl_reject PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_sign_cvote_nbgl_reject test_sign_cvote_nbgl_reject)
+
+add_executable(test_cvote_aux_data_ui
+    test_cvote_aux_data_ui.c
+)
+target_link_libraries(test_cvote_aux_data_ui PUBLIC cmocka gcov cardano_sign_tx_core)
+add_test(test_cvote_aux_data_ui test_cvote_aux_data_ui)
 
 add_executable(test_tx_parser
     test_tx_parser.c
@@ -980,3 +990,9 @@ add_executable(test_native_script_status_text
 )
 target_link_libraries(test_native_script_status_text PUBLIC cmocka gcov cardano_derive_native_script_core)
 add_test(test_native_script_status_text test_native_script_status_text)
+
+add_executable(test_native_script_ui_render
+    test_native_script_ui_render.c
+)
+target_link_libraries(test_native_script_ui_render PUBLIC cmocka gcov cardano_derive_native_script_core)
+add_test(test_native_script_ui_render test_native_script_ui_render)

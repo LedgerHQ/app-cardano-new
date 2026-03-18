@@ -134,6 +134,7 @@ static void derive_native_script_hash_streaming_continue_choice(bool confirm) {
     }
 }
 
+__attribute__((weak))
 void ui_start_native_script_streaming(void) {
     // Start NBGL streaming with title screen
     nbgl_useCaseReviewStreamingStart(TYPE_OPERATION,
