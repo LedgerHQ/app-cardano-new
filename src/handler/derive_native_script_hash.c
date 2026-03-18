@@ -188,9 +188,6 @@ static bool deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
                     keyPathToKeyHash(
                         &ctx->scriptContent.pubkeyPath, pubkeyHash, ADDRESS_KEY_HASH_LENGTH);
                     break;
-                case POLICY_HIDE:
-                    LEDGER_ASSERT(false, "POLICY_HIDE not supported for native script device pubkey");
-                    break;
                 default:
                     LEDGER_ASSERT(false, "Invalid policy value: %d", policy);
             }

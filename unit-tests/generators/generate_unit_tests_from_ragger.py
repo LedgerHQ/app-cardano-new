@@ -294,7 +294,7 @@ def _extract_cmocka_test_names(file_path: Path) -> tuple[list[str], str]:
     return names, content
 
 
-def _count_unit_tests_by_command() -> tuple[dict[str, int], int, str]:
+def _count_unit_tests_by_command() -> tuple[dict[str, int], int, set[str], str]:
     """
     Count unit-test entries per command and return the data along with total generated functions.
 
@@ -302,9 +302,15 @@ def _count_unit_tests_by_command() -> tuple[dict[str, int], int, str]:
     independent of the generator output formatting.
     IMPORTANT: this reads test sources from disk and does not depend on in-memory
     generation-phase counters/state from earlier steps in this script.
+
+    Returns:
+        (command_counts, total_funcs, registered_names, combined_content)
+        registered_names: set of all function names registered via cmocka_unit_test()
+        combined_content: concatenated raw source text (used only for A-vs-B sanity check)
     """
     command_counts: dict[str, int] = {command: 0 for command in _COMMAND_ORDER}
     total_funcs = 0
+    registered_names: set[str] = set()
     command_file_contents: list[str] = []
 
     def _add_file_content_only(path: Path) -> None:
@@ -322,6 +328,7 @@ def _count_unit_tests_by_command() -> tuple[dict[str, int], int, str]:
         names, content = _extract_cmocka_test_names(path)
         command_counts[command] += len(names)
         total_funcs += len(names)
+        registered_names.update(names)
         command_file_contents.append(content)
 
     tx_test_files = sorted(
@@ -355,7 +362,24 @@ def _count_unit_tests_by_command() -> tuple[dict[str, int], int, str]:
             _add_file_counts(file_path, command)
 
     combined_content = "\n".join(command_file_contents)
-    return command_counts, total_funcs, combined_content
+    return command_counts, total_funcs, registered_names, combined_content
+
+
+def _is_covered_by_registered_names(candidate_names: set[str], registered_names: set[str]) -> bool:
+    """Option B: check coverage against the authoritative set of cmocka-registered names."""
+    return any(
+        candidate_name in registered_names
+        or any(n.startswith(candidate_name + "_") for n in registered_names)
+        for candidate_name in candidate_names
+    )
+
+
+def _is_covered_by_substring(candidate_names: set[str], unit_tests_content: str) -> bool:
+    """Option A: word-boundary regex check against raw source text."""
+    return any(
+        bool(re.search(rf"\b{re.escape(candidate_name)}\b", unit_tests_content))
+        for candidate_name in candidate_names
+    )
 
 
 def _verify_ragger_test_coverage() -> None:
@@ -366,10 +390,13 @@ def _verify_ragger_test_coverage() -> None:
         print("WARNING: Ragger tests directory not found, skipping coverage check")
         return
 
+    venv_pytest = REPO_ROOT / "tests" / "standalone" / "venv" / "bin" / "pytest"
+    pytest_cmd = str(venv_pytest) if venv_pytest.exists() else "pytest"
+
     try:
         # Try to collect with a device parameter (ragger tests require --device)
         result = subprocess.run(
-            ["pytest", "--collect-only", "-q", "--device", "stax", str(ragger_tests_dir)],
+            [pytest_cmd, "--collect-only", "-q", "--device", "stax", str(ragger_tests_dir)],
             capture_output=True,
             text=True,
             timeout=30,
@@ -416,7 +443,14 @@ def _verify_ragger_test_coverage() -> None:
         "test_mock_key_derivation.py",
         "test_get_app_info.py",
     }
-    skip_test_funcs = {"test_wrong_data_length"}
+    skip_test_funcs = {
+        "test_wrong_data_length",
+        # test_sign_tx_deny coverage is tracked via _count_sign_tx_deny_fixtures() /
+        # SIGN_TX_DENY_FIXTURES; the unit-test runner (test_sign_tx_deny_fixture) is
+        # a fixture-driven loop, not a per-case cmocka registration, so it will never
+        # appear in registered_unit_test_names under its ragger name.
+        "test_sign_tx_deny",
+    }
     ragger_test_funcs = set()
 
     for test_line in ragger_tests:
@@ -439,7 +473,7 @@ def _verify_ragger_test_coverage() -> None:
 
     # Coverage/counting is intentionally filesystem-based and independent from
     # generation-phase bookkeeping; it scans current unit-test files on disk.
-    unit_command_counts, total_unit_test_funcs, unit_tests_content = _count_unit_tests_by_command()
+    unit_command_counts, total_unit_test_funcs, registered_unit_test_names, unit_tests_content = _count_unit_tests_by_command()
     deny_fixture_count = _count_sign_tx_deny_fixtures()
     if deny_fixture_count:
         unit_command_counts["sign_tx"] += deny_fixture_count
@@ -456,11 +490,17 @@ def _verify_ragger_test_coverage() -> None:
         # Some ragger tests expand into indexed unit tests. Match both the exact
         # function name and generated prefixes.
         candidate_function_names = _candidate_function_names_for_coverage_match(func_name)
-        found = any(
-            candidate_name in unit_tests_content or f"{candidate_name}_" in unit_tests_content
-            for candidate_name in candidate_function_names
-        )
-        if found:
+        # Primary check (B): coverage is determined by cmocka_unit_test() registrations only.
+        found_by_registered = _is_covered_by_registered_names(candidate_function_names, registered_unit_test_names)
+        # Sanity check (A): word-boundary regex over raw source text.
+        found_by_substring = _is_covered_by_substring(candidate_function_names, unit_tests_content)
+        if found_by_substring and not found_by_registered:
+            print(
+                f"WARNING: coverage inconsistency for '{func_name}': "
+                f"found as word-boundary match in source text but NOT in cmocka registrations — "
+                f"function may be defined but not registered as a test"
+            )
+        if found_by_registered:
             covered_coverage.append(func_name)
         else:
             missing_coverage.append(func_name)
