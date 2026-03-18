@@ -32,8 +32,6 @@ def test_pubkey_confirm(device: Device,
                         testCase: PubKeyTestCase) -> None:
     """Check Public Key with confirmation"""
 
-    # TODO why are snapshots missing?
-
     # Use the app interface instead of raw interface
     client = CommandSender(backend)
 

@@ -50,6 +50,7 @@ testsMultisig = [
 
 testsColdKeys = [
     PubKeyTestCase(name="Export_pubkey_cold_case", path="m/1853'/1815'/0'/0'"),
+    PubKeyTestCase(name="Export_pubkey_cold_unusual_case", path="m/1853'/1815'/0'/101'"),
 ]
 
 testsCVoteKeysUsual = [

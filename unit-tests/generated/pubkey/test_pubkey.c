@@ -122,39 +122,44 @@ static void test_pubkey_confirm_export_pubkey_cold_case_19(void **state) {
     run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_CONFIRM[19]);
 }
 
-static void test_pubkey_confirm_export_pubkey_cvote_keys_path_2_20(void **state) {
+static void test_pubkey_confirm_export_pubkey_cold_unusual_case_20(void **state) {
     (void) state;
     run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_CONFIRM[20]);
 }
 
-static void test_pubkey_confirm_export_pubkey_cvote_keys_path_1_21(void **state) {
+static void test_pubkey_confirm_export_pubkey_cvote_keys_path_2_21(void **state) {
     (void) state;
     run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_CONFIRM[21]);
 }
 
-static void test_pubkey_confirm_export_pubkey_cvote_keys_path_3_22(void **state) {
+static void test_pubkey_confirm_export_pubkey_cvote_keys_path_1_22(void **state) {
     (void) state;
     run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_CONFIRM[22]);
 }
 
-static void test_pubkey_confirm_export_pubkey_drep_key_path_0_23(void **state) {
+static void test_pubkey_confirm_export_pubkey_cvote_keys_path_3_23(void **state) {
     (void) state;
     run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_CONFIRM[23]);
 }
 
-static void test_pubkey_confirm_export_pubkey_committee_cold_key_path_0_24(void **state) {
+static void test_pubkey_confirm_export_pubkey_drep_key_path_0_24(void **state) {
     (void) state;
     run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_CONFIRM[24]);
 }
 
-static void test_pubkey_confirm_export_pubkey_committee_hot_key_path_0_25(void **state) {
+static void test_pubkey_confirm_export_pubkey_committee_cold_key_path_0_25(void **state) {
     (void) state;
     run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_CONFIRM[25]);
 }
 
-static void test_pubkey_confirm_export_pubkey_mint_key_path_0_26(void **state) {
+static void test_pubkey_confirm_export_pubkey_committee_hot_key_path_0_26(void **state) {
     (void) state;
     run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_CONFIRM[26]);
+}
+
+static void test_pubkey_confirm_export_pubkey_mint_key_path_0_27(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_CONFIRM[27]);
 }
 
 static void test_pubkey_without_confirmation_export_pubkey_shelley_usual_path_0_0(void **state) {
@@ -228,13 +233,14 @@ int main(void) {
         cmocka_unit_test(test_pubkey_confirm_export_pubkey_multisig_payment_path_0_17),
         cmocka_unit_test(test_pubkey_confirm_export_pubkey_multisig_staking_path_0_18),
         cmocka_unit_test(test_pubkey_confirm_export_pubkey_cold_case_19),
-        cmocka_unit_test(test_pubkey_confirm_export_pubkey_cvote_keys_path_2_20),
-        cmocka_unit_test(test_pubkey_confirm_export_pubkey_cvote_keys_path_1_21),
-        cmocka_unit_test(test_pubkey_confirm_export_pubkey_cvote_keys_path_3_22),
-        cmocka_unit_test(test_pubkey_confirm_export_pubkey_drep_key_path_0_23),
-        cmocka_unit_test(test_pubkey_confirm_export_pubkey_committee_cold_key_path_0_24),
-        cmocka_unit_test(test_pubkey_confirm_export_pubkey_committee_hot_key_path_0_25),
-        cmocka_unit_test(test_pubkey_confirm_export_pubkey_mint_key_path_0_26),
+        cmocka_unit_test(test_pubkey_confirm_export_pubkey_cold_unusual_case_20),
+        cmocka_unit_test(test_pubkey_confirm_export_pubkey_cvote_keys_path_2_21),
+        cmocka_unit_test(test_pubkey_confirm_export_pubkey_cvote_keys_path_1_22),
+        cmocka_unit_test(test_pubkey_confirm_export_pubkey_cvote_keys_path_3_23),
+        cmocka_unit_test(test_pubkey_confirm_export_pubkey_drep_key_path_0_24),
+        cmocka_unit_test(test_pubkey_confirm_export_pubkey_committee_cold_key_path_0_25),
+        cmocka_unit_test(test_pubkey_confirm_export_pubkey_committee_hot_key_path_0_26),
+        cmocka_unit_test(test_pubkey_confirm_export_pubkey_mint_key_path_0_27),
         cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_shelley_usual_path_0_0),
         cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_shelley_usual_path_1_1),
         cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_shelley_usual_path_2_2),

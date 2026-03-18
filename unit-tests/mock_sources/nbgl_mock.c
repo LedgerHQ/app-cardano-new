@@ -13,8 +13,10 @@
 #include "nbgl_use_case.h"
 #include "nbgl_mock.h"
 #include "menu.h"
+#include <string.h>
 
 #define NBGL_MOCK_MAX_FINAL_DECISIONS 16
+#define NBGL_MOCK_TEXT_BUFFER_SIZE 256
 
 static bool g_final_decisions_storage[NBGL_MOCK_MAX_FINAL_DECISIONS];
 static size_t g_final_decision_count = 0;
@@ -25,8 +27,17 @@ static nbgl_opType_t g_reject_next_operation_type = TYPE_TRANSACTION;
 static nbgl_operationType_t g_last_streaming_operation_type = TYPE_TRANSACTION;
 static bool g_streaming_start_auto_complete = false;
 static bool g_streaming_start_confirm = true;
-static const char *g_last_status_message = NULL;
+static char g_last_choice_message[NBGL_MOCK_TEXT_BUFFER_SIZE];
+static char g_last_status_message[NBGL_MOCK_TEXT_BUFFER_SIZE];
 static bool g_last_status_success = false;
+
+static void nbgl_mock_store_text(char *destination, const char *source) {
+    memset(destination, 0, NBGL_MOCK_TEXT_BUFFER_SIZE);
+    if (source == NULL) {
+        return;
+    }
+    strncpy(destination, source, NBGL_MOCK_TEXT_BUFFER_SIZE - 1);
+}
 
 void nbgl_mock_reset(void) {
     g_final_decision_count = 0;
@@ -37,7 +48,8 @@ void nbgl_mock_reset(void) {
     g_last_streaming_operation_type = TYPE_TRANSACTION;
     g_streaming_start_auto_complete = false;
     g_streaming_start_confirm = true;
-    g_last_status_message = NULL;
+    memset(g_last_choice_message, 0, sizeof(g_last_choice_message));
+    memset(g_last_status_message, 0, sizeof(g_last_status_message));
     g_last_status_success = false;
 }
 
@@ -126,7 +138,7 @@ void nbgl_useCaseHomeAndSettings(const char                   *appName,
 // ======================================================================
 
 void nbgl_useCaseStatus(const char *message, bool isSuccess, nbgl_callback_t quitCallback) {
-    g_last_status_message = message;
+    nbgl_mock_store_text(g_last_status_message, message);
     g_last_status_success = isSuccess;
     if (quitCallback != NULL) {
         quitCallback();
@@ -174,7 +186,7 @@ void nbgl_useCaseChoice(const nbgl_icon_details_t *icon,
                         const char                *rejectString,
                         nbgl_choiceCallback_t      callback) {
     (void) icon;
-    (void) message;
+    nbgl_mock_store_text(g_last_choice_message, message);
     (void) subMessage;
     (void) confirmText;
     (void) rejectString;
@@ -257,6 +269,10 @@ void nbgl_useCaseReviewStreamingFinish(const char           *finishTitle,
 
 void ui_menu_main(void) {
     // no-op in unit tests
+}
+
+const char *nbgl_mock_last_choice_message(void) {
+    return g_last_choice_message;
 }
 
 const char *nbgl_mock_last_status_message(void) {
