@@ -12,7 +12,10 @@
 #define BECH32_SEPARATOR_LENGTH 1
 #define BECH32_CHECKSUM_LENGTH  6
 
-#define MAX_BECH32_BUFFER_LENGTH 150
+// Maximum input bytes accepted by format_bech32().
+// WARNING: increasing this would take more stack space, see data5bit definition in bech32.c.
+// We are not supposed to use more for Cardano Shelley.
+#define MAX_BECH32_BUFFER_LENGTH 65
 
 #define MAX_BECH32_ENCODED_DATA_LENGTH (((8 * MAX_BECH32_BUFFER_LENGTH) + 4) / 5)
 #define MAX_BECH32_STRING_LENGTH                                                        \
