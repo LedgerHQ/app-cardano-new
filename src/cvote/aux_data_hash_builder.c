@@ -15,13 +15,13 @@ enum {
 
 /*
  * Optional tracing for debugging aux data hash serialization.
- * Enabled via -DTRACE_TX_HASH_BUILDER to capture the exact CBOR bytes
+ * Enabled via -DTRACE_AUX_DATA_HASH_BUILDER to capture the exact CBOR bytes
  * being hashed.
  */
 #ifdef TRACE_AUX_DATA_HASH_BUILDER
 enum {
-    AUX_DATA_TRACE_BUFFER_SIZE = 8 * 1024,
-    CVOTE_PAYLOAD_TRACE_BUFFER_SIZE = 8 * 1024,
+    AUX_DATA_TRACE_BUFFER_SIZE = 4 * 1024,
+    CVOTE_PAYLOAD_TRACE_BUFFER_SIZE = 4 * 1024,
 };
 static uint8_t aux_data_hash_trace_buffer[AUX_DATA_TRACE_BUFFER_SIZE];
 static size_t aux_data_hash_trace_size = 0;

@@ -61,6 +61,7 @@ bool swap_copy_transaction_parameters(create_transaction_parameters_t *params) {
     memset(&swap_validated, 0, sizeof(swap_validated));
 
     // Save destination address
+    LEDGER_ASSERT(params->destination_address != NULL, "NULL destination_address");
     LEDGER_ASSERT(strlen(params->destination_address) < sizeof(swap_validated.destination),
                   "Swap destination address too long");
     strlcpy(swap_validated.destination,
@@ -74,6 +75,8 @@ bool swap_copy_transaction_parameters(create_transaction_parameters_t *params) {
     TRACE("Destination received %s", params->destination_address);
 
     // Save amount and fees
+    LEDGER_ASSERT(params->amount != NULL, "NULL amount");
+    LEDGER_ASSERT(params->fee_amount != NULL, "NULL fee_amount");
     if (!swap_str_to_u64(params->amount, params->amount_length, &swap_validated.amount)) {
         TRACE("Amount copy error");
         return false;
