@@ -26,6 +26,7 @@ from standalone.input_files.native_script import ValidNativeScriptTestCases, Val
 from standalone.input_files.native_script import NativeScript, NativeScriptType
 from standalone.input_files.native_script import NativeScriptParamsScripts, NativeScriptParamsNofK
 from standalone.utils import (
+    NavContext,
     idTestFunc,
     get_device_pubkey,
     nano_navigate_without_waits,
@@ -133,26 +134,33 @@ def test_derive_native_script_hash(device: Device,
 
     # Use the app interface instead of raw interface
     client = CommandSender(backend)
+    nav_ctx = NavContext(device, navigator, scenario_navigator)
+    step_counter = [0]
 
-    _deriveNativeScriptHash_init(device, navigator, client)
-    _deriveNativeScriptHash_addScript(device, navigator, client, testCase.script)
+    _deriveNativeScriptHash_init(nav_ctx, client, testCase.name, step_counter)
+    _deriveNativeScriptHash_addScript(nav_ctx, client, testCase.script, testCase.name, step_counter)
 
-    _deriveNativeScriptHash_finishWholeNativeScript(device, navigator, scenario_navigator, client, testCase)
+    _deriveNativeScriptHash_finishWholeNativeScript(nav_ctx, client, testCase, step_counter)
 
-def _deriveNativeScriptHash_init(device: Device,
-                                 navigator: Navigator,
-                                 client: CommandSender) -> None:
+def _deriveNativeScriptHash_init(nav_ctx: NavContext,
+                                 client: CommandSender,
+                                 test_name: str,
+                                 step_counter: list[int]) -> None:
     with client.derive_script_init_async():
-        if device.is_nano:
-            navigator.navigate_until_text(
+        if nav_ctx.is_nano:
+            snap_name = f"{test_name}/step_{step_counter[0]:02d}_init"
+            step_counter[0] += 1
+            nav_ctx.navigator.navigate_until_text_and_compare(
                 navigate_instruction=NavInsID.RIGHT_CLICK,
                 validation_instructions=[NavInsID.RIGHT_CLICK],
                 text=r"^Review Script$",
+                path=nav_ctx.screenshot_path,
+                test_case_name=snap_name,
                 screen_change_before_first_instruction=True,
                 screen_change_after_last_instruction=False,
             )
         else:
-            navigator.navigate(
+            nav_ctx.navigator.navigate(
                 [NavInsID.USE_CASE_REVIEW_TAP], screen_change_before_first_instruction=False
             )
 
@@ -160,61 +168,73 @@ def _deriveNativeScriptHash_init(device: Device,
     assert response and response.status == StatusWord.SWO_SUCCESS
 
 
-def _deriveNativeScriptHash_addScript(device: Device,
-                                      navigator: Navigator,
+def _deriveNativeScriptHash_addScript(nav_ctx: NavContext,
                                       client: CommandSender,
-                                      script: NativeScript) -> None:
+                                      script: NativeScript,
+                                      test_name: str,
+                                      step_counter: list[int]) -> None:
     """Send the different add commands
 
     Args:
-        firmware (Firmware): The firmware version
-        navigator (Navigator): The navigator instance
+        nav_ctx (NavContext): Navigation context
         client (CommandSender): The command sender instance
         script (NativeScript): The test case
+        test_name (str): Test case name for snapshot paths
+        step_counter (list[int]): Mutable step counter for unique snapshot names
     """
 
     if script.type in [NativeScriptType.ALL, NativeScriptType.ANY, NativeScriptType.N_OF_K]:
-        _deriveScriptHash_startComplexScript(device, navigator, client, script)
+        _deriveScriptHash_startComplexScript(nav_ctx, client, script, test_name, step_counter)
         assert isinstance(script.params, (NativeScriptParamsScripts, NativeScriptParamsNofK))
         for subscript in script.params.scripts:
-            _deriveNativeScriptHash_addScript(device, navigator, client, subscript)
+            _deriveNativeScriptHash_addScript(nav_ctx, client, subscript, test_name, step_counter)
     else:
-        _deriveNativeScriptHash_addSimpleScript(device, navigator, client, script)
+        _deriveNativeScriptHash_addSimpleScript(nav_ctx, client, script, test_name, step_counter)
 
 
-def _deriveNativeScriptHash_addSimpleScript(device: Device,
-                                            navigator: Navigator,
+def _deriveNativeScriptHash_addSimpleScript(nav_ctx: NavContext,
                                             client: CommandSender,
-                                            script: NativeScript) -> None:
+                                            script: NativeScript,
+                                            test_name: str,
+                                            step_counter: list[int]) -> None:
     """Send the add command for a simple script
 
     Args:
-        firmware (Firmware): The firmware version
-        navigator (Navigator): The navigator instance
+        nav_ctx (NavContext): Navigation context
         client (CommandSender): The command sender instance
         script (NativeScript): The script
+        test_name (str): Test case name for snapshot paths
+        step_counter (list[int]): Mutable step counter for unique snapshot names
     """
 
     with client.derive_script_add_simple_async(script):
-        if device.is_nano:
+        if nav_ctx.is_nano:
+            snap_name = f"{test_name}/step_{step_counter[0]:02d}_simple"
+            step_counter[0] += 1
             step_right_clicks = _native_script_step_right_clicks(script)
             if step_right_clicks is None:
-                navigator.navigate_until_text(
+                nav_ctx.navigator.navigate_until_text_and_compare(
                     navigate_instruction=NavInsID.RIGHT_CLICK,
                     validation_instructions=[NavInsID.RIGHT_CLICK],
                     text=_native_script_step_final_label(script),
+                    path=nav_ctx.screenshot_path,
+                    test_case_name=snap_name,
                     screen_change_before_first_instruction=True,
                     screen_change_after_last_instruction=False,
                 )
             else:
+                # Big-number timelocks: fixed click count without screen-change
+                # waits (the last click doesn't always trigger a detectable
+                # screen delta in Speculos).  Content is still covered by the
+                # non-big-number timelock snapshot tests.
                 nano_navigate_without_waits(
                     backend=client.backend,
-                    navigator=navigator,
+                    navigator=nav_ctx.navigator,
                     instructions=[NavInsID.RIGHT_CLICK] * step_right_clicks,
                     screen_change_before_first_instruction=True,
                 )
         else:
-            navigator.navigate(
+            nav_ctx.navigator.navigate(
                 [NavInsID.USE_CASE_REVIEW_TAP], screen_change_before_first_instruction=False
             )
 
@@ -223,30 +243,36 @@ def _deriveNativeScriptHash_addSimpleScript(device: Device,
     assert response and response.status == StatusWord.SWO_SUCCESS
 
 
-def _deriveScriptHash_startComplexScript(device: Device,
-                                         navigator: Navigator,
+def _deriveScriptHash_startComplexScript(nav_ctx: NavContext,
                                          client: CommandSender,
-                                         script: NativeScript) -> None:
+                                         script: NativeScript,
+                                         test_name: str,
+                                         step_counter: list[int]) -> None:
     """Send the add command for a complex script
 
     Args:
-        firmware (Firmware): The firmware version
+        nav_ctx (NavContext): Navigation context
         client (CommandSender): The command sender instance
-        navigator (Navigator): The navigator instance
         script (NativeScript): The script
+        test_name (str): Test case name for snapshot paths
+        step_counter (list[int]): Mutable step counter for unique snapshot names
     """
 
     with client.derive_script_add_complex_async(script):
-        if device.is_nano:
-            navigator.navigate_until_text(
+        if nav_ctx.is_nano:
+            snap_name = f"{test_name}/step_{step_counter[0]:02d}_complex"
+            step_counter[0] += 1
+            nav_ctx.navigator.navigate_until_text_and_compare(
                 navigate_instruction=NavInsID.RIGHT_CLICK,
                 validation_instructions=[NavInsID.RIGHT_CLICK],
                 text=_native_script_step_final_label(script),
+                path=nav_ctx.screenshot_path,
+                test_case_name=snap_name,
                 screen_change_before_first_instruction=True,
                 screen_change_after_last_instruction=False,
             )
         else:
-            navigator.navigate(
+            nav_ctx.navigator.navigate(
                 [NavInsID.USE_CASE_REVIEW_TAP], screen_change_before_first_instruction=False
             )
 
@@ -256,31 +282,33 @@ def _deriveScriptHash_startComplexScript(device: Device,
     assert response and response.status == StatusWord.SWO_SUCCESS
 
 
-def _deriveNativeScriptHash_finishWholeNativeScript(device: Device,
-                                                    navigator: Navigator,
-                                                    scenario_navigator: NavigateWithScenario,
+def _deriveNativeScriptHash_finishWholeNativeScript(nav_ctx: NavContext,
                                                     client: CommandSender,
-                                                    testCase: ValidNativeScriptTestCase) -> None:
+                                                    testCase: ValidNativeScriptTestCase,
+                                                    step_counter: list[int]) -> None:
     """Send the finish command for the whole native script
 
     Args:
-        firmware (Firmware): The firmware version
-        navigator (Navigator): The navigator instance
-        scenario_navigator (NavigateWithScenario): The scenario navigator instance
+        nav_ctx (NavContext): Navigation context
         client (CommandSender): The command sender instance
         testCase (ValidNativeScriptTestCase): The test case
+        step_counter (list[int]): Mutable step counter for unique snapshot names
     """
 
     with client.derive_script_finish_async(testCase.displayFormat):
-        if device.is_nano:
-            navigator.navigate_until_text(
+        if nav_ctx.is_nano:
+            snap_name = f"{testCase.name}/step_{step_counter[0]:02d}_finish"
+            step_counter[0] += 1
+            nav_ctx.navigator.navigate_until_text_and_compare(
                 navigate_instruction=NavInsID.RIGHT_CLICK,
                 validation_instructions=[NavInsID.BOTH_CLICK],
                 text=r"^Confirm hash$",
+                path=nav_ctx.screenshot_path,
+                test_case_name=snap_name,
                 screen_change_before_first_instruction=True,
             )
         else:
-            navigator.navigate(
+            nav_ctx.navigator.navigate(
                 [NavInsID.USE_CASE_REVIEW_TAP, NavInsID.USE_CASE_REVIEW_CONFIRM],
                 screen_change_before_first_instruction=False,
             )
