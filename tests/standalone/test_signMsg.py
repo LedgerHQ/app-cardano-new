@@ -39,7 +39,6 @@ from standalone.utils import (
     verify_signature,
     derive_address,
     review_approve,
-    nano_navigate_until_text_relaxed,
     NavContext,
 )
 
@@ -61,23 +60,16 @@ def test_sign_message(device: Device,
     nav_ctx = NavContext(device, navigator, scenario_navigator)
 
     def review_msg() -> None:
-        if device.is_nano and len(testCase.expected_warnings) == 0:
-            nano_navigate_until_text_relaxed(
-                backend=backend,
-                navigator=navigator,
-                navigate_instruction=NavInsID.RIGHT_CLICK,
-                validation_instructions=[NavInsID.BOTH_CLICK],
-                text=r"^Sign message$",
-                screen_change_before_first_instruction=True,
-            )
-            return
-
         review_approve(
             nav_ctx,
             test_name=testCase.name,
             target_text="Sign message" if not testCase.expected_warnings else r"^Reject operation$",
             warnings=testCase.expected_warnings,
-            nano_review_instructions=[NavInsID.LEFT_CLICK, NavInsID.BOTH_CLICK],
+            nano_review_instructions=(
+                [NavInsID.LEFT_CLICK, NavInsID.BOTH_CLICK]
+                if testCase.expected_warnings
+                else None
+            ),
         )
 
     signedData = client.sign_msg(testCase, on_review=review_msg)

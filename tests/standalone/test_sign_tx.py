@@ -128,17 +128,6 @@ def _run_sign_tx_test(device: Device,
             return
 
         test_name = f"{testCase.name}-{mode_str}/cvote_review"
-        if device.is_nano and not testCase.expected_aux_warnings:
-            nano_navigate_until_text_relaxed(
-                backend=backend,
-                navigator=navigator,
-                navigate_instruction=NavInsID.RIGHT_CLICK,
-                validation_instructions=[NavInsID.BOTH_CLICK],
-                text=r"^Confirm vote",
-                screen_change_before_first_instruction=True,
-            )
-            return
-
         if not device.is_nano:
             if testCase.expected_aux_warnings:
                 detail_navigation = [NavInsID.RIGHT_HEADER_TAP]
@@ -216,13 +205,6 @@ def _run_sign_tx_test(device: Device,
                 test_name=test_name,
                 warnings=testCase.expected_warnings,
                 target_text="Sign transaction",
-            )
-        elif device.is_nano:
-            navigator.navigate_until_text(
-                navigate_instruction=NavInsID.RIGHT_CLICK,
-                validation_instructions=[NavInsID.BOTH_CLICK],
-                text=r"^Sign transaction$",
-                screen_change_before_first_instruction=True,
             )
         else:
             review_approve(
