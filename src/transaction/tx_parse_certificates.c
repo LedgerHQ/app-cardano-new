@@ -86,6 +86,10 @@ bool parse_certificate_stake_registration_deregistration_conway(
         TRACE("Failed to read deposit");
         return false;
     }
+    if (cert_data->deposit >= LOVELACE_MAX_SUPPLY) {
+        TRACE("Deposit too large: %llu", (unsigned long long) cert_data->deposit);
+        return false;
+    }
     TRACE_MODULE("deposit=%llu", (unsigned long long) cert_data->deposit);
     return true;
 }
@@ -183,6 +187,10 @@ bool parse_certificate_account_registration_delegation_to_stake_pool(
         TRACE("Failed to read deposit");
         return false;
     }
+    if (cert_data->deposit >= LOVELACE_MAX_SUPPLY) {
+        TRACE("Deposit too large: %llu", (unsigned long long) cert_data->deposit);
+        return false;
+    }
     TRACE_MODULE("deposit=%llu", (unsigned long long) cert_data->deposit);
     return true;
 }
@@ -209,6 +217,10 @@ bool parse_certificate_account_registration_delegation_to_drep(
     ASSERT_TYPE(cert_data->deposit, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->deposit, BE)) {
         TRACE("Failed to read deposit");
+        return false;
+    }
+    if (cert_data->deposit >= LOVELACE_MAX_SUPPLY) {
+        TRACE("Deposit too large: %llu", (unsigned long long) cert_data->deposit);
         return false;
     }
     TRACE_MODULE("deposit=%llu", (unsigned long long) cert_data->deposit);
@@ -243,6 +255,10 @@ bool parse_certificate_account_registration_delegation_to_stake_pool_and_drep(
     ASSERT_TYPE(cert_data->deposit, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->deposit, BE)) {
         TRACE("Failed to read deposit");
+        return false;
+    }
+    if (cert_data->deposit >= LOVELACE_MAX_SUPPLY) {
+        TRACE("Deposit too large: %llu", (unsigned long long) cert_data->deposit);
         return false;
     }
     TRACE_MODULE("deposit=%llu", (unsigned long long) cert_data->deposit);
@@ -309,6 +325,10 @@ bool parse_certificate_drep_registration(buffer_t *buf,
         TRACE("Failed to read deposit");
         return false;
     }
+    if (cert_data->deposit >= LOVELACE_MAX_SUPPLY) {
+        TRACE("Deposit too large: %llu", (unsigned long long) cert_data->deposit);
+        return false;
+    }
     TRACE_MODULE("deposit=%llu", (unsigned long long) cert_data->deposit);
 
     if (!buffer_read_anchor(buf, &cert_data->anchor)) {
@@ -335,6 +355,10 @@ bool parse_certificate_drep_deregistration(buffer_t *buf,
     ASSERT_TYPE(cert_data->deposit, uint64_t);
     if (!buffer_read_u64(buf, &cert_data->deposit, BE)) {
         TRACE("Failed to read deposit");
+        return false;
+    }
+    if (cert_data->deposit >= LOVELACE_MAX_SUPPLY) {
+        TRACE("Deposit too large: %llu", (unsigned long long) cert_data->deposit);
         return false;
     }
     TRACE_MODULE("deposit=%llu", (unsigned long long) cert_data->deposit);
@@ -591,6 +615,10 @@ bool parse_pool_metadata(buffer_t *buf, pool_metadata_t *out_metadata) {
         return false;
     }
     ASSERT(out_metadata->url != NULL);
+    if (!str_isPrintableAsciiWithoutSpaces(out_metadata->url, url_length)) {
+        TRACE("Metadata URL contains non-printable or space characters");
+        return false;
+    }
     out_metadata->urlSize = url_length;
 
     if (!buffer_read_bytes_ptr(buf, &out_metadata->hash, POOL_METADATA_HASH_LENGTH)) {

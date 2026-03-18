@@ -137,8 +137,9 @@ void inet_ntop6(const uint8_t* src, char* dst, size_t dstSize) {
             break;
         }
         STATIC_ASSERT(sizeof(words[i]) <= sizeof(unsigned), "oversized type for %u");
-        int written = snprintf(tp, sizeof tmp - (tp - tmp), "%x", words[i]);
-        LEDGER_ASSERT(written > 0, "snprintf IPv6 hex formatting failed");
+        size_t remaining = sizeof tmp - (size_t)(tp - tmp);
+        int written = snprintf(tp, remaining, "%x", words[i]);
+        LEDGER_ASSERT(written > 0 && (size_t) written < remaining, "snprintf IPv6 hex formatting failed or truncated");
         tp += written;
     }
     /* Was it a trailing run of 0x00's? */

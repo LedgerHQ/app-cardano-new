@@ -146,6 +146,7 @@ uint64_t cbor_token_value_from_negative_i64(int64_t negativeValue) {
 bool cbor_writeToken(uint8_t type, uint64_t value, uint8_t* buffer, size_t bufferSize, size_t* out_size) {
     ASSERT(bufferSize < BUFFER_SIZE_PARANOIA);
     ASSERT(out_size != NULL);
+    ASSERT(buffer != NULL);
 
 #define CHECK_BUF_LEN(requiredSize) \
     if ((size_t) requiredSize > bufferSize) return false;

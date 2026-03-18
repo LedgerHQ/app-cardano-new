@@ -94,11 +94,11 @@ size_t cborEncodePubkeyAddressInner(const uint8_t* addressRoot,
                     // Protocol magic itself is bytes with cbor-encoded content
                     uint8_t scratch[10] = {0};
                     size_t scratchSize = 0;
-                    cbor_writeToken(CBOR_TYPE_UNSIGNED,
-                                    protocolMagic,
-                                    scratch,
-                                    SIZEOF(scratch),
-                                    &scratchSize);
+                    ASSERT(cbor_writeToken(CBOR_TYPE_UNSIGNED,
+                                          protocolMagic,
+                                          scratch,
+                                          SIZEOF(scratch),
+                                          &scratchSize));
                     ASSERT(buffer_write_cbor_token(&out, CBOR_TYPE_BYTES, scratchSize));
                     ASSERT(buffer_write_bytes(&out, scratch, scratchSize));
                 }
