@@ -17,6 +17,7 @@ from application_client.response_unpacker import (
     unpack_get_version_response,
     unpack_get_serial_response,
 )
+from application_client.status_words import StatusWord
 
 from .utils import verify_name, verify_version
 
@@ -53,9 +54,16 @@ def test_get_version(backend: BackendInterface) -> None:
 def test_get_serial(backend: BackendInterface) -> None:
     """Check application serial number via GET_SERIAL APDU."""
     client = CommandSender(backend)
-    rapdu = client.get_serial()
+    first_response = client.get_serial()
+    second_response = client.get_serial()
 
-    # Parse the serial response using the unpacker
-    serial = unpack_get_serial_response(rapdu.data)
+    assert first_response.status == StatusWord.SWO_SUCCESS
+    assert second_response.status == StatusWord.SWO_SUCCESS
 
-    print(f" Serial: {serial.hex()} -> {serial.decode()}")
+    first_serial = unpack_get_serial_response(first_response.data)
+    second_serial = unpack_get_serial_response(second_response.data)
+
+    assert first_serial == first_response.data
+    assert second_serial == second_response.data
+    assert len(first_serial) == 7
+    assert first_serial == second_serial, "Serial must be stable within one session"

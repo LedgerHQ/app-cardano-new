@@ -160,7 +160,7 @@ static void derive_native_script_hash_review_choice(bool confirm) {
     finalize_derive_native_script_hash();
 
     // SHOW STATUS
-    nbgl_useCaseStatus("Confirm native script hash", true, ui_menu_main);
+    nbgl_useCaseStatus("Script hash exported", true, ui_menu_main);
 }
 
 static void derive_native_script_hash_streaming_finish_continue(bool confirm) {

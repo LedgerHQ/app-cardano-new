@@ -59,21 +59,6 @@ def _load_sign_msg_deny_test_cases() -> list:
     from standalone.input_files.signMsg import signMsgDenyTestCases  # type: ignore
     return signMsgDenyTestCases
 
-
-def _is_init_only_deny_test(test_case) -> bool:
-    """Check if deny test only needs INIT phase."""
-    # ASCII validation happens during CHUNK, not INIT
-    if test_case.msgData.isAscii and not all(32 <= b < 127 for b in bytes.fromhex(test_case.msgData.messageHex)):
-        return False
-
-    return not (
-        test_case.invalid_chunk_size is not None
-        or test_case.send_chunk_without_init
-        or test_case.send_confirm_without_chunks
-        or test_case.send_confirm_with_payload
-    )
-
-
 def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
     _add_tests_to_sys_path()
     from standalone.input_files.signMsg import (  # type: ignore

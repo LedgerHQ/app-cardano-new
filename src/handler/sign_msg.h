@@ -5,6 +5,8 @@
 
 #include "buffer.h"
 
+#define MAX_CIP8_MSG_CHUNK_SIZE 250
+
 /**
  * Handler for CIP-8 message signing (INS_SIGN_MSG).
  *

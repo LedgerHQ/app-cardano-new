@@ -239,7 +239,6 @@ typedef struct {
 
 // CIP-8 message signing constants
 #define CIP8_MSG_HASH_LENGTH 28
-#define MAX_CIP8_MSG_CHUNK_SIZE 250
 
 /**
  * Context for CIP-8 message signing.

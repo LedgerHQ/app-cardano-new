@@ -22,6 +22,7 @@ from .client_constants_check import (
     assert_cvote_credential_constants_match,
     assert_default_setting_values_match,
     assert_ins_constants_match,
+    assert_max_sign_msg_chunk_size_match,
     assert_max_sign_tx_chunk_size_match,
     assert_p1_p2_constants_match,
     assert_response_unpacker_constants_match,
@@ -57,6 +58,7 @@ def enforce_client_constants() -> None:
     assert_cla_constant_match()
     assert_cvote_credential_constants_match()
     assert_max_sign_tx_chunk_size_match()
+    assert_max_sign_msg_chunk_size_match()
     assert_setting_value_constants_match()
     assert_default_setting_values_match()
     assert_settings_menu_constants_match()

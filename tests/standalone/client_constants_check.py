@@ -17,7 +17,21 @@ for extra_path in (ROOT, TESTS_ROOT):
         sys.path.insert(0, str_extra)
 
 from application_client.app_def import AddressType, NetworkIds, ProtocolMagics, StakingDataSourceType
-from application_client.command_builder import CLA, CVoteCredentialType, InsType, P1Type, P2Type
+from application_client.command_builder import (
+    CLA,
+    CVoteCredentialType,
+    InsType,
+    MAX_CIP8_MSG_CHUNK_SIZE,
+    P1Type,
+    P2Type,
+)
+from application_client.response_unpacker import (
+    unpack_get_pubkey_response,
+    unpack_get_serial_response,
+    unpack_get_version_response,
+    unpack_sign_cip36_confirm_response,
+    unpack_sign_message_response,
+)
 from application_client.security_warnings import WarningBit
 from application_client.status_words import StatusWord
 from standalone.input_files.cvote import MAX_CIP36_PAYLOAD_SIZE
@@ -126,6 +140,10 @@ def _dispatcher_header_path() -> Path:
 
 def _handler_sign_tx_path() -> Path:
     return Path(__file__).resolve().parents[2] / "src" / "handler" / "sign_tx.h"
+
+
+def _handler_sign_msg_path() -> Path:
+    return Path(__file__).resolve().parents[2] / "src" / "handler" / "sign_msg.h"
 
 
 def _cvote_types_header_path() -> Path:
@@ -238,6 +256,18 @@ def _assert_enum_subset(enum_cls: type[Any], expected_values: Mapping[str, int])
             )
 
 
+def _assert_raises_value_error(callback: Any, expected_message_fragment: str) -> None:
+    try:
+        callback()
+    except ValueError as error:
+        if expected_message_fragment not in str(error):
+            raise AssertionError(
+                f"Unexpected ValueError message: {error!s}; expected fragment {expected_message_fragment!r}"
+            ) from error
+        return
+    raise AssertionError("Expected ValueError was not raised")
+
+
 def assert_ins_constants_match() -> None:
     dispatcher_values = _parse_enum(_dispatcher_header_path())
     _assert_dispatcher_enum_prefix("INS_", InsType, dispatcher_values)
@@ -264,6 +294,12 @@ def assert_max_sign_tx_chunk_size_match() -> None:
     defines = _parse_defines(_handler_sign_tx_path())
     if defines.get("MAX_SIGN_TX_CHUNK_SIZE") != MAX_SIGN_TX_CHUNK_SIZE:
         raise AssertionError("MAX_SIGN_TX_CHUNK_SIZE mismatch")
+
+
+def assert_max_sign_msg_chunk_size_match() -> None:
+    defines = _parse_defines(_handler_sign_msg_path())
+    if defines.get("MAX_CIP8_MSG_CHUNK_SIZE") != MAX_CIP8_MSG_CHUNK_SIZE:
+        raise AssertionError("MAX_CIP8_MSG_CHUNK_SIZE mismatch")
 
 
 def assert_warning_bit_constants_match() -> None:
@@ -409,20 +445,25 @@ def assert_app_status_words_match() -> None:
 
 def assert_app_definition_constants_match() -> None:
     c_defines = _parse_defines(_cardano_constants_path())
-    _assert_enum_subset(
+    # TESTNET/FAKE are Python-side helper network descriptors that are not mirrored
+    # by dedicated C named constants; pin them here to avoid silent client drift.
+    _assert_exact_enum_mapping(
         NetworkIds,
         {
             "TESTNET": c_defines["TESTNET_NETWORK_ID"],
             "MAINNET": c_defines["MAINNET_NETWORK_ID"],
+            "FAKE": 0x03,
         },
     )
-    _assert_enum_subset(
+    _assert_exact_enum_mapping(
         ProtocolMagics,
         {
             "MAINNET": c_defines["MAINNET_PROTOCOL_MAGIC"],
+            "TESTNET": 42,
             "TESTNET_LEGACY": c_defines["TESTNET_PROTOCOL_MAGIC_LEGACY"],
             "TESTNET_PREPROD": c_defines["TESTNET_PROTOCOL_MAGIC_PREPROD"],
             "TESTNET_PREVIEW": c_defines["TESTNET_PROTOCOL_MAGIC_PREVIEW"],
+            "FAKE": 47,
         },
     )
 
@@ -582,11 +623,14 @@ def assert_sign_tx_related_constants_match() -> None:
 
 def assert_sign_msg_and_native_script_constants_match() -> None:
     globals_defines = _parse_defines(_globals_header_path())
+    sign_msg_defines = _parse_defines(_handler_sign_msg_path())
     message_signing_values = _parse_enum(_message_signing_header_path())
     native_script_display_values = _parse_enum(_derive_native_script_hash_header_path())
 
-    if globals_defines["MAX_CIP8_MSG_CHUNK_SIZE"] != 250:
-        raise AssertionError("Unexpected MAX_CIP8_MSG_CHUNK_SIZE in globals.h")
+    if sign_msg_defines["MAX_CIP8_MSG_CHUNK_SIZE"] != MAX_CIP8_MSG_CHUNK_SIZE:
+        raise AssertionError(
+            f"MAX_CIP8_MSG_CHUNK_SIZE mismatch: {MAX_CIP8_MSG_CHUNK_SIZE} != {sign_msg_defines['MAX_CIP8_MSG_CHUNK_SIZE']}"
+        )
 
     _assert_exact_enum_mapping(
         NativeScriptHashDisplayFormat,
@@ -645,3 +689,88 @@ def assert_response_unpacker_constants_match() -> None:
                 raise AssertionError(
                     f"{literal_name} mismatch in response_unpacker.py: {value_str} != {expected_value}"
                 )
+
+    version_response = bytes([1, 2, 3])
+    if unpack_get_version_response(version_response) != (1, 2, 3):
+        raise AssertionError("unpack_get_version_response failed to parse a valid response")
+    _assert_raises_value_error(
+        lambda: unpack_get_version_response(version_response + b"\x00"),
+        "Invalid version response length",
+    )
+
+    serial_length = expected_literals["SERIAL_LENGTH"]
+    valid_serial = b"S" * serial_length
+    if unpack_get_serial_response(valid_serial) != valid_serial:
+        raise AssertionError("unpack_get_serial_response failed to return valid bytes")
+    _assert_raises_value_error(
+        lambda: unpack_get_serial_response(valid_serial + b"\x00"),
+        "Invalid serial response length",
+    )
+
+    valid_pubkey_response = (
+        b"P" * expected_literals["PUBLIC_KEY_LENGTH"] +
+        b"C" * expected_literals["CHAIN_CODE_LENGTH"]
+    )
+    if unpack_get_pubkey_response(valid_pubkey_response) != (
+        b"P" * expected_literals["PUBLIC_KEY_LENGTH"],
+        b"C" * expected_literals["CHAIN_CODE_LENGTH"],
+    ):
+        raise AssertionError("unpack_get_pubkey_response failed to parse a valid response")
+    _assert_raises_value_error(
+        lambda: unpack_get_pubkey_response(valid_pubkey_response + b"\x00"),
+        "Invalid pubkey response length",
+    )
+
+    signature_length = expected_literals["SIGNATURE_LENGTH"]
+    public_key_length = expected_literals["PUBLIC_KEY_LENGTH"]
+    max_address_field_length = expected_literals["MAX_ADDRESS_FIELD_LENGTH"]
+    valid_address_field = b"abc"
+    valid_sign_message_response = (
+        b"S" * signature_length +
+        b"P" * public_key_length +
+        len(valid_address_field).to_bytes(4, "big") +
+        valid_address_field
+    )
+    if unpack_sign_message_response(valid_sign_message_response) != (
+        b"S" * signature_length,
+        b"P" * public_key_length,
+        valid_address_field,
+    ):
+        raise AssertionError("unpack_sign_message_response failed to parse a valid response")
+    _assert_raises_value_error(
+        lambda: unpack_sign_message_response(valid_sign_message_response + b"\x00"),
+        "Trailing bytes in response",
+    )
+    oversized_address_field_response = (
+        b"S" * signature_length +
+        b"P" * public_key_length +
+        (max_address_field_length + 1).to_bytes(4, "big")
+    )
+    _assert_raises_value_error(
+        lambda: unpack_sign_message_response(oversized_address_field_response),
+        "Address field too long",
+    )
+    truncated_address_field_response = (
+        b"S" * signature_length +
+        b"P" * public_key_length +
+        (5).to_bytes(4, "big") +
+        b"abcd"
+    )
+    _assert_raises_value_error(
+        lambda: unpack_sign_message_response(truncated_address_field_response),
+        "Address field truncated",
+    )
+
+    valid_cip36_confirm_response = (
+        b"H" * expected_literals["HASH_LENGTH"] +
+        b"S" * signature_length
+    )
+    if unpack_sign_cip36_confirm_response(valid_cip36_confirm_response) != (
+        b"H" * expected_literals["HASH_LENGTH"],
+        b"S" * signature_length,
+    ):
+        raise AssertionError("unpack_sign_cip36_confirm_response failed to parse a valid response")
+    _assert_raises_value_error(
+        lambda: unpack_sign_cip36_confirm_response(valid_cip36_confirm_response + b"\x00"),
+        "Invalid CIP-36 confirm response length",
+    )

@@ -204,6 +204,9 @@ add_executable(test_ui_utils
     ../src/utils/mem.c
     ${UNIT_TEST_MEM_UTILS_STUB}
 )
+add_executable(test_ui_address_fields
+    test_ui_address_fields.c
+)
 
 set(TEST_EXECUTABLES
     test_hex_utils
@@ -226,6 +229,7 @@ set(TEST_EXECUTABLES
     test_tx_hash_builder
     test_tx_validate
     test_ui_utils
+    test_ui_address_fields
 )
 
 # SDK libraries
@@ -771,6 +775,9 @@ add_executable(test_derive_address
 target_link_libraries(test_derive_address PUBLIC cmocka gcov cardano_derive_address_core)
 target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
 add_test(test_derive_address test_derive_address)
+
+target_link_libraries(test_ui_address_fields PUBLIC cmocka gcov cardano_derive_address_core)
+add_test(test_ui_address_fields test_ui_address_fields)
 
 set(PUBKEY_COMMON_SOURCES
     mock_sources/mock_globals.c
