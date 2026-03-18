@@ -25,6 +25,8 @@ static nbgl_opType_t g_reject_next_operation_type = TYPE_TRANSACTION;
 static nbgl_operationType_t g_last_streaming_operation_type = TYPE_TRANSACTION;
 static bool g_streaming_start_auto_complete = false;
 static bool g_streaming_start_confirm = true;
+static const char *g_last_status_message = NULL;
+static bool g_last_status_success = false;
 
 void nbgl_mock_reset(void) {
     g_final_decision_count = 0;
@@ -35,6 +37,8 @@ void nbgl_mock_reset(void) {
     g_last_streaming_operation_type = TYPE_TRANSACTION;
     g_streaming_start_auto_complete = false;
     g_streaming_start_confirm = true;
+    g_last_status_message = NULL;
+    g_last_status_success = false;
 }
 
 void nbgl_mock_set_final_decisions(const bool *decisions, size_t decision_count) {
@@ -122,8 +126,8 @@ void nbgl_useCaseHomeAndSettings(const char                   *appName,
 // ======================================================================
 
 void nbgl_useCaseStatus(const char *message, bool isSuccess, nbgl_callback_t quitCallback) {
-    (void) message;
-    (void) isSuccess;
+    g_last_status_message = message;
+    g_last_status_success = isSuccess;
     if (quitCallback != NULL) {
         quitCallback();
     }
@@ -253,4 +257,12 @@ void nbgl_useCaseReviewStreamingFinish(const char           *finishTitle,
 
 void ui_menu_main(void) {
     // no-op in unit tests
+}
+
+const char *nbgl_mock_last_status_message(void) {
+    return g_last_status_message;
+}
+
+bool nbgl_mock_last_status_success(void) {
+    return g_last_status_success;
 }

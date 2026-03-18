@@ -974,3 +974,9 @@ add_executable(test_native_script_init_ui_completion
 )
 target_link_libraries(test_native_script_init_ui_completion PUBLIC cmocka gcov cardano_derive_native_script_core)
 add_test(test_native_script_init_ui_completion test_native_script_init_ui_completion)
+
+add_executable(test_native_script_status_text
+    test_native_script_status_text.c
+)
+target_link_libraries(test_native_script_status_text PUBLIC cmocka gcov cardano_derive_native_script_core)
+add_test(test_native_script_status_text test_native_script_status_text)
