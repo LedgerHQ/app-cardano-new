@@ -178,11 +178,9 @@ static void derive_native_script_hash_streaming_finish_continue(bool confirm) {
 
     // SHOW STATUS
     if (confirm) {
-        TRACE("User confirmed");
         nbgl_useCaseReviewStreamingFinish("Confirm hash",
                                           derive_native_script_hash_review_choice);
     } else {
-        TRACE("User rejected");
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
     }
 }

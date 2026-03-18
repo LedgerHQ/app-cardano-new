@@ -1,6 +1,15 @@
 /* SPDX-FileCopyrightText: 2025 Vacuumlabs */
 /* SPDX-License-Identifier: Apache-2.0 */
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_UI_DISPLAY to trace address field UI rendering.
+ */
+#ifdef TRACE_UI_DISPLAY
+#define TRACE_MODULE(...) TRACE("[ui_address_fields] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 #include "ui_address_fields.h"
 #include "ui_utils.h"
 #include "ui_constants.h"
@@ -14,6 +23,7 @@
 #include "ipUtils.h"
 
 void addPaymentInfoUIPairs(const address_params_t* address_params) {
+    TRACE_MODULE("addPaymentInfoUIPairs: address_type=%u", (unsigned) address_params->type);
     START_COUNT();
     switch (determinePaymentChoice(address_params->type)) {
         case PAYMENT_PATH: {
@@ -37,6 +47,7 @@ void addPaymentInfoUIPairs(const address_params_t* address_params) {
 }
 
 void addStakingInfoUIPairs(const address_params_t* address_params) {
+    TRACE_MODULE("addStakingInfoUIPairs: staking_part_type=%u", (unsigned) addressParams_getStakingPartType(address_params));
     START_COUNT();
     switch (addressParams_getStakingPartType(address_params)) {
         case STAKING_PART_NONE: {

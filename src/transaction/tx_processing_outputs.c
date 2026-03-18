@@ -27,6 +27,15 @@
 
 #include <string.h>
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_TX_PARSE to trace output parsing flow.
+ */
+#ifdef TRACE_TX_PARSE
+#define TRACE_MODULE(...) TRACE("[tx_processing_outputs] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 #ifdef HAVE_SWAP
 #include "swap.h"
 #include "swap_lib.h"
@@ -83,13 +92,21 @@ static bool tx_process_output(buffer_t *output_buf,
     const tx_processing_mode_t *mode = &state->mode;
     tx_hash_builder_t *hash_builder = &state->hash_builder;
 
+    TRACE_MODULE("Processing output index %u", (unsigned) output_index);
+
     // --- 1. Parse top-level output fields ---
     tx_output_description_t output_desc = {0};
     uint16_t status = parse_output_top_level(output_buf, &output_desc, SWO_TX_PARSING_FAIL_OUTPUTS);
     if (status != SWO_OK) {
+        TRACE_MODULE("Output %u: parse error 0x%04x", (unsigned) output_index, (unsigned) status);
         tx_handle_parse_error(status);
         return false;
     }
+    TRACE_MODULE("Output %u: format=%u destination_type=%u numAssetGroups=%u",
+                 (unsigned) output_index,
+                 (unsigned) output_desc.format,
+                 (unsigned) output_desc.destination.type,
+                 (unsigned) output_desc.numAssetGroups);
 
     // --- 2. Policy, plan, render: top-level fields ---
     security_policy_t output_policy = POLICY_DENY;
@@ -116,6 +133,7 @@ static bool tx_process_output(buffer_t *output_buf,
             tx_params->networkId,
             tx_params->protocolMagic,
             state->warning_bits);
+        TRACE_MODULE("Output %u: output_policy=%u", (unsigned) output_index, (unsigned) output_policy);
         APPLY_POLICY(output_policy, tx_ui_plan_or_render_output, mode, output_index, &output_desc);
 
         datum_policy = policyForSignTxOutputDatumHash(output_policy, state->warning_bits);
@@ -268,13 +286,19 @@ static bool tx_process_collateral_return_output(buffer_t *output_buf, tx_process
     const tx_processing_mode_t *mode = &state->mode;
     tx_hash_builder_t *hash_builder = &state->hash_builder;
 
+    TRACE_MODULE("Processing collateral return output");
+
     // --- 1. Parse top-level output fields ---
     tx_output_description_t output_desc = {0};
     uint16_t status = parse_output_top_level(output_buf, &output_desc, SWO_TX_PARSING_FAIL_COLLATERAL_OUTPUT);
     if (status != SWO_OK) {
+        TRACE_MODULE("Collateral output: parse error 0x%04x", (unsigned) status);
         tx_handle_parse_error(status);
         return false;
     }
+    TRACE_MODULE("Collateral output: destination_type=%u numAssetGroups=%u",
+                 (unsigned) output_desc.destination.type,
+                 (unsigned) output_desc.numAssetGroups);
 
     // --- 2. Policy, plan, render: top-level fields ---
     security_policy_t output_policy = POLICY_DENY;
@@ -391,6 +415,7 @@ bool tx_process_outputs(buffer_t *buf, tx_processing_state_t *state) {
     const tx_params_t *tx_params = state->tx_params;
     LEDGER_ASSERT(tx_params != NULL, "tx_processing_state not initialized");
     const tx_processing_mode_t *mode = &state->mode;
+    TRACE_MODULE("tx_process_outputs: num_outputs=%u", (unsigned) tx_params->num_outputs);
 
     if (mode->run_hash_builder) {
         txHashBuilder_enterOutputs(&state->hash_builder);
@@ -441,8 +466,10 @@ bool tx_process_collateral_output(buffer_t *buf, tx_processing_state_t *state) {
     LEDGER_ASSERT(tx_params != NULL, "tx_processing_state not initialized");
 
     if (!tx_params->includeCollateralOutput) {
+        TRACE_MODULE("tx_process_collateral_output: no collateral output, skipping");
         return true;
     }
+    TRACE_MODULE("tx_process_collateral_output: processing");
 
     uint16_t output_length = 0;
     if (!buffer_read_u16(buf, &output_length, BE) ||

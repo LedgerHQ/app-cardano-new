@@ -4,6 +4,15 @@
 #include <stdint.h>
 #include <string.h>
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_UI_DISPLAY to trace certificate UI rendering.
+ */
+#ifdef TRACE_UI_DISPLAY
+#define TRACE_MODULE(...) TRACE("[tx_ui_render_certificates] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 #include "assert.h"
 #include "addressUtilsShelley.h"
 #include "bech32.h"
@@ -725,6 +734,10 @@ void tx_ui_plan_or_render_certificate(const tx_processing_mode_t *mode,
                                       const certificate_data_t *certificate_data) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(certificate_data != NULL, "NULL certificate_data");
+    TRACE_MODULE("certificate type=%u count=%d render=%d",
+                 (unsigned) certificate_data->type,
+                 (int) mode->ui_count_pairs,
+                 (int) mode->ui_render);
 
     switch (certificate_data->type) {
         case CERTIFICATE_STAKE_REGISTRATION:

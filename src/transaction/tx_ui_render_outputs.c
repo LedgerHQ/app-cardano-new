@@ -4,6 +4,15 @@
 #include <stdint.h>
 #include <string.h>
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_UI_DISPLAY to trace output UI rendering.
+ */
+#ifdef TRACE_UI_DISPLAY
+#define TRACE_MODULE(...) TRACE("[tx_ui_render_outputs] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 #include "assert.h"
 #include "bech32.h"
 #include "cardano_tokens.h"
@@ -22,6 +31,11 @@ void tx_ui_plan_or_render_output(const tx_processing_mode_t *mode,
                                  const tx_output_description_t *output_desc) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(output_desc != NULL, "NULL output_desc");
+    TRACE_MODULE("output index=%u destination_type=%u count=%d render=%d",
+                 (unsigned) output_index,
+                 (unsigned) output_desc->destination.type,
+                 (int) mode->ui_count_pairs,
+                 (int) mode->ui_render);
 
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_OUTPUT_BASE;
@@ -132,6 +146,10 @@ void tx_ui_plan_or_render_output_datum(const tx_processing_mode_t *mode,
                                        const output_datum_t *datum) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(datum != NULL, "NULL datum");
+    TRACE_MODULE("datum type=%u count=%d render=%d",
+                 (unsigned) datum->type,
+                 (int) mode->ui_count_pairs,
+                 (int) mode->ui_render);
 
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_OUTPUT_DATUM;

@@ -3,6 +3,15 @@
 
 #include <stdint.h>
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_UI_DISPLAY to trace transaction UI rendering.
+ */
+#ifdef TRACE_UI_DISPLAY
+#define TRACE_MODULE(...) TRACE("[tx_ui_render] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 #include "assert.h"
 #include "bech32.h"
 #include "bip44.h"
@@ -50,6 +59,7 @@ void tx_ui_plan_or_render_input(const tx_processing_mode_t *mode,
                                 uint16_t input_index) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_input != NULL, "NULL parsed_input");
+    TRACE_MODULE("input index=%u count=%d render=%d", (unsigned) input_index, (int) mode->ui_count_pairs, (int) mode->ui_render);
 
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_INPUT;
@@ -189,6 +199,7 @@ void tx_ui_plan_or_render_mint_token(const tx_processing_mode_t *mode,
 
 void tx_ui_plan_or_render_fee(const tx_processing_mode_t *mode, uint64_t parsed_fee) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
+    TRACE_MODULE("fee count=%d render=%d", (int) mode->ui_count_pairs, (int) mode->ui_render);
 
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_FEE;
@@ -333,6 +344,11 @@ void tx_ui_plan_or_render_voter(const tx_processing_mode_t *mode,
                                 uint16_t voter_index) {
     LEDGER_ASSERT(mode != NULL, "NULL mode");
     LEDGER_ASSERT(parsed_voter != NULL, "NULL parsed_voter");
+    TRACE_MODULE("voter index=%u type=%u count=%d render=%d",
+                 (unsigned) voter_index,
+                 (unsigned) parsed_voter->type,
+                 (int) mode->ui_count_pairs,
+                 (int) mode->ui_render);
 
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_VOTER;
