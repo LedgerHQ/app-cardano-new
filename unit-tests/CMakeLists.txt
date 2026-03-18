@@ -149,9 +149,6 @@ add_executable(test_message_signing
 )
 add_executable(test_cvote
     generated/cvote/test_cvote.c
-    ../src/messageSigning/messageSigning.c
-    ../src/keyDerivation/keyDerivation.c
-    ../src/securityPolicy/securityPolicy_privkey.c
 )
 add_executable(test_sign_msg
     generated/sign_msg/test_sign_msg.c
@@ -454,7 +451,7 @@ target_link_libraries(test_address_utils_shelley
 )
 target_link_libraries(test_key_derivation PUBLIC cmocka gcov crypto_mocks_lib bip44_real hex_utils write hash_mocks_lib)
 target_link_libraries(test_message_signing PUBLIC cmocka gcov crypto_mocks_lib bip44_real hash_mocks_lib)
-target_link_libraries(test_cvote PUBLIC cmocka gcov crypto_mocks_lib bip44_real hash_mocks_lib)
+target_link_libraries(test_cvote PUBLIC cmocka gcov cardano_sign_tx_core)
 target_link_libraries(test_sign_msg PUBLIC cmocka gcov cardano_sign_msg_core)
 target_link_libraries(test_aux_data_hash_builder
     PUBLIC

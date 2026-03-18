@@ -116,6 +116,22 @@ typedef struct {
     warning_bits_t expected_warning_bits;
 } opcert_fixture_t;
 
+typedef struct {
+    const uint8_t *data;
+    size_t data_len;
+} cvote_chunk_t;
+
+typedef struct {
+    const char *name;
+    const uint8_t *init_data;
+    size_t init_data_len;
+    const cvote_chunk_t *chunks;
+    size_t chunk_count;
+    const uint8_t *confirm_data;
+    size_t confirm_data_len;
+    warning_bits_t expected_warning_bits;
+} cvote_fixture_t;
+
 
 
 // Native script types (matching CBOR encoding)

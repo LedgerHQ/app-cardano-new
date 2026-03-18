@@ -1,0 +1,130 @@
+# SPDX-FileCopyrightText: 2025-2026 Vacuumlabs
+# SPDX-License-Identifier: Apache-2.0
+from __future__ import annotations
+
+from typing import Any, List
+
+from common import (
+    _add_tests_to_sys_path,
+    extract_apdu_payload,
+    write_file_safe,
+    sanitize_c_identifier,
+    format_bytes_as_c_array,
+)
+from paths import GENERATED_CVOTE_DIR
+
+FIXTURES_FILE = GENERATED_CVOTE_DIR / "test_cvote_fixtures.h"
+
+
+def _load_cvote_test_cases() -> List[Any]:
+    _add_tests_to_sys_path()
+    from standalone.input_files.cvote import cvoteTestCases  # type: ignore
+    return cvoteTestCases
+
+
+def _warning_expr_from_test_case(test_case: Any) -> str:
+    expected_warnings = getattr(test_case, "expected_warnings", [])
+    if expected_warnings:
+        return " | ".join(
+            f"((warning_bits_t)1 << {bit.name})" for bit in expected_warnings
+        )
+    return "0"
+
+
+def generate_cvote_fixtures() -> None:
+    print("Generating cvote fixtures...")
+
+    test_cases = _load_cvote_test_cases()
+    if not test_cases:
+        raise RuntimeError("No cvote test cases found")
+
+    _add_tests_to_sys_path()
+    from application_client.command_builder import CommandBuilder  # type: ignore
+
+    builder = CommandBuilder()
+
+    header_lines = [
+        "// Auto-generated CIP-36 VoteCast signing fixtures",
+        "// Generated from tests/standalone/input_files/cvote.py",
+        "#pragma once",
+        "",
+        "#include <stdint.h>",
+        "#include <stddef.h>",
+        "#include \"securityWarnings.h\"",
+        "#include \"test_fixture_types.h\"",
+        "",
+        "// ======================================================================",
+        "// CIP-36 CVote Test Fixtures",
+        "// ======================================================================",
+        "",
+    ]
+
+    fixture_entries: list[str] = []
+    for test_index, test_case in enumerate(test_cases):
+        safe_name = sanitize_c_identifier(test_case.name, uppercase=True)
+        base_name = f"CVOTE_{test_index:03d}_{safe_name}"
+
+        # INIT APDU
+        init_apdu = builder.sign_cvote_init(test_case)
+        init_payload = extract_apdu_payload(init_apdu)
+        init_array_name = f"{base_name}_INIT_APDU"
+        header_lines.extend(
+            format_bytes_as_c_array(init_payload, init_array_name, bytes_per_line=16, return_as_list=True)
+        )
+        header_lines.append("")
+
+        # CHUNK APDUs
+        chunk_apdus: List[bytes] = builder.sign_cvote_chunk(test_case)
+        chunk_array_names: list[str] = []
+        for chunk_idx, chunk_apdu in enumerate(chunk_apdus):
+            chunk_payload = extract_apdu_payload(chunk_apdu)
+            chunk_array_name = f"{base_name}_CHUNK_{chunk_idx:03d}_APDU"
+            header_lines.extend(
+                format_bytes_as_c_array(chunk_payload, chunk_array_name, bytes_per_line=16, return_as_list=True)
+            )
+            header_lines.append("")
+            chunk_array_names.append(chunk_array_name)
+
+        if chunk_array_names:
+            chunks_struct_name = f"{base_name}_CHUNKS"
+            header_lines.append(f"static const cvote_chunk_t {chunks_struct_name}[] = {{")
+            for chunk_array_name in chunk_array_names:
+                header_lines.append(
+                    f"    {{ .data = {chunk_array_name}, .data_len = sizeof({chunk_array_name}) }},"
+                )
+            header_lines.append("};")
+            header_lines.append("")
+
+        # CONFIRM APDU (contains witness path)
+        confirm_apdu = builder.sign_cvote_confirm(test_case)
+        confirm_payload = extract_apdu_payload(confirm_apdu)
+        confirm_array_name = f"{base_name}_CONFIRM_APDU"
+        header_lines.extend(
+            format_bytes_as_c_array(confirm_payload, confirm_array_name, bytes_per_line=16, return_as_list=True)
+        )
+        header_lines.append("")
+
+        # Fixture entry
+        chunks_struct = f"{base_name}_CHUNKS" if chunk_array_names else "NULL"
+        chunk_count = f"sizeof({base_name}_CHUNKS) / sizeof(cvote_chunk_t)" if chunk_array_names else "0"
+        entry_lines = [
+            "{",
+            f"    .name = \"{test_case.name}\",",
+            f"    .init_data = {init_array_name},",
+            f"    .init_data_len = sizeof({init_array_name}),",
+            f"    .chunks = {chunks_struct},",
+            f"    .chunk_count = {chunk_count},",
+            f"    .confirm_data = {confirm_array_name},",
+            f"    .confirm_data_len = sizeof({confirm_array_name}),",
+            f"    .expected_warning_bits = {_warning_expr_from_test_case(test_case)},",
+            "},",
+        ]
+        fixture_entries.append("\n".join(entry_lines))
+
+    header_lines.append("static const cvote_fixture_t CVOTE_FIXTURES[] = {")
+    header_lines.extend(fixture_entries)
+    header_lines.append("};")
+    header_lines.append("")
+
+    write_file_safe(FIXTURES_FILE, "\n".join(header_lines) + "\n")
+    print(f"Written cvote fixtures to {FIXTURES_FILE}")

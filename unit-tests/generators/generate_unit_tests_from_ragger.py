@@ -76,6 +76,9 @@ from fixture_generators.sign_msg_generators import (
 from fixture_generators.opcert_generators import (
     generate_opcert_fixtures,
 )
+from fixture_generators.cvote_generators import (
+    generate_cvote_fixtures,
+)
 
 # Import deny generators
 from deny_fixture_generators.tx_deny_generators import (
@@ -119,6 +122,9 @@ from test_runner_generators.sign_msg_test_runner_generators import (
 )
 from test_runner_generators.opcert_test_runner_generators import (
     generate_opcert_test_runners,
+)
+from test_runner_generators.cvote_test_runner_generators import (
+    generate_cvote_test_runners,
 )
 
 def _log_stage(message: str) -> None:
@@ -589,6 +595,7 @@ def run_all() -> None:
     generate_pubkey_fixtures()
     generate_sign_msg_fixtures()
     generate_opcert_fixtures()
+    generate_cvote_fixtures()
     _log_stage("Generating test runners")
     generate_tx_test_runners()
     generate_address_derivation_test_runners()
@@ -597,6 +604,7 @@ def run_all() -> None:
     generate_pubkey_test_runners()
     generate_sign_msg_test_runners()
     generate_opcert_test_runners()
+    generate_cvote_test_runners()
     _log_stage("Generating deny fixtures")
     generate_tx_deny_fixtures()
     generate_address_derivation_deny_fixtures()
@@ -639,6 +647,7 @@ def main() -> None:
         generate_pubkey_fixtures()
         generate_sign_msg_fixtures()
         generate_opcert_fixtures()
+        generate_cvote_fixtures()
         _log_stage("Normalizing generated file headers")
         _normalize_generated_output_headers()
     elif args.command == "generate-test-runners":
@@ -650,6 +659,7 @@ def main() -> None:
         generate_pubkey_test_runners()
         generate_sign_msg_test_runners()
         generate_opcert_test_runners()
+        generate_cvote_test_runners()
         generate_pubkey_deny_test_runners()
         _log_stage("Normalizing generated file headers")
         _normalize_generated_output_headers()

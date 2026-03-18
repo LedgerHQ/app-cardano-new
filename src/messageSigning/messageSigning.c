@@ -55,6 +55,8 @@ void getCVoteRegistrationSignature(const bip44_path_t* path,
     ASSERT(payloadHashSize == CVOTE_REGISTRATION_PAYLOAD_HASH_LENGTH);
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
     ASSERT(outSize == ED25519_SIGNATURE_LENGTH);
+    LEDGER_ASSERT(bip44_isOrdinaryStakingKeyPath(path),
+                  "CVote registration signature requires an ordinary staking key path");
 
     signRawMessageWithPath(path, payloadHashBuffer, payloadHashSize, outBuffer, outSize);
 }
