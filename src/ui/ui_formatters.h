@@ -12,6 +12,25 @@
 #include "tx_credential_types.h"
 
 /**
+ * UI formatter output buffer contract
+ *
+ * All formatters in this file write into caller-supplied buffers of size `outSize`.
+ * The convention requires one sentinel byte beyond the NUL terminator:
+ *
+ *   outSize >= strlen(result) + 2
+ *
+ * i.e. the formatted string must occupy at most outSize-2 characters (plus NUL),
+ * leaving one spare byte unused. This sentinel byte serves as a truncation-detection
+ * guard: if snprintf fills the buffer to capacity it cannot distinguish between
+ * "the string happened to end here" and "more characters were silently dropped".
+ * Requiring the sentinel byte makes both cases distinguishable.
+ *
+ * Consequence: formatters assert/return-false when written + 1 < outSize is false,
+ * i.e. they reject exact-fit (written == outSize - 1) as potential truncation.
+ * Callers must size their buffers with this extra byte in mind.
+ */
+
+/**
  * Format bytes to lowercase hex string
  *
  * Wrapper around bytes_to_lowercase_hex to match the unified UI_ADD_FORMAT2 signature.

@@ -56,6 +56,9 @@ Format: -> means explanation why not a bug.
 * URL formatter enforces printable ASCII without spaces for displayed URLs.
 -> intentional display-safety policy. Percent-encoded URLs (including `%20`) are ASCII and allowed; non-ASCII/confusable URLs are intentionally rejected as not safely displayable without ambiguity.
 
+* UI formatters reject exact-fit output buffers (`written + 1 < outSize` returns false/asserts when `written == outSize - 1`).
+-> intentional sentinel-byte convention. One spare byte beyond the NUL is required so that a full-capacity snprintf write is detectable as potential truncation. Callers must size buffers with this extra byte in mind. Documented in `src/ui/ui_formatters.h`.
+
 * Non-mainnet network IDs 2–15 are rendered with mainnet-looking `addr`/`stake` bech32 prefixes.
 -> not a bug. These IDs don't exist on any real network, and `isNetworkUsual()` returns false for them, triggering an unusual-network warning to the user. Behavior matches the old app.
 
