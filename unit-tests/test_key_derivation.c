@@ -43,8 +43,6 @@ static void test_byron_accounts(void** state) {
     expect_extended_pubkey((uint32_t[]){HD + 44, HD + 1815, HD + 1}, 3,
                            "eb6e933ce45516ac7b0e023de700efae5e212ccc6bf0fcb33ba9243b9d832827");
 
-    expect_extended_pubkey((uint32_t[]){HD + 44, HD + 1815, HD + 1, HD + 1, 189}, 5,
-                           "383d4ee1ca5a6d0a88fcbc345dc0c1b1bdb6d63d6f0fc57a65c395aa9b9712c1");
 }
 
 static void test_shelley_accounts(void** state) {
@@ -52,9 +50,6 @@ static void test_shelley_accounts(void** state) {
 
     expect_extended_pubkey((uint32_t[]){HD + 1852, HD + 1815, HD + 1}, 3,
                            "c9d624c493e269271980bc5e89bcd913719137f3b20c11339f28875951124c82");
-
-    expect_extended_pubkey((uint32_t[]){HD + 1852, HD + 1815, HD + 1, HD + 1, 189}, 5,
-                           "20bce7877e7ba4536f8fe555198e4cb3340e655af44f68c4b9dd087e932ab864");
 }
 
 static void test_pool_cold_key(void** state) {

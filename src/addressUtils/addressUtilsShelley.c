@@ -102,13 +102,16 @@ static bool is_staking_part_consistent_with_address_type(const address_params_t*
 
         case BASE_PAYMENT_KEY_STAKE_SCRIPT:
         case BASE_PAYMENT_SCRIPT_STAKE_SCRIPT:
-        case REWARD_SCRIPT:
             CONSISTENT_WITH(STAKING_PART_SCRIPT_HASH);
 
             __attribute__((fallthrough));
         case POINTER_KEY:
         case POINTER_SCRIPT:
             CONSISTENT_WITH(STAKING_PART_BLOCKCHAIN_POINTER);
+            break;
+
+        case REWARD_SCRIPT:
+            CONSISTENT_WITH(STAKING_PART_SCRIPT_HASH);
             break;
 
         case ENTERPRISE_KEY:

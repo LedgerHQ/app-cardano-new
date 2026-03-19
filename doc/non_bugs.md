@@ -56,5 +56,11 @@ Format: -> means explanation why not a bug.
 * URL formatter enforces printable ASCII without spaces for displayed URLs.
 -> intentional display-safety policy. Percent-encoded URLs (including `%20`) are ASCII and allowed; non-ASCII/confusable URLs are intentionally rejected as not safely displayable without ambiguity.
 
+* Non-mainnet network IDs 2–15 are rendered with mainnet-looking `addr`/`stake` bech32 prefixes.
+-> not a bug. These IDs don't exist on any real network, and `isNetworkUsual()` returns false for them, triggering an unusual-network warning to the user. Behavior matches the old app.
+
+* `extractProtocolMagic` parses the tag-24 inner Byron payload on the outer buffer without a dedicated sub-buffer.
+-> not a bug. The outer buffer bounds, whole-buffer exhaustion check, and CRC32 checksum verification together ensure correctness; a sub-buffer would add no security value.
+
 * `aux_data_hash_builder.c` trace buffers (`AUX_DATA_TRACE_BUFFER_SIZE` / `CVOTE_PAYLOAD_TRACE_BUFFER_SIZE`) are only 4 KiB each and will assert if a high-delegation CIP-36 registration overflows them.
 -> intentional. Buffers are debug-only (compiled in only under `-DTRACE_AUX_DATA_HASH_BUILDER`, never in production). The assert-on-overflow is deliberate: if a developer enables tracing and hits the limit, they get a loud failure rather than silent truncation of the trace, and can decide how to proceed. Production hashing is unaffected.

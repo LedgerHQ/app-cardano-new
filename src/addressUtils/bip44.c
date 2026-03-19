@@ -426,7 +426,7 @@ static bip44_path_type_t bip44_classifyOrdinaryWalletPath(const bip44_path_t* pa
             return PATH_ORDINARY_ACCOUNT;
         }
         case 5: {
-            const uint8_t chainType = bip44_getChainTypeValue(pathSpec);
+            const uint32_t chainType = bip44_getChainTypeValue(pathSpec);
             switch (chainType) {
                 case CARDANO_CHAIN_INTERNAL:
                 case CARDANO_CHAIN_EXTERNAL:
@@ -477,7 +477,7 @@ static bip44_path_type_t bip44_classifyMultisigWalletPath(const bip44_path_t* pa
             return PATH_MULTISIG_ACCOUNT;
         }
         case 5: {
-            const uint8_t chainType = bip44_getChainTypeValue(pathSpec);
+            const uint32_t chainType = bip44_getChainTypeValue(pathSpec);
             switch (chainType) {
                 case CARDANO_CHAIN_EXTERNAL:
                     if (isHardened(bip44_getAddressValue(pathSpec))) {
