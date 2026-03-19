@@ -98,10 +98,11 @@ void app_main(void) {
                 app_exit();
             }
             CATCH_OTHER(exception) {
-                (void) exception;
                 TRACE("Unhandled exception in app_main loop: 0x%04X", exception);
                 CLOSE_TRY;
-                reset_app_context();
+                uint16_t swo = ((exception & 0xF000) == 0x6000) ? (uint16_t) exception
+                                                                 : SWO_UNKNOWN;
+                send_swo_and_reset(swo);
             }
             FINALLY {
             }
