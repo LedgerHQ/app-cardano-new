@@ -9,6 +9,7 @@
 from enum import Enum, IntEnum, auto
 from typing import Mapping, Union
 from unittest.mock import Mock
+from weakref import WeakKeyDictionary
 import pytest
 from ledgered.devices import Device, DeviceType
 from ragger.backend import BackendInterface
@@ -67,9 +68,16 @@ DEFAULT_SETTING_VALUES: dict[SettingID, SettingValue] = {
     SettingID.EXPERT_MODE: SettingValue.DISABLED,
 }
 
-_known_setting_values: dict[SettingID, SettingValue] = DEFAULT_SETTING_VALUES.copy()
-_debug_settings_apdu_supported: bool | None = None
-_last_backend_identity: int | None = None
+_known_setting_values_by_backend: "WeakKeyDictionary[BackendInterface, dict[SettingID, SettingValue]]" = WeakKeyDictionary()
+_debug_settings_apdu_supported_by_backend: "WeakKeyDictionary[BackendInterface, bool]" = WeakKeyDictionary()
+
+
+def _get_backend_setting_values(backend: BackendInterface) -> dict[SettingID, SettingValue]:
+    known_setting_values = _known_setting_values_by_backend.get(backend)
+    if known_setting_values is None:
+        known_setting_values = DEFAULT_SETTING_VALUES.copy()
+        _known_setting_values_by_backend[backend] = known_setting_values
+    return known_setting_values
 
 
 def get_settings_moves(device: Device,
@@ -89,7 +97,9 @@ def get_settings_moves(device: Device,
             if setting in to_toggle:
                 moves += [NavInsID.BOTH_CLICK]
             moves += [NavInsID.RIGHT_CLICK]
-        moves += [NavInsID.BOTH_CLICK]  # Back
+        # Leave the settings subpage via "Back", then return from the top-level
+        # "App settings" menu item to the home screen.
+        moves += [NavInsID.BOTH_CLICK, NavInsID.LEFT_CLICK]
     else:
         current_page = 0
         moves += [NavInsID.USE_CASE_HOME_SETTINGS]
@@ -109,14 +119,11 @@ def settings_toggle(device: Device, navigator: Navigator, to_toggle: list[Settin
     Navigates from the home screen into settings, toggles the requested
     switches, and exits back to the home screen.
     """
+    if len(to_toggle) == 0:
+        return
+
     moves = get_settings_moves(device, to_toggle)
     navigator.navigate(moves, screen_change_before_first_instruction=False)
-    for setting in to_toggle:
-        _known_setting_values[setting] = (
-            SettingValue.DISABLED
-            if _known_setting_values[setting] == SettingValue.ENABLED
-            else SettingValue.ENABLED
-        )
 
 
 def settings_set(device: Device,
@@ -128,35 +135,28 @@ def settings_set(device: Device,
     Prefer the debug APDU when available because it is a real "set" operation.
     Fall back to UI toggles for production builds where only menu navigation exists.
     """
-    global _debug_settings_apdu_supported
-    global _last_backend_identity
-
     if backend is None:
         raise AssertionError("settings_set requires backend to probe debug APDU support")
 
-    backend_identity = id(backend)
-    if _last_backend_identity != backend_identity:
-        _known_setting_values.clear()
-        _known_setting_values.update(DEFAULT_SETTING_VALUES)
-        _debug_settings_apdu_supported = None
-        _last_backend_identity = backend_identity
+    known_setting_values = _get_backend_setting_values(backend)
 
-    effective_target_setting_values = _known_setting_values.copy()
+    effective_target_setting_values = known_setting_values.copy()
     effective_target_setting_values.update(target_setting_values)
 
-    if _debug_settings_apdu_supported is not False:
+    debug_settings_apdu_supported = _debug_settings_apdu_supported_by_backend.get(backend)
+    if debug_settings_apdu_supported is not False:
         client = CommandSender(backend)
         response = client.try_set_debug_settings(
             expert_mode=effective_target_setting_values[SettingID.EXPERT_MODE] == SettingValue.ENABLED,
             silent_export=effective_target_setting_values[SettingID.SILENT_PUBKEY_EXPORT] == SettingValue.ENABLED,
         )
         if response.status == StatusWord.SWO_SUCCESS:
-            _debug_settings_apdu_supported = True
-            _known_setting_values.update(effective_target_setting_values)
+            _debug_settings_apdu_supported_by_backend[backend] = True
+            known_setting_values.update(effective_target_setting_values)
             return
         if response.status != StatusWord.SWO_INVALID_INS:
             raise AssertionError(f"Debug set settings failed: {hex(response.status)}")
-        _debug_settings_apdu_supported = False
+        _debug_settings_apdu_supported_by_backend[backend] = False
 
     if isinstance(navigator, Mock):
         pytest.skip(
@@ -168,8 +168,12 @@ def settings_set(device: Device,
     settings_to_toggle = [
         setting_id
         for setting_id, target_value in effective_target_setting_values.items()
-        if _known_setting_values[setting_id] != target_value
+        if known_setting_values[setting_id] != target_value
     ]
+    if len(settings_to_toggle) == 0:
+        return
+
     settings_toggle(device, navigator, settings_to_toggle)
+    known_setting_values.update(effective_target_setting_values)
     # Wait until the app is fully back on the home screen before the next APDU.
     backend.wait_for_home_screen()
