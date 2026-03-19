@@ -145,6 +145,10 @@ add_executable(test_crypto
     test_crypto.c
     ../../src/crypto/crypto.c
 )
+add_executable(test_security_policy_privkey
+    test_security_policy_privkey.c
+    ../../src/securityPolicy/securityPolicy_privkey.c
+)
 add_executable(test_message_signing
     test_message_signing.c
     ../../src/messageSigning/messageSigning.c
@@ -456,6 +460,7 @@ target_link_libraries(test_address_utils_shelley
 )
 target_link_libraries(test_key_derivation PUBLIC cmocka gcov crypto_mocks_lib bip44_real hex_utils write hash_mocks_lib)
 target_link_libraries(test_crypto PUBLIC cmocka gcov mock_printf)
+target_link_libraries(test_security_policy_privkey PUBLIC cmocka gcov bip44_real mock_printf)
 target_link_libraries(test_message_signing PUBLIC cmocka gcov crypto_mocks_lib bip44_real hash_mocks_lib)
 target_link_libraries(test_cvote PUBLIC cmocka gcov cardano_sign_tx_core)
 target_link_libraries(test_sign_msg PUBLIC cmocka gcov cardano_sign_msg_core)
@@ -716,6 +721,7 @@ add_test(test_address_utils_byron test_address_utils_byron)
 add_test(test_address_utils_shelley test_address_utils_shelley)
 add_test(test_key_derivation test_key_derivation)
 add_test(test_crypto test_crypto)
+add_test(test_security_policy_privkey test_security_policy_privkey)
 add_test(test_message_signing test_message_signing)
 add_test(test_cvote test_cvote)
 
