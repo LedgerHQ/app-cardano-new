@@ -14,7 +14,7 @@ copy them from this document before running the command.
 
 ### 1.1 Create the mock USB loader
 
-Save `unit-tests/mock_usb_loader.js` with the following contents:
+Save `tests/unit/mock_usb_loader.js` with the following contents:
 
 ```javascript
 const Module = require('module')
@@ -41,7 +41,7 @@ This stub prevents LedgerJS from trying to talk to a real Ledger device during t
 
 ### 1.2 Create the exporter
 
-Save `unit-tests/export_sign_tx_rejects.js` with this script (adapted from LedgerJS):
+Save `tests/unit/export_sign_tx_rejects.js` with this script (adapted from LedgerJS):
 
 ```javascript
 #!/usr/bin/env node
@@ -158,10 +158,11 @@ With the scripts in place, run the exporter from the repo root:
 source ~/.nvm/nvm.sh
 nvm use 16.20.2 >/dev/null
 cd ../ledgerjs-cardano-shelley
-NODE_OPTIONS=--require=/home/jan/praca/vacuumlabs/cardano/ledger-app-cardano/unit-tests/mock_usb_loader.js \
+REPO_ROOT=$(git rev-parse --show-toplevel)
+NODE_OPTIONS=--require=$REPO_ROOT/tests/unit/mock_usb_loader.js \
 NODE_PATH=./node_modules \
-node /home/jan/praca/vacuumlabs/cardano/ledger-app-cardano/unit-tests/export_sign_tx_rejects.js \
-  > /home/jan/praca/vacuumlabs/cardano/ledger-app-cardano/tests/standalone/input_files/signTxRejects.json
+node $REPO_ROOT/tests/unit/export_sign_tx_rejects.js \
+  > $REPO_ROOT/tests/standalone/input_files/signTxRejects.json
 ```
 
 This produces a JSON payload with all reject test cases.
@@ -298,16 +299,16 @@ sign_tx_path.write_text(new_content, encoding="utf-8")
 
 ```bash
 source tests/venv/bin/activate
-pushd unit-tests
-python3 generators/generate_unit_tests_from_ragger.py rejects
+pushd tests/unit
+python3 generators/generate_unit_tests_from_ragger.py deny_tests
 popd
 ```
 
 ## 5) Validate
 
 ```bash
-make -C unit-tests/build test_sign_tx_rejects
-unit-tests/build/test_sign_tx_rejects
+make -C tests/unit/build test_sign_tx_deny_tests
+tests/unit/build/test_sign_tx_deny_tests
 ```
 
 Expected: 113 reject tests, all passing.

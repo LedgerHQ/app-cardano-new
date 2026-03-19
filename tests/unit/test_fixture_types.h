@@ -117,6 +117,13 @@ typedef struct {
 } opcert_fixture_t;
 
 typedef struct {
+    const char *name;
+    const uint8_t *payload;
+    size_t payload_len;
+    uint16_t expected_sw;
+} opcert_deny_fixture_t;
+
+typedef struct {
     const uint8_t *data;
     size_t data_len;
 } cvote_chunk_t;

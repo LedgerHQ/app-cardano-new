@@ -7571,6 +7571,29 @@ testsCVoteRegistrationDenies: List[SignTxTestCase] = [
         deny_before_review=True,
         unsuitable_in_ragger_reason=None,
     ),
+    SignTxTestCase(
+        name="CIP36_registration_with_invalid_format_byte",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            auxiliaryData=TxAuxiliaryData(
+                TxAuxiliaryDataType.CIP36_REGISTRATION,
+                TxAuxiliaryDataCIP36(
+                    3,  # invalid: only CIP_15=1 and CIP_36=2 are valid
+                    "m/1852'/1815'/0'/2/0",
+                    destinations["internalBaseWithStakingPath"],
+                    1454448,
+                    "4b19e27ffc006ace16592311c4d2f0cafc255eaa47a6178ff540c0a46d07027c",
+                ),
+            ),
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_CVOTE_AUX_DATA_PARSING_FAIL,
+        deny_before_review=True,
+        unsuitable_in_ragger_reason=None,
+    ),
 ]
 
 invalidCertificates: List[SignTxTestCase] = [

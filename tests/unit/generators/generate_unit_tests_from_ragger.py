@@ -95,6 +95,9 @@ from deny_fixture_generators.derive_native_script_deny_generators import (
 from deny_fixture_generators.pubkey_deny_generators import (
     generate_pubkey_deny_fixtures,
 )
+from deny_fixture_generators.opcert_deny_generators import (
+    generate_opcert_deny_fixtures,
+)
 
 # Import test runners
 from test_runner_generators.tx_test_runner_generators import (
@@ -122,6 +125,9 @@ from test_runner_generators.sign_msg_test_runner_generators import (
 )
 from test_runner_generators.opcert_test_runner_generators import (
     generate_opcert_test_runners,
+)
+from test_runner_generators.opcert_deny_runner_generators import (
+    generate_opcert_deny_test_runners,
 )
 from test_runner_generators.cvote_test_runner_generators import (
     generate_cvote_test_runners,
@@ -349,7 +355,10 @@ def _count_unit_tests_by_command() -> tuple[dict[str, int], int, set[str], str]:
     unit_file_map = {
         "sign_msg": [GENERATED_SIGN_MSG_DIR / "test_sign_msg.c"],
         "sign_cvote": [GENERATED_CVOTE_DIR / "test_cvote.c"],
-        "sign_opcert": [GENERATED_OPCERT_DIR / "test_opcert.c"],
+        "sign_opcert": [
+            GENERATED_OPCERT_DIR / "test_opcert.c",
+            GENERATED_OPCERT_DIR / "test_opcert_deny_tests.c",
+        ],
         "pubkey_export": [
             GENERATED_PUBKEY_DIR / "test_pubkey.c",
             GENERATED_PUBKEY_DIR / "test_pubkey_deny_tests.c",
@@ -611,6 +620,8 @@ def run_all() -> None:
     generate_derive_native_script_deny_fixtures()
     generate_pubkey_deny_fixtures()
     generate_pubkey_deny_test_runners()
+    generate_opcert_deny_fixtures()
+    generate_opcert_deny_test_runners()
     _log_stage("Regenerating mock data")
     regenerate_mock_data()
     _log_stage("Normalizing generated file headers")
@@ -661,6 +672,7 @@ def main() -> None:
         generate_opcert_test_runners()
         generate_cvote_test_runners()
         generate_pubkey_deny_test_runners()
+        generate_opcert_deny_test_runners()
         _log_stage("Normalizing generated file headers")
         _normalize_generated_output_headers()
     elif args.command == "deny_tests":
@@ -669,6 +681,7 @@ def main() -> None:
         generate_address_derivation_deny_fixtures()
         generate_derive_native_script_deny_fixtures()
         generate_pubkey_deny_fixtures()
+        generate_opcert_deny_fixtures()
         _log_stage("Normalizing generated file headers")
         _normalize_generated_output_headers()
     elif args.command == "mock-data":

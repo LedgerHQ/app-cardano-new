@@ -718,6 +718,16 @@ add_executable(test_opcert
 target_link_libraries(test_opcert PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_opcert test_opcert)
 
+add_executable(test_opcert_deny_tests
+    generated/opcert/test_opcert_deny_tests.c
+    test_utils/hexUtils.c
+    ../../src/handler/sign_opcert.c
+    ../../src/opcert/opcert_parse.c
+    ../../src/ui/ui_display_opcert.c
+)
+target_link_libraries(test_opcert_deny_tests PUBLIC cmocka gcov cardano_sign_tx_core)
+add_test(test_opcert_deny_tests test_opcert_deny_tests)
+
 
 # Common sources for address derivation tests
 set(DERIVE_ADDRESS_COMMON_SOURCES
