@@ -14,6 +14,7 @@ import cbor2  # type: ignore
 import pytest
 
 from ragger.backend import BackendInterface
+from ragger.error import ExceptionRAPDU
 from ledgered.devices import Device
 from ragger.navigator import Navigator, NavInsID
 from ragger.navigator.navigation_scenario import NavigateWithScenario
@@ -23,6 +24,7 @@ from application_client.command_sender import CommandSender
 from application_client.response_unpacker import unpack_derive_native_script_hash_response
 
 from standalone.input_files.native_script import ValidNativeScriptTestCases, ValidNativeScriptTestCase
+from standalone.input_files.native_script import InvalidScriptTestCases
 from standalone.input_files.native_script import NativeScript, NativeScriptType
 from standalone.input_files.native_script import NativeScriptParamsScripts, NativeScriptParamsNofK
 from standalone.utils import (
@@ -323,3 +325,26 @@ def _deriveNativeScriptHash_finishWholeNativeScript(nav_ctx: NavContext,
     # hashing it.  For PUBKEY_DEVICE_OWNED scripts the key hash is derived
     # from the device mnemonic at runtime via get_device_pubkey().
     assert script_hash.hex() == _compute_expected_script_hash(testCase.script)
+
+
+@pytest.mark.parametrize(
+    "testCase",
+    InvalidScriptTestCases,
+    ids=idTestFunc
+)
+def test_derive_native_script_hash_deny(backend: BackendInterface,
+                                        navigator: Navigator,
+                                        scenario_navigator: NavigateWithScenario,
+                                        device: Device,
+                                        testCase: ValidNativeScriptTestCase) -> None:
+    """Check that invalid native scripts are denied with the expected status word."""
+    client = CommandSender(backend)
+    nav_ctx = NavContext(device, navigator, scenario_navigator)
+    step_counter = [0]
+
+    _deriveNativeScriptHash_init(nav_ctx, client, testCase.name, step_counter)
+
+    with pytest.raises(ExceptionRAPDU) as err:
+        _deriveNativeScriptHash_addScript(nav_ctx, client, testCase.script, testCase.name, step_counter)
+
+    assert err.value.status == testCase.expected_in_unit_test.sw

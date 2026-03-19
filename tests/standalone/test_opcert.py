@@ -11,14 +11,16 @@ import pytest
 
 from ledgered.devices import Device
 from ragger.backend import BackendInterface
+from ragger.error import ExceptionRAPDU
 from ragger.navigator import Navigator
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
+from application_client.command_builder import CLA, InsType, P1Type, P2Type
 from application_client.status_words import StatusWord
 from application_client.command_sender import CommandSender
 from application_client.response_unpacker import unpack_sign_opcert_response
 
-from standalone.input_files.signOpCert import opCertTestCases, OpCertTestCase
+from standalone.input_files.signOpCert import opCertTestCases, OpCertTestCase, opCertDenyTestCases, OpCertDenyTestCase
 
 from standalone.utils import idTestFunc, review_approve, verify_signature, NavContext
 
@@ -59,3 +61,18 @@ def test_opCert(device: Device,
     msg += testCase.opCert.kesPeriod.to_bytes(8, 'big')
 
     verify_signature(testCase.opCert.path, signature, msg)
+
+
+@pytest.mark.parametrize(
+    "testCase",
+    opCertDenyTestCases,
+    ids=idTestFunc
+)
+def test_opcert_deny(backend: BackendInterface,
+                     testCase: OpCertDenyTestCase) -> None:
+    """Check that malformed opcert APDUs are denied with the expected status word."""
+    apdu = bytes([CLA, InsType.INS_SIGN_OPCERT, P1Type.P1_UNUSED, P2Type.P2_UNUSED,
+                  len(bytes.fromhex(testCase.payload_hex))]) + bytes.fromhex(testCase.payload_hex)
+    with pytest.raises(ExceptionRAPDU) as err:
+        backend.exchange_raw(apdu)
+    assert err.value.status == testCase.expected_sw

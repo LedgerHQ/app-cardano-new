@@ -8,9 +8,10 @@ This module provides Ragger tests for CIP-36 Vote check
 """
 
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from application_client.security_warnings import WarningBit
+from application_client.status_words import StatusWord
 
 MAX_CIP36_PAYLOAD_SIZE = 250
 
@@ -25,6 +26,23 @@ class CVoteTestCase:
     cVote: CIP36Vote
     expected_warnings: List[WarningBit]
 
+
+@dataclass(kw_only=True)
+class CVoteDenyTestCase:
+    """Raw-payload deny test for the sign_cvote handler error paths.
+
+    init_payload_hex is the APDU body for the INIT step (no 5-byte header).
+    If invalid_witness_path is set, a valid INIT is sent first and then the
+    CONFIRM step is sent with that path, expecting a security-policy denial.
+    If send_chunk_before_init is True, a CHUNK APDU is sent without a prior
+    INIT, expecting SWO_COMMAND_NOT_ALLOWED.
+    """
+    name: str
+    expected_sw: StatusWord
+    init_payload_hex: Optional[str] = None
+    invalid_witness_path: Optional[str] = None
+    send_chunk_before_init: bool = False
+
 # pylint: disable=line-too-long
 cvoteTestCases = [
     CVoteTestCase(
@@ -35,4 +53,40 @@ cvoteTestCases = [
         ),
         expected_warnings=[WarningBit.WARNING_BIT_CVOTE_WITNESS_NOT_FULLY_VERIFIABLE],
     )
+]
+
+# pylint: disable=line-too-long
+cvoteDenyTestCases: List[CVoteDenyTestCase] = [
+    CVoteDenyTestCase(
+        name="cvote_deny_zero_remaining_bytes",
+        # 4-byte length field is zero — app rejects before reading any chunk data.
+        init_payload_hex="00000000",
+        expected_sw=StatusWord.SWO_WRONG_DATA_LENGTH,
+    ),
+    CVoteDenyTestCase(
+        name="cvote_deny_init_no_chunk_data",
+        # Total length claims 100 bytes but no chunk follows — mismatch with
+        # expected first-chunk size of min(100, 250) = 100.
+        init_payload_hex="00000064",
+        expected_sw=StatusWord.SWO_WRONG_DATA_LENGTH,
+    ),
+    CVoteDenyTestCase(
+        name="cvote_deny_init_chunk_exceeds_declared_length",
+        # Total length is 2 bytes but 3 bytes of data follow — chunk_size > total.
+        init_payload_hex="00000002" + "aabbcc",
+        expected_sw=StatusWord.SWO_WRONG_DATA_LENGTH,
+    ),
+    CVoteDenyTestCase(
+        name="cvote_deny_chunk_before_init",
+        # Attempt to send a CHUNK APDU before INIT has been performed.
+        send_chunk_before_init=True,
+        expected_sw=StatusWord.SWO_COMMAND_NOT_ALLOWED,
+    ),
+    CVoteDenyTestCase(
+        name="cvote_deny_invalid_witness_path",
+        # Valid INIT followed by CONFIRM with a non-cvote key path
+        # (m/44'/1815'/0'/0/0 is a payment path, not PATH_CVOTE_KEY).
+        invalid_witness_path="m/44'/1815'/0'/0/0",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    ),
 ]

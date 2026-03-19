@@ -141,6 +141,10 @@ add_executable(test_key_derivation
     ../../src/keyDerivation/keyDerivation.c
     ../../src/securityPolicy/securityPolicy_privkey.c
 )
+add_executable(test_crypto
+    test_crypto.c
+    ../../src/crypto/crypto.c
+)
 add_executable(test_message_signing
     test_message_signing.c
     ../../src/messageSigning/messageSigning.c
@@ -219,6 +223,7 @@ set(TEST_EXECUTABLES
     test_address_utils_byron
     test_address_utils_shelley
     test_key_derivation
+    test_crypto
     test_message_signing
     test_cvote
     test_sign_msg
@@ -450,6 +455,7 @@ target_link_libraries(test_address_utils_shelley
         cx_crc_support
 )
 target_link_libraries(test_key_derivation PUBLIC cmocka gcov crypto_mocks_lib bip44_real hex_utils write hash_mocks_lib)
+target_link_libraries(test_crypto PUBLIC cmocka gcov mock_printf)
 target_link_libraries(test_message_signing PUBLIC cmocka gcov crypto_mocks_lib bip44_real hash_mocks_lib)
 target_link_libraries(test_cvote PUBLIC cmocka gcov cardano_sign_tx_core)
 target_link_libraries(test_sign_msg PUBLIC cmocka gcov cardano_sign_msg_core)
@@ -703,8 +709,16 @@ add_test(test_hash test_hash)
 add_test(test_address_utils_byron test_address_utils_byron)
 add_test(test_address_utils_shelley test_address_utils_shelley)
 add_test(test_key_derivation test_key_derivation)
+add_test(test_crypto test_crypto)
 add_test(test_message_signing test_message_signing)
 add_test(test_cvote test_cvote)
+
+add_executable(test_cvote_deny_tests
+    generated/cvote/test_cvote_deny_tests.c
+)
+target_link_libraries(test_cvote_deny_tests PUBLIC cmocka gcov cardano_sign_tx_core)
+add_test(test_cvote_deny_tests test_cvote_deny_tests)
+
 add_test(test_sign_msg test_sign_msg)
 add_test(test_ui_utils test_ui_utils)
 
@@ -908,7 +922,6 @@ target_link_libraries(test_pubkey_deny_tests PUBLIC cmocka gcov cardano_pubkey_c
 add_test(test_pubkey_deny_tests test_pubkey_deny_tests)
 
 set(DERIVE_NATIVE_SCRIPT_COMMON_SOURCES
-    mock_sources/mock_globals.c
     ../../src/deriveNativeScriptHash/derive_native_script_hash_builder.c
     ../../src/handler/derive_native_script_hash.c
     ../../src/keyDerivation/keyDerivation.c
@@ -927,6 +940,7 @@ set(DERIVE_NATIVE_SCRIPT_COMMON_SOURCES
     ../../src/ui/ui_formatters.c
     ../../src/ui/ui_display_native_script_hash.c
     ${UNIT_TEST_MEM_UTILS_STUB}
+    mock_sources/mock_globals.c
     mock_sources/glyphs_mock.c
     mock_sources/nbgl_mock.c
     mock_sources/hex_stub.c

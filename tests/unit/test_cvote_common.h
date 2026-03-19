@@ -93,3 +93,79 @@ static inline void run_cvote_fixture(const cvote_fixture_t *fixture) {
                         g_mock_last_signature_entry->message,
                         g_mock_last_signature_entry->message_len);
 }
+
+// ----------------------------------------------------------------------
+// Deny fixture runner
+// ----------------------------------------------------------------------
+
+static inline void run_cvote_deny_fixture(const cvote_deny_fixture_t *fixture) {
+    assert_non_null(fixture);
+    reset_cvote_test_state();
+    reset_mock_signature_state();
+
+    if (fixture->phase == CVOTE_DENY_PHASE_CHUNK) {
+        // Send CHUNK without prior INIT — should fail immediately.
+        buffer_t buf = {
+            .ptr = (uint8_t *) fixture->apdu_data,
+            .size = fixture->apdu_data_len,
+            .offset = 0,
+        };
+        apdu_response_begin(INS_SIGN_CVOTE);
+        handler_sign_cvote(&buf, P1_CVOTE_CHUNK);
+        apdu_response_assert_sent_or_deferred();
+        assert_int_equal(g_last_response_sw, fixture->expected_sw);
+        return;
+    }
+
+    if (fixture->phase == CVOTE_DENY_PHASE_INIT) {
+        // Malformed INIT payload — should fail during INIT.
+        buffer_t buf = {
+            .ptr = (uint8_t *) fixture->apdu_data,
+            .size = fixture->apdu_data_len,
+            .offset = 0,
+        };
+        apdu_response_begin(INS_SIGN_CVOTE);
+        handler_sign_cvote(&buf, P1_CVOTE_INIT);
+        apdu_response_assert_sent_or_deferred();
+        assert_int_equal(g_last_response_sw, fixture->expected_sw);
+        return;
+    }
+
+    // CVOTE_DENY_PHASE_CONFIRM: valid INIT + optional chunks, then malformed CONFIRM.
+    assert_non_null(fixture->apdu_data);
+    assert_true(fixture->apdu_data_len > 0);
+    buffer_t init_buf = {
+        .ptr = (uint8_t *) fixture->apdu_data,
+        .size = fixture->apdu_data_len,
+        .offset = 0,
+    };
+    apdu_response_begin(INS_SIGN_CVOTE);
+    handler_sign_cvote(&init_buf, P1_CVOTE_INIT);
+    apdu_response_assert_sent_or_deferred();
+    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+
+    for (size_t chunk_idx = 0; chunk_idx < fixture->chunk_count; chunk_idx++) {
+        const cvote_chunk_t *chunk = &fixture->chunks[chunk_idx];
+        buffer_t chunk_buf = {
+            .ptr = (uint8_t *) chunk->data,
+            .size = chunk->data_len,
+            .offset = 0,
+        };
+        apdu_response_begin(INS_SIGN_CVOTE);
+        handler_sign_cvote(&chunk_buf, P1_CVOTE_CHUNK);
+        apdu_response_assert_sent_or_deferred();
+        assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    }
+
+    assert_non_null(fixture->confirm_data);
+    assert_true(fixture->confirm_data_len > 0);
+    buffer_t confirm_buf = {
+        .ptr = (uint8_t *) fixture->confirm_data,
+        .size = fixture->confirm_data_len,
+        .offset = 0,
+    };
+    apdu_response_begin(INS_SIGN_CVOTE);
+    handler_sign_cvote(&confirm_buf, P1_CVOTE_CONFIRM);
+    apdu_response_assert_sent_or_deferred();
+    assert_int_equal(g_last_response_sw, fixture->expected_sw);
+}

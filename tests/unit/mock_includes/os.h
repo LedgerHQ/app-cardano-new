@@ -62,6 +62,12 @@
 
 // #include "os_hal.h"
 
+cx_err_t os_derive_bip32_no_throw(cx_curve_t        curve,
+                                  const unsigned int *path,
+                                  unsigned int        path_len,
+                                  unsigned char       raw_privkey[static 64],
+                                  unsigned char      *chain_code);
+
 // -----------------------------------------------------------------------
 // - BASIC MATHS
 // -----------------------------------------------------------------------

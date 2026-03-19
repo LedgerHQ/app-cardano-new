@@ -10,18 +10,20 @@ This module provides Ragger tests for CIP36 check
 import pytest
 
 from ragger.backend import BackendInterface
+from ragger.error import ExceptionRAPDU
 from ledgered.devices import Device
 from ragger.navigator import Navigator
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
 
+from application_client.command_builder import CLA, InsType, P1Type, P2Type
 from application_client.status_words import StatusWord
 from application_client.command_sender import CommandSender
 from application_client.response_unpacker import (
     unpack_sign_cip36_confirm_response
 )
 
-from standalone.input_files.cvote import cvoteTestCases, CVoteTestCase
+from standalone.input_files.cvote import cvoteTestCases, CVoteTestCase, cvoteDenyTestCases, CVoteDenyTestCase
 
 from standalone.utils import idTestFunc, review_approve, verify_signature, NavContext
 
@@ -112,3 +114,45 @@ def _cvote_confirm(nav_ctx: NavContext,
     votecast_hash, signature = unpack_sign_cip36_confirm_response(response.data)
 
     return votecast_hash, signature
+
+
+@pytest.mark.parametrize(
+    "testCase",
+    cvoteDenyTestCases,
+    ids=idTestFunc
+)
+def test_cvote_deny(backend: BackendInterface,
+                    testCase: CVoteDenyTestCase) -> None:
+    """Check that invalid cvote inputs are denied with the expected status word."""
+    from ragger.bip import pack_derivation_path
+
+    if testCase.send_chunk_before_init:
+        chunk_apdu = bytes([CLA, InsType.INS_SIGN_CVOTE, P1Type.P1_CVOTE_CHUNK, P2Type.P2_UNUSED, 0])
+        with pytest.raises(ExceptionRAPDU) as err:
+            backend.exchange_raw(chunk_apdu)
+        assert err.value.status == testCase.expected_sw
+        return
+
+    if testCase.invalid_witness_path is not None:
+        # Send a valid INIT using the first happy-path test case's votecast data,
+        # then send a CONFIRM with the invalid witness path.
+        valid_tc = cvoteTestCases[0]
+        client = CommandSender(backend)
+        _cvote_init(client, valid_tc)
+
+        witness_path_bytes = pack_derivation_path(testCase.invalid_witness_path)
+        confirm_apdu = bytes([CLA, InsType.INS_SIGN_CVOTE, P1Type.P1_CVOTE_CONFIRM, P2Type.P2_UNUSED,
+                               len(witness_path_bytes)]) + witness_path_bytes
+        with pytest.raises(ExceptionRAPDU) as err:
+            backend.exchange_raw(confirm_apdu)
+        assert err.value.status == testCase.expected_sw
+        return
+
+    # Malformed INIT payload.
+    assert testCase.init_payload_hex is not None
+    payload = bytes.fromhex(testCase.init_payload_hex)
+    init_apdu = bytes([CLA, InsType.INS_SIGN_CVOTE, P1Type.P1_CVOTE_INIT, P2Type.P2_UNUSED,
+                       len(payload)]) + payload
+    with pytest.raises(ExceptionRAPDU) as err:
+        backend.exchange_raw(init_apdu)
+    assert err.value.status == testCase.expected_sw

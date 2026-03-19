@@ -20,6 +20,8 @@
 
 static uint16_t g_last_sw = 0;
 static uint8_t g_last_called_ins = 0;
+static int g_last_handler_variant = 0;
+static uint8_t g_last_handler_p1_or_p2 = 0;
 static bool g_apdu_response_active = false;
 static bool g_apdu_response_sent = false;
 static bool g_apdu_response_deferred = false;
@@ -29,11 +31,20 @@ static void reset_test_context(void) {
     memset(&G_context, 0, sizeof(G_context));
     g_last_sw = 0;
     g_last_called_ins = 0;
+    g_last_handler_variant = 0;
+    g_last_handler_p1_or_p2 = 0;
     g_apdu_response_active = false;
     g_apdu_response_sent = false;
     g_apdu_response_deferred = false;
     g_get_serial_should_defer = false;
 }
+
+enum {
+    HANDLER_VARIANT_NONE = 0,
+    HANDLER_VARIANT_SIGN_TX,
+    HANDLER_VARIANT_SIGN_TX_WITNESS,
+    HANDLER_VARIANT_SIGN_TX_AUX_DATA,
+};
 
 // -------------------------------------------------------------------------
 // App context / IO hooks
@@ -158,35 +169,38 @@ void handler_get_public_key(buffer_t *cdata) {
 
 void handler_derive_address(buffer_t *cdata, uint8_t p1) {
     (void) cdata;
-    (void) p1;
     g_last_called_ins = INS_DERIVE_ADDRESS;
+    g_last_handler_p1_or_p2 = p1;
     apdu_response_send_sw(SWO_SUCCESS);
 }
 
 void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
     (void) cdata;
-    (void) script_type;
     g_last_called_ins = INS_DERIVE_NATIVE_SCRIPT_HASH;
+    g_last_handler_p1_or_p2 = script_type;
     apdu_response_send_sw(SWO_SUCCESS);
 }
 
 void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
     (void) cdata;
-    (void) p1;
     g_last_called_ins = INS_SIGN_TX;
+    g_last_handler_variant = HANDLER_VARIANT_SIGN_TX;
+    g_last_handler_p1_or_p2 = p1;
     apdu_response_send_sw(SWO_SUCCESS);
 }
 
 void handler_sign_tx_witness(buffer_t *cdata) {
     (void) cdata;
     g_last_called_ins = INS_SIGN_TX;
+    g_last_handler_variant = HANDLER_VARIANT_SIGN_TX_WITNESS;
     apdu_response_send_sw(SWO_SUCCESS);
 }
 
 void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
     (void) cdata;
-    (void) p2;
     g_last_called_ins = INS_SIGN_TX;
+    g_last_handler_variant = HANDLER_VARIANT_SIGN_TX_AUX_DATA;
+    g_last_handler_p1_or_p2 = p2;
     apdu_response_send_sw(SWO_SUCCESS);
 }
 
@@ -198,15 +212,15 @@ void handler_sign_opcert(buffer_t *cdata) {
 
 void handler_sign_cvote(buffer_t *cdata, uint8_t p1) {
     (void) cdata;
-    (void) p1;
     g_last_called_ins = INS_SIGN_CVOTE;
+    g_last_handler_p1_or_p2 = p1;
     apdu_response_send_sw(SWO_SUCCESS);
 }
 
 void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
     (void) cdata;
-    (void) p1;
     g_last_called_ins = INS_SIGN_MSG;
+    g_last_handler_p1_or_p2 = p1;
     apdu_response_send_sw(SWO_SUCCESS);
 }
 
@@ -228,6 +242,12 @@ static command_t make_command(uint8_t ins, uint8_t p1, uint8_t p2) {
         .lc = 0,
         .data = &dummy,
     };
+    return cmd;
+}
+
+static command_t make_command_with_cla(uint8_t cla, uint8_t ins, uint8_t p1, uint8_t p2) {
+    command_t cmd = make_command(ins, p1, p2);
+    cmd.cla = cla;
     return cmd;
 }
 
@@ -311,6 +331,155 @@ static void test_deferred_response_is_allowed(void **state) {
     assert_false(g_apdu_response_active);
 }
 
+static void test_invalid_cla_is_rejected(void **state) {
+    (void) state;
+
+    reset_test_context();
+
+    command_t cmd = make_command_with_cla(CLA + 1, INS_GET_VERSION, P1_UNUSED, P2_UNUSED);
+    apdu_dispatcher(&cmd);
+
+    assert_int_equal(g_last_sw, SWO_INVALID_CLA);
+    assert_int_equal(g_last_called_ins, 0);
+}
+
+static void test_stateless_dispatch_routes_to_basic_handlers(void **state) {
+    (void) state;
+
+    const struct {
+        uint8_t ins;
+        uint8_t expected_ins;
+    } cases[] = {
+        {INS_GET_SERIAL, INS_GET_SERIAL},
+        {INS_GET_VERSION, INS_GET_VERSION},
+        {INS_GET_APP_NAME, INS_GET_APP_NAME},
+        {INS_GET_PUBLIC_KEY, INS_GET_PUBLIC_KEY},
+        {INS_SIGN_OPCERT, INS_SIGN_OPCERT},
+#ifdef DEBUG
+        {INS_DEBUG_SET_SETTINGS, INS_DEBUG_SET_SETTINGS},
+#endif
+    };
+
+    for (size_t i = 0; i < sizeof(cases) / sizeof(cases[0]); i++) {
+        reset_test_context();
+
+        command_t cmd = make_command(cases[i].ins, P1_UNUSED, P2_UNUSED);
+        apdu_dispatcher(&cmd);
+
+        assert_int_equal(g_last_sw, SWO_SUCCESS);
+        assert_int_equal(g_last_called_ins, cases[i].expected_ins);
+    }
+}
+
+static void test_invalid_instruction_is_rejected(void **state) {
+    (void) state;
+
+    reset_test_context();
+
+    command_t cmd = make_command(0xEE, P1_UNUSED, P2_UNUSED);
+    apdu_dispatcher(&cmd);
+
+    assert_int_equal(g_last_sw, SWO_INVALID_INS);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_dispatcher_rejects_invalid_p1_p2_combinations(void **state) {
+    (void) state;
+
+    const struct {
+        uint8_t ins;
+        uint8_t p1;
+        uint8_t p2;
+    } cases[] = {
+        {INS_GET_SERIAL, 0x01, P2_UNUSED},
+        {INS_GET_VERSION, P1_UNUSED, 0x01},
+        {INS_GET_APP_NAME, 0x01, P2_UNUSED},
+        {INS_GET_PUBLIC_KEY, P1_UNUSED, 0x01},
+        {INS_DERIVE_ADDRESS, 0xEE, P2_UNUSED},
+        {INS_DERIVE_NATIVE_SCRIPT_HASH, 0xEE, P2_UNUSED},
+        {INS_SIGN_TX, P1_TX_INIT, 0x01},
+        {INS_SIGN_TX, P1_TX_AUX_DATA, 0xEE},
+        {INS_SIGN_CVOTE, 0xEE, P2_UNUSED},
+        {INS_SIGN_MSG, 0xEE, P2_UNUSED},
+        {INS_SIGN_OPCERT, 0x01, P2_UNUSED},
+#ifdef DEBUG
+        {INS_DEBUG_SET_SETTINGS, P1_UNUSED, 0x01},
+#endif
+    };
+
+    for (size_t i = 0; i < sizeof(cases) / sizeof(cases[0]); i++) {
+        reset_test_context();
+
+        command_t cmd = make_command(cases[i].ins, cases[i].p1, cases[i].p2);
+        apdu_dispatcher(&cmd);
+
+        assert_int_equal(g_last_sw, SWO_INCORRECT_P1_P2);
+        assert_int_equal(g_last_called_ins, 0);
+        assert_int_equal(G_context.req_type, REQUEST_NONE);
+    }
+}
+
+static void test_sign_tx_special_branches_are_dispatched(void **state) {
+    (void) state;
+
+    const struct {
+        uint8_t p1;
+        uint8_t p2;
+        int expected_variant;
+        uint8_t expected_p1_or_p2;
+    } cases[] = {
+        {P1_TX_INIT, P2_UNUSED, HANDLER_VARIANT_SIGN_TX, P1_TX_INIT},
+        {P1_TX_SIGN_WITNESS, P2_UNUSED, HANDLER_VARIANT_SIGN_TX_WITNESS, 0},
+        {P1_TX_AUX_DATA, P2_AUX_DATA_INIT, HANDLER_VARIANT_SIGN_TX_AUX_DATA, P2_AUX_DATA_INIT},
+        {P1_TX_AUX_DATA, P2_AUX_DATA_DELEGATION, HANDLER_VARIANT_SIGN_TX_AUX_DATA, P2_AUX_DATA_DELEGATION},
+    };
+
+    for (size_t i = 0; i < sizeof(cases) / sizeof(cases[0]); i++) {
+        reset_test_context();
+
+        command_t cmd = make_command(INS_SIGN_TX, cases[i].p1, cases[i].p2);
+        apdu_dispatcher(&cmd);
+
+        assert_int_equal(g_last_sw, SWO_SUCCESS);
+        assert_int_equal(g_last_called_ins, INS_SIGN_TX);
+        assert_int_equal(g_last_handler_variant, cases[i].expected_variant);
+        assert_int_equal(g_last_handler_p1_or_p2, cases[i].expected_p1_or_p2);
+    }
+}
+
+static void test_multi_phase_handlers_accept_all_supported_p1_values(void **state) {
+    (void) state;
+
+    const struct {
+        uint8_t ins;
+        const uint8_t *valid_p1_values;
+        size_t valid_p1_values_count;
+    } cases[] = {
+        {INS_DERIVE_ADDRESS, (const uint8_t[]) {P1_ADDRESS_RETURN, P1_ADDRESS_DISPLAY}, 2},
+        {INS_DERIVE_NATIVE_SCRIPT_HASH,
+         (const uint8_t[]) {P1_NATIVE_SCRIPT_INIT,
+                            P1_NATIVE_SCRIPT_START_COMPLEX,
+                            P1_NATIVE_SCRIPT_ADD_SIMPLE,
+                            P1_NATIVE_SCRIPT_FINISH},
+         4},
+        {INS_SIGN_CVOTE, (const uint8_t[]) {P1_CVOTE_INIT, P1_CVOTE_CHUNK, P1_CVOTE_CONFIRM}, 3},
+        {INS_SIGN_MSG, (const uint8_t[]) {P1_SIGN_MSG_INIT, P1_SIGN_MSG_CHUNK, P1_SIGN_MSG_CONFIRM}, 3},
+    };
+
+    for (size_t i = 0; i < sizeof(cases) / sizeof(cases[0]); i++) {
+        for (size_t j = 0; j < cases[i].valid_p1_values_count; j++) {
+            reset_test_context();
+
+            command_t cmd = make_command(cases[i].ins, cases[i].valid_p1_values[j], P2_UNUSED);
+            apdu_dispatcher(&cmd);
+
+            assert_int_equal(g_last_sw, SWO_SUCCESS);
+            assert_int_equal(g_last_called_ins, cases[i].ins);
+            assert_int_equal(g_last_handler_p1_or_p2, cases[i].valid_p1_values[j]);
+        }
+    }
+}
+
 static int assert_no_pending_deferred_response(void **state) {
     (void) state;
     assert_false(g_apdu_response_active && g_apdu_response_deferred && !g_apdu_response_sent);
@@ -322,6 +491,12 @@ int main(void) {
         cmocka_unit_test(test_interleaving_guard_blocks_other_instructions),
         cmocka_unit_test(test_interleaving_allows_expected_instruction),
         cmocka_unit_test(test_deferred_response_is_allowed),
+        cmocka_unit_test(test_invalid_cla_is_rejected),
+        cmocka_unit_test(test_stateless_dispatch_routes_to_basic_handlers),
+        cmocka_unit_test(test_invalid_instruction_is_rejected),
+        cmocka_unit_test(test_dispatcher_rejects_invalid_p1_p2_combinations),
+        cmocka_unit_test(test_sign_tx_special_branches_are_dispatched),
+        cmocka_unit_test(test_multi_phase_handlers_accept_all_supported_p1_values),
     };
     return cmocka_run_group_tests(tests, NULL, assert_no_pending_deferred_response);
 }

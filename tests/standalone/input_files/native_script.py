@@ -363,4 +363,20 @@ InvalidScriptTestCases = [
         script=NativeScript(NativeScriptType.N_OF_K, NativeScriptParamsNofK(1)),
         expected_in_unit_test=SignedData(sw=StatusWord.SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_COUNT),
     ),
+    ValidNativeScriptTestCase(
+        name="Native_script_PUBKEY_device_owned_path_invalid_non_hardened_account",
+        # m/44'/1815'/0/0/0: account index 0 is not hardened, so bip44_classifyPath
+        # returns PATH_INVALID and the security policy returns POLICY_DENY.
+        script=NativeScript(
+            NativeScriptType.PUBKEY_DEVICE_OWNED,
+            NativeScriptParamsPubkey("m/44'/1815'/0/0/0"),
+        ),
+        expected_in_unit_test=SignedData(sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED),
+    ),
+    ValidNativeScriptTestCase(
+        name="Native_script_N_OF_K_required_count_equals_zero_with_subscripts",
+        # requiredCount=0 is valid but requiredCount=3 with 0 scripts is not.
+        script=NativeScript(NativeScriptType.N_OF_K, NativeScriptParamsNofK(3)),
+        expected_in_unit_test=SignedData(sw=StatusWord.SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_COUNT),
+    ),
 ]

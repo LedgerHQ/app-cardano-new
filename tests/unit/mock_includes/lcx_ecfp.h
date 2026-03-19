@@ -244,6 +244,23 @@ typedef struct cx_ecfp_256_extended_private_key_s
 typedef struct cx_ecfp_256_public_key_s cx_ecfp_public_key_t;
 typedef struct cx_ecfp_256_private_key_s cx_ecfp_private_key_t;
 
+cx_err_t cx_eddsa_get_public_key_no_throw(const cx_ecfp_private_key_t *pv_key,
+                                          cx_md_t                      hashID,
+                                          cx_ecfp_public_key_t        *pu_key,
+                                          uint8_t                     *a,
+                                          size_t                       a_len,
+                                          uint8_t                     *h,
+                                          size_t                       h_len);
+
+cx_err_t cx_ecdomain_parameters_length(cx_curve_t curve, size_t *length);
+
+cx_err_t cx_eddsa_sign_no_throw(const cx_ecfp_private_key_t *pvkey,
+                                cx_md_t                      hashID,
+                                const uint8_t               *hash,
+                                size_t                       hash_len,
+                                uint8_t                     *sig,
+                                size_t                       sig_len);
+
 /** Up to 384 bits Public Elliptic Curve key */
 struct cx_ecfp_384_public_key_s {
   /** curve ID #cx_curve_e */

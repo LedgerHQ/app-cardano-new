@@ -12,3 +12,8 @@ const internal_storage_t N_storage_real = {
 };
 bool unit_test_expert_mode_enabled = false;
 bool unit_test_silent_pubkey_export_enabled = false;
+
+// Keep this translation unit visible to gcov/lcov even though it mostly
+// provides global definitions referenced from other objects.
+__attribute__((constructor)) static void mock_globals_coverage_anchor(void) {
+}

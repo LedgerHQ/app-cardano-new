@@ -98,6 +98,9 @@ from deny_fixture_generators.pubkey_deny_generators import (
 from deny_fixture_generators.opcert_deny_generators import (
     generate_opcert_deny_fixtures,
 )
+from deny_fixture_generators.cvote_deny_generators import (
+    generate_cvote_deny_fixtures,
+)
 
 # Import test runners
 from test_runner_generators.tx_test_runner_generators import (
@@ -131,6 +134,12 @@ from test_runner_generators.opcert_deny_runner_generators import (
 )
 from test_runner_generators.cvote_test_runner_generators import (
     generate_cvote_test_runners,
+)
+from test_runner_generators.cvote_deny_runner_generators import (
+    generate_cvote_deny_test_runners,
+)
+from test_runner_generators.native_script_deny_runner_generators import (
+    generate_native_script_deny_test_runners,
 )
 
 def _log_stage(message: str) -> None:
@@ -354,7 +363,10 @@ def _count_unit_tests_by_command() -> tuple[dict[str, int], int, set[str], str]:
 
     unit_file_map = {
         "sign_msg": [GENERATED_SIGN_MSG_DIR / "test_sign_msg.c"],
-        "sign_cvote": [GENERATED_CVOTE_DIR / "test_cvote.c"],
+        "sign_cvote": [
+            GENERATED_CVOTE_DIR / "test_cvote.c",
+            GENERATED_CVOTE_DIR / "test_cvote_deny_tests.c",
+        ],
         "sign_opcert": [
             GENERATED_OPCERT_DIR / "test_opcert.c",
             GENERATED_OPCERT_DIR / "test_opcert_deny_tests.c",
@@ -369,7 +381,7 @@ def _count_unit_tests_by_command() -> tuple[dict[str, int], int, set[str], str]:
         ],
         "derive_native_script": [
             GENERATED_NATIVE_SCRIPT_DIR / "test_native_script.c",
-            GENERATED_NATIVE_SCRIPT_DIR / "test_native_script_deny_tests.c",
+            GENERATED_NATIVE_SCRIPT_DIR / "test_native_script_deny_tests.c",  # regenerated with static registrations
         ],
     }
     for command, file_paths in unit_file_map.items():
@@ -622,6 +634,9 @@ def run_all() -> None:
     generate_pubkey_deny_test_runners()
     generate_opcert_deny_fixtures()
     generate_opcert_deny_test_runners()
+    generate_cvote_deny_fixtures()
+    generate_cvote_deny_test_runners()
+    generate_native_script_deny_test_runners()
     _log_stage("Regenerating mock data")
     regenerate_mock_data()
     _log_stage("Normalizing generated file headers")
@@ -673,6 +688,8 @@ def main() -> None:
         generate_cvote_test_runners()
         generate_pubkey_deny_test_runners()
         generate_opcert_deny_test_runners()
+        generate_cvote_deny_test_runners()
+        generate_native_script_deny_test_runners()
         _log_stage("Normalizing generated file headers")
         _normalize_generated_output_headers()
     elif args.command == "deny_tests":
@@ -682,6 +699,10 @@ def main() -> None:
         generate_derive_native_script_deny_fixtures()
         generate_pubkey_deny_fixtures()
         generate_opcert_deny_fixtures()
+        generate_opcert_deny_test_runners()
+        generate_cvote_deny_fixtures()
+        generate_cvote_deny_test_runners()
+        generate_native_script_deny_test_runners()
         _log_stage("Normalizing generated file headers")
         _normalize_generated_output_headers()
     elif args.command == "mock-data":

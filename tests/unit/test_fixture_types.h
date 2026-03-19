@@ -139,6 +139,27 @@ typedef struct {
     warning_bits_t expected_warning_bits;
 } cvote_fixture_t;
 
+typedef enum {
+    CVOTE_DENY_PHASE_INIT    = 0,  // malformed INIT payload → error at INIT
+    CVOTE_DENY_PHASE_CHUNK   = 1,  // CHUNK before INIT → SWO_COMMAND_NOT_ALLOWED
+    CVOTE_DENY_PHASE_CONFIRM = 2,  // valid INIT, then malformed CONFIRM → error at CONFIRM
+} cvote_deny_phase_e;
+
+typedef struct {
+    const char *name;
+    cvote_deny_phase_e phase;
+    // For INIT/CHUNK phases: the single APDU body to send (init or empty chunk).
+    // For CONFIRM phase: the valid INIT body (same data as a happy-path test case).
+    const uint8_t *apdu_data;
+    size_t apdu_data_len;
+    // For CONFIRM phase: intermediate chunk APDUs to send after INIT (may be NULL/0).
+    const cvote_chunk_t *chunks;
+    size_t chunk_count;
+    // Used only for CONFIRM phase: the bad CONFIRM payload.
+    const uint8_t *confirm_data;
+    size_t confirm_data_len;
+    uint16_t expected_sw;
+} cvote_deny_fixture_t;
 
 
 // Native script types (matching CBOR encoding)
