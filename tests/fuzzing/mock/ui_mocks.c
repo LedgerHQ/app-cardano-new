@@ -5,6 +5,8 @@
 #include <stdint.h>
 
 #include "os_helpers.h"
+#include "nbgl_obj.h"
+#include "nbgl_screen.h"
 #include "nbgl_use_case.h"
 
 // Mock icon definitions for fuzzing
@@ -213,4 +215,14 @@ void nbgl_useCaseReviewStreamingFinish(const char *finishTitle,
                                        nbgl_choiceCallback_t choiceCallback) {
     UNUSED(finishTitle);
     UNUSED(choiceCallback);
+}
+
+void nbgl_objAllowDrawing(bool enable) {
+    UNUSED(enable);
+}
+
+void nbgl_screenRedraw(void) {
+}
+
+void nbgl_refresh(void) {
 }

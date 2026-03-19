@@ -8,9 +8,15 @@ This directory contains 13 fuzzing harnesses covering APDU handlers, transaction
 parsing, address derivation, script hashing, and other security-critical components.
 Each harness implements `int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)`.
 
+Quick start to build and run all fuzzers locally:
+
+```bash
+rm -rf build && cmake -S . -B build -DBOLOS_SDK=${BOLOS_SDK} -DTARGET=stax -DCMAKE_C_COMPILER=clang -DCMAKE_BUILD_TYPE=Debug -DSANITIZER=address -G Ninja && cmake --build build -j4 && ./run_all_fuzzers.sh 600
+```
+
 ## Available Harnesses
 
-The `fuzzing/harness/` directory contains harnesses for individual APDU handlers,
+The `tests/fuzzing/harness/` directory contains harnesses for individual APDU handlers,
 internal parsers/builders, and a combined dispatcher fuzzer. Each implements
 `int LLVMFuzzerTestOneInput(...)` and is built into a `fuzz_*` binary.
 
@@ -44,9 +50,16 @@ and coverage support. This is the recommended method.
 ```bash
 cd tests/fuzzing
 
+# Remove any stale build cache copied from a container run under /app.
+rm -rf build
+
+# Select a supported SDK target explicitly when BOLOS_SDK has no .target file.
+export TARGET=stax  # or: export TARGET=flex
+
 # Build all fuzzers
 ${BOLOS_SDK}/fuzzing/local_run.sh \
     --BOLOS_SDK=${BOLOS_SDK} \
+    --fuzzer=build/fuzz_getVersion \
     --j=4 \
     --build=1
 
@@ -75,6 +88,10 @@ ${BOLOS_SDK}/fuzzing/local_run.sh \
 `local_run.sh` handles sanitizer flags, corpus management, crash collection, and LLVM
 coverage report generation automatically. Run with `--help` for all options.
 
+The SDK script forwards the `TARGET` environment variable to the app's `make list-defines`
+step, so one of `stax` or `flex` must be selected unless `${BOLOS_SDK}/.target` already
+exists.
+
 ### Manual CMake Build (Alternative)
 
 For more control over the build process:
@@ -82,18 +99,21 @@ For more control over the build process:
 ```bash
 cd tests/fuzzing
 rm -rf build
+export TARGET=stax  # or: export TARGET=flex
 cmake -DBOLOS_SDK=/opt/ledger-secure-sdk \
+      -DTARGET=${TARGET} \
       -DCMAKE_C_COMPILER=clang \
       -DCMAKE_BUILD_TYPE=Debug \
       -DSANITIZER=address \
       -Bbuild -H.
-make -C build -j4
+cmake --build build -j4
 ```
 
 Then run fuzzers directly:
 
 ```bash
-# Interactive fuzzing with seed corpus
+# Interactive fuzzing with an optional shared seed corpus
+mkdir -p ./corpus
 ./build/fuzz_signOpCert ./corpus
 
 # Fuzzing without seed (finds more edge cases, slower startup)
@@ -154,9 +174,9 @@ The repository includes `.clusterfuzzlite/` configuration files that enable auto
 
 ## Corpus Seed Data
 
-The `corpus/` directory contains seed inputs accumulated from prior fuzzing runs
-(hash-named files, ~13k entries). These accelerate future runs by providing known
-interesting inputs as a starting point.
+The shared `corpus/` directory is optional and is used only for manual direct runs of
+the fuzzing binaries. The SDK `local_run.sh` workflow manages per-fuzzer corpora under
+`out/<fuzzer>/corpus` automatically.
 
 ## Notes
 

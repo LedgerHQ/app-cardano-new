@@ -11,14 +11,14 @@ if(NOT DEFINED BOLOS_SDK)
 endif()
 
 if(NOT DEFINED APP_BUILD_PATH)
-  set(APP_BUILD_PATH "${CMAKE_SOURCE_DIR}/..")
+  set(APP_BUILD_PATH "${CMAKE_SOURCE_DIR}/../..")
 endif()
 
 # Pull in the SDK fuzzing framework: secure_sdk target, macro extraction,
 # sanitizer/coverage flags, mock libraries, etc.
 add_subdirectory(${BOLOS_SDK}/fuzzing ${CMAKE_CURRENT_BINARY_DIR}/ledger-secure-sdk EXCLUDE_FROM_ALL)
 
-set(CARDANO_PATH ${CMAKE_SOURCE_DIR}/..)
+set(CARDANO_PATH ${CMAKE_SOURCE_DIR}/../..)
 
 set(CARDANO_SOURCE
     ${CARDANO_PATH}/src/addressUtils/addressUtilsByron.c

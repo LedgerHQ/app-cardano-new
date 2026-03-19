@@ -14,9 +14,12 @@ tests/unit/coverage/
 tests/unit/coverage.info
 
 # Fuzzing
-fuzzing/build/
-fuzzing/corpus/
-fuzzing/out/
+tests/fuzzing/build/
+tests/fuzzing/corpus/
+tests/fuzzing/out/
+tests/fuzzing/out-local/
+tests/fuzzing/*.profraw
+tests/fuzzing/*.profdata
 
 # Python
 *.pyc[cod]

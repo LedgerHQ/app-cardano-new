@@ -3,12 +3,12 @@ set -euo pipefail
 
 if [[ $# -lt 1 || $# -gt 2 ]]; then
   echo "Usage: $0 <timeout_seconds> [output_dir]"
-  echo "Example: $0 600 fuzzing/out-local"
+  echo "Example: $0 600 out-local"
   exit 1
 fi
 
 timeout_seconds="$1"
-output_dir="${2:-fuzzing/out-local}"
+output_dir="${2:-out-local}"
 
 if ! [[ "$timeout_seconds" =~ ^[0-9]+$ ]] || [[ "$timeout_seconds" -le 0 ]]; then
   echo "Error: timeout_seconds must be a positive integer"
@@ -16,20 +16,19 @@ if ! [[ "$timeout_seconds" =~ ^[0-9]+$ ]] || [[ "$timeout_seconds" -le 0 ]]; the
 fi
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-repo_root="$(cd "$script_dir/.." && pwd)"
-build_dir="$repo_root/fuzzing/build"
+build_dir="$script_dir/build"
 
 if [[ "$output_dir" = /* ]]; then
   output_root="$output_dir"
 else
-  output_root="$repo_root/$output_dir"
+  output_root="$script_dir/$output_dir"
 fi
 
 if [[ ! -d "$build_dir" ]]; then
   echo "Error: build directory not found: $build_dir"
   echo "Build first, e.g.:"
-  echo "  cmake -S fuzzing -B fuzzing/build -DBOLOS_SDK=/opt/ledger-secure-sdk -DTARGET=stax"
-  echo "  make --no-print-directory -C fuzzing/build -j4"
+  echo "  cmake -S tests/fuzzing -B tests/fuzzing/build -DBOLOS_SDK=/opt/ledger-secure-sdk -DTARGET=stax"
+  echo "  cmake --build tests/fuzzing/build -j4"
   exit 1
 fi
 

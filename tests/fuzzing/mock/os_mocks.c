@@ -84,42 +84,78 @@ void halt() {
         ;
 };
 
-void io_send_buf(unsigned short code, unsigned char *buffer, size_t tx){};
+void io_send_buf(unsigned short code, unsigned char *buffer, size_t tx) {
+    (void) code;
+    (void) buffer;
+    (void) tx;
+}
+
 unsigned short io_exchange(unsigned char chan, unsigned short tx_len) {
+    (void) chan;
+    (void) tx_len;
     return 0;
-};
+}
+
 unsigned short io_seph_recv(unsigned char *buffer, unsigned short maxlength, unsigned int flags) {
+    (void) buffer;
+    (void) maxlength;
+    (void) flags;
     return 0;
-};
+}
+
 cx_err_t cx_blake2b_init_no_throw(cx_blake2b_t *hash, size_t size) {
+    (void) hash;
+    (void) size;
     return CX_OK;
-};
+}
+
 cx_err_t cx_hash_no_throw(cx_hash_t *hash,
                           uint32_t mode,
                           const uint8_t *in,
                           size_t len,
                           uint8_t *out,
                           size_t out_len) {
+    (void) hash;
+    (void) mode;
+    (void) in;
+    (void) len;
+    (void) out;
+    (void) out_len;
     return CX_OK;
-};
+}
+
 size_t cx_hash_get_size(const cx_hash_t *ctx) {
+    (void) ctx;
     return 32;
-};
-void io_seph_send(const unsigned char *buffer, unsigned short length){};
+}
+
+void io_seph_send(const unsigned char *buffer, unsigned short length) {
+    (void) buffer;
+    (void) length;
+}
+
 cx_err_t cx_sha3_init_no_throw(cx_sha3_t *hash, size_t size) {
+    (void) hash;
+    (void) size;
     return CX_OK;
-};
+}
+
 unsigned int io_seph_is_status_sent(void) {
     return 0;
-};
+}
+
 bolos_bool_t os_perso_isonboarded(void) {
     return (bolos_bool_t) BOLOS_UX_OK;
-};
+}
 
-void io_seproxyhal_init_ux(void){};
+void io_seproxyhal_init_ux(void) {
+}
+
 bolos_task_status_t os_sched_last_status(unsigned int task_idx) {
+    (void) task_idx;
     return 1;
-};
+}
+
 bolos_bool_t os_global_pin_is_validated(void) {
     return (bolos_bool_t) BOLOS_UX_OK;
 }
@@ -131,6 +167,12 @@ cx_err_t cx_eddsa_get_public_key_no_throw(const cx_ecfp_private_key_t *pv_key,
                                           size_t a_len,
                                           uint8_t *h,
                                           size_t h_len) {
+    (void) pv_key;
+    (void) hashID;
+    (void) a;
+    (void) a_len;
+    (void) h;
+    (void) h_len;
     pu_key->W_len = 65;
     memset(pu_key, 'A', pu_key->W_len);
     return CX_OK;
@@ -181,6 +223,14 @@ void os_perso_derive_node_with_seed_key(unsigned int mode,
                                         unsigned char *chain,
                                         unsigned char *seed_key,
                                         unsigned int seed_key_length) {
+    (void) mode;
+    (void) curve;
+    (void) path;
+    (void) pathLength;
+    (void) privateKey;
+    (void) chain;
+    (void) seed_key;
+    (void) seed_key_length;
 }
 
 void assert_exit(bool confirm) {
