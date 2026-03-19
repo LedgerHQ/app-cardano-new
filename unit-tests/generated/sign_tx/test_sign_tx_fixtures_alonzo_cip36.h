@@ -16,7 +16,7 @@
 //   - Source file and era
 //   - Original Ragger test name
 //
-// Total tests in this era: 7
+// Total tests in this era: 8
 
 #pragma once
 
@@ -550,7 +550,104 @@ static const tx_fixture_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_W
     .expected_warning_bits = 0,
 };
 
-// Test 6: Sign_tx_with_CIP36_registration_with_many_delegations_streaming
+// Test 6: Sign_tx_with_CIP36_registration_with_delegation_unusual_path_warning
+// Source: tests/standalone/input_files/signTx.py > alonzo_cip36 era tests
+//
+static const uint8_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_RAW_TX[] = {
+    0x3B, 0x40, 0x26, 0x51, 0x11, 0xD8, 0xBB, 0x3C, 0x3C, 0x60, 0x8D, 0x95, 0xB3, 0xA0, 0xBF, 0x83,
+    0x46, 0x1A, 0xCE, 0x32, 0xD7, 0x93, 0x36, 0x57, 0x9A, 0x19, 0x39, 0xB3, 0xAA, 0xD1, 0xC0, 0xB7,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x3B, 0x02, 0x00, 0x01, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00,
+    0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x22, 0x05,
+    0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x6C, 0xA7, 0x93, 0x00, 0x01, 0x01, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x0A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07,
+};
+
+static const uint8_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_AUX_DATA_INIT_PAYLOAD[] = {
+    0x02, 0x00, 0x02, 0x02, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x01, 0x05, 0x80, 0x00, 0x07,
+    0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x22, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x16, 0x31, 0x70, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0xE6,
+};
+
+static const uint8_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_AUX_DATA_DELEGATION_0[] = {
+    0x00, 0x4B, 0x19, 0xE2, 0x7F, 0xFC, 0x00, 0x6A, 0xCE, 0x16, 0x59, 0x23, 0x11, 0xC4, 0xD2, 0xF0,
+    0xCA, 0xFC, 0x25, 0x5E, 0xAA, 0x47, 0xA6, 0x17, 0x8F, 0xF5, 0x40, 0xC0, 0xA4, 0x6D, 0x07, 0x02,
+    0x7C, 0x00, 0x00, 0x00, 0x09,
+};
+
+static const uint8_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_AUX_DATA_DELEGATION_1[] = {
+    0x02, 0x05, 0x80, 0x00, 0x06, 0x9E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x65, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const aux_data_payload_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_AUX_DATA_DELEGATIONS[] = {
+    { .payload = FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_AUX_DATA_DELEGATION_0, .payload_len = sizeof(FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_AUX_DATA_DELEGATION_0) },
+    { .payload = FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_AUX_DATA_DELEGATION_1, .payload_len = sizeof(FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_AUX_DATA_DELEGATION_1) },
+};
+
+static const uint8_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0xE6, 0xC0, 0xF8, 0x20, 0x84, 0x35, 0x63, 0x27, 0xCF, 0x7A, 0xEA, 0x73, 0xF3, 0x58, 0x7A, 0xCD,
+    0x7F, 0x3E, 0x63, 0x79, 0xFA, 0x19, 0x00, 0xF0, 0x3A, 0xE0, 0x0D, 0x50, 0xF4, 0xDC, 0x7B, 0x18,
+    0xBA, 0xA7, 0x98, 0xC0, 0xF3, 0x52, 0x03, 0xC7, 0x93, 0x1D, 0x8A, 0x93, 0x93, 0x3F, 0x1A, 0xAD,
+    0x08, 0x5E, 0x03, 0x99, 0xA6, 0x7E, 0x60, 0x10, 0x4D, 0x87, 0x6D, 0xF0, 0xE8, 0xFB, 0x5B, 0xB8,
+};
+
+static const witness_payload_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
+static const tx_fixture_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING = {
+    .name = "Sign_tx_with_CIP36_registration_with_delegation_unusual_path_warning",
+    .raw_tx = FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_RAW_TX,
+    .raw_tx_len = sizeof(FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_RAW_TX),
+    .tx_body_cbor_hex = "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820dbd3dcc45a668526741d94ba977b0055229dcc10171d4d622c3d700c1701a4110807",
+    .expected_hash_hex = "7f615f882d98c80b62d4454342eac9f9dd88d4c17fa4bb4c8759b210351eb85c",
+    .signing_mode = 3,
+    .network_id = 1,
+    .protocol_magic = 764824073,
+    .num_inputs = 1,
+    .num_outputs = 1,
+    .num_witnesses = 1,
+    .witness_payloads = FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
+    .num_certificates = 0,
+    .num_withdrawals = 0,
+    .num_mint_asset_groups = 0,
+    .include_ttl = true,
+    .include_validity_interval_start = true,
+    .include_aux_data_hash = true,
+    .aux_data_type = 1,
+    .aux_data_init_payload = FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_AUX_DATA_INIT_PAYLOAD,
+    .aux_data_init_payload_len = sizeof(FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_AUX_DATA_INIT_PAYLOAD),
+    .aux_data_delegations = FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING_AUX_DATA_DELEGATIONS,
+    .aux_data_delegation_count = 2,
+    .include_script_data_hash = false,
+    .num_collateral_inputs = 0,
+    .num_required_signers = 0,
+    .include_network_id = false,
+    .include_collateral_output = false,
+    .include_total_collateral = false,
+    .num_reference_inputs = 0,
+    .num_voters = 0,
+    .include_treasury = false,
+    .treasury = 0,
+    .include_donation = false,
+    .donation = 0,
+    .aux_data_hash_hex = "dbd3dcc45a668526741d94ba977b0055229dcc10171d4d622c3d700c1701a411",
+    .options = 0,
+    .expected_warning_bits = 0,
+};
+
+// Test 7: Sign_tx_with_CIP36_registration_with_many_delegations_streaming
 // Source: tests/standalone/input_files/signTx.py > alonzo_cip36 era tests
 //
 static const uint8_t FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_MANY_DELEGATIONS_STREAMING_RAW_TX[] = {

@@ -229,6 +229,36 @@ static void test_sign_tx_with_cip36_registration_with_delegations_reject_aux_exp
     run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATIONS, true);
 }
 
+static void test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING, false);
+}
+
+static void test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING, false);
+}
+
+static void test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_aux_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING, false);
+}
+
+static void test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING, true);
+}
+
+static void test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING, true);
+}
+
+static void test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_aux_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING, true);
+}
+
 static void test_sign_tx_with_cip36_registration_with_many_delegations_streaming_expert_off(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_MANY_DELEGATIONS_STREAMING, false);
@@ -301,6 +331,12 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegations_expert_on),
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegations_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegations_reject_aux_expert_on),
+        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_expert_off),
+        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_aux_expert_off),
+        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_expert_on),
+        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_aux_expert_on),
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_many_delegations_streaming_expert_off),
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_many_delegations_streaming_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_many_delegations_streaming_reject_aux_expert_off),

@@ -3504,6 +3504,38 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820f0e62a047ef597d9fb1bfefb9cd3f4e77558c33510ca552484ee8b5c77bbdf650807",
     ),
     SignTxTestCase(
+        name="Sign_tx_with_CIP36_registration_with_delegation_unusual_path_warning",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            validityIntervalStart=7,
+            auxiliaryData=TxAuxiliaryData(
+                TxAuxiliaryDataType.CIP36_REGISTRATION,
+                TxAuxiliaryDataCIP36(
+                    CIP36VoteRegistrationFormat.CIP_36,
+                    "m/1852'/1815'/0'/2/0",
+                    destinations["internalBaseWithStakingPath"],
+                    1454448,
+                    votingPurpose=2790,
+                    delegations=[
+                        CIP36VoteDelegation(
+                            CIP36VoteDelegationType.KEY,
+                            "4b19e27ffc006ace16592311c4d2f0cafc255eaa47a6178ff540c0a46d07027c",
+                            9,
+                        ),
+                        CIP36VoteDelegation(
+                            CIP36VoteDelegationType.PATH, "m/1694'/1815'/101'/0/1", 0
+                        ),
+                    ],
+                ),
+            ),
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820dbd3dcc45a668526741d94ba977b0055229dcc10171d4d622c3d700c1701a4110807",
+        expected_aux_warnings=[WarningBit.WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH],
+    ),
+    SignTxTestCase(
         name="Sign_tx_with_CIP36_registration_with_many_delegations_streaming",
         tx=Transaction(
             network=Mainnet,
