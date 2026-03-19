@@ -138,13 +138,13 @@ static bool cvote_start_streaming_review(cvote_aux_data_t *aux_data) {
     }
 
     const nbgl_warning_t *warning_ptr = ui_get_warnings();
+    aux_data->ui_streaming.review_started = true;
     nbgl_useCaseAdvancedReviewStreamingStart(TYPE_OPERATION,
                                              &ICON_APP_CARDANO,
                                              cvote_review_title,
                                              NULL,
                                              warning_ptr,
                                              cvote_aux_data_streaming_continue_choice);
-    aux_data->ui_streaming.review_started = true;
 
     return true;
 }

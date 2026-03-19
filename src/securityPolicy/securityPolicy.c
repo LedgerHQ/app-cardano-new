@@ -1917,16 +1917,19 @@ security_policy_t policyForSignTxVotingProcedure(sign_tx_signingmode_t txSigning
                 case EXT_VOTER_COMMITTEE_HOT_KEY_PATH:
                     DENY_UNLESS(bip44_isCommitteeHotKeyPath(&voter->keyPath));
                     DENY_IF(violatesSingleAccountOrStoreIt(&voter->keyPath));
+                    SHOW_IF(mark_unusual_key_derivation(w, &voter->keyPath));
                     break;
 
                 case EXT_VOTER_DREP_KEY_PATH:
                     DENY_UNLESS(bip44_isDRepKeyPath(&voter->keyPath));
                     DENY_IF(violatesSingleAccountOrStoreIt(&voter->keyPath));
+                    SHOW_IF(mark_unusual_key_derivation(w, &voter->keyPath));
                     break;
 
                 case EXT_VOTER_STAKE_POOL_KEY_PATH:
                     // Pool cold keys are exempt from single-account constraint.
                     DENY_UNLESS(bip44_isPoolColdKeyPath(&voter->keyPath));
+                    SHOW_IF(mark_unusual_key_derivation(w, &voter->keyPath));
                     break;
 
                 default:

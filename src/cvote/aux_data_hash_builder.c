@@ -270,6 +270,9 @@ void auxDataHashBuilder_cVoteRegistration_addVotingPurpose(aux_data_hash_builder
                                                            uint64_t votingPurpose) {
     _TRACE("state = %d", builder->state);
 
+    // voting purpose is a CIP36-only field; the payload map size is 5 for CIP36, 4 for CIP15,
+    // so calling this in a CIP15 flow would silently produce malformed CBOR
+    ASSERT(builder->cVoteRegistrationData.format == CIP36);
     ASSERT(builder->state == AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_PAYLOAD_NONCE);
     {
         APPEND_CBOR(HC_AUX_DATA | HC_CVOTE_REGISTRATION_PAYLOAD,
@@ -292,6 +295,7 @@ void auxDataHashBuilder_cVoteRegistration_finalizePayload(aux_data_hash_builder_
 
     ASSERT(outSize == CVOTE_REGISTRATION_PAYLOAD_HASH_LENGTH);
     { blake2b_256_finalize(&builder->cVoteRegistrationData.payloadHash, outBuffer, outSize); }
+    builder->state = AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_PAYLOAD_FINALIZED;
 }
 
 void auxDataHashBuilder_cVoteRegistration_addSignature(aux_data_hash_builder_t* builder,
@@ -301,8 +305,7 @@ void auxDataHashBuilder_cVoteRegistration_addSignature(aux_data_hash_builder_t* 
 
     ASSERT(signatureSize < BUFFER_SIZE_PARANOIA);
 
-    ASSERT(builder->state == AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_PAYLOAD_NONCE ||
-           builder->state == AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_PAYLOAD_VOTING_PURPOSE);
+    ASSERT(builder->state == AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_PAYLOAD_FINALIZED);
     {
         APPEND_CBOR(HC_AUX_DATA, CBOR_TYPE_UNSIGNED, METADATA_KEY_CVOTE_REGISTRATION_SIGNATURE);
         {

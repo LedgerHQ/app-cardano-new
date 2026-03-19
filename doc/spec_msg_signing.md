@@ -107,6 +107,7 @@ For signing, the following keys will be allowed:
 * payment keys
 * stake keys
 * multisig keys (CIP-1854)
+* mint keys (CIP-1855)
 * DRep keys
 * constitutional committee hot and cold keys
 * stake pool operator keys
