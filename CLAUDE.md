@@ -83,15 +83,15 @@ For detailed analysis, see:
 
 ## Testing Workflow
 ### Python Environment
-- **Default Python environment for repo tooling:** use `tests/standalone/venv` for Python work related to `tests/standalone/`, `tests/application_client/`, and `tests/unit/generators/`.
+- **Default Python environment for repo tooling:** use `tests/venv` for all Python work — standalone ragger tests, swap tests, `tests/application_client/`, and `tests/unit/generators/`.
 - **Do not rely on system `python3`** for those workflows; missing packages and import-path mismatches are common outside the venv.
-- **Typical activation:** `source tests/standalone/venv/bin/activate`
-- **When running from `tests/unit/`:** activate via `source ../standalone/venv/bin/activate`
+- **Typical activation:** `source tests/venv/bin/activate`
+- **When running from `tests/unit/`:** activate via `source ../venv/bin/activate`
 - **When running unit-test generators from `tests/unit/`:** ensure imports resolve from `tests/` as well, e.g. `PYTHONPATH=../.. python3 generators/generate_unit_tests_from_ragger.py`
 
 - **When C code is modified:** run unit tests. Use unit test build as proxy for real app build. Use `-j8` for make, not `-j$(nproc)`.
 - **After unit tests pass:** check fuzzing build as an additional compile-health gate.
-- **When `tests/standalone` ragger inputs or `application_client/` are modified:** run `tests/unit/generators/generate_unit_tests_from_ragger.py` (using `tests/standalone/venv` to have virtual env for python with all the required packages), then run unit tests to verify generated outputs are up to date and passing. The generator depends on `application_client/`, so any change there must be reflected by regenerated unit-test fixtures.
+- **When `tests/standalone` ragger inputs or `application_client/` are modified:** run `tests/unit/generators/generate_unit_tests_from_ragger.py` (using `tests/venv` to have virtual env for python with all the required packages), then run unit tests to verify generated outputs are up to date and passing. The generator depends on `application_client/`, so any change there must be reflected by regenerated unit-test fixtures.
 - **Do not run ragger tests or swap tests unless explicitly requested.**
 - **Compilation warnings are not acceptable:** treat warnings as issues to fix.
 - Command to build executed by Ledger VSCode plugin (not suitable for agents because of permissions, but can be run manually):

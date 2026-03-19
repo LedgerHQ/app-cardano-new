@@ -10,14 +10,12 @@ In this repository workflow, swap tests are run only on explicit request.
 # 1. Build app with swap support
 make ENABLE_SWAP=1
 
-# 2. Set up virtual environment (first time only)
-cd tests/swap
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-pip install GitPython
+# 2. Set up and activate the shared Python environment
+# See ../../doc/testing.md
+source tests/venv/bin/activate
 
 # 3. Clone and build test dependencies (first time only)
+cd tests/swap
 python helper_tool_clone_dependencies.py
 docker run --user "$(id -u)":"$(id -g)" --rm -ti \
   -v "$(realpath ../../):/app" \
@@ -25,8 +23,8 @@ docker run --user "$(id -u)":"$(id -g)" --rm -ti \
   bash -c "cd /app/tests/swap && python3 helper_tool_build_dependencies.py"
 
 # 4. Run tests (activate venv first each time)
-source venv/bin/activate
-pytest . --device stax
+source tests/venv/bin/activate
+pytest tests/swap/ --device stax
 ```
 
 ## Prerequisites
@@ -41,20 +39,7 @@ make ENABLE_SWAP=1
 
 ### 2. Set Up Python Virtual Environment
 
-Create and activate a virtual environment in `tests/swap/`:
-
-```bash
-cd tests/swap
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### 3. Install Python Dependencies
-
-```bash
-# Make sure venv is activated
-pip install -r requirements.txt
-```
+Use the shared Python environment described in `../../doc/testing.md`.
 
 This installs all required dependencies including:
 - Ragger (testing framework)
@@ -63,14 +48,16 @@ This installs all required dependencies including:
 - Cardano-specific libraries (base58, bech32, cbor, etc.)
 - GitPython (for cloning repositories)
 
-### 4. Clone and Build Test Dependencies
+### 3. Clone and Build Test Dependencies
 
 The swap tests require the Exchange app and Ethereum app binaries.
 
 **Clone dependencies:**
 
 ```bash
-# Make sure you're in tests/swap/ with venv activated
+# From tests/swap/ with venv activated
+source tests/venv/bin/activate
+cd tests/swap
 python3 helper_tool_clone_dependencies.py
 ```
 
@@ -91,11 +78,10 @@ This builds Exchange and Ethereum apps for all devices (stax, flex, nanox, nanos
 
 ## Running Tests
 
-**Important:** Always activate the virtual environment before running tests:
+**Important:** Always activate the shared venv before running tests:
 
 ```bash
-cd tests/swap
-source venv/bin/activate
+source tests/venv/bin/activate
 ```
 
 ### List Available Tests
@@ -153,7 +139,6 @@ deactivate
 - `conftest.py` - Pytest configuration and fixtures
 - `cal_helper.py` - Currency configuration (ADA)
 - `helper_tool_*.py` - Scripts to clone and build dependencies
-- `requirements.txt` - Python dependencies
 - `snapshots/` - Expected UI screenshots per device
 
 ## How Swap Tests Work
@@ -177,20 +162,20 @@ The test suite validates:
 ## Troubleshooting
 
 **Virtual environment not activated**
-- Always run `source venv/bin/activate` before running tests
+- Always run `source tests/venv/bin/activate` from the repo root before running tests
 - Your prompt should show `(venv)` prefix when activated
 
 **"No such file or directory: app-exchange"**
-- Run `python helper_tool_clone_dependencies.py` and `python helper_tool_build_dependencies.py`
+- Run `python helper_tool_clone_dependencies.py` and `python helper_tool_build_dependencies.py` from `tests/swap/`
 - Make sure you're in the `tests/swap/` directory
 
 **"ImportError: ledger_app_clients.exchange"**
-- Activate venv: `source venv/bin/activate`
-- Install requirements: `pip install -r requirements.txt`
+- Activate venv: `source tests/venv/bin/activate`
+- Install requirements: `pip install -r tests/requirements.txt`
 
 **"command not found: pytest"**
-- Activate venv: `source venv/bin/activate`
-- If still failing, reinstall: `pip install -r requirements.txt`
+- Activate venv: `source tests/venv/bin/activate`
+- If still failing, reinstall: `pip install -r tests/requirements.txt`
 
 **"SWO_SWAP_CHECKING_FAIL" errors**
 - Ensure the Cardano app is built with `ENABLE_SWAP=1`

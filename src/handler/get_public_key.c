@@ -10,7 +10,6 @@
 #include "cx.h"
 #include "io.h"
 #include "buffer.h"
-#include "crypto_helpers.h"
 #include "nbgl_use_case.h"
 
 #include "get_public_key.h"

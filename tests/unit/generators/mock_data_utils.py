@@ -46,7 +46,7 @@ def regenerate_mock_data() -> None:
         from nacl import bindings  # type: ignore
     except ImportError as exc:
         print(f"ERROR: missing dependency: {exc}")
-        print("Please activate the venv: source ../tests/standalone/venv/bin/activate")
+        print("Please activate the venv: source tests/venv/bin/activate")
         sys.exit(1)
 
     default_mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"

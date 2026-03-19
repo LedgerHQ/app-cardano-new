@@ -396,7 +396,7 @@ def _verify_ragger_test_coverage() -> None:
         print("WARNING: Ragger tests directory not found, skipping coverage check")
         return
 
-    venv_pytest = REPO_ROOT / "tests" / "standalone" / "venv" / "bin" / "pytest"
+    venv_pytest = REPO_ROOT / "tests" / "venv" / "bin" / "pytest"
     pytest_cmd = str(venv_pytest) if venv_pytest.exists() else "pytest"
 
     try:

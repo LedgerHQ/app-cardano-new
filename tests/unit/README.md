@@ -60,14 +60,16 @@ it will output `coverage.total` and `coverage/` folder with HTML details (in `co
 
 Some unit tests consume generated C headers. Do not hand-edit these generated files; update the generator scripts and re-run them.
 
+For the shared Python environment used by generators, see `../../doc/testing.md`.
+
 ### Transaction Signing Fixtures
 
 Fixtures for sign-tx tests are generated from ragger fixtures and serialized through the shared Python command builder.
 
-Generators (run from repo root with the standalone venv):
+Generators (run from repo root):
 
 ```bash
-source tests/standalone/venv/bin/activate
+source tests/venv/bin/activate
 pushd tests/unit
 python3 generators/generate_unit_tests_from_ragger.py
 # or individual steps:
@@ -90,7 +92,7 @@ Notes:
 Mock key material lives in `tests/unit/mock_crypto/crypto_mock_data.h` and is regenerated with:
 
 ```bash
-source tests/standalone/venv/bin/activate
+source tests/venv/bin/activate
 pushd tests/unit
 python3 generators/generate_unit_tests_from_ragger.py mock-data
 popd
@@ -198,8 +200,7 @@ If mock data (public keys, chain codes, key hashes) becomes outdated or incorrec
 
 ```bash
 cd tests/unit
-# Activate the ragger venv (required!)
-source ../standalone/venv/bin/activate
+source ../venv/bin/activate
 python3 generators/generate_unit_tests_from_ragger.py mock-data
 ```
 

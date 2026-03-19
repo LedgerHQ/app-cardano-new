@@ -2,6 +2,41 @@
 
 This is the main entry point for test documentation in the Cardano Ledger app.
 
+## Python Environment
+
+Python-based test tooling in this repository uses a shared virtual environment at
+`tests/venv`.
+
+Create it once from the repository root:
+
+```bash
+python3 -m venv tests/venv
+source tests/venv/bin/activate
+pip install -r tests/requirements.txt
+```
+
+Use this environment for:
+
+- `tests/standalone/` ragger tests
+- `tests/application_client/`
+- `tests/unit/generators/`
+- other Python helpers under `tests/`
+
+Activation examples:
+
+```bash
+# From repository root
+source tests/venv/bin/activate
+
+# From tests/unit
+source ../venv/bin/activate
+```
+
+Notes:
+
+- Do not rely on the system `python3` for these workflows; missing packages and
+  import-path mismatches are common outside the shared venv.
+
 ## Test Suites
 
 - Unit tests: `../tests/unit/README.md`
@@ -16,6 +51,8 @@ This is the main entry point for test documentation in the Cardano Ledger app.
 - Regenerate unit-test fixtures when `tests/standalone/input_files/` or
   `tests/application_client/` changes via:
   `../tests/unit/generators/generate_unit_tests_from_ragger.py`.
+- Use the shared venv above when running generator scripts or other Python-based
+  test tooling.
 - Run ragger and swap tests only when explicitly requested.
 
 ## Terminology: Deny vs Reject

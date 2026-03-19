@@ -255,7 +255,7 @@ print("wrote", len(lines), "lines")
 Run it with the ragger venv and proper `PYTHONPATH`:
 
 ```bash
-source tests/standalone/venv/bin/activate
+source tests/venv/bin/activate
 PYTHONPATH=/home/jan/praca/vacuumlabs/cardano/ledger-app-cardano/tests \
 python3 /tmp/gen_rejects_section.py
 ```
@@ -297,7 +297,7 @@ sign_tx_path.write_text(new_content, encoding="utf-8")
 ## 4) Regenerate unit-test fixtures
 
 ```bash
-source tests/standalone/venv/bin/activate
+source tests/venv/bin/activate
 pushd unit-tests
 python3 generators/generate_unit_tests_from_ragger.py rejects
 popd
