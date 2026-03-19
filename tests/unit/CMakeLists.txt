@@ -689,6 +689,12 @@ add_executable(test_tx_parser
 target_link_libraries(test_tx_parser PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_tx_parser test_tx_parser)
 
+add_executable(test_cardano_parsers
+    test_cardano_parsers.c
+)
+target_link_libraries(test_cardano_parsers PUBLIC cmocka gcov parsers_lib cardano_buffer_lib mock_printf)
+add_test(test_cardano_parsers test_cardano_parsers)
+
 add_executable(test_tx_utils
     test_tx_utils.c
 )
