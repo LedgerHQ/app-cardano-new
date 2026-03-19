@@ -1,0 +1,3 @@
+# Additional defines needed for fuzzing builds that are not
+# extracted from the app Makefile via 'make list-defines'.
+FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION=1

@@ -4,18 +4,15 @@
 
 Fuzzing allows us to test how a program behaves when provided with invalid, unexpected, or random data as input. Fuzzing is part of our comprehensive testing strategy, which is described in the testing section of [doc/OVERVIEW.md](../doc/OVERVIEW.md).
 
-This directory contains multiple fuzzing harnesses for security-critical components of the Cardano app:
-- **`fuzz_signOpCert`** - Tests operational certificate signing
-- **`fuzz_getPublicKeys`** - Tests BIP44 path parsing and key derivation
-- **`fuzz_all_handlers`** - Tests APDU dispatcher and command routing
-
-Each harness implements `int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)`, which feeds random APDU-formatted data to the handlers.
+This directory contains 13 fuzzing harnesses covering APDU handlers, transaction
+parsing, address derivation, script hashing, and other security-critical components.
+Each harness implements `int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)`.
 
 ## Available Harnesses
 
-The `fuzzing/harness/` directory contains one fuzzer per APDU instruction plus the
-combined dispatcher fuzzer. Each harness implements `int LLVMFuzzerTestOneInput(...)`
-and is built into a `fuzz_*` binary.
+The `fuzzing/harness/` directory contains harnesses for individual APDU handlers,
+internal parsers/builders, and a combined dispatcher fuzzer. Each implements
+`int LLVMFuzzerTestOneInput(...)` and is built into a `fuzz_*` binary.
 
 Current harnesses:
 - `fuzz_all_handlers`
@@ -34,25 +31,86 @@ Current harnesses:
 
 ## Building and Running Fuzzers (SDK Fuzzing Framework)
 
-### Local Build (Recommended for Development)
+The fuzzing infrastructure uses the Ledger SDK fuzzing framework (`${BOLOS_SDK}/fuzzing/`).
+Compile definitions are extracted automatically from the app Makefile via `make list-defines`,
+with app-specific additions/exclusions managed in `macros/add_macros.txt` and
+`macros/exclude_macros.txt`.
 
-The fuzzing harnesses are built via the Ledger SDK fuzzing framework. You must provide
-the SDK path and target. Stax is the supported target.
+### Using `local_run.sh` (Recommended)
+
+The SDK provides `local_run.sh` for building and running fuzzers with proper sanitizer
+and coverage support. This is the recommended method.
+
+```bash
+cd fuzzing
+
+# Build all fuzzers
+${BOLOS_SDK}/fuzzing/local_run.sh \
+    --BOLOS_SDK=${BOLOS_SDK} \
+    --j=4 \
+    --build=1
+
+# Run a specific fuzzer
+${BOLOS_SDK}/fuzzing/local_run.sh \
+    --BOLOS_SDK=${BOLOS_SDK} \
+    --j=4 \
+    --run-fuzzer=1 \
+    --fuzzer=build/fuzz_signTx
+
+# Run with coverage report (generates HTML in out/<fuzzer>/index.html)
+${BOLOS_SDK}/fuzzing/local_run.sh \
+    --BOLOS_SDK=${BOLOS_SDK} \
+    --j=4 \
+    --run-fuzzer=1 \
+    --fuzzer=build/fuzz_signTx \
+    --compute-coverage=1
+
+# Reproduce a specific crash
+${BOLOS_SDK}/fuzzing/local_run.sh \
+    --BOLOS_SDK=${BOLOS_SDK} \
+    --fuzzer=build/fuzz_signTx \
+    --run-crash=out/fuzz_signTx/crashes/crash-abc123
+```
+
+`local_run.sh` handles sanitizer flags, corpus management, crash collection, and LLVM
+coverage report generation automatically. Run with `--help` for all options.
+
+### Manual CMake Build (Alternative)
+
+For more control over the build process:
 
 ```bash
 cd fuzzing
 rm -rf build
 cmake -DBOLOS_SDK=/opt/ledger-secure-sdk \
-      -DTARGET=stax \
-      -DCMAKE_C_COMPILER=/usr/bin/clang \
+      -DCMAKE_C_COMPILER=clang \
+      -DCMAKE_BUILD_TYPE=Debug \
+      -DSANITIZER=address \
       -Bbuild -H.
 make -C build -j4
 ```
 
-**What this does:**
-1. Configures the build with the Ledger SDK fuzzing framework
-2. Compiles all fuzzing harnesses with libFuzzer + address sanitizer
-3. Output binaries: `build/fuzz_signOpCert`, `build/fuzz_getPublicKeys`, `build/fuzz_all_handlers`
+Then run fuzzers directly:
+
+```bash
+# Interactive fuzzing with seed corpus
+./build/fuzz_signOpCert ./corpus
+
+# Fuzzing without seed (finds more edge cases, slower startup)
+./build/fuzz_getPublicKeys
+
+# Test multi-command sequences
+./build/fuzz_all_handlers ./corpus -max_len=8192
+```
+
+### Batch Run (All Fuzzers)
+
+The `run_all_fuzzers.sh` convenience script discovers and runs all built fuzzers:
+
+```bash
+cd fuzzing
+./run_all_fuzzers.sh 600 fuzzing/out-local
+```
 
 ### Container-Based Build (For CI/Continuous Fuzzing)
 
@@ -65,40 +123,19 @@ docker run --rm --privileged -e FUZZING_LANGUAGE=c \
     -v "$(realpath .)/fuzzing/out:/out" -ti cardano-app
 ```
 
-**What happens:**
-1. `ledger-app-builder-lite` builds the BOLOS SDK
-2. `oss-fuzz-base/base-builder` provides clang, libfuzzer, and sanitizers
-3. `build.sh` compiles all fuzzing harnesses
-4. Output binaries in `fuzzing/out/`: `fuzz_signOpCert`, `fuzz_getPublicKeys`, `fuzz_all_handlers`
+## Macro Management
 
-### Running Fuzzers
+Compile definitions are handled by the SDK's macro extraction system:
 
-After local build:
+1. **Automatic extraction:** The SDK runs `make list-defines` against the app Makefile
+   to collect all `DEFINES` (crypto flags, platform flags, etc.).
+2. **`macros/add_macros.txt`:** Additional defines needed only for fuzzing builds
+   (e.g. `FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION=1`).
+3. **`macros/exclude_macros.txt`:** Defines to remove from fuzzing builds
+   (e.g. `NDEBUG` to keep asserts active, `PRINTF(...)=` to avoid conflicts).
 
-```bash
-cd fuzzing
-
-# Interactive fuzzing with seed corpus
-./build/fuzz_signOpCert ./corpus
-
-# Fuzzing without seed (finds more edge cases, slower startup)
-./build/fuzz_getPublicKeys
-
-# Test multi-command sequences
-./build/fuzz_all_handlers ./corpus -max_len=8192
-```
-
-After container build, binaries will be in `out/` instead of `build/`.
-
-
-### Crash Reproduction
-
-If fuzzing finds a crash, it will save the input to `crash-*`:
-
-```bash
-# Reproduce a specific crash
-./out/fuzz_signOpCert crash-abc123
-```
+This replaces the previous approach of hardcoding all defines in CMakeLists.txt and
+ensures fuzzing builds stay in sync with the app's actual build configuration.
 
 ## Continuous Fuzzing via Google OSS-Fuzz
 
@@ -107,38 +144,31 @@ For production continuous fuzzing integration with Google's OSS-Fuzz infrastruct
 The repository includes `.clusterfuzzlite/` configuration files that enable automatic fuzzing campaigns.
 
 **How it works:**
-1. `.clusterfuzzlite/Dockerfile` - Multi-stage build:
-   - Stage 1: `ledger-app-builder-lite` compiles BOLOS SDK
-   - Stage 2: `oss-fuzz-base/base-builder` provides fuzzing infrastructure
-2. `.clusterfuzzlite/build.sh` - Build script that:
-   - Calls `cmake -DBOLOS_SDK=../BOLOS_SDK -DTARGET=stax`
-   - Compiles all fuzz harnesses
-   - Outputs binaries to `$OUT` directory
+1. `.clusterfuzzlite/Dockerfile` - Uses `ledger-app-builder-lite` to provide the SDK,
+   then `oss-fuzz-base/base-builder` for clang/libfuzzer/sanitizers.
+2. `.clusterfuzzlite/build.sh` - Runs cmake with `LIB_FUZZING_ENGINE` and `CFLAGS`
+   set by the OSS-Fuzz environment (the SDK detects this and uses those instead
+   of its own sanitizer flags).
 
-**Integration:**
-- This setup is compatible with Google's OSS-Fuzz and ClusterFuzzLite services
-- No additional configuration needed beyond what's in `.clusterfuzzlite/`
-- See [Google OSS-Fuzz documentation](https://google.github.io/oss-fuzz/) for integration details
+**Status:** The configuration files exist but CI integration is not yet active.
 
 ## Corpus Seed Data
 
-The `corpus/` directory contains minimal seed inputs to accelerate fuzzing:
-- `signOpCert_basic` - Valid operational certificate data
-- `getPublicKeys_bip44_mainnet` - BIP44 mainnet path
-- `allHandlers_sequence` - Multi-command APDU sequence
-- Edge case files for testing error handling
+The `corpus/` directory contains seed inputs accumulated from prior fuzzing runs
+(hash-named files, ~13k entries). These accelerate future runs by providing known
+interesting inputs as a starting point.
 
 ## Notes
 
 - Fuzzing requires **Clang** compiler
-- Local builds use address sanitizer (configured in CMake)
-- Address sanitizer catches memory errors automatically
-- Coverage mapping tracks which code paths are tested
-- Long-running fuzzing campaigns may find subtle bugs
+- Address sanitizer and memory sanitizer are supported (via `--sanitizer=address|memory`)
+- Coverage mapping is available via `--compute-coverage=1`
+- The `-fno-sanitize=alignment` flag is applied to suppress false positives from packed struct accesses
 - Corpus files should be added as new interesting inputs are discovered
 
 ## References
 
+- [Ledger SDK Fuzzing Framework](https://github.com/LedgerHQ/ledger-secure-sdk/tree/master/fuzzing)
 - [Google Sanitizers](https://github.com/google/sanitizers)
 - [LLVM LibFuzzer](https://llvm.org/docs/LibFuzzer/)
 - [ClusterFuzzLite](https://google.github.io/clusterfuzzlite/)
