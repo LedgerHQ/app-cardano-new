@@ -225,7 +225,7 @@ _RAGGER_FILE_TO_COMMAND = {
 
 _CMOCKA_TEST_PATTERN = re.compile(r"cmocka_unit_test\(\s*([^)]+?)\s*\)")
 
-_GENERATED_BY_SCRIPT = "unit-tests/generators/generate_unit_tests_from_ragger.py"
+_GENERATED_BY_SCRIPT = "tests/unit/generators/generate_unit_tests_from_ragger.py"
 
 
 def _normalize_generated_output_headers() -> None:

@@ -37,31 +37,31 @@ add_compile_definitions(DEBUG)
 add_compile_definitions(TARGET_NANOX)
 
 # IMPORTANT: mock_includes MUST come first so our SDK mocks override Ledger SDK headers
-# (We use real headers from ../src for app-specific code like utils.h, assert.h, etc.)
+# (We use real headers from ../../src for app-specific code like utils.h, assert.h, etc.)
 include_directories(mock_includes)
 include_directories(.)
 include_directories(libs)
-include_directories(../src)
-include_directories(../src/bech32)
-include_directories(../src/utils)
-include_directories(../src/memory)
-include_directories(../src/addressUtils)
-include_directories(../src/crypto)
-include_directories(../src/deriveNativeScriptHash)
-include_directories(../src/transaction)
-include_directories(../src/ui)
-include_directories(../src/opcert)
-include_directories(../src/parsers)
-include_directories(../src/securityPolicy)
-include_directories(../src/messageSigning)
-include_directories(../src/apdu)
-include_directories(../src/txHashBuilder)
-include_directories(../src/cardano_tokens)
-include_directories(../src/keyDerivation)
-include_directories(../src/handler)
-include_directories(../src/cvote)
-include_directories(../src/tokenRegistry)
-include_directories(../src/swap)
+include_directories(../../src)
+include_directories(../../src/bech32)
+include_directories(../../src/utils)
+include_directories(../../src/memory)
+include_directories(../../src/addressUtils)
+include_directories(../../src/crypto)
+include_directories(../../src/deriveNativeScriptHash)
+include_directories(../../src/transaction)
+include_directories(../../src/ui)
+include_directories(../../src/opcert)
+include_directories(../../src/parsers)
+include_directories(../../src/securityPolicy)
+include_directories(../../src/messageSigning)
+include_directories(../../src/apdu)
+include_directories(../../src/txHashBuilder)
+include_directories(../../src/cardano_tokens)
+include_directories(../../src/keyDerivation)
+include_directories(../../src/handler)
+include_directories(../../src/cvote)
+include_directories(../../src/tokenRegistry)
+include_directories(../../src/swap)
 include_directories($ENV{BOLOS_SDK}/lib_standard_app)
 include_directories($ENV{BOLOS_SDK}/include)
 include_directories($ENV{BOLOS_SDK}/lib_alloc)
@@ -96,56 +96,56 @@ add_executable(test_hex_utils test_hex_utils.c)
 add_executable(test_bech32 test_bech32.c)
 add_executable(test_text_utils
     test_text_utils.c
-    ../src/ui/ui_formatters.c
-    ../src/cardano_tokens/cardano_tokens.c
-    ../src/utils/textUtils.c
-    ../src/utils/ipUtils.c
+    ../../src/ui/ui_formatters.c
+    ../../src/cardano_tokens/cardano_tokens.c
+    ../../src/utils/textUtils.c
+    ../../src/utils/ipUtils.c
     mock_sources/hex_stub.c
 )
 add_executable(test_ui_formatters
     test_ui_formatters.c
-    ../src/ui/ui_formatters.c
-    ../src/cardano_tokens/cardano_tokens.c
-    ../src/utils/textUtils.c
-    ../src/utils/ipUtils.c
+    ../../src/ui/ui_formatters.c
+    ../../src/cardano_tokens/cardano_tokens.c
+    ../../src/utils/textUtils.c
+    ../../src/utils/ipUtils.c
     mock_sources/hex_stub.c
 )
 add_executable(test_cardano_tokens
     test_cardano_tokens.c
-    ../src/cardano_tokens/cardano_tokens.c
-    ../src/ui/ui_formatters.c
-    ../src/utils/textUtils.c
-    ../src/utils/ipUtils.c
+    ../../src/cardano_tokens/cardano_tokens.c
+    ../../src/ui/ui_formatters.c
+    ../../src/utils/textUtils.c
+    ../../src/utils/ipUtils.c
     mock_sources/hex_stub.c
 )
 add_executable(test_bip44 test_bip44.c)
 add_executable(test_cbor test_cbor.c)
 add_executable(test_cardano_buffer test_cardano_buffer.c)
-add_executable(test_ip_utils test_ip_utils.c ../src/utils/ipUtils.c)
+add_executable(test_ip_utils test_ip_utils.c ../../src/utils/ipUtils.c)
 add_executable(test_hash test_hash.c)
 add_executable(test_address_utils_byron
     test_address_utils_byron.c
-    ../src/addressUtils/addressUtilsByron.c
-    ../src/keyDerivation/keyDerivation.c
-    ../src/securityPolicy/securityPolicy_privkey.c
+    ../../src/addressUtils/addressUtilsByron.c
+    ../../src/keyDerivation/keyDerivation.c
+    ../../src/securityPolicy/securityPolicy_privkey.c
 )
 add_executable(test_address_utils_shelley
     test_address_utils_shelley.c
-    ../src/addressUtils/addressUtilsShelley.c
-    ../src/addressUtils/addressUtilsByron.c
-    ../src/keyDerivation/keyDerivation.c
-    ../src/securityPolicy/securityPolicy_privkey.c
+    ../../src/addressUtils/addressUtilsShelley.c
+    ../../src/addressUtils/addressUtilsByron.c
+    ../../src/keyDerivation/keyDerivation.c
+    ../../src/securityPolicy/securityPolicy_privkey.c
 )
 add_executable(test_key_derivation
     test_key_derivation.c
-    ../src/keyDerivation/keyDerivation.c
-    ../src/securityPolicy/securityPolicy_privkey.c
+    ../../src/keyDerivation/keyDerivation.c
+    ../../src/securityPolicy/securityPolicy_privkey.c
 )
 add_executable(test_message_signing
     test_message_signing.c
-    ../src/messageSigning/messageSigning.c
-    ../src/keyDerivation/keyDerivation.c
-    ../src/securityPolicy/securityPolicy_privkey.c
+    ../../src/messageSigning/messageSigning.c
+    ../../src/keyDerivation/keyDerivation.c
+    ../../src/securityPolicy/securityPolicy_privkey.c
 )
 add_executable(test_cvote
     generated/cvote/test_cvote.c
@@ -155,41 +155,41 @@ add_executable(test_sign_msg
 )
 add_executable(test_aux_data_hash_builder
     test_aux_data_hash_builder.c
-    ../src/cvote/aux_data_hash_builder.c
+    ../../src/cvote/aux_data_hash_builder.c
 )
 add_executable(test_tx_hash_builder
     test_tx_hash_builder.c
-    ../src/transaction/tx_hash_builder.c
+    ../../src/transaction/tx_hash_builder.c
 )
 add_executable(test_tx_validate
     test_tx_validate.c
     mock_sources/mock_globals.c
-    ../src/transaction/tx_parse.c
-    ../src/transaction/tx_processing.c
-    ../src/transaction/tx_processing_outputs.c
-    ../src/transaction/tx_processing_certificates.c
-    ../src/transaction/tx_ui_render.c
-    ../src/transaction/tx_ui_render_certificates.c
-    ../src/transaction/tx_ui_render_outputs.c
-    ../src/transaction/tx_parse_certificates.c
-    ../src/transaction/tx_parse_outputs.c
-    ../src/transaction/tx_utils.c
-    ../src/transaction/tx_hash_builder.c
-    ../src/addressUtils/addressUtilsShelley.c
-    ../src/addressUtils/addressUtilsByron.c
-    ../src/addressUtils/bip44.c
-    ../src/parsers/cardano_parsers.c
-    ../src/securityPolicy/securityPolicy.c
-    ../src/securityPolicy/securityPolicy_privkey.c
-    ../src/keyDerivation/keyDerivation.c
-    ../src/utils/mem.c
+    ../../src/transaction/tx_parse.c
+    ../../src/transaction/tx_processing.c
+    ../../src/transaction/tx_processing_outputs.c
+    ../../src/transaction/tx_processing_certificates.c
+    ../../src/transaction/tx_ui_render.c
+    ../../src/transaction/tx_ui_render_certificates.c
+    ../../src/transaction/tx_ui_render_outputs.c
+    ../../src/transaction/tx_parse_certificates.c
+    ../../src/transaction/tx_parse_outputs.c
+    ../../src/transaction/tx_utils.c
+    ../../src/transaction/tx_hash_builder.c
+    ../../src/addressUtils/addressUtilsShelley.c
+    ../../src/addressUtils/addressUtilsByron.c
+    ../../src/addressUtils/bip44.c
+    ../../src/parsers/cardano_parsers.c
+    ../../src/securityPolicy/securityPolicy.c
+    ../../src/securityPolicy/securityPolicy_privkey.c
+    ../../src/keyDerivation/keyDerivation.c
+    ../../src/utils/mem.c
     $ENV{BOLOS_SDK}/lib_lists/lists.c
-    ../src/cardano_tokens/cardano_tokens.c
-    ../src/ui/ui_utils.c
-    ../src/ui/ui_warnings.c
-    ../src/ui/ui_formatters.c
-    ../src/ui/ui_address_fields.c
-    ../src/app_context.c
+    ../../src/cardano_tokens/cardano_tokens.c
+    ../../src/ui/ui_utils.c
+    ../../src/ui/ui_warnings.c
+    ../../src/ui/ui_formatters.c
+    ../../src/ui/ui_address_fields.c
+    ../../src/app_context.c
     ${UNIT_TEST_MEM_UTILS_STUB}
     mock_sources/glyphs_mock.c
     mock_sources/hex_stub.c
@@ -197,8 +197,8 @@ add_executable(test_tx_validate
 )
 add_executable(test_ui_utils
     test_ui_utils.c
-    ../src/ui/ui_utils.c
-    ../src/utils/mem.c
+    ../../src/ui/ui_utils.c
+    ../../src/utils/mem.c
     ${UNIT_TEST_MEM_UTILS_STUB}
 )
 add_executable(test_ui_address_fields
@@ -245,17 +245,17 @@ add_library(apdu_parser SHARED $ENV{BOLOS_SDK}/lib_standard_app/parser.c)
 # The mock_includes/ directory is prioritized so our SDK mocks override Ledger SDK headers
 add_library(hex_utils SHARED test_utils/hexUtils.c)
 target_link_libraries(hex_utils PUBLIC c)
-add_library(bech32_lib SHARED ../src/bech32/bech32.c)
+add_library(bech32_lib SHARED ../../src/bech32/bech32.c)
 target_link_libraries(bech32_lib PUBLIC c)
-add_library(text_utils SHARED ../src/utils/textUtils.c ../src/utils/ipUtils.c)
+add_library(text_utils SHARED ../../src/utils/textUtils.c ../../src/utils/ipUtils.c)
 target_link_libraries(text_utils PUBLIC c format)
-add_library(bip44_real SHARED ../src/addressUtils/bip44.c)
+add_library(bip44_real SHARED ../../src/addressUtils/bip44.c)
 target_link_libraries(bip44_real PUBLIC c read write buffer varint)
-add_library(cbor_lib SHARED ../src/utils/cbor.c ../src/utils/cbor_canonical.c)
+add_library(cbor_lib SHARED ../../src/utils/cbor.c ../../src/utils/cbor_canonical.c)
 target_link_libraries(cbor_lib PUBLIC c m read)
-add_library(cardano_buffer_lib SHARED ../src/utils/cardano_buffer.c)
+add_library(cardano_buffer_lib SHARED ../../src/utils/cardano_buffer.c)
 target_link_libraries(cardano_buffer_lib PUBLIC c cbor_lib buffer write)
-add_library(parsers_lib SHARED ../src/parsers/cardano_parsers.c)
+add_library(parsers_lib SHARED ../../src/parsers/cardano_parsers.c)
 target_link_libraries(parsers_lib PUBLIC c buffer read write varint bip32 text_utils bip44_real)
 add_library(crypto_mocks_lib SHARED
     mock_crypto/crypto_mocks.c
@@ -276,48 +276,48 @@ target_link_libraries(cx_crc_support PUBLIC c)
 set(SIGN_TX_COMMON_SOURCES
     mock_sources/mock_globals.c
     $ENV{BOLOS_SDK}/lib_lists/lists.c
-    ../src/utils/mem.c
-    ../src/handler/sign_tx.c
-    ../src/handler/sign_tx_aux_data.c
-    ../src/handler/sign_cvote.c
-    ../src/cvote/cvote_parser.c
-    ../src/cvote/cvote_hash.c
-    ../src/cvote/vote_cast_hash_builder.c
-    ../src/cvote/aux_data_hash_builder.c
-    ../src/transaction/tx_parse.c
-    ../src/transaction/tx_processing.c
-    ../src/transaction/tx_processing_outputs.c
-    ../src/transaction/tx_processing_certificates.c
-    ../src/transaction/tx_ui_render.c
-    ../src/transaction/tx_ui_render_certificates.c
-    ../src/transaction/tx_ui_render_outputs.c
-    ../src/transaction/tx_parse_certificates.c
-    ../src/transaction/tx_parse_outputs.c
-    ../src/transaction/tx_utils.c
-    ../src/parsers/cardano_parsers.c
-    ../src/securityPolicy/securityPolicy.c
-    ../src/securityPolicy/securityPolicy_privkey.c
-    ../src/messageSigning/messageSigning.c
-    ../src/keyDerivation/keyDerivation.c
-    ../src/cardano_tokens/cardano_tokens.c
-    ../src/addressUtils/addressUtilsShelley.c
-    ../src/addressUtils/addressUtilsByron.c
-    ../src/transaction/tx_hash_builder.c
-    ../src/ui/ui_address_fields.c
-    ../src/ui/ui_utils.c
-    ../src/ui/ui_warnings.c
-    ../src/ui/ui_formatters.c
-    ../src/app_context.c
+    ../../src/utils/mem.c
+    ../../src/handler/sign_tx.c
+    ../../src/handler/sign_tx_aux_data.c
+    ../../src/handler/sign_cvote.c
+    ../../src/cvote/cvote_parser.c
+    ../../src/cvote/cvote_hash.c
+    ../../src/cvote/vote_cast_hash_builder.c
+    ../../src/cvote/aux_data_hash_builder.c
+    ../../src/transaction/tx_parse.c
+    ../../src/transaction/tx_processing.c
+    ../../src/transaction/tx_processing_outputs.c
+    ../../src/transaction/tx_processing_certificates.c
+    ../../src/transaction/tx_ui_render.c
+    ../../src/transaction/tx_ui_render_certificates.c
+    ../../src/transaction/tx_ui_render_outputs.c
+    ../../src/transaction/tx_parse_certificates.c
+    ../../src/transaction/tx_parse_outputs.c
+    ../../src/transaction/tx_utils.c
+    ../../src/parsers/cardano_parsers.c
+    ../../src/securityPolicy/securityPolicy.c
+    ../../src/securityPolicy/securityPolicy_privkey.c
+    ../../src/messageSigning/messageSigning.c
+    ../../src/keyDerivation/keyDerivation.c
+    ../../src/cardano_tokens/cardano_tokens.c
+    ../../src/addressUtils/addressUtilsShelley.c
+    ../../src/addressUtils/addressUtilsByron.c
+    ../../src/transaction/tx_hash_builder.c
+    ../../src/ui/ui_address_fields.c
+    ../../src/ui/ui_utils.c
+    ../../src/ui/ui_warnings.c
+    ../../src/ui/ui_formatters.c
+    ../../src/app_context.c
     ${UNIT_TEST_MEM_UTILS_STUB}
     mock_sources/glyphs_mock.c
     mock_sources/hex_stub.c
     mock_sources/os_lib_end_stub.c
     test_utils/io_capture.c
     # Real UI display code - calls NBGL functions mocked in nbgl_mock.c
-    ../src/ui/ui_display_tx.c
-    ../src/ui/ui_display_witness.c
-    ../src/ui/ui_cvote.c
-    ../src/ui/ui_display_cvote_aux_data.c
+    ../../src/ui/ui_display_tx.c
+    ../../src/ui/ui_display_witness.c
+    ../../src/ui/ui_cvote.c
+    ../../src/ui/ui_display_cvote_aux_data.c
     mock_sources/nbgl_mock.c
 )
 set(SIGN_TX_COMMON_LIBS
@@ -601,7 +601,7 @@ add_test(test_sign_tx_deny_tests test_sign_tx_deny_tests)
 
 add_executable(test_handler_denies
     test_handler_denies.c
-    ../src/handler/get_public_key.c
+    ../../src/handler/get_public_key.c
 )
 target_link_libraries(test_handler_denies PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_handler_denies test_handler_denies)
@@ -609,7 +609,7 @@ add_test(test_handler_denies test_handler_denies)
 add_executable(test_dispatcher_interleaving
     test_dispatcher_interleaving.c
     mock_sources/mock_globals.c
-    ../src/apdu/dispatcher.c
+    ../../src/apdu/dispatcher.c
 )
 target_link_libraries(test_dispatcher_interleaving PUBLIC cmocka gcov mock_printf)
 add_test(test_dispatcher_interleaving test_dispatcher_interleaving)
@@ -658,9 +658,9 @@ add_test(test_sign_msg_nbgl_reject test_sign_msg_nbgl_reject)
 
 add_executable(test_sign_opcert_nbgl_reject
     test_sign_opcert_nbgl_reject.c
-    ../src/handler/sign_opcert.c
-    ../src/opcert/opcert_parse.c
-    ../src/ui/ui_display_opcert.c
+    ../../src/handler/sign_opcert.c
+    ../../src/opcert/opcert_parse.c
+    ../../src/ui/ui_display_opcert.c
 )
 target_link_libraries(test_sign_opcert_nbgl_reject PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_sign_opcert_nbgl_reject test_sign_opcert_nbgl_reject)
@@ -711,9 +711,9 @@ add_test(test_ui_utils test_ui_utils)
 add_executable(test_opcert
     generated/opcert/test_opcert.c
     test_utils/hexUtils.c
-    ../src/handler/sign_opcert.c
-    ../src/opcert/opcert_parse.c
-    ../src/ui/ui_display_opcert.c
+    ../../src/handler/sign_opcert.c
+    ../../src/opcert/opcert_parse.c
+    ../../src/ui/ui_display_opcert.c
 )
 target_link_libraries(test_opcert PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_opcert test_opcert)
@@ -722,23 +722,23 @@ add_test(test_opcert test_opcert)
 # Common sources for address derivation tests
 set(DERIVE_ADDRESS_COMMON_SOURCES
     mock_sources/mock_globals.c
-    ../src/handler/derive_address.c
-    ../src/keyDerivation/keyDerivation.c
-    ../src/addressUtils/addressUtilsShelley.c
-    ../src/addressUtils/addressUtilsByron.c
-    ../src/addressUtils/bip44.c
-    ../src/transaction/tx_utils.c
-    ../src/cardano_tokens/cardano_tokens.c
-    ../src/securityPolicy/securityPolicy.c
-    ../src/securityPolicy/securityPolicy_privkey.c
-    ../src/app_context.c
-    ../src/utils/mem.c
-    ../src/cardano_tokens/cardano_tokens.c
-    ../src/ui/ui_utils.c
-    ../src/ui/ui_warnings.c
-    ../src/ui/ui_formatters.c
-    ../src/ui/ui_address_fields.c
-    ../src/ui/ui_display_address_derivation.c
+    ../../src/handler/derive_address.c
+    ../../src/keyDerivation/keyDerivation.c
+    ../../src/addressUtils/addressUtilsShelley.c
+    ../../src/addressUtils/addressUtilsByron.c
+    ../../src/addressUtils/bip44.c
+    ../../src/transaction/tx_utils.c
+    ../../src/cardano_tokens/cardano_tokens.c
+    ../../src/securityPolicy/securityPolicy.c
+    ../../src/securityPolicy/securityPolicy_privkey.c
+    ../../src/app_context.c
+    ../../src/utils/mem.c
+    ../../src/cardano_tokens/cardano_tokens.c
+    ../../src/ui/ui_utils.c
+    ../../src/ui/ui_warnings.c
+    ../../src/ui/ui_formatters.c
+    ../../src/ui/ui_address_fields.c
+    ../../src/ui/ui_display_address_derivation.c
     ${UNIT_TEST_MEM_UTILS_STUB}
     mock_sources/glyphs_mock.c
     mock_sources/nbgl_mock.c
@@ -788,20 +788,20 @@ add_test(test_ui_address_fields test_ui_address_fields)
 
 set(PUBKEY_COMMON_SOURCES
     mock_sources/mock_globals.c
-    ../src/handler/get_public_key.c
-    ../src/keyDerivation/keyDerivation.c
-    ../src/addressUtils/addressUtilsShelley.c
-    ../src/addressUtils/addressUtilsByron.c
-    ../src/addressUtils/bip44.c
-    ../src/transaction/tx_utils.c
-    ../src/cardano_tokens/cardano_tokens.c
-    ../src/securityPolicy/securityPolicy.c
-    ../src/securityPolicy/securityPolicy_privkey.c
-    ../src/app_context.c
-    ../src/utils/mem.c
-    ../src/ui/ui_utils.c
-    ../src/ui/ui_warnings.c
-    ../src/ui/ui_display_pubkey.c
+    ../../src/handler/get_public_key.c
+    ../../src/keyDerivation/keyDerivation.c
+    ../../src/addressUtils/addressUtilsShelley.c
+    ../../src/addressUtils/addressUtilsByron.c
+    ../../src/addressUtils/bip44.c
+    ../../src/transaction/tx_utils.c
+    ../../src/cardano_tokens/cardano_tokens.c
+    ../../src/securityPolicy/securityPolicy.c
+    ../../src/securityPolicy/securityPolicy_privkey.c
+    ../../src/app_context.c
+    ../../src/utils/mem.c
+    ../../src/ui/ui_utils.c
+    ../../src/ui/ui_warnings.c
+    ../../src/ui/ui_display_pubkey.c
     ${UNIT_TEST_MEM_UTILS_STUB}
     mock_sources/glyphs_mock.c
     mock_sources/nbgl_mock.c
@@ -833,28 +833,28 @@ target_link_libraries(cardano_pubkey_core PUBLIC ${PUBKEY_COMMON_LIBS})
 
 set(SIGN_MSG_COMMON_SOURCES
     mock_sources/mock_globals.c
-    ../src/app_context.c
+    ../../src/app_context.c
     $ENV{BOLOS_SDK}/lib_lists/lists.c
-    ../src/utils/mem.c
-    ../src/handler/sign_msg.c
-    ../src/messageSigning/messageSigning.c
-    ../src/keyDerivation/keyDerivation.c
-    ../src/securityPolicy/securityPolicy.c
-    ../src/securityPolicy/securityPolicy_privkey.c
-    ../src/addressUtils/addressUtilsShelley.c
-    ../src/addressUtils/addressUtilsByron.c
-    ../src/addressUtils/bip44.c
-    ../src/cardano_tokens/cardano_tokens.c
-    ../src/parsers/cardano_parsers.c
-    ../src/utils/cardano_buffer.c
-    ../src/utils/cbor.c
-    ../src/utils/cbor_canonical.c
-    ../src/utils/textUtils.c
-    ../src/ui/ui_utils.c
-    ../src/ui/ui_warnings.c
-    ../src/ui/ui_formatters.c
-    ../src/ui/ui_sign_msg.c
-    ../src/transaction/tx_utils.c
+    ../../src/utils/mem.c
+    ../../src/handler/sign_msg.c
+    ../../src/messageSigning/messageSigning.c
+    ../../src/keyDerivation/keyDerivation.c
+    ../../src/securityPolicy/securityPolicy.c
+    ../../src/securityPolicy/securityPolicy_privkey.c
+    ../../src/addressUtils/addressUtilsShelley.c
+    ../../src/addressUtils/addressUtilsByron.c
+    ../../src/addressUtils/bip44.c
+    ../../src/cardano_tokens/cardano_tokens.c
+    ../../src/parsers/cardano_parsers.c
+    ../../src/utils/cardano_buffer.c
+    ../../src/utils/cbor.c
+    ../../src/utils/cbor_canonical.c
+    ../../src/utils/textUtils.c
+    ../../src/ui/ui_utils.c
+    ../../src/ui/ui_warnings.c
+    ../../src/ui/ui_formatters.c
+    ../../src/ui/ui_sign_msg.c
+    ../../src/transaction/tx_utils.c
     ${UNIT_TEST_MEM_UTILS_STUB}
     mock_sources/glyphs_mock.c
     mock_sources/nbgl_mock.c
@@ -899,23 +899,23 @@ add_test(test_pubkey_deny_tests test_pubkey_deny_tests)
 
 set(DERIVE_NATIVE_SCRIPT_COMMON_SOURCES
     mock_sources/mock_globals.c
-    ../src/deriveNativeScriptHash/derive_native_script_hash_builder.c
-    ../src/handler/derive_native_script_hash.c
-    ../src/keyDerivation/keyDerivation.c
-    ../src/parsers/cardano_parsers.c
-    ../src/addressUtils/addressUtilsShelley.c
-    ../src/addressUtils/addressUtilsByron.c
-    ../src/addressUtils/bip44.c
-    ../src/transaction/tx_utils.c
-    ../src/cardano_tokens/cardano_tokens.c
-    ../src/securityPolicy/securityPolicy.c
-    ../src/securityPolicy/securityPolicy_privkey.c
-    ../src/app_context.c
-    ../src/utils/mem.c
-    ../src/ui/ui_utils.c
-    ../src/ui/ui_warnings.c
-    ../src/ui/ui_formatters.c
-    ../src/ui/ui_display_native_script_hash.c
+    ../../src/deriveNativeScriptHash/derive_native_script_hash_builder.c
+    ../../src/handler/derive_native_script_hash.c
+    ../../src/keyDerivation/keyDerivation.c
+    ../../src/parsers/cardano_parsers.c
+    ../../src/addressUtils/addressUtilsShelley.c
+    ../../src/addressUtils/addressUtilsByron.c
+    ../../src/addressUtils/bip44.c
+    ../../src/transaction/tx_utils.c
+    ../../src/cardano_tokens/cardano_tokens.c
+    ../../src/securityPolicy/securityPolicy.c
+    ../../src/securityPolicy/securityPolicy_privkey.c
+    ../../src/app_context.c
+    ../../src/utils/mem.c
+    ../../src/ui/ui_utils.c
+    ../../src/ui/ui_warnings.c
+    ../../src/ui/ui_formatters.c
+    ../../src/ui/ui_display_native_script_hash.c
     ${UNIT_TEST_MEM_UTILS_STUB}
     mock_sources/glyphs_mock.c
     mock_sources/nbgl_mock.c

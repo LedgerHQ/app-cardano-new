@@ -62,7 +62,7 @@ pytest tests/standalone/ --tb=short -v --device stax
 
 ### Unit Tests (CMocka)
 
-Unit tests are located in `unit-tests/` and use the [CMocka](https://cmocka.org/) framework. Detailed instructions are in [unit-tests/README.md](unit-tests/README.md).
+Unit tests are located in `tests/unit/` and use the [CMocka](https://cmocka.org/) framework. Detailed instructions are in [tests/unit/README.md](tests/unit/README.md).
 
 ## Documentation
 
@@ -71,7 +71,7 @@ Unit tests are located in `unit-tests/` and use the [CMocka](https://cmocka.org/
 - Transaction Processing: [doc/tx.md](doc/tx.md)
 - APDU Overview: [doc/apdu.md](doc/apdu.md)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
-- Unit Tests: [unit-tests/README.md](unit-tests/README.md)
+- Unit Tests: [tests/unit/README.md](tests/unit/README.md)
 - Fuzzing: [tests/fuzzing/FUZZING.md](tests/fuzzing/FUZZING.md)
 
 TODO: Update Doxygen configuration to include Cardano-specific documentation modules.

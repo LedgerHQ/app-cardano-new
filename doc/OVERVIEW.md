@@ -95,7 +95,7 @@ The app uses three complementary testing approaches for comprehensive validation
 ### Testing Docs
 
 - `testing.md` for testing entry point and workflow.
-- `unit-tests/README.md` for unit-test build/run/fixtures.
+- `tests/unit/README.md` for unit-test build/run/fixtures.
 - `tests/standalone/README.md` for ragger standalone tests.
 - `tests/swap/README.md` for swap/library-mode tests.
 - `tests/fuzzing/FUZZING.md` for fuzzing harnesses and build/run.
@@ -104,7 +104,7 @@ The app uses three complementary testing approaches for comprehensive validation
 
 - When C code changes, run unit tests.
 - Run ragger and swap tests only when explicitly requested (they are slower and UI-dependent).
-- The primary app build is done via the VSCode Ledger plugin and is not automated here; use the unit-tests build path as a compile-health proxy.
+- The primary app build is done via the VSCode Ledger plugin and is not automated here; use the unit tests build path as a compile-health proxy.
 - After unit tests pass, verify fuzzing build as an additional compile-health check.
 - Compilation warnings are treated as failures to be fixed.
 
@@ -149,7 +149,7 @@ pytest -v --tb=short tests/standalone/test_sign_tx.py --device stax
 
 See [../tests/standalone/README.md](../tests/standalone/README.md) for setup and usage.
 
-### 4.2. Unit Tests (`unit-tests/`)
+### 4.2. Unit Tests (`tests/unit/`)
 
 C unit tests using the `cmocka` framework that test individual modules in isolation on the host machine. These test core logic like transaction parsing, hashing, validation, and UI formatting without device simulation.
 
@@ -157,7 +157,7 @@ C unit tests using the `cmocka` framework that test individual modules in isolat
 - **Fixtures**: `test_sign_tx_fixtures_*.h` contain large test vectors for different transaction eras. These fixtures are managed and regenerated using scripts.
 - **Mocking**: `test_sign_tx_common.h` and other mock files provide mocks for IO and UI, allowing logic to be tested in isolation.
 
-See [../unit-tests/README.md](../unit-tests/README.md) for setup, usage, and fixture management.
+See [../tests/unit/README.md](../tests/unit/README.md) for setup, usage, and fixture management.
 
 ### 4.3. Fuzzing (`tests/fuzzing/`)
 

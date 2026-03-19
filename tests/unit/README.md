@@ -19,7 +19,7 @@ sudo apt install cmake libcmocka-dev lcov
 
 ## Overview
 
-In `unit-tests` folder, compile with
+In `tests/unit` folder, compile with
 
 ```shell
 cmake -Bbuild -H. && make -C build -j4
@@ -34,14 +34,14 @@ CTEST_OUTPUT_ON_FAILURE=1 make -C build -j4 test
 To run a specific test binary (e.g., `test_ui_formatters`), use:
 
 ```shell
-cd unit-tests
+cd tests/unit
 cmake -Bbuild -H. && make -C build -j4
 CTEST_OUTPUT_ON_FAILURE=1 ctest --test-dir build -R test_ui_formatters
 ```
 
 ## Generate code coverage
 
-Just execute in `unit-tests` folder
+Just execute in `tests/unit` folder
 
 ```shell
 ./gen_coverage.sh
@@ -51,7 +51,7 @@ it will output `coverage.total` and `coverage/` folder with HTML details (in `co
 
 ## Structure
 
-- Test files are placed directly in `unit-tests/` directory with `test_*.c` naming pattern
+- Test files are placed directly in `tests/unit/` directory with `test_*.c` naming pattern
 - `mock_includes/` contains SDK header mocks for native compilation
 - `libs/` contains mock implementations (crypto, etc.)
 - Each test file tests a specific module from `../src/`
@@ -68,7 +68,7 @@ Generators (run from repo root with the standalone venv):
 
 ```bash
 source tests/standalone/venv/bin/activate
-pushd unit-tests
+pushd tests/unit
 python3 generators/generate_unit_tests_from_ragger.py
 # or individual steps:
 python3 generators/generate_unit_tests_from_ragger.py fixtures
@@ -79,19 +79,19 @@ popd
 The default command runs all generators in order (fixtures, generate-test-runners, rejects, mock-data).
 
 Notes:
--- `unit-tests/generators/generate_unit_tests_from_ragger.py` produces `unit-tests/test_sign_tx_fixtures_*.h` from
-  `tests/standalone/input_files/signTx.py`, rewrites each `unit-tests/test_sign_tx_*.c`
-  with `tx_fixture_t` + `run_fixture_with_expert_mode`, and emits `unit-tests/test_sign_tx_fixtures_deny.h`.
+-- `tests/unit/generators/generate_unit_tests_from_ragger.py` produces `tests/unit/test_sign_tx_fixtures_*.h` from
+  `tests/standalone/input_files/signTx.py`, rewrites each `tests/unit/test_sign_tx_*.c`
+  with `tx_fixture_t` + `run_fixture_with_expert_mode`, and emits `tests/unit/test_sign_tx_fixtures_deny.h`.
 - APDU fixtures use the app's binary schema (presence flags + length-prefixed ASCII for relays/metadata);
   they are not CBOR byte dumps. CBOR fixtures remain the source of truth for tx body/hash validation.
 
 ### Mock Crypto Fixtures
 
-Mock key material lives in `unit-tests/mock_crypto/crypto_mock_data.h` and is regenerated with:
+Mock key material lives in `tests/unit/mock_crypto/crypto_mock_data.h` and is regenerated with:
 
 ```bash
 source tests/standalone/venv/bin/activate
-pushd unit-tests
+pushd tests/unit
 python3 generators/generate_unit_tests_from_ragger.py mock-data
 popd
 ```
@@ -123,7 +123,7 @@ This is the standard test mnemonic used across all Cardano Ledger application te
 
 ## Test Coverage
 
-### 1. Key Derivation Verification (`unit-tests/test_mock_key_derivation.c`)
+### 1. Key Derivation Verification (`tests/unit/test_mock_key_derivation.c`)
 
 **What it does:**
 - Parses `crypto_mock_data.h` to extract all mock path entries (currently 49)
@@ -132,7 +132,7 @@ This is the standard test mnemonic used across all Cardano Ledger application te
 
 **How to run:**
 ```bash
-cd unit-tests
+cd tests/unit
 cmake -Bbuild -H. && make -C build -j4 test
 # or specifically:
 CTEST_OUTPUT_ON_FAILURE=1 make -C build -j4 test 2>&1 | grep test_mock_key_derivation
@@ -160,7 +160,7 @@ pytest -xvs --device stax test_mock_key_derivation.py::test_all_mock_key_derivat
 - Account keys
 - All standard Cardano BIP-44 paths
 
-### 3. Opcert Message Construction (`unit-tests/test_opcert.c`)
+### 3. Opcert Message Construction (`tests/unit/test_opcert.c`)
 
 **What it does:**
 - Verifies that opcert messages are constructed correctly
@@ -197,9 +197,9 @@ The `MOCK_SIGNATURES` array in `mock_crypto/crypto_mock_data.h` contains pre-com
 If mock data (public keys, chain codes, key hashes) becomes outdated or incorrect:
 
 ```bash
-cd unit-tests
+cd tests/unit
 # Activate the ragger venv (required!)
-source ../tests/standalone/venv/bin/activate
+source ../standalone/venv/bin/activate
 python3 generators/generate_unit_tests_from_ragger.py mock-data
 ```
 

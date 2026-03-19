@@ -45,7 +45,7 @@ For detailed analysis, see:
 - **Do NOT remove original comments** explaining crucial details without confirmation.
 - **Do NOT perform git operations** (modifications/writes).
 - **Do NOT install anything**.
-- **Do NOT add extended-length APDU support.** This app uses short-form APDUs only (5-byte header, Lc ≤ 255). Do not modify `unit-tests/generators/common.py::extract_apdu_payload()` or any parser/generator to handle the extended-length case.
+- **Do NOT add extended-length APDU support.** This app uses short-form APDUs only (5-byte header, Lc ≤ 255). Do not modify `tests/unit/generators/common.py::extract_apdu_payload()` or any parser/generator to handle the extended-length case.
 
 ### License Comment Policy
 - **Preserve attribution:** Apache-2.0 requires preserving copyright/attribution notices from upstream code.
@@ -76,22 +76,22 @@ For detailed analysis, see:
 - **Client Libraries:** `../ledgerjs-cardano-shelley` and `../cardano-hw-interop-lib`.
 - **Testing:**
     - [doc/testing.md](doc/testing.md): Testing entry point and workflow.
-    - [unit-tests/README.md](unit-tests/README.md): Unit tests setup, build, and fixture management.
+    - [tests/unit/README.md](tests/unit/README.md): Unit tests setup, build, and fixture management.
     - [tests/standalone/README.md](tests/standalone/README.md): Ragger standalone tests.
     - [tests/swap/README.md](tests/swap/README.md): Swap/library-mode tests.
     - [tests/fuzzing/FUZZING.md](tests/fuzzing/FUZZING.md): Fuzzing harnesses and usage.
 
 ## Testing Workflow
 ### Python Environment
-- **Default Python environment for repo tooling:** use `tests/standalone/venv` for Python work related to `tests/standalone/`, `tests/application_client/`, and `unit-tests/generators/`.
+- **Default Python environment for repo tooling:** use `tests/standalone/venv` for Python work related to `tests/standalone/`, `tests/application_client/`, and `tests/unit/generators/`.
 - **Do not rely on system `python3`** for those workflows; missing packages and import-path mismatches are common outside the venv.
 - **Typical activation:** `source tests/standalone/venv/bin/activate`
-- **When running from `unit-tests/`:** activate via `source ../tests/standalone/venv/bin/activate`
-- **When running unit-test generators from `unit-tests/`:** ensure imports resolve from `tests/` as well, e.g. `PYTHONPATH=..:../tests python3 generators/generate_unit_tests_from_ragger.py`
+- **When running from `tests/unit/`:** activate via `source ../standalone/venv/bin/activate`
+- **When running unit-test generators from `tests/unit/`:** ensure imports resolve from `tests/` as well, e.g. `PYTHONPATH=../.. python3 generators/generate_unit_tests_from_ragger.py`
 
 - **When C code is modified:** run unit tests. Use unit test build as proxy for real app build. Use `-j8` for make, not `-j$(nproc)`.
 - **After unit tests pass:** check fuzzing build as an additional compile-health gate.
-- **When `tests/standalone` ragger inputs or `application_client/` are modified:** run `unit-tests/generators/generate_unit_tests_from_ragger.py` (using `tests/standalone/venv` to have virtual env for python with all the required packages), then run unit tests to verify generated outputs are up to date and passing. The generator depends on `application_client/`, so any change there must be reflected by regenerated unit-test fixtures.
+- **When `tests/standalone` ragger inputs or `application_client/` are modified:** run `tests/unit/generators/generate_unit_tests_from_ragger.py` (using `tests/standalone/venv` to have virtual env for python with all the required packages), then run unit tests to verify generated outputs are up to date and passing. The generator depends on `application_client/`, so any change there must be reflected by regenerated unit-test fixtures.
 - **Do not run ragger tests or swap tests unless explicitly requested.**
 - **Compilation warnings are not acceptable:** treat warnings as issues to fix.
 - Command to build executed by Ledger VSCode plugin (not suitable for agents because of permissions, but can be run manually):

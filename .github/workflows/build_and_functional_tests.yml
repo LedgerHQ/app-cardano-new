@@ -43,14 +43,14 @@ jobs:
 
       - name: Regenerate unit-test files
         run: |
-          cd unit-tests
+          cd tests/unit
           python3 generators/generate_unit_tests_from_ragger.py
 
       - name: Verify no generated file drift
         run: |
-          if [ -n "$(git status --porcelain -- unit-tests)" ]; then
-            echo "Generated unit-test files are out of date. Run unit-tests/generators/generate_unit_tests_from_ragger.py and commit the changes."
-            git status --short -- unit-tests
+          if [ -n "$(git status --porcelain -- tests/unit)" ]; then
+            echo "Generated unit-test files are out of date. Run tests/unit/generators/generate_unit_tests_from_ragger.py and commit the changes."
+            git status --short -- tests/unit
             exit 1
           fi
 
@@ -61,7 +61,7 @@ jobs:
     uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_unit_tests.yml@v1
     secrets: inherit
     with:
-      test_directory: unit-tests
+      test_directory: tests/unit
 
   build_application:
     name: Build application using the reusable workflow

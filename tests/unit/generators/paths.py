@@ -4,7 +4,7 @@
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-UNIT_TESTS_DIR = REPO_ROOT / "unit-tests"
+UNIT_TESTS_DIR = REPO_ROOT / "tests" / "unit"
 FIXTURES_DIR = UNIT_TESTS_DIR
 
 GENERATED_DIR = UNIT_TESTS_DIR / "generated"
