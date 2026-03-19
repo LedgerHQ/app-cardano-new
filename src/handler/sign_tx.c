@@ -558,7 +558,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             if (!tx_ui_prepared) {
                 tx_review_cleanup();
                 TRACE("TX UI preparation failed");
-                send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
             }
 

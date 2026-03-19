@@ -1119,9 +1119,7 @@ bool tx_render_ui_chunk(uint16_t from) {
 }
 
 bool tx_render_ui_all(void) {
-    if (G_context.req_type != REQUEST_SIGN_TRANSACTION) {
-        return false;
-    }
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "tx_render_ui_all called in wrong state");
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_HASHED, "tx_render_ui_all called too early");
     uint16_t total_pairs = tx_body_ctx()->total_ui_pairs;
 
