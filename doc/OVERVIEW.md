@@ -98,7 +98,7 @@ The app uses three complementary testing approaches for comprehensive validation
 - `unit-tests/README.md` for unit-test build/run/fixtures.
 - `tests/standalone/README.md` for ragger standalone tests.
 - `tests/swap/README.md` for swap/library-mode tests.
-- `fuzzing/FUZZING.md` for fuzzing harnesses and build/run.
+- `tests/fuzzing/FUZZING.md` for fuzzing harnesses and build/run.
 
 ### Practical Workflow
 
@@ -159,7 +159,7 @@ C unit tests using the `cmocka` framework that test individual modules in isolat
 
 See [../unit-tests/README.md](../unit-tests/README.md) for setup, usage, and fixture management.
 
-### 4.3. Fuzzing (`fuzzing/`)
+### 4.3. Fuzzing (`tests/fuzzing/`)
 
 Security-focused testing that feeds random or malformed data to critical components (APDU handlers, transaction parsers, key derivation). Uses the Ledger SDK fuzzing framework with libFuzzer.
 
@@ -170,7 +170,7 @@ Available harnesses:
 - `fuzz_signOpCert`: Operational certificate signing.
 - `fuzz_deriveAddress`, `fuzz_deriveNativeScriptHash`, and others.
 
-See [../fuzzing/FUZZING.md](../fuzzing/FUZZING.md) for harnesses and execution instructions.
+See [../tests/fuzzing/FUZZING.md](../tests/fuzzing/FUZZING.md) for harnesses and execution instructions.
 
 Together, these approaches ensure correctness (unit tests), real-world behavior (functional tests), and robustness against malformed input (fuzzing).
 

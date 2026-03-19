@@ -72,7 +72,7 @@ Unit tests are located in `unit-tests/` and use the [CMocka](https://cmocka.org/
 - APDU Overview: [doc/apdu.md](doc/apdu.md)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 - Unit Tests: [unit-tests/README.md](unit-tests/README.md)
-- Fuzzing: [fuzzing/FUZZING.md](fuzzing/FUZZING.md)
+- Fuzzing: [tests/fuzzing/FUZZING.md](tests/fuzzing/FUZZING.md)
 
 TODO: Update Doxygen configuration to include Cardano-specific documentation modules.
 

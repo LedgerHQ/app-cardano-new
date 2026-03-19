@@ -42,7 +42,7 @@ The SDK provides `local_run.sh` for building and running fuzzers with proper san
 and coverage support. This is the recommended method.
 
 ```bash
-cd fuzzing
+cd tests/fuzzing
 
 # Build all fuzzers
 ${BOLOS_SDK}/fuzzing/local_run.sh \
@@ -80,7 +80,7 @@ coverage report generation automatically. Run with `--help` for all options.
 For more control over the build process:
 
 ```bash
-cd fuzzing
+cd tests/fuzzing
 rm -rf build
 cmake -DBOLOS_SDK=/opt/ledger-secure-sdk \
       -DCMAKE_C_COMPILER=clang \
@@ -108,8 +108,8 @@ Then run fuzzers directly:
 The `run_all_fuzzers.sh` convenience script discovers and runs all built fuzzers:
 
 ```bash
-cd fuzzing
-./run_all_fuzzers.sh 600 fuzzing/out-local
+cd tests/fuzzing
+./run_all_fuzzers.sh 600 out-local
 ```
 
 ### Container-Based Build (For CI/Continuous Fuzzing)
@@ -117,10 +117,10 @@ cd fuzzing
 For continuous fuzzing integration with OSS-Fuzz:
 
 ```bash
-mkdir -p fuzzing/out
+mkdir -p tests/fuzzing/out
 docker build -t cardano-app --file .clusterfuzzlite/Dockerfile .
 docker run --rm --privileged -e FUZZING_LANGUAGE=c \
-    -v "$(realpath .)/fuzzing/out:/out" -ti cardano-app
+    -v "$(realpath .)/tests/fuzzing/out:/out" -ti cardano-app
 ```
 
 ## Macro Management

@@ -7,7 +7,7 @@ This is the main entry point for test documentation in the Cardano Ledger app.
 - Unit tests: `../unit-tests/README.md`
 - Standalone functional tests (ragger): `../tests/standalone/README.md`
 - Swap/library-mode tests: `../tests/swap/README.md`
-- Fuzzing: `../fuzzing/FUZZING.md`
+- Fuzzing: `../tests/fuzzing/FUZZING.md`
 
 ## Workflow
 

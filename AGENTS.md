@@ -79,7 +79,7 @@ For detailed analysis, see:
     - [unit-tests/README.md](unit-tests/README.md): Unit tests setup, build, and fixture management.
     - [tests/standalone/README.md](tests/standalone/README.md): Ragger standalone tests.
     - [tests/swap/README.md](tests/swap/README.md): Swap/library-mode tests.
-    - [fuzzing/FUZZING.md](fuzzing/FUZZING.md): Fuzzing harnesses and usage.
+    - [tests/fuzzing/FUZZING.md](tests/fuzzing/FUZZING.md): Fuzzing harnesses and usage.
 
 ## Testing Workflow
 ### Python Environment
