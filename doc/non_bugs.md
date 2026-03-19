@@ -11,8 +11,8 @@
 
 Format: -> means explanation why not a bug.
 
-* IPv6 Relay Address Corruption (Critical Security): Hashing logic incorrectly swaps bytes of big-endian IPv6 addresses on little-endian devices. While the UI displays the correct address, the signed hash is corrupted.
--> this is how Cardano blockchain does it, we have to do the same.
+* IPv6 Relay Address Byte Order: The app serializes each relay IPv6 address into the tx hash as 4 big-endian uint32 words. This matches how Cardano transmits IPv6 relay addresses — as 4 little-endian uint32 words — which differs from standard network byte order (RFC 4291). The UI calls `inet_ntop6` which reads the bytes bytewise (standard order) and displays the address correctly. Both the hash and the display are self-consistent and match the Cardano ledger expectation.
+-> intentional. Cardano's non-standard per-word little-endian IPv6 encoding must be followed.
 
 * Missing Canonical Ordering Checks (CDDL Violations): required_signers (Key 14) are not checked for canonical sorting, pool_owners within stake pool registration certificates are not checked for canonical sorting.
 -> for historical reason, we do not check unique elements in sets.

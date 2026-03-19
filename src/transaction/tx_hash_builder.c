@@ -1447,18 +1447,14 @@ static void _relay_addIpv6(tx_hash_builder_t* builder, const ipv6_t* ipv6) {
         LEDGER_ASSERT(ipv6->ip != NULL, "NULL ipv6");
         BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, IPV6_LENGTH);
 
-        // serialized as 4 big-endian uint32
-        // we need a local copy of the data to make the following pointer tricks work
-        // the copy is created by memmove instead of struct assignment to avoid compiler optimizing
-        // it away
-        uint8_t ipBuffer[IPV6_LENGTH] = {0};
-        memmove(ipBuffer, ipv6->ip, SIZEOF(ipBuffer));
-        STATIC_ASSERT(SIZEOF(ipBuffer) == IPV6_LENGTH, "wrong ipv6 size");
-
-        uint32_t* as_uint32 = (uint32_t*) ipBuffer;
+        // The IPv6 address is stored as 4 little-endian uint32 words (Cardano's encoding).
+        // Serialize each word as big-endian to produce the correct CBOR byte string.
+        STATIC_ASSERT(IPV6_LENGTH == 4 * sizeof(uint32_t), "wrong ipv6 size");
         for (size_t i = 0; i < 4; i++) {
+            uint32_t word;
+            memcpy(&word, ipv6->ip + i * sizeof(uint32_t), sizeof(uint32_t));
             uint8_t chunk[4] = {0};
-            write_u32_be(chunk, 0, as_uint32[i]);
+            write_u32_be(chunk, 0, word);
             BUILDER_APPEND_DATA(chunk, 4);
         }
     }
