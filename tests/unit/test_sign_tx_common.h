@@ -431,6 +431,81 @@ static inline void run_fixture_reject_aux_with_expert_mode(const tx_fixture_t *f
     run_fixture_reject_with_expert_mode(fixture, expert_mode, REJECT_STAGE_AUX);
 }
 
+/**
+ * Run a streaming fixture and reject at the initial "Review transaction" screen
+ * (tx_streaming_start_choice called with false). Only valid for streaming fixtures.
+ */
+static inline void run_fixture_reject_streaming_start_with_expert_mode(const tx_fixture_t *fixture,
+                                                                        bool expert_mode) {
+    LEDGER_ASSERT(fixture != NULL, "NULL fixture");
+
+    extern bool unit_test_expert_mode_enabled;
+    const bool previous_mode = unit_test_expert_mode_enabled;
+    unit_test_expert_mode_enabled = expert_mode;
+
+    reset_context();
+    assert_true(test_mem_init());
+
+    uint8_t init_raw[512];
+    init_apdu_params_t params = build_init_params_from_fixture(fixture, NULL, 0);
+    size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
+    assert_true(init_len > 0);
+
+    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
+
+    // Reject at the streaming start screen.
+    nbgl_mock_set_streaming_start_auto_complete(true, false);
+
+    run_sign_tx_body_chunked(fixture->raw_tx, fixture->raw_tx_len);
+
+    assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+    assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
+
+    unit_test_expert_mode_enabled = previous_mode;
+}
+
+/**
+ * Run a streaming fixture and reject at the first intermediate streaming continue screen
+ * (tx_streaming_continue_choice called with false after the first chunk). Only valid for
+ * streaming fixtures with at least two chunks.
+ */
+static inline void run_fixture_reject_streaming_continue_with_expert_mode(
+    const tx_fixture_t *fixture,
+    bool expert_mode) {
+    LEDGER_ASSERT(fixture != NULL, "NULL fixture");
+
+    extern bool unit_test_expert_mode_enabled;
+    const bool previous_mode = unit_test_expert_mode_enabled;
+    unit_test_expert_mode_enabled = expert_mode;
+
+    reset_context();
+    assert_true(test_mem_init());
+
+    uint8_t init_raw[512];
+    init_apdu_params_t params = build_init_params_from_fixture(fixture, NULL, 0);
+    size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
+    assert_true(init_len > 0);
+
+    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
+
+    // Confirm the streaming start, then reject on the first streaming continue call.
+    nbgl_mock_set_streaming_start_auto_complete(true, true);
+    nbgl_mock_set_streaming_continue_reject_at_call(0);
+
+    run_sign_tx_body_chunked(fixture->raw_tx, fixture->raw_tx_len);
+
+    assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+    assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
+
+    unit_test_expert_mode_enabled = previous_mode;
+}
+
 // Free heap-allocated tx buffers and reset the UI pair count.
 // Used in tests that abort a transaction early and need to clean up before the next test.
 // Accesses the body slot directly because this may be called in any tx state.

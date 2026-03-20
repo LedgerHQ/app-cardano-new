@@ -203,6 +203,7 @@ add_executable(test_tx_validate
     mock_sources/hex_stub.c
     test_utils/io_capture.c
 )
+add_executable(test_ui_warnings test_ui_warnings.c)
 add_executable(test_ui_utils
     test_ui_utils.c
     ../../src/ui/ui_utils.c
@@ -235,6 +236,7 @@ set(TEST_EXECUTABLES
     test_tx_hash_builder
     test_tx_validate
     test_ui_utils
+    test_ui_warnings
     test_ui_address_fields
 )
 
@@ -591,6 +593,9 @@ add_executable(test_security_policy_certificates test_security_policy_certificat
 target_link_libraries(test_security_policy_certificates PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_security_policy_certificates test_security_policy_certificates)
 
+target_link_libraries(test_ui_warnings PUBLIC cmocka gcov cardano_sign_tx_core)
+add_test(test_ui_warnings test_ui_warnings)
+
 add_executable(test_security_policy_collateral test_security_policy_collateral.c)
 target_link_libraries(test_security_policy_collateral PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_security_policy_collateral test_security_policy_collateral)
@@ -648,6 +653,12 @@ add_executable(test_sign_tx_witness_nbgl_reject
 )
 target_link_libraries(test_sign_tx_witness_nbgl_reject PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_sign_tx_witness_nbgl_reject test_sign_tx_witness_nbgl_reject)
+
+add_executable(test_sign_tx_streaming_nbgl_reject
+    test_sign_tx_streaming_nbgl_reject.c
+)
+target_link_libraries(test_sign_tx_streaming_nbgl_reject PUBLIC cmocka gcov cardano_sign_tx_core)
+add_test(test_sign_tx_streaming_nbgl_reject test_sign_tx_streaming_nbgl_reject)
 
 add_executable(test_pubkey_nbgl_reject
     test_pubkey_nbgl_reject.c

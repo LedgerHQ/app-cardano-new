@@ -27,7 +27,7 @@ static void free_warning_dynamic_strings(void) {
     APP_MEM_FREE_AND_NULL((void **) &g_warning_overflow_text);
 }
 
-static bool build_warning_summary_text(const warning_definition_t *const *warning_defs,
+bool build_warning_summary_text(const warning_definition_t *const *warning_defs,
                                        size_t start_index,
                                        size_t warning_count,
                                        bool include_descriptions,

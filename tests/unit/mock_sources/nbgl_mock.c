@@ -27,6 +27,9 @@ static nbgl_opType_t g_reject_next_operation_type = TYPE_TRANSACTION;
 static nbgl_operationType_t g_last_streaming_operation_type = TYPE_TRANSACTION;
 static bool g_streaming_start_auto_complete = false;
 static bool g_streaming_start_confirm = true;
+static bool g_streaming_continue_reject_enabled = false;
+static size_t g_streaming_continue_reject_at_call = 0;
+static size_t g_streaming_continue_call_count = 0;
 static char g_last_choice_message[NBGL_MOCK_TEXT_BUFFER_SIZE];
 static char g_last_status_message[NBGL_MOCK_TEXT_BUFFER_SIZE];
 static bool g_last_status_success = false;
@@ -48,6 +51,9 @@ void nbgl_mock_reset(void) {
     g_last_streaming_operation_type = TYPE_TRANSACTION;
     g_streaming_start_auto_complete = false;
     g_streaming_start_confirm = true;
+    g_streaming_continue_reject_enabled = false;
+    g_streaming_continue_reject_at_call = 0;
+    g_streaming_continue_call_count = 0;
     memset(g_last_choice_message, 0, sizeof(g_last_choice_message));
     memset(g_last_status_message, 0, sizeof(g_last_status_message));
     g_last_status_success = false;
@@ -81,6 +87,12 @@ void nbgl_mock_reject_next_final_decision_for_operation(nbgl_opType_t operation_
 void nbgl_mock_set_streaming_start_auto_complete(bool enabled, bool confirm) {
     g_streaming_start_auto_complete = enabled;
     g_streaming_start_confirm = confirm;
+}
+
+void nbgl_mock_set_streaming_continue_reject_at_call(size_t call_index) {
+    g_streaming_continue_reject_enabled = true;
+    g_streaming_continue_reject_at_call = call_index;
+    g_streaming_continue_call_count = 0;
 }
 
 static nbgl_opType_t nbgl_mock_operation_base_type(nbgl_operationType_t operation_type) {
@@ -251,7 +263,13 @@ void nbgl_useCaseReviewStreamingContinue(const nbgl_contentTagValueList_t *tagVa
                                          nbgl_choiceCallback_t             choiceCallback) {
     (void) tagValueList;
     if (choiceCallback != NULL) {
-        choiceCallback(true);
+        bool confirm = true;
+        if (g_streaming_continue_reject_enabled &&
+            g_streaming_continue_call_count == g_streaming_continue_reject_at_call) {
+            confirm = false;
+        }
+        g_streaming_continue_call_count++;
+        choiceCallback(confirm);
     }
 }
 

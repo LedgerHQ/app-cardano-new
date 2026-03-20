@@ -8,6 +8,24 @@
 #include "ui_utils.h"
 
 /**
+ * Build a human-readable summary string from an array of warning definitions.
+ *
+ * Iterates warning_defs[start_index..warning_count) and concatenates entries as:
+ *   - include_descriptions=false: "Title1. Title2. "
+ *   - include_descriptions=true:  "Title1: Desc1\nTitle2: Desc2"
+ *
+ * Allocates *out via APP_MEM_CALLOC; caller must free it.
+ * Useful for TRACE output and unit tests.
+ *
+ * @return true on success, false on allocation failure
+ */
+bool build_warning_summary_text(const warning_definition_t *const *warning_defs,
+                                size_t start_index,
+                                size_t warning_count,
+                                bool include_descriptions,
+                                char **out);
+
+/**
  * Build NBGL warning structure from warning bits.
  * Handles 0, 1, or multiple warnings.
  *
