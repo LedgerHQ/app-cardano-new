@@ -4,9 +4,8 @@
 /**
  * Tests for the real ui_display_native_script_hash.c rendering logic.
  *
- * Unlike test_native_script_state_machine.c (which stubs out UI entirely) and
- * test_native_script_additional_deny_tests.c (which stubs ui_display_native_script_hash
- * to a no-op), this file exercises the real ui_display_native_script_hash() code path
+ * Unlike test_native_script_state_machine.c (which stubs out UI entirely),
+ * this file exercises the real ui_display_native_script_hash() code path
  * from cardano_derive_native_script_core.  The NBGL mock auto-confirms all streaming
  * callbacks, so each test drives a complete APDU flow through the real render logic
  * and verifies:

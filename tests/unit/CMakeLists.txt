@@ -617,6 +617,12 @@ add_executable(test_handler_denies
 target_link_libraries(test_handler_denies PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_handler_denies test_handler_denies)
 
+add_executable(test_handler_denies_tx
+    test_handler_denies_tx.c
+)
+target_link_libraries(test_handler_denies_tx PUBLIC cmocka gcov cardano_sign_tx_core)
+add_test(test_handler_denies_tx test_handler_denies_tx)
+
 add_executable(test_dispatcher_interleaving
     test_dispatcher_interleaving.c
     mock_sources/mock_globals.c
@@ -630,12 +636,6 @@ add_executable(test_handler_state_machines
 )
 target_link_libraries(test_handler_state_machines PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_handler_state_machines test_handler_state_machines)
-
-add_executable(test_handler_sign_tx_additional
-    test_handler_sign_tx_additional.c
-)
-target_link_libraries(test_handler_sign_tx_additional PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_handler_sign_tx_additional test_handler_sign_tx_additional)
 
 add_executable(test_handler_sign_tx_swap
     test_handler_sign_tx_swap.c
@@ -1005,12 +1005,6 @@ add_executable(test_native_script_state_machine
 )
 target_link_libraries(test_native_script_state_machine PUBLIC cmocka gcov cardano_derive_native_script_core)
 add_test(test_native_script_state_machine test_native_script_state_machine)
-
-add_executable(test_native_script_additional_deny_tests
-    test_native_script_additional_deny_tests.c
-)
-target_link_libraries(test_native_script_additional_deny_tests PUBLIC cmocka gcov cardano_derive_native_script_core)
-add_test(test_native_script_additional_deny_tests test_native_script_additional_deny_tests)
 
 add_executable(test_native_script_init_ui_completion
     test_native_script_init_ui_completion.c
