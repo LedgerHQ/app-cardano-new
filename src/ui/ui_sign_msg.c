@@ -30,7 +30,7 @@ static bool format_ascii_chunk(const uint8_t *bytes, size_t size, char *out, siz
     LEDGER_ASSERT(out != NULL, "NULL output buffer");
     LEDGER_ASSERT(outSize > 0, "Zero output buffer size");
     if (size + 1 > outSize) {
-        return false;
+        return false; // LCOV_EXCL_LINE
     }
     memcpy(out, bytes, size);
     out[size] = '\0';
@@ -82,10 +82,10 @@ void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnin
 
     // Initialize pairs for display (6 fields)
     if (!ui_pairs_init(6)) {
-        TRACE("Failed to initialize pairs");
-        ui_render_scope_end();
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return;
+        TRACE("Failed to initialize pairs"); // LCOV_EXCL_LINE
+        ui_render_scope_end(); // LCOV_EXCL_LINE
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
+        return; // LCOV_EXCL_LINE
     }
 
     // Field 1: Payload type (hashed or non-hashed)
@@ -144,9 +144,9 @@ void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnin
         }
     } else {
         if (ctx->msgBuffer == NULL) {
-            ui_render_scope_end();
-            LEDGER_ASSERT(false, "Message buffer not allocated");
-            return;
+            ui_render_scope_end(); // LCOV_EXCL_LINE
+            LEDGER_ASSERT(false, "Message buffer not allocated"); // LCOV_EXCL_LINE
+            return; // LCOV_EXCL_LINE
         }
         if (ctx->isAscii) {
             UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Message (ASCII)", "Msg (ASCII)"),
@@ -174,11 +174,11 @@ void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnin
     switch (format_status) {
         case UI_STATUS_SUCCESS:
             break;
+        // LCOV_EXCL_START
         case UI_STATUS_OUT_OF_MEMORY:
             send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
             return;
         case UI_STATUS_UNINITIALIZED:
-        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unexpected UI status");
             return;
@@ -188,8 +188,8 @@ void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnin
     // Build warnings if any
     ui_status_t warning_status = ui_build_warnings(warnings);
     if (warning_status != UI_STATUS_SUCCESS) {
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return;
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
+        return; // LCOV_EXCL_LINE
     }
 
     nbgl_operationType_t reviewOperationType = TYPE_OPERATION;

@@ -168,6 +168,24 @@ signMsgTestCases = [
         ),
     ),
     SignMsgTestCase(
+        name="Sign_msg_empty_ascii_message_with_keyhash_as_address_field",
+        msgData=MessageData(
+            messageHex="",
+            signingPath="m/1852'/1815'/0'/0/1",
+            hashPayload=False,
+            isAscii=True,
+            addressFieldType=MessageAddressFieldType.KEY_HASH
+        ),
+        expected_in_unit_test=SignMsgExpectedInUnitTest(
+            signatureHex=(
+                "4ac0d7422617cb794c166b7137a4f097d08bb01b58091ca8c6e0b3816288a286"
+                "9c8121daddab958cdc58899cc6e1e564e36d35753f9e032f23df00b249149e06"
+            ),
+            signingPublicKeyHex="b3d5f4158f0c391ee2a28a2e285f218f3e895ff6ff59cb9369c64b03b5bab5eb",
+            addressFieldHex="5a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3",
+        ),
+    ),
+    SignMsgTestCase(
         name="Sign_msg_short_nonhashed_ascii_message_with_keyhash_as_address_field",
         msgData=MessageData(
             messageHex="68656c6c6f20776f726c64",  # "hello world"

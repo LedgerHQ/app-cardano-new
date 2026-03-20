@@ -28,84 +28,89 @@ static void test_sign_message_sign_msg_empty_message_with_keyhash_as_address_fie
     run_fixture(&SIGN_MSG_FIXTURES[0]);
 }
 
-static void test_sign_message_sign_msg_short_nonhashed_ascii_message_with_keyhash_as_address_field_1(void **state) {
+static void test_sign_message_sign_msg_empty_ascii_message_with_keyhash_as_address_field_1(void **state) {
     (void) state;
     run_fixture(&SIGN_MSG_FIXTURES[1]);
 }
 
-static void test_sign_message_sign_msg_short_hashed_ascii_message_with_keyhash_as_address_field_2(void **state) {
+static void test_sign_message_sign_msg_short_nonhashed_ascii_message_with_keyhash_as_address_field_2(void **state) {
     (void) state;
     run_fixture(&SIGN_MSG_FIXTURES[2]);
 }
 
-static void test_sign_message_sign_msg_short_nonhashed_ascii_message_displayed_as_hex_3(void **state) {
+static void test_sign_message_sign_msg_short_hashed_ascii_message_with_keyhash_as_address_field_3(void **state) {
     (void) state;
     run_fixture(&SIGN_MSG_FIXTURES[3]);
 }
 
-static void test_sign_message_sign_msg_short_nonhashed_hex_message_with_keyhash_as_address_field_4(void **state) {
+static void test_sign_message_sign_msg_short_nonhashed_ascii_message_displayed_as_hex_4(void **state) {
     (void) state;
     run_fixture(&SIGN_MSG_FIXTURES[4]);
 }
 
-static void test_sign_message_sign_msg_short_hashed_hex_message_with_keyhash_as_address_field_5(void **state) {
+static void test_sign_message_sign_msg_short_nonhashed_hex_message_with_keyhash_as_address_field_5(void **state) {
     (void) state;
     run_fixture(&SIGN_MSG_FIXTURES[5]);
 }
 
-static void test_sign_message_sign_msg_198_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field_6(void **state) {
+static void test_sign_message_sign_msg_short_hashed_hex_message_with_keyhash_as_address_field_6(void **state) {
     (void) state;
     run_fixture(&SIGN_MSG_FIXTURES[6]);
 }
 
-static void test_sign_message_sign_msg_99_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_7(void **state) {
+static void test_sign_message_sign_msg_198_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field_7(void **state) {
     (void) state;
     run_fixture(&SIGN_MSG_FIXTURES[7]);
 }
 
-static void test_sign_message_sign_msg_1000_bytes_long_hashed_ascii_message_with_keyhash_as_address_field_8(void **state) {
+static void test_sign_message_sign_msg_99_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_8(void **state) {
     (void) state;
     run_fixture(&SIGN_MSG_FIXTURES[8]);
 }
 
-static void test_sign_message_sign_msg_349_bytes_long_hashed_hex_message_with_keyhash_as_address_field_9(void **state) {
+static void test_sign_message_sign_msg_1000_bytes_long_hashed_ascii_message_with_keyhash_as_address_field_9(void **state) {
     (void) state;
     run_fixture(&SIGN_MSG_FIXTURES[9]);
 }
 
-static void test_sign_message_sign_msg_short_nonhashed_hex_message_with_base_address_in_address_field_10(void **state) {
+static void test_sign_message_sign_msg_349_bytes_long_hashed_hex_message_with_keyhash_as_address_field_10(void **state) {
     (void) state;
     run_fixture(&SIGN_MSG_FIXTURES[10]);
 }
 
-static void test_sign_message_sign_msg_short_nonhashed_hex_message_with_reward_address_in_address_field_11(void **state) {
+static void test_sign_message_sign_msg_short_nonhashed_hex_message_with_base_address_in_address_field_11(void **state) {
     (void) state;
     run_fixture(&SIGN_MSG_FIXTURES[11]);
 }
 
-static void test_sign_message_sign_msg_257_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field_12(void **state) {
+static void test_sign_message_sign_msg_short_nonhashed_hex_message_with_reward_address_in_address_field_12(void **state) {
     (void) state;
     run_fixture(&SIGN_MSG_FIXTURES[12]);
 }
 
-static void test_sign_message_sign_msg_1000_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field_13(void **state) {
+static void test_sign_message_sign_msg_257_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field_13(void **state) {
     (void) state;
     run_fixture(&SIGN_MSG_FIXTURES[13]);
 }
 
-static void test_sign_message_sign_msg_257_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_14(void **state) {
+static void test_sign_message_sign_msg_1000_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field_14(void **state) {
     (void) state;
     run_fixture(&SIGN_MSG_FIXTURES[14]);
 }
 
-static void test_sign_message_sign_msg_1000_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_15(void **state) {
+static void test_sign_message_sign_msg_257_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_15(void **state) {
     (void) state;
     run_fixture(&SIGN_MSG_FIXTURES[15]);
 }
 
-static void test_sign_message_sign_msg_unusual_path_with_high_address_index_16(void **state) {
+static void test_sign_message_sign_msg_1000_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_16(void **state) {
     (void) state;
     run_fixture(&SIGN_MSG_FIXTURES[16]);
+}
+
+static void test_sign_message_sign_msg_unusual_path_with_high_address_index_17(void **state) {
+    (void) state;
+    run_fixture(&SIGN_MSG_FIXTURES[17]);
 }
 
 // ======================================================================
@@ -424,22 +429,23 @@ static void test_sign_message_deny_sign_msg_deny_invalid_address_type_payment_sc
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_sign_message_sign_msg_empty_message_with_keyhash_as_address_field_0),
-        cmocka_unit_test(test_sign_message_sign_msg_short_nonhashed_ascii_message_with_keyhash_as_address_field_1),
-        cmocka_unit_test(test_sign_message_sign_msg_short_hashed_ascii_message_with_keyhash_as_address_field_2),
-        cmocka_unit_test(test_sign_message_sign_msg_short_nonhashed_ascii_message_displayed_as_hex_3),
-        cmocka_unit_test(test_sign_message_sign_msg_short_nonhashed_hex_message_with_keyhash_as_address_field_4),
-        cmocka_unit_test(test_sign_message_sign_msg_short_hashed_hex_message_with_keyhash_as_address_field_5),
-        cmocka_unit_test(test_sign_message_sign_msg_198_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field_6),
-        cmocka_unit_test(test_sign_message_sign_msg_99_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_7),
-        cmocka_unit_test(test_sign_message_sign_msg_1000_bytes_long_hashed_ascii_message_with_keyhash_as_address_field_8),
-        cmocka_unit_test(test_sign_message_sign_msg_349_bytes_long_hashed_hex_message_with_keyhash_as_address_field_9),
-        cmocka_unit_test(test_sign_message_sign_msg_short_nonhashed_hex_message_with_base_address_in_address_field_10),
-        cmocka_unit_test(test_sign_message_sign_msg_short_nonhashed_hex_message_with_reward_address_in_address_field_11),
-        cmocka_unit_test(test_sign_message_sign_msg_257_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field_12),
-        cmocka_unit_test(test_sign_message_sign_msg_1000_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field_13),
-        cmocka_unit_test(test_sign_message_sign_msg_257_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_14),
-        cmocka_unit_test(test_sign_message_sign_msg_1000_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_15),
-        cmocka_unit_test(test_sign_message_sign_msg_unusual_path_with_high_address_index_16),
+        cmocka_unit_test(test_sign_message_sign_msg_empty_ascii_message_with_keyhash_as_address_field_1),
+        cmocka_unit_test(test_sign_message_sign_msg_short_nonhashed_ascii_message_with_keyhash_as_address_field_2),
+        cmocka_unit_test(test_sign_message_sign_msg_short_hashed_ascii_message_with_keyhash_as_address_field_3),
+        cmocka_unit_test(test_sign_message_sign_msg_short_nonhashed_ascii_message_displayed_as_hex_4),
+        cmocka_unit_test(test_sign_message_sign_msg_short_nonhashed_hex_message_with_keyhash_as_address_field_5),
+        cmocka_unit_test(test_sign_message_sign_msg_short_hashed_hex_message_with_keyhash_as_address_field_6),
+        cmocka_unit_test(test_sign_message_sign_msg_198_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field_7),
+        cmocka_unit_test(test_sign_message_sign_msg_99_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_8),
+        cmocka_unit_test(test_sign_message_sign_msg_1000_bytes_long_hashed_ascii_message_with_keyhash_as_address_field_9),
+        cmocka_unit_test(test_sign_message_sign_msg_349_bytes_long_hashed_hex_message_with_keyhash_as_address_field_10),
+        cmocka_unit_test(test_sign_message_sign_msg_short_nonhashed_hex_message_with_base_address_in_address_field_11),
+        cmocka_unit_test(test_sign_message_sign_msg_short_nonhashed_hex_message_with_reward_address_in_address_field_12),
+        cmocka_unit_test(test_sign_message_sign_msg_257_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field_13),
+        cmocka_unit_test(test_sign_message_sign_msg_1000_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field_14),
+        cmocka_unit_test(test_sign_message_sign_msg_257_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_15),
+        cmocka_unit_test(test_sign_message_sign_msg_1000_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field_16),
+        cmocka_unit_test(test_sign_message_sign_msg_unusual_path_with_high_address_index_17),
         cmocka_unit_test(test_sign_message_deny_sign_msg_deny_nonexistent_address_field_type_0),
         cmocka_unit_test(test_sign_message_deny_sign_msg_deny_invalid_address_field_type_zero_1),
         cmocka_unit_test(test_sign_message_deny_sign_msg_deny_msg_length_exceeds_uint16_max_2),
