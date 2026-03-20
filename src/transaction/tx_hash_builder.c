@@ -44,6 +44,8 @@ The following macros and functions have dual purpose:
 #define BUILDER_APPEND_DATA(buffer, bufferSize) \
     blake2b_256_append_buffer_tx_body(&builder->txHash, buffer, bufferSize)
 
+// bufferSize == 0 is safe: blake2b_update() is a no-op for inlen == 0,
+// so callers may pass buffer == NULL when bufferSize == 0 (e.g. empty pool metadata URL).
 static void blake2b_256_append_buffer_tx_body(blake2b_256_context_t* hashCtx,
                                               const uint8_t* buffer,
                                               size_t bufferSize) {

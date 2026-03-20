@@ -294,6 +294,16 @@ def _run_sign_tx_test(device: Device,
             return False
         return purpose in (44, 1852)
 
+    def _is_mint_witness_path(witness_path: str) -> bool:
+        path_elements = witness_path.replace("'", "").split("/")
+        if len(path_elements) < 2:
+            return False
+        try:
+            purpose = int(path_elements[1])
+        except ValueError:
+            return False
+        return purpose == 1855
+
     def _is_unusual_witness_path_for_navigation(witness_path: str) -> bool:
         # Keep this aligned with Ledger-side "reasonable path" behavior for ordinary witnesses.
         # We need this to decide whether witness confirmation UI is expected.
@@ -339,6 +349,7 @@ def _run_sign_tx_test(device: Device,
         )
         should_confirm_witness = (
             witness_has_non_hidden_review
+            or _is_mint_witness_path(path)
             or (expert_mode and _is_ordinary_witness_path(path))
         )
 

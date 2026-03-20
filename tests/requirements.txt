@@ -1,5 +1,7 @@
 pytest
 pytest-timeout
+pytest-xdist
+pytest-order
 ragger[speculos,ledgerwallet]>=1.37.0
 ragger[tests,speculos]>=1.36.1
 ecdsa>=0.17.0

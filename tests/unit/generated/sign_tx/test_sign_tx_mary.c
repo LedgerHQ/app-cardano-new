@@ -229,6 +229,26 @@ static void test_sign_tx_with_mint_fields_among_other_fields_reject_tx_expert_on
     run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS, true);
 }
 
+static void test_sign_tx_with_mint_key_witness_in_ordinary_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_KEY_WITNESS_IN_ORDINARY_TX, false);
+}
+
+static void test_sign_tx_with_mint_key_witness_in_ordinary_tx_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_KEY_WITNESS_IN_ORDINARY_TX, false);
+}
+
+static void test_sign_tx_with_mint_key_witness_in_ordinary_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_KEY_WITNESS_IN_ORDINARY_TX, true);
+}
+
+static void test_sign_tx_with_mint_key_witness_in_ordinary_tx_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_KEY_WITNESS_IN_ORDINARY_TX, true);
+}
+
 // ======================================================================
 // Main
 // ======================================================================
@@ -271,6 +291,10 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_mint_fields_among_other_fields_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_mint_fields_among_other_fields_expert_on),
         cmocka_unit_test(test_sign_tx_with_mint_fields_among_other_fields_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_with_mint_key_witness_in_ordinary_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_with_mint_key_witness_in_ordinary_tx_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_with_mint_key_witness_in_ordinary_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_with_mint_key_witness_in_ordinary_tx_reject_tx_expert_on),
     };
     return _cmocka_run_group_tests("test_sign_tx_mary", tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);
 }

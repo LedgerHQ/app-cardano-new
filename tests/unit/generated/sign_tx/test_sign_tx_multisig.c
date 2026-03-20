@@ -149,6 +149,26 @@ static void test_sign_tx_with_a_stake_deregistration_script_certificate_reject_t
     run_fixture_reject_tx_with_expert_mode(&FIXTURE_MULTISIG_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_SCRIPT_CERTIFICATE, true);
 }
 
+static void test_sign_tx_with_mint_key_witness_in_multisig_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_MULTISIG_SIGN_TX_WITH_MINT_KEY_WITNESS_IN_MULTISIG_TX, false);
+}
+
+static void test_sign_tx_with_mint_key_witness_in_multisig_tx_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MULTISIG_SIGN_TX_WITH_MINT_KEY_WITNESS_IN_MULTISIG_TX, false);
+}
+
+static void test_sign_tx_with_mint_key_witness_in_multisig_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_MULTISIG_SIGN_TX_WITH_MINT_KEY_WITNESS_IN_MULTISIG_TX, true);
+}
+
+static void test_sign_tx_with_mint_key_witness_in_multisig_tx_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MULTISIG_SIGN_TX_WITH_MINT_KEY_WITNESS_IN_MULTISIG_TX, true);
+}
+
 // ======================================================================
 // Main
 // ======================================================================
@@ -175,6 +195,10 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_a_stake_deregistration_script_certificate_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_a_stake_deregistration_script_certificate_expert_on),
         cmocka_unit_test(test_sign_tx_with_a_stake_deregistration_script_certificate_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_with_mint_key_witness_in_multisig_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_with_mint_key_witness_in_multisig_tx_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_with_mint_key_witness_in_multisig_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_with_mint_key_witness_in_multisig_tx_reject_tx_expert_on),
     };
     return _cmocka_run_group_tests("test_sign_tx_multisig", tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);
 }

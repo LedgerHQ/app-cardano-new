@@ -606,18 +606,22 @@ bool parse_pool_metadata(buffer_t *buf, pool_metadata_t *out_metadata) {
         TRACE("Failed to read metadata URL length");
         return false;
     }
-    if (url_length == 0 || url_length > MAX_POOL_METADATA_URL_LENGTH) {
+    if (url_length > MAX_POOL_METADATA_URL_LENGTH) {
         TRACE("Invalid metadata URL length: %u", (unsigned) url_length);
         return false;
     }
-    if (!buffer_read_bytes_ptr(buf, &out_metadata->url, url_length)) {
-        TRACE("Failed to read metadata URL");
-        return false;
-    }
-    ASSERT(out_metadata->url != NULL);
-    if (!str_isPrintableAsciiWithoutSpaces(out_metadata->url, url_length)) {
-        TRACE("Metadata URL contains non-printable or space characters");
-        return false;
+    if (url_length > 0) {
+        if (!buffer_read_bytes_ptr(buf, &out_metadata->url, url_length)) {
+            TRACE("Failed to read metadata URL");
+            return false;
+        }
+        ASSERT(out_metadata->url != NULL);
+        if (!str_isPrintableAsciiWithoutSpaces(out_metadata->url, url_length)) {
+            TRACE("Metadata URL contains non-printable or space characters");
+            return false;
+        }
+    } else {
+        out_metadata->url = NULL;
     }
     out_metadata->urlSize = url_length;
 

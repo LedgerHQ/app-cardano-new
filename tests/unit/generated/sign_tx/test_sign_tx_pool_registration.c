@@ -189,6 +189,26 @@ static void test_sign_tx_witness_pool_registration_with_no_metadata_reject_tx_ex
     run_fixture_reject_tx_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_WITH_NO_METADATA, true);
 }
 
+static void test_sign_tx_witness_pool_registration_empty_metadata_url_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_EMPTY_METADATA_URL, false);
+}
+
+static void test_sign_tx_witness_pool_registration_empty_metadata_url_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_EMPTY_METADATA_URL, false);
+}
+
+static void test_sign_tx_witness_pool_registration_empty_metadata_url_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_EMPTY_METADATA_URL, true);
+}
+
+static void test_sign_tx_witness_pool_registration_empty_metadata_url_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_EMPTY_METADATA_URL, true);
+}
+
 static void test_sign_tx_witness_pool_registration_without_outputs_expert_off(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_WITHOUT_OUTPUTS, false);
@@ -303,6 +323,10 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_witness_pool_registration_with_no_metadata_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_witness_pool_registration_with_no_metadata_expert_on),
         cmocka_unit_test(test_sign_tx_witness_pool_registration_with_no_metadata_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_witness_pool_registration_empty_metadata_url_expert_off),
+        cmocka_unit_test(test_sign_tx_witness_pool_registration_empty_metadata_url_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_witness_pool_registration_empty_metadata_url_expert_on),
+        cmocka_unit_test(test_sign_tx_witness_pool_registration_empty_metadata_url_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_witness_pool_registration_without_outputs_expert_off),
         cmocka_unit_test(test_sign_tx_witness_pool_registration_without_outputs_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_witness_pool_registration_without_outputs_expert_on),

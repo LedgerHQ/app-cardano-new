@@ -16,7 +16,7 @@
 //   - Source file and era
 //   - Original Ragger test name
 //
-// Total tests in this era: 11
+// Total tests in this era: 12
 
 #pragma once
 
@@ -656,7 +656,92 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTR
     .expected_warning_bits = 0,
 };
 
-// Test 7: Sign_tx_Witness_pool_registration_without_outputs
+// Test 7: Sign_tx_Witness_pool_registration_empty_metadata_url
+// Source: tests/standalone/input_files/signTx.py > pool_registration era tests
+//
+static const uint8_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_EMPTY_METADATA_URL_RAW_TX[] = {
+    0x3B, 0x40, 0x26, 0x51, 0x11, 0xD8, 0xBB, 0x3C, 0x3C, 0x60, 0x8D, 0x95, 0xB3, 0xA0, 0xBF, 0x83,
+    0x46, 0x1A, 0xCE, 0x32, 0xD7, 0x93, 0x36, 0x57, 0x9A, 0x19, 0x39, 0xB3, 0xAA, 0xD1, 0xC0, 0xB7,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x49, 0x01, 0x00, 0x39, 0x01, 0x7C, 0xB0, 0x5F, 0xCE, 0x11, 0x0F,
+    0xB9, 0x99, 0xF0, 0x1A, 0xBB, 0x4F, 0x62, 0xBC, 0x45, 0x5E, 0x21, 0x7D, 0x4A, 0x51, 0xFD, 0xE9,
+    0x09, 0xFA, 0x9A, 0xEA, 0x54, 0x54, 0x43, 0xAC, 0x53, 0xC0, 0x46, 0xCF, 0x6A, 0x42, 0x09, 0x5E,
+    0x3C, 0x60, 0x31, 0x0F, 0xA8, 0x02, 0x77, 0x1D, 0x06, 0x72, 0xF8, 0xFE, 0x2D, 0x18, 0x61, 0x13,
+    0x8B, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x03,
+    0x00, 0xC2, 0x00, 0x13, 0x38, 0x1D, 0x91, 0x8E, 0xC0, 0x28, 0x3C, 0xEE, 0xFF, 0x60, 0xF7, 0xF4,
+    0xFC, 0x21, 0xE1, 0x54, 0x0E, 0x05, 0x3C, 0xCF, 0x8A, 0x77, 0x30, 0x7A, 0x7A, 0x32, 0xAD, 0x07,
+    0x82, 0x1C, 0xD3, 0x44, 0xD7, 0xFD, 0x7E, 0x3A, 0xE5, 0xF2, 0xED, 0x86, 0x32, 0x18, 0xCB, 0x97,
+    0x9F, 0xF1, 0xD5, 0x9E, 0x50, 0xC4, 0x27, 0x6B, 0xDC, 0x47, 0x9B, 0x0D, 0x08, 0x44, 0x50, 0x00,
+    0x00, 0x00, 0x0B, 0xA4, 0x3B, 0x74, 0x00, 0x00, 0x00, 0x00, 0x00, 0x14, 0x43, 0xFD, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x00,
+    0xE1, 0x79, 0x4D, 0x9B, 0x34, 0x08, 0xC9, 0xFB, 0x67, 0xB9, 0x50, 0xA4, 0x8A, 0x06, 0x90, 0xF0,
+    0x70, 0xF1, 0x17, 0xE9, 0x97, 0x8F, 0x7F, 0xC1, 0xD1, 0x20, 0xFC, 0x58, 0xAD, 0x00, 0x01, 0x00,
+    0x01, 0x02, 0x02, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x0B, 0xB8, 0x02, 0x36, 0xE4, 0x4B,
+    0x9A, 0x01, 0x00, 0x00, 0xCD, 0xB7, 0x14, 0xFD, 0x72, 0x2C, 0x24, 0xAE, 0xB1, 0x0C, 0x93, 0xDB,
+    0xB0, 0xFF, 0x03, 0xBD, 0x47, 0x83, 0x44, 0x1C, 0xD5, 0xBA, 0x2A, 0x8B, 0x6F, 0x37, 0x33, 0x90,
+    0x52, 0x05, 0x35, 0xBB,
+};
+
+static const uint8_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_EMPTY_METADATA_URL_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x02, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_EMPTY_METADATA_URL_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0x13, 0x20, 0xF1, 0x95, 0x42, 0x20, 0x3C, 0x04, 0x61, 0x2D, 0xA8, 0xFF, 0xA1, 0xF6, 0xD9, 0x94,
+    0xD1, 0x3C, 0x02, 0x35, 0x18, 0x2B, 0x49, 0xCE, 0xAD, 0xFA, 0x54, 0xF6, 0x72, 0x32, 0x02, 0xD8,
+    0x4F, 0x47, 0x91, 0x75, 0x35, 0x47, 0x5C, 0xE4, 0x3F, 0x4A, 0xC8, 0x1F, 0xC1, 0x91, 0xB9, 0xF4,
+    0xA4, 0x5C, 0x62, 0xD5, 0x44, 0x4C, 0x29, 0x2E, 0xDA, 0x9D, 0x34, 0x56, 0x6C, 0x15, 0x22, 0x78,
+};
+
+static const witness_payload_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_EMPTY_METADATA_URL_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_EMPTY_METADATA_URL_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_EMPTY_METADATA_URL_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_EMPTY_METADATA_URL_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
+static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_EMPTY_METADATA_URL = {
+    .name = "Sign_tx_Witness_pool_registration_empty_metadata_url",
+    .raw_tx = FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_EMPTY_METADATA_URL_RAW_TX,
+    .raw_tx_len = sizeof(FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_EMPTY_METADATA_URL_RAW_TX),
+    .tx_body_cbor_hex = "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c818400190bb84436e44b9af682605820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
+    .expected_hash_hex = "8a81563deb8d9728ce8307cf10446aa0738ab58d9d96f2721043ebb6b1f0c19c",
+    .signing_mode = 4,
+    .network_id = 1,
+    .protocol_magic = 764824073,
+    .num_inputs = 1,
+    .num_outputs = 1,
+    .num_witnesses = 1,
+    .witness_payloads = FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_EMPTY_METADATA_URL_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
+    .num_certificates = 1,
+    .num_withdrawals = 0,
+    .num_mint_asset_groups = 0,
+    .include_ttl = true,
+    .include_validity_interval_start = false,
+    .include_aux_data_hash = false,
+    .aux_data_type = 0,
+    .aux_data_init_payload = NULL,
+    .aux_data_init_payload_len = 0,
+    .aux_data_delegations = NULL,
+    .aux_data_delegation_count = 0,
+    .include_script_data_hash = false,
+    .num_collateral_inputs = 0,
+    .num_required_signers = 0,
+    .include_network_id = false,
+    .include_collateral_output = false,
+    .include_total_collateral = false,
+    .num_reference_inputs = 0,
+    .num_voters = 0,
+    .include_treasury = false,
+    .treasury = 0,
+    .include_donation = false,
+    .donation = 0,
+    .aux_data_hash_hex = NULL,
+    .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL),
+};
+
+// Test 8: Sign_tx_Witness_pool_registration_without_outputs
 // Source: tests/standalone/input_files/signTx.py > pool_registration era tests
 //
 static const uint8_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_WITHOUT_OUTPUTS_RAW_TX[] = {
@@ -744,7 +829,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTR
     .expected_warning_bits = 0,
 };
 
-// Test 8: Sign_tx_Witness_pool_registration_as_operator_with_no_owners_and_no_relays
+// Test 9: Sign_tx_Witness_pool_registration_as_operator_with_no_owners_and_no_relays
 // Source: tests/standalone/input_files/signTx.py > pool_registration era tests
 //
 static const uint8_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_AS_OPERATOR_WITH_NO_OWNERS_AND_NO_RELAYS_RAW_TX[] = {
@@ -842,7 +927,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTR
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_POOL_REGISTRATION_NO_OWNERS) | ((warning_bits_t)1 << WARNING_BIT_POOL_REGISTRATION_NO_RELAYS),
 };
 
-// Test 9: Sign_tx_Witness_pool_registration_as_operator_with_one_owner_and_no_relays
+// Test 10: Sign_tx_Witness_pool_registration_as_operator_with_one_owner_and_no_relays
 // Source: tests/standalone/input_files/signTx.py > pool_registration era tests
 //
 static const uint8_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_AS_OPERATOR_WITH_ONE_OWNER_AND_NO_RELAYS_RAW_TX[] = {
@@ -941,7 +1026,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTR
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_POOL_REGISTRATION_NO_RELAYS),
 };
 
-// Test 10: Sign_tx_Witness_pool_registration_as_operator_with_multiple_owners_and_all_relays
+// Test 11: Sign_tx_Witness_pool_registration_as_operator_with_multiple_owners_and_all_relays
 // Source: tests/standalone/input_files/signTx.py > pool_registration era tests
 //
 static const uint8_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTRATION_AS_OPERATOR_WITH_MULTIPLE_OWNERS_AND_ALL_RELAYS_RAW_TX[] = {

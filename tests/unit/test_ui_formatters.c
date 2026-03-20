@@ -366,6 +366,57 @@ static void test_format_dns_name(void **state) {
     bool success = format_dns_name(dns_name, strlen((const char *) dns_name), tmp, sizeof(tmp));
     assert_true(success);
     assert_string_equal(tmp, "relay.example.com");
+
+    // Buffer exactly dnsLength+1 — no room for null terminator
+    char exact[18] = {0};  // "relay.example.com" is 17 chars, +1 = 18, so 18 >= 17+1 → should fail
+    success = format_dns_name(dns_name, strlen((const char *) dns_name), exact, sizeof(exact));
+    assert_false(success);
+
+    // Buffer one byte too small
+    char too_small[17] = {0};
+    success = format_dns_name(dns_name, strlen((const char *) dns_name), too_small, sizeof(too_small));
+    assert_false(success);
+}
+
+static void test_format_decimal_amount_buffer_too_small(void **state) {
+    (void) state;
+
+    char buf[2] = {0};
+    // "0" requires 2 bytes (char + null); outSize=1 is too small
+    bool success = format_decimal_amount(0, 0, buf, 1);
+    assert_false(success);
+
+    // "1,000" requires 6 bytes; outSize=5 is too small
+    char buf2[6] = {0};
+    success = format_decimal_amount(1000, 0, buf2, 5);
+    assert_false(success);
+}
+
+static void test_format_input_with_index_buffer_too_small(void **state) {
+    (void) state;
+
+    const uint8_t hash[TX_HASH_LENGTH] = {
+        0x3b, 0x40, 0x26, 0x51, 0x11, 0xd8, 0xbb, 0x3c,
+        0x3c, 0x60, 0x8d, 0x95, 0xb3, 0xa0, 0xbf, 0x83,
+        0x46, 0x1a, 0xce, 0x32, 0xd7, 0x93, 0x36, 0x57,
+        0x9a, 0x19, 0x39, 0xb3, 0xaa, 0xd1, 0xc0, 0xb7,
+    };
+    const tx_input_t input = {.txHash = hash, .index = 0};
+
+    // Buffer too small for hex conversion: TX_HASH_LENGTH*2+1 = 65 bytes needed
+    char buf_hex_fail[64] = {0};
+    bool success = format_input_with_index(&input, buf_hex_fail, sizeof(buf_hex_fail));
+    assert_false(success);
+
+    // Buffer exactly 65 bytes: hex fits but no room for " / 0"
+    char buf_suffix_fail[65] = {0};
+    success = format_input_with_index(&input, buf_suffix_fail, sizeof(buf_suffix_fail));
+    assert_false(success);
+
+    // Buffer large enough: should succeed
+    char buf_ok[100] = {0};
+    success = format_input_with_index(&input, buf_ok, sizeof(buf_ok));
+    assert_true(success);
 }
 
 static void test_format_asset_fingerprint_bech32(void **state) {
@@ -434,6 +485,8 @@ int main(void) {
         cmocka_unit_test(test_format_certificate_type),
         cmocka_unit_test(test_format_url),
         cmocka_unit_test(test_format_dns_name),
+        cmocka_unit_test(test_format_decimal_amount_buffer_too_small),
+        cmocka_unit_test(test_format_input_with_index_buffer_too_small),
         cmocka_unit_test(test_format_asset_fingerprint_bech32),
     };
 

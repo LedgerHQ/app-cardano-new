@@ -1368,6 +1368,23 @@ certificates: dict[str, Certificate] = {
             [relays["singleHostIPV4Relay0"]],
         ),
     ),
+    "poolRegistrationEmptyMetadataUrl": Certificate(
+        CertificateType.STAKE_POOL_REGISTRATION,
+        PoolRegistrationParams(
+            poolKeys["poolKeyHash"],
+            "07821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d084450",
+            50000000000,
+            340000000,
+            Margin(3, 100),
+            poolKeys["poolRewardAccountHash"],
+            [poolKeys["stakingPathOwner0"]],
+            [relays["singleHostIPV4Relay0"]],
+            PoolMetadataParams(
+                "",
+                "cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
+            ),
+        ),
+    ),
     "poolRegistrationOperatorNoOwnersNoRelays": Certificate(
         CertificateType.STAKE_POOL_REGISTRATION,
         PoolRegistrationParams(
@@ -2743,6 +2760,21 @@ testsMultisig: List[SignTxTestCase] = [
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048182018201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
         additionalWitnessPaths=["m/1854'/1815'/0'/2/0"],
     ),
+    SignTxTestCase(
+        name="Sign_tx_with_mint_key_witness_in_multisig_tx",
+        tx=Transaction(
+            network=Testnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalShelleyBaseScripthashKeyhash"]],
+            fee=42,
+            ttl=10,
+            mint=mints["mintAmountVariety"],
+        ),
+        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e0102182a030a09a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a3581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff",
+        additionalWitnessPaths=["m/1855'/1815'/0'"],
+        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL, WarningBit.WARNING_BIT_OUTPUT_MISSING_DATUM],
+    ),
 ]
 
 testsAllegra: List[SignTxTestCase] = [
@@ -2877,6 +2909,19 @@ testsMary: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821904d2a1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1a007838628258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca793020a031903e808186409a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a3581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff",
+    ),
+    SignTxTestCase(
+        name="Sign_tx_with_mint_key_witness_in_ordinary_tx",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[],
+            mint=mints["mintAmountVariety"],
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a09a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a3581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff",
+        additionalWitnessPaths=["m/1855'/1815'/0'"],
+        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_NOT_VERIFIABLE],
     ),
 ]
 
@@ -4183,6 +4228,18 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c818400190bb84436e44b9af6f6",
+    ),
+    SignTxTestCase(
+        name="Sign_tx_Witness_pool_registration_empty_metadata_url",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoNoPath"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            certificates=[certificates["poolRegistrationEmptyMetadataUrl"]],
+        ),
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c818400190bb84436e44b9af682605820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
+        expected_warnings=[WarningBit.WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL],
     ),
     SignTxTestCase(
         name="Sign_tx_Witness_pool_registration_without_outputs",
@@ -7330,6 +7387,55 @@ poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
         additionalWitnessPaths=["m/1852'/1815'/0'/2/0", "m/1854'/1815'/0'/2/0"],
         expected_sw=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         deny_before_review=True,
+    ),
+    SignTxTestCase(
+        name="Pool_registration_owner_by_hash_staking_key_witness_denied",
+        tx=Transaction(
+            network=NetworkDesc(networkId=1, protocol=764824073),
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineShelleyBase1"]],
+            certificates=[
+                Certificate(
+                    type=CertificateType.STAKE_POOL_REGISTRATION,
+                    params=PoolRegistrationParams(
+                        poolKey=PoolKey(
+                            type=PoolKeyType.THIRD_PARTY,
+                            key="13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad",
+                        ),
+                        vrfKeyHashHex="07821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d084450",
+                        pledge=50000000000,
+                        cost=340000000,
+                        margin=Margin(numerator=3, denominator=100),
+                        rewardAccount=PoolKey(
+                            type=PoolKeyType.THIRD_PARTY,
+                            key="e1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad",
+                        ),
+                        poolOwners=[
+                            PoolKey(
+                                type=PoolKeyType.THIRD_PARTY,
+                                key="794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad",
+                            )
+                        ],
+                        relays=[
+                            Relay(
+                                type=RelayType.SINGLE_HOST_IP_ADDR,
+                                params=SingleHostIpAddrRelayParams(
+                                    portNumber=3000, ipv4="54.228.75.154", ipv6=None
+                                ),
+                            )
+                        ],
+                        metadata=PoolMetadataParams(
+                            metadataUrl="https://www.vacuumlabs.com/sampleUrl.json",
+                            metadataHashHex="cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
+                        ),
+                    ),
+                )
+            ],
+        ),
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        txBody="",
+        additionalWitnessPaths=["m/1852'/1815'/0'/2/0"],
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
 ]
 

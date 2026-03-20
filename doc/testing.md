@@ -51,6 +51,8 @@ Notes:
 - Regenerate unit-test fixtures when `tests/standalone/input_files/` or
   `tests/application_client/` changes via:
   `../tests/unit/generators/generate_unit_tests_from_ragger.py`.
+- For the concrete edit/regenerate/build/run sequence, see
+  `../tests/unit/README.md` -> `Fixture Workflow`.
 - Use the shared venv above when running generator scripts or other Python-based
   test tooling.
 - Run ragger and swap tests only when explicitly requested.

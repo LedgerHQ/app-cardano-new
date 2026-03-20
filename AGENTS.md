@@ -22,16 +22,7 @@ For detailed analysis, see:
 - **Style:** Use long, descriptive variable names.
 - **Security:** Use `STATIC_ASSERT` and `LEDGER_ASSERT` liberally for parameter validation and state machine invariants.
 - **Static-analysis-friendly null checks:** Prefer combined guards like `x != NULL && x->field ...` in conditions/assertions (including `LEDGER_ASSERT`) when dereferencing pointers, to keep `scan-build`/clang analyzer free of false-positive null-dereference warnings. Use function contracts like `__attribute__((nonnull(...)))` where appropriate (already used in this repo), and note the SDK `__clang_analyzer__` trick with `__attribute__((analyzer_noreturn))` (see `exceptions.h`) for analyzer-specific control-flow hints.
-- **Debugging:** Use `TRACE` (avoid `PRINTF`). For verbose/repetitive debug output, use **conditional guards** (see `doc/testing.md`):
-  - Use `TRACE_MODULE()` for state tracking, loops, field-level parsing (compiled out unless guard is defined).
-  - Keep `TRACE()` for critical errors and security-relevant information (always compiled in debug builds).
-  - **Available Guards:**
-    - `TRACE_TX_PARSE`: Transaction parsing (`src/transaction/tx_parse*.c`, `src/parsers/cardano_parsers.c`).
-    - `TRACE_TX_HASH_BUILDER`: Transaction hashing (`src/transaction/tx_hash_builder.c`).
-    - `TRACE_HANDLERS`: APDU command handler flow (`src/handler/*.c`).
-    - `TRACE_UI_DISPLAY`: UI rendering and state (`src/ui/ui_display*.c`).
-    - `TRACE_CVOTE`: Catalyst voting parsing (`src/cvote/cvote_parser.c`).
-    - `TRACE_AUX_DATA_HASH_BUILDER`, `TRACE_VOTECAST_HASH_BUILDER`, `TRACE_NATIVE_SCRIPT_HASH_BUILDER`: Hash builders.
+- **Debugging:** Use `TRACE` (avoid `PRINTF`) and `TRACE_MODULE()` for verbose or repetitive output. See `doc/testing.md` for the guard list and usage pattern.
 - **Memory Management:** Be extremely mindful of scarce memory. Global context data should be strictly necessary.
 - **Stack Discipline:** Ledger targets, especially Nano X, are sensitive to stack pressure. Use `__noinline_due_to_stack__` from `src/utils/utils.h` for helpers with large local buffers or helpers that commonly compose into stack-heavy call chains, particularly in address derivation / formatting and transaction parsing / formatting paths. Put the attribute on its own line immediately above the function declaration / definition. Prefer this over adding temporary global scratch buffers unless there is a stronger architectural reason.
 - **Temporary Buffers:** For short-lived byte buffers in tx/UI code, a tiny local helper such as `alloc_temp_buffer_or_fail()` using `APP_MEM_CALLOC`/`APP_MEM_FREE_AND_NULL` is acceptable when the allocation/free stay tightly scoped and improve stack usage.
@@ -95,17 +86,9 @@ For detailed analysis, see:
     - [tests/fuzzing/FUZZING.md](tests/fuzzing/FUZZING.md): Fuzzing harnesses and usage.
 
 ## Testing Workflow
-### Python Environment
-- **Default Python environment for repo tooling:** use `tests/venv` for all Python work - standalone ragger tests, swap tests, `tests/application_client/`, and `tests/unit/generators/`.
-- **Do not rely on system `python3`** for those workflows; missing packages and import-path mismatches are common outside the venv.
-- **Typical activation:** `source tests/venv/bin/activate`
-- **When running from `tests/unit/`:** activate via `source ../venv/bin/activate`
-- **When running unit-test generators from `tests/unit/`:** ensure imports resolve from `tests/` as well, e.g. `PYTHONPATH=../.. python3 generators/generate_unit_tests_from_ragger.py`
-
-- **When C code is modified:** run unit tests. Use unit test build as proxy for real app build. Use `-j8` for make, not `-j$(nproc)`.
-- **After unit tests pass:** check fuzzing build as an additional compile-health gate.
-- **When `tests/standalone` ragger inputs or `tests/application_client/` are modified:** run `tests/unit/generators/generate_unit_tests_from_ragger.py` (using `tests/venv` to have virtual env for python with all the required packages), then run unit tests to verify generated outputs are up to date and passing. The generator depends on `tests/application_client/`, so any change there must be reflected by regenerated unit-test fixtures.
-- **Do not run ragger tests or swap tests unless explicitly requested.**
-- **Compilation warnings are not acceptable:** treat warnings as issues to fix.
-- Command to build executed by Ledger VSCode plugin (not suitable for agents because of permissions, but can be run manually):
-  `docker exec --user 1000:1000 -it ledger-app-cardano-container bash -c 'export BOLOS_SDK=$(echo $STAX_SDK) && make -C ./ clean_target' && docker exec --user 1000:1000 -it ledger-app-cardano-container bash -c 'export BOLOS_SDK=$(echo $STAX_SDK) && make -C ./ -j DEBUG=1 COIN=cardano_ada'`
+- Use `tests/venv` for Python-based tooling. The exact activation, generator, and fixture commands live in [doc/testing.md](doc/testing.md) and [tests/unit/README.md](tests/unit/README.md).
+- When C code changes, run unit tests first. Use `-j8` for `make`.
+- After unit tests pass, run a fuzzing build as an additional compile-health gate.
+- When `tests/standalone/input_files/` or `tests/application_client/` changes, regenerate unit-test fixtures before re-running unit tests.
+- Do not run ragger tests or swap tests unless explicitly requested.
+- Compilation warnings are not acceptable; fix them.

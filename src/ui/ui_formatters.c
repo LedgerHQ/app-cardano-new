@@ -83,13 +83,13 @@ bool format_decimal_amount(uint64_t amount, size_t places, char *out, size_t out
     // decimal digits
     for (size_t dec = 0; dec < places; dec++) {
         if (!buffer_write_u8(&scratch_buf, (uint8_t)('0' + (amount % 10)))) {
-            return false;
+            return false; // LCOV_EXCL_LINE
         }
         amount /= 10;
     }
     if (places > 0) {
         if (!buffer_write_u8(&scratch_buf, (uint8_t)'.')) {
-            return false;
+            return false; // LCOV_EXCL_LINE
         }
     }
     // We want at least one iteration
@@ -98,11 +98,11 @@ bool format_decimal_amount(uint64_t amount, size_t places, char *out, size_t out
         // thousands separator
         if (place && (place % 3 == 0)) {
             if (!buffer_write_u8(&scratch_buf, (uint8_t)',')) {
-                return false;
+                return false; // LCOV_EXCL_LINE
             }
         }
         if (!buffer_write_u8(&scratch_buf, (uint8_t)('0' + (amount % 10)))) {
-            return false;
+            return false; // LCOV_EXCL_LINE
         }
         amount /= 10;
         place++;
@@ -119,11 +119,11 @@ bool format_decimal_amount(uint64_t amount, size_t places, char *out, size_t out
     buffer_t out_buf = buffer_create(out, outSize);
     for (size_t i = 0; i < rawSize; i++) {
         if (!buffer_write_u8(&out_buf, (uint8_t)scratchBuffer[rawSize - 1 - i])) {
-            return false;
+            return false; // LCOV_EXCL_LINE
         }
     }
     if (!buffer_write_u8(&out_buf, 0)) {
-        return false;
+        return false; // LCOV_EXCL_LINE
     }
 
     // make sure all the information is displayed to the user
@@ -486,7 +486,7 @@ bool format_incomplete_hex_with_length(const uint8_t *data,
     char hexPrefix[HEX_PREFIX_SIZE];
     int hexStatus = bytes_to_lowercase_hex(hexPrefix, sizeof(hexPrefix), data, previewLen);
     if (hexStatus != 0) {
-        return false;
+        return false; // LCOV_EXCL_LINE
     }
 
     STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(dataLen)), "signed type for %u");
