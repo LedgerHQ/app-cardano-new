@@ -311,7 +311,6 @@ bool format_ipv6(const ipv6_t *ipv6, char *out, size_t outSize) {
     if (ipv6->isNull) {
         int written = snprintf(out, outSize, "(none)");
         LEDGER_ASSERT(written > 0, "snprintf ipv6 null formatting failed");
-        LEDGER_ASSERT((size_t)written < outSize, "snprintf ipv6 null formatting truncated");
         LEDGER_ASSERT((size_t)written + 1 < outSize, "IPv6 null string does not fit in output buffer");
     } else {
         LEDGER_ASSERT(ipv6->ip != NULL, "NULL ipv6->ip");

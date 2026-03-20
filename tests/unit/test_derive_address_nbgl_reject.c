@@ -62,9 +62,32 @@ static void test_nbgl_reject_on_address_review_resets_context(void **state) {
     assert_int_equal(G_context.state.derive_address_state, DERIVE_ADDRESS_STATE_NONE);
 }
 
+static void test_derive_address_rejects_when_request_already_active(void **state) {
+    (void) state;
+    reset_test_context();
+
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+
+    test_read_buffer_t derive_address_buffer = make_test_read_buffer(
+        SHELLEY_DISPLAY_APDU_PAYLOAD,
+        sizeof(SHELLEY_DISPLAY_APDU_PAYLOAD)
+    );
+
+    apdu_response_begin(INS_DERIVE_ADDRESS);
+    handler_derive_address(&derive_address_buffer.sdk_buffer, P1_ADDRESS_DISPLAY);
+    apdu_response_assert_sent_or_deferred();
+    assert_read_buffer_unchanged_and_cleanup(&derive_address_buffer, SHELLEY_DISPLAY_APDU_PAYLOAD);
+
+    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_len, 0);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+    assert_int_equal(G_context.state.derive_address_state, DERIVE_ADDRESS_STATE_NONE);
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_nbgl_reject_on_address_review_resets_context),
+        cmocka_unit_test(test_derive_address_rejects_when_request_already_active),
     };
     return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }

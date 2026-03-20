@@ -476,6 +476,18 @@ static void test_tx_rejects_invalid_p1(void **state) {
     assert_int_equal(g_last_response_sw, SWO_INCORRECT_P1_P2);
 }
 
+static void test_tx_aux_data_rejects_invalid_p2(void **state) {
+    (void) state;
+    reset_context();
+    assert_true(test_mem_init());
+
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    G_context.state.tx_state = TX_STATE_AUX_DATA;
+
+    run_sign_tx_aux_data_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0}, 0xFF);
+    assert_int_equal(g_last_response_sw, SWO_INCORRECT_P1_P2);
+}
+
 static void test_tx_rejects_empty_non_final_chunk(void **state) {
     (void) state;
 
@@ -583,6 +595,7 @@ int main(void) {
         cmocka_unit_test(test_tx_confirm_rejects_empty_final_chunk),
         cmocka_unit_test(test_tx_confirm_rejects_oversized_final_chunk),
         cmocka_unit_test(test_tx_rejects_invalid_p1),
+        cmocka_unit_test(test_tx_aux_data_rejects_invalid_p2),
         cmocka_unit_test(test_tx_rejects_empty_non_final_chunk),
         cmocka_unit_test(test_tx_witness_rejects_too_many_witnesses),
         cmocka_unit_test(test_tx_witness_rejects_truncated_bip44_path),

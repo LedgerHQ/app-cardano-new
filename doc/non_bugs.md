@@ -67,3 +67,6 @@ Format: -> means explanation why not a bug.
 
 * `aux_data_hash_builder.c` trace buffers (`AUX_DATA_TRACE_BUFFER_SIZE` / `CVOTE_PAYLOAD_TRACE_BUFFER_SIZE`) are only 4 KiB each and will assert if a high-delegation CIP-36 registration overflows them.
 -> intentional. Buffers are debug-only (compiled in only under `-DTRACE_AUX_DATA_HASH_BUILDER`, never in production). The assert-on-overflow is deliberate: if a developer enables tracing and hits the limit, they get a loud failure rather than silent truncation of the trace, and can decide how to proceed. Production hashing is unaffected.
+
+* `parse_opcert` reads `kesPeriod` before `issueCounter` from the wire, but `finalize_sign_opcert` serializes them in the opposite order (`issueCounter` then `kesPeriod`).
+-> intentional. The APDU wire protocol sends `kesPeriod` first (historical convention), but the opcert body that is actually signed must be `KES public key || issueCounter || kesPeriod` per the Cardano spec (see `doc/spec_pool_registration.md` section 3.3.4 and the cardano-crypto.js verification snippet). The parse order and the serialization order are deliberately different.
