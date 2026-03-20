@@ -281,10 +281,12 @@ void handler_sign_cvote(buffer_t *cdata, uint8_t p1) {
             handle_sign_cvote_confirm_apdu(cdata);
             break;
         }
+        // LCOV_EXCL_START
         default:
             TRACE("Bad display type");
             LEDGER_ASSERT(false, "display type should be handled before");
             break;
+        // LCOV_EXCL_STOP
     }
     return;
 }

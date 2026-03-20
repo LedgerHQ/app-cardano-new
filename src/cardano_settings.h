@@ -22,9 +22,11 @@ static inline uint8_t flip_bool_setting(uint8_t value)
         return SETTINGS_YES;
     case SETTINGS_YES:
         return SETTINGS_NO;
+    // LCOV_EXCL_START
     default:
         ASSERT(false);
         return 0;  // Unreachable, but satisfies compiler
+    // LCOV_EXCL_STOP
     }
 }
 

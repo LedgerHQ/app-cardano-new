@@ -39,9 +39,11 @@ void addPaymentInfoUIPairs(const address_params_t* address_params) {
             break;
         }
 
+        // LCOV_EXCL_START
         default:
             // includes PAYMENT_NONE
             LEDGER_ASSERT(false, "Invalid payment choice");
+        // LCOV_EXCL_STOP
     }
     CHECK_COUNT(UI_PAIRS_PAYMENT_INFO);
 }
@@ -61,8 +63,10 @@ void addStakingInfoUIPairs(const address_params_t* address_params) {
                     UI_ADD_STATIC(UI_STATIC_LABEL("Warning:"), UI_STATIC_LABEL("no staking rewards"));
                     break;
 
+                // LCOV_EXCL_START
                 default:
                     LEDGER_ASSERT(false, "Invalid payment choice");
+                // LCOV_EXCL_STOP
             }
             break;
         }
@@ -92,8 +96,10 @@ void addStakingInfoUIPairs(const address_params_t* address_params) {
             break;
         }
 
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Invalid staking data source");
+        // LCOV_EXCL_STOP
     }
     CHECK_COUNT(UI_PAIRS_STAKING_INFO);
 }

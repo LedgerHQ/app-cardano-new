@@ -188,9 +188,11 @@ static void hash_certificate(tx_hash_builder_t *hash_builder,
                                   "pool credential hash size mismatch");
                     memmove(pool_key_hash, pool_credential->keyHash, SIZEOF(pool_key_hash));
                     break;
+                // LCOV_EXCL_START
                 default:
                     LEDGER_ASSERT(false, "Unknown ext_credential_type_t for pool retirement");
                     break;
+                // LCOV_EXCL_STOP
             }
             txHashBuilder_addCertificate_poolRetirement(hash_builder,
                                                         pool_key_hash,
@@ -198,9 +200,11 @@ static void hash_certificate(tx_hash_builder_t *hash_builder,
                                                         parsed_certificate_data->retirementEpoch);
             break;
         }
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown certificate_type_t");
             break;
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -278,6 +282,7 @@ static security_policy_t determine_certificate_policy(certificate_type_t type,
                 &parsed_certificate_data->coldCredential,
                 warning_bits);
 
+        // LCOV_EXCL_START
         case CERTIFICATE_STAKE_POOL_REGISTRATION:
             LEDGER_ASSERT(false, "CERTIFICATE_STAKE_POOL_REGISTRATION handled separately");
             return POLICY_DENY;
@@ -285,6 +290,7 @@ static security_policy_t determine_certificate_policy(certificate_type_t type,
         default:
             LEDGER_ASSERT(false, "Unknown certificate_type_t");
             return POLICY_DENY;
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -433,8 +439,10 @@ bool process_pool_registration_certificate(buffer_t *buf,
                 LEDGER_ASSERT(parsed_cert->poolId.hash != NULL, "NULL pool ID hash");
                 memmove(pool_key_hash, parsed_cert->poolId.hash, SIZEOF(pool_key_hash));
                 break;
+            // LCOV_EXCL_START
             default:
                 LEDGER_ASSERT(false, "Unknown pool ID key reference type");
+            // LCOV_EXCL_STOP
         }
         txHashBuilder_poolRegistrationCertificate_poolKeyHash(hash_builder,
                                                               pool_key_hash,

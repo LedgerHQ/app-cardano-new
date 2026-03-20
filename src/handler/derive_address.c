@@ -147,10 +147,12 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
             ui_deriveAddress_handleDisplay(policy, warnings);
             break;
         }
+        // LCOV_EXCL_START
         default:
             TRACE("Bad display type");
             LEDGER_ASSERT(false, "display type should be handled before");
             break;
+        // LCOV_EXCL_STOP
     }
     return;
 }

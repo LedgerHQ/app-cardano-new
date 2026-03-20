@@ -44,9 +44,11 @@ typedef struct {
                 break; \
             case POLICY_HIDE: \
                 break; \
+            /* LCOV_EXCL_START */ \
             default: \
                 LEDGER_ASSERT(false, "Unknown policy"); \
                 break; \
+            /* LCOV_EXCL_STOP */ \
         } \
     } while (0)
 

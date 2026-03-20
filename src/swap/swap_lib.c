@@ -120,9 +120,11 @@ bool swap_check_destination_validity(const tx_output_destination_t *destination)
                 return false;
             }
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Invalid destination type for swap: %d", destination->type);
             return false;  // Unreachable
+        // LCOV_EXCL_STOP
     }
     TRACE("Destination VALID");
     return true;

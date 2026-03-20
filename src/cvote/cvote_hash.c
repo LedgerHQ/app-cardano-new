@@ -35,10 +35,12 @@ static void cvote_extract_pubkey(const cvote_credential_t *credential, uint8_t *
             explicit_bzero(&derived_key, SIZEOF(derived_key));
             return;
         }
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Invalid CVote credential type %u (only 0=KEY, 2=KEY_PATH allowed)",
                          credential->type);
     }
+        // LCOV_EXCL_STOP
 }
 
 static void cvote_extract_destination_address(const tx_output_destination_t *destination,
@@ -77,10 +79,12 @@ static void cvote_hash_builder_add_vote_key(cvote_aux_data_t *aux_data) {
             // CIP36: vote key only included if no delegations (not in delegations mode)
             should_add_vote_key = (aux_data->hash_builder.state != AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_PAYLOAD_DELEGATIONS);
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Invalid CVote registration format %u (only CIP15=1, CIP36=2 allowed)",
                          aux_data->format);
     }
+        // LCOV_EXCL_STOP
 
     if (should_add_vote_key) {
         uint8_t pubkey[PUBLIC_KEY_LENGTH] = {0};

@@ -119,9 +119,11 @@ credential_t credential_for_tx_hash_from_ext_credential(const ext_credential_t *
             result.type = CREDENTIAL_SCRIPT_HASH;
             memmove(result.scriptHash, credential->scriptHash, SIZEOF(result.scriptHash));
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown ext credential type");
             break;
+        // LCOV_EXCL_STOP
     }
 
     return result;
@@ -155,9 +157,11 @@ drep_t drep_for_tx_hash_from_ext_drep(const ext_drep_t *ext_drep) {
         case EXT_DREP_NO_CONFIDENCE:
             result.type = DREP_NO_CONFIDENCE;
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown ext drep type");
             break;
+        // LCOV_EXCL_STOP
     }
 
     return result;
@@ -205,9 +209,11 @@ voter_t voter_for_tx_hash_from_ext_voter(const ext_voter_t *ext_voter) {
             voter.type = VOTER_DREP_SCRIPT_HASH;
             memmove(voter.scriptHash, ext_voter->scriptHash, SIZEOF(voter.scriptHash));
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown ext voter type");
             break;
+        // LCOV_EXCL_STOP
     }
 
     return voter;
@@ -447,9 +453,11 @@ static bool tx_process_withdrawals(buffer_t *buf, tx_processing_state_t *state) 
                         reward_address,
                         REWARD_ACCOUNT_LENGTH);
                     break;
+                // LCOV_EXCL_START
                 default:
                     LEDGER_ASSERT(false, "Unknown withdrawal credential type");
                     break;
+                // LCOV_EXCL_STOP
             }
             LEDGER_ASSERT(reward_address_length == REWARD_ACCOUNT_LENGTH, "Invalid reward address length");
 
@@ -699,9 +707,11 @@ bool tx_process_required_signers(buffer_t *buf, tx_processing_state_t *state) {
                             parsed_required_signer.keyHash,
                             SIZEOF(signer_key_hash));
                     break;
+                // LCOV_EXCL_START
                 default:
                     LEDGER_ASSERT(false, "Unknown required_signer_type_t");
                     break;
+                // LCOV_EXCL_STOP
             }
             txHashBuilder_addRequiredSigner(hash_builder,
                                             signer_key_hash,
@@ -1104,9 +1114,11 @@ bool tx_render_ui_chunk(uint16_t from) {
             break;
         case POLICY_HIDE:
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown policy");
             break;
+        // LCOV_EXCL_STOP
     }
 
     // A single streamed chunk may visit only a subset of policy SHOW paths.
@@ -1174,10 +1186,12 @@ bool tx_render_ui_all(void) {
             TRACE("tx ui streaming");
             break;
 
+        // LCOV_EXCL_START
         case UI_STATUS_UNINITIALIZED:
         default:
             LEDGER_ASSERT(false, "Unexpected UI status after first chunk render");
             return false;
+        // LCOV_EXCL_STOP
     }
 
     // Finalize the pairs count for display (may be less than allocated).
@@ -1192,9 +1206,11 @@ bool tx_render_ui_all(void) {
         case UI_STATUS_OUT_OF_MEMORY:
             return false;
         case UI_STATUS_UNINITIALIZED:
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unexpected UI warning status");
             return false;
+        // LCOV_EXCL_STOP
     }
 
     G_context.state.tx_state = TX_STATE_UI_REVIEW;

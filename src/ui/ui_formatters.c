@@ -50,9 +50,11 @@ static const char *getCertificateTypeName(certificate_type_t type) {
             return "DRep Update";
         case CERTIFICATE_STAKE_POOL_REGISTRATION:
             return "Pool Registration";
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown certificate type");
             return "Unknown";
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -363,9 +365,11 @@ bool format_constant_drep(ext_drep_type_t drep_type, char *out, size_t outSize) 
         case EXT_DREP_NO_CONFIDENCE:
             drep_str = "No Confidence";
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Only abstain and no confidence are constant DRep types");
             return false;
+        // LCOV_EXCL_STOP
     }
 
     int written = snprintf(out, outSize, "%s", drep_str);

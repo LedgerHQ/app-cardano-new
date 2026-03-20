@@ -68,10 +68,7 @@ void ui_display_witness(const bip44_path_t* witnessPath,
 
     bool isUnusual = warning_bits_has(warnings, WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH);
 
-    if (securityPolicy != POLICY_SHOW) {
-        LEDGER_ASSERT(false, "Unexpected security policy");
-        return;
-    }
+    LEDGER_ASSERT(securityPolicy == POLICY_SHOW, "Unexpected security policy");
 
     TRACE("isUnusual: %d", isUnusual);
 

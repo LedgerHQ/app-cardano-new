@@ -102,9 +102,11 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
         case POLICY_HIDE:
             aux_data->ui_show.vote_key = false;
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown vote key policy: %u", vote_key_policy);
             return false;
+        // LCOV_EXCL_STOP
     }
 
     // 2. Staking key
@@ -127,9 +129,11 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
         case POLICY_HIDE:
             aux_data->ui_show.staking_key = false;
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown staking key policy: %u", staking_key_policy);
             return false;
+        // LCOV_EXCL_STOP
     }
 
     // 3. Payment destination
@@ -148,9 +152,11 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
         case POLICY_HIDE:
             aux_data->ui_show.payment_destination = false;
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown destination policy: %u", destination_policy);
             return false;
+        // LCOV_EXCL_STOP
     }
 
     // 4. Nonce
@@ -166,9 +172,11 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
         case POLICY_HIDE:
             aux_data->ui_show.nonce = false;
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown nonce policy: %u", nonce_policy);
             return false;
+        // LCOV_EXCL_STOP
     }
 
     // 5. Voting purpose (CIP36 only)
@@ -184,9 +192,11 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
         case POLICY_HIDE:
             aux_data->ui_show.voting_purpose = false;
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown voting purpose policy: %u", voting_purpose_policy);
             return false;
+        // LCOV_EXCL_STOP
     }
 
     // Aux data hash is no longer displayed in UI (finalized after user confirms)

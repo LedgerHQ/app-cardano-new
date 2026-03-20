@@ -70,8 +70,10 @@ void keyPathToKeyHash(const bip44_path_t* pathSpec, uint8_t* hash, size_t hashSi
             explicit_bzero(&extPubKey, SIZEOF(extPubKey));
             return;
 
+        // LCOV_EXCL_START
         default:
             explicit_bzero(&extPubKey, SIZEOF(extPubKey));
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 }

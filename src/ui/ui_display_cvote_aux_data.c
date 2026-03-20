@@ -187,9 +187,11 @@ static void cvote_add_vote_key_pair(const char *label,
                            credential->publicKey,
                            PUBLIC_KEY_LENGTH);
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unexpected vote credential type");
             break;
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -362,8 +364,10 @@ static bool cvote_add_delegation_pairs(
         case POLICY_HIDE:
             // No UI pairs added, but delegation is allowed
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown delegation policy");
+        // LCOV_EXCL_STOP
     }
 
     ui_status_t result = ui_render_scope_end();

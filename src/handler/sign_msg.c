@@ -345,8 +345,10 @@ static void prepare_address_field(sign_msg_ctx_t *ctx) {
             break;
         }
 
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Invalid address field type");
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -512,9 +514,11 @@ static void signMsg_handle_confirm(buffer_t *cdata) {
             return;
 
         case POLICY_DENY:
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Invalid sign_msg policy at CONFIRM: %d", ctx->signing_policy);
             return;
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -598,9 +602,11 @@ void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
             signMsg_handle_confirm(cdata);
             break;
         }
+        // LCOV_EXCL_START
         default:
             TRACE("Bad P1 value");
             LEDGER_ASSERT(false, "P1 should be handled before");
             break;
+        // LCOV_EXCL_STOP
     }
 }

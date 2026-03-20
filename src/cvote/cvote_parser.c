@@ -197,10 +197,12 @@ cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
             }
             break;
 
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Invalid CVote registration format: %u", out_data->format);
             dest_status = CVOTE_PARSER_INVALID_FORMAT;
             return dest_status;
+        // LCOV_EXCL_STOP
     }
 
     // Verify buffer fully consumed

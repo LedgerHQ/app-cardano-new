@@ -121,10 +121,12 @@ void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnin
                            ctx->addressFieldSize);
             break;
         }
+        // LCOV_EXCL_START
         default:
             ui_render_scope_end();
             LEDGER_ASSERT(false, "Invalid address field type");
             return;
+        // LCOV_EXCL_STOP
     }
 
     // Field 4: Message length in bytes
@@ -176,9 +178,11 @@ void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnin
             send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
             return;
         case UI_STATUS_UNINITIALIZED:
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unexpected UI status");
             return;
+        // LCOV_EXCL_STOP
     }
 
     // Build warnings if any

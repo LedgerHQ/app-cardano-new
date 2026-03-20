@@ -67,8 +67,10 @@ static address_type_t getDestinationAddressType(const tx_output_destination_t *d
             LEDGER_ASSERT(destination->address.buffer != NULL, "NULL destination address");
             LEDGER_ASSERT(destination->address.length > 0, "Zero destination address length");
             return getAddressType(destination->address.buffer[0]);
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -2007,10 +2009,12 @@ security_policy_t policyForSignTxDisplayTxHash(sign_tx_signingmode_t signingMode
         case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
             SHOW();
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown tx signing mode for tx hash display policy");
             DENY();
             break;
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -2270,10 +2274,12 @@ security_policy_t policyForCVoteRegistrationVoteKey(const cvote_credential_t* cr
             SHOW();
             break;
         }
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown credential type: %u", credential->type);
             DENY();
             break;
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached

@@ -119,10 +119,12 @@ static void format_address_fields(const address_params_t *params, warning_bits_t
             break;
         }
 
+        // LCOV_EXCL_START
         default:
             ui_render_scope_end();
             LEDGER_ASSERT(false, "Unsupported address type: %d", params->type);
             return;
+        // LCOV_EXCL_STOP
     }
     ui_status_t status = ui_render_scope_end();
     LEDGER_ASSERT(status == UI_STATUS_SUCCESS, "Unexpected UI status: %d", status);
@@ -170,10 +172,12 @@ void ui_deriveAddress_handleReturn(security_policy_t policy, warning_bits_t warn
             finalize_derive_address();
             break;
         }
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Invalid policy in ui_deriveAddress_handleReturn: %d", policy);
             break;
-    }
+        // LCOV_EXCL_STOP
+}
 }
 
 void ui_deriveAddress_handleDisplay(security_policy_t policy, warning_bits_t warnings) {
@@ -188,8 +192,10 @@ void ui_deriveAddress_handleDisplay(security_policy_t policy, warning_bits_t war
                                     derive_address_review_choice,
                                     warnings);
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Invalid policy in ui_deriveAddress_handleDisplay: %d", policy);
             break;
+        // LCOV_EXCL_STOP
     }
 }

@@ -89,9 +89,11 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
             finalize_pubkey_export();
             return;
 
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unexpected security policy");
             return;
+        // LCOV_EXCL_STOP
     }
 
     bool isColdKey = (bip44_classifyPath(&pk->path) == PATH_POOL_COLD_KEY);

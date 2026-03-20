@@ -187,9 +187,11 @@ bool buffer_read_drep(buffer_t *buf, ext_drep_t *drep) {
         case EXT_DREP_NO_CONFIDENCE:
             TRACE("DRep has no additional data");
             break;
+        // LCOV_EXCL_START
         default:
-            TRACE("Invalid DRep type: %u", drep_type);
+            LEDGER_ASSERT(false, "Invalid internal DRep type: %u", drep_type);
             return false;
+        // LCOV_EXCL_STOP
     }
     TRACE("Successfully parsed DRep");
     return true;
@@ -272,9 +274,11 @@ static bool _parse_credential_data(buffer_t *buf,
             LEDGER_ASSERT(credential->scriptHash != NULL, "NULL scriptHash");
             break;
         }
+        // LCOV_EXCL_START
         default:
-            TRACE("Invalid credential type: %u", cred_type);
+            LEDGER_ASSERT(false, "Invalid internal credential type: %u", cred_type);
             return false;
+        // LCOV_EXCL_STOP
     }
     return true;
 }

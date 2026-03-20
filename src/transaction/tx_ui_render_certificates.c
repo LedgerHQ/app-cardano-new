@@ -66,8 +66,10 @@ static void render_credential(const ext_credential_t *credential,
                            credential->scriptHash,
                            SCRIPT_HASH_LENGTH);
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown credential type");
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -146,8 +148,11 @@ static void render_drep(const ext_drep_t *drep, const char *label) {
         case EXT_DREP_NO_CONFIDENCE:
             UI_ADD_FORMAT1(label, MAX_DREP_OPTION_LENGTH, format_constant_drep, drep->type);
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown DRep type");
+            break;
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -446,8 +451,11 @@ static void plan_or_render_certificate_pool_retirement(
                 LEDGER_ASSERT(pool_credential->keyHash != NULL, "NULL pool credential key hash");
                 memcpy(pool_key_hash, pool_credential->keyHash, POOL_KEY_HASH_LENGTH);
                 break;
+            // LCOV_EXCL_START
             default:
                 LEDGER_ASSERT(false, "Unsupported pool credential type for retirement");
+                break;
+            // LCOV_EXCL_STOP
         }
 
         START_COUNT();
@@ -496,8 +504,11 @@ void plan_or_render_pool_id(const tx_processing_mode_t *mode, const pool_id_t *p
                 LEDGER_ASSERT(pool_id->hash != NULL, "NULL pool ID hash");
                 memmove(pool_key_hash, pool_id->hash, SIZEOF(pool_key_hash));
                 break;
+            // LCOV_EXCL_START
             default:
                 LEDGER_ASSERT(false, "Unknown pool ID key reference type");
+                break;
+            // LCOV_EXCL_STOP
         }
         UI_ADD_FORMAT3(UI_STATIC_LABEL("Pool ID"),
                        MAX_BECH32_STRING_LENGTH,
@@ -608,8 +619,11 @@ static uint16_t count_pool_relay_ui_pairs(const pool_relay_t *relay) {
         case RELAY_MULTIPLE_HOST_NAME:
             if (relay->dnsNameSize > 0) pairs += UI_PAIRS_POOL_RELAY_DNS;
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown relay format type");
+            break;
+        // LCOV_EXCL_STOP
     }
     return pairs;
 }
@@ -673,8 +687,11 @@ void plan_or_render_pool_relay(const tx_processing_mode_t *mode,
                                    relay->dnsNameSize);
                 }
                 break;
+            // LCOV_EXCL_START
             default:
                 LEDGER_ASSERT(false, "Unknown relay format type");
+                break;
+            // LCOV_EXCL_STOP
         }
         CHECK_COUNT(expected_pairs);
     }
@@ -817,8 +834,10 @@ void tx_ui_plan_or_render_certificate(const tx_processing_mode_t *mode,
             LEDGER_ASSERT(false, "CERTIFICATE_STAKE_POOL_REGISTRATION handled separately");
             break;
 
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown certificate type");
             break;
+        // LCOV_EXCL_STOP
     }
 }

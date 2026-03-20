@@ -126,10 +126,12 @@ static void tx_streaming_continue_choice(bool confirm) {
             tx_review_cleanup();
             send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
             return;
+        // LCOV_EXCL_START
         case UI_STATUS_UNINITIALIZED:
         default:
             LEDGER_ASSERT(false, "Unexpected UI status after streaming chunk render");
             return;
+        // LCOV_EXCL_STOP
     }
 
     // Update next_ui_pair_index for the next chunk.

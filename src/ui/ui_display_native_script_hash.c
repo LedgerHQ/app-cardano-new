@@ -221,9 +221,11 @@ void display_complex_script_content(ui_native_script_type scriptType) {
             script_label = "N of K";
             expectedPairs = UI_PAIRS_SCRIPT_TYPE + UI_PAIRS_REQUIREMENT + UI_PAIRS_CONTENT;
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Invalid script type for complex script display");
             return;
+        // LCOV_EXCL_STOP
     }
 
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;

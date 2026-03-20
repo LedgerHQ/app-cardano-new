@@ -188,9 +188,11 @@ static bool deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
                     keyPathToKeyHash(
                         &ctx->scriptContent.pubkeyPath, pubkeyHash, ADDRESS_KEY_HASH_LENGTH);
                     break;
+                // LCOV_EXCL_START
                 default:
                     LEDGER_ASSERT(false, "Invalid policy value: %d", policy);
             }
+                // LCOV_EXCL_STOP
             break;
         }
         case EXT_CREDENTIAL_KEY_HASH:
@@ -204,9 +206,11 @@ static bool deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
             ctx->ui_scriptType = UI_SCRIPT_PUBKEY_HASH;  // Tag the union immediately
             memmove(pubkeyHash, credential.keyHash, ADDRESS_KEY_HASH_LENGTH);
             break;
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unexpected credential type: %d", credential.type);
             return false;
+        // LCOV_EXCL_STOP
     }
     
     // Add pubkey hash to script hash builder (single call for both paths)
@@ -485,9 +489,11 @@ void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
                 case P1_NATIVE_SCRIPT_FINISH:
                     deriveNativeScriptHash_handleWholeNativeScriptFinish(cdata);
                     break;
+                // LCOV_EXCL_START
                 default:
                     LEDGER_ASSERT(false, "Invalid native script type: %d", script_type);
                     break;
+                // LCOV_EXCL_STOP
             }
             break;
         default:

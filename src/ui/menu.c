@@ -74,8 +74,11 @@ static void controls_callback(int token, uint8_t index, int page) {
             nvm_write((void*) &N_storage.expert_mode_enabled, &switch_value, 1);
             break;
 
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown menu token");
+            break;
+        // LCOV_EXCL_STOP
     }
 }
 

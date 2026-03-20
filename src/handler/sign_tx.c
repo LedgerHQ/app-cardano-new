@@ -768,8 +768,10 @@ void handler_sign_tx_witness(buffer_t *cdata) {
             ui_display_witness(&tx_witness_ctx()->witness_path, policy, witness_warnings);
             return;
 
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Invalid security policy");
             return;
+        // LCOV_EXCL_STOP
     }
 }

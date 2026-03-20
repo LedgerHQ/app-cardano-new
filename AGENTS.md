@@ -43,7 +43,7 @@ For detailed analysis, see:
 - **Do NOT modify `src/transaction/tx_hash_builder.c`, `src/addressUtils/addressUtilsShelley.c`, or `src/addressUtils/bip44.c`** without explicit confirmation. They are trusted components.
 - **Do NOT add custom CBOR serialization**, address manipulation, or BIP44 path functions. Use existing utilities.
 - **Do NOT remove original comments** explaining crucial details without confirmation.
-- **Do NOT perform git operations** (modifications/writes).
+- **Do NOT perform git write operations** (modifications/writes). Read-only commands like `git diff` are allowed.
 - **Do NOT install anything**.
 - **Do NOT add extended-length APDU support.** This app uses short-form APDUs only (5-byte header, Lc ≤ 255). Do not modify `tests/unit/generators/common.py::extract_apdu_payload()` or any parser/generator to handle the extended-length case.
 
@@ -69,6 +69,19 @@ For detailed analysis, see:
 - **UI Logic:** Ensure that UI display items follow the order of items in the transaction body and display format/encoding is consistent with old app.
 - **Instruction Interleaving:** Confirm that handlers correctly guard against instruction interleaving attacks.
 - **Review Baseline:** Treat [doc/non_bugs.md](doc/non_bugs.md) as a maintained list of known non-issues and intentional tradeoffs; do not re-report listed items as bugs.
+
+## Coverage Hygiene
+
+- Use `LCOV_EXCL_LINE` for invariant-only branches that cannot occur through supported app flow:
+  - exhaustive `default` branches over validated enum domains,
+  - defensive invariants after earlier guard/parse checks,
+  - impossible transition paths between request/state-machine steps.
+- For these invariants:
+  - keep the branch as `LEDGER_ASSERT(...)` (or `ASSERT(...)`) and append `// LCOV_EXCL_LINE`.
+  - for two-line `if (cond) { ... } else { LEDGER_ASSERT(false, ...); }` patterns, prefer two single-line `// LCOV_EXCL_LINE` comments on the assert and the unreachable fallback/return.
+- Do **not** use LCOV exclusions for realistic malformed-input flow, parser-failure paths, or policy outcomes that can be exercised with valid APDU scenarios.
+- If a branch can be covered from a bad APDU / bad Tx / bad buffer path with concrete fixtures, do not exclude it; add a unit test.
+- Prefer per-line marks (`// LCOV_EXCL_LINE`) for small branches; use `LCOV_EXCL_START/STOP` only when a contiguous block is truly all structural invariants.
 
 ## Additional Resources
 - **BOLOS SDK:** `/opt/ledger-secure-sdk` (underlying library).

@@ -121,9 +121,11 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
             finalize_sign_opcert();
             return;
 
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unexpected security policy");
             return;
+        // LCOV_EXCL_STOP
     }
 
     // Format all opcert fields and check for errors
@@ -134,10 +136,12 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
         case UI_STATUS_OUT_OF_MEMORY:
             send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
             return;
+        // LCOV_EXCL_START
         case UI_STATUS_UNINITIALIZED:
         default:
             LEDGER_ASSERT(false, "Unexpected UI status");
             return;
+        // LCOV_EXCL_STOP
     }
 
     // Build warnings if needed
@@ -149,10 +153,12 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
         case UI_STATUS_OUT_OF_MEMORY:
             send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
             return;
+        // LCOV_EXCL_START
         case UI_STATUS_UNINITIALIZED:
         default:
             LEDGER_ASSERT(false, "Unexpected warning status");
             return;
+        // LCOV_EXCL_STOP
     }
     const nbgl_warning_t* warningPtr = ui_get_warnings();
     nbgl_useCaseAdvancedReview(TYPE_OPERATION,

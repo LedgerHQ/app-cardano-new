@@ -55,6 +55,47 @@ Notes:
   test tooling.
 - Run ragger and swap tests only when explicitly requested.
 
+## Coverage Exclusion Policy
+
+Use `LCOV_EXCL_*` only for invariant-only dead paths that are intentionally
+unreachable after existing validation, not for behavior branches.
+
+Good candidates:
+
+- `default` arms on validated enum domains.
+- Impossible request/state-machine transitions.
+- Defensive invariant checks used to catch internal contract violations.
+
+Avoid excluding:
+
+- parser/validation failures from malformed APDU, buffer, or Tx input,
+- user-visible policy branches that can produce a deny/ reject outcome,
+- missing-error paths that should be validated by unit fixtures.
+
+Recommended style:
+
+- Keep the check as `LEDGER_ASSERT(false, "...")` (or `ASSERT(false)` for low-level
+  checks) inside a `// LCOV_EXCL_START` / `// LCOV_EXCL_STOP` block.
+- Use block exclusions for small impossible fallbacks and unreachable default
+  arms on validated enum switches.
+- If a branch is reachable with realistic malformed-but-not-impossible input, add a
+  test instead of excluding it.
+
+Example:
+
+```c
+switch (status) {
+    case VALID:
+        ...
+        break;
+    // LCOV_EXCL_START
+    default:
+        LEDGER_ASSERT(false, "Unknown status: %u", status);
+        return;
+    // LCOV_EXCL_STOP
+}
+```
+
 ## Terminology: Deny vs Reject
 
 Use these terms consistently across ragger tests, generator scripts, unit-test fixtures, and unit-test runners:

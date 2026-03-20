@@ -146,9 +146,11 @@ void tx_ui_plan_or_render_required_signer(const tx_processing_mode_t *mode,
                                format_bip44_path,
                                &parsed_required_signer->keyPath);
                 break;
+            // LCOV_EXCL_START
             default:
                 LEDGER_ASSERT(false, "Unknown required signer type");
                 break;
+            // LCOV_EXCL_STOP
         }
         CHECK_COUNT(UI_PAIRS_REQUIRED_SIGNER);
     }
@@ -424,9 +426,11 @@ void tx_ui_plan_or_render_voter(const tx_processing_mode_t *mode,
                                parsed_voter->keyHash,
                                ADDRESS_KEY_HASH_LENGTH);
                 break;
+            // LCOV_EXCL_START
             default:
                 LEDGER_ASSERT(false, "Unknown voter type");
                 break;
+            // LCOV_EXCL_STOP
         }
         CHECK_COUNT(UI_PAIRS_VOTER);
     }

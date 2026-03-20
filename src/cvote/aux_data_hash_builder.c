@@ -209,9 +209,11 @@ void auxDataHashBuilder_cVoteRegistration_addStakingKey(aux_data_hash_builder_t*
             ASSERT(builder->cVoteRegistrationData.remainingDelegations == 0);
             break;
 
+        // LCOV_EXCL_START
         default:
-            // should not happen
             ASSERT(false);
+            break;
+        // LCOV_EXCL_STOP
     }
 
     {
