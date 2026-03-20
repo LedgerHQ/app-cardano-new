@@ -182,8 +182,8 @@ def _extract_fixtures_from_header(fixture_path: Path) -> list[tuple[str, str, bo
     return fixtures
 
 
-def _build_boilerplate(fixture_file: str) -> str:
-    """Generate the standard boilerplate for sign_tx test files."""
+def _build_common_header(fixture_file: str) -> str:
+    """Generate the standard header for sign_tx test files."""
     return (
         "// Unit tests for transaction signing (auto-generated)\n"
         "// DO NOT EDIT - regenerate using generators/generate_unit_tests_from_ragger.py\n"
@@ -255,7 +255,7 @@ def _generate_complete_test_file(
             f"Test count mismatch for {test_c_file}: expected {expected_test_count}, got {len(test_names)}"
         )
 
-    boilerplate = _build_boilerplate(fixture_file)
+    common_header = _build_common_header(fixture_file)
     tests_block = "\n\n".join(test_functions)
     main_block = _build_main_function(test_names, test_c_file)
 
@@ -266,7 +266,7 @@ def _generate_complete_test_file(
     )
 
     complete_file = (
-        boilerplate.rstrip()
+        common_header.rstrip()
         + "\n\n"
         + era_comment_block
         + tests_block

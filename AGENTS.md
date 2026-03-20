@@ -4,7 +4,7 @@ We are converting an old version of the Ledger Cardano app into a new modernized
 
 ## Context
 - **Old app (Shelley):** `../app-cardano`. Refer to this for established logic and processing patterns.
-- **New app:** `../ledger-app-cardano`. A fork of the Ledger boilerplate app.
+- **New app:** `../ledger-app-cardano`. The modernized Ledger Cardano app in this repository.
 - **Device Support:** Supporting Stax, Flex, Nano X, and Nano S+. *Nano S is no longer supported.*
 - **UI Framework:** NBGL is used exclusively for UI. Prefer high-level functions for standard use cases.
 
@@ -36,7 +36,6 @@ For detailed analysis, see:
 - **Stack Discipline:** Ledger targets, especially Nano X, are sensitive to stack pressure. Use `__noinline_due_to_stack__` from `src/utils/utils.h` for helpers with large local buffers or helpers that commonly compose into stack-heavy call chains, particularly in address derivation / formatting and transaction parsing / formatting paths. Put the attribute on its own line immediately above the function declaration / definition. Prefer this over adding temporary global scratch buffers unless there is a stronger architectural reason.
 - **Temporary Buffers:** For short-lived byte buffers in tx/UI code, a tiny local helper such as `alloc_temp_buffer_or_fail()` using `APP_MEM_CALLOC`/`APP_MEM_FREE_AND_NULL` is acceptable when the allocation/free stay tightly scoped and improve stack usage.
 - **Imports:** Organize imports logically and avoid forward declarations.
-- **Legacy Code:** Identify and propose removal of any boilerplate leftovers.
 - **Use cheap fast model to gather context if possible (e.g. Haiku)**.
 
 ### What NOT to DO
@@ -52,7 +51,7 @@ For detailed analysis, see:
 - **Do not imply false authorship:** If code is Ledger-derived, keep Ledger as original work.
 - **Use file-by-file classification:**
   - **Vacuumlabs-only:** files created in this repo (Cardano-specific original work) use Vacuumlabs copyright.
-  - **Copied from Ledger/boilerplate/eth (unmodified):** keep original upstream copyright/license header.
+  - **Copied from upstream Ledger code (unmodified):** keep original upstream copyright/license header.
   - **Copied + modified:** keep original upstream attribution and add Vacuumlabs in a separate `Modifications` block.
   - **Copied from old app (`../app-cardano`):** treat as Vacuumlabs-only unless there is evidence the specific part is Ledger-origin; ambiguous cases require confirmation.
 - **Third-party code:** never replace third-party license blocks (e.g., ISC/MIT). Keep them intact; only append minimal modification note if needed.
@@ -62,6 +61,7 @@ For detailed analysis, see:
 
 ## Instructions for Reviewing Agent
 
+- **Review Scope:** A review should identify bugs, regressions, security issues, and concrete opportunities for improvement; do not spend review output describing what the code does unless that explanation is needed to justify a finding.
 - **Security focus:** Be thorough and paranoid about security and correctness. Unless a security policy allows HIDE, all data must be displayed or confirmed by human app users.
 - **Verification:** Ensure that every received BIP44 path is validated against `securityPolicy.c` (typically applies to other incoming data too, e.g. tx body elements).
 - **Consistency:** Verify that new handlers are consistent with existing ones.
@@ -96,15 +96,15 @@ For detailed analysis, see:
 
 ## Testing Workflow
 ### Python Environment
-- **Default Python environment for repo tooling:** use `tests/standalone/venv` for Python work related to `tests/standalone/`, `tests/application_client/`, and `tests/unit/generators/`.
+- **Default Python environment for repo tooling:** use `tests/venv` for all Python work - standalone ragger tests, swap tests, `tests/application_client/`, and `tests/unit/generators/`.
 - **Do not rely on system `python3`** for those workflows; missing packages and import-path mismatches are common outside the venv.
-- **Typical activation:** `source tests/standalone/venv/bin/activate`
-- **When running from `tests/unit/`:** activate via `source ../standalone/venv/bin/activate`
+- **Typical activation:** `source tests/venv/bin/activate`
+- **When running from `tests/unit/`:** activate via `source ../venv/bin/activate`
 - **When running unit-test generators from `tests/unit/`:** ensure imports resolve from `tests/` as well, e.g. `PYTHONPATH=../.. python3 generators/generate_unit_tests_from_ragger.py`
 
 - **When C code is modified:** run unit tests. Use unit test build as proxy for real app build. Use `-j8` for make, not `-j$(nproc)`.
 - **After unit tests pass:** check fuzzing build as an additional compile-health gate.
-- **When `tests/standalone` ragger inputs or `application_client/` are modified:** run `tests/unit/generators/generate_unit_tests_from_ragger.py` (using `tests/standalone/venv` to have virtual env for python with all the required packages), then run unit tests to verify generated outputs are up to date and passing. The generator depends on `application_client/`, so any change there must be reflected by regenerated unit-test fixtures.
+- **When `tests/standalone` ragger inputs or `tests/application_client/` are modified:** run `tests/unit/generators/generate_unit_tests_from_ragger.py` (using `tests/venv` to have virtual env for python with all the required packages), then run unit tests to verify generated outputs are up to date and passing. The generator depends on `tests/application_client/`, so any change there must be reflected by regenerated unit-test fixtures.
 - **Do not run ragger tests or swap tests unless explicitly requested.**
 - **Compilation warnings are not acceptable:** treat warnings as issues to fix.
 - Command to build executed by Ledger VSCode plugin (not suitable for agents because of permissions, but can be run manually):
