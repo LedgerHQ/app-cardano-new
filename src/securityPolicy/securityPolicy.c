@@ -265,9 +265,11 @@ static security_policy_t _policyForDeriveAddress(const address_params_t *address
             // no paths in the address
             break;
 
+        // LCOV_EXCL_START
         default:
-            DENY();
+            LEDGER_ASSERT(false, "Unexpected address type in derive-address policy");
             break;
+        // LCOV_EXCL_STOP
     }
 
     RETURN(successPolicy);
@@ -479,8 +481,10 @@ security_policy_t policyForSignTxInit(const tx_params_t *txParams,
         case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     // w are collected here; UI machine decides which screens to show
@@ -533,8 +537,10 @@ security_policy_t policyForSignTxInput(sign_tx_signingmode_t txSigningMode,
             HIDE();
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -673,8 +679,10 @@ static security_policy_t policyForSignTxOutputAddressBytes(const tx_output_descr
             SHOW();
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -783,8 +791,10 @@ static security_policy_t policyForSignTxOutputAddressParams(const tx_output_desc
             break;
         }
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -811,9 +821,11 @@ security_policy_t policyForSignTxOutput(const tx_output_description_t *output,
                                                       networkId,
                                                       protocolMagic,
                                                       w));
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
             break;
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -832,9 +844,11 @@ security_policy_t policyForSignTxOutputDatumHash(security_policy_t outputPolicy,
         case POLICY_HIDE:
             HIDE();
             break;
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
             DENY();
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -853,9 +867,11 @@ security_policy_t policyForSignTxOutputRefScript(security_policy_t outputPolicy,
         case POLICY_HIDE:
             HIDE();
             break;
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
             DENY();
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -944,10 +960,12 @@ static security_policy_t policyForSignTxCollateralOutputAddressParams(
             }
             break;
 
+        // LCOV_EXCL_START
         default:
             // should be used only in Plutus transactions
-            DENY();
+            ASSERT(false);
             break;
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -976,9 +994,11 @@ security_policy_t policyForSignTxCollateralOutputAddress(const tx_output_descrip
                                                                 protocolMagic,
                                                                 isTotalCollateralIncluded,
                                                                 w));
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
             break;
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1051,8 +1071,10 @@ security_policy_t policyForSignTxFee(sign_tx_signingmode_t txSigningMode,
             HIDE();
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1083,8 +1105,10 @@ static bool _forbiddenCredential(sign_tx_signingmode_t txSigningMode,
                     return true;
                 case EXT_CREDENTIAL_SCRIPT_HASH:
                     break;
+                // LCOV_EXCL_START
                 default:
                     ASSERT(false);
+                // LCOV_EXCL_STOP
             }
             break;
 
@@ -1103,14 +1127,18 @@ static bool _forbiddenCredential(sign_tx_signingmode_t txSigningMode,
                     return true;
                 case EXT_CREDENTIAL_KEY_PATH:
                     break;
+                // LCOV_EXCL_START
                 default:
                     ASSERT(false);
+                // LCOV_EXCL_STOP
             }
             break;
 
+        // LCOV_EXCL_START
         default:
             // this should not be called in POOL_REGISTRATION signing modes
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     return false;
@@ -1400,8 +1428,10 @@ security_policy_t policyForSignTxStakePoolRegistrationInit(sign_tx_signingmode_t
             DENY();
             break;
 
+        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unexpected signing mode");
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1424,8 +1454,10 @@ security_policy_t policyForSignTxStakePoolRegistrationPoolId(sign_tx_signingmode
             SHOW();
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1444,8 +1476,10 @@ security_policy_t policyForSignTxStakePoolRegistrationVrfKey(sign_tx_signingmode
             SHOW();
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1473,8 +1507,10 @@ security_policy_t policyForSignTxStakePoolRegistrationRewardAccount(
             // we do not enforce single account, no benefit for pool registrations
             // and it is compatible with previous app versions
             break;
+        // LCOV_EXCL_START
         default:
-            DENY();
+            ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     switch (txSigningMode) {
@@ -1483,8 +1519,10 @@ security_policy_t policyForSignTxStakePoolRegistrationRewardAccount(
             SHOW();
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1507,8 +1545,10 @@ security_policy_t policyForSignTxStakePoolRegistrationOwner(
         case EXT_CREDENTIAL_SCRIPT_HASH:
             DENY();
             break;
+        // LCOV_EXCL_START
         default:
-            DENY();
+            ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     switch (txSigningMode) {
@@ -1522,8 +1562,10 @@ security_policy_t policyForSignTxStakePoolRegistrationOwner(
             SHOW();
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
     DENY();  // should not be reached
 }
@@ -1545,8 +1587,10 @@ security_policy_t policyForSignTxStakePoolRegistrationRelay(
             SHOW();
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1613,10 +1657,12 @@ security_policy_t policyForSignTxWithdrawal(sign_tx_signingmode_t txSigningMode,
                     DENY();
                     break;
 
+                // LCOV_EXCL_START
                 default:
                     // in POOL_REGISTRATION signing modes, this certificate should have already been
                     // reported as invalid (only pool registration certificate is allowed)
                     ASSERT(false);
+                // LCOV_EXCL_STOP
             }
             break;
 
@@ -1640,10 +1686,12 @@ security_policy_t policyForSignTxWithdrawal(sign_tx_signingmode_t txSigningMode,
                     DENY();
                     break;
 
+                // LCOV_EXCL_START
                 default:
                     // in POOL_REGISTRATION signing modes, this certificate should have already been
                     // reported as invalid (only pool registration certificate is allowed)
                     ASSERT(false);
+                // LCOV_EXCL_STOP
             }
             break;
 
@@ -1660,17 +1708,21 @@ security_policy_t policyForSignTxWithdrawal(sign_tx_signingmode_t txSigningMode,
                     DENY();
                     break;
 
+                // LCOV_EXCL_START
                 default:
                     // in POOL_REGISTRATION signing modes, this certificate should have already been
                     // reported as invalid (only pool registration certificate is allowed)
                     ASSERT(false);
+                // LCOV_EXCL_STOP
             }
             break;
 
+        // LCOV_EXCL_START
         default:
             // in POOL_REGISTRATION signing modes, non-zero number of withdrawals
             // should have already been reported as invalid
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1693,8 +1745,10 @@ security_policy_t policyForSignTxAuxData(aux_data_type_t auxDataType, warning_bi
             SHOW();
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1719,10 +1773,12 @@ security_policy_t policyForSignTxMintInit(const sign_tx_signingmode_t txSigningM
             SHOW();
             break;
 
+        // LCOV_EXCL_START
         default:
             // in POOL_REGISTRATION signing modes, non-empty mint field
             // should have already been reported as invalid
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1744,8 +1800,10 @@ security_policy_t policyForSignTxScriptDataHash(const sign_tx_signingmode_t txSi
             DENY();
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1782,26 +1840,16 @@ security_policy_t policyForSignTxCollateralInput(const sign_tx_signingmode_t txS
             DENY();
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
 }
 
 // ======================================= Required Signers =======================================
-
-static bool required_signers_allowed(const sign_tx_signingmode_t txSigningMode) {
-    switch (txSigningMode) {
-        case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
-        case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
-        case SIGN_TX_SIGNINGMODE_MULTISIG_TX:
-            return true;
-
-        default:
-            return false;
-    }
-}
 
 static bool is_required_signer_allowed(bip44_path_t *path) {
     switch (bip44_classifyPath(path)) {
@@ -1833,7 +1881,19 @@ security_policy_t policyForSignTxRequiredSigner(const sign_tx_signingmode_t txSi
                                                 required_signer_t *requiredSigner,
                                                 warning_bits_t *w) {
     POLICY_INIT();
-    DENY_UNLESS(required_signers_allowed(txSigningMode));
+    switch (txSigningMode) {
+        case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
+        case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
+        case SIGN_TX_SIGNINGMODE_MULTISIG_TX:
+            // OK
+            break;
+
+        // LCOV_EXCL_START
+        default:
+            ASSERT(false);
+            break;
+        // LCOV_EXCL_STOP
+    }
 
     switch (requiredSigner->type) {
         case REQUIRED_SIGNER_WITH_HASH:
@@ -1847,8 +1907,10 @@ security_policy_t policyForSignTxRequiredSigner(const sign_tx_signingmode_t txSi
             HIDE();
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1887,8 +1949,10 @@ security_policy_t policyForSignTxReferenceInput(const sign_tx_signingmode_t txSi
             DENY();
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
     DENY();  // should not be reached
 }
@@ -1934,8 +1998,10 @@ security_policy_t policyForSignTxVotingProcedure(sign_tx_signingmode_t txSigning
                     SHOW_IF(mark_unusual_key_derivation(w, &voter->keyPath));
                     break;
 
+                // LCOV_EXCL_START
                 default:
                     ASSERT(false);
+                // LCOV_EXCL_STOP
             }
             break;
 
@@ -1956,8 +2022,10 @@ security_policy_t policyForSignTxVotingProcedure(sign_tx_signingmode_t txSigning
                     // scripts are OK
                     break;
 
+                // LCOV_EXCL_START
                 default:
                     ASSERT(false);
+                // LCOV_EXCL_STOP
             }
             break;
 
@@ -2245,8 +2313,10 @@ security_policy_t policyForSignTxWitness(sign_tx_signingmode_t txSigningMode,
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
             RETURN(_poolRegistrationOperatorWitnessPolicy(witnessPath, w));
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -2336,8 +2406,10 @@ security_policy_t policyForCVoteRegistrationPaymentDestination(
             break;
         }
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
