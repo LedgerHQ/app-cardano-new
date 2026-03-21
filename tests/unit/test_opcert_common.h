@@ -16,6 +16,7 @@
 #include "app_context.h"
 #include "opcert_parse.h"
 #include "opcert/opcert_types.h"
+#include "handler/sign_opcert.h"
 #include "test_fixture_types.h"
 #include "app_mem_utils.h"
 #include "io_capture.h"
@@ -37,8 +38,8 @@ static inline void reset_opcert_common_context(void) {
 }
 
 // ----------------------------------------------------------------------
-// Deny fixture runner — calls parse_opcert() with a malformed payload and
-// verifies the expected SWO error is emitted.
+// Deny fixture runner — exercises the full handler on malformed or policy-denied payloads
+// and verifies the expected SWO error is emitted.
 // ----------------------------------------------------------------------
 
 static inline void run_opcert_deny_fixture(const opcert_deny_fixture_t *fixture) {
@@ -51,10 +52,8 @@ static inline void run_opcert_deny_fixture(const opcert_deny_fixture_t *fixture)
         .size = fixture->payload_len,
         .offset = 0,
     };
-    parsed_opcert_t parsed = {0};
     apdu_response_begin(INS_SIGN_OPCERT);
-    bool ok = parse_opcert(&buf, &parsed);
-    assert_false(ok);
+    handler_sign_opcert(&buf);
     apdu_response_assert_sent_or_deferred();
     assert_int_equal(g_last_response_sw, fixture->expected_sw);
 }

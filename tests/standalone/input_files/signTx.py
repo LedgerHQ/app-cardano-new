@@ -7481,6 +7481,73 @@ poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
+        name="Pool_registration_owner_by_hash_staking_key_witness_denied_by_null_owner_path",
+        tx=Transaction(
+            network=NetworkDesc(networkId=1, protocol=764824073),
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineShelleyBase1"]],
+            certificates=[
+                Certificate(
+                    type=CertificateType.STAKE_POOL_REGISTRATION,
+                    params=PoolRegistrationParams(
+                        poolKey=PoolKey(
+                            type=PoolKeyType.THIRD_PARTY,
+                            key="13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad",
+                        ),
+                        vrfKeyHashHex="07821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d084450",
+                        pledge=50000000000,
+                        cost=340000000,
+                        margin=Margin(numerator=3, denominator=100),
+                        rewardAccount=PoolKey(
+                            type=PoolKeyType.THIRD_PARTY,
+                            key="e1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad",
+                        ),
+                        poolOwners=[
+                            PoolKey(
+                                type=PoolKeyType.THIRD_PARTY,
+                                key="794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad",
+                            )
+                        ],
+                        relays=[
+                            Relay(
+                                type=RelayType.SINGLE_HOST_IP_ADDR,
+                                params=SingleHostIpAddrRelayParams(
+                                    portNumber=3000, ipv4="54.228.75.154", ipv6=None
+                                ),
+                            ),
+                            Relay(
+                                type=RelayType.SINGLE_HOST_IP_ADDR,
+                                params=SingleHostIpAddrRelayParams(
+                                    portNumber=3000,
+                                    ipv4="54.228.75.155",
+                                    ipv6="24ff:7801:33a2:e383:a5c4:340a:07c2:76e5",
+                                ),
+                            ),
+                            Relay(
+                                type=RelayType.SINGLE_HOST_HOSTNAME,
+                                params=SingleHostHostnameRelayParams(
+                                    portNumber=3000, dnsName="aaaa.bbbb.com"
+                                ),
+                            ),
+                            Relay(
+                                type=RelayType.MULTI_HOST,
+                                params=MultiHostRelayParams(dnsName="aaaa.bbbc.com"),
+                            ),
+                        ],
+                        metadata=PoolMetadataParams(
+                            metadataUrl="https://www.vacuumlabs.com/sampleUrl.json",
+                            metadataHashHex="cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
+                        ),
+                    ),
+                )
+            ],
+        ),
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        txBody="",
+        additionalWitnessPaths=["m/1852'/1815'/0'/2/0"],
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    ),
+    SignTxTestCase(
         name="Invalid_numerator_denominator_relationship",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),

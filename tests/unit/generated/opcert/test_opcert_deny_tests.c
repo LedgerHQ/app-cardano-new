@@ -42,9 +42,14 @@ static void test_opcert_deny_3_opcert_deny_invalid_pool_key_path(void **state) {
     run_opcert_deny_fixture(&OPCERT_DENY_FIXTURES[3]);
 }
 
-static void test_opcert_deny_4_opcert_deny_trailing_bytes(void **state) {
+static void test_opcert_deny_4_opcert_deny_wrong_pool_key_path_class(void **state) {
     (void) state;
     run_opcert_deny_fixture(&OPCERT_DENY_FIXTURES[4]);
+}
+
+static void test_opcert_deny_5_opcert_deny_trailing_bytes(void **state) {
+    (void) state;
+    run_opcert_deny_fixture(&OPCERT_DENY_FIXTURES[5]);
 }
 
 // ======================================================================
@@ -57,7 +62,8 @@ int main(void) {
         cmocka_unit_test(test_opcert_deny_1_opcert_deny_truncated_kes_period),
         cmocka_unit_test(test_opcert_deny_2_opcert_deny_truncated_issue_counter),
         cmocka_unit_test(test_opcert_deny_3_opcert_deny_invalid_pool_key_path),
-        cmocka_unit_test(test_opcert_deny_4_opcert_deny_trailing_bytes),
+        cmocka_unit_test(test_opcert_deny_4_opcert_deny_wrong_pool_key_path_class),
+        cmocka_unit_test(test_opcert_deny_5_opcert_deny_trailing_bytes),
     };
 
     return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);

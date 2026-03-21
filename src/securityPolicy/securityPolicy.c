@@ -2542,9 +2542,11 @@ size_t warning_bits_to_definitions(warning_bits_t w,
         const char *title = (const char *) PIC(def->title);
         const char *description = (const char *) PIC(def->description);
         if (title == NULL || description == NULL || description[0] == '\0') {
+            // LCOV_EXCL_START
             TRACE("Missing warning definition for bit %d", bit);
             LEDGER_ASSERT(false, "Missing warning definition");
             return count;
+            // LCOV_EXCL_STOP
         }
         definitions[count++] = def;
     }

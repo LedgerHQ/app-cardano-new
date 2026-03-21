@@ -67,12 +67,26 @@ static const uint8_t OPCERT_DENY_003_OPCERT_DENY_INVALID_POOL_KEY_PATH_PAYLOAD[]
 };
 
 // ----------------------------------------------------------------------
-// Deny Test 4: opcert_deny_trailing_bytes
+// Deny Test 4: opcert_deny_wrong_pool_key_path_class
+// Expected SW: SWO_SECURITY_CONDITION_NOT_SATISFIED (0x6982)
+// Source: tests/standalone/input_files/signOpCert.py > opCertDenyTestCases > opcert_deny_wrong_pool_key_path_class
+// ----------------------------------------------------------------------
+
+static const uint8_t OPCERT_DENY_004_OPCERT_DENY_WRONG_POOL_KEY_PATH_CLASS_PAYLOAD[] = {
+    0x3D, 0x24, 0xBC, 0x54, 0x73, 0x88, 0xCF, 0x24, 0x03, 0xFD, 0x97, 0x8F, 0xC3, 0xD3, 0xA9, 0x3D,
+    0x1F, 0x39, 0xAC, 0xF6, 0x8A, 0x9C, 0x00, 0xE4, 0x05, 0x12, 0x08, 0x4D, 0xC0, 0x5F, 0x28, 0x22,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A,
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x02, 0x00, 0x00, 0x00, 0x00,
+};
+
+// ----------------------------------------------------------------------
+// Deny Test 5: opcert_deny_trailing_bytes
 // Expected SW: SWO_INVALID_OPCERT_LENGTH (0x6B14)
 // Source: tests/standalone/input_files/signOpCert.py > opCertDenyTestCases > opcert_deny_trailing_bytes
 // ----------------------------------------------------------------------
 
-static const uint8_t OPCERT_DENY_004_OPCERT_DENY_TRAILING_BYTES_PAYLOAD[] = {
+static const uint8_t OPCERT_DENY_005_OPCERT_DENY_TRAILING_BYTES_PAYLOAD[] = {
     0x3D, 0x24, 0xBC, 0x54, 0x73, 0x88, 0xCF, 0x24, 0x03, 0xFD, 0x97, 0x8F, 0xC3, 0xD3, 0xA9, 0x3D,
     0x1F, 0x39, 0xAC, 0xF6, 0x8A, 0x9C, 0x00, 0xE4, 0x05, 0x12, 0x08, 0x4D, 0xC0, 0x5F, 0x28, 0x22,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A,
@@ -109,11 +123,18 @@ static const opcert_deny_fixture_t OPCERT_DENY_FIXTURES[] = {
     .payload_len = sizeof(OPCERT_DENY_003_OPCERT_DENY_INVALID_POOL_KEY_PATH_PAYLOAD),
     .expected_sw = SWO_OPCERT_PARSING_FAIL_POOL_KEY_PATH,
 },
+// Source: tests/standalone/input_files/signOpCert.py > opCertDenyTestCases > opcert_deny_wrong_pool_key_path_class
+{
+    .name = "opcert_deny_wrong_pool_key_path_class",
+    .payload = OPCERT_DENY_004_OPCERT_DENY_WRONG_POOL_KEY_PATH_CLASS_PAYLOAD,
+    .payload_len = sizeof(OPCERT_DENY_004_OPCERT_DENY_WRONG_POOL_KEY_PATH_CLASS_PAYLOAD),
+    .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+},
 // Source: tests/standalone/input_files/signOpCert.py > opCertDenyTestCases > opcert_deny_trailing_bytes
 {
     .name = "opcert_deny_trailing_bytes",
-    .payload = OPCERT_DENY_004_OPCERT_DENY_TRAILING_BYTES_PAYLOAD,
-    .payload_len = sizeof(OPCERT_DENY_004_OPCERT_DENY_TRAILING_BYTES_PAYLOAD),
+    .payload = OPCERT_DENY_005_OPCERT_DENY_TRAILING_BYTES_PAYLOAD,
+    .payload_len = sizeof(OPCERT_DENY_005_OPCERT_DENY_TRAILING_BYTES_PAYLOAD),
     .expected_sw = SWO_INVALID_OPCERT_LENGTH,
 },
 };

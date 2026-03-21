@@ -48,6 +48,7 @@ _KES_PERIOD = "000000000000002f"   # 47 big-endian uint64
 _ISSUE_COUNTER = "000000000000002a"  # 42 big-endian uint64
 # m/1853'/1815'/0'/0'  encoded as: count=4, then each hardened index as 4B big-endian
 _POOL_KEY_PATH = "04" + "8000073d" + "00000717" + "80000000" + "80000000"
+_WRONG_CLASS_POOL_KEY_PATH = "05" + "8000073c" + "80000717" + "80000000" + "00000002" + "00000000"
 _VALID_OPCERT = _KES_KEY + _KES_PERIOD + _ISSUE_COUNTER + _POOL_KEY_PATH
 
 # pylint: disable=line-too-long
@@ -75,6 +76,12 @@ opCertDenyTestCases: List[OpCertDenyTestCase] = [
         # KES key + period + counter present; path count claims 5 elements but only 0 follow
         payload_hex=_KES_KEY + _KES_PERIOD + _ISSUE_COUNTER + "05",
         expected_sw=StatusWord.SWO_OPCERT_PARSING_FAIL_POOL_KEY_PATH,
+    ),
+    OpCertDenyTestCase(
+        name="opcert_deny_wrong_pool_key_path_class",
+        # Valid BIP44 path, but not a pool cold key path.
+        payload_hex=_KES_KEY + _KES_PERIOD + _ISSUE_COUNTER + _WRONG_CLASS_POOL_KEY_PATH,
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     OpCertDenyTestCase(
         name="opcert_deny_trailing_bytes",
