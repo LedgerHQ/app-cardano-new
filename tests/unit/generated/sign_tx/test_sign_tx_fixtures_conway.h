@@ -15,7 +15,7 @@
 //   - Source file and era
 //   - Original Ragger test name
 //
-// Total tests in this era: 14
+// Total tests in this era: 15
 
 #pragma once
 
@@ -1049,7 +1049,82 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_CERT
     .expected_warning_bits = 0,
 };
 
-// Test 10: Sign_tx_with_DREP_REGISTRATION_certificates
+// Test 10: Sign_tx_with_RESIGN_COMMITTEE_COLD_hash_certificates
+// Source: tests/standalone/input_files/signTx.py > conway era tests
+//
+static const uint8_t FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES_RAW_TX[] = {
+    0x3B, 0x40, 0x26, 0x51, 0x11, 0xD8, 0xBB, 0x3C, 0x3C, 0x60, 0x8D, 0x95, 0xB3, 0xA0, 0xBF, 0x83,
+    0x46, 0x1A, 0xCE, 0x32, 0xD7, 0x93, 0x36, 0x57, 0x9A, 0x19, 0x39, 0xB3, 0xAA, 0xD1, 0xC0, 0xB7,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x3B, 0x01, 0x00, 0x2B, 0x82, 0xD8, 0x18, 0x58, 0x21, 0x83, 0x58,
+    0x1C, 0x9E, 0x1C, 0x71, 0xDE, 0x65, 0x2E, 0xC8, 0xB8, 0x5F, 0xEC, 0x29, 0x6F, 0x06, 0x85, 0xCA,
+    0x39, 0x88, 0x78, 0x1C, 0x94, 0xA2, 0xE1, 0xA5, 0xD8, 0x9D, 0x92, 0xF4, 0x5F, 0xA0, 0x00, 0x1A,
+    0x0D, 0x0C, 0x25, 0x61, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2D, 0xD2, 0xE8, 0x00, 0x01, 0x01, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x0A, 0x0F, 0x00, 0x1A, 0xFD, 0x02, 0x8B, 0x50, 0x4C, 0x36, 0x68, 0x10, 0x2B, 0x12, 0x9B, 0x37,
+    0xA8, 0x6C, 0x09, 0xA2, 0x87, 0x2F, 0x76, 0x74, 0x1D, 0xC7, 0xA6, 0x8E, 0x21, 0x49, 0xC8, 0x01,
+    0x0F, 0x01, 0xCF, 0x73, 0x75, 0x88, 0xBE, 0x6E, 0x9E, 0xDE, 0xB7, 0x37, 0xEB, 0x2E, 0x6D, 0x06,
+    0xE5, 0xCB, 0xD2, 0x92, 0xBD, 0x8E, 0xE3, 0x2E, 0x41, 0x0C, 0x0B, 0xBA, 0x1B, 0xA6, 0x01,
+};
+
+static const uint8_t FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0x0D, 0xB1, 0x87, 0x2A, 0xF9, 0x13, 0xF6, 0x64, 0x63, 0x8B, 0xE8, 0xDC, 0x9E, 0xF0, 0x3E, 0xE0,
+    0xB9, 0x12, 0xE8, 0xCE, 0x6E, 0x7C, 0xBB, 0x10, 0x3D, 0x4D, 0x87, 0x1C, 0x79, 0x2C, 0x75, 0x39,
+    0x51, 0xD6, 0xE7, 0xCA, 0x8E, 0x74, 0x96, 0x84, 0x3F, 0xEC, 0x88, 0x3C, 0xFE, 0x97, 0x5E, 0x80,
+    0xCE, 0x72, 0x88, 0x2E, 0x32, 0x1B, 0xDB, 0xF0, 0x4A, 0x2A, 0xE7, 0xBC, 0x65, 0x0B, 0x55, 0x99,
+};
+
+static const witness_payload_t FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
+static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES = {
+    .name = "Sign_tx_with_RESIGN_COMMITTEE_COLD_hash_certificates",
+    .raw_tx = FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES_RAW_TX,
+    .raw_tx_len = sizeof(FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES_RAW_TX),
+    .tx_body_cbor_hex = "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0482830f8200581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8f6830f8201581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba6f6",
+    .expected_hash_hex = "9410208250be5d48ce2547ec2f428dd41ba45f76ebc100ac80f4385cb8eeb67d",
+    .signing_mode = 7,
+    .network_id = 1,
+    .protocol_magic = 764824073,
+    .num_inputs = 1,
+    .num_outputs = 1,
+    .num_witnesses = 1,
+    .witness_payloads = FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
+    .num_certificates = 2,
+    .num_withdrawals = 0,
+    .num_mint_asset_groups = 0,
+    .include_ttl = true,
+    .include_validity_interval_start = false,
+    .include_aux_data_hash = false,
+    .aux_data_type = 0,
+    .aux_data_init_payload = NULL,
+    .aux_data_init_payload_len = 0,
+    .aux_data_delegations = NULL,
+    .aux_data_delegation_count = 0,
+    .include_script_data_hash = false,
+    .num_collateral_inputs = 0,
+    .num_required_signers = 0,
+    .include_network_id = false,
+    .include_collateral_output = false,
+    .include_total_collateral = false,
+    .num_reference_inputs = 0,
+    .num_voters = 0,
+    .include_treasury = false,
+    .treasury = 0,
+    .include_donation = false,
+    .donation = 0,
+    .aux_data_hash_hex = NULL,
+    .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
+};
+
+// Test 11: Sign_tx_with_DREP_REGISTRATION_certificates
 // Source: tests/standalone/input_files/signTx.py > conway era tests
 //
 static const uint8_t FIXTURE_CONWAY_SIGN_TX_WITH_DREP_REGISTRATION_CERTIFICATES_RAW_TX[] = {
@@ -1141,7 +1216,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_DREP_REGISTRATION_CERTIFIC
     .expected_warning_bits = 0,
 };
 
-// Test 11: Sign_tx_with_DREP_DEREGISTRATION_certificate
+// Test 12: Sign_tx_with_DREP_DEREGISTRATION_certificate
 // Source: tests/standalone/input_files/signTx.py > conway era tests
 //
 static const uint8_t FIXTURE_CONWAY_SIGN_TX_WITH_DREP_DEREGISTRATION_CERTIFICATE_RAW_TX[] = {
@@ -1227,7 +1302,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_DREP_DEREGISTRATION_CERTIF
     .expected_warning_bits = 0,
 };
 
-// Test 12: Sign_tx_with_DREP_UPDATE_certificates
+// Test 13: Sign_tx_with_DREP_UPDATE_certificates
 // Source: tests/standalone/input_files/signTx.py > conway era tests
 //
 static const uint8_t FIXTURE_CONWAY_SIGN_TX_WITH_DREP_UPDATE_CERTIFICATES_RAW_TX[] = {
@@ -1318,7 +1393,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_DREP_UPDATE_CERTIFICATES =
     .expected_warning_bits = 0,
 };
 
-// Test 13: Sign_tx_with_mixed_script_hash_certificates_in_plutus_mode
+// Test 14: Sign_tx_with_mixed_script_hash_certificates_in_plutus_mode
 // Source: tests/standalone/input_files/signTx.py > conway era tests
 //
 static const uint8_t FIXTURE_CONWAY_SIGN_TX_WITH_MIXED_SCRIPT_HASH_CERTIFICATES_IN_PLUTUS_MODE_RAW_TX[] = {

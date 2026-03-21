@@ -2232,6 +2232,83 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_BYRON_TO_SHELLE
     },
 };
 
+// Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Deny_withdrawal_with_key_hash_in_ordinary_tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_DENY_WITHDRAWAL_WITH_KEY_HASH_IN_ORDINARY_TX[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "000000000049010039017CB05FCE110FB999F01ABB4F62BC455E217D4A51FDE9"
+    "09FA9AEA545443AC53C046CF6A42095E3C60310FA802771D0672F8FE2D186113"
+    "8B0900000000000000010001010000000000000000002A000000000000000A00"
+    "0000000000006F001D227AEFA4B773149170885AADBA30AAB3127CC611DDBC49"
+    "99DEF61C",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+// Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Deny_withdrawal_with_script_hash_in_ordinary_tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_DENY_WITHDRAWAL_WITH_SCRIPT_HASH_IN_ORDINARY_TX[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "000000000049010039017CB05FCE110FB999F01ABB4F62BC455E217D4A51FDE9"
+    "09FA9AEA545443AC53C046CF6A42095E3C60310FA802771D0672F8FE2D186113"
+    "8B0900000000000000010001010000000000000000002A000000000000000A00"
+    "0000000000006F0129FB5FD4AA8CADD6705ACC8263CEE0FC62EDCA5AC38DB593"
+    "FEC2F9FD",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+// Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Deny_withdrawal_with_key_path_in_multisig_tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_DENY_WITHDRAWAL_WITH_KEY_PATH_IN_MULTISIG_TX[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "000000000049010039017CB05FCE110FB999F01ABB4F62BC455E217D4A51FDE9"
+    "09FA9AEA545443AC53C046CF6A42095E3C60310FA802771D0672F8FE2D186113"
+    "8B0900000000000000010001010000000000000000002A000000000000000A00"
+    "0000000000006F02058000073C80000717800000000000000200000000",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+// Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Deny_withdrawal_with_key_hash_in_multisig_tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_DENY_WITHDRAWAL_WITH_KEY_HASH_IN_MULTISIG_TX[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "000000000049010039017CB05FCE110FB999F01ABB4F62BC455E217D4A51FDE9"
+    "09FA9AEA545443AC53C046CF6A42095E3C60310FA802771D0672F8FE2D186113"
+    "8B0900000000000000010001010000000000000000002A000000000000000A00"
+    "0000000000006F001D227AEFA4B773149170885AADBA30AAB3127CC611DDBC49"
+    "99DEF61C",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
 
 // Source: tests/standalone/input_files/signTx.py > collateralOutputDenyTestCases > Collateral_output_with_datum_hash
 static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_DATUM_HASH[] = {
@@ -2319,6 +2396,93 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_O
     "01545E0CE5F2221096D6477E11E6643922FA8D2ED495234DC0D667C1316FF84E"
     "572310E265EDB31330448B36B7179E00000000006CA79301010200000014DEAD"
     "BEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+// Source: tests/standalone/input_files/signTx.py > collateralOutputDenyTestCases > Collateral_output_with_device_owned_script_payment_address
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_DEVICE_OWNED_SCRIPT_PAYMENT_ADDRESS[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000003B01002B82D818582183581C9E1C71DE652EC8B85FEC296F0685CA"
+    "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
+    "00000000000000002A000000000000000A004902030129FB5FD4AA8CADD6705A"
+    "CC8263CEE0FC62EDCA5AC38DB593FEC2F9FD55122A946B9AD3D2DDF029D3A828"
+    "F0468AECE76895F15C9EFBD69B427700000000006CA7930101010000",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+// Source: tests/standalone/input_files/signTx.py > collateralOutputDenyTestCases > Deny_pool_registration_operator_with_datum_hash
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_DENY_POOL_REGISTRATION_OPERATOR_WITH_DATUM_HASH[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000004E01001D71477E52B3116B62FE8CD34A312615F5FCD678C94E1D6C"
+    "DB86C1A3964C00000000000000010002010000003B40265111D8BB3C3C608D95"
+    "B3A0BF83461ACE32D79336579A1939B3AAD1C0B7000000000000002A00000000"
+    "0000000A0300C002048000073D80000717800000008000000007821CD344D7FD"
+    "7E3AE5F2ED863218CB979FF1D59E50C4276BDC479B0D0844500000000BA43B74"
+    "00000000001443FD000000000000000003000000000000006400E1794D9B3408"
+    "C9FB67B950A48A0690F070F117E9978F7FC1D120FC58AD000000",
+        .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
+        .more = true,
+    },
+    {
+        .hex_payload =
+    "0002002968747470733A2F2F7777772E76616375756D6C6162732E636F6D2F73"
+    "616D706C6555726C2E6A736F6ECDB714FD722C24AEB10C93DBB0FF03BD478344"
+    "1CD5BA2A8B6F373390520535BB",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "048000073D800007178000000080000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+// Source: tests/standalone/input_files/signTx.py > collateralOutputDenyTestCases > Deny_collateral_output_with_byron_address
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_DENY_COLLATERAL_OUTPUT_WITH_BYRON_ADDRESS[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "000000000049010039017CB05FCE110FB999F01ABB4F62BC455E217D4A51FDE9"
+    "09FA9AEA545443AC53C046CF6A42095E3C60310FA802771D0672F8FE2D186113"
+    "8B0900000000000000010001010000000000000000002A000000000000000A00"
+    "3B01002B82D818582183581C9E1C71DE652EC8B85FEC296F0685CA3988781C94"
+    "A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E80001010000",
         .p1 = P1_TX_CONFIRM,
         .p2 = P2_UNUSED,
         .more = false,
@@ -4493,6 +4657,54 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
+    // Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Deny_withdrawal_with_key_hash_in_ordinary_tx
+    {
+        .name = "[DENY_SINGLE_ACCOUNT] Deny_withdrawal_with_key_hash_in_ordinary_tx",
+        .init_hex =
+        "0000000000000000012D964A0903000100010200000001010100000100000000"
+        "010101000000000101000100A4",
+        .chunks = SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_DENY_WITHDRAWAL_WITH_KEY_HASH_IN_ORDINARY_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_DENY_WITHDRAWAL_WITH_KEY_HASH_IN_ORDINARY_TX),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Deny_withdrawal_with_script_hash_in_ordinary_tx
+    {
+        .name = "[DENY_SINGLE_ACCOUNT] Deny_withdrawal_with_script_hash_in_ordinary_tx",
+        .init_hex =
+        "0000000000000000012D964A0903000100010200000001010100000100000000"
+        "010101000000000101000100A4",
+        .chunks = SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_DENY_WITHDRAWAL_WITH_SCRIPT_HASH_IN_ORDINARY_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_DENY_WITHDRAWAL_WITH_SCRIPT_HASH_IN_ORDINARY_TX),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Deny_withdrawal_with_key_path_in_multisig_tx
+    {
+        .name = "[DENY_SINGLE_ACCOUNT] Deny_withdrawal_with_key_path_in_multisig_tx",
+        .init_hex =
+        "0000000000000000012D964A0906000100010200000001010100000100000000"
+        "0101010000000001010000009D",
+        .chunks = SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_DENY_WITHDRAWAL_WITH_KEY_PATH_IN_MULTISIG_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_DENY_WITHDRAWAL_WITH_KEY_PATH_IN_MULTISIG_TX),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases > Deny_withdrawal_with_key_hash_in_multisig_tx
+    {
+        .name = "[DENY_SINGLE_ACCOUNT] Deny_withdrawal_with_key_hash_in_multisig_tx",
+        .init_hex =
+        "0000000000000000012D964A0906000100010200000001010100000100000000"
+        "010101000000000101000000A4",
+        .chunks = SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_DENY_WITHDRAWAL_WITH_KEY_HASH_IN_MULTISIG_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_SINGLE_ACCOUNT_DENY_WITHDRAWAL_WITH_KEY_HASH_IN_MULTISIG_TX),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
     // Source: tests/standalone/input_files/signTx.py > collateralOutputDenyTestCases > Collateral_output_with_datum_hash
     {
         .name = "[DENY_COLLATERAL_OUTPUT] Collateral_output_with_datum_hash",
@@ -4525,6 +4737,42 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         "010201000000000101000100D2",
         .chunks = SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_REFERENCE_SCRIPT,
         .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_REFERENCE_SCRIPT),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > collateralOutputDenyTestCases > Collateral_output_with_device_owned_script_payment_address
+    {
+        .name = "[DENY_COLLATERAL_OUTPUT] Collateral_output_with_device_owned_script_payment_address",
+        .init_hex =
+        "0000000000000000012D964A0907000100010200000000010100000100000000"
+        "010201000000000101000100BC",
+        .chunks = SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_DEVICE_OWNED_SCRIPT_PAYMENT_ADDRESS,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_COLLATERAL_OUTPUT_WITH_DEVICE_OWNED_SCRIPT_PAYMENT_ADDRESS),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > collateralOutputDenyTestCases > Deny_pool_registration_operator_with_datum_hash
+    {
+        .name = "[DENY_COLLATERAL_OUTPUT] Deny_pool_registration_operator_with_datum_hash",
+        .init_hex =
+        "0000000000000000012D964A0905000100010200010000010100000100000000"
+        "01010100000000010100020147",
+        .chunks = SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_DENY_POOL_REGISTRATION_OPERATOR_WITH_DATUM_HASH,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_DENY_POOL_REGISTRATION_OPERATOR_WITH_DATUM_HASH),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > collateralOutputDenyTestCases > Deny_collateral_output_with_byron_address
+    {
+        .name = "[DENY_COLLATERAL_OUTPUT] Deny_collateral_output_with_byron_address",
+        .init_hex =
+        "0000000000000000012D964A0907000100010200000000010100000100000000"
+        "010201000000000101000100BC",
+        .chunks = SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_DENY_COLLATERAL_OUTPUT_WITH_BYRON_ADDRESS,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_COLLATERAL_OUTPUT_DENY_COLLATERAL_OUTPUT_WITH_BYRON_ADDRESS),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,

@@ -125,10 +125,11 @@ Run this snippet with `source tests/venv/bin/activate && python3 -c "..."` (cbor
 
 Mock key material lives in `tests/unit/mock_crypto/crypto_mock_data.h`. For details on how these fixtures are verified and regenerated, see **[MOCK_DATA.md](MOCK_DATA.md)**.
 
+You can add new mock paths or signatures by extending `MOCK_PATHS` / `MOCK_SIGNATURES` in that header. After updating the data, rerun the mock-data generator to refresh the derived key material and signatures.
+
 Brief regeneration command (from repository root):
 
 ```bash
 source tests/venv/bin/activate
 python3 -m tests.unit.generators.generate_unit_tests_from_ragger mock-data
 ```
-

@@ -249,6 +249,26 @@ static void test_sign_tx_with_resign_committee_cold_certificates_reject_tx_exper
     run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_CERTIFICATES, true);
 }
 
+static void test_sign_tx_with_resign_committee_cold_hash_certificates_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES, false);
+}
+
+static void test_sign_tx_with_resign_committee_cold_hash_certificates_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES, false);
+}
+
+static void test_sign_tx_with_resign_committee_cold_hash_certificates_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES, true);
+}
+
+static void test_sign_tx_with_resign_committee_cold_hash_certificates_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES, true);
+}
+
 static void test_sign_tx_with_drep_registration_certificates_expert_off(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_DREP_REGISTRATION_CERTIFICATES, false);
@@ -375,6 +395,10 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_resign_committee_cold_certificates_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_resign_committee_cold_certificates_expert_on),
         cmocka_unit_test(test_sign_tx_with_resign_committee_cold_certificates_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_with_resign_committee_cold_hash_certificates_expert_off),
+        cmocka_unit_test(test_sign_tx_with_resign_committee_cold_hash_certificates_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_with_resign_committee_cold_hash_certificates_expert_on),
+        cmocka_unit_test(test_sign_tx_with_resign_committee_cold_hash_certificates_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_drep_registration_certificates_expert_off),
         cmocka_unit_test(test_sign_tx_with_drep_registration_certificates_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_drep_registration_certificates_expert_on),

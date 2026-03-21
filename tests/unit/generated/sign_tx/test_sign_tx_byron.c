@@ -109,6 +109,26 @@ static void test_sign_tx_with_thirdparty_byron_testnet_output_reject_tx_expert_o
     run_fixture_reject_tx_with_expert_mode(&FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_TESTNET_OUTPUT, true);
 }
 
+static void test_sign_tx_with_device_owned_byron_mainnet_output_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_BYRON_SIGN_TX_WITH_DEVICE_OWNED_BYRON_MAINNET_OUTPUT, false);
+}
+
+static void test_sign_tx_with_device_owned_byron_mainnet_output_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BYRON_SIGN_TX_WITH_DEVICE_OWNED_BYRON_MAINNET_OUTPUT, false);
+}
+
+static void test_sign_tx_with_device_owned_byron_mainnet_output_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_BYRON_SIGN_TX_WITH_DEVICE_OWNED_BYRON_MAINNET_OUTPUT, true);
+}
+
+static void test_sign_tx_with_device_owned_byron_mainnet_output_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BYRON_SIGN_TX_WITH_DEVICE_OWNED_BYRON_MAINNET_OUTPUT, true);
+}
+
 // ======================================================================
 // Main
 // ======================================================================
@@ -127,6 +147,10 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_thirdparty_byron_testnet_output_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_thirdparty_byron_testnet_output_expert_on),
         cmocka_unit_test(test_sign_tx_with_thirdparty_byron_testnet_output_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_with_device_owned_byron_mainnet_output_expert_off),
+        cmocka_unit_test(test_sign_tx_with_device_owned_byron_mainnet_output_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_with_device_owned_byron_mainnet_output_expert_on),
+        cmocka_unit_test(test_sign_tx_with_device_owned_byron_mainnet_output_reject_tx_expert_on),
     };
     return _cmocka_run_group_tests("test_sign_tx_byron", tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);
 }
