@@ -573,6 +573,20 @@ destinations: dict[str, TxOutputDestination] = {
             "135e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e"
         ),
     ),
+    "externalShelleyBaseKeyhashScripthashFakenet": TxOutputDestination(
+        TxOutputDestinationType.THIRD_PARTY,
+        # FakeNet addr1y... (base payment key, stake script)
+        ThirdPartyAddressParams(
+            "235a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277"
+        ),
+    ),
+    "externalShelleyBaseScripthashScripthashFakenet": TxOutputDestination(
+        TxOutputDestinationType.THIRD_PARTY,
+        # FakeNet addr1x... (base payment script, stake script)
+        ThirdPartyAddressParams(
+            "33122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277"
+        ),
+    ),
     "multiassetThirdParty": TxOutputDestination(
         TxOutputDestinationType.THIRD_PARTY,
         # bech32 addr1q84sh2j72ux0l03fxndjnhctdg7hcppsaejafsa84vh7lwgmcs5wgus8qt4atk45lvt4xfxpjtwfhdmvchdf2m3u3hlsd5tq5r
@@ -865,6 +879,22 @@ outputs: dict[str, TxOutput] = {
     ),
     "datumHashExternalFakenet": TxOutputAlonzo(
         destinations["externalShelleyBaseScripthashKeyhashFakenet"],
+        7120787,
+        datum=Datum(
+            DatumType.HASH,
+            "ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce188",
+        ),
+    ),
+    "datumHashExternalBaseKeyhashScripthashFakenet": TxOutputAlonzo(
+        destinations["externalShelleyBaseKeyhashScripthashFakenet"],
+        7120787,
+        datum=Datum(
+            DatumType.HASH,
+            "ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce188",
+        ),
+    ),
+    "datumHashExternalBaseScripthashScripthashFakenet": TxOutputAlonzo(
+        destinations["externalShelleyBaseScripthashScripthashFakenet"],
         7120787,
         datum=Datum(
             DatumType.HASH,
@@ -3778,6 +3808,32 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839135e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e1a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a031b0055a275925d560f",
+        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
+    ),
+    SignTxTestCase(
+        name="Sign_tx_with_datum_hash_in_output_base_keyhash_scripthash_fakenet",
+        tx=Transaction(
+            network=FakeNet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["datumHashExternalBaseKeyhashScripthashFakenet"]],
+            fee=42,
+            ttl=10,
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839235a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42771a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a",
+        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
+    ),
+    SignTxTestCase(
+        name="Sign_tx_with_datum_hash_in_output_base_scripthash_scripthash_fakenet",
+        tx=Transaction(
+            network=FakeNet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["datumHashExternalBaseScripthashScripthashFakenet"]],
+            fee=42,
+            ttl=10,
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018183583933122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42771a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a",
         expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
     ),
     SignTxTestCase(

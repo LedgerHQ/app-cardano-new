@@ -207,6 +207,31 @@ static void test_pubkey_without_confirmation_export_pubkey_cvote_keys_path_1_8(v
     run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_WITHOUT_CONFIRMATION[8]);
 }
 
+static void test_pubkey_without_confirmation_export_pubkey_drep_key_path_0_silent_9(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_WITHOUT_CONFIRMATION[9]);
+}
+
+static void test_pubkey_without_confirmation_export_pubkey_committee_cold_key_path_0_silent_10(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_WITHOUT_CONFIRMATION[10]);
+}
+
+static void test_pubkey_without_confirmation_export_pubkey_committee_hot_key_path_0_silent_11(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_WITHOUT_CONFIRMATION[11]);
+}
+
+static void test_pubkey_without_confirmation_export_pubkey_mint_key_path_0_silent_12(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_WITHOUT_CONFIRMATION[12]);
+}
+
+static void test_pubkey_without_confirmation_export_pubkey_cold_case_silent_13(void **state) {
+    (void) state;
+    run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_WITHOUT_CONFIRMATION[13]);
+}
+
 // ======================================================================
 // Main
 // ======================================================================
@@ -250,6 +275,11 @@ int main(void) {
         cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_multisig_staking_path_0_6),
         cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_cvote_keys_path_2_7),
         cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_cvote_keys_path_1_8),
+        cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_drep_key_path_0_silent_9),
+        cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_committee_cold_key_path_0_silent_10),
+        cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_committee_hot_key_path_0_silent_11),
+        cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_mint_key_path_0_silent_12),
+        cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_cold_case_silent_13),
     };
     return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }

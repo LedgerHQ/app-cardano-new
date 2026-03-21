@@ -78,6 +78,14 @@ testsMintKeys = [
     PubKeyTestCase(name="Export_pubkey_mint_key_path_0", path="m/1855'/1815'/0'"),
 ]
 
+testsSilentExportRareKeys = [
+    PubKeyTestCase(name="Export_pubkey_drep_key_path_0_silent", path="m/1852'/1815'/0'/3/0"),
+    PubKeyTestCase(name="Export_pubkey_committee_cold_key_path_0_silent", path="m/1852'/1815'/0'/4/0"),
+    PubKeyTestCase(name="Export_pubkey_committee_hot_key_path_0_silent", path="m/1852'/1815'/0'/5/0"),
+    PubKeyTestCase(name="Export_pubkey_mint_key_path_0_silent", path="m/1855'/1815'/0'"),
+    PubKeyTestCase(name="Export_pubkey_cold_case_silent", path="m/1853'/1815'/0'/0'"),
+]
+
 def _parse_bip44_path(path: str) -> list[tuple[int, bool]]:
     parts = path.split("/")[1:]
     parsed: list[tuple[int, bool]] = []
@@ -131,7 +139,7 @@ testsSilentExport = [
         + testsMintKeys
     )
     if _is_silent_export_path(test_case.path)
-]
+] + testsSilentExportRareKeys
 
 denyTestCases = [
     PubKeyTestCase(name="Export_pubkey_path_shorter_than_3_indexes", path="m/44'/1815'"),

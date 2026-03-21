@@ -517,6 +517,8 @@ def _verify_ragger_test_coverage() -> None:
         # Some ragger tests expand into indexed unit tests. Match both the exact
         # function name and generated prefixes.
         candidate_function_names = _candidate_function_names_for_coverage_match(func_name)
+        # We intentionally use two mechanisms (Option A and Option B) for coverage validation.
+        # This redundancy is for validation purposes, and any mismatch between them will be manually investigated.
         # Primary check (B): coverage is determined by cmocka_unit_test() registrations only.
         found_by_registered = _is_covered_by_registered_names(candidate_function_names, registered_unit_test_names)
         # Sanity check (A): word-boundary regex over raw source text.

@@ -182,9 +182,11 @@ static security_policy_t _policyForGetExtendedPublicKey_silent(const bip44_path_
             SHOW();
             break;
 
+        // LCOV_EXCL_START
         default:
-            DENY();
+            ASSERT(false);
             break;
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
