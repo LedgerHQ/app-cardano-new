@@ -11,7 +11,10 @@ fixture generators (valid and reject test cases).
 from __future__ import annotations
 from typing import Any
 
-from tests.unit.generators.common import extract_apdu_payload
+from tests.unit.generators.common import (
+    extract_apdu_payload,
+    format_bytes_as_c_array,
+)
 
 
 def _is_simple_native_script(native_script: Any) -> bool:
@@ -168,16 +171,11 @@ def generate_simple_script_apdu_array(
 
     lines.append("// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE")
     lines.append(f"// Script type: {script.type.name}")
-    lines.append(f"static const uint8_t {array_name}[{len(apdu_payload)}] = {{")
-
-    # Format bytes in rows of 8 for readability
-    for i in range(0, len(apdu_payload), 8):
-        byte_chunk = apdu_payload[i : i + 8]
-        hex_bytes = ", ".join(f"0x{b:02x}" for b in byte_chunk)
-        trailing_comma = "," if i + 8 < len(apdu_payload) else ""
-        lines.append(f"    {hex_bytes}{trailing_comma}")
-
-    lines.append("};")
+    lines.extend(
+        format_bytes_as_c_array(
+            apdu_payload, name=array_name, bytes_per_line=8, return_as_list=True
+        )
+    )
     lines.append("")
 
     return lines, array_name
@@ -249,16 +247,11 @@ def generate_finish_apdu_payload(
     lines.append(
         f"// Display format: {display_format.name} (0x{display_format.value:02x})"
     )
-    lines.append(f"static const uint8_t {array_name}[{len(apdu_payload)}] = {{")
-
-    # Format bytes in rows of 8 for readability
-    for i in range(0, len(apdu_payload), 8):
-        byte_chunk = apdu_payload[i : i + 8]
-        hex_bytes = ", ".join(f"0x{b:02x}" for b in byte_chunk)
-        trailing_comma = "," if i + 8 < len(apdu_payload) else ""
-        lines.append(f"    {hex_bytes}{trailing_comma}")
-
-    lines.append("};")
+    lines.extend(
+        format_bytes_as_c_array(
+            apdu_payload, name=array_name, bytes_per_line=8, return_as_list=True
+        )
+    )
     lines.append("")
 
     return lines, array_name

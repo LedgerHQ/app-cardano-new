@@ -135,7 +135,7 @@ def _generate_fixture_code_for_test_case(
 
     Args:
         test_case: DeriveAddressTestCase from ragger tests
-        test_number: Sequential test number (1-based)
+        test_number: Sequential test number (0-based)
 
     Returns:
         List of C code lines defining the test fixture
@@ -251,6 +251,8 @@ def _build_fixtures() -> str:
         "",
     ]
 
+    total_fixtures = sum(len(t) for t in all_test_cases.values())
+
     # Generate fixture data for each test case
     for type_test, tests in all_test_cases.items():
         print(f"Processing type: {type_test} with {len(tests)} test cases")
@@ -304,7 +306,7 @@ def _build_fixtures() -> str:
         header_lines.append("};")
         header_lines.append("")
 
-    return "\n".join(header_lines)
+    return "\n".join(header_lines), total_fixtures
 
 
 # ==============================================================================
@@ -319,10 +321,12 @@ def generate_address_derivation_fixtures() -> None:
     This is the main entry point called from generate_unit_tests_from_ragger.py.
     Creates a single header file with all test fixtures.
 
+    Returns:
+        The total number of generated fixtures.
     """
 
     # Build header file content
-    fixtures = _build_fixtures()
-    # Write to file
-    write_generated_c_file(FIXTURES_FILE, fixtures)
+    content, total_fixtures = _build_fixtures()
+    write_generated_c_file(FIXTURES_FILE, content)
     print(f"Generated {FIXTURES_FILE}")
+    return total_fixtures

@@ -16,6 +16,10 @@ import hashlib
 import re
 import sys
 
+from tests.unit.generators.common import (
+    extract_brace_delimited_entries,
+    resolve_mnemonic,
+)
 from tests.unit.generators.paths import UNIT_TESTS_DIR
 
 
@@ -42,22 +46,12 @@ _ENTRY_START_PATTERN = re.compile(r"\{\s*\.path\s*=")
 def regenerate_mock_data() -> None:
     try:
         from ragger.bip import calculate_public_key_and_chaincode, CurveChoice  # type: ignore
-        from ragger.conftest import configuration as ragger_configuration  # type: ignore
         from bip_utils import Bip39SeedGenerator, Bip32Ed25519Kholaw  # type: ignore
         from nacl import bindings  # type: ignore
     except ImportError as exc:
         print(f"ERROR: missing dependency: {exc}")
         print("Please activate the venv: source tests/venv/bin/activate")
         sys.exit(1)
-
-    default_mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
-
-    def resolve_mnemonic() -> str:
-        if ragger_configuration is not None:
-            optional_seed = getattr(ragger_configuration.OPTIONAL, "CUSTOM_SEED", "")
-            if optional_seed:
-                return optional_seed
-        return default_mnemonic
 
     mnemonic = resolve_mnemonic()
 
@@ -99,7 +93,7 @@ def regenerate_mock_data() -> None:
         sys.exit(1)
 
     try:
-        content = input_file.read_text()
+        content = input_file.read_text(encoding="utf-8")
     except Exception as exc:
         print(f"ERROR: Failed to read mock data input file {input_file}: {exc}")
         sys.exit(1)
@@ -116,33 +110,10 @@ def regenerate_mock_data() -> None:
 
     mock_paths_body = mock_paths_match.group(2)
 
-    def _extract_entries(body: str) -> list[str]:
-        entries: list[str] = []
-        search_pos = 0
-        while True:
-            match = _ENTRY_START_PATTERN.search(body, search_pos)
-            if not match:
-                break
-            start = match.start()
-            depth = 0
-            idx = start
-            while idx < len(body):
-                char = body[idx]
-                if char == "{":
-                    depth += 1
-                elif char == "}":
-                    depth -= 1
-                    if depth == 0:
-                        end_idx = idx + 1
-                        break
-                idx += 1
-            else:
-                raise ValueError("Unbalanced braces while parsing mock entries")
-            while end_idx < len(body) and body[end_idx] in " \t\r\n,":
-                end_idx += 1
-            entries.append(body[start:end_idx])
-            search_pos = end_idx
-        return entries
+    path_entries = extract_brace_delimited_entries(mock_paths_body, _ENTRY_START_PATTERN)
+    if not path_entries:
+        raise ValueError("No mock path entries were found")
+    print(f"Regenerating {len(path_entries)} mock path entries...")
 
     def _build_path_entry(entry_text: str) -> str:
         path_match = re.search(r"\.path\s*=\s*(\{[^}]+\})", entry_text)
@@ -193,10 +164,7 @@ def regenerate_mock_data() -> None:
             print(f"ERROR: Failed to derive key for {path_desc}: {exc}")
             sys.exit(1)
 
-    path_entries = _extract_entries(mock_paths_body)
-    if not path_entries:
-        raise ValueError("No mock path entries were found")
-    print(f"Regenerating {len(path_entries)} mock path entries...")
+
     regenerated_paths = [_build_path_entry(entry) for entry in path_entries]
     new_mock_body = "\n".join(regenerated_paths).rstrip()
     content = (
@@ -253,7 +221,7 @@ def regenerate_mock_data() -> None:
         )
 
     signature_body = signature_match.group(2)
-    signature_entries = _extract_entries(signature_body)
+    signature_entries = extract_brace_delimited_entries(signature_body, _ENTRY_START_PATTERN)
     if not signature_entries:
         raise ValueError("No mock signature entries were found")
     print(f"\nRegenerating {len(signature_entries)} mock signature entries...")

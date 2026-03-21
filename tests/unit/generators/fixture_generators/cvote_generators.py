@@ -9,6 +9,7 @@ from tests.unit.generators.common import (
     write_generated_c_file,
     sanitize_c_identifier,
     format_bytes_as_c_array,
+    warning_expr_from_test_case,
 )
 from tests.unit.generators.paths import GENERATED_CVOTE_DIR
 
@@ -21,16 +22,8 @@ def _load_cvote_test_cases() -> List[Any]:
     return cvoteTestCases
 
 
-def _warning_expr_from_test_case(test_case: Any) -> str:
-    expected_warnings = getattr(test_case, "expected_warnings", [])
-    if expected_warnings:
-        return " | ".join(
-            f"((warning_bits_t)1 << {bit.name})" for bit in expected_warnings
-        )
-    return "0"
 
-
-def generate_cvote_fixtures() -> None:
+def generate_cvote_fixtures() -> int:
     print("Generating cvote fixtures...")
 
     test_cases = _load_cvote_test_cases()
@@ -131,7 +124,7 @@ def generate_cvote_fixtures() -> None:
             f"    .chunk_count = {chunk_count},",
             f"    .confirm_data = {confirm_array_name},",
             f"    .confirm_data_len = sizeof({confirm_array_name}),",
-            f"    .expected_warning_bits = {_warning_expr_from_test_case(test_case)},",
+            f"    .expected_warning_bits = {warning_expr_from_test_case(test_case)},",
             "},",
         ]
         fixture_entries.append("\n".join(entry_lines))
@@ -143,3 +136,4 @@ def generate_cvote_fixtures() -> None:
 
     write_generated_c_file(FIXTURES_FILE, "\n".join(header_lines) + "\n")
     print(f"Written cvote fixtures to {FIXTURES_FILE}")
+    return len(test_cases)

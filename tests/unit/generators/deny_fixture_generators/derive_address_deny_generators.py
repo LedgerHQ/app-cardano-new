@@ -156,6 +156,10 @@ def _get_expected_deny_reason(test_case: Any) -> str:
     """
     test_name_lower = test_case.name.lower()
 
+    # Check if expected_sw is explicitly provided in the test case
+    if getattr(test_case, "expected_sw", None):
+        return test_case.expected_sw.name
+
     # Map test characteristics to expected deny reasons
     if "path too short" in test_name_lower:
         return "SWO_SECURITY_CONDITION_NOT_SATISFIED"
@@ -324,7 +328,7 @@ def _build_deny_fixtures_header() -> str:
     print()
     print(f"Generated {len(deny_test_cases)} deny test fixtures")
 
-    return "\n".join(header_lines)
+    return "\n".join(header_lines), len(deny_test_cases)
 
 
 # ==============================================================================
@@ -332,7 +336,7 @@ def _build_deny_fixtures_header() -> str:
 # ==============================================================================
 
 
-def generate_address_derivation_deny_fixtures() -> None:
+def generate_address_derivation_deny_fixtures() -> int:
     """
     Generate address derivation deny-test fixture header.
 
@@ -341,10 +345,14 @@ def generate_address_derivation_deny_fixtures() -> None:
 
     The generated fixtures test that the device properly denies invalid
     address derivation requests according to securityPolicy.c validation rules.
+
+    Returns:
+        The total number of generated fixtures.
     """
 
     # Build header file content
-    header_content = _build_deny_fixtures_header()
+    header_content, fixture_count = _build_deny_fixtures_header()
     # Write to file
     write_generated_c_file(GENERATED_DENY_HEADER, header_content)
     print(f"Generated {GENERATED_DENY_HEADER}")
+    return fixture_count

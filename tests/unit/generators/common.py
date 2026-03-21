@@ -2,13 +2,23 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import inspect
+import re
 import sys
+import tempfile
 import types
 from pathlib import Path
 
 from tests.unit.generators.paths import (
     REPO_ROOT,
 )
+
+
+def format_display_name(prefix: str, test_name: str) -> str:
+    """Format a display name for a test case."""
+    cleaned = test_name.replace("-", "_").replace(" ", "_")
+    cleaned = "_".join(part for part in cleaned.split("_") if part)
+    return f"[{prefix}] {cleaned}"
+
 
 
 def read_file_safe(file_path: Path) -> str:
@@ -34,7 +44,10 @@ def read_file_safe(file_path: Path) -> str:
 
 
 def write_file_safe(file_path: Path, content: str) -> None:
-    """Write file with proper error handling. Exits immediately on error."""
+    """
+    Write file with proper error handling. Exits immediately on error.
+    Uses a temporary file and atomic rename to prevent data corruption.
+    """
     try:
         # Create parent directories if needed
         file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -42,8 +55,22 @@ def write_file_safe(file_path: Path, content: str) -> None:
         print(f"ERROR: Failed to create directory {file_path.parent}: {exc}")
         sys.exit(1)
 
+    temp_file_path = None
     try:
-        file_path.write_text(content, encoding="utf-8")
+        # Create a temporary file in the same directory
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            delete=False,  # Don't delete immediately
+            dir=file_path.parent,
+            prefix=f".{file_path.name}.",  # Prefix with dot for hidden file
+        ) as tmp_file:
+            tmp_file.write(content)
+            temp_file_path = Path(tmp_file.name)
+
+        # Atomically rename the temporary file to the final destination
+        temp_file_path.rename(file_path)
+
     except PermissionError as exc:
         print(f"ERROR: Permission denied writing to {file_path}: {exc}")
         sys.exit(1)
@@ -53,6 +80,13 @@ def write_file_safe(file_path: Path, content: str) -> None:
     except Exception as exc:
         print(f"ERROR: Unexpected error writing {file_path}: {exc}")
         sys.exit(1)
+    finally:
+        # Clean up temporary file if it still exists (e.g., if rename failed)
+        if temp_file_path and temp_file_path.exists():
+            try:
+                temp_file_path.unlink()
+            except OSError as exc:
+                print(f"WARNING: Failed to clean up temporary file {temp_file_path}: {exc}")
 
 
 def write_generated_c_file(file_path: Path, content: str) -> None:
@@ -129,6 +163,24 @@ def sanitize_c_identifier(
 
     # Convert case
     return sanitized.upper() if uppercase else sanitized.lower()
+
+
+def warning_expr_from_test_case(test_case: object) -> str:
+    """Return a C expression for the expected_warning_bits field.
+
+    Produces a bit-OR expression suitable for embedding directly in a C
+    struct initialiser, e.g.::
+
+        ((warning_bits_t)1 << WARNING_FOO) | ((warning_bits_t)1 << WARNING_BAR)
+
+    Returns ``"0"`` when no warnings are expected.
+    """
+    expected_warnings = getattr(test_case, "expected_warnings", [])
+    if expected_warnings:
+        return " | ".join(
+            f"((warning_bits_t)1 << {bit.name})" for bit in expected_warnings
+        )
+    return "0"
 
 
 def extract_apdu_payload(apdu: bytes) -> bytes:
@@ -266,3 +318,80 @@ def _ensure_base58_module() -> None:
     module.b58encode = b58encode
     module.b58decode = b58decode
     sys.modules["base58"] = module
+
+
+def resolve_mnemonic() -> str:
+    """Return the test mnemonic to use for key derivation.
+
+    Checks ``ragger_configuration.OPTIONAL.CUSTOM_SEED`` first; falls back to
+    the standard ``abandon … about`` mnemonic used across the test suite.
+    """
+    default_mnemonic = (
+        "abandon abandon abandon abandon abandon abandon "
+        "abandon abandon abandon abandon abandon about"
+    )
+    try:
+        from ragger.conftest import configuration as ragger_configuration  # type: ignore
+    except ImportError:
+        return default_mnemonic
+
+    if ragger_configuration is not None:
+        optional_seed = getattr(ragger_configuration.OPTIONAL, "CUSTOM_SEED", "")
+        if optional_seed:
+            return optional_seed
+
+    return default_mnemonic
+
+
+def extract_brace_delimited_entries(
+    body: str,
+    start_pattern: "re.Pattern[str] | None" = None,
+) -> list[str]:
+    """Extract top-level brace-delimited C struct entries from *body*.
+
+    Each entry starts where *start_pattern* matches (default: any ``{``)
+    and ends at the matching closing brace (depth-tracking).  Trailing
+    whitespace, commas, and newlines following the closing brace are
+    consumed so that the returned strings are ready to hand to a subsequent
+    regex.
+
+    Raises ``ValueError`` on unbalanced braces.
+    """
+    entries: list[str] = []
+    search_pos = 0
+    while True:
+        if start_pattern is None:
+            open_pos = body.find("{", search_pos)
+            if open_pos == -1:
+                break
+            match_start = open_pos
+        else:
+            m = start_pattern.search(body, search_pos)
+            if not m:
+                break
+            match_start = m.start()
+            open_pos = body.find("{", match_start)
+            if open_pos == -1:
+                break
+
+        depth = 0
+        idx = open_pos
+        end_idx = -1
+        while idx < len(body):
+            char = body[idx]
+            if char == "{":
+                depth += 1
+            elif char == "}":
+                depth -= 1
+                if depth == 0:
+                    end_idx = idx + 1
+                    break
+            idx += 1
+        if end_idx == -1:
+            raise ValueError("Unbalanced braces while parsing entries")
+        # Consume trailing whitespace/comma/newline after the closing brace
+        while end_idx < len(body) and body[end_idx] in " \t\r\n,":
+            end_idx += 1
+        entries.append(body[match_start:end_idx])
+        search_pos = end_idx
+    return entries

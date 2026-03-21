@@ -1362,3 +1362,4 @@ static const pubkey_fixture_t PUBKEY_FIXTURES_TEST_PUBKEY_WITHOUT_CONFIRMATION[]
     .expected_policy = POLICY_HIDE,
 },
 };
+

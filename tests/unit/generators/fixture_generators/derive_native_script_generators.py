@@ -6,6 +6,7 @@ from typing import Any
 
 from tests.unit.generators.common import (
     write_generated_c_file,
+    sanitize_c_identifier,
     _ensure_base58_module,
 )
 from tests.unit.generators.paths import GENERATED_NATIVE_SCRIPT_DIR
@@ -92,7 +93,7 @@ def _build_fixtures() -> str:
     test_case_root_identifiers = []
 
     for test_case_index, test_case in enumerate(all_test_cases):
-        test_case_name_sanitized = test_case.name.replace(" ", "_").replace("#", "NUM")
+        test_case_name_sanitized = sanitize_c_identifier(test_case.name)
         base_id = f"TC{test_case_index}_{test_case_name_sanitized.upper()}"
 
         header_lines.append(
@@ -187,10 +188,10 @@ def _build_fixtures() -> str:
         ]
     )
 
-    return "\n".join(header_lines)
+    return "\n".join(header_lines), len(test_case_root_identifiers)
 
 
-def generate_derive_native_script_fixtures() -> None:
+def generate_derive_native_script_fixtures() -> int:
     """
     Generate native script hash derivation test fixture header.
 
@@ -200,12 +201,15 @@ def generate_derive_native_script_fixtures() -> None:
     - Internal nodes: COMPLEX scripts (ALL, ANY, N_OF_K) containing children
 
 
+    Returns:
+        The total number of generated fixtures.
     """
     print("Generating derive_native_script_fixtures.h...")
     print()
 
-    fixtures = _build_fixtures()
+    fixtures, total_fixtures = _build_fixtures()
     write_generated_c_file(FIXTURES_FILE, fixtures)
 
     print()
     print(f"Generated {FIXTURES_FILE}")
+    return total_fixtures

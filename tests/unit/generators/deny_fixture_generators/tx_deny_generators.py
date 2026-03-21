@@ -6,6 +6,8 @@ from typing import Any
 
 from tests.unit.generators.common import (
     write_generated_c_file,
+    sanitize_c_identifier,
+    format_display_name,
 )
 from tests.unit.generators.paths import GENERATED_SIGN_TX_DIR
 
@@ -20,7 +22,6 @@ SET_ORDER = [
     "singleAccountDenyTestCases",
     "collateralOutputDenyTestCases",
     "testsInvalidTokenBundleOrdering",
-    "poolRegistrationOwnerDenyTestCases",
     "votingDenyTestCases",
     "requiredSignerDenyTestCases",
     "stakePoolRegistrationPoolIdDenyTestCases",
@@ -43,8 +44,6 @@ SET_PREFIX = {
     "singleAccountDenyTestCases": "DENY_SINGLE_ACCOUNT",
     "collateralOutputDenyTestCases": "DENY_COLLATERAL_OUTPUT",
     "testsInvalidTokenBundleOrdering": "DENY_MULTIASSET",
-    "poolRegistrationOwnerDenyTestCases": "DENY_POOL_OWNER",
-    "votingDenyTestCases": "DENY_VOTING",
     "requiredSignerDenyTestCases": "DENY_REQUIRED_SIGNER",
     "stakePoolRegistrationPoolIdDenyTestCases": "DENY_POOL_ID",
     "stakePoolRegistrationOwnerDenyTestCases": "DENY_POOL_OWNER",
@@ -82,8 +81,6 @@ def _build_deny_fixtures() -> str:
         collateralOutputDenyTestCases,
         testsInvalidTokenBundleOrdering,
         poolRegistrationOwnerDenyTestCases,
-        votingDenyTestCases,
-        requiredSignerDenyTestCases,
         stakePoolRegistrationPoolIdDenyTestCases,
         stakePoolRegistrationOwnerDenyTestCases,
         outputDenyTestCases,
@@ -104,32 +101,15 @@ def _build_deny_fixtures() -> str:
         "singleAccountDenyTestCases": singleAccountDenyTestCases,
         "collateralOutputDenyTestCases": collateralOutputDenyTestCases,
         "testsInvalidTokenBundleOrdering": testsInvalidTokenBundleOrdering,
-        "poolRegistrationOwnerDenyTestCases": poolRegistrationOwnerDenyTestCases,
-        "votingDenyTestCases": votingDenyTestCases,
-        "requiredSignerDenyTestCases": requiredSignerDenyTestCases,
         "stakePoolRegistrationPoolIdDenyTestCases": stakePoolRegistrationPoolIdDenyTestCases,
-        "stakePoolRegistrationOwnerDenyTestCases": stakePoolRegistrationOwnerDenyTestCases,
+        "stakePoolRegistrationOwnerDenyTestCases": poolRegistrationOwnerDenyTestCases
+        + stakePoolRegistrationOwnerDenyTestCases,
         "outputDenyTestCases": outputDenyTestCases,
         "testsCVoteRegistrationDenies": testsCVoteRegistrationDenies,
         "invalidCertificates": invalidCertificates,
         "invalidPoolMetadataTestCases": invalidPoolMetadataTestCases,
         "invalidRelayTestCases": invalidRelayTestCases,
     }
-
-    def sanitize_name(name: str) -> str:
-        result = []
-        for char in name.replace("-", "_"):
-            if char.isalnum():
-                result.append(char.upper())
-            else:
-                result.append("_")
-        cleaned = "_".join(part for part in "".join(result).split("_") if part)
-        return cleaned
-
-    def format_display_name(prefix: str, test_name: str) -> str:
-        cleaned = test_name.replace("-", "_").replace(" ", "_")
-        cleaned = "_".join(part for part in cleaned.split("_") if part)
-        return f"[{prefix}] {cleaned}"
 
     def to_hex_lines(
         hex_str: str, indent: int = 4, append_comma: bool = False
@@ -231,7 +211,7 @@ def _build_deny_fixtures() -> str:
         expected_sw_name = expected_sw.name
         expect_init_failure = prefix == "DENY_INIT"
         if prefix == "DENY_ADDRESS":
-            normalized_name = sanitize_name(test_case.name)
+            normalized_name = sanitize_c_identifier(test_case.name).upper()
             if (
                 "POOL_OPERATOR_SPENDING_CHOICE_NOT_PATH" in normalized_name
                 or "POOL_OWNER_UNCONDITIONALLY" in normalized_name
@@ -243,7 +223,7 @@ def _build_deny_fixtures() -> str:
             name=test_case.name,
             display_name=display_name,
             prefix=prefix,
-            sanitized_name=sanitize_name(test_case.name),
+            sanitized_name=sanitize_c_identifier(test_case.name).upper(),
             init_hex=init_payload.hex().upper(),
             chunks=chunks,
             expected_sw=expected_sw_name,

@@ -12,6 +12,7 @@ from tests.unit.generators.common import (
     sanitize_c_identifier,
     extract_apdu_payload,
     format_bytes_as_c_array,
+    extract_brace_delimited_entries,
 )
 from tests.unit.generators.paths import GENERATED_SIGN_TX_DIR, UNIT_TESTS_DIR
 
@@ -50,29 +51,6 @@ def _parse_path_to_words(path: str) -> tuple[int, ...]:
     return tuple(path_words)
 
 
-def _extract_braced_entries(body: str) -> list[str]:
-    entries: list[str] = []
-    start_index = 0
-    while True:
-        entry_start = body.find("{ .path =", start_index)
-        if entry_start == -1:
-            break
-        depth = 0
-        cursor = entry_start
-        while cursor < len(body):
-            char = body[cursor]
-            if char == "{":
-                depth += 1
-            elif char == "}":
-                depth -= 1
-                if depth == 0:
-                    entries.append(body[entry_start : cursor + 1])
-                    start_index = cursor + 1
-                    break
-            cursor += 1
-        else:
-            raise ValueError("Unbalanced braces while parsing mock signature entries")
-    return entries
 
 
 def _load_mock_signature_lookup() -> dict[tuple[tuple[int, ...], bytes], bytes]:
@@ -108,7 +86,10 @@ def _load_mock_signature_lookup() -> dict[tuple[tuple[int, ...], bytes], bytes]:
         )
 
     signature_lookup: dict[tuple[tuple[int, ...], bytes], bytes] = {}
-    for signature_entry in _extract_braced_entries(signatures_match.group(1)):
+    _PATH_ENTRY_PATTERN = re.compile(r"\{\s*\.path\s*=")
+    for signature_entry in extract_brace_delimited_entries(
+        signatures_match.group(1), _PATH_ENTRY_PATTERN
+    ):
         path_match = re.search(r"\.path\s*=\s*(\{[^}]+\})", signature_entry)
         path_len_match = re.search(r"\.path_len\s*=\s*(\d+)", signature_entry)
         message_name_match = re.search(r"\.message\s*=\s*(\w+)", signature_entry)
@@ -153,10 +134,13 @@ def _compute_fallback_mock_signature(
 def _derive_witness_signature(witness_path: str, message: bytes) -> bytes:
     path_words = _parse_path_to_words(witness_path)
     signature_lookup = _load_mock_signature_lookup()
-    return signature_lookup.get(
-        (path_words, message),
-        _compute_fallback_mock_signature(path_words, message),
-    )
+    signature = signature_lookup.get((path_words, message))
+    if signature is None:
+        print(f"WARNING: No mock signature found for path {witness_path!r}.")
+        print("  The generated fixture will contain a fake deterministic signature.")
+        print("  Run the generator with the 'mock-data' subcommand first to generate it.")
+        return _compute_fallback_mock_signature(path_words, message)
+    return signature
 
 
 def _bool_to_c(value: bool) -> str:

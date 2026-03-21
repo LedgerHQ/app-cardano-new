@@ -10,6 +10,7 @@ from tests.unit.generators.common import (
     write_generated_c_file,
     sanitize_c_identifier,
     format_bytes_as_c_array,
+    warning_expr_from_test_case,
 )
 from tests.unit.generators.paths import GENERATED_OPCERT_DIR
 
@@ -22,14 +23,6 @@ def _load_opcert_test_cases() -> Sequence[object]:
 
     return opCertTestCases
 
-
-def _warning_expr_from_test_case(test_case: object) -> str:
-    expected_warnings = getattr(test_case, "expected_warnings", [])
-    if expected_warnings:
-        return " | ".join(
-            f"((warning_bits_t)1 << {bit.name})" for bit in expected_warnings
-        )
-    return "0"
 
 
 def generate_opcert_fixtures() -> None:
@@ -68,7 +61,7 @@ def generate_opcert_fixtures() -> None:
             f'    .name = "{test_case.name}",',
             f"    .payload = {array_name},",
             f"    .payload_len = sizeof({array_name}),",
-            f"    .expected_warning_bits = {_warning_expr_from_test_case(test_case)},",
+            f"    .expected_warning_bits = {warning_expr_from_test_case(test_case)},",
             "},",
         ]
         fixture_entries.append("\n".join(entry_lines))
@@ -79,3 +72,4 @@ def generate_opcert_fixtures() -> None:
 
     write_generated_c_file(FIXTURES_FILE, "\n".join(header_lines) + "\n")
     print(f"Written opcert fixtures to {FIXTURES_FILE}")
+    return len(test_cases)

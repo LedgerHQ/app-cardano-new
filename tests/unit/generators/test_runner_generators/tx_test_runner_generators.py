@@ -24,8 +24,8 @@ _FIXTURE_PATTERN = re.compile(
 
 # Match .name fields within fixture bodies
 _NAME_FIELD_PATTERN = re.compile(r'\.name\s*=\s*"([^"]+)"')
-_AUX_INCLUDED_PATTERN = re.compile(r"\.include_aux_data_hash\s*=\s*(true|false)")
-_AUX_TYPE_PATTERN = re.compile(r"\.aux_data_type\s*=\s*([A-Z0-9_]+|\d+)")
+AUX_INCLUDED_PATTERN = re.compile(r"\.include_aux_data_hash\s*=\s*(true|false)")
+AUX_TYPE_PATTERN = re.compile(r"\.aux_data_type\s*=\s*([A-Z0-9_]+|\d+)")
 
 
 ERA_COMMENT_OVERRIDES = {
@@ -85,9 +85,9 @@ ERA_TEST_FILE_MAP: dict[str, tuple[str, str, str]] = {
 }
 
 
-def _fixture_has_cvote_aux_data(fixture_body: str) -> bool:
-    aux_included_match = _AUX_INCLUDED_PATTERN.search(fixture_body)
-    aux_type_match = _AUX_TYPE_PATTERN.search(fixture_body)
+def fixture_has_cvote_aux_data(fixture_body: str) -> bool:
+    aux_included_match = AUX_INCLUDED_PATTERN.search(fixture_body)
+    aux_type_match = AUX_TYPE_PATTERN.search(fixture_body)
     if aux_included_match is None or aux_type_match is None:
         return False
 
@@ -180,7 +180,7 @@ def _extract_fixtures_from_header(fixture_path: Path) -> list[tuple[str, str, bo
         if not name_match:
             continue
         display_name = name_match.group(1)
-        fixtures.append((fixture_name, display_name, _fixture_has_cvote_aux_data(body)))
+        fixtures.append((fixture_name, display_name, fixture_has_cvote_aux_data(body)))
     return fixtures
 
 

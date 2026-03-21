@@ -8,19 +8,12 @@ from tests.unit.generators.common import (
     sanitize_c_identifier,
     format_bytes_as_c_array,
     extract_apdu_payload,
+    warning_expr_from_test_case,
 )
 from tests.unit.generators.paths import GENERATED_SIGN_MSG_DIR
 
 FIXTURES_FILE = GENERATED_SIGN_MSG_DIR / "test_sign_msg_fixtures.h"
 
-
-def _warning_expr_from_test_case(test_case: Any) -> str:
-    expected_warnings = getattr(test_case, "expected_warnings", [])
-    if expected_warnings:
-        return " | ".join(
-            f"((warning_bits_t)1 << {bit.name})" for bit in expected_warnings
-        )
-    return "0"
 
 
 # ==============================================================================
@@ -301,9 +294,7 @@ def _build_fixtures() -> str:
         chunk_struct_name = f"SIGN_MSG_{idx:03d}_{safe_test_name}_CHUNKS"
         if payloads["chunk_payloads"]:
             header_lines.append(f"    .chunks = {chunk_struct_name},")
-            header_lines.append(
-                f"    .chunk_count = sizeof({chunk_struct_name}) / sizeof(sign_msg_chunk_t),"
-            )
+            header_lines.append(f"    .chunk_count = ARRAY_LEN({chunk_struct_name}),")
         else:
             header_lines.append("    .chunks = NULL,")
             header_lines.append("    .chunk_count = 0,")
@@ -319,7 +310,7 @@ def _build_fixtures() -> str:
             header_lines.append("    .confirm_data_len = 0,")
         header_lines.append("    .check_expected = SWO_SUCCESS,")
         header_lines.append(
-            f"    .expected_warning_bits = {_warning_expr_from_test_case(test_case)},"
+            f"    .expected_warning_bits = {warning_expr_from_test_case(test_case)},"
         )
         expected_struct_name = fixture_expected_structs[idx]
         if expected_struct_name:
@@ -333,7 +324,9 @@ def _build_fixtures() -> str:
     return "\n".join(header_lines)
 
 
-def generate_sign_msg_fixtures() -> None:
+def generate_sign_msg_fixtures() -> int:
     content = _build_fixtures()
     write_generated_c_file(FIXTURES_FILE, content)
     print(f"Generated {FIXTURES_FILE}")
+    from tests.standalone.input_files.signMsg import signMsgTestCases  # type: ignore
+    return len(signMsgTestCases)

@@ -8,7 +8,9 @@ import re
 from tests.unit.generators.common import (
     write_generated_c_file,
     sanitize_c_identifier,
+    _ensure_base58_module,
     format_bytes_as_c_array,
+    resolve_mnemonic,
 )
 from tests.unit.generators.paths import GENERATED_PUBKEY_DIR, UNIT_TESTS_DIR
 
@@ -28,7 +30,7 @@ class PubKeyTestGroup:
 # ==============================================================================
 
 
-def _load_pubkey_test_cases() -> dict[str, PubKeyTestGroup]:
+def _load_public_key_test_cases() -> dict[str, PubKeyTestGroup]:
     """
     Load public key export test cases from ragger standalone tests.
 
@@ -116,22 +118,6 @@ def _serialize_pubkey_test_case_to_apdu(test_case: Any) -> bytes:
 # ==============================================================================
 # Step 3: Derive Expected Pubkey + Chaincode
 # ==============================================================================
-
-
-def _resolve_mnemonic() -> str:
-    default_mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
-
-    try:
-        from ragger.conftest import configuration as ragger_configuration  # type: ignore
-    except ImportError:
-        return default_mnemonic
-
-    if ragger_configuration is not None:
-        optional_seed = getattr(ragger_configuration.OPTIONAL, "CUSTOM_SEED", "")
-        if optional_seed:
-            return optional_seed
-
-    return default_mnemonic
 
 
 def _derive_expected_response_bytes(test_case: Any, mnemonic: str) -> bytes:
@@ -272,13 +258,13 @@ def _generate_fixture_code_for_test_case(
     expected_response: bytes,
 ) -> list[str]:
     """
-    Generate C code for a single pubkey export test fixture.
+    Generate C code for a single public key fixture.
 
     Args:
-        group_name: Category name (e.g., test_pubkey_confirm)
+        group_name: The group name identifier
         test_case: PubKeyTestCase from ragger tests
-        test_number: Sequential test number (1-based)
-        expected_response: Expected pubkey+chaincode bytes
+        test_number: Sequential test number (0-based)
+        expected_response: Expected public key and chain code bytes
 
     Returns:
         List of C code lines defining the test fixture
@@ -340,9 +326,34 @@ def _generate_fixture_code_for_test_case(
 # ==============================================================================
 
 
-def _build_fixtures() -> str:
-    categorized_test_cases = _load_pubkey_test_cases()
-    mnemonic = _resolve_mnemonic()
+def _build_fixtures_for_group(
+    group_name: str,
+    group: PubKeyTestGroup,
+    mnemonic: str,
+) -> list[str]:
+    header_lines: list[str] = []
+    for idx, test_case in enumerate(group.test_cases):
+        expected_response = _derive_expected_response_bytes(test_case, mnemonic)
+        header_lines.extend(
+            _generate_fixture_code_for_test_case(
+                group_name,
+                test_case,
+                idx,
+                expected_response,
+            )
+        )
+    return header_lines
+
+
+def generate_pubkey_fixtures() -> int:
+    """Generate public key export test fixture headers.
+
+    Returns:
+        Total number of fixture entries generated.
+    """
+    _ensure_base58_module()
+    mnemonic = resolve_mnemonic()
+    categorized_test_cases = _load_public_key_test_cases()
 
     header_lines: list[str] = [
         "//",
@@ -368,24 +379,10 @@ def _build_fixtures() -> str:
         "",
     ]
 
-    fixture_arrays: dict[str, list[str]] = {}
-
+    total_fixtures = 0
     for group_name, group in categorized_test_cases.items():
-        group_lines: list[str] = []
-        for idx, test_case in enumerate(group.test_cases):
-            expected_response = _derive_expected_response_bytes(test_case, mnemonic)
-            group_lines.extend(
-                _generate_fixture_code_for_test_case(
-                    group_name,
-                    test_case,
-                    idx,
-                    expected_response,
-                )
-            )
-        fixture_arrays[group_name] = group_lines
-
-    for group_name, lines in fixture_arrays.items():
-        header_lines.extend(lines)
+        header_lines.extend(_build_fixtures_for_group(group_name, group, mnemonic))
+        total_fixtures += len(group.test_cases)
 
     for group_name, group in categorized_test_cases.items():
         array_name = f"PUBKEY_FIXTURES_{group_name.upper()}"
@@ -418,10 +415,7 @@ def _build_fixtures() -> str:
         header_lines.append("};")
         header_lines.append("")
 
-    return "\n".join(header_lines)
-
-
-def generate_pubkey_fixtures() -> None:
-    content = _build_fixtures()
+    content = "\n".join(header_lines) + "\n"
     write_generated_c_file(FIXTURES_FILE, content)
     print(f"Generated {FIXTURES_FILE}")
+    return total_fixtures

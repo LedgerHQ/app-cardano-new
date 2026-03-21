@@ -37,11 +37,11 @@
 
 // APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
 // Script type: PUBKEY_DEVICE_OWNED
-static const uint8_t APDU_PAYLOAD_TC0_NATIVE_SCRIPT_PUBKEY_INVALID_KEY_PATH_C0[27] = {
+static const uint8_t APDU_PAYLOAD_TC0_NATIVE_SCRIPT_PUBKEY_INVALID_KEY_PATH_C0[] = {
     0x00, 0x02, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00
+    0x00, 0x00, 0x00,
 };
 
 static const native_script_t SCRIPT_TC0_NATIVE_SCRIPT_PUBKEY_INVALID_KEY_PATH_C0 = {
@@ -57,8 +57,8 @@ static const native_script_t SCRIPT_TC0_NATIVE_SCRIPT_PUBKEY_INVALID_KEY_PATH_C0
 
 // APDU payload for P1_NATIVE_SCRIPT_FINISH
 // Display format: BECH32 (0x01)
-static const uint8_t FINISH_APDU_PAYLOAD_TC0_NATIVE_SCRIPT_PUBKEY_INVALID_KEY_PATH[1] = {
-    0x01
+static const uint8_t FINISH_APDU_PAYLOAD_TC0_NATIVE_SCRIPT_PUBKEY_INVALID_KEY_PATH[] = {
+    0x01,
 };
 
 // ======================================================================
@@ -88,8 +88,8 @@ static const native_script_t SCRIPT_TC1_NATIVE_SCRIPT_N_OF_K_INVALID_REQUIRED_CO
 
 // APDU payload for P1_NATIVE_SCRIPT_FINISH
 // Display format: BECH32 (0x01)
-static const uint8_t FINISH_APDU_PAYLOAD_TC1_NATIVE_SCRIPT_N_OF_K_INVALID_REQUIRED_COUNT_HIGHER_THAN_NUMBER_OF_SCRIPTS[1] = {
-    0x01
+static const uint8_t FINISH_APDU_PAYLOAD_TC1_NATIVE_SCRIPT_N_OF_K_INVALID_REQUIRED_COUNT_HIGHER_THAN_NUMBER_OF_SCRIPTS[] = {
+    0x01,
 };
 
 // ======================================================================
@@ -99,10 +99,10 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC1_NATIVE_SCRIPT_N_OF_K_INVALID_REQUIR
 
 // APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
 // Script type: PUBKEY_DEVICE_OWNED
-static const uint8_t APDU_PAYLOAD_TC2_NATIVE_SCRIPT_PUBKEY_DEVICE_OWNED_PATH_INVALID_NON_HARDENED_ACCOUNT_C0[23] = {
-    0x00, 0x02, 0x05, 0x80, 0x00, 0x00, 0x2c, 0x80,
+static const uint8_t APDU_PAYLOAD_TC2_NATIVE_SCRIPT_PUBKEY_DEVICE_OWNED_PATH_INVALID_NON_HARDENED_ACCOUNT_C0[] = {
+    0x00, 0x02, 0x05, 0x80, 0x00, 0x00, 0x2C, 0x80,
     0x00, 0x07, 0x17, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
 static const native_script_t SCRIPT_TC2_NATIVE_SCRIPT_PUBKEY_DEVICE_OWNED_PATH_INVALID_NON_HARDENED_ACCOUNT_C0 = {
@@ -118,8 +118,8 @@ static const native_script_t SCRIPT_TC2_NATIVE_SCRIPT_PUBKEY_DEVICE_OWNED_PATH_I
 
 // APDU payload for P1_NATIVE_SCRIPT_FINISH
 // Display format: BECH32 (0x01)
-static const uint8_t FINISH_APDU_PAYLOAD_TC2_NATIVE_SCRIPT_PUBKEY_DEVICE_OWNED_PATH_INVALID_NON_HARDENED_ACCOUNT[1] = {
-    0x01
+static const uint8_t FINISH_APDU_PAYLOAD_TC2_NATIVE_SCRIPT_PUBKEY_DEVICE_OWNED_PATH_INVALID_NON_HARDENED_ACCOUNT[] = {
+    0x01,
 };
 
 // ======================================================================
@@ -149,8 +149,8 @@ static const native_script_t SCRIPT_TC3_NATIVE_SCRIPT_N_OF_K_REQUIRED_COUNT_EQUA
 
 // APDU payload for P1_NATIVE_SCRIPT_FINISH
 // Display format: BECH32 (0x01)
-static const uint8_t FINISH_APDU_PAYLOAD_TC3_NATIVE_SCRIPT_N_OF_K_REQUIRED_COUNT_EQUALS_ZERO_WITH_SUBSCRIPTS[1] = {
-    0x01
+static const uint8_t FINISH_APDU_PAYLOAD_TC3_NATIVE_SCRIPT_N_OF_K_REQUIRED_COUNT_EQUALS_ZERO_WITH_SUBSCRIPTS[] = {
+    0x01,
 };
 
 // ======================================================================
