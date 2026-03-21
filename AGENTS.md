@@ -86,11 +86,13 @@ For detailed analysis, see:
     - [tests/fuzzing/FUZZING.md](tests/fuzzing/FUZZING.md): Fuzzing harnesses and usage.
 
 ## Testing Workflow
-- Use `tests/venv` for Python-based tooling. The exact activation, generator, and fixture commands live in [doc/testing.md](doc/testing.md) and [tests/unit/README.md](tests/unit/README.md).
-- When C code changes, run unit tests first. Use `-j8` for `make`.
-- After unit tests pass, run a fuzzing build as an additional compile-health gate.
-- When `tests/standalone/input_files/` or `tests/application_client/` changes, regenerate unit-test fixtures before re-running unit tests using:
-  `PYTHONPATH=. tests/venv/bin/python -m tests.unit.generators.generate_unit_tests_from_ragger all`
-- When modifying Python files, run `ruff check --fix` on them.
-- Do not run ragger tests or swap tests unless explicitly requested.
-- Compilation warnings are not acceptable; fix them.
+
+The detailed testing workflow, including environment setup and specific commands, is documented in **[doc/testing.md](doc/testing.md)**.
+
+Brief summary:
+- **Unit tests**: `make -C tests/unit` (run when C code changes).
+- **Fuzzing**: Extra compile-health gate after unit tests.
+- **Fixture generation**: `python3 -m tests.unit.generators...` (run when ragger inputs change).
+- **Linting**: `ruff check --fix` (run when Python code changes).
+- **Ragger/Swap tests**: Run only on explicit request.
+- **Strictness**: Compilation warnings and lint errors are treated as failures.

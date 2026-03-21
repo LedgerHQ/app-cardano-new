@@ -22,6 +22,42 @@ Use this environment for:
 - `tests/unit/generators/`
 - other Python helpers under `tests/`
 
+## System Prerequisites
+
+On Ubuntu, install the following required dependencies for building and running unit tests:
+
+```bash
+sudo apt update
+sudo apt install cmake libcmocka-dev lcov
+```
+
+For standalone functional tests (ragger), you also need:
+
+```bash
+sudo apt install qemu-user-static
+```
+
+### Linting and Formatting (Ruff)
+
+The project uses [Ruff](https://docs.astral.sh/ruff/) for Python linting and formatting. Ruff is included in the shared `tests/requirements.txt`.
+
+Always run Ruff before committing Python changes:
+
+```bash
+# From repository root
+source tests/venv/bin/activate
+
+# Format files
+ruff format . --exclude tests/venv
+
+# Run linter and apply automatic fixes
+ruff check --fix . --exclude tests/venv
+```
+
+Notes:
+- The project follows absolute import patterns (`from tests.pkg...`).
+- Most `E402` (imports not at top) errors have been resolved by moving path bootstrapping to module execution (`python3 -m ...`). Avoid introducing new `sys.path` hacks.
+
 Activation examples:
 
 ```bash

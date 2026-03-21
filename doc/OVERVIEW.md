@@ -90,89 +90,19 @@ For a compact command/flow reference and links to APDU source-of-truth headers, 
 
 ## 4. Testing Infrastructure
 
-The app uses three complementary testing approaches for comprehensive validation:
+The application uses a multi-layered testing approach to ensure correctness and security. Detailed documentation for the testing setup and workflows can be found in **[testing.md](testing.md)**.
 
-### Testing Docs
+### Testing Layers
+- **Unit Tests (`tests/unit/`)**: C unit tests (using `cmocka`) for individual modules.
+- **Functional Tests (`tests/standalone/`)**: End-to-end Python tests (using `ragger` and `speculos`) that simulate device UI.
+- **Swap Tests (`tests/swap/`)**: Specialized tests for exchange/swap library mode.
+- **Fuzzing (`tests/fuzzing/`)**: libFuzzer-based security testing for critical parsers and handlers.
 
-- `testing.md` for testing entry point and workflow.
-- `tests/unit/README.md` for unit-test build/run/fixtures.
-- `tests/standalone/README.md` for ragger standalone tests.
-- `tests/swap/README.md` for swap/library-mode tests.
-- `tests/fuzzing/FUZZING.md` for fuzzing harnesses and build/run.
-
-### Practical Workflow
-
-- When C code changes, run unit tests.
-- Run ragger and swap tests only when explicitly requested (they are slower and UI-dependent).
-- The primary app build is done via the VSCode Ledger plugin and is not automated here; use the unit tests build path as a compile-health proxy.
-- After unit tests pass, verify fuzzing build as an additional compile-health check.
-- Compilation warnings are treated as failures to be fixed.
-
-### 4.1. Functional Tests (`tests/standalone/`)
-
-Interactive tests using the `ragger` framework that simulate the device UI and verify end-to-end behavior. These test actual transactions, user interactions, and device responses.
-
-- **`application_client/`**:
-    - **`command_builder.py`**: Serializes transaction objects into APDU commands.
-    - **`command_sender.py`**: Sends APDUs to the device and handles responses.
-- **Constant synchronization checks**:
-    - `tests/standalone/client_constants_check.py` verifies Python client constants against C headers.
-    - Covered mappings currently include:
-      - `CLA`, `INS_*`, `P1_*`, `P2_*` from `src/apdu/dispatcher.h`
-      - `MAX_SIGN_TX_CHUNK_SIZE` from `src/handler/sign_tx.h`
-      - `CVOTE_CREDENTIAL_*` from `src/cvote/cvote_types.h` (mapped to `application_client.command_builder.CVoteCredentialType`)
-    - These checks are executed by:
-      - `tests/standalone/test_client_constants.py`
-      - `tests/standalone/conftest.py` session fixture (`enforce_client_constants`)
-    - If any of these C constants change, update Python constants and extend the checks in `client_constants_check.py` in the same PR.
-- **`standalone/`**:
-    - Contains actual test cases (e.g., `test_sign_tx.py`).
-    - **`conftest.py`**: Configures the ragger environment.
-    - **`input_files/`**: Contains transaction objects and test vectors.
-
-**Common Command Examples:**
-
-```bash
-# Run all transaction signing tests for Stax
-pytest tests/standalone/test_sign_tx.py --device stax
-
-# Run a specific test case by name
-pytest tests/standalone/test_sign_tx.py --device stax -k "Sign_tx_with_script_data_hash"
-
-# Run with verbose output and short tracebacks
-pytest -v --tb=short tests/standalone/test_sign_tx.py --device stax
-```
-
-**Useful Ragger/Speculos Flags:**
-- `--display`: Enables the Speculos graphical window to see the device screen during the test. By default, tests run in headless mode.
-- `--no-nav`: Disables automatic navigation. This is useful when you want to manually interact with the device via Speculos or debug a specific UI state.
-
-See [../tests/standalone/README.md](../tests/standalone/README.md) for setup and usage.
-
-### 4.2. Unit Tests (`tests/unit/`)
-
-C unit tests using the `cmocka` framework that test individual modules in isolation on the host machine. These test core logic like transaction parsing, hashing, validation, and UI formatting without device simulation.
-
-- **Structure**: Individual files test specific modules (e.g., `test_cbor.c`, `test_tx_hash_builder.c`, `test_ui_formatters.c`).
-- **Fixtures**: `test_sign_tx_fixtures_*.h` contain large test vectors for different transaction eras. These fixtures are managed and regenerated using scripts.
-- **Mocking**: `test_sign_tx_common.h` and other mock files provide mocks for IO and UI, allowing logic to be tested in isolation.
-
-See [../tests/unit/README.md](../tests/unit/README.md) for setup, usage, and fixture management.
-
-### 4.3. Fuzzing (`tests/fuzzing/`)
-
-Security-focused testing that feeds random or malformed data to critical components (APDU handlers, transaction parsers, key derivation). Uses the Ledger SDK fuzzing framework with libFuzzer.
-
-Available harnesses:
-- `fuzz_all_handlers`: Tests APDU dispatcher and command routing.
-- `fuzz_signTx`: Transaction signing fuzzing.
-- `fuzz_getPublicKeys`: BIP44 path parsing and key derivation.
-- `fuzz_signOpCert`: Operational certificate signing.
-- `fuzz_deriveAddress`, `fuzz_deriveNativeScriptHash`, and others.
-
-See [../tests/fuzzing/FUZZING.md](../tests/fuzzing/FUZZING.md) for harnesses and execution instructions.
-
-Together, these approaches ensure correctness (unit tests), real-world behavior (functional tests), and robustness against malformed input (fuzzing).
+For specific instructions on running tests and managing fixtures, refer to the following:
+- [doc/testing.md](testing.md): Main testing entry point and shared workflow.
+- [tests/unit/README.md](../tests/unit/README.md): Unit test build and fixture generation details.
+- [tests/standalone/README.md](../tests/standalone/README.md): Ragger functional test usage.
+- [tests/fuzzing/FUZZING.md](../tests/fuzzing/FUZZING.md): Fuzzing harness details.
 
 ## 5. Generic Helpers
 

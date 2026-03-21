@@ -49,20 +49,20 @@ Supported `BOLOS_SDK` targets:
 
 ## Test
 
-The application includes both unit tests and functional tests.
+The application uses a multi-layered testing approach, including unit tests, end-to-end functional tests, and fuzzing.
 
-### Functional Tests (Ragger)
+For detailed instructions on setting up the test environment and running different test suites, please refer to **[doc/testing.md](doc/testing.md)**.
 
-Functional tests are located in `tests/standalone/` and use the [Ragger](https://github.com/LedgerHQ/ragger) framework.
+### Quick Commands
 
 ```shell
-pip install -r tests/standalone/requirements.txt
-pytest tests/standalone/ --tb=short -v --device stax
+# Unit tests
+make -C tests/unit -j8
+
+# Functional tests (requires Speculos/Ragger setup)
+pytest tests/standalone/ --device nanox
 ```
 
-### Unit Tests (CMocka)
-
-Unit tests are located in `tests/unit/` and use the [CMocka](https://cmocka.org/) framework. Detailed instructions are in [tests/unit/README.md](tests/unit/README.md).
 
 ## Documentation
 

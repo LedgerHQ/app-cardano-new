@@ -10,15 +10,9 @@ This directory contains the standalone functional test suite for the app (launch
 
 ## Quick Start
 
-Set up the shared Python environment first as described in `../../doc/testing.md`.
+Set up the system dependencies and shared Python environment first as described in **[doc/testing.md](../../doc/testing.md)**.
 
-Standalone tests also require:
-
-```bash
-sudo apt-get update && sudo apt-get install qemu-user-static
-```
-
-Run a simple test on Speculos:
+Run a simple test on Speculos (default):
 
 ```bash
 source tests/venv/bin/activate
