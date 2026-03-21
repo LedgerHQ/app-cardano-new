@@ -5,13 +5,12 @@ from dataclasses import dataclass
 from typing import Any
 import re
 
-from common import (
+from tests.unit.generators.common import (
     write_generated_c_file,
     sanitize_c_identifier,
-    _add_tests_to_sys_path,
     format_bytes_as_c_array,
 )
-from paths import GENERATED_PUBKEY_DIR, UNIT_TESTS_DIR
+from tests.unit.generators.paths import GENERATED_PUBKEY_DIR, UNIT_TESTS_DIR
 
 FIXTURES_FILE = GENERATED_PUBKEY_DIR / "test_pubkey_fixtures.h"
 MOCK_DATA_FILE = UNIT_TESTS_DIR / "mock_crypto" / "crypto_mock_data.h"
@@ -28,6 +27,7 @@ class PubKeyTestGroup:
 # Step 1: Load Test Cases from Ragger Tests
 # ==============================================================================
 
+
 def _load_pubkey_test_cases() -> dict[str, PubKeyTestGroup]:
     """
     Load public key export test cases from ragger standalone tests.
@@ -35,9 +35,8 @@ def _load_pubkey_test_cases() -> dict[str, PubKeyTestGroup]:
     Returns:
         Dictionary mapping category names to PubKeyTestGroup metadata
     """
-    _add_tests_to_sys_path()
 
-    from standalone.input_files.pubkey import (  # type: ignore
+    from tests.standalone.input_files.pubkey import (  # type: ignore
         testsByron,
         testsShelleyUsual,
         testsShelleyUnusual,
@@ -180,7 +179,7 @@ def _build_mock_path_map() -> dict[str, bytes]:
     content = MOCK_DATA_FILE.read_text(encoding="utf-8")
 
     mock_paths_match = re.search(
-        r'(static\s+const\s+mock_path_data_t\s+MOCK_PATHS\[\]\s*=\s*\{)(.*?)(\};)',
+        r"(static\s+const\s+mock_path_data_t\s+MOCK_PATHS\[\]\s*=\s*\{)(.*?)(\};)",
         content,
         flags=re.DOTALL,
     )
@@ -241,7 +240,12 @@ def _build_mock_path_map() -> dict[str, bytes]:
         pubkey_match = re.search(r"\.public_key\s*=\s*\{(.*?)\}", entry, re.DOTALL)
         chaincode_match = re.search(r"\.chain_code\s*=\s*\{(.*?)\}", entry, re.DOTALL)
 
-        if not path_match or not path_len_match or not pubkey_match or not chaincode_match:
+        if (
+            not path_match
+            or not path_len_match
+            or not pubkey_match
+            or not chaincode_match
+        ):
             raise ValueError("Failed to parse mock path entry")
 
         path_array = path_match.group(1)
@@ -254,6 +258,7 @@ def _build_mock_path_map() -> dict[str, bytes]:
         path_map[path_desc] = public_key + chain_code
 
     return path_map
+
 
 # ==============================================================================
 # Step 4: Generate C Code for Fixtures
@@ -280,22 +285,26 @@ def _generate_fixture_code_for_test_case(
     """
     code_lines: list[str] = []
 
-    code_lines.append("// ----------------------------------------------------------------------")
+    code_lines.append(
+        "// ----------------------------------------------------------------------"
+    )
     code_lines.append(f"// Test group: {group_name}")
     code_lines.append(f"// Test {test_number}: {test_case.name}")
     code_lines.append(f"// Path: {test_case.path}")
-    code_lines.append("// ----------------------------------------------------------------------")
+    code_lines.append(
+        "// ----------------------------------------------------------------------"
+    )
     code_lines.append("")
 
     payload_bytes = _serialize_pubkey_test_case_to_apdu(test_case)
 
     safe_test_name = sanitize_c_identifier(test_case.name)
 
-    code_lines.append(f"// Source: tests/standalone/input_files/pubkey.py > {test_case.name}")
-
-    payload_array_name = (
-        f"PUBKEY_{group_name}_{test_number:03d}_{safe_test_name}_APDU"
+    code_lines.append(
+        f"// Source: tests/standalone/input_files/pubkey.py > {test_case.name}"
     )
+
+    payload_array_name = f"PUBKEY_{group_name}_{test_number:03d}_{safe_test_name}_APDU"
     payload_array_code = format_bytes_as_c_array(
         payload_bytes,
         payload_array_name,
@@ -349,9 +358,9 @@ def _build_fixtures() -> str:
         "#include <stdint.h>",
         "#include <stddef.h>",
         "#include <stdbool.h>",
-        "#include \"cardano_swo.h\"",
-        "#include \"securityPolicy/securityPolicyType.h\"",
-        "#include \"test_fixture_types.h\"",
+        '#include "cardano_swo.h"',
+        '#include "securityPolicy/securityPolicyType.h"',
+        '#include "test_fixture_types.h"',
         "",
         "// ======================================================================",
         "// Public Key Export Test Fixtures",
@@ -387,7 +396,7 @@ def _build_fixtures() -> str:
                 f"// Source: tests/standalone/input_files/pubkey.py > {group_name} > {test_case.name}"
             )
             header_lines.append("{")
-            header_lines.append(f"    .name = \"{test_case.name}\",")
+            header_lines.append(f'    .name = "{test_case.name}",')
             header_lines.append(
                 f"    .data = PUBKEY_{group_name}_{idx:03d}_{safe_test_name}_APDU,"
             )
@@ -404,9 +413,7 @@ def _build_fixtures() -> str:
             header_lines.append(
                 f"    .silent_export_enabled = {'true' if group.silent_export_enabled else 'false'},"
             )
-            header_lines.append(
-                f"    .expected_policy = {group.expected_policy},"
-            )
+            header_lines.append(f"    .expected_policy = {group.expected_policy},")
             header_lines.append("},")
         header_lines.append("};")
         header_lines.append("")

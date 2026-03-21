@@ -9,27 +9,58 @@ from ragger.navigator import Navigator
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 from ragger.error import ExceptionRAPDU
 
-from application_client.command_sender import CommandSender
-from application_client.status_words import StatusWord
-from application_client.response_unpacker import unpack_get_pubkey_response
+from tests.application_client.command_sender import CommandSender
+from tests.application_client.status_words import StatusWord
+from tests.application_client.response_unpacker import unpack_get_pubkey_response
 
-from standalone.input_files.pubkey import PubKeyTestCase, denyTestCases, testsByron, testsShelleyUsual, testsShelleyUnusual, testsMultisig, testsColdKeys, testsCVoteKeysUsual, testsCVoteKeysUnusual, testsDRepKeys, testsCommitteeColdKeys, testsCommitteeHotKeys, testsMintKeys, testsSilentExport
+from tests.standalone.input_files.pubkey import (
+    PubKeyTestCase,
+    denyTestCases,
+    testsByron,
+    testsShelleyUsual,
+    testsShelleyUnusual,
+    testsMultisig,
+    testsColdKeys,
+    testsCVoteKeysUsual,
+    testsCVoteKeysUnusual,
+    testsDRepKeys,
+    testsCommitteeColdKeys,
+    testsCommitteeHotKeys,
+    testsMintKeys,
+    testsSilentExport,
+)
 
-from standalone.utils import idTestFunc, get_device_pubkey, choice_approve, NavContext
-from standalone.settings import SettingID, SettingValue, settings_set
+from tests.standalone.utils import (
+    idTestFunc,
+    get_device_pubkey,
+    choice_approve,
+    NavContext,
+)
+from tests.standalone.settings import SettingID, SettingValue, settings_set
+
 
 @pytest.mark.parametrize(
     "testCase",
-    testsByron + testsShelleyUsual + testsShelleyUnusual + testsMultisig + testsColdKeys +
-    testsCVoteKeysUsual + testsCVoteKeysUnusual + testsDRepKeys +
-    testsCommitteeColdKeys + testsCommitteeHotKeys + testsMintKeys,
-    ids=idTestFunc
+    testsByron
+    + testsShelleyUsual
+    + testsShelleyUnusual
+    + testsMultisig
+    + testsColdKeys
+    + testsCVoteKeysUsual
+    + testsCVoteKeysUnusual
+    + testsDRepKeys
+    + testsCommitteeColdKeys
+    + testsCommitteeHotKeys
+    + testsMintKeys,
+    ids=idTestFunc,
 )
-def test_pubkey_confirm(device: Device,
-                        backend: BackendInterface,
-                        navigator: Navigator,
-                        scenario_navigator: NavigateWithScenario,
-                        testCase: PubKeyTestCase) -> None:
+def test_pubkey_confirm(
+    device: Device,
+    backend: BackendInterface,
+    navigator: Navigator,
+    scenario_navigator: NavigateWithScenario,
+    testCase: PubKeyTestCase,
+) -> None:
     """Check Public Key with confirmation"""
 
     # Use the app interface instead of raw interface
@@ -48,9 +79,7 @@ def test_pubkey_confirm(device: Device,
     nav_ctx = NavContext(device, navigator, scenario_navigator)
     with client.get_pubkey_async(testCase.path):
         if testCase.nav:
-            choice_approve(nav_ctx,
-                           test_name=testCase.name,
-                           confirm_text=r"^Export$")
+            choice_approve(nav_ctx, test_name=testCase.name, confirm_text=r"^Export$")
         else:
             pass
     # Check the status (Asynchronous)
@@ -61,15 +90,13 @@ def test_pubkey_confirm(device: Device,
     _check_pubkey_result(response.data, testCase.path)
 
 
-@pytest.mark.parametrize(
-    "testCase",
-    testsSilentExport,
-    ids=idTestFunc
-)
-def test_pubkey_without_confirmation(device: Device,
-                                     backend: BackendInterface,
-                                     navigator: Navigator,
-                                     testCase: PubKeyTestCase) -> None:
+@pytest.mark.parametrize("testCase", testsSilentExport, ids=idTestFunc)
+def test_pubkey_without_confirmation(
+    device: Device,
+    backend: BackendInterface,
+    navigator: Navigator,
+    testCase: PubKeyTestCase,
+) -> None:
     """Check Public Key without confirmation"""
 
     # Use the app interface instead of raw interface
@@ -96,13 +123,8 @@ def test_pubkey_without_confirmation(device: Device,
     _check_pubkey_result(response.data, testCase.path)
 
 
-@pytest.mark.parametrize(
-    "testCase",
-    denyTestCases,
-    ids=idTestFunc
-)
-def test_pubkey_deny(backend: BackendInterface,
-                       testCase: PubKeyTestCase) -> None:
+@pytest.mark.parametrize("testCase", denyTestCases, ids=idTestFunc)
+def test_pubkey_deny(backend: BackendInterface, testCase: PubKeyTestCase) -> None:
     """Check deny behavior for invalid public-key export inputs."""
 
     # Use the app interface instead of raw interface

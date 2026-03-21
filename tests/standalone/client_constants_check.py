@@ -16,8 +16,13 @@ for extra_path in (ROOT, TESTS_ROOT):
     if str_extra not in sys.path:
         sys.path.insert(0, str_extra)
 
-from application_client.app_def import AddressType, NetworkIds, ProtocolMagics, StakingDataSourceType
-from application_client.command_builder import (
+from tests.application_client.app_def import (
+    AddressType,
+    NetworkIds,
+    ProtocolMagics,
+    StakingDataSourceType,
+)
+from tests.application_client.command_builder import (
     CLA,
     CVoteCredentialType,
     InsType,
@@ -25,20 +30,20 @@ from application_client.command_builder import (
     P1Type,
     P2Type,
 )
-from application_client.response_unpacker import (
+from tests.application_client.response_unpacker import (
     unpack_get_pubkey_response,
     unpack_get_serial_response,
     unpack_get_version_response,
     unpack_sign_cip36_confirm_response,
     unpack_sign_message_response,
 )
-from application_client.security_warnings import WarningBit
-from application_client.status_words import StatusWord
-from standalone.input_files.cvote import MAX_CIP36_PAYLOAD_SIZE
-from standalone.input_files.native_script import NativeScriptHashDisplayFormat
-from standalone.input_files.signMsg import MessageAddressFieldType
-from standalone.input_files.signTx import MAX_SIGN_TX_CHUNK_SIZE
-from standalone.input_files.signTx import (
+from tests.application_client.security_warnings import WarningBit
+from tests.application_client.status_words import StatusWord
+from tests.standalone.input_files.cvote import MAX_CIP36_PAYLOAD_SIZE
+from tests.standalone.input_files.native_script import NativeScriptHashDisplayFormat
+from tests.standalone.input_files.signMsg import MessageAddressFieldType
+from tests.standalone.input_files.signTx import MAX_SIGN_TX_CHUNK_SIZE
+from tests.standalone.input_files.signTx import (
     CertificateType,
     CredentialParamsType,
     DRepParamsType,
@@ -52,13 +57,20 @@ from standalone.input_files.signTx import (
     VoteOption,
     VoterType,
 )
-from standalone.settings import DEFAULT_SETTING_VALUES, SETTINGS_ORDER, SettingID, SettingValue
+from tests.standalone.settings import (
+    DEFAULT_SETTING_VALUES,
+    SETTINGS_ORDER,
+    SettingID,
+    SettingValue,
+)
 
 
 def _parse_defines(path: Path) -> Mapping[str, int]:
     defines: dict[str, int] = {}
     for line in path.read_text().splitlines():
-        match = re.match(r"#define\s+(\w+)\s+\(?\s*(0x[0-9A-Fa-f]+|\d+)(?:[uUlL]*)\s*\)?", line)
+        match = re.match(
+            r"#define\s+(\w+)\s+\(?\s*(0x[0-9A-Fa-f]+|\d+)(?:[uUlL]*)\s*\)?", line
+        )
         if match:
             defines[match.group(1)] = int(match.group(2), 0)
     return defines
@@ -103,7 +115,9 @@ def _parse_sequential_enum(path: Path, enum_name: str) -> Mapping[str, int]:
     return values
 
 
-def _parse_anonymous_sequential_enum(text: str, sentinel_name: str) -> Mapping[str, int]:
+def _parse_anonymous_sequential_enum(
+    text: str, sentinel_name: str
+) -> Mapping[str, int]:
     pattern = re.compile(
         r"enum\s*\{([^}]*)\s*" + re.escape(sentinel_name) + r"\s*\};",
         re.DOTALL,
@@ -131,7 +145,12 @@ def _parse_anonymous_sequential_enum(text: str, sentinel_name: str) -> Mapping[s
 
 
 def _security_warnings_header_path() -> Path:
-    return Path(__file__).resolve().parents[2] / "src" / "securityPolicy" / "securityWarnings.h"
+    return (
+        Path(__file__).resolve().parents[2]
+        / "src"
+        / "securityPolicy"
+        / "securityWarnings.h"
+    )
 
 
 def _dispatcher_header_path() -> Path:
@@ -171,7 +190,12 @@ def _cardano_constants_path() -> Path:
 
 
 def _address_utils_shelley_header_path() -> Path:
-    return Path(__file__).resolve().parents[2] / "src" / "addressUtils" / "addressUtilsShelley.h"
+    return (
+        Path(__file__).resolve().parents[2]
+        / "src"
+        / "addressUtils"
+        / "addressUtilsShelley.h"
+    )
 
 
 def _tx_header_path() -> Path:
@@ -179,23 +203,48 @@ def _tx_header_path() -> Path:
 
 
 def _tx_credential_types_header_path() -> Path:
-    return Path(__file__).resolve().parents[2] / "src" / "transaction" / "tx_credential_types.h"
+    return (
+        Path(__file__).resolve().parents[2]
+        / "src"
+        / "transaction"
+        / "tx_credential_types.h"
+    )
 
 
 def _tx_output_types_header_path() -> Path:
-    return Path(__file__).resolve().parents[2] / "src" / "transaction" / "tx_output_types.h"
+    return (
+        Path(__file__).resolve().parents[2]
+        / "src"
+        / "transaction"
+        / "tx_output_types.h"
+    )
 
 
 def _tx_certificate_types_header_path() -> Path:
-    return Path(__file__).resolve().parents[2] / "src" / "transaction" / "tx_certificate_types.h"
+    return (
+        Path(__file__).resolve().parents[2]
+        / "src"
+        / "transaction"
+        / "tx_certificate_types.h"
+    )
 
 
 def _message_signing_header_path() -> Path:
-    return Path(__file__).resolve().parents[2] / "src" / "messageSigning" / "messageSigning.h"
+    return (
+        Path(__file__).resolve().parents[2]
+        / "src"
+        / "messageSigning"
+        / "messageSigning.h"
+    )
 
 
 def _derive_native_script_hash_header_path() -> Path:
-    return Path(__file__).resolve().parents[2] / "src" / "handler" / "derive_native_script_hash.h"
+    return (
+        Path(__file__).resolve().parents[2]
+        / "src"
+        / "handler"
+        / "derive_native_script_hash.h"
+    )
 
 
 def _globals_header_path() -> Path:
@@ -203,7 +252,12 @@ def _globals_header_path() -> Path:
 
 
 def _key_derivation_header_path() -> Path:
-    return Path(__file__).resolve().parents[2] / "src" / "keyDerivation" / "keyDerivation.h"
+    return (
+        Path(__file__).resolve().parents[2]
+        / "src"
+        / "keyDerivation"
+        / "keyDerivation.h"
+    )
 
 
 def _get_version_header_path() -> Path:
@@ -215,16 +269,26 @@ def _get_serial_c_path() -> Path:
 
 
 def _vote_cast_hash_builder_header_path() -> Path:
-    return Path(__file__).resolve().parents[2] / "src" / "cvote" / "vote_cast_hash_builder.h"
+    return (
+        Path(__file__).resolve().parents[2]
+        / "src"
+        / "cvote"
+        / "vote_cast_hash_builder.h"
+    )
 
 
 def _response_unpacker_path() -> Path:
-    return Path(__file__).resolve().parents[2] / "tests" / "application_client" / "response_unpacker.py"
+    return (
+        Path(__file__).resolve().parents[2]
+        / "tests"
+        / "application_client"
+        / "response_unpacker.py"
+    )
 
 
-def _assert_dispatcher_enum_prefix(prefix: str,
-                                   enum_cls: type[Any],
-                                   dispatcher_values: Mapping[str, int]) -> None:
+def _assert_dispatcher_enum_prefix(
+    prefix: str, enum_cls: type[Any], dispatcher_values: Mapping[str, int]
+) -> None:
     for name, value in dispatcher_values.items():
         if not name.startswith(prefix):
             continue
@@ -235,17 +299,23 @@ def _assert_dispatcher_enum_prefix(prefix: str,
             raise AssertionError(f"{name} mismatch: {int(attr_value)} != {value}")
 
 
-def _assert_exact_enum_mapping(enum_cls: type[Any], expected_values: Mapping[str, int]) -> None:
+def _assert_exact_enum_mapping(
+    enum_cls: type[Any], expected_values: Mapping[str, int]
+) -> None:
     python_values = {
         name: int(value)
         for name, value in vars(enum_cls).items()
         if not name.startswith("_") and isinstance(value, int)
     }
     if python_values != dict(expected_values):
-        raise AssertionError(f"{enum_cls.__name__} mismatch: {python_values} != {dict(expected_values)}")
+        raise AssertionError(
+            f"{enum_cls.__name__} mismatch: {python_values} != {dict(expected_values)}"
+        )
 
 
-def _assert_enum_subset(enum_cls: type[Any], expected_values: Mapping[str, int]) -> None:
+def _assert_enum_subset(
+    enum_cls: type[Any], expected_values: Mapping[str, int]
+) -> None:
     for name, expected_value in expected_values.items():
         if not hasattr(enum_cls, name):
             raise AssertionError(f"{enum_cls.__name__}.{name} missing")
@@ -287,7 +357,9 @@ def assert_cla_constant_match() -> None:
 
 def assert_cvote_credential_constants_match() -> None:
     cvote_values = _parse_enum(_cvote_types_header_path())
-    _assert_dispatcher_enum_prefix("CVOTE_CREDENTIAL_", CVoteCredentialType, cvote_values)
+    _assert_dispatcher_enum_prefix(
+        "CVOTE_CREDENTIAL_", CVoteCredentialType, cvote_values
+    )
 
 
 def assert_max_sign_tx_chunk_size_match() -> None:
@@ -317,7 +389,9 @@ def assert_warning_bit_constants_match() -> None:
         if c_name == "WARNING_BIT_COUNT":
             continue
         if not hasattr(WarningBit, c_name):
-            raise AssertionError(f"C enum member {c_name}={c_value} missing from Python WarningBit")
+            raise AssertionError(
+                f"C enum member {c_name}={c_value} missing from Python WarningBit"
+            )
 
 
 def assert_setting_value_constants_match() -> None:
@@ -336,21 +410,29 @@ def assert_default_setting_values_match() -> None:
     text = _app_main_path().read_text()
     expected_assignments = {
         "expert_mode_enabled": DEFAULT_SETTING_VALUES[SettingID.EXPERT_MODE],
-        "silent_pubkey_export_enabled": DEFAULT_SETTING_VALUES[SettingID.SILENT_PUBKEY_EXPORT],
+        "silent_pubkey_export_enabled": DEFAULT_SETTING_VALUES[
+            SettingID.SILENT_PUBKEY_EXPORT
+        ],
     }
     for field_name, python_value in expected_assignments.items():
         match = re.search(rf"storage\.{field_name}\s*=\s*(SETTINGS_\w+)\s*;", text)
         if not match:
-            raise AssertionError(f"Default assignment for {field_name} not found in app_main.c")
+            raise AssertionError(
+                f"Default assignment for {field_name} not found in app_main.c"
+            )
         c_value_name = match.group(1)
         if c_value_name == "SETTINGS_NO":
             c_value = SettingValue.DISABLED
         elif c_value_name == "SETTINGS_YES":
             c_value = SettingValue.ENABLED
         else:
-            raise AssertionError(f"Unexpected setting default {c_value_name} for {field_name}")
+            raise AssertionError(
+                f"Unexpected setting default {c_value_name} for {field_name}"
+            )
         if c_value != python_value:
-            raise AssertionError(f"{field_name} default mismatch: Python {python_value} != C {c_value}")
+            raise AssertionError(
+                f"{field_name} default mismatch: Python {python_value} != C {c_value}"
+            )
 
 
 def assert_settings_menu_constants_match() -> None:
@@ -371,7 +453,9 @@ def assert_settings_menu_constants_match() -> None:
 
     expected_order = [setting_id for setting_id, _, _ in expected_settings]
     if SETTINGS_ORDER != expected_order:
-        raise AssertionError(f"SETTINGS_ORDER mismatch: {SETTINGS_ORDER} != {expected_order}")
+        raise AssertionError(
+            f"SETTINGS_ORDER mismatch: {SETTINGS_ORDER} != {expected_order}"
+        )
 
     id_enum_values = _parse_anonymous_sequential_enum(text, "SETTINGS_SWITCHES_NB")
     expected_id_values = {
@@ -379,12 +463,12 @@ def assert_settings_menu_constants_match() -> None:
         for index, (_, setting_name, _) in enumerate(expected_settings)
     }
     actual_id_values = {
-        name: value
-        for name, value in id_enum_values.items()
-        if name.endswith("_ID")
+        name: value for name, value in id_enum_values.items() if name.endswith("_ID")
     }
     if actual_id_values != expected_id_values:
-        raise AssertionError(f"Settings ID enum mismatch: {actual_id_values} != {expected_id_values}")
+        raise AssertionError(
+            f"Settings ID enum mismatch: {actual_id_values} != {expected_id_values}"
+        )
 
     token_enum_match = re.search(
         r"enum\s*\{\s*([^}]*)\s*\};\s*\n\s*enum\s*\{\s*[^}]*SETTINGS_SWITCHES_NB",
@@ -394,13 +478,17 @@ def assert_settings_menu_constants_match() -> None:
     if not token_enum_match:
         raise AssertionError("Could not find settings token enum in menu.c")
 
-    token_enum_entries = [entry.strip() for entry in token_enum_match.group(1).split(",") if entry.strip()]
+    token_enum_entries = [
+        entry.strip() for entry in token_enum_match.group(1).split(",") if entry.strip()
+    ]
     expected_token_entries = [
         "SILENT_PUBKEY_EXPORT_TOKEN = FIRST_USER_TOKEN",
         "EXPERT_MODE_TOKEN",
     ]
     if token_enum_entries != expected_token_entries:
-        raise AssertionError(f"Settings token enum mismatch: {token_enum_entries} != {expected_token_entries}")
+        raise AssertionError(
+            f"Settings token enum mismatch: {token_enum_entries} != {expected_token_entries}"
+        )
 
     for index, (_, setting_name, storage_field_name) in enumerate(expected_settings):
         callback_pattern = re.compile(
@@ -422,7 +510,9 @@ def assert_settings_menu_constants_match() -> None:
             raise AssertionError(f"UI initialization mismatch for {setting_name}")
 
         if SETTINGS_ORDER[index] is not expected_order[index]:
-            raise AssertionError(f"SETTINGS_ORDER index {index} mismatch for {setting_name}")
+            raise AssertionError(
+                f"SETTINGS_ORDER index {index} mismatch for {setting_name}"
+            )
 
 
 def assert_app_status_words_match() -> None:
@@ -432,15 +522,16 @@ def assert_app_status_words_match() -> None:
         for name, value in c_values.items()
         if name.startswith("SWO_") and name != "SWO_OK"
     }
-    python_values = {
-        name: int(getattr(StatusWord, name))
-        for name in c_values
-    }
+    python_values = {name: int(getattr(StatusWord, name)) for name in c_values}
     missing_names = [name for name in c_values if not hasattr(StatusWord, name)]
     if missing_names:
-        raise AssertionError(f"StatusWord missing app-defined statuses: {missing_names}")
+        raise AssertionError(
+            f"StatusWord missing app-defined statuses: {missing_names}"
+        )
     if python_values != c_values:
-        raise AssertionError(f"StatusWord app-defined mismatch: {python_values} != {c_values}")
+        raise AssertionError(
+            f"StatusWord app-defined mismatch: {python_values} != {c_values}"
+        )
 
 
 def assert_app_definition_constants_match() -> None:
@@ -509,8 +600,12 @@ def assert_sign_tx_related_constants_match() -> None:
         TransactionSigningMode,
         {
             "ORDINARY_TRANSACTION": tx_values["SIGN_TX_SIGNINGMODE_ORDINARY_TX"],
-            "POOL_REGISTRATION_AS_OWNER": tx_values["SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER"],
-            "POOL_REGISTRATION_AS_OPERATOR": tx_values["SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR"],
+            "POOL_REGISTRATION_AS_OWNER": tx_values[
+                "SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER"
+            ],
+            "POOL_REGISTRATION_AS_OPERATOR": tx_values[
+                "SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR"
+            ],
             "MULTISIG_TRANSACTION": tx_values["SIGN_TX_SIGNINGMODE_MULTISIG_TX"],
             "PLUTUS_TRANSACTION": tx_values["SIGN_TX_SIGNINGMODE_PLUTUS_TX"],
         },
@@ -556,34 +651,62 @@ def assert_sign_tx_related_constants_match() -> None:
         VoterType,
         {
             "COMMITTEE_KEY_HASH": certificate_values["VOTER_COMMITTEE_HOT_KEY_HASH"],
-            "COMMITTEE_KEY_PATH": certificate_values["VOTER_COMMITTEE_HOT_KEY_HASH"] + 100,
-            "COMMITTEE_SCRIPT_HASH": certificate_values["VOTER_COMMITTEE_HOT_SCRIPT_HASH"],
+            "COMMITTEE_KEY_PATH": certificate_values["VOTER_COMMITTEE_HOT_KEY_HASH"]
+            + 100,
+            "COMMITTEE_SCRIPT_HASH": certificate_values[
+                "VOTER_COMMITTEE_HOT_SCRIPT_HASH"
+            ],
             "DREP_KEY_HASH": certificate_values["VOTER_DREP_KEY_HASH"],
             "DREP_KEY_PATH": certificate_values["VOTER_DREP_KEY_HASH"] + 100,
             "DREP_SCRIPT_HASH": certificate_values["VOTER_DREP_SCRIPT_HASH"],
             "STAKE_POOL_KEY_HASH": certificate_values["VOTER_STAKE_POOL_KEY_HASH"],
-            "STAKE_POOL_KEY_PATH": certificate_values["VOTER_STAKE_POOL_KEY_HASH"] + 100,
+            "STAKE_POOL_KEY_PATH": certificate_values["VOTER_STAKE_POOL_KEY_HASH"]
+            + 100,
         },
     )
     _assert_exact_enum_mapping(
         CertificateType,
         {
             "STAKE_REGISTRATION": certificate_values["CERTIFICATE_STAKE_REGISTRATION"],
-            "STAKE_DEREGISTRATION": certificate_values["CERTIFICATE_STAKE_DEREGISTRATION"],
+            "STAKE_DEREGISTRATION": certificate_values[
+                "CERTIFICATE_STAKE_DEREGISTRATION"
+            ],
             "STAKE_DELEGATION": certificate_values["CERTIFICATE_STAKE_DELEGATION"],
-            "STAKE_POOL_REGISTRATION": certificate_values["CERTIFICATE_STAKE_POOL_REGISTRATION"],
-            "STAKE_POOL_RETIREMENT": certificate_values["CERTIFICATE_STAKE_POOL_RETIREMENT"],
-            "STAKE_REGISTRATION_CONWAY": certificate_values["CERTIFICATE_STAKE_REGISTRATION_CONWAY"],
-            "STAKE_DEREGISTRATION_CONWAY": certificate_values["CERTIFICATE_STAKE_DEREGISTRATION_CONWAY"],
+            "STAKE_POOL_REGISTRATION": certificate_values[
+                "CERTIFICATE_STAKE_POOL_REGISTRATION"
+            ],
+            "STAKE_POOL_RETIREMENT": certificate_values[
+                "CERTIFICATE_STAKE_POOL_RETIREMENT"
+            ],
+            "STAKE_REGISTRATION_CONWAY": certificate_values[
+                "CERTIFICATE_STAKE_REGISTRATION_CONWAY"
+            ],
+            "STAKE_DEREGISTRATION_CONWAY": certificate_values[
+                "CERTIFICATE_STAKE_DEREGISTRATION_CONWAY"
+            ],
             "VOTE_DELEGATION": certificate_values["CERTIFICATE_VOTE_DELEGATION"],
-            "STAKE_POOL_AND_DREP_DELEGATION": certificate_values["CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION"],
-            "ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL": certificate_values["CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL"],
-            "ACCOUNT_REGISTRATION_DELEGATION_TO_DREP": certificate_values["CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP"],
-            "ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP": certificate_values["CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP"],
-            "AUTHORIZE_COMMITTEE_HOT": certificate_values["CERTIFICATE_AUTHORIZE_COMMITTEE_HOT"],
-            "RESIGN_COMMITTEE_COLD": certificate_values["CERTIFICATE_RESIGN_COMMITTEE_COLD"],
+            "STAKE_POOL_AND_DREP_DELEGATION": certificate_values[
+                "CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION"
+            ],
+            "ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL": certificate_values[
+                "CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL"
+            ],
+            "ACCOUNT_REGISTRATION_DELEGATION_TO_DREP": certificate_values[
+                "CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP"
+            ],
+            "ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP": certificate_values[
+                "CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP"
+            ],
+            "AUTHORIZE_COMMITTEE_HOT": certificate_values[
+                "CERTIFICATE_AUTHORIZE_COMMITTEE_HOT"
+            ],
+            "RESIGN_COMMITTEE_COLD": certificate_values[
+                "CERTIFICATE_RESIGN_COMMITTEE_COLD"
+            ],
             "DREP_REGISTRATION": certificate_values["CERTIFICATE_DREP_REGISTRATION"],
-            "DREP_DEREGISTRATION": certificate_values["CERTIFICATE_DREP_DEREGISTRATION"],
+            "DREP_DEREGISTRATION": certificate_values[
+                "CERTIFICATE_DREP_DEREGISTRATION"
+            ],
             "DREP_UPDATE": certificate_values["CERTIFICATE_DREP_UPDATE"],
         },
     )
@@ -636,7 +759,9 @@ def assert_sign_msg_and_native_script_constants_match() -> None:
         NativeScriptHashDisplayFormat,
         {
             "BECH32": native_script_display_values["DISPLAY_NATIVE_SCRIPT_HASH_BECH32"],
-            "POLICY_ID": native_script_display_values["DISPLAY_NATIVE_SCRIPT_HASH_POLICY_ID"],
+            "POLICY_ID": native_script_display_values[
+                "DISPLAY_NATIVE_SCRIPT_HASH_POLICY_ID"
+            ],
         },
     )
 
@@ -675,7 +800,9 @@ def assert_response_unpacker_constants_match() -> None:
         "MAX_ADDRESS_FIELD_LENGTH": c_defines["MAX_ADDRESS_LENGTH"],
         "HASH_LENGTH": c_defines["VOTECAST_HASH_LENGTH"],
     }
-    serial_match = re.search(r"#define\s+SERIAL_LENGTH\s+(\d+)", _get_serial_c_path().read_text())
+    serial_match = re.search(
+        r"#define\s+SERIAL_LENGTH\s+(\d+)", _get_serial_c_path().read_text()
+    )
     if not serial_match:
         raise AssertionError("SERIAL_LENGTH not found in get_serial.c")
     expected_literals["SERIAL_LENGTH"] = int(serial_match.group(1))
@@ -692,7 +819,9 @@ def assert_response_unpacker_constants_match() -> None:
 
     version_response = bytes([1, 2, 3])
     if unpack_get_version_response(version_response) != (1, 2, 3):
-        raise AssertionError("unpack_get_version_response failed to parse a valid response")
+        raise AssertionError(
+            "unpack_get_version_response failed to parse a valid response"
+        )
     _assert_raises_value_error(
         lambda: unpack_get_version_response(version_response + b"\x00"),
         "Invalid version response length",
@@ -708,14 +837,16 @@ def assert_response_unpacker_constants_match() -> None:
     )
 
     valid_pubkey_response = (
-        b"P" * expected_literals["PUBLIC_KEY_LENGTH"] +
-        b"C" * expected_literals["CHAIN_CODE_LENGTH"]
+        b"P" * expected_literals["PUBLIC_KEY_LENGTH"]
+        + b"C" * expected_literals["CHAIN_CODE_LENGTH"]
     )
     if unpack_get_pubkey_response(valid_pubkey_response) != (
         b"P" * expected_literals["PUBLIC_KEY_LENGTH"],
         b"C" * expected_literals["CHAIN_CODE_LENGTH"],
     ):
-        raise AssertionError("unpack_get_pubkey_response failed to parse a valid response")
+        raise AssertionError(
+            "unpack_get_pubkey_response failed to parse a valid response"
+        )
     _assert_raises_value_error(
         lambda: unpack_get_pubkey_response(valid_pubkey_response + b"\x00"),
         "Invalid pubkey response length",
@@ -726,35 +857,37 @@ def assert_response_unpacker_constants_match() -> None:
     max_address_field_length = expected_literals["MAX_ADDRESS_FIELD_LENGTH"]
     valid_address_field = b"abc"
     valid_sign_message_response = (
-        b"S" * signature_length +
-        b"P" * public_key_length +
-        len(valid_address_field).to_bytes(4, "big") +
-        valid_address_field
+        b"S" * signature_length
+        + b"P" * public_key_length
+        + len(valid_address_field).to_bytes(4, "big")
+        + valid_address_field
     )
     if unpack_sign_message_response(valid_sign_message_response) != (
         b"S" * signature_length,
         b"P" * public_key_length,
         valid_address_field,
     ):
-        raise AssertionError("unpack_sign_message_response failed to parse a valid response")
+        raise AssertionError(
+            "unpack_sign_message_response failed to parse a valid response"
+        )
     _assert_raises_value_error(
         lambda: unpack_sign_message_response(valid_sign_message_response + b"\x00"),
         "Trailing bytes in response",
     )
     oversized_address_field_response = (
-        b"S" * signature_length +
-        b"P" * public_key_length +
-        (max_address_field_length + 1).to_bytes(4, "big")
+        b"S" * signature_length
+        + b"P" * public_key_length
+        + (max_address_field_length + 1).to_bytes(4, "big")
     )
     _assert_raises_value_error(
         lambda: unpack_sign_message_response(oversized_address_field_response),
         "Address field too long",
     )
     truncated_address_field_response = (
-        b"S" * signature_length +
-        b"P" * public_key_length +
-        (5).to_bytes(4, "big") +
-        b"abcd"
+        b"S" * signature_length
+        + b"P" * public_key_length
+        + (5).to_bytes(4, "big")
+        + b"abcd"
     )
     _assert_raises_value_error(
         lambda: unpack_sign_message_response(truncated_address_field_response),
@@ -762,15 +895,18 @@ def assert_response_unpacker_constants_match() -> None:
     )
 
     valid_cip36_confirm_response = (
-        b"H" * expected_literals["HASH_LENGTH"] +
-        b"S" * signature_length
+        b"H" * expected_literals["HASH_LENGTH"] + b"S" * signature_length
     )
     if unpack_sign_cip36_confirm_response(valid_cip36_confirm_response) != (
         b"H" * expected_literals["HASH_LENGTH"],
         b"S" * signature_length,
     ):
-        raise AssertionError("unpack_sign_cip36_confirm_response failed to parse a valid response")
+        raise AssertionError(
+            "unpack_sign_cip36_confirm_response failed to parse a valid response"
+        )
     _assert_raises_value_error(
-        lambda: unpack_sign_cip36_confirm_response(valid_cip36_confirm_response + b"\x00"),
+        lambda: unpack_sign_cip36_confirm_response(
+            valid_cip36_confirm_response + b"\x00"
+        ),
         "Invalid CIP-36 confirm response length",
     )

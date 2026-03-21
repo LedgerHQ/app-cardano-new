@@ -11,31 +11,23 @@ runner can replay.
 
 from typing import Any
 
-from common import (
+from tests.unit.generators.common import (
     write_generated_c_file,
     sanitize_c_identifier,
-    _add_tests_to_sys_path,
     format_bytes_as_c_array,
 )
-from paths import GENERATED_CVOTE_DIR
+from tests.unit.generators.paths import GENERATED_CVOTE_DIR
 
 GENERATED_DENY_HEADER = GENERATED_CVOTE_DIR / "test_cvote_fixtures_deny.h"
 
 # Bad CONFIRM body: m/44'/1815'/0'/0/0 encoded as BIP44 path.
 # count=5 | 0x8000002c | 0x80000717 | 0x80000000 | 0x00000000 | 0x00000000
-_BAD_CONFIRM_PAYMENT_PATH_HEX = (
-    "05"
-    "8000002c"
-    "80000717"
-    "80000000"
-    "00000000"
-    "00000000"
-)
+_BAD_CONFIRM_PAYMENT_PATH_HEX = "058000002c80000717800000000000000000000000"
 
 
 def _load_cvote_deny_test_cases() -> list[Any]:
-    _add_tests_to_sys_path()
-    from standalone.input_files.cvote import cvoteDenyTestCases  # type: ignore
+    from tests.standalone.input_files.cvote import cvoteDenyTestCases  # type: ignore
+
     return cvoteDenyTestCases
 
 
@@ -47,9 +39,8 @@ def _load_valid_init_and_chunks() -> tuple[bytes, list[bytes]]:
         client = CommandSender(backend)
         _cvote_init(client, valid_tc)   # sends INIT + chunks via CommandSender
     """
-    _add_tests_to_sys_path()
-    from standalone.input_files.cvote import cvoteTestCases  # type: ignore
-    from application_client.command_builder import CommandBuilder  # type: ignore
+    from tests.standalone.input_files.cvote import cvoteTestCases  # type: ignore
+    from tests.application_client.command_builder import CommandBuilder  # type: ignore
 
     tc = cvoteTestCases[0]
     cb = CommandBuilder()
@@ -113,15 +104,25 @@ def _build_deny_fixtures() -> str:
 
     # Emit shared chunk arrays for the CONFIRM-phase cases (all share cvoteTestCases[0]).
     if valid_chunk_payloads:
-        header_lines.append("// ----------------------------------------------------------------------")
-        header_lines.append("// Shared chunk data from cvoteTestCases[0] (used by CONFIRM-phase deny tests)")
-        header_lines.append("// This mirrors what _cvote_init() sends in test_cvote_deny ragger test.")
-        header_lines.append("// ----------------------------------------------------------------------")
+        header_lines.append(
+            "// ----------------------------------------------------------------------"
+        )
+        header_lines.append(
+            "// Shared chunk data from cvoteTestCases[0] (used by CONFIRM-phase deny tests)"
+        )
+        header_lines.append(
+            "// This mirrors what _cvote_init() sends in test_cvote_deny ragger test."
+        )
+        header_lines.append(
+            "// ----------------------------------------------------------------------"
+        )
         header_lines.append("")
         for i, chunk_bytes in enumerate(valid_chunk_payloads):
             arr_name = f"CVOTE_DENY_CONFIRM_SHARED_CHUNK_{i:03d}"
             header_lines.extend(
-                format_bytes_as_c_array(chunk_bytes, arr_name, bytes_per_line=16, return_as_list=True)
+                format_bytes_as_c_array(
+                    chunk_bytes, arr_name, bytes_per_line=16, return_as_list=True
+                )
             )
             header_lines.append("")
         chunk_arr_entries = ", ".join(
@@ -129,8 +130,12 @@ def _build_deny_fixtures() -> str:
             f".data_len = sizeof(CVOTE_DENY_CONFIRM_SHARED_CHUNK_{i:03d}) }}"
             for i in range(len(valid_chunk_payloads))
         )
-        header_lines.append(f"static const cvote_chunk_t CVOTE_DENY_CONFIRM_SHARED_CHUNKS[] = {{ {chunk_arr_entries} }};")
-        header_lines.append(f"#define CVOTE_DENY_CONFIRM_SHARED_CHUNK_COUNT {len(valid_chunk_payloads)}")
+        header_lines.append(
+            f"static const cvote_chunk_t CVOTE_DENY_CONFIRM_SHARED_CHUNKS[] = {{ {chunk_arr_entries} }};"
+        )
+        header_lines.append(
+            f"#define CVOTE_DENY_CONFIRM_SHARED_CHUNK_COUNT {len(valid_chunk_payloads)}"
+        )
         header_lines.append("")
 
     # Per-fixture: (safe_name, apdu_arr_name, apdu_bytes, confirm_arr_expr, confirm_len_expr, phase, tc)
@@ -142,20 +147,30 @@ def _build_deny_fixtures() -> str:
         apdu_bytes = _apdu_data_bytes(tc, valid_init_payload)
         confirm_bytes = _confirm_data_bytes(tc)
 
-        header_lines.append("// ----------------------------------------------------------------------")
+        header_lines.append(
+            "// ----------------------------------------------------------------------"
+        )
         header_lines.append(f"// Deny Test {idx}: {tc.name}")
         header_lines.append(f"// Phase: {phase}  Expected SW: {tc.expected_sw.name}")
-        header_lines.append(f"// Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases > {tc.name}")
-        header_lines.append("// ----------------------------------------------------------------------")
+        header_lines.append(
+            f"// Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases > {tc.name}"
+        )
+        header_lines.append(
+            "// ----------------------------------------------------------------------"
+        )
         header_lines.append("")
 
         apdu_arr_name = f"CVOTE_DENY_{idx:03d}_{safe_name}_APDU"
         if apdu_bytes:
             header_lines.extend(
-                format_bytes_as_c_array(apdu_bytes, apdu_arr_name, bytes_per_line=16, return_as_list=True)
+                format_bytes_as_c_array(
+                    apdu_bytes, apdu_arr_name, bytes_per_line=16, return_as_list=True
+                )
             )
         else:
-            header_lines.append(f"static const uint8_t {apdu_arr_name}[] = {{0}};  // placeholder (empty body)")
+            header_lines.append(
+                f"static const uint8_t {apdu_arr_name}[] = {{0}};  // placeholder (empty body)"
+            )
         header_lines.append("")
 
         confirm_arr_expr = "NULL"
@@ -163,20 +178,51 @@ def _build_deny_fixtures() -> str:
         if confirm_bytes is not None:
             confirm_arr_name = f"CVOTE_DENY_{idx:03d}_{safe_name}_CONFIRM"
             header_lines.extend(
-                format_bytes_as_c_array(confirm_bytes, confirm_arr_name, bytes_per_line=16, return_as_list=True)
+                format_bytes_as_c_array(
+                    confirm_bytes,
+                    confirm_arr_name,
+                    bytes_per_line=16,
+                    return_as_list=True,
+                )
             )
             header_lines.append("")
             confirm_arr_expr = confirm_arr_name
             confirm_len_expr = f"sizeof({confirm_arr_name})"
 
-        fixture_entries.append((safe_name, apdu_arr_name, apdu_bytes, confirm_arr_expr, confirm_len_expr, phase, tc))
+        fixture_entries.append(
+            (
+                safe_name,
+                apdu_arr_name,
+                apdu_bytes,
+                confirm_arr_expr,
+                confirm_len_expr,
+                phase,
+                tc,
+            )
+        )
 
     header_lines.append("static const cvote_deny_fixture_t CVOTE_DENY_FIXTURES[] = {")
-    for safe_name, apdu_arr_name, apdu_bytes, confirm_arr_expr, confirm_len_expr, phase, tc in fixture_entries:
+    for (
+        safe_name,
+        apdu_arr_name,
+        apdu_bytes,
+        confirm_arr_expr,
+        confirm_len_expr,
+        phase,
+        tc,
+    ) in fixture_entries:
         apdu_len_expr = f"sizeof({apdu_arr_name})" if apdu_bytes else "0"
-        is_confirm_phase = (phase == "CVOTE_DENY_PHASE_CONFIRM")
-        chunks_expr = "CVOTE_DENY_CONFIRM_SHARED_CHUNKS" if is_confirm_phase and valid_chunk_payloads else "NULL"
-        chunk_count_expr = "CVOTE_DENY_CONFIRM_SHARED_CHUNK_COUNT" if is_confirm_phase and valid_chunk_payloads else "0"
+        is_confirm_phase = phase == "CVOTE_DENY_PHASE_CONFIRM"
+        chunks_expr = (
+            "CVOTE_DENY_CONFIRM_SHARED_CHUNKS"
+            if is_confirm_phase and valid_chunk_payloads
+            else "NULL"
+        )
+        chunk_count_expr = (
+            "CVOTE_DENY_CONFIRM_SHARED_CHUNK_COUNT"
+            if is_confirm_phase and valid_chunk_payloads
+            else "0"
+        )
         header_lines.append(
             f"// Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases > {tc.name}"
         )

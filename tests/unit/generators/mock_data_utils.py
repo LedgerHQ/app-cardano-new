@@ -9,13 +9,14 @@ Extracts BIP32 paths and signatures from the existing crypto_mock_data.h
 template, re-derives all keys and signatures from the standard test mnemonic,
 and writes the result back in place.
 """
+
 from __future__ import annotations
 
 import hashlib
 import re
 import sys
 
-from paths import UNIT_TESTS_DIR
+from tests.unit.generators.paths import UNIT_TESTS_DIR
 
 
 # ======================================================================
@@ -24,13 +25,13 @@ from paths import UNIT_TESTS_DIR
 
 # Match MOCK_PATHS array definition
 _MOCK_PATHS_PATTERN = re.compile(
-    r'(static\s+const\s+mock_path_data_t\s+MOCK_PATHS\[\]\s*=\s*\{)(.*?)(\};)',
+    r"(static\s+const\s+mock_path_data_t\s+MOCK_PATHS\[\]\s*=\s*\{)(.*?)(\};)",
     flags=re.DOTALL,
 )
 
 # Match MOCK_SIGNATURES array definition
 _MOCK_SIGNATURES_PATTERN = re.compile(
-    r'(static\s+const\s+mock_signature_data_t\s+MOCK_SIGNATURES\[\]\s*=\s*\{)(.*?)(\};)',
+    r"(static\s+const\s+mock_signature_data_t\s+MOCK_SIGNATURES\[\]\s*=\s*\{)(.*?)(\};)",
     flags=re.DOTALL,
 )
 
@@ -109,7 +110,9 @@ def regenerate_mock_data() -> None:
 
     mock_paths_match = _MOCK_PATHS_PATTERN.search(content)
     if not mock_paths_match:
-        raise ValueError("MOCK_PATHS definition not found in mock_crypto/crypto_mock_data.h")
+        raise ValueError(
+            "MOCK_PATHS definition not found in mock_crypto/crypto_mock_data.h"
+        )
 
     mock_paths_body = mock_paths_match.group(2)
 
@@ -142,8 +145,8 @@ def regenerate_mock_data() -> None:
         return entries
 
     def _build_path_entry(entry_text: str) -> str:
-        path_match = re.search(r'\.path\s*=\s*(\{[^}]+\})', entry_text)
-        path_len_match = re.search(r'\.path_len\s*=\s*(\d+)', entry_text)
+        path_match = re.search(r"\.path\s*=\s*(\{[^}]+\})", entry_text)
+        path_len_match = re.search(r"\.path_len\s*=\s*(\d+)", entry_text)
         if not path_match or not path_len_match:
             raise ValueError("Failed to parse path information in mock entry")
         path_array = path_match.group(1)
@@ -164,25 +167,27 @@ def regenerate_mock_data() -> None:
             print(f"OK {path_desc}")
 
             lines: list[str] = []
-            lines.append(f"{base_indent}/* Path \"{path_desc}\" */")
+            lines.append(f'{base_indent}/* Path "{path_desc}" */')
             lines.append("")
-            lines.extend([
-                f"{base_indent}{{ .path = {path_array}, .path_len = {path_len},",
-                f'{field_indent}/* Public key (hex): "{derived_pk.hex()}" */',
-                f"{field_indent}.public_key = {{",
-                *format_c_array_block(derived_pk, inner_indent=array_indent),
-                f"{field_indent}}},",
-                f'{field_indent}/* Chain code (hex): "{derived_cc.hex()}" */',
-                f"{field_indent}.chain_code = {{",
-                *format_c_array_block(derived_cc, inner_indent=array_indent),
-                f"{field_indent}}},",
-                f'{field_indent}/* Blake2b-224 key hash: {derived_kh.hex()} */',
-                f"{field_indent}.key_hash = {{",
-                *format_c_array_block(derived_kh, inner_indent=array_indent),
-                f"{field_indent}}},",
-                f"{base_indent}}},",
-                "",
-            ])
+            lines.extend(
+                [
+                    f"{base_indent}{{ .path = {path_array}, .path_len = {path_len},",
+                    f'{field_indent}/* Public key (hex): "{derived_pk.hex()}" */',
+                    f"{field_indent}.public_key = {{",
+                    *format_c_array_block(derived_pk, inner_indent=array_indent),
+                    f"{field_indent}}},",
+                    f'{field_indent}/* Chain code (hex): "{derived_cc.hex()}" */',
+                    f"{field_indent}.chain_code = {{",
+                    *format_c_array_block(derived_cc, inner_indent=array_indent),
+                    f"{field_indent}}},",
+                    f"{field_indent}/* Blake2b-224 key hash: {derived_kh.hex()} */",
+                    f"{field_indent}.key_hash = {{",
+                    *format_c_array_block(derived_kh, inner_indent=array_indent),
+                    f"{field_indent}}},",
+                    f"{base_indent}}},",
+                    "",
+                ]
+            )
             return "\n".join(lines)
         except Exception as exc:
             print(f"ERROR: Failed to derive key for {path_desc}: {exc}")
@@ -254,9 +259,9 @@ def regenerate_mock_data() -> None:
     print(f"\nRegenerating {len(signature_entries)} mock signature entries...")
 
     def _build_signature_entry(entry_text: str) -> str:
-        path_match = re.search(r'\.path\s*=\s*(\{[^}]+\})', entry_text)
-        path_len_match = re.search(r'\.path_len\s*=\s*(\d+)', entry_text)
-        message_match = re.search(r'\.message\s*=\s*([A-Z0-9_]+)', entry_text)
+        path_match = re.search(r"\.path\s*=\s*(\{[^}]+\})", entry_text)
+        path_len_match = re.search(r"\.path_len\s*=\s*(\d+)", entry_text)
+        message_match = re.search(r"\.message\s*=\s*([A-Z0-9_]+)", entry_text)
         if not path_match or not path_len_match or not message_match:
             raise ValueError("Failed to parse information from mock signature entry")
         path_array = path_match.group(1)
@@ -284,20 +289,24 @@ def regenerate_mock_data() -> None:
             f'{base_indent}/* Path "{path_desc}" message {message_name} (hex "{message_hex}") */'
         )
         lines.append("")
-        lines.extend([
-            f"{base_indent}{{ .path = {path_array}, .path_len = {path_len},",
-            f"{field_indent}.message = {message_name}, .message_len = sizeof({message_name}),",
-            f'{field_indent}/* Signature (hex): "{signature_hex}" */',
-            f"{field_indent}.signature = {{",
-            *format_c_array_block(signature, inner_indent=array_indent),
-            f"{field_indent}}},",
-            f"{base_indent}}},",
-            "",
-        ])
+        lines.extend(
+            [
+                f"{base_indent}{{ .path = {path_array}, .path_len = {path_len},",
+                f"{field_indent}.message = {message_name}, .message_len = sizeof({message_name}),",
+                f'{field_indent}/* Signature (hex): "{signature_hex}" */',
+                f"{field_indent}.signature = {{",
+                *format_c_array_block(signature, inner_indent=array_indent),
+                f"{field_indent}}},",
+                f"{base_indent}}},",
+                "",
+            ]
+        )
         return "\n".join(lines)
 
     try:
-        regenerated_signatures = [_build_signature_entry(entry) for entry in signature_entries]
+        regenerated_signatures = [
+            _build_signature_entry(entry) for entry in signature_entries
+        ]
     except Exception as exc:
         print(f"ERROR: Failed to regenerate mock signatures: {exc}")
         sys.exit(1)
@@ -313,7 +322,9 @@ def regenerate_mock_data() -> None:
     try:
         temp_output_file.write_text(new_content)
     except Exception as exc:
-        print(f"ERROR: Failed to write temporary mock data file {temp_output_file}: {exc}")
+        print(
+            f"ERROR: Failed to write temporary mock data file {temp_output_file}: {exc}"
+        )
         sys.exit(1)
 
     try:

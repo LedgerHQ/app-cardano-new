@@ -7,15 +7,16 @@
 This module provides Ragger tests Client application.
 It contains the application definitions.
 """
+
 from enum import IntEnum
 from dataclasses import dataclass
 from typing import Union
 
 
 class ProtocolMagics(IntEnum):
-    MAINNET = 0x2D964A09        # 764824073
-    TESTNET = 0x2A              # 42, For integration tests
-    TESTNET_LEGACY = 0x4170CB17 # 1097911063
+    MAINNET = 0x2D964A09  # 764824073
+    TESTNET = 0x2A  # 42, For integration tests
+    TESTNET_LEGACY = 0x4170CB17  # 1097911063
     TESTNET_PREPROD = 1
     TESTNET_PREVIEW = 2
     FAKE = 47

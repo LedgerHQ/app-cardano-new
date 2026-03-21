@@ -16,28 +16,36 @@ from ragger.navigator import Navigator
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
 
-from application_client.command_builder import CLA, InsType, P1Type, P2Type
-from application_client.status_words import StatusWord
-from application_client.command_sender import CommandSender
-from application_client.response_unpacker import (
-    unpack_sign_cip36_confirm_response
+from tests.application_client.command_builder import CLA, InsType, P1Type, P2Type
+from tests.application_client.status_words import StatusWord
+from tests.application_client.command_sender import CommandSender
+from tests.application_client.response_unpacker import (
+    unpack_sign_cip36_confirm_response,
 )
 
-from standalone.input_files.cvote import cvoteTestCases, CVoteTestCase, cvoteDenyTestCases, CVoteDenyTestCase
-
-from standalone.utils import idTestFunc, review_approve, verify_signature, NavContext
-
-
-@pytest.mark.parametrize(
-    "testCase",
+from tests.standalone.input_files.cvote import (
     cvoteTestCases,
-    ids=idTestFunc
+    CVoteTestCase,
+    cvoteDenyTestCases,
+    CVoteDenyTestCase,
 )
-def test_cvote(device: Device,
-               backend: BackendInterface,
-               navigator: Navigator,
-               scenario_navigator: NavigateWithScenario,
-               testCase: CVoteTestCase) -> None:
+
+from tests.standalone.utils import (
+    idTestFunc,
+    review_approve,
+    verify_signature,
+    NavContext,
+)
+
+
+@pytest.mark.parametrize("testCase", cvoteTestCases, ids=idTestFunc)
+def test_cvote(
+    device: Device,
+    backend: BackendInterface,
+    navigator: Navigator,
+    scenario_navigator: NavigateWithScenario,
+    testCase: CVoteTestCase,
+) -> None:
     """Check CIP36 Vote"""
     # Use the app interface instead of raw interface
     client = CommandSender(backend)
@@ -54,16 +62,18 @@ def test_cvote(device: Device,
 
     # Verify the hash matches the expected Blake2b-256 hash of the votecast data
     import hashlib
+
     expected_hash = hashlib.blake2b(original_votecast_data, digest_size=32).digest()
-    assert votecast_hash == expected_hash, f"Hash mismatch: {votecast_hash.hex()} != {expected_hash.hex()}"
+    assert votecast_hash == expected_hash, (
+        f"Hash mismatch: {votecast_hash.hex()} != {expected_hash.hex()}"
+    )
 
     # Check the signature validity
     # Note: The signature is over the hash, not the raw votecast data
     verify_signature(testCase.cVote.witnessPath, signature, votecast_hash)
 
 
-def _cvote_init(client: CommandSender,
-                testCase: CVoteTestCase) -> None:
+def _cvote_init(client: CommandSender, testCase: CVoteTestCase) -> None:
     """cVOTE INIT
 
     Args:
@@ -86,9 +96,9 @@ def _cvote_init(client: CommandSender,
         assert response and response.status == StatusWord.SWO_SUCCESS
 
 
-def _cvote_confirm(nav_ctx: NavContext,
-                   client: CommandSender,
-                   testCase: CVoteTestCase) -> tuple[bytes, bytes]:
+def _cvote_confirm(
+    nav_ctx: NavContext, client: CommandSender, testCase: CVoteTestCase
+) -> tuple[bytes, bytes]:
     """cVOTE CONFIRM and SIGN
 
     Args:
@@ -116,18 +126,15 @@ def _cvote_confirm(nav_ctx: NavContext,
     return votecast_hash, signature
 
 
-@pytest.mark.parametrize(
-    "testCase",
-    cvoteDenyTestCases,
-    ids=idTestFunc
-)
-def test_cvote_deny(backend: BackendInterface,
-                    testCase: CVoteDenyTestCase) -> None:
+@pytest.mark.parametrize("testCase", cvoteDenyTestCases, ids=idTestFunc)
+def test_cvote_deny(backend: BackendInterface, testCase: CVoteDenyTestCase) -> None:
     """Check that invalid cvote inputs are denied with the expected status word."""
     from ragger.bip import pack_derivation_path
 
     if testCase.send_chunk_before_init:
-        chunk_apdu = bytes([CLA, InsType.INS_SIGN_CVOTE, P1Type.P1_CVOTE_CHUNK, P2Type.P2_UNUSED, 0])
+        chunk_apdu = bytes(
+            [CLA, InsType.INS_SIGN_CVOTE, P1Type.P1_CVOTE_CHUNK, P2Type.P2_UNUSED, 0]
+        )
         with pytest.raises(ExceptionRAPDU) as err:
             backend.exchange_raw(chunk_apdu)
         assert err.value.status == testCase.expected_sw
@@ -141,8 +148,18 @@ def test_cvote_deny(backend: BackendInterface,
         _cvote_init(client, valid_tc)
 
         witness_path_bytes = pack_derivation_path(testCase.invalid_witness_path)
-        confirm_apdu = bytes([CLA, InsType.INS_SIGN_CVOTE, P1Type.P1_CVOTE_CONFIRM, P2Type.P2_UNUSED,
-                               len(witness_path_bytes)]) + witness_path_bytes
+        confirm_apdu = (
+            bytes(
+                [
+                    CLA,
+                    InsType.INS_SIGN_CVOTE,
+                    P1Type.P1_CVOTE_CONFIRM,
+                    P2Type.P2_UNUSED,
+                    len(witness_path_bytes),
+                ]
+            )
+            + witness_path_bytes
+        )
         with pytest.raises(ExceptionRAPDU) as err:
             backend.exchange_raw(confirm_apdu)
         assert err.value.status == testCase.expected_sw
@@ -151,8 +168,18 @@ def test_cvote_deny(backend: BackendInterface,
     # Malformed INIT payload.
     assert testCase.init_payload_hex is not None
     payload = bytes.fromhex(testCase.init_payload_hex)
-    init_apdu = bytes([CLA, InsType.INS_SIGN_CVOTE, P1Type.P1_CVOTE_INIT, P2Type.P2_UNUSED,
-                       len(payload)]) + payload
+    init_apdu = (
+        bytes(
+            [
+                CLA,
+                InsType.INS_SIGN_CVOTE,
+                P1Type.P1_CVOTE_INIT,
+                P2Type.P2_UNUSED,
+                len(payload),
+            ]
+        )
+        + payload
+    )
     with pytest.raises(ExceptionRAPDU) as err:
         backend.exchange_raw(init_apdu)
     assert err.value.status == testCase.expected_sw

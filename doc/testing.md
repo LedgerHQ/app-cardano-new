@@ -50,7 +50,7 @@ Notes:
 - After unit tests pass, run a fuzzing build as a compile-health gate.
 - Regenerate unit-test fixtures when `tests/standalone/input_files/` or
   `tests/application_client/` changes via:
-  `../tests/unit/generators/generate_unit_tests_from_ragger.py`.
+  `PYTHONPATH=. tests/venv/bin/python -m tests.unit.generators.generate_unit_tests_from_ragger all` from the repository root.
 - For the concrete edit/regenerate/build/run sequence, see
   `../tests/unit/README.md` -> `Fixture Workflow`.
 - Use the shared venv above when running generator scripts or other Python-based

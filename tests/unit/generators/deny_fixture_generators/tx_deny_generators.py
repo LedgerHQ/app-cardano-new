@@ -4,11 +4,10 @@
 from dataclasses import dataclass
 from typing import Any
 
-from common import (
+from tests.unit.generators.common import (
     write_generated_c_file,
-    _add_tests_to_sys_path,
 )
-from paths import GENERATED_SIGN_TX_DIR
+from tests.unit.generators.paths import GENERATED_SIGN_TX_DIR
 
 SET_ORDER = [
     "transactionInitDenyTestCases",
@@ -60,16 +59,18 @@ GENERATED_DENY_HEADER = GENERATED_SIGN_TX_DIR / "test_sign_tx_fixtures_deny.h"
 
 
 def _build_deny_fixtures() -> str:
-    _add_tests_to_sys_path()
-    from application_client.command_builder import (  # type: ignore
+    from tests.application_client.command_builder import (  # type: ignore
         CommandBuilder,
         P1Type,
         P2Type,
         gather_witness_paths,
     )
-    from standalone.input_files.signTx import TxAuxiliaryDataCIP36, TxAuxiliaryDataType  # type: ignore
-    from application_client.status_words import StatusWord  # type: ignore
-    from standalone.input_files.signTx import (  # type: ignore
+    from tests.standalone.input_files.signTx import (
+        TxAuxiliaryDataCIP36,
+        TxAuxiliaryDataType,
+    )  # type: ignore
+    from tests.application_client.status_words import StatusWord  # type: ignore
+    from tests.standalone.input_files.signTx import (  # type: ignore
         transactionInitDenyTestCases,
         addressParamsDenyTestCases,
         certificateDenyTestCases,
@@ -130,12 +131,14 @@ def _build_deny_fixtures() -> str:
         cleaned = "_".join(part for part in cleaned.split("_") if part)
         return f"[{prefix}] {cleaned}"
 
-    def to_hex_lines(hex_str: str, indent: int = 4, append_comma: bool = False) -> list[str]:
+    def to_hex_lines(
+        hex_str: str, indent: int = 4, append_comma: bool = False
+    ) -> list[str]:
         chunk_size = 64
         lines = []
         for i in range(0, len(hex_str), chunk_size):
-            segment = hex_str[i:i + chunk_size]
-            lines.append(" " * indent + f"\"{segment}\"")
+            segment = hex_str[i : i + chunk_size]
+            lines.append(" " * indent + f'"{segment}"')
         if append_comma and lines:
             lines[-1] = lines[-1] + ","
         return lines
@@ -184,10 +187,15 @@ def _build_deny_fixtures() -> str:
             )
             for chunk in builder.serialize_transaction_chunks(tx)
         ]
-        if tx.auxiliaryData is not None and tx.auxiliaryData.type == TxAuxiliaryDataType.CIP36_REGISTRATION:
+        if (
+            tx.auxiliaryData is not None
+            and tx.auxiliaryData.type == TxAuxiliaryDataType.CIP36_REGISTRATION
+        ):
             aux_params = tx.auxiliaryData.params
             if not isinstance(aux_params, TxAuxiliaryDataCIP36):
-                raise ValueError("Expected TxAuxiliaryDataCIP36 params for CIP36 registration")
+                raise ValueError(
+                    "Expected TxAuxiliaryDataCIP36 params for CIP36 registration"
+                )
             aux_chunks: list[ChunkInfo] = []
             aux_init_apdu = builder.sign_tx_aux_data_init(tx, aux_params)
             aux_chunks.append(
@@ -224,7 +232,10 @@ def _build_deny_fixtures() -> str:
         expect_init_failure = prefix == "DENY_INIT"
         if prefix == "DENY_ADDRESS":
             normalized_name = sanitize_name(test_case.name)
-            if "POOL_OPERATOR_SPENDING_CHOICE_NOT_PATH" in normalized_name or "POOL_OWNER_UNCONDITIONALLY" in normalized_name:
+            if (
+                "POOL_OPERATOR_SPENDING_CHOICE_NOT_PATH" in normalized_name
+                or "POOL_OWNER_UNCONDITIONALLY" in normalized_name
+            ):
                 expect_init_failure = True
 
         display_name = format_display_name(prefix, test_case.name)
@@ -273,7 +284,7 @@ def _build_deny_fixtures() -> str:
             "",
             "#include <stdint.h>",
             "#include <stdbool.h>",
-            "#include \"dispatcher.h\"  // For P1 constants",
+            '#include "dispatcher.h"  // For P1 constants',
             "",
         ]
         for set_name in SET_ORDER:
@@ -283,8 +294,12 @@ def _build_deny_fixtures() -> str:
             for fixture in fixtures[set_name]:
                 if not fixture.chunks:
                     continue
-                lines.append(f"// Source: {fixture.source_file} > {fixture.source_set} > {fixture.name}")
-                lines.append(f"static const apdu_segment_t SIGN_TX_SEGMENTS_{prefix}_{fixture.sanitized_name}[] = {{")
+                lines.append(
+                    f"// Source: {fixture.source_file} > {fixture.source_set} > {fixture.name}"
+                )
+                lines.append(
+                    f"static const apdu_segment_t SIGN_TX_SEGMENTS_{prefix}_{fixture.sanitized_name}[] = {{"
+                )
                 for chunk in fixture.chunks:
                     lines.append("    {")
                     lines.append("        .hex_payload =")
@@ -293,7 +308,9 @@ def _build_deny_fixtures() -> str:
                     p2_constant = P2_CONSTANTS.get(chunk.p2, f"0x{chunk.p2:02X}")
                     lines.append(f"        .p1 = {p1_constant},")
                     lines.append(f"        .p2 = {p2_constant},")
-                    lines.append(f"        .more = {'true' if chunk.more else 'false'},")
+                    lines.append(
+                        f"        .more = {'true' if chunk.more else 'false'},"
+                    )
                     lines.append("    },")
                 lines.append("};")
                 lines.append("")
@@ -304,11 +321,15 @@ def _build_deny_fixtures() -> str:
             if not prefix or set_name not in fixtures:
                 continue
             for fixture in fixtures[set_name]:
-                lines.append(f"    // Source: {fixture.source_file} > {fixture.source_set} > {fixture.name}")
+                lines.append(
+                    f"    // Source: {fixture.source_file} > {fixture.source_set} > {fixture.name}"
+                )
                 lines.append("    {")
                 lines.append(f'        .name = "{fixture.display_name}",')
                 lines.append("        .init_hex =")
-                lines.extend(to_hex_lines(fixture.init_hex, indent=8, append_comma=True))
+                lines.extend(
+                    to_hex_lines(fixture.init_hex, indent=8, append_comma=True)
+                )
                 if fixture.chunks:
                     array_name = f"SIGN_TX_SEGMENTS_{prefix}_{fixture.sanitized_name}"
                     lines.append(f"        .chunks = {array_name},")
@@ -317,7 +338,9 @@ def _build_deny_fixtures() -> str:
                     lines.append("        .chunks = NULL,")
                     lines.append("        .chunk_count = 0,")
                 lines.append(f"        .expected_sw = {fixture.expected_sw},")
-                lines.append(f"        .expect_init_failure = {'true' if fixture.expect_init_failure else 'false'},")
+                lines.append(
+                    f"        .expect_init_failure = {'true' if fixture.expect_init_failure else 'false'},"
+                )
                 lines.append("        .skip_reason = NULL,")
                 lines.append("    },")
         lines.append("};")

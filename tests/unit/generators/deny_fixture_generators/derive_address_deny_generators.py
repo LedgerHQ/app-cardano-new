@@ -3,18 +3,19 @@
 
 from typing import Any
 
-from common import (
+from tests.unit.generators.common import (
     write_generated_c_file,
     sanitize_c_identifier,
     _ensure_base58_module,
-    _add_tests_to_sys_path,
     extract_apdu_payload,
     format_bytes_as_c_array,
 )
-from paths import GENERATED_DERIVE_ADDRESS_DIR
-from application_client.command_builder import P1Type
+from tests.unit.generators.paths import GENERATED_DERIVE_ADDRESS_DIR
+from tests.application_client.command_builder import P1Type
 
-GENERATED_DENY_HEADER = GENERATED_DERIVE_ADDRESS_DIR / "test_address_derivation_fixtures_deny.h"
+GENERATED_DENY_HEADER = (
+    GENERATED_DERIVE_ADDRESS_DIR / "test_address_derivation_fixtures_deny.h"
+)
 
 # ==============================================================================
 # Step 1: Load Deny Test Cases from Ragger Tests
@@ -33,10 +34,9 @@ def _load_address_derivation_deny_test_cases() -> list[Any]:
         List of DeriveAddressTestCase objects that should be denied
     """
     _ensure_base58_module()
-    _add_tests_to_sys_path()
 
     # Import deny test cases from ragger standalone input files
-    from standalone.input_files.derive_address import (  # type: ignore
+    from tests.standalone.input_files.derive_address import (  # type: ignore
         denyTestCases,
     )
 
@@ -66,7 +66,7 @@ def _serialize_deny_test_case_to_apdu(test_case: Any) -> bytes:
         For deny tests, P1 parameter doesn't matter since the request
         should be denied before display logic is reached.
     """
-    from application_client.command_builder import CommandBuilder, P1Type  # type: ignore
+    from tests.application_client.command_builder import CommandBuilder, P1Type  # type: ignore
 
     command_builder = CommandBuilder()
 
@@ -82,7 +82,6 @@ def _serialize_deny_test_case_to_apdu(test_case: Any) -> bytes:
 # ==============================================================================
 # Step 3: Generate C Code for Deny Fixtures
 # ==============================================================================
-
 
 
 def _format_hex_comment(data: bytes, line_width: int | None = None) -> list[str]:
@@ -201,7 +200,9 @@ def _generate_fixture_code_for_deny_test_case(
     code_lines.append(f"// Deny Test {test_number}: {test_case.name}")
     code_lines.append(f"// Expected deny SW: {deny_reason}")
     code_lines.append(f"// Address Type: {test_case.addrType.name}")
-    code_lines.append(f"// Source: tests/standalone/input_files/derive_address.py > deny tests > {test_case.name}")
+    code_lines.append(
+        f"// Source: tests/standalone/input_files/derive_address.py > deny tests > {test_case.name}"
+    )
     code_lines.append(f"// Spending: {test_case.spendingValue}")
     if test_case.stakingValue:
         code_lines.append(f"// Staking: {test_case.stakingValue}")
@@ -220,9 +221,7 @@ def _generate_fixture_code_for_deny_test_case(
     safe_test_name = sanitize_c_identifier(test_case.name)
 
     # Generate C array for complete APDU command
-    payload_array_name = (
-        f"DERIVE_ADDRESS_DENY_{test_number:03d}_{safe_test_name}_APDU"
-    )
+    payload_array_name = f"DERIVE_ADDRESS_DENY_{test_number:03d}_{safe_test_name}_APDU"
     payload_array_code = _generate_c_byte_array_for_apdu(
         payload_bytes,
         payload_array_name,
@@ -303,7 +302,9 @@ def _build_deny_fixtures_header() -> str:
         deny_reason = _get_expected_deny_reason(test_case)
 
         # Add source traceability comment
-        header_lines.append(f"// Source: tests/standalone/input_files/derive_address.py > deny tests > {test_case.name}")
+        header_lines.append(
+            f"// Source: tests/standalone/input_files/derive_address.py > deny tests > {test_case.name}"
+        )
         header_lines.append("{")
 
         header_lines.append(f'    .name = "{test_case.name}",')
@@ -316,11 +317,10 @@ def _build_deny_fixtures_header() -> str:
     header_lines.append("};")
     header_lines.append("")
 
-
     header_lines.append(
         f"#define DERIVE_ADDRESS_DENY_FIXTURE_COUNT {len(deny_test_cases)}"
     )
-    
+
     print()
     print(f"Generated {len(deny_test_cases)} deny test fixtures")
 

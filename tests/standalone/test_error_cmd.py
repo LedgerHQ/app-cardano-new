@@ -6,8 +6,8 @@ import pytest
 from ragger.error import ExceptionRAPDU
 from ragger.backend.interface import BackendInterface
 
-from application_client.command_builder import CLA, InsType, P1Type, P2Type
-from application_client.status_words import StatusWord
+from tests.application_client.command_builder import CLA, InsType, P1Type, P2Type
+from tests.application_client.status_words import StatusWord
 
 
 # Ensure the app returns an error when a bad CLA is used
@@ -20,40 +20,58 @@ def test_bad_cla(backend: BackendInterface) -> None:
 # Ensure the app returns an error when a bad INS is used
 def test_bad_ins(backend: BackendInterface) -> None:
     with pytest.raises(ExceptionRAPDU) as e:
-        backend.exchange(cla=CLA, ins=0xff)
+        backend.exchange(cla=CLA, ins=0xFF)
     assert e.value.status == StatusWord.SWO_INVALID_INS
 
 
 # Ensure the app returns an error when a bad P1 or P2 is used
 def test_wrong_p1p2(backend: BackendInterface) -> None:
     with pytest.raises(ExceptionRAPDU) as e:
-        backend.exchange(cla=CLA,
-                         ins=InsType.INS_GET_VERSION,
-                         p1=P1Type.P1_UNUSED + 1,
-                         p2=P2Type.P2_AUX_DATA_DELEGATION)
+        backend.exchange(
+            cla=CLA,
+            ins=InsType.INS_GET_VERSION,
+            p1=P1Type.P1_UNUSED + 1,
+            p2=P2Type.P2_AUX_DATA_DELEGATION,
+        )
     assert e.value.status == StatusWord.SWO_INCORRECT_P1_P2
     with pytest.raises(ExceptionRAPDU) as e:
-        backend.exchange(cla=CLA, ins=InsType.INS_GET_VERSION, p1=P1Type.P1_UNUSED, p2=P2Type.P2_AUX_DATA_INIT)
+        backend.exchange(
+            cla=CLA,
+            ins=InsType.INS_GET_VERSION,
+            p1=P1Type.P1_UNUSED,
+            p2=P2Type.P2_AUX_DATA_INIT,
+        )
     assert e.value.status == StatusWord.SWO_INCORRECT_P1_P2
     with pytest.raises(ExceptionRAPDU) as e:
-        backend.exchange(cla=CLA,
-                         ins=InsType.INS_GET_APP_NAME,
-                         p1=P1Type.P1_UNUSED + 1,
-                         p2=P2Type.P2_AUX_DATA_DELEGATION)
+        backend.exchange(
+            cla=CLA,
+            ins=InsType.INS_GET_APP_NAME,
+            p1=P1Type.P1_UNUSED + 1,
+            p2=P2Type.P2_AUX_DATA_DELEGATION,
+        )
     assert e.value.status == StatusWord.SWO_INCORRECT_P1_P2
     with pytest.raises(ExceptionRAPDU) as e:
-        backend.exchange(cla=CLA, ins=InsType.INS_GET_APP_NAME, p1=P1Type.P1_UNUSED, p2=P2Type.P2_AUX_DATA_INIT)
+        backend.exchange(
+            cla=CLA,
+            ins=InsType.INS_GET_APP_NAME,
+            p1=P1Type.P1_UNUSED,
+            p2=P2Type.P2_AUX_DATA_INIT,
+        )
     assert e.value.status == StatusWord.SWO_INCORRECT_P1_P2
 
 
 def test_sign_tx_deny_nonzero_legacy_p2_values(backend: BackendInterface) -> None:
     # Transaction body APDUs use P1-based staging; any non-zero P2 is invalid.
     with pytest.raises(ExceptionRAPDU) as e:
-        backend.exchange(cla=CLA, ins=InsType.INS_SIGN_TX, p1=P1Type.P1_TX_INIT, p2=0x10, data=b"")
+        backend.exchange(
+            cla=CLA, ins=InsType.INS_SIGN_TX, p1=P1Type.P1_TX_INIT, p2=0x10, data=b""
+        )
     assert e.value.status == StatusWord.SWO_INCORRECT_P1_P2
 
     with pytest.raises(ExceptionRAPDU) as e:
-        backend.exchange(cla=CLA, ins=InsType.INS_SIGN_TX, p1=P1Type.P1_TX_CHUNK, p2=0x11, data=b"")
+        backend.exchange(
+            cla=CLA, ins=InsType.INS_SIGN_TX, p1=P1Type.P1_TX_CHUNK, p2=0x11, data=b""
+        )
     assert e.value.status == StatusWord.SWO_INCORRECT_P1_P2
 
 
@@ -76,27 +94,33 @@ def test_invalid_state(backend: BackendInterface) -> None:
     # Test 1: Try to send transaction data chunk (P1_TX_CHUNK) without initializing (P1_TX_INIT) first
     # This violates the state machine: can only send chunks when req_type == REQUEST_SIGN_TRANSACTION
     with pytest.raises(ExceptionRAPDU) as e:
-        backend.exchange(cla=CLA,
-                         ins=InsType.INS_SIGN_TX,
-                         p1=P1Type.P1_TX_CHUNK,  # Try to continue without init
-                         p2=P2Type.P2_UNUSED,
-                         data=b"abcde")
+        backend.exchange(
+            cla=CLA,
+            ins=InsType.INS_SIGN_TX,
+            p1=P1Type.P1_TX_CHUNK,  # Try to continue without init
+            p2=P2Type.P2_UNUSED,
+            data=b"abcde",
+        )
     assert e.value.status == StatusWord.SWO_COMMAND_NOT_ALLOWED
 
     # Test 2: Try to send final chunk (P1_TX_CONFIRM) without initializing first
     with pytest.raises(ExceptionRAPDU) as e:
-        backend.exchange(cla=CLA,
-                         ins=InsType.INS_SIGN_TX,
-                         p1=P1Type.P1_TX_CONFIRM,
-                         p2=P2Type.P2_UNUSED,
-                         data=b"")
+        backend.exchange(
+            cla=CLA,
+            ins=InsType.INS_SIGN_TX,
+            p1=P1Type.P1_TX_CONFIRM,
+            p2=P2Type.P2_UNUSED,
+            data=b"",
+        )
     assert e.value.status == StatusWord.SWO_COMMAND_NOT_ALLOWED
 
     # Test 3: Try to sign witness (P1_TX_SIGN_WITNESS) before transaction is approved
     with pytest.raises(ExceptionRAPDU) as e:
-        backend.exchange(cla=CLA,
-                         ins=InsType.INS_SIGN_TX,
-                         p1=P1Type.P1_TX_SIGN_WITNESS,
-                         p2=P2Type.P2_UNUSED,
-                         data=b"")
+        backend.exchange(
+            cla=CLA,
+            ins=InsType.INS_SIGN_TX,
+            p1=P1Type.P1_TX_SIGN_WITNESS,
+            p2=P2Type.P2_UNUSED,
+            data=b"",
+        )
     assert e.value.status == StatusWord.SWO_COMMAND_NOT_ALLOWED

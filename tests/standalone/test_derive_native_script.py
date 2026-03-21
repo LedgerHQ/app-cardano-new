@@ -19,15 +19,23 @@ from ledgered.devices import Device
 from ragger.navigator import Navigator, NavInsID
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
-from application_client.status_words import StatusWord
-from application_client.command_sender import CommandSender
-from application_client.response_unpacker import unpack_derive_native_script_hash_response
+from tests.application_client.status_words import StatusWord
+from tests.application_client.command_sender import CommandSender
+from tests.application_client.response_unpacker import (
+    unpack_derive_native_script_hash_response,
+)
 
-from standalone.input_files.native_script import ValidNativeScriptTestCases, ValidNativeScriptTestCase
-from standalone.input_files.native_script import InvalidScriptTestCases
-from standalone.input_files.native_script import NativeScript, NativeScriptType
-from standalone.input_files.native_script import NativeScriptParamsScripts, NativeScriptParamsNofK
-from standalone.utils import (
+from tests.standalone.input_files.native_script import (
+    ValidNativeScriptTestCases,
+    ValidNativeScriptTestCase,
+)
+from tests.standalone.input_files.native_script import InvalidScriptTestCases
+from tests.standalone.input_files.native_script import NativeScript, NativeScriptType
+from tests.standalone.input_files.native_script import (
+    NativeScriptParamsScripts,
+    NativeScriptParamsNofK,
+)
+from tests.standalone.utils import (
     NavContext,
     idTestFunc,
     get_device_pubkey,
@@ -61,7 +69,10 @@ def _native_script_to_cbor_structure(script: NativeScript) -> list:
         after(slot)          -> [4, slot]
         before(slot)         -> [5, slot]
     """
-    if script.type in (NativeScriptType.PUBKEY_DEVICE_OWNED, NativeScriptType.PUBKEY_THIRD_PARTY):
+    if script.type in (
+        NativeScriptType.PUBKEY_DEVICE_OWNED,
+        NativeScriptType.PUBKEY_THIRD_PARTY,
+    ):
         return [0, _resolve_key_hash(script)]
 
     if script.type == NativeScriptType.ALL:
@@ -71,8 +82,11 @@ def _native_script_to_cbor_structure(script: NativeScript) -> list:
         return [2, [_native_script_to_cbor_structure(s) for s in script.params.scripts]]
 
     if script.type == NativeScriptType.N_OF_K:
-        return [3, script.params.requiredCount,
-                [_native_script_to_cbor_structure(s) for s in script.params.scripts]]
+        return [
+            3,
+            script.params.requiredCount,
+            [_native_script_to_cbor_structure(s) for s in script.params.scripts],
+        ]
 
     if script.type == NativeScriptType.INVALID_BEFORE:
         return [4, script.params.slot]
@@ -90,7 +104,7 @@ def _compute_expected_script_hash(script: NativeScript) -> str:
     Native scripts use tag 0x00.
     """
     serialized = cbor2.dumps(_native_script_to_cbor_structure(script))
-    return hashlib.blake2b(b'\x00' + serialized, digest_size=28).hexdigest()
+    return hashlib.blake2b(b"\x00" + serialized, digest_size=28).hexdigest()
 
 
 def _native_script_step_final_label(script: NativeScript) -> str:
@@ -115,23 +129,24 @@ def _native_script_step_final_label(script: NativeScript) -> str:
 
 
 def _native_script_step_right_clicks(script: NativeScript) -> int | None:
-    if script.type in (NativeScriptType.INVALID_BEFORE, NativeScriptType.INVALID_HEREAFTER):
+    if script.type in (
+        NativeScriptType.INVALID_BEFORE,
+        NativeScriptType.INVALID_HEREAFTER,
+    ):
         assert hasattr(script.params, "slot")
         if script.params.slot > 0xFFFFFFFF:
             return 3
     return None
 
 
-@pytest.mark.parametrize(
-    "testCase",
-    ValidNativeScriptTestCases,
-    ids=idTestFunc
-)
-def test_derive_native_script_hash(device: Device,
-                                   backend: BackendInterface,
-                                   navigator: Navigator,
-                                   scenario_navigator: NavigateWithScenario,
-                                   testCase: ValidNativeScriptTestCase) -> None:
+@pytest.mark.parametrize("testCase", ValidNativeScriptTestCases, ids=idTestFunc)
+def test_derive_native_script_hash(
+    device: Device,
+    backend: BackendInterface,
+    navigator: Navigator,
+    scenario_navigator: NavigateWithScenario,
+    testCase: ValidNativeScriptTestCase,
+) -> None:
     """Check Derive Native Script Hash"""
 
     # Use the app interface instead of raw interface
@@ -140,14 +155,18 @@ def test_derive_native_script_hash(device: Device,
     step_counter = [0]
 
     _deriveNativeScriptHash_init(nav_ctx, client, testCase.name, step_counter)
-    _deriveNativeScriptHash_addScript(nav_ctx, client, testCase.script, testCase.name, step_counter)
+    _deriveNativeScriptHash_addScript(
+        nav_ctx, client, testCase.script, testCase.name, step_counter
+    )
 
-    _deriveNativeScriptHash_finishWholeNativeScript(nav_ctx, client, testCase, step_counter)
+    _deriveNativeScriptHash_finishWholeNativeScript(
+        nav_ctx, client, testCase, step_counter
+    )
 
-def _deriveNativeScriptHash_init(nav_ctx: NavContext,
-                                 client: CommandSender,
-                                 test_name: str,
-                                 step_counter: list[int]) -> None:
+
+def _deriveNativeScriptHash_init(
+    nav_ctx: NavContext, client: CommandSender, test_name: str, step_counter: list[int]
+) -> None:
     with client.derive_script_init_async():
         if nav_ctx.is_nano:
             snap_name = f"{test_name}/step_{step_counter[0]:02d}_init"
@@ -163,18 +182,21 @@ def _deriveNativeScriptHash_init(nav_ctx: NavContext,
             )
         else:
             nav_ctx.navigator.navigate(
-                [NavInsID.USE_CASE_REVIEW_TAP], screen_change_before_first_instruction=False
+                [NavInsID.USE_CASE_REVIEW_TAP],
+                screen_change_before_first_instruction=False,
             )
 
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS
 
 
-def _deriveNativeScriptHash_addScript(nav_ctx: NavContext,
-                                      client: CommandSender,
-                                      script: NativeScript,
-                                      test_name: str,
-                                      step_counter: list[int]) -> None:
+def _deriveNativeScriptHash_addScript(
+    nav_ctx: NavContext,
+    client: CommandSender,
+    script: NativeScript,
+    test_name: str,
+    step_counter: list[int],
+) -> None:
     """Send the different add commands
 
     Args:
@@ -185,20 +207,34 @@ def _deriveNativeScriptHash_addScript(nav_ctx: NavContext,
         step_counter (list[int]): Mutable step counter for unique snapshot names
     """
 
-    if script.type in [NativeScriptType.ALL, NativeScriptType.ANY, NativeScriptType.N_OF_K]:
-        _deriveScriptHash_startComplexScript(nav_ctx, client, script, test_name, step_counter)
-        assert isinstance(script.params, (NativeScriptParamsScripts, NativeScriptParamsNofK))
+    if script.type in [
+        NativeScriptType.ALL,
+        NativeScriptType.ANY,
+        NativeScriptType.N_OF_K,
+    ]:
+        _deriveScriptHash_startComplexScript(
+            nav_ctx, client, script, test_name, step_counter
+        )
+        assert isinstance(
+            script.params, (NativeScriptParamsScripts, NativeScriptParamsNofK)
+        )
         for subscript in script.params.scripts:
-            _deriveNativeScriptHash_addScript(nav_ctx, client, subscript, test_name, step_counter)
+            _deriveNativeScriptHash_addScript(
+                nav_ctx, client, subscript, test_name, step_counter
+            )
     else:
-        _deriveNativeScriptHash_addSimpleScript(nav_ctx, client, script, test_name, step_counter)
+        _deriveNativeScriptHash_addSimpleScript(
+            nav_ctx, client, script, test_name, step_counter
+        )
 
 
-def _deriveNativeScriptHash_addSimpleScript(nav_ctx: NavContext,
-                                            client: CommandSender,
-                                            script: NativeScript,
-                                            test_name: str,
-                                            step_counter: list[int]) -> None:
+def _deriveNativeScriptHash_addSimpleScript(
+    nav_ctx: NavContext,
+    client: CommandSender,
+    script: NativeScript,
+    test_name: str,
+    step_counter: list[int],
+) -> None:
     """Send the add command for a simple script
 
     Args:
@@ -237,7 +273,8 @@ def _deriveNativeScriptHash_addSimpleScript(nav_ctx: NavContext,
                 )
         else:
             nav_ctx.navigator.navigate(
-                [NavInsID.USE_CASE_REVIEW_TAP], screen_change_before_first_instruction=False
+                [NavInsID.USE_CASE_REVIEW_TAP],
+                screen_change_before_first_instruction=False,
             )
 
     # Check the status (Asynchronous)
@@ -245,11 +282,13 @@ def _deriveNativeScriptHash_addSimpleScript(nav_ctx: NavContext,
     assert response and response.status == StatusWord.SWO_SUCCESS
 
 
-def _deriveScriptHash_startComplexScript(nav_ctx: NavContext,
-                                         client: CommandSender,
-                                         script: NativeScript,
-                                         test_name: str,
-                                         step_counter: list[int]) -> None:
+def _deriveScriptHash_startComplexScript(
+    nav_ctx: NavContext,
+    client: CommandSender,
+    script: NativeScript,
+    test_name: str,
+    step_counter: list[int],
+) -> None:
     """Send the add command for a complex script
 
     Args:
@@ -275,7 +314,8 @@ def _deriveScriptHash_startComplexScript(nav_ctx: NavContext,
             )
         else:
             nav_ctx.navigator.navigate(
-                [NavInsID.USE_CASE_REVIEW_TAP], screen_change_before_first_instruction=False
+                [NavInsID.USE_CASE_REVIEW_TAP],
+                screen_change_before_first_instruction=False,
             )
 
     # Check the status (Asynchronous)
@@ -284,10 +324,12 @@ def _deriveScriptHash_startComplexScript(nav_ctx: NavContext,
     assert response and response.status == StatusWord.SWO_SUCCESS
 
 
-def _deriveNativeScriptHash_finishWholeNativeScript(nav_ctx: NavContext,
-                                                    client: CommandSender,
-                                                    testCase: ValidNativeScriptTestCase,
-                                                    step_counter: list[int]) -> None:
+def _deriveNativeScriptHash_finishWholeNativeScript(
+    nav_ctx: NavContext,
+    client: CommandSender,
+    testCase: ValidNativeScriptTestCase,
+    step_counter: list[int],
+) -> None:
     """Send the finish command for the whole native script
 
     Args:
@@ -327,16 +369,14 @@ def _deriveNativeScriptHash_finishWholeNativeScript(nav_ctx: NavContext,
     assert script_hash.hex() == _compute_expected_script_hash(testCase.script)
 
 
-@pytest.mark.parametrize(
-    "testCase",
-    InvalidScriptTestCases,
-    ids=idTestFunc
-)
-def test_derive_native_script_hash_deny(backend: BackendInterface,
-                                        navigator: Navigator,
-                                        scenario_navigator: NavigateWithScenario,
-                                        device: Device,
-                                        testCase: ValidNativeScriptTestCase) -> None:
+@pytest.mark.parametrize("testCase", InvalidScriptTestCases, ids=idTestFunc)
+def test_derive_native_script_hash_deny(
+    backend: BackendInterface,
+    navigator: Navigator,
+    scenario_navigator: NavigateWithScenario,
+    device: Device,
+    testCase: ValidNativeScriptTestCase,
+) -> None:
     """Check that invalid native scripts are denied with the expected status word."""
     client = CommandSender(backend)
     nav_ctx = NavContext(device, navigator, scenario_navigator)
@@ -345,6 +385,8 @@ def test_derive_native_script_hash_deny(backend: BackendInterface,
     _deriveNativeScriptHash_init(nav_ctx, client, testCase.name, step_counter)
 
     with pytest.raises(ExceptionRAPDU) as err:
-        _deriveNativeScriptHash_addScript(nav_ctx, client, testCase.script, testCase.name, step_counter)
+        _deriveNativeScriptHash_addScript(
+            nav_ctx, client, testCase.script, testCase.name, step_counter
+        )
 
     assert err.value.status == testCase.expected_in_unit_test.sw

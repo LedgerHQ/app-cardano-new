@@ -5,6 +5,7 @@
 """
 Unified generator for unit-test fixtures derived from ragger sources.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -12,21 +13,12 @@ import re
 import subprocess
 import sys
 from collections import defaultdict
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Callable
 
-_THIS_FILE = Path(__file__).resolve()
-_GENERATORS_DIR = _THIS_FILE.parent
-_UNIT_TESTS_DIR = _GENERATORS_DIR.parent
-_REPO_ROOT = _UNIT_TESTS_DIR.parent
-_TESTS_DIR = _REPO_ROOT / "tests"
-
-for import_root in (_UNIT_TESTS_DIR, _REPO_ROOT, _TESTS_DIR):
-    import_root_str = str(import_root)
-    if import_root_str not in sys.path:
-        sys.path.insert(0, import_root_str)
-
-from paths import UNIT_TESTS_DIR
-from paths import (
+from tests.unit.generators.paths import UNIT_TESTS_DIR
+from tests.unit.generators.paths import (
     REPO_ROOT,
     GENERATED_SIGN_TX_DIR,
     GENERATED_SIGN_MSG_DIR,
@@ -36,7 +28,95 @@ from paths import (
     GENERATED_DERIVE_ADDRESS_DIR,
     GENERATED_NATIVE_SCRIPT_DIR,
 )
-from mock_data_utils import regenerate_mock_data
+from tests.unit.generators.mock_data_utils import regenerate_mock_data
+
+
+# Import fixture generators
+from tests.unit.generators.fixture_generators.tx_generators import (
+    generate_tx_fixtures,
+)
+
+from tests.unit.generators.fixture_generators.derive_address_generators import (
+    generate_address_derivation_fixtures,
+)
+
+from tests.unit.generators.fixture_generators.derive_native_script_generators import (
+    generate_derive_native_script_fixtures,
+)
+from tests.unit.generators.fixture_generators.pubkey_generators import (
+    generate_pubkey_fixtures,
+)
+from tests.unit.generators.fixture_generators.sign_msg_generators import (
+    generate_sign_msg_fixtures,
+)
+from tests.unit.generators.fixture_generators.opcert_generators import (
+    generate_opcert_fixtures,
+)
+from tests.unit.generators.fixture_generators.cvote_generators import (
+    generate_cvote_fixtures,
+)
+
+# Import deny generators
+from tests.unit.generators.deny_fixture_generators.tx_deny_generators import (
+    generate_tx_deny_fixtures,
+)
+
+from tests.unit.generators.deny_fixture_generators.derive_address_deny_generators import (
+    generate_address_derivation_deny_fixtures,
+)
+
+from tests.unit.generators.deny_fixture_generators.derive_native_script_deny_generators import (
+    generate_derive_native_script_deny_fixtures,
+)
+from tests.unit.generators.deny_fixture_generators.pubkey_deny_generators import (
+    generate_pubkey_deny_fixtures,
+)
+from tests.unit.generators.deny_fixture_generators.opcert_deny_generators import (
+    generate_opcert_deny_fixtures,
+)
+from tests.unit.generators.deny_fixture_generators.cvote_deny_generators import (
+    generate_cvote_deny_fixtures,
+)
+
+# Import test runners
+from tests.unit.generators.test_runner_generators.tx_test_runner_generators import (
+    generate_tx_test_runners,
+)
+
+from tests.unit.generators.test_runner_generators.derive_address_test_runner_generators import (
+    generate_address_derivation_test_runners,
+)
+
+from tests.unit.generators.test_runner_generators.derive_native_script_runner_generators import (
+    generate_native_script_test_runners,
+)
+from tests.unit.generators.test_runner_generators.derive_address_deny_runner_generators import (
+    generate_address_derivation_deny_test_runners,
+)
+from tests.unit.generators.test_runner_generators.pubkey_test_runner_generators import (
+    generate_pubkey_test_runners,
+)
+from tests.unit.generators.test_runner_generators.pubkey_deny_runner_generators import (
+    generate_pubkey_deny_test_runners,
+)
+from tests.unit.generators.test_runner_generators.sign_msg_test_runner_generators import (
+    generate_sign_msg_test_runners,
+)
+from tests.unit.generators.test_runner_generators.opcert_test_runner_generators import (
+    generate_opcert_test_runners,
+)
+from tests.unit.generators.test_runner_generators.opcert_deny_runner_generators import (
+    generate_opcert_deny_test_runners,
+)
+from tests.unit.generators.test_runner_generators.cvote_test_runner_generators import (
+    generate_cvote_test_runners,
+)
+from tests.unit.generators.test_runner_generators.cvote_deny_runner_generators import (
+    generate_cvote_deny_test_runners,
+)
+from tests.unit.generators.test_runner_generators.native_script_deny_runner_generators import (
+    generate_native_script_deny_test_runners,
+)
 
 
 # Match deny fixtures array for counting individual deny cases
@@ -54,92 +134,6 @@ _TX_FIXTURE_PATTERN = re.compile(
 _TX_AUX_INCLUDED_PATTERN = re.compile(r"\.include_aux_data_hash\s*=\s*(true|false)")
 _TX_AUX_TYPE_PATTERN = re.compile(r"\.aux_data_type\s*=\s*([A-Z0-9_]+|\d+)")
 
-# Import fixture generators
-from fixture_generators.tx_generators import (
-    generate_tx_fixtures,
-)
-
-from fixture_generators.derive_address_generators import (
-    generate_address_derivation_fixtures,
-)
-
-from fixture_generators.derive_native_script_generators import (
-    generate_derive_native_script_fixtures,
-)
-from fixture_generators.pubkey_generators import (
-    generate_pubkey_fixtures,
-)
-from fixture_generators.sign_msg_generators import (
-    generate_sign_msg_fixtures,
-)
-from fixture_generators.opcert_generators import (
-    generate_opcert_fixtures,
-)
-from fixture_generators.cvote_generators import (
-    generate_cvote_fixtures,
-)
-
-# Import deny generators
-from deny_fixture_generators.tx_deny_generators import (
-    generate_tx_deny_fixtures,
-)
-
-from deny_fixture_generators.derive_address_deny_generators import (
-    generate_address_derivation_deny_fixtures,
-)
-
-from deny_fixture_generators.derive_native_script_deny_generators import (
-    generate_derive_native_script_deny_fixtures,
-)
-from deny_fixture_generators.pubkey_deny_generators import (
-    generate_pubkey_deny_fixtures,
-)
-from deny_fixture_generators.opcert_deny_generators import (
-    generate_opcert_deny_fixtures,
-)
-from deny_fixture_generators.cvote_deny_generators import (
-    generate_cvote_deny_fixtures,
-)
-
-# Import test runners
-from test_runner_generators.tx_test_runner_generators import (
-    generate_tx_test_runners,
-)
-
-from test_runner_generators.derive_address_test_runner_generators import (
-    generate_address_derivation_test_runners,
-)
-
-from test_runner_generators.derive_native_script_runner_generators import (
-    generate_native_script_test_runners,
-)
-from test_runner_generators.derive_address_deny_runner_generators import (
-    generate_address_derivation_deny_test_runners,
-)
-from test_runner_generators.pubkey_test_runner_generators import (
-    generate_pubkey_test_runners,
-)
-from test_runner_generators.pubkey_deny_runner_generators import (
-    generate_pubkey_deny_test_runners,
-)
-from test_runner_generators.sign_msg_test_runner_generators import (
-    generate_sign_msg_test_runners,
-)
-from test_runner_generators.opcert_test_runner_generators import (
-    generate_opcert_test_runners,
-)
-from test_runner_generators.opcert_deny_runner_generators import (
-    generate_opcert_deny_test_runners,
-)
-from test_runner_generators.cvote_test_runner_generators import (
-    generate_cvote_test_runners,
-)
-from test_runner_generators.cvote_deny_runner_generators import (
-    generate_cvote_deny_test_runners,
-)
-from test_runner_generators.native_script_deny_runner_generators import (
-    generate_native_script_deny_test_runners,
-)
 
 def _log_stage(message: str) -> None:
     print(f"\n--- {message} ---")
@@ -172,7 +166,10 @@ def _fixture_has_cvote_aux_data(fixture_body: str) -> bool:
 
     include_aux_data = aux_included_match.group(1) == "true"
     aux_type_token = aux_type_match.group(1)
-    return include_aux_data and aux_type_token in {"1", "AUX_DATA_TYPE_CVOTE_REGISTRATION"}
+    return include_aux_data and aux_type_token in {
+        "1",
+        "AUX_DATA_TYPE_CVOTE_REGISTRATION",
+    }
 
 
 def _count_sign_tx_fine_grained_entries_from_fixtures() -> int:
@@ -207,35 +204,99 @@ def _count_sign_tx_fine_grained_entries_from_fixtures() -> int:
     return total_entries
 
 
-_COMMAND_ORDER = [
-    "sign_tx",
-    "sign_msg",
-    "sign_cvote",
-    "sign_opcert",
-    "pubkey_export",
-    "derive_address",
-    "derive_native_script",
+@dataclass
+class CommandMetadata:
+    id: str
+    display_name: str
+    ragger_file_name: str
+    generated_dir: Path
+    fixture_generators: list[Callable]
+    runner_generators: list[Callable]
+    deny_generators: list[Callable]
+    generated_entries_count: int = 0
+
+
+COMMAND_REGISTRY = [
+    CommandMetadata(
+        id="sign_tx",
+        display_name="Sign Transaction",
+        ragger_file_name="test_sign_tx.py",
+        generated_dir=GENERATED_SIGN_TX_DIR,
+        fixture_generators=[generate_tx_fixtures],
+        runner_generators=[generate_tx_test_runners],
+        deny_generators=[generate_tx_deny_fixtures],
+    ),
+    CommandMetadata(
+        id="sign_msg",
+        display_name="Sign Message",
+        ragger_file_name="test_signMsg.py",
+        generated_dir=GENERATED_SIGN_MSG_DIR,
+        fixture_generators=[generate_sign_msg_fixtures],
+        runner_generators=[generate_sign_msg_test_runners],
+        deny_generators=[],
+    ),
+    CommandMetadata(
+        id="sign_cvote",
+        display_name="Sign CVote",
+        ragger_file_name="test_cvote.py",
+        generated_dir=GENERATED_CVOTE_DIR,
+        fixture_generators=[generate_cvote_fixtures],
+        runner_generators=[
+            generate_cvote_test_runners,
+            generate_cvote_deny_test_runners,
+        ],
+        deny_generators=[generate_cvote_deny_fixtures],
+    ),
+    CommandMetadata(
+        id="sign_opcert",
+        display_name="Sign Opcert",
+        ragger_file_name="test_opcert.py",
+        generated_dir=GENERATED_OPCERT_DIR,
+        fixture_generators=[generate_opcert_fixtures],
+        runner_generators=[
+            generate_opcert_test_runners,
+            generate_opcert_deny_test_runners,
+        ],
+        deny_generators=[generate_opcert_deny_fixtures],
+    ),
+    CommandMetadata(
+        id="pubkey_export",
+        display_name="Pubkey Export",
+        ragger_file_name="test_pubkey.py",
+        generated_dir=GENERATED_PUBKEY_DIR,
+        fixture_generators=[generate_pubkey_fixtures],
+        runner_generators=[
+            generate_pubkey_test_runners,
+            generate_pubkey_deny_test_runners,
+        ],
+        deny_generators=[generate_pubkey_deny_fixtures],
+    ),
+    CommandMetadata(
+        id="derive_address",
+        display_name="Derive Address",
+        ragger_file_name="test_derive_address.py",
+        generated_dir=GENERATED_DERIVE_ADDRESS_DIR,
+        fixture_generators=[generate_address_derivation_fixtures],
+        runner_generators=[
+            generate_address_derivation_test_runners,
+            generate_address_derivation_deny_test_runners,
+        ],
+        deny_generators=[generate_address_derivation_deny_fixtures],
+    ),
+    CommandMetadata(
+        id="derive_native_script",
+        display_name="Derive Native Script",
+        ragger_file_name="test_derive_native_script.py",
+        generated_dir=GENERATED_NATIVE_SCRIPT_DIR,
+        fixture_generators=[generate_derive_native_script_fixtures],
+        runner_generators=[
+            generate_native_script_test_runners,
+            generate_native_script_deny_test_runners,
+        ],
+        deny_generators=[generate_derive_native_script_deny_fixtures],
+    ),
 ]
 
-_COMMAND_DISPLAY_NAMES = {
-    "sign_tx": "Sign Transaction",
-    "sign_msg": "Sign Message",
-    "sign_cvote": "Sign CVote",
-    "sign_opcert": "Sign Opcert",
-    "pubkey_export": "Pubkey Export",
-    "derive_address": "Derive Address",
-    "derive_native_script": "Derive Native Script",
-}
-
-_RAGGER_FILE_TO_COMMAND = {
-    "test_sign_tx.py": "sign_tx",
-    "test_signMsg.py": "sign_msg",
-    "test_cvote.py": "sign_cvote",
-    "test_opcert.py": "sign_opcert",
-    "test_pubkey.py": "pubkey_export",
-    "test_derive_address.py": "derive_address",
-    "test_derive_native_script.py": "derive_native_script",
-}
 
 _CMOCKA_TEST_PATTERN = re.compile(r"cmocka_unit_test\(\s*([^)]+?)\s*\)")
 
@@ -275,7 +336,7 @@ def _count_unit_tests_by_command() -> tuple[dict[str, int], int, set[str], str]:
         registered_names: set of all function names registered via cmocka_unit_test()
         combined_content: concatenated raw source text (used only for A-vs-B sanity check)
     """
-    command_counts: dict[str, int] = {command: 0 for command in _COMMAND_ORDER}
+    command_counts: dict[str, int] = {cmd.id: 0 for cmd in COMMAND_REGISTRY}
     total_funcs = 0
     registered_names: set[str] = set()
     command_file_contents: list[str] = []
@@ -299,7 +360,9 @@ def _count_unit_tests_by_command() -> tuple[dict[str, int], int, set[str], str]:
         command_file_contents.append(content)
 
     tx_test_files = sorted(
-        p for p in GENERATED_SIGN_TX_DIR.glob("test_sign_tx_*.c") if p.name != "test_sign_tx_deny_tests.c"
+        p
+        for p in GENERATED_SIGN_TX_DIR.glob("test_sign_tx_*.c")
+        if p.name != "test_sign_tx_deny_tests.c"
     )
     for path in tx_test_files:
         _add_file_counts(path, "sign_tx")
@@ -307,15 +370,8 @@ def _count_unit_tests_by_command() -> tuple[dict[str, int], int, set[str], str]:
     # but include its source for function-name coverage matching.
     _add_file_content_only(GENERATED_SIGN_TX_DIR / "test_sign_tx_deny_tests.c")
 
-    command_dir_map = {
-        "sign_msg": GENERATED_SIGN_MSG_DIR,
-        "sign_cvote": GENERATED_CVOTE_DIR,
-        "sign_opcert": GENERATED_OPCERT_DIR,
-        "pubkey_export": GENERATED_PUBKEY_DIR,
-        "derive_address": GENERATED_DERIVE_ADDRESS_DIR,
-        "derive_native_script": GENERATED_NATIVE_SCRIPT_DIR,
-    }
-    
+    command_dir_map = {cmd.id: cmd.generated_dir for cmd in COMMAND_REGISTRY}
+
     for command, directory in command_dir_map.items():
         if directory.exists():
             for file_path in sorted(directory.glob("test_*.c")):
@@ -325,7 +381,9 @@ def _count_unit_tests_by_command() -> tuple[dict[str, int], int, set[str], str]:
     return command_counts, total_funcs, registered_names, combined_content
 
 
-def _is_covered_by_registered_names(candidate_names: set[str], registered_names: set[str]) -> bool:
+def _is_covered_by_registered_names(
+    candidate_names: set[str], registered_names: set[str]
+) -> bool:
     """Option B: check coverage against the authoritative set of cmocka-registered names."""
     return any(
         candidate_name in registered_names
@@ -334,7 +392,9 @@ def _is_covered_by_registered_names(candidate_names: set[str], registered_names:
     )
 
 
-def _is_covered_by_substring(candidate_names: set[str], unit_tests_content: str) -> bool:
+def _is_covered_by_substring(
+    candidate_names: set[str], unit_tests_content: str
+) -> bool:
     """Option A: word-boundary regex check against raw source text."""
     return any(
         bool(re.search(rf"\b{re.escape(candidate_name)}\b", unit_tests_content))
@@ -356,14 +416,23 @@ def _verify_ragger_test_coverage() -> None:
     try:
         # Try to collect with a device parameter (ragger tests require --device)
         result = subprocess.run(
-            [pytest_cmd, "--collect-only", "-q", "--device", "stax", str(ragger_tests_dir)],
+            [
+                pytest_cmd,
+                "--collect-only",
+                "-q",
+                "--device",
+                "stax",
+                str(ragger_tests_dir),
+            ],
             capture_output=True,
             text=True,
             timeout=30,
         )
         # Check for collection errors (non-zero return code indicates failure)
         if result.returncode != 0:
-            print(f"ERROR: pytest collection failed with return code {result.returncode}")
+            print(
+                f"ERROR: pytest collection failed with return code {result.returncode}"
+            )
             if result.stderr:
                 print("STDERR output:")
                 print(result.stderr)
@@ -373,7 +442,8 @@ def _verify_ragger_test_coverage() -> None:
             sys.exit(1)
         # Parse test names from pytest output (format: test_file.py::test_name[...])
         ragger_tests = [
-            line.strip() for line in result.stdout.split("\n")
+            line.strip()
+            for line in result.stdout.split("\n")
             if "::" in line and "test_" in line
         ]
     except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
@@ -381,7 +451,9 @@ def _verify_ragger_test_coverage() -> None:
         sys.exit(1)
 
     if not ragger_tests:
-        print("ERROR: No ragger tests found - check that test files are present and importable")
+        print(
+            "ERROR: No ragger tests found - check that test files are present and importable"
+        )
         sys.exit(1)
 
     # Count total test cases (including parameterized variants)
@@ -391,8 +463,8 @@ def _verify_ragger_test_coverage() -> None:
         print(f"ERROR: Unit test directory not found at {UNIT_TESTS_DIR}")
         sys.exit(1)
 
-    ragger_command_counts = {command: 0 for command in _COMMAND_ORDER}
-    comparable_ragger_command_counts = {command: 0 for command in _COMMAND_ORDER}
+    ragger_command_counts = {cmd.id: 0 for cmd in COMMAND_REGISTRY}
+    comparable_ragger_command_counts = {cmd.id: 0 for cmd in COMMAND_REGISTRY}
     skip_counts: dict[str, int] = defaultdict(int)
     unmapped_counts: dict[str, int] = defaultdict(int)
 
@@ -421,7 +493,10 @@ def _verify_ragger_test_coverage() -> None:
         if module_name in skip_test_files:
             skip_counts[module_name] += 1
             continue
-        command = _RAGGER_FILE_TO_COMMAND.get(module_name)
+        command = next(
+            (cmd.id for cmd in COMMAND_REGISTRY if cmd.ragger_file_name == module_name),
+            None,
+        )
         if command:
             ragger_command_counts[command] += 1
             comparable_ragger_command_counts[command] += 1
@@ -433,14 +508,21 @@ def _verify_ragger_test_coverage() -> None:
 
     # Coverage/counting is intentionally filesystem-based and independent from
     # generation-phase bookkeeping; it scans current unit-test files on disk.
-    unit_command_counts, total_unit_test_funcs, registered_unit_test_names, unit_tests_content = _count_unit_tests_by_command()
+    (
+        unit_command_counts,
+        total_unit_test_funcs,
+        registered_unit_test_names,
+        unit_tests_content,
+    ) = _count_unit_tests_by_command()
     deny_fixture_count = _count_sign_tx_deny_fixtures()
     if deny_fixture_count:
         unit_command_counts["sign_tx"] += deny_fixture_count
     expanded_unit_test_count = total_unit_test_funcs + deny_fixture_count
     # For sign_tx, compare against fine-grained expected entries (same granularity
     # as generated unit tests), not raw pytest parameterized-case count.
-    comparable_ragger_command_counts["sign_tx"] = _count_sign_tx_fine_grained_entries_from_fixtures()
+    comparable_ragger_command_counts["sign_tx"] = (
+        _count_sign_tx_fine_grained_entries_from_fixtures()
+    )
 
     # Extract unique test function names from ragger tests
     # Format: test_file.py::test_func_name[param] -> extract test_func_name
@@ -449,13 +531,19 @@ def _verify_ragger_test_coverage() -> None:
     for func_name in sorted(ragger_test_funcs):
         # Some ragger tests expand into indexed unit tests. Match both the exact
         # function name and generated prefixes.
-        candidate_function_names = _candidate_function_names_for_coverage_match(func_name)
+        candidate_function_names = _candidate_function_names_for_coverage_match(
+            func_name
+        )
         # We intentionally use two mechanisms (Option A and Option B) for coverage validation.
         # This redundancy is for validation purposes, and any mismatch between them will be manually investigated.
         # Primary check (B): coverage is determined by cmocka_unit_test() registrations only.
-        found_by_registered = _is_covered_by_registered_names(candidate_function_names, registered_unit_test_names)
+        found_by_registered = _is_covered_by_registered_names(
+            candidate_function_names, registered_unit_test_names
+        )
         # Sanity check (A): word-boundary regex over raw source text.
-        found_by_substring = _is_covered_by_substring(candidate_function_names, unit_tests_content)
+        found_by_substring = _is_covered_by_substring(
+            candidate_function_names, unit_tests_content
+        )
         if found_by_substring and not found_by_registered:
             print(
                 f"WARNING: coverage inconsistency for '{func_name}': "
@@ -469,19 +557,28 @@ def _verify_ragger_test_coverage() -> None:
 
     deny_note = ""
     if deny_fixture_count:
-        deny_note = (f", includes {deny_fixture_count} fixtures sampled through "
-                     f"`SIGN_TX_DENY_FIXTURES`")
+        deny_note = (
+            f", includes {deny_fixture_count} fixtures sampled through "
+            f"`SIGN_TX_DENY_FIXTURES`"
+        )
     print("\nRagger test coverage check:")
-    print(f"  Ragger: {total_ragger_test_cases} total test cases from {len(ragger_tests)} parameterized variants")
-    print(f"  Unit tests: {expanded_unit_test_count} total test entries "
-          f"({total_unit_test_funcs} generated functions{deny_note})")
+    print(
+        f"  Ragger: {total_ragger_test_cases} total test cases from {len(ragger_tests)} parameterized variants"
+    )
+    print(
+        f"  Unit tests: {expanded_unit_test_count} total test entries "
+        f"({total_unit_test_funcs} generated functions{deny_note})"
+    )
     print("  Command breakdown:")
-    for command in _COMMAND_ORDER:
+    for cmd in COMMAND_REGISTRY:
+        command = cmd.id
         ragger_count = comparable_ragger_command_counts.get(command, 0)
         unit_count = unit_command_counts.get(command, 0)
         delta = unit_count - ragger_count
         delta_note = f" (Δ {delta:+d})" if delta else ""
-        print(f"    - {_COMMAND_DISPLAY_NAMES[command]}: {ragger_count} Ragger -> {unit_count} unit entries{delta_note}")
+        print(
+            f"    - {cmd.display_name}: {ragger_count} Ragger -> {unit_count} unit entries{delta_note}"
+        )
     if comparable_ragger_command_counts["sign_tx"] != ragger_command_counts["sign_tx"]:
         print(
             "  Note: Sign Transaction uses fine-grained fixture-based counting for comparison "
@@ -489,27 +586,66 @@ def _verify_ragger_test_coverage() -> None:
         )
     if skip_counts:
         skip_total = sum(skip_counts.values())
-        skip_details = ", ".join(f"{name}({count})" for name, count in sorted(skip_counts.items()))
-        print(f"  Ignored {skip_total} pytest cases from auxiliary modules ({skip_details})")
+        skip_details = ", ".join(
+            f"{name}({count})" for name, count in sorted(skip_counts.items())
+        )
+        print(
+            f"  Ignored {skip_total} pytest cases from auxiliary modules ({skip_details})"
+        )
     if unmapped_counts:
         unmapped_total = sum(unmapped_counts.values())
-        unmapped_details = ", ".join(f"{name}({count})" for name, count in sorted(unmapped_counts.items()))
+        unmapped_details = ", ".join(
+            f"{name}({count})" for name, count in sorted(unmapped_counts.items())
+        )
         print(f"  Unmapped pytest modules ({unmapped_total} cases): {unmapped_details}")
     insufficient_commands = []
-    for command in _COMMAND_ORDER:
+    mismatched_counts = []
+    for cmd in COMMAND_REGISTRY:
+        command = cmd.id
         ragger_count = comparable_ragger_command_counts.get(command, 0)
         unit_count = unit_command_counts.get(command, 0)
+
+        # We intentionally use a third method of counting: tracking in-memory returns from the generators
+        # and validating them against the parsed cmocka registrations.
+        if hasattr(cmd, "generated_entries_count") and cmd.generated_entries_count > 0:
+            in_memory_count = cmd.generated_entries_count
+
+            # The deny fixtures for sign_tx are currently counted via a regex on SIGN_TX_DENY_FIXTURES
+            # in _count_sign_tx_deny_fixtures and added to unit_count. If the in-memory generators didn't
+            # count them directly in generated_entries_count, we adjust here for an apples-to-apples comparison.
+            if command == "sign_tx" and deny_fixture_count:
+                in_memory_count += deny_fixture_count
+
+            if in_memory_count != unit_count:
+                mismatched_counts.append(
+                    f"{cmd.display_name}: Generated {in_memory_count} entries in memory, but parsed {unit_count} cmocka tests from files."
+                )
+
         if unit_count < ragger_count:
             insufficient_commands.append(
-                f"{_COMMAND_DISPLAY_NAMES[command]} (Ragger {ragger_count}, Unit {unit_count})"
+                f"{cmd.display_name} (Ragger {ragger_count}, Unit {unit_count})"
             )
+
+    if mismatched_counts:
+        print(
+            "  WARNING: Mismatch between in-memory generation and file parsing (Intentional validation redundancy):"
+        )
+        for mismatch in mismatched_counts:
+            print(f"    - {mismatch}")
+
     if insufficient_commands:
-        print(f"  ERROR: insufficient per-command coverage detected: {', '.join(insufficient_commands)}")
+        print(
+            f"  ERROR: insufficient per-command coverage detected: {', '.join(insufficient_commands)}"
+        )
     print(f"  Found {len(ragger_test_funcs)} unique ragger test functions to cover")
-    print(f"  Coverage: {len(covered_coverage)} functions covered, {len(missing_coverage)} missing")
+    print(
+        f"  Coverage: {len(covered_coverage)} functions covered, {len(missing_coverage)} missing"
+    )
 
     if missing_coverage:
-        print(f"\n  WARNING: {len(missing_coverage)} test function(s) lack unit test coverage:")
+        print(
+            f"\n  WARNING: {len(missing_coverage)} test function(s) lack unit test coverage:"
+        )
         for test in missing_coverage:
             print(f"    - {test}")
 
@@ -518,8 +654,7 @@ def _verify_ragger_test_coverage() -> None:
         for func_name in missing_coverage:
             # Find all ragger test cases for this function
             missing_test_cases = [
-                line.strip() for line in ragger_tests
-                if f"::{func_name}[" in line
+                line.strip() for line in ragger_tests if f"::{func_name}[" in line
             ]
             if missing_test_cases:
                 print(f"    {func_name}: ({len(missing_test_cases)} cases)")
@@ -529,8 +664,12 @@ def _verify_ragger_test_coverage() -> None:
                         _, test_case = case.split("::", 1)
                         print(f"      - {test_case}")
         print("\n" + "=" * 88)
-        print("COVERAGE FAILURE: missing unit-test coverage for one or more ragger test functions.")
-        print("The generator run is unsuccessful until all missing functions above are covered.")
+        print(
+            "COVERAGE FAILURE: missing unit-test coverage for one or more ragger test functions."
+        )
+        print(
+            "The generator run is unsuccessful until all missing functions above are covered."
+        )
         print("=" * 88)
         sys.exit(1)
     else:
@@ -545,37 +684,29 @@ def _verify_ragger_test_coverage() -> None:
 
 def run_all() -> None:
     _log_stage("Generating fixtures")
-    generate_tx_fixtures()
-    generate_address_derivation_fixtures()
-    generate_derive_native_script_fixtures()
-    generate_pubkey_fixtures()
-    generate_sign_msg_fixtures()
-    generate_opcert_fixtures()
-    generate_cvote_fixtures()
+    for cmd in COMMAND_REGISTRY:
+        for gen in cmd.fixture_generators:
+            count = gen()
+            if count is not None:
+                cmd.generated_entries_count += count
+
     _log_stage("Generating test runners")
-    generate_tx_test_runners()
-    generate_address_derivation_test_runners()
-    generate_native_script_test_runners()
-    generate_address_derivation_deny_test_runners()
-    generate_pubkey_test_runners()
-    generate_sign_msg_test_runners()
-    generate_opcert_test_runners()
-    generate_cvote_test_runners()
+    for cmd in COMMAND_REGISTRY:
+        for gen in cmd.runner_generators:
+            count = gen()
+            if count is not None:
+                cmd.generated_entries_count += count
+
     _log_stage("Generating deny fixtures")
-    generate_tx_deny_fixtures()
-    generate_address_derivation_deny_fixtures()
-    generate_derive_native_script_deny_fixtures()
-    generate_pubkey_deny_fixtures()
-    generate_pubkey_deny_test_runners()
-    generate_opcert_deny_fixtures()
-    generate_opcert_deny_test_runners()
-    generate_cvote_deny_fixtures()
-    generate_cvote_deny_test_runners()
-    generate_native_script_deny_test_runners()
+    for cmd in COMMAND_REGISTRY:
+        for gen in cmd.deny_generators:
+            count = gen()
+            if count is not None:
+                cmd.generated_entries_count += count
+
     _log_stage("Regenerating mock data")
     regenerate_mock_data()
     _log_stage("Verifying Ragger coverage")
-    # Final coverage/counting is an independent read-back from files on disk.
     _verify_ragger_test_coverage()
 
 
@@ -600,38 +731,25 @@ def main() -> None:
         run_all()
     elif args.command == "fixtures":
         _log_stage("Generating fixtures")
-        generate_tx_fixtures()
-        generate_address_derivation_fixtures()
-        generate_derive_native_script_fixtures()
-        generate_pubkey_fixtures()
-        generate_sign_msg_fixtures()
-        generate_opcert_fixtures()
-        generate_cvote_fixtures()
+        for cmd in COMMAND_REGISTRY:
+            for gen in cmd.fixture_generators:
+                count = gen()
+                if count is not None:
+                    cmd.generated_entries_count += count
     elif args.command == "generate-test-runners":
         _log_stage("Generating test runners")
-        generate_tx_test_runners()
-        generate_address_derivation_test_runners()
-        generate_native_script_test_runners()
-        generate_address_derivation_deny_test_runners()
-        generate_pubkey_test_runners()
-        generate_sign_msg_test_runners()
-        generate_opcert_test_runners()
-        generate_cvote_test_runners()
-        generate_pubkey_deny_test_runners()
-        generate_opcert_deny_test_runners()
-        generate_cvote_deny_test_runners()
-        generate_native_script_deny_test_runners()
+        for cmd in COMMAND_REGISTRY:
+            for gen in cmd.runner_generators:
+                count = gen()
+                if count is not None:
+                    cmd.generated_entries_count += count
     elif args.command == "deny_tests":
         _log_stage("Generating deny fixtures")
-        generate_tx_deny_fixtures()
-        generate_address_derivation_deny_fixtures()
-        generate_derive_native_script_deny_fixtures()
-        generate_pubkey_deny_fixtures()
-        generate_opcert_deny_fixtures()
-        generate_opcert_deny_test_runners()
-        generate_cvote_deny_fixtures()
-        generate_cvote_deny_test_runners()
-        generate_native_script_deny_test_runners()
+        for cmd in COMMAND_REGISTRY:
+            for gen in cmd.deny_generators:
+                count = gen()
+                if count is not None:
+                    cmd.generated_entries_count += count
     elif args.command == "mock-data":
         _log_stage("Regenerating mock data")
         regenerate_mock_data()

@@ -21,13 +21,13 @@ from ledgered.devices import Device
 from ragger.bip.seed import SPECULOS_MNEMONIC
 from ragger.backend import BackendInterface
 
-from application_client.app_def import AddressType
+from tests.application_client.app_def import AddressType
 
-from standalone.input_files.derive_address import DeriveAddressTestCase
-from standalone.input_files.pubkey import PubKeyTestCase
-from standalone.input_files.cvote import CVoteTestCase
-from standalone.input_files.signOpCert import OpCertTestCase
-from standalone.input_files.signMsg import SignMsgTestCase
+from tests.standalone.input_files.derive_address import DeriveAddressTestCase
+from tests.standalone.input_files.pubkey import PubKeyTestCase
+from tests.standalone.input_files.cvote import CVoteTestCase
+from tests.standalone.input_files.signOpCert import OpCertTestCase
+from tests.standalone.input_files.signMsg import SignMsgTestCase
 
 
 ROOT_SCREENSHOT_PATH = Path(__file__).parent.resolve()
@@ -42,8 +42,12 @@ _WARNING_CLICKS = 3
 class NavContext:
     """Bundles the device/navigator/scenario_navigator triple passed to every navigation helper."""
 
-    def __init__(self, device: Device, navigator: Navigator,
-                 scenario_navigator: NavigateWithScenario) -> None:
+    def __init__(
+        self,
+        device: Device,
+        navigator: Navigator,
+        scenario_navigator: NavigateWithScenario,
+    ) -> None:
         self.device = device
         self.navigator = navigator
         self.scenario_navigator = scenario_navigator
@@ -57,16 +61,19 @@ class NavContext:
         return self.scenario_navigator.screenshot_path
 
 
-def _nano_instructions(instructions: Sequence[object] | None,
-                       default: Sequence[object]) -> Sequence[object]:
+def _nano_instructions(
+    instructions: Sequence[object] | None, default: Sequence[object]
+) -> Sequence[object]:
     return list(instructions) if instructions is not None else default
 
 
-def nano_navigate_without_waits(backend: BackendInterface,
-                                navigator: Navigator,
-                                instructions: Sequence[object],
-                                timeout: float = 10.0,
-                                screen_change_before_first_instruction: bool = True) -> None:
+def nano_navigate_without_waits(
+    backend: BackendInterface,
+    navigator: Navigator,
+    instructions: Sequence[object],
+    timeout: float = 10.0,
+    screen_change_before_first_instruction: bool = True,
+) -> None:
     wait_for_screen_change = getattr(backend, "wait_for_screen_change", None)
     if screen_change_before_first_instruction and callable(wait_for_screen_change):
         wait_for_screen_change(timeout)
@@ -80,13 +87,15 @@ def nano_navigate_without_waits(backend: BackendInterface,
         )
 
 
-def nano_navigate_until_text_relaxed(backend: BackendInterface,
-                                     navigator: Navigator,
-                                     navigate_instruction: object,
-                                     validation_instructions: Sequence[object],
-                                     text: str,
-                                     timeout: float = 300.0,
-                                     screen_change_before_first_instruction: bool = True) -> None:
+def nano_navigate_until_text_relaxed(
+    backend: BackendInterface,
+    navigator: Navigator,
+    navigate_instruction: object,
+    validation_instructions: Sequence[object],
+    text: str,
+    timeout: float = 300.0,
+    screen_change_before_first_instruction: bool = True,
+) -> None:
     compare_screen_with_text = getattr(backend, "compare_screen_with_text", None)
     wait_for_screen_change = getattr(backend, "wait_for_screen_change", None)
 
@@ -139,11 +148,13 @@ def nano_navigate_until_text_relaxed(backend: BackendInterface,
     )
 
 
-def _navigate_maybe_compare(ctx: NavContext,
-                            test_name: str,
-                            instructions: Sequence[object],
-                            do_comparison: bool = True,
-                            **kwargs) -> None:
+def _navigate_maybe_compare(
+    ctx: NavContext,
+    test_name: str,
+    instructions: Sequence[object],
+    do_comparison: bool = True,
+    **kwargs,
+) -> None:
     """Navigate with or without golden screenshot comparison."""
     if do_comparison:
         ctx.navigator.navigate_and_compare(
@@ -159,14 +170,16 @@ def _navigate_maybe_compare(ctx: NavContext,
         )
 
 
-def _navigate_until_text_optional_compare(ctx: NavContext,
-                                          test_name: str,
-                                          navigate_instruction: object,
-                                          validation_instructions: Sequence[object],
-                                          text: str,
-                                          do_comparison: bool = True,
-                                          screen_change_before_first_instruction: bool = True,
-                                          screen_change_after_last_instruction: bool = True) -> None:
+def _navigate_until_text_optional_compare(
+    ctx: NavContext,
+    test_name: str,
+    navigate_instruction: object,
+    validation_instructions: Sequence[object],
+    text: str,
+    do_comparison: bool = True,
+    screen_change_before_first_instruction: bool = True,
+    screen_change_after_last_instruction: bool = True,
+) -> None:
     if do_comparison:
         ctx.navigator.navigate_until_text_and_compare(
             navigate_instruction=navigate_instruction,
@@ -230,7 +243,7 @@ def verify_version(version: str) -> None:
 
 
 def _read_makefile() -> List[str]:
-    """Read lines from the parent Makefile """
+    """Read lines from the parent Makefile"""
 
     parent = Path(__file__).parent.parent.parent.resolve()
     makefile = f"{parent}/Makefile"
@@ -239,8 +252,15 @@ def _read_makefile() -> List[str]:
     return lines
 
 
-
-def idTestFunc(testCase: Union[DeriveAddressTestCase, PubKeyTestCase, CVoteTestCase, OpCertTestCase, SignMsgTestCase]) -> str:
+def idTestFunc(
+    testCase: Union[
+        DeriveAddressTestCase,
+        PubKeyTestCase,
+        CVoteTestCase,
+        OpCertTestCase,
+        SignMsgTestCase,
+    ],
+) -> str:
     """Retrieve the test case name for friendly display
 
     Args:
@@ -252,27 +272,37 @@ def idTestFunc(testCase: Union[DeriveAddressTestCase, PubKeyTestCase, CVoteTestC
     return testCase.name
 
 
-def _review_approve_with_warning(ctx: NavContext,
-                                 test_name: str,
-                                 target_text: str,
-                                 warnings: Sequence[object],
-                                 do_comparison: bool = True,
-                                 nano_review_instructions: Sequence[object] | None = None) -> None:
+def _review_approve_with_warning(
+    ctx: NavContext,
+    test_name: str,
+    target_text: str,
+    warnings: Sequence[object],
+    do_comparison: bool = True,
+    nano_review_instructions: Sequence[object] | None = None,
+) -> None:
     if not ctx.is_nano:
         detail_navigation = [NavInsID.RIGHT_HEADER_TAP]
         if len(warnings) > 3:
             detail_navigation += [
-                NavIns(NavInsID.CHOICE_CHOOSE, (4, )),
+                NavIns(NavInsID.CHOICE_CHOOSE, (4,)),
                 NavInsID.LEFT_HEADER_TAP,
             ]
         detail_navigation += [NavInsID.LEFT_HEADER_TAP]
 
-        _navigate_maybe_compare(ctx, f"{test_name}/{_WARNING_PATH}/details",
-                                detail_navigation, do_comparison)
-        _navigate_maybe_compare(ctx, f"{test_name}/{_WARNING_PATH}",
-                                [NavInsID.USE_CASE_CHOICE_REJECT], do_comparison,
-                                screen_change_before_first_instruction=False,
-                                screen_change_after_last_instruction=False)
+        _navigate_maybe_compare(
+            ctx,
+            f"{test_name}/{_WARNING_PATH}/details",
+            detail_navigation,
+            do_comparison,
+        )
+        _navigate_maybe_compare(
+            ctx,
+            f"{test_name}/{_WARNING_PATH}",
+            [NavInsID.USE_CASE_CHOICE_REJECT],
+            do_comparison,
+            screen_change_before_first_instruction=False,
+            screen_change_after_last_instruction=False,
+        )
         _navigate_until_text_optional_compare(
             ctx,
             test_name=test_name,
@@ -287,8 +317,9 @@ def _review_approve_with_warning(ctx: NavContext,
         )
         return
 
-    nano_review_instructions = _nano_instructions(nano_review_instructions,
-                                                  [NavInsID.BOTH_CLICK])
+    nano_review_instructions = _nano_instructions(
+        nano_review_instructions, [NavInsID.BOTH_CLICK]
+    )
 
     # Nano NBGL warning/review flows are fragile under screenshot comparison and
     # can time out while waiting for intermediate screen changes. Drive them
@@ -305,13 +336,15 @@ def _review_approve_with_warning(ctx: NavContext,
     )
 
 
-def review_approve(ctx: NavContext,
-                   test_name: str,
-                   target_text: str | None = None,
-                   warnings: Sequence[object] = (),
-                   has_warning_screen: bool = False,
-                   do_comparison: bool = True,
-                   nano_review_instructions: Sequence[object] | None = None) -> None:
+def review_approve(
+    ctx: NavContext,
+    test_name: str,
+    target_text: str | None = None,
+    warnings: Sequence[object] = (),
+    has_warning_screen: bool = False,
+    do_comparison: bool = True,
+    nano_review_instructions: Sequence[object] | None = None,
+) -> None:
     if has_warning_screen or warnings:
         _review_approve_with_warning(
             ctx,
@@ -336,8 +369,9 @@ def review_approve(ctx: NavContext,
             ctx,
             test_name=test_name,
             navigate_instruction=NavInsID.RIGHT_CLICK,
-            validation_instructions=_nano_instructions(nano_review_instructions,
-                                                       NANO_CHOICE_CONFIRM_INSTRUCTIONS),
+            validation_instructions=_nano_instructions(
+                nano_review_instructions, NANO_CHOICE_CONFIRM_INSTRUCTIONS
+            ),
             text=target_text,
             do_comparison=do_comparison,
         )
@@ -347,20 +381,21 @@ def review_approve(ctx: NavContext,
         ctx,
         test_name=test_name,
         navigate_instruction=NavInsID.RIGHT_CLICK,
-        validation_instructions=_nano_instructions(nano_review_instructions,
-                                                   NANO_REVIEW_CONFIRM_INSTRUCTIONS),
+        validation_instructions=_nano_instructions(
+            nano_review_instructions, NANO_REVIEW_CONFIRM_INSTRUCTIONS
+        ),
         text=_REJECT_TEXT,
         do_comparison=do_comparison,
     )
 
 
-def choice_approve(ctx: NavContext,
-                   test_name: str,
-                   confirm_text: str,
-                   do_comparison: bool = True) -> None:
+def choice_approve(
+    ctx: NavContext, test_name: str, confirm_text: str, do_comparison: bool = True
+) -> None:
     if not ctx.is_nano:
         _navigate_maybe_compare(
-            ctx, test_name,
+            ctx,
+            test_name,
             [NavInsID.USE_CASE_CHOICE_CONFIRM, NavInsID.USE_CASE_STATUS_DISMISS],
             do_comparison,
         )
@@ -405,7 +440,9 @@ def _deriveAddressByron(testCase: DeriveAddressTestCase) -> str:
     # Derive the key for the specified path
     bip32Path: Bip32Path = Bip32PathParser.Parse(testCase.spendingValue).ToList()
     bip44_acc = bip44_mst_ctx.Purpose().Coin().Account(bip32Path[2])
-    bip44_chg = bip44_acc.Change(Bip44Changes.CHAIN_EXT if bip32Path[3] == 0 else Bip44Changes.CHAIN_INT)
+    bip44_chg = bip44_acc.Change(
+        Bip44Changes.CHAIN_EXT if bip32Path[3] == 0 else Bip44Changes.CHAIN_INT
+    )
     bip44_addr = bip44_chg.AddressIndex(bip32Path[4])
 
     # Get the address
@@ -420,8 +457,7 @@ def _deriveAddressShelley(testCase: DeriveAddressTestCase) -> bytes:
         key += hashlib.blake2b(pk, digest_size=28).digest().hex()
     else:
         key += testCase.spendingValue
-    if testCase.addrType in (AddressType.POINTER_KEY,
-                             AddressType.POINTER_SCRIPT):
+    if testCase.addrType in (AddressType.POINTER_KEY, AddressType.POINTER_SCRIPT):
         key += _appenduint32(int(testCase.stakingValue[0:8], 16))
         key += _appenduint32(int(testCase.stakingValue[8:16], 16))
         key += _appenduint32(int(testCase.stakingValue[16:24], 16))
@@ -452,7 +488,7 @@ def _appenduint32(value: int) -> str:
 
 
 def get_device_pubkey(path: str) -> Tuple[bytes, str]:
-    """ Retrieve the Public Key
+    """Retrieve the Public Key
 
     Args:
         path (str): Derivation path
@@ -460,7 +496,9 @@ def get_device_pubkey(path: str) -> Tuple[bytes, str]:
     Returns:
         The Reference PK and the byte Chain Code
     """
-    ref_pk, ref_chain_code = calculate_public_key_and_chaincode(CurveChoice.Ed25519Kholaw, path)
+    ref_pk, ref_chain_code = calculate_public_key_and_chaincode(
+        CurveChoice.Ed25519Kholaw, path
+    )
     return bytes.fromhex(ref_pk[2:]), ref_chain_code
 
 

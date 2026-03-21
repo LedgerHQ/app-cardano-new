@@ -17,12 +17,12 @@ from ledgered.devices import Device
 from ragger.navigator import Navigator, NavInsID
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
-from application_client.app_def import AddressType, Mainnet
-from application_client.status_words import StatusWord
-from application_client.command_sender import CommandSender
-from application_client.response_unpacker import unpack_sign_message_response
+from tests.application_client.app_def import AddressType, Mainnet
+from tests.application_client.status_words import StatusWord
+from tests.application_client.command_sender import CommandSender
+from tests.application_client.response_unpacker import unpack_sign_message_response
 
-from standalone.input_files.signMsg import (
+from tests.standalone.input_files.signMsg import (
     signMsgTestCases,
     signMsgDenyTestCases,
     SignMsgTestCase,
@@ -31,9 +31,9 @@ from standalone.input_files.signMsg import (
     build_sign_msg_init_apdu_for_deny,
 )
 
-from standalone.test_derive_address import DeriveAddressTestCase
+from tests.standalone.test_derive_address import DeriveAddressTestCase
 
-from standalone.utils import (
+from tests.standalone.utils import (
     idTestFunc,
     get_device_pubkey,
     verify_signature,
@@ -43,16 +43,14 @@ from standalone.utils import (
 )
 
 
-@pytest.mark.parametrize(
-    "testCase",
-    signMsgTestCases,
-    ids=idTestFunc
-)
-def test_sign_message(device: Device,
-                      backend: BackendInterface,
-                      navigator: Navigator,
-                      scenario_navigator: NavigateWithScenario,
-                      testCase: SignMsgTestCase) -> None:
+@pytest.mark.parametrize("testCase", signMsgTestCases, ids=idTestFunc)
+def test_sign_message(
+    device: Device,
+    backend: BackendInterface,
+    navigator: Navigator,
+    scenario_navigator: NavigateWithScenario,
+    testCase: SignMsgTestCase,
+) -> None:
     """Check Sign Message"""
 
     # Use the app interface instead of raw interface
@@ -63,7 +61,9 @@ def test_sign_message(device: Device,
         review_approve(
             nav_ctx,
             test_name=testCase.name,
-            target_text="Sign message" if not testCase.expected_warnings else r"^Reject operation$",
+            target_text="Sign message"
+            if not testCase.expected_warnings
+            else r"^Reject operation$",
             warnings=testCase.expected_warnings,
             nano_review_instructions=(
                 [NavInsID.LEFT_CLICK, NavInsID.BOTH_CLICK]
@@ -81,13 +81,11 @@ def test_sign_message(device: Device,
     _check_result(testCase, signature, public_key, address_field)
 
 
-@pytest.mark.parametrize(
-    "testCase",
-    signMsgDenyTestCases,
-    ids=idTestFunc
-)
-def test_sign_message_deny(backend: BackendInterface, testCase: SignMsgDenyTestCase) -> None:
-    from standalone.input_files.signMsg import (
+@pytest.mark.parametrize("testCase", signMsgDenyTestCases, ids=idTestFunc)
+def test_sign_message_deny(
+    backend: BackendInterface, testCase: SignMsgDenyTestCase
+) -> None:
+    from tests.standalone.input_files.signMsg import (
         build_sign_msg_chunk_apdu_for_deny,
         build_sign_msg_confirm_apdu_for_deny,
     )
@@ -108,18 +106,27 @@ def test_sign_message_deny(backend: BackendInterface, testCase: SignMsgDenyTestC
     # Also check for implicit INIT failures from message length validation
     msg_len = len(bytes.fromhex(testCase.msgData.messageHex))
     expect_init_failure = (
-        testCase.invalid_address_field_type is not None or
-        testCase.invalid_msg_length is not None or
-        testCase.truncate_init_apdu_at is not None or
+        testCase.invalid_address_field_type is not None
+        or testCase.invalid_msg_length is not None
+        or testCase.truncate_init_apdu_at is not None
+        or
         # Security policy deny (happens during INIT after parsing succeeds)
-        testCase.expected_status == StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED or
+        testCase.expected_status == StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED
+        or
         # Address params parsing failure (happens during INIT)
-        testCase.expected_status == StatusWord.SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS or
+        testCase.expected_status == StatusWord.SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS
+        or
         # Memory overflow during INIT validation (SWO_INSUFFICIENT_MEMORY)
-        (testCase.expected_status == StatusWord.SWO_INSUFFICIENT_MEMORY and
-         (msg_len > 65535 or  # Exceeds UINT16_MAX
-          (not testCase.msgData.isAscii and msg_len >= 32767) or  # Non-ASCII hex buffer overflow
-          (not testCase.msgData.hashPayload and msg_len >= 65280)))  # Non-hashed sig_structure overflow
+        (
+            testCase.expected_status == StatusWord.SWO_INSUFFICIENT_MEMORY
+            and (
+                msg_len > 65535  # Exceeds UINT16_MAX
+                or (
+                    not testCase.msgData.isAscii and msg_len >= 32767
+                )  # Non-ASCII hex buffer overflow
+                or (not testCase.msgData.hashPayload and msg_len >= 65280)
+            )
+        )  # Non-hashed sig_structure overflow
     )
 
     if expect_init_failure:
@@ -133,7 +140,8 @@ def test_sign_message_deny(backend: BackendInterface, testCase: SignMsgDenyTestC
 
     # Handle CHUNK-phase deny scenarios
     if testCase.invalid_chunk_size is not None or (
-        testCase.msgData.isAscii and not all(32 <= b < 127 for b in bytes.fromhex(testCase.msgData.messageHex))
+        testCase.msgData.isAscii
+        and not all(32 <= b < 127 for b in bytes.fromhex(testCase.msgData.messageHex))
     ):
         # ASCII validation or chunk size validation happens during CHUNK
         chunk_apdu = build_sign_msg_chunk_apdu_for_deny(testCase, 0)
@@ -153,8 +161,8 @@ def test_sign_message_deny(backend: BackendInterface, testCase: SignMsgDenyTestC
 
     if testCase.send_confirm_with_payload:
         # Send all normal chunks first
-        from application_client.command_builder import CommandBuilder
-        from standalone.input_files.signMsg import SignMsgTestCase
+        from tests.application_client.command_builder import CommandBuilder
+        from tests.standalone.input_files.signMsg import SignMsgTestCase
 
         transient_success_case = SignMsgTestCase(
             name=testCase.name,
@@ -175,7 +183,9 @@ def test_sign_message_deny(backend: BackendInterface, testCase: SignMsgDenyTestC
     raise ValueError(f"Deny test case {testCase.name} has no deny scenario configured")
 
 
-def _check_result(testCase: SignMsgTestCase, signature: bytes, public_key: bytes, address_field: bytes) -> None:
+def _check_result(
+    testCase: SignMsgTestCase, signature: bytes, public_key: bytes, address_field: bytes
+) -> None:
     """Check the unpacked response values
 
     Args:
@@ -219,16 +229,15 @@ def _generate_payload(testCase: SignMsgTestCase, addressField: bytes) -> bytes:
     """
 
     array = []
-    dico = {
-        1: -8,
-        "address": addressField
-    }
+    dico = {1: -8, "address": addressField}
 
     array.append("Signature1")
     array.append(cbor.cbor.dumps_dict(dico))
-    array.append(b'')
+    array.append(b"")
     if testCase.msgData.hashPayload:
-        msgHash = blake2b(bytes.fromhex(testCase.msgData.messageHex), digest_size=28).hexdigest()
+        msgHash = blake2b(
+            bytes.fromhex(testCase.msgData.messageHex), digest_size=28
+        ).hexdigest()
         array.append(bytes.fromhex(msgHash))
     else:
         array.append(bytes.fromhex(testCase.msgData.messageHex))

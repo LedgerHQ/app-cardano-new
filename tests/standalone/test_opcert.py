@@ -15,26 +15,34 @@ from ragger.error import ExceptionRAPDU
 from ragger.navigator import Navigator
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
-from application_client.command_builder import CLA, InsType, P1Type, P2Type
-from application_client.status_words import StatusWord
-from application_client.command_sender import CommandSender
-from application_client.response_unpacker import unpack_sign_opcert_response
+from tests.application_client.command_builder import CLA, InsType, P1Type, P2Type
+from tests.application_client.status_words import StatusWord
+from tests.application_client.command_sender import CommandSender
+from tests.application_client.response_unpacker import unpack_sign_opcert_response
 
-from standalone.input_files.signOpCert import opCertTestCases, OpCertTestCase, opCertDenyTestCases, OpCertDenyTestCase
-
-from standalone.utils import idTestFunc, review_approve, verify_signature, NavContext
-
-
-@pytest.mark.parametrize(
-    "testCase",
+from tests.standalone.input_files.signOpCert import (
     opCertTestCases,
-    ids=idTestFunc
+    OpCertTestCase,
+    opCertDenyTestCases,
+    OpCertDenyTestCase,
 )
-def test_opCert(device: Device,
-                backend: BackendInterface,
-                navigator: Navigator,
-                scenario_navigator: NavigateWithScenario,
-                testCase: OpCertTestCase) -> None:
+
+from tests.standalone.utils import (
+    idTestFunc,
+    review_approve,
+    verify_signature,
+    NavContext,
+)
+
+
+@pytest.mark.parametrize("testCase", opCertTestCases, ids=idTestFunc)
+def test_opCert(
+    device: Device,
+    backend: BackendInterface,
+    navigator: Navigator,
+    scenario_navigator: NavigateWithScenario,
+    testCase: OpCertTestCase,
+) -> None:
     """Check Sign Operational Certificate"""
 
     # Use the app interface instead of raw interface
@@ -57,22 +65,24 @@ def test_opCert(device: Device,
 
     msg = bytes()
     msg += bytes.fromhex(testCase.opCert.kesPublicKeyHex)
-    msg += testCase.opCert.issueCounter.to_bytes(8, 'big')
-    msg += testCase.opCert.kesPeriod.to_bytes(8, 'big')
+    msg += testCase.opCert.issueCounter.to_bytes(8, "big")
+    msg += testCase.opCert.kesPeriod.to_bytes(8, "big")
 
     verify_signature(testCase.opCert.path, signature, msg)
 
 
-@pytest.mark.parametrize(
-    "testCase",
-    opCertDenyTestCases,
-    ids=idTestFunc
-)
-def test_opcert_deny(backend: BackendInterface,
-                     testCase: OpCertDenyTestCase) -> None:
+@pytest.mark.parametrize("testCase", opCertDenyTestCases, ids=idTestFunc)
+def test_opcert_deny(backend: BackendInterface, testCase: OpCertDenyTestCase) -> None:
     """Check that malformed opcert APDUs are denied with the expected status word."""
-    apdu = bytes([CLA, InsType.INS_SIGN_OPCERT, P1Type.P1_UNUSED, P2Type.P2_UNUSED,
-                  len(bytes.fromhex(testCase.payload_hex))]) + bytes.fromhex(testCase.payload_hex)
+    apdu = bytes(
+        [
+            CLA,
+            InsType.INS_SIGN_OPCERT,
+            P1Type.P1_UNUSED,
+            P2Type.P2_UNUSED,
+            len(bytes.fromhex(testCase.payload_hex)),
+        ]
+    ) + bytes.fromhex(testCase.payload_hex)
     with pytest.raises(ExceptionRAPDU) as err:
         backend.exchange_raw(apdu)
     assert err.value.status == testCase.expected_sw

@@ -10,10 +10,10 @@ from ledger_app_clients.exchange.test_runner import (
 from ledger_app_clients.exchange.utils import handle_lib_call_start_or_stop
 from ragger.error import ExceptionRAPDU
 
-from application_client.command_sender import CommandSender
-from application_client.command_builder import gather_witness_paths
-from application_client.app_def import Mainnet
-from standalone.input_files.signTx import (
+from tests.application_client.command_sender import CommandSender
+from tests.application_client.command_builder import gather_witness_paths
+from tests.application_client.app_def import Mainnet
+from tests.standalone.input_files.signTx import (
     Transaction,
     TransactionSigningMode,
     TxInput,
@@ -23,7 +23,7 @@ from standalone.input_files.signTx import (
     TxOutputDestinationType,
     ThirdPartyAddressParams,
 )
-from standalone.input_files.derive_address import (
+from tests.standalone.input_files.derive_address import (
     DeriveAddressTestCase,
     AddressType,
 )
@@ -78,6 +78,7 @@ class CardanoShelleySwapTests(ExchangeTestRunner):
 
     def _destination_to_hex(self, destination: str) -> str:
         import bech32
+
         _, data_part = bech32.bech32_decode(destination)
         if data_part is None:
             # Not a valid bech32 address - pass as-is for denial testing
@@ -147,7 +148,9 @@ class CardanoShelleySwapTests(ExchangeTestRunner):
 
     def perform_final_tx(self, destination, send_amount, fees, memo):
         """Build and sign a standard Cardano transaction for swap finalization."""
-        tx = self._build_swap_tx(destination, send_amount, fees, third_party_output_count=1)
+        tx = self._build_swap_tx(
+            destination, send_amount, fees, third_party_output_count=1
+        )
         client = CommandSender(self.backend)
 
         # In swap mode, no UI review is needed (on_review=None)
@@ -158,14 +161,18 @@ class CardanoShelleySwapTests(ExchangeTestRunner):
         )
 
         # Swap flow is completed only after all witnesses are requested and signed.
-        witness_paths = gather_witness_paths(tx, TransactionSigningMode.ORDINARY_TRANSACTION, [])
+        witness_paths = gather_witness_paths(
+            tx, TransactionSigningMode.ORDINARY_TRANSACTION, []
+        )
         for witness_path in witness_paths:
             client.sign_tx_witness(witness_path)
 
 
 class CardanoShelleySwapDenyMultipleThirdPartyOutputs(CardanoShelleySwapTests):
     def perform_final_tx(self, destination, send_amount, fees, memo):
-        tx = self._build_swap_tx(destination, send_amount, fees, third_party_output_count=2)
+        tx = self._build_swap_tx(
+            destination, send_amount, fees, third_party_output_count=2
+        )
         client = CommandSender(self.backend)
 
         # Must be denied in swap mode with SWO_SWAP_CHECKING_FAIL.
@@ -196,7 +203,9 @@ class CardanoShelleySwapDenyMultipleThirdPartyOutputs(CardanoShelleySwapTests):
 
 class CardanoShelleySwapDenyWitnessPoolColdPath(CardanoShelleySwapTests):
     def perform_final_tx(self, destination, send_amount, fees, memo):
-        tx = self._build_swap_tx(destination, send_amount, fees, third_party_output_count=1)
+        tx = self._build_swap_tx(
+            destination, send_amount, fees, third_party_output_count=1
+        )
         client = CommandSender(self.backend)
 
         # Pool cold key is denied in swap witness policy.
@@ -237,11 +246,15 @@ class CardanoShelleySwapDenyWitnessPoolColdPath(CardanoShelleySwapTests):
 
 # We use a class to reuse the same Speculos instance (faster performances)
 class TestsCardanoSwap:
-    @pytest.mark.parametrize('test_to_run', ALL_TESTS_EXCEPT_MEMO_THORSWAP_AND_FEES)
+    @pytest.mark.parametrize("test_to_run", ALL_TESTS_EXCEPT_MEMO_THORSWAP_AND_FEES)
     def test_cardano_swap(self, backend, exchange_navigation_helper, test_to_run):
-        CardanoShelleySwapTests(backend, exchange_navigation_helper).run_test(test_to_run)
+        CardanoShelleySwapTests(backend, exchange_navigation_helper).run_test(
+            test_to_run
+        )
 
-    def test_cardano_swap_deny_multiple_third_party_outputs(self, backend, exchange_navigation_helper):
+    def test_cardano_swap_deny_multiple_third_party_outputs(
+        self, backend, exchange_navigation_helper
+    ):
         CardanoShelleySwapDenyMultipleThirdPartyOutputs(
             backend,
             exchange_navigation_helper,

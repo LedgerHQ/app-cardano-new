@@ -8,19 +8,26 @@ from ragger.backend.interface import BackendInterface, RAPDU
 from ragger.error import ExceptionRAPDU
 
 
-from standalone.input_files.signOpCert import OpCertTestCase
-from application_client.command_builder import (
+from tests.standalone.input_files.signOpCert import OpCertTestCase
+from tests.application_client.command_builder import (
     CommandBuilder,
     SETTINGS_DISABLED,
     SETTINGS_ENABLED,
     gather_witness_paths,
     P1Type,
 )
-from standalone.input_files.derive_address import DeriveAddressTestCase
-from standalone.input_files.native_script import NativeScript, NativeScriptHashDisplayFormat
-from application_client.status_words import StatusWord
-from standalone.input_files.signTx import Transaction, TxAuxiliaryDataCIP36, TxAuxiliaryDataType
-from standalone.input_files.cvote import CVoteTestCase
+from tests.standalone.input_files.derive_address import DeriveAddressTestCase
+from tests.standalone.input_files.native_script import (
+    NativeScript,
+    NativeScriptHashDisplayFormat,
+)
+from tests.application_client.status_words import StatusWord
+from tests.standalone.input_files.signTx import (
+    Transaction,
+    TxAuxiliaryDataCIP36,
+    TxAuxiliaryDataType,
+)
+from tests.standalone.input_files.cvote import CVoteTestCase
 
 
 class CommandSender:
@@ -40,7 +47,6 @@ class CommandSender:
 
         return self.backend.exchange_raw(payload)
 
-
     @contextmanager
     def _exchange_async(self, payload: bytes) -> Generator[bool, None, None]:
         """Asynchronous APDU exchange with response
@@ -55,7 +61,6 @@ class CommandSender:
         with self.backend.exchange_async_raw(payload) as has_data_available:
             yield has_data_available
 
-
     def get_async_response(self) -> Optional[RAPDU]:
         """Asynchronous APDU response
 
@@ -64,7 +69,6 @@ class CommandSender:
         """
 
         return self.backend.last_async_response
-
 
     def get_version(self) -> RAPDU:
         return self._exchange(self._cmd_builder.get_version())
@@ -80,9 +84,10 @@ class CommandSender:
         with self._exchange_async(self._cmd_builder.get_pubkey_path(path)):
             yield
 
-
     @contextmanager
-    def sign_opcert_async(self, test_case: OpCertTestCase) -> Generator[None, None, None]:
+    def sign_opcert_async(
+        self, test_case: OpCertTestCase
+    ) -> Generator[None, None, None]:
         """APDU Sign Operational Certificate
 
         Args:
@@ -95,7 +100,6 @@ class CommandSender:
         with self._exchange_async(self._cmd_builder.sign_opcert(test_case)):
             yield
 
-
     @contextmanager
     def sign_tx_witness_async(self, path: str) -> Generator[bool, None, None]:
         """APDU Sign TX Witness
@@ -107,17 +111,21 @@ class CommandSender:
             Generator
         """
 
-        with self._exchange_async(self._cmd_builder.sign_tx_witness(path)) as has_data_available:
+        with self._exchange_async(
+            self._cmd_builder.sign_tx_witness(path)
+        ) as has_data_available:
             yield has_data_available
 
-    def sign_tx(self,
-                tx: Transaction,
-                signing_mode: int,
-                additional_witness_paths: Optional[List[str]] = None,
-                options: int = 0,
-                on_review: Optional[Callable[[], None]] = None,
-                on_cvote_review: Optional[Callable[[], None]] = None,
-                on_advance: Optional[Callable[[int], None]] = None) -> bytes:
+    def sign_tx(
+        self,
+        tx: Transaction,
+        signing_mode: int,
+        additional_witness_paths: Optional[List[str]] = None,
+        options: int = 0,
+        on_review: Optional[Callable[[], None]] = None,
+        on_cvote_review: Optional[Callable[[], None]] = None,
+        on_advance: Optional[Callable[[int], None]] = None,
+    ) -> bytes:
         """Sign a transaction and return the transaction hash bytes.
 
         This builds the init APDU from the transaction body, sends the raw chunks,
@@ -150,10 +158,12 @@ class CommandSender:
 
         return response.data
 
-    def _send_tx_aux_data_if_present(self,
-                                     tx: Transaction,
-                                     on_review: Optional[Callable[[], None]] = None,
-                                     on_advance: Optional[Callable[[int], None]] = None) -> None:
+    def _send_tx_aux_data_if_present(
+        self,
+        tx: Transaction,
+        on_review: Optional[Callable[[], None]] = None,
+        on_advance: Optional[Callable[[int], None]] = None,
+    ) -> None:
         if tx.auxiliaryData is None:
             return
         if tx.auxiliaryData.type != TxAuxiliaryDataType.CIP36_REGISTRATION:
@@ -167,32 +177,44 @@ class CommandSender:
 
         if has_delegations:
             if on_advance:
-                with self._exchange_async(self._cmd_builder.sign_tx_aux_data_init(tx, aux_params)) as has_data_available:
+                with self._exchange_async(
+                    self._cmd_builder.sign_tx_aux_data_init(tx, aux_params)
+                ) as has_data_available:
                     if not has_data_available:
                         on_advance(2)
                 response = self.get_async_response()
                 if response is None:
                     raise AssertionError("No response from AUX_DATA init")
             else:
-                response = self._exchange(self._cmd_builder.sign_tx_aux_data_init(tx, aux_params))
+                response = self._exchange(
+                    self._cmd_builder.sign_tx_aux_data_init(tx, aux_params)
+                )
             if response.status != StatusWord.SWO_SUCCESS:
                 raise AssertionError(f"AUX_DATA init failed: {hex(response.status)}")
 
             for delegation in aux_params.delegations[:-1]:
                 if on_advance:
-                    with self._exchange_async(self._cmd_builder.sign_tx_aux_data_delegation(delegation)) as has_data_available:
+                    with self._exchange_async(
+                        self._cmd_builder.sign_tx_aux_data_delegation(delegation)
+                    ) as has_data_available:
                         if not has_data_available:
                             on_advance(1)
                     response = self.get_async_response()
                     if response is None:
                         raise AssertionError("No response from AUX_DATA delegation")
                 else:
-                    response = self._exchange(self._cmd_builder.sign_tx_aux_data_delegation(delegation))
+                    response = self._exchange(
+                        self._cmd_builder.sign_tx_aux_data_delegation(delegation)
+                    )
                 if response.status != StatusWord.SWO_SUCCESS:
-                    raise AssertionError(f"AUX_DATA registration failed: {hex(response.status)}")
+                    raise AssertionError(
+                        f"AUX_DATA registration failed: {hex(response.status)}"
+                    )
 
             last_delegation = aux_params.delegations[-1]
-            with self._exchange_async(self._cmd_builder.sign_tx_aux_data_delegation(last_delegation)) as has_data_available:
+            with self._exchange_async(
+                self._cmd_builder.sign_tx_aux_data_delegation(last_delegation)
+            ) as has_data_available:
                 if on_review and not has_data_available:
                     on_review()
 
@@ -200,9 +222,13 @@ class CommandSender:
             if response is None:
                 raise AssertionError("No response from last delegation")
             if response.status != StatusWord.SWO_SUCCESS:
-                raise AssertionError(f"AUX_DATA registration failed: {hex(response.status)}")
+                raise AssertionError(
+                    f"AUX_DATA registration failed: {hex(response.status)}"
+                )
         else:
-            with self._exchange_async(self._cmd_builder.sign_tx_aux_data_init(tx, aux_params)) as has_data_available:
+            with self._exchange_async(
+                self._cmd_builder.sign_tx_aux_data_init(tx, aux_params)
+            ) as has_data_available:
                 if on_review and not has_data_available:
                     on_review()
 
@@ -231,7 +257,9 @@ class CommandSender:
         for chunk in chunks[:-1]:
             response = self._exchange(chunk)
             if response.status != StatusWord.SWO_SUCCESS:
-                raise AssertionError(f"Intermediate chunk failed: {hex(response.status)}")
+                raise AssertionError(
+                    f"Intermediate chunk failed: {hex(response.status)}"
+                )
 
         # Send final chunk asynchronously (for UI navigation)
         with self._exchange_async(chunks[-1]) as has_data_available:
@@ -247,7 +275,6 @@ class CommandSender:
             Response APDU with signature
         """
         return self._exchange(self._cmd_builder.sign_tx_witness(path))
-
 
     def set_debug_settings(self, expert_mode: bool, silent_export: bool) -> RAPDU:
         """Set app settings via debug APDU (only works with DEBUG builds).
@@ -273,7 +300,9 @@ class CommandSender:
 
         # Verify response contains 2 bytes (current settings)
         if len(response.data) != 2:
-            raise AssertionError(f"Expected 2 bytes in response, got {len(response.data)}")
+            raise AssertionError(
+                f"Expected 2 bytes in response, got {len(response.data)}"
+            )
 
         # Verify settings were applied correctly
         actual_expert = response.data[0]
@@ -292,12 +321,16 @@ class CommandSender:
     def try_set_debug_settings(self, expert_mode: bool, silent_export: bool) -> RAPDU:
         """Send the debug settings APDU and return the raw response."""
         try:
-            return self._exchange(self._cmd_builder.debug_set_settings(expert_mode, silent_export))
+            return self._exchange(
+                self._cmd_builder.debug_set_settings(expert_mode, silent_export)
+            )
         except ExceptionRAPDU as err:
             return RAPDU(data=err.data, status=err.status)
 
     @contextmanager
-    def derive_address_async(self, p1: P1Type, test_case: DeriveAddressTestCase) -> Generator[None, None, None]:
+    def derive_address_async(
+        self, p1: P1Type, test_case: DeriveAddressTestCase
+    ) -> Generator[None, None, None]:
         """APDU Derive Address
 
         Args:
@@ -325,7 +358,9 @@ class CommandSender:
         return self._exchange(self._cmd_builder.derive_address(p1, test_case))
 
     @contextmanager
-    def derive_script_add_simple_async(self, script: NativeScript) -> Generator[None, None, None]:
+    def derive_script_add_simple_async(
+        self, script: NativeScript
+    ) -> Generator[None, None, None]:
         """APDU NATIVE SCRIPT HASH - SIMPLE SCRIPT step
 
         Args:
@@ -344,9 +379,10 @@ class CommandSender:
         with self._exchange_async(self._cmd_builder.derive_script_init()):
             yield
 
-
     @contextmanager
-    def derive_script_add_complex_async(self, script: NativeScript) -> Generator[None, None, None]:
+    def derive_script_add_complex_async(
+        self, script: NativeScript
+    ) -> Generator[None, None, None]:
         """APDU NATIVE SCRIPT HASH - COMPLEX SCRIPT step
 
         Args:
@@ -359,9 +395,10 @@ class CommandSender:
         with self._exchange_async(self._cmd_builder.derive_script_add_complex(script)):
             yield
 
-
     @contextmanager
-    def derive_script_finish_async(self, display_format: NativeScriptHashDisplayFormat) -> Generator[None, None, None]:
+    def derive_script_finish_async(
+        self, display_format: NativeScriptHashDisplayFormat
+    ) -> Generator[None, None, None]:
         """APDU NATIVE SCRIPT HASH - FINISH step
 
         Args:
@@ -371,11 +408,15 @@ class CommandSender:
             Generator
         """
 
-        with self._exchange_async(self._cmd_builder.derive_script_finish(display_format)):
+        with self._exchange_async(
+            self._cmd_builder.derive_script_finish(display_format)
+        ):
             yield
 
     @contextmanager
-    def sign_cip36_init_async(self, testCase: CVoteTestCase) -> Generator[None, None, None]:
+    def sign_cip36_init_async(
+        self, testCase: CVoteTestCase
+    ) -> Generator[None, None, None]:
         """APDU CIP36 Vote - CHUNK step
 
         Args:
@@ -390,7 +431,6 @@ class CommandSender:
 
     def has_sign_cip36_chunks(self, testCase: CVoteTestCase) -> bool:
         return len(self._cmd_builder.sign_cvote_chunk(testCase)) > 0
-
 
     def sign_cip36_chunk(self, testCase: CVoteTestCase) -> RAPDU:
         """APDU CIP36 Vote - INIT step
@@ -412,9 +452,10 @@ class CommandSender:
                 raise AssertionError(f"CIP-36 chunk failed: {hex(resp.status)}")
         return self._exchange(chunks[-1])
 
-
     @contextmanager
-    def sign_cip36_confirm_async(self, testCase: CVoteTestCase) -> Generator[None, None, None]:
+    def sign_cip36_confirm_async(
+        self, testCase: CVoteTestCase
+    ) -> Generator[None, None, None]:
         """APDU CIP36 Vote - CONFIRM step
 
         Args:
@@ -440,9 +481,9 @@ class CommandSender:
         with self._exchange_async(self._cmd_builder.sign_msg_init(testCase)):
             yield
 
-    def sign_msg(self,
-                 testCase,
-                 on_review: Optional[Callable[[], None]] = None) -> bytes:
+    def sign_msg(
+        self, testCase, on_review: Optional[Callable[[], None]] = None
+    ) -> bytes:
         """Sign a message, returning the composite response
 
         Args:

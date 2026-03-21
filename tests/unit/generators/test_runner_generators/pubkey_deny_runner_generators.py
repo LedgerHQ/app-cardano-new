@@ -4,8 +4,12 @@ import re
 from pathlib import Path
 
 
-from common import read_file_safe, write_generated_c_file, sanitize_c_identifier
-from paths import GENERATED_PUBKEY_DIR
+from tests.unit.generators.common import (
+    read_file_safe,
+    write_generated_c_file,
+    sanitize_c_identifier,
+)
+from tests.unit.generators.paths import GENERATED_PUBKEY_DIR
 
 _DENY_ARRAY_PATTERN = re.compile(
     r"static\s+const\s+pubkey_fixture_t\s+PUBKEY_DENY_FIXTURES\[\]\s*=\s*\{(.*?)\};",
@@ -59,7 +63,9 @@ def _build_test_functions(fixture_names: list[str]) -> tuple[str, list[str]]:
     test_function_names: list[str] = []
 
     for idx, fixture_name in enumerate(fixture_names):
-        sanitized = sanitize_c_identifier(fixture_name, uppercase=False, handle_leading_digit=True)
+        sanitized = sanitize_c_identifier(
+            fixture_name, uppercase=False, handle_leading_digit=True
+        )
         test_function_name = f"test_pubkey_deny_{idx}_{sanitized}"
 
         test_functions.append(
@@ -88,7 +94,7 @@ def _build_main_function(test_function_names: list[str]) -> str:
     )
 
 
-def generate_pubkey_deny_test_runners() -> None:
+def generate_pubkey_deny_test_runners() -> int:
     fixture_header_path = GENERATED_PUBKEY_DIR / "test_pubkey_fixtures_deny.h"
     test_c_file = GENERATED_PUBKEY_DIR / "test_pubkey_deny_tests.c"
 
@@ -109,3 +115,4 @@ def generate_pubkey_deny_test_runners() -> None:
 
     write_generated_c_file(test_c_file, complete_file)
     print(f"Generated {test_c_file}")
+    return len(test_function_names)

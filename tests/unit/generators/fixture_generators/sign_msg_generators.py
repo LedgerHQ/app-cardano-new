@@ -3,14 +3,13 @@
 
 from typing import Any, Dict, List
 
-from common import (
+from tests.unit.generators.common import (
     write_generated_c_file,
     sanitize_c_identifier,
-    _add_tests_to_sys_path,
     format_bytes_as_c_array,
     extract_apdu_payload,
 )
-from paths import GENERATED_SIGN_MSG_DIR
+from tests.unit.generators.paths import GENERATED_SIGN_MSG_DIR
 
 FIXTURES_FILE = GENERATED_SIGN_MSG_DIR / "test_sign_msg_fixtures.h"
 
@@ -28,6 +27,7 @@ def _warning_expr_from_test_case(test_case: Any) -> str:
 # Step 1: Load Test Cases from Ragger Tests
 # ==============================================================================
 
+
 def _load_sign_msg_test_cases() -> list[Any]:
     """
     Load sign message test cases from ragger standalone tests.
@@ -35,9 +35,8 @@ def _load_sign_msg_test_cases() -> list[Any]:
     Returns:
         List of SignMsgTestCase objects
     """
-    _add_tests_to_sys_path()
 
-    from standalone.input_files.signMsg import signMsgTestCases  # type: ignore
+    from tests.standalone.input_files.signMsg import signMsgTestCases  # type: ignore
 
     return signMsgTestCases
 
@@ -45,6 +44,7 @@ def _load_sign_msg_test_cases() -> list[Any]:
 # ==============================================================================
 # Step 2: Serialize Test Case to APDU Commands
 # ==============================================================================
+
 
 def _serialize_sign_msg_test_case_to_apdus(test_case: Any) -> Dict[str, Any]:
     """
@@ -56,9 +56,8 @@ def _serialize_sign_msg_test_case_to_apdus(test_case: Any) -> Dict[str, Any]:
     Returns:
         Dictionary with keys 'init_payload', 'chunk_payloads', 'confirm_payload'
     """
-    _add_tests_to_sys_path()
 
-    from application_client.command_builder import CommandBuilder  # type: ignore
+    from tests.application_client.command_builder import CommandBuilder  # type: ignore
 
     builder = CommandBuilder()
 
@@ -69,16 +68,16 @@ def _serialize_sign_msg_test_case_to_apdus(test_case: Any) -> Dict[str, Any]:
     chunk_payloads = builder.build_sign_msg_chunk_payloads(test_case)
 
     return {
-        'init_payload': extract_apdu_payload(init_apdu),
-        'chunk_payloads': chunk_payloads,
-        'confirm_payload': extract_apdu_payload(confirm_apdu),
+        "init_payload": extract_apdu_payload(init_apdu),
+        "chunk_payloads": chunk_payloads,
+        "confirm_payload": extract_apdu_payload(confirm_apdu),
     }
-
 
 
 # ==============================================================================
 # Step 3: Generate C Code for Fixtures
 # ==============================================================================
+
 
 def _generate_expected_data_section(
     test_case: Any,
@@ -160,21 +159,27 @@ def _generate_fixture_code_for_test_case(
     """
     code_lines: list[str] = []
 
-    code_lines.append("// ----------------------------------------------------------------------")
+    code_lines.append(
+        "// ----------------------------------------------------------------------"
+    )
     code_lines.append(f"// Test {test_number}: {test_case.name}")
-    code_lines.append("// ----------------------------------------------------------------------")
+    code_lines.append(
+        "// ----------------------------------------------------------------------"
+    )
     code_lines.append("")
 
     # payloads provided by caller to avoid redundant serialization
 
     safe_test_name = sanitize_c_identifier(test_case.name)
 
-    code_lines.append(f"// Source: tests/standalone/input_files/signMsg.py > {test_case.name}")
+    code_lines.append(
+        f"// Source: tests/standalone/input_files/signMsg.py > {test_case.name}"
+    )
 
     # INIT payload
     init_array_name = f"SIGN_MSG_{test_number:03d}_{safe_test_name}_INIT_APDU"
     init_array_code = format_bytes_as_c_array(
-        payloads['init_payload'],
+        payloads["init_payload"],
         init_array_name,
         bytes_per_line=16,
         return_as_list=True,
@@ -182,7 +187,7 @@ def _generate_fixture_code_for_test_case(
     code_lines.extend(init_array_code)
     code_lines.append("")
 
-    chunk_payloads = payloads['chunk_payloads']
+    chunk_payloads = payloads["chunk_payloads"]
     chunk_array_names: List[str] = []
     for chunk_index, chunk_payload in enumerate(chunk_payloads):
         chunk_array_name = (
@@ -213,7 +218,7 @@ def _generate_fixture_code_for_test_case(
 
     # CONFIRM payload (usually empty)
     confirm_array_name = f"SIGN_MSG_{test_number:03d}_{safe_test_name}_CONFIRM_APDU"
-    confirm_payload = payloads['confirm_payload']
+    confirm_payload = payloads["confirm_payload"]
     if confirm_payload:
         confirm_array_code = format_bytes_as_c_array(
             confirm_payload,
@@ -236,6 +241,7 @@ def _generate_fixture_code_for_test_case(
 # Step 4: Build Complete C Header File
 # ==============================================================================
 
+
 def _build_fixtures() -> str:
     test_cases = _load_sign_msg_test_cases()
 
@@ -253,8 +259,8 @@ def _build_fixtures() -> str:
         "#include <stdint.h>",
         "#include <stddef.h>",
         "#include <stdbool.h>",
-        "#include \"cardano_swo.h\"",
-        "#include \"test_fixture_types.h\"",
+        '#include "cardano_swo.h"',
+        '#include "test_fixture_types.h"',
         "",
         "// ======================================================================",
         "// CIP-8 Message Signing Test Fixtures",
@@ -285,7 +291,7 @@ def _build_fixtures() -> str:
             f"// Source: tests/standalone/input_files/signMsg.py > {test_case.name}"
         )
         header_lines.append("{")
-        header_lines.append(f"    .name = \"{test_case.name}\",")
+        header_lines.append(f'    .name = "{test_case.name}",')
         header_lines.append(
             f"    .init_data = SIGN_MSG_{idx:03d}_{safe_test_name}_INIT_APDU,"
         )
@@ -293,17 +299,15 @@ def _build_fixtures() -> str:
             f"    .init_data_len = sizeof(SIGN_MSG_{idx:03d}_{safe_test_name}_INIT_APDU),"
         )
         chunk_struct_name = f"SIGN_MSG_{idx:03d}_{safe_test_name}_CHUNKS"
-        if payloads['chunk_payloads']:
-            header_lines.append(
-                f"    .chunks = {chunk_struct_name},"
-            )
+        if payloads["chunk_payloads"]:
+            header_lines.append(f"    .chunks = {chunk_struct_name},")
             header_lines.append(
                 f"    .chunk_count = sizeof({chunk_struct_name}) / sizeof(sign_msg_chunk_t),"
             )
         else:
             header_lines.append("    .chunks = NULL,")
             header_lines.append("    .chunk_count = 0,")
-        if payloads['confirm_payload']:
+        if payloads["confirm_payload"]:
             header_lines.append(
                 f"    .confirm_data = SIGN_MSG_{idx:03d}_{safe_test_name}_CONFIRM_APDU,"
             )
@@ -319,9 +323,7 @@ def _build_fixtures() -> str:
         )
         expected_struct_name = fixture_expected_structs[idx]
         if expected_struct_name:
-            header_lines.append(
-                f"    .expected = &{expected_struct_name},"
-            )
+            header_lines.append(f"    .expected = &{expected_struct_name},")
         else:
             header_lines.append("    .expected = NULL,")
         header_lines.append("},")

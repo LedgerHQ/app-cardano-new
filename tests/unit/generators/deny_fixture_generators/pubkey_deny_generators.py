@@ -3,13 +3,12 @@
 
 from typing import Any
 
-from common import (
+from tests.unit.generators.common import (
     write_generated_c_file,
     sanitize_c_identifier,
-    _add_tests_to_sys_path,
     format_bytes_as_c_array,
 )
-from paths import GENERATED_PUBKEY_DIR
+from tests.unit.generators.paths import GENERATED_PUBKEY_DIR
 
 GENERATED_DENY_HEADER = GENERATED_PUBKEY_DIR / "test_pubkey_fixtures_deny.h"
 
@@ -18,10 +17,10 @@ GENERATED_DENY_HEADER = GENERATED_PUBKEY_DIR / "test_pubkey_fixtures_deny.h"
 # Step 1: Load Deny Test Cases from Ragger Tests
 # ==============================================================================
 
-def _load_pubkey_deny_test_cases() -> list[Any]:
-    _add_tests_to_sys_path()
 
-    from standalone.input_files.pubkey import (  # type: ignore
+def _load_pubkey_deny_test_cases() -> list[Any]:
+
+    from tests.standalone.input_files.pubkey import (  # type: ignore
         denyTestCases,
     )
 
@@ -31,6 +30,7 @@ def _load_pubkey_deny_test_cases() -> list[Any]:
 # ==============================================================================
 # Step 2: Serialize Test Case to APDU Command
 # ==============================================================================
+
 
 def _serialize_deny_test_case_to_apdu(test_case: Any) -> bytes:
     path = test_case.path
@@ -58,20 +58,24 @@ def _generate_fixture_code_for_deny_test_case(
 ) -> list[str]:
     code_lines: list[str] = []
 
-    code_lines.append("// ----------------------------------------------------------------------")
+    code_lines.append(
+        "// ----------------------------------------------------------------------"
+    )
     code_lines.append(f"// Deny Test {test_number}: {test_case.name}")
     code_lines.append(f"// Path: {test_case.path}")
-    code_lines.append(f"// Source: tests/standalone/input_files/pubkey.py > deny tests > {test_case.name}")
-    code_lines.append("// ----------------------------------------------------------------------")
+    code_lines.append(
+        f"// Source: tests/standalone/input_files/pubkey.py > deny tests > {test_case.name}"
+    )
+    code_lines.append(
+        "// ----------------------------------------------------------------------"
+    )
     code_lines.append("")
 
     payload_bytes = _serialize_deny_test_case_to_apdu(test_case)
 
     safe_test_name = sanitize_c_identifier(test_case.name)
 
-    payload_array_name = (
-        f"PUBKEY_DENY_{test_number:03d}_{safe_test_name}_APDU"
-    )
+    payload_array_name = f"PUBKEY_DENY_{test_number:03d}_{safe_test_name}_APDU"
     payload_array_code = format_bytes_as_c_array(
         payload_bytes,
         payload_array_name,
@@ -102,8 +106,8 @@ def _build_deny_fixtures() -> str:
         "#include <stdint.h>",
         "#include <stddef.h>",
         "#include <stdbool.h>",
-        "#include \"cardano_swo.h\"",
-        "#include \"test_fixture_types.h\"",
+        '#include "cardano_swo.h"',
+        '#include "test_fixture_types.h"',
         "",
         "// ======================================================================",
         "// Public Key Export Deny Test Fixtures",
@@ -121,14 +125,14 @@ def _build_deny_fixtures() -> str:
             f"// Source: tests/standalone/input_files/pubkey.py > deny tests > {test_case.name}"
         )
         header_lines.append("{")
-        header_lines.append(f"    .name = \"{test_case.name}\",")
-        header_lines.append(
-            f"    .data = PUBKEY_DENY_{idx:03d}_{safe_test_name}_APDU,"
-        )
+        header_lines.append(f'    .name = "{test_case.name}",')
+        header_lines.append(f"    .data = PUBKEY_DENY_{idx:03d}_{safe_test_name}_APDU,")
         header_lines.append(
             f"    .data_len = sizeof(PUBKEY_DENY_{idx:03d}_{safe_test_name}_APDU),"
         )
-        header_lines.append("    .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,")
+        header_lines.append(
+            "    .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,"
+        )
         header_lines.append("    .expected_response = NULL,")
         header_lines.append("    .expected_response_len = 0,")
         header_lines.append("    .silent_export_enabled = false,")

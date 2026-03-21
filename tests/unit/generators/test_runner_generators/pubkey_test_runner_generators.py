@@ -6,8 +6,12 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-from common import read_file_safe, write_generated_c_file, sanitize_c_identifier
-from paths import GENERATED_PUBKEY_DIR
+from tests.unit.generators.common import (
+    read_file_safe,
+    write_generated_c_file,
+    sanitize_c_identifier,
+)
+from tests.unit.generators.paths import GENERATED_PUBKEY_DIR
 
 
 _FIXTURE_ARRAY_PATTERN = re.compile(
@@ -32,7 +36,9 @@ def _extract_fixture_array_names(header_content: str) -> list[str]:
     return [match.group(1) for match in _FIXTURE_ARRAY_PATTERN.finditer(header_content)]
 
 
-def _extract_fixtures_for_array(header_content: str, array_name: str) -> list[FixtureDetails]:
+def _extract_fixtures_for_array(
+    header_content: str, array_name: str
+) -> list[FixtureDetails]:
     array_pattern = re.compile(
         rf"static\s+const\s+pubkey_fixture_t\s+{re.escape(array_name)}\s*\[\]\s*=\s*\{{(.*?)\}};",
         re.DOTALL,
@@ -92,7 +98,9 @@ def _build_test_functions(arrays: list[FixtureArrayDetails]) -> tuple[str, list[
     test_function_names: list[str] = []
 
     for array in arrays:
-        array_suffix = array.array_name.replace("PUBKEY_FIXTURES_TEST_PUBKEY_", "").lower()
+        array_suffix = array.array_name.replace(
+            "PUBKEY_FIXTURES_TEST_PUBKEY_", ""
+        ).lower()
         for fixture in array.fixtures:
             sanitized = sanitize_c_identifier(
                 fixture.name,
@@ -128,7 +136,7 @@ def _build_main_function(test_function_names: list[str]) -> str:
     )
 
 
-def generate_pubkey_test_runners() -> None:
+def generate_pubkey_test_runners() -> int:
     fixture_header_path = GENERATED_PUBKEY_DIR / "test_pubkey_fixtures.h"
     test_c_file = GENERATED_PUBKEY_DIR / "test_pubkey.c"
 
@@ -149,3 +157,4 @@ def generate_pubkey_test_runners() -> None:
 
     write_generated_c_file(test_c_file, complete_file)
     print(f"Generated {test_c_file}")
+    return len(test_function_names)

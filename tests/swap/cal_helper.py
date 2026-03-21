@@ -6,14 +6,31 @@ from ledger_app_clients.exchange.cal_helper import CurrencyConfiguration
 
 # Packed derivation path for m/1852'/1815'/0'/0/0 (Shelley standard)
 # Format: 1 byte length (5) + 5 * 4 bytes big-endian path components
-ADA_SHELLEY_PACKED_DERIVATION_PATH = bytes([
-    5,  # path length
-    0x80, 0x00, 0x07, 0x3C,  # 1852' (0x8000073C)
-    0x80, 0x00, 0x07, 0x17,  # 1815' (0x80000717)
-    0x80, 0x00, 0x00, 0x00,  # 0'    (0x80000000)
-    0x00, 0x00, 0x00, 0x00,  # 0
-    0x00, 0x00, 0x00, 0x00,  # 0
-])
+ADA_SHELLEY_PACKED_DERIVATION_PATH = bytes(
+    [
+        5,  # path length
+        0x80,
+        0x00,
+        0x07,
+        0x3C,  # 1852' (0x8000073C)
+        0x80,
+        0x00,
+        0x07,
+        0x17,  # 1815' (0x80000717)
+        0x80,
+        0x00,
+        0x00,
+        0x00,  # 0'    (0x80000000)
+        0x00,
+        0x00,
+        0x00,
+        0x00,  # 0
+        0x00,
+        0x00,
+        0x00,
+        0x00,  # 0
+    ]
+)
 
 ADA_CONF = create_currency_config("ADA", "Cardano ADA")
 

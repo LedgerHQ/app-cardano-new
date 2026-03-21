@@ -44,11 +44,12 @@ NANO_STREAMING_TIMEOUT_SECONDS = 600
 # Ragger tests are supposed to run without any hardcoded seed / mnemonic.
 # However, for debugging, we might want to fix the seed occasionally
 # to a value corresponding to the unit test fixtures.
-#configuration.OPTIONAL.CUSTOM_SEED = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+# configuration.OPTIONAL.CUSTOM_SEED = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
 
 #########################
 ### CONFIGURATION END ###
 #########################
+
 
 @pytest.fixture(scope="session", autouse=True)
 def enforce_client_constants() -> None:
@@ -70,7 +71,7 @@ def enforce_client_constants() -> None:
 
 
 # Pull all features from the base ragger conftest using the overridden configuration
-pytest_plugins = ("ragger.conftest.base_conftest", )
+pytest_plugins = ("ragger.conftest.base_conftest",)
 
 
 @pytest.fixture(scope="session")

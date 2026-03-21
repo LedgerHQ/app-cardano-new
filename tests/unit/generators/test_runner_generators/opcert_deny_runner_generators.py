@@ -4,8 +4,12 @@
 import re
 from pathlib import Path
 
-from common import read_file_safe, write_generated_c_file, sanitize_c_identifier
-from paths import GENERATED_OPCERT_DIR
+from tests.unit.generators.common import (
+    read_file_safe,
+    write_generated_c_file,
+    sanitize_c_identifier,
+)
+from tests.unit.generators.paths import GENERATED_OPCERT_DIR
 
 _DENY_ARRAY_PATTERN = re.compile(
     r"static\s+const\s+opcert_deny_fixture_t\s+OPCERT_DENY_FIXTURES\[\]\s*=\s*\{(.*?)\};",
@@ -54,7 +58,9 @@ def _build_test_functions(fixture_names: list[str]) -> tuple[str, list[str]]:
     lines: list[str] = []
     func_names: list[str] = []
     for idx, name in enumerate(fixture_names):
-        sanitized = sanitize_c_identifier(name, uppercase=False, handle_leading_digit=True)
+        sanitized = sanitize_c_identifier(
+            name, uppercase=False, handle_leading_digit=True
+        )
         func_name = f"test_opcert_deny_{idx}_{sanitized}"
         lines.append(f"static void {func_name}(void **state) {{")
         lines.append("    (void) state;")
@@ -77,7 +83,7 @@ def _build_main(func_names: list[str]) -> str:
     )
 
 
-def generate_opcert_deny_test_runners() -> None:
+def generate_opcert_deny_test_runners() -> int:
     fixture_header = GENERATED_OPCERT_DIR / "test_opcert_fixtures_deny.h"
     test_c_file = GENERATED_OPCERT_DIR / "test_opcert_deny_tests.c"
 

@@ -13,15 +13,22 @@ from dataclasses import dataclass, field
 
 from ragger.navigator import NavInsID
 
-from standalone.input_files.derive_address import DeriveAddressTestCase
-from application_client.app_def import AddressType, Mainnet
-from application_client.security_warnings import WarningBit
-from application_client.status_words import StatusWord
-from application_client.command_builder import CommandBuilder, InsType, P1Type, P2Type
+from tests.standalone.input_files.derive_address import DeriveAddressTestCase
+from tests.application_client.app_def import AddressType, Mainnet
+from tests.application_client.security_warnings import WarningBit
+from tests.application_client.status_words import StatusWord
+from tests.application_client.command_builder import (
+    CommandBuilder,
+    InsType,
+    P1Type,
+    P2Type,
+)
+
 
 class MessageAddressFieldType(IntEnum):
     ADDRESS = 0x01
     KEY_HASH = 0x02
+
 
 @dataclass
 class MessageData:
@@ -34,17 +41,20 @@ class MessageData:
     addressFieldType: MessageAddressFieldType
     addressDesc: Optional[DeriveAddressTestCase] = None
 
+
 @dataclass
 class NavigationData:
     init: List[NavInsID]
     chunk: List[NavInsID]
     confirm: List[NavInsID]
 
+
 @dataclass
 class SignMsgExpectedInUnitTest:
     signatureHex: str
     signingPublicKeyHex: str
     addressFieldHex: str
+
 
 @dataclass(kw_only=True)
 class SignMsgTestCase:
@@ -53,6 +63,7 @@ class SignMsgTestCase:
     nav: Optional[NavigationData] = None
     expected_in_unit_test: Optional[SignMsgExpectedInUnitTest] = None
     expected_warnings: List[WarningBit] = field(default_factory=list)
+
 
 @dataclass(kw_only=True)
 class SignMsgDenyTestCase:
@@ -70,6 +81,7 @@ class SignMsgDenyTestCase:
     send_confirm_without_chunks: bool = False  # Skip CHUNK phase entirely
     send_confirm_with_payload: bool = False  # Add non-empty payload to CONFIRM
 
+
 def build_sign_msg_init_apdu_for_deny(test_case: SignMsgDenyTestCase) -> bytes:
     transient_success_case = SignMsgTestCase(
         name=test_case.name,
@@ -81,7 +93,9 @@ def build_sign_msg_init_apdu_for_deny(test_case: SignMsgDenyTestCase) -> bytes:
     if test_case.invalid_msg_length is not None:
         # Message length is in payload (after 5-byte header), first 4 bytes
         payload_offset = 5
-        init_apdu[payload_offset:payload_offset+4] = test_case.invalid_msg_length.to_bytes(4, "big")
+        init_apdu[payload_offset : payload_offset + 4] = (
+            test_case.invalid_msg_length.to_bytes(4, "big")
+        )
 
     if test_case.invalid_address_field_type is not None:
         # KEY_HASH has no trailing address params; addressFieldType is the last cdata byte.
@@ -91,7 +105,7 @@ def build_sign_msg_init_apdu_for_deny(test_case: SignMsgDenyTestCase) -> bytes:
         # Truncate the APDU and fix the Lc field to match the truncated payload length
         # APDU structure: CLA(1) INS(1) P1(1) P2(1) Lc(1) [payload...]
         # truncate_init_apdu_at is the total APDU length after truncation
-        init_apdu = init_apdu[:test_case.truncate_init_apdu_at]
+        init_apdu = init_apdu[: test_case.truncate_init_apdu_at]
         # Update Lc field (byte 4) to match actual payload length
         new_payload_length = len(init_apdu) - 5  # Subtract 5-byte header
         if new_payload_length >= 0:
@@ -99,7 +113,10 @@ def build_sign_msg_init_apdu_for_deny(test_case: SignMsgDenyTestCase) -> bytes:
 
     return bytes(init_apdu)
 
-def build_sign_msg_chunk_apdu_for_deny(test_case: SignMsgDenyTestCase, chunk_index: int = 0) -> bytes:
+
+def build_sign_msg_chunk_apdu_for_deny(
+    test_case: SignMsgDenyTestCase, chunk_index: int = 0
+) -> bytes:
     """Build a CHUNK APDU with optional manipulation for deny testing."""
     transient_success_case = SignMsgTestCase(
         name=test_case.name,
@@ -110,10 +127,7 @@ def build_sign_msg_chunk_apdu_for_deny(test_case: SignMsgDenyTestCase, chunk_ind
     if chunk_index >= len(chunk_apdus):
         # Return empty chunk if no chunks needed (e.g., empty message)
         return CommandBuilder()._serialize(
-            InsType.INS_SIGN_MSG,
-            P1Type.P1_SIGN_MSG_CHUNK,
-            P2Type.P2_UNUSED,
-            bytes()
+            InsType.INS_SIGN_MSG, P1Type.P1_SIGN_MSG_CHUNK, P2Type.P2_UNUSED, bytes()
         )
 
     chunk_apdu = bytearray(chunk_apdus[chunk_index])
@@ -127,20 +141,19 @@ def build_sign_msg_chunk_apdu_for_deny(test_case: SignMsgDenyTestCase, chunk_ind
 
     return bytes(chunk_apdu)
 
+
 def build_sign_msg_confirm_apdu_for_deny(test_case: SignMsgDenyTestCase) -> bytes:
     """Build a CONFIRM APDU with optional manipulation for deny testing."""
     if test_case.send_confirm_with_payload:
         # Add non-empty payload (should be denied)
-        payload = b'\xDE\xAD\xBE\xEF'
+        payload = b"\xde\xad\xbe\xef"
     else:
         payload = bytes()
 
     return CommandBuilder()._serialize(
-        InsType.INS_SIGN_MSG,
-        P1Type.P1_SIGN_MSG_CONFIRM,
-        P2Type.P2_UNUSED,
-        payload
+        InsType.INS_SIGN_MSG, P1Type.P1_SIGN_MSG_CONFIRM, P2Type.P2_UNUSED, payload
     )
+
 
 # pylint: disable=line-too-long
 signMsgTestCases = [
@@ -151,10 +164,12 @@ signMsgTestCases = [
             signingPath="m/1852'/1815'/0'/0/1",
             hashPayload=False,
             isAscii=False,
-            addressFieldType=MessageAddressFieldType.KEY_HASH
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
+            init=[NavInsID.BOTH_CLICK] * 2
+            + [NavInsID.RIGHT_CLICK]
+            + [NavInsID.BOTH_CLICK],
             chunk=[NavInsID.BOTH_CLICK],
             confirm=[NavInsID.BOTH_CLICK] * 2,
         ),
@@ -174,7 +189,7 @@ signMsgTestCases = [
             signingPath="m/1852'/1815'/0'/0/1",
             hashPayload=False,
             isAscii=True,
-            addressFieldType=MessageAddressFieldType.KEY_HASH
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
@@ -195,7 +210,9 @@ signMsgTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
+            init=[NavInsID.BOTH_CLICK] * 2
+            + [NavInsID.RIGHT_CLICK]
+            + [NavInsID.BOTH_CLICK],
             chunk=[NavInsID.BOTH_CLICK] * 2,
             confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
@@ -218,7 +235,9 @@ signMsgTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
+            init=[NavInsID.BOTH_CLICK] * 2
+            + [NavInsID.RIGHT_CLICK]
+            + [NavInsID.BOTH_CLICK],
             chunk=[NavInsID.BOTH_CLICK] * 2,
             confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
@@ -264,7 +283,9 @@ signMsgTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
+            init=[NavInsID.BOTH_CLICK] * 2
+            + [NavInsID.RIGHT_CLICK]
+            + [NavInsID.BOTH_CLICK],
             chunk=[NavInsID.BOTH_CLICK] * 2,
             confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
@@ -287,7 +308,9 @@ signMsgTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
+            init=[NavInsID.BOTH_CLICK] * 2
+            + [NavInsID.RIGHT_CLICK]
+            + [NavInsID.BOTH_CLICK],
             chunk=[NavInsID.BOTH_CLICK] * 2,
             confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
@@ -311,7 +334,9 @@ signMsgTestCases = [
         ),
         nav=NavigationData(
             init=[NavInsID.BOTH_CLICK] * 3,
-            chunk=[NavInsID.BOTH_CLICK] + [NavInsID.RIGHT_CLICK] * 2 + [NavInsID.BOTH_CLICK],
+            chunk=[NavInsID.BOTH_CLICK]
+            + [NavInsID.RIGHT_CLICK] * 2
+            + [NavInsID.BOTH_CLICK],
             confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
@@ -334,7 +359,9 @@ signMsgTestCases = [
         ),
         nav=NavigationData(
             init=[NavInsID.BOTH_CLICK] * 3,
-            chunk=[NavInsID.BOTH_CLICK] + [NavInsID.RIGHT_CLICK] * 3 + [NavInsID.BOTH_CLICK],
+            chunk=[NavInsID.BOTH_CLICK]
+            + [NavInsID.RIGHT_CLICK] * 3
+            + [NavInsID.BOTH_CLICK],
             confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
@@ -357,7 +384,9 @@ signMsgTestCases = [
         ),
         nav=NavigationData(
             init=[NavInsID.BOTH_CLICK] * 3,
-            chunk=[NavInsID.BOTH_CLICK] + [NavInsID.RIGHT_CLICK] * 2 + [NavInsID.BOTH_CLICK],
+            chunk=[NavInsID.BOTH_CLICK]
+            + [NavInsID.RIGHT_CLICK] * 2
+            + [NavInsID.BOTH_CLICK],
             confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
@@ -380,7 +409,9 @@ signMsgTestCases = [
         ),
         nav=NavigationData(
             init=[NavInsID.BOTH_CLICK] * 3,
-            chunk=[NavInsID.BOTH_CLICK] + [NavInsID.RIGHT_CLICK] * 3 + [NavInsID.BOTH_CLICK],
+            chunk=[NavInsID.BOTH_CLICK]
+            + [NavInsID.RIGHT_CLICK] * 3
+            + [NavInsID.BOTH_CLICK],
             confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
@@ -409,7 +440,9 @@ signMsgTestCases = [
             ),
         ),
         nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
+            init=[NavInsID.BOTH_CLICK] * 2
+            + [NavInsID.RIGHT_CLICK]
+            + [NavInsID.BOTH_CLICK],
             chunk=[NavInsID.BOTH_CLICK] * 2,
             confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
@@ -438,11 +471,13 @@ signMsgTestCases = [
                 netDesc=Mainnet,
                 addrType=AddressType.REWARD_KEY,
                 spendingValue="",
-                stakingValue="m/1852'/1815'/0'/2/0"
+                stakingValue="m/1852'/1815'/0'/2/0",
             ),
         ),
         nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 2 + [NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK],
+            init=[NavInsID.BOTH_CLICK] * 2
+            + [NavInsID.RIGHT_CLICK]
+            + [NavInsID.BOTH_CLICK],
             chunk=[NavInsID.BOTH_CLICK] * 2,
             confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
@@ -536,7 +571,6 @@ signMsgDenyTestCases = [
         invalid_address_field_type=0x00,
         expected_status=StatusWord.SWO_SIGN_MSG_INVALID_ADDRESS_FIELD_TYPE,
     ),
-
     # ========== Message Length Boundary Violations ==========
     SignMsgDenyTestCase(
         name="Sign_msg_deny_msg_length_exceeds_uint16_max",
@@ -553,7 +587,8 @@ signMsgDenyTestCases = [
     SignMsgDenyTestCase(
         name="Sign_msg_deny_nonascii_msg_causing_ui_hex_buffer_overflow",
         msgData=MessageData(
-            messageHex="de" * 32768,  # 32768 bytes -> 65536 hex chars + 1 null + 2 safety = overflow
+            messageHex="de"
+            * 32768,  # 32768 bytes -> 65536 hex chars + 1 null + 2 safety = overflow
             signingPath="m/1852'/1815'/0'/0/1",
             hashPayload=False,
             isAscii=False,
@@ -564,7 +599,8 @@ signMsgDenyTestCases = [
     SignMsgDenyTestCase(
         name="Sign_msg_deny_nonhashed_msg_causing_sig_structure_overflow",
         msgData=MessageData(
-            messageHex="de" * 65280,  # Large enough to cause sig_structure overflow (UINT16_MAX - overhead)
+            messageHex="de"
+            * 65280,  # Large enough to cause sig_structure overflow (UINT16_MAX - overhead)
             signingPath="m/1852'/1815'/0'/0/1",
             hashPayload=False,  # Non-hashed payload uses raw message in sig_structure
             isAscii=False,
@@ -572,7 +608,6 @@ signMsgDenyTestCases = [
         ),
         expected_status=StatusWord.SWO_INSUFFICIENT_MEMORY,
     ),
-
     # ========== INIT APDU Truncation (Parsing Failures) ==========
     # Note: Truncate only in the payload data, after CLA/INS/P1/P2/Lc header is complete
     SignMsgDenyTestCase(
@@ -635,7 +670,6 @@ signMsgDenyTestCases = [
         truncate_init_apdu_at=32,  # After isAscii, before addressFieldType
         expected_status=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_FIELD_TYPE,
     ),
-
     # ========== Chunk Size Validation ==========
     SignMsgDenyTestCase(
         name="Sign_msg_deny_chunk_size_exceeds_remaining_bytes",
@@ -661,7 +695,6 @@ signMsgDenyTestCases = [
         invalid_chunk_size=249,  # First chunk should be exactly 250, not 249
         expected_status=StatusWord.SWO_SIGN_MSG_INVALID_CHUNK_SIZE,
     ),
-
     # ========== ASCII Validation ==========
     SignMsgDenyTestCase(
         name="Sign_msg_deny_nonascii_byte_in_message_marked_as_ascii",
@@ -674,7 +707,6 @@ signMsgDenyTestCases = [
         ),
         expected_status=StatusWord.SWO_SIGN_MSG_INVALID_ASCII,
     ),
-
     # ========== State Sequencing ==========
     SignMsgDenyTestCase(
         name="Sign_msg_deny_chunk_without_init",
@@ -700,7 +732,6 @@ signMsgDenyTestCases = [
         send_confirm_without_chunks=True,
         expected_status=StatusWord.SWO_COMMAND_NOT_ALLOWED,
     ),
-
     # ========== CONFIRM Payload Validation ==========
     SignMsgDenyTestCase(
         name="Sign_msg_deny_confirm_with_nonempty_payload",
@@ -714,7 +745,6 @@ signMsgDenyTestCases = [
         send_confirm_with_payload=True,
         expected_status=StatusWord.SWO_SIGN_MSG_CONFIRM_MUST_BE_EMPTY,
     ),
-
     # ========== Security Policy Validation ==========
     SignMsgDenyTestCase(
         name="Sign_msg_deny_invalid_witness_path_wrong_coin_type",

@@ -4,20 +4,21 @@
 from dataclasses import dataclass
 from typing import Any
 
-from common import (
+from tests.unit.generators.common import (
     write_generated_c_file,
     sanitize_c_identifier,
     _ensure_base58_module,
-    _add_tests_to_sys_path,
     extract_apdu_payload,
     format_bytes_as_c_array,
 )
-from paths import GENERATED_DERIVE_ADDRESS_DIR
+from tests.unit.generators.paths import GENERATED_DERIVE_ADDRESS_DIR
+
 FIXTURES_FILE = GENERATED_DERIVE_ADDRESS_DIR / "test_derive_address_fixtures.h"
 
 # ==============================================================================
 # Step 1: Load Test Cases from Ragger Tests
 # ==============================================================================
+
 
 @dataclass(frozen=True)
 class TestCaseCategory:
@@ -26,7 +27,9 @@ class TestCaseCategory:
     test_cases: list[Any]
 
 
-def _load_address_derivation_test_cases() -> tuple[dict[str, list[Any]], dict[str, TestCaseCategory]]:
+def _load_address_derivation_test_cases() -> tuple[
+    dict[str, list[Any]], dict[str, TestCaseCategory]
+]:
     """
     Load address derivation test cases from ragger standalone tests.
 
@@ -35,10 +38,9 @@ def _load_address_derivation_test_cases() -> tuple[dict[str, list[Any]], dict[st
 
     """
     _ensure_base58_module()
-    _add_tests_to_sys_path()
 
     # Import  test cases from ragger standalone input files
-    from standalone.input_files.derive_address import (  # type: ignore
+    from tests.standalone.input_files.derive_address import (  # type: ignore
         byronTestCases,
         shelleyTestCasesNoConfirm,
         shelleyTestCasesWithConfirm,
@@ -54,35 +56,36 @@ def _load_address_derivation_test_cases() -> tuple[dict[str, list[Any]], dict[st
         "test_derive_address_byron": TestCaseCategory(
             p1_value="P1_ADDRESS_RETURN",
             type="byronTestCases",
-            test_cases=byronTestCases
+            test_cases=byronTestCases,
         ),
         "test_derive_address_byron_show": TestCaseCategory(
             p1_value="P1_ADDRESS_DISPLAY",
             type="byronTestCases",
-            test_cases=byronTestCases
+            test_cases=byronTestCases,
         ),
         "test_derive_address_shelley": TestCaseCategory(
             p1_value="P1_ADDRESS_RETURN",
             type="shelleyTestCasesNoConfirm",
-            test_cases=shelleyTestCasesNoConfirm
+            test_cases=shelleyTestCasesNoConfirm,
         ),
         "test_derive_address_shelley_confirm": TestCaseCategory(
             p1_value="P1_ADDRESS_RETURN",
             type="shelleyTestCasesWithConfirm",
-            test_cases=shelleyTestCasesWithConfirm
+            test_cases=shelleyTestCasesWithConfirm,
         ),
         "test_derive_address_shelley_show_no_confirm": TestCaseCategory(
             p1_value="P1_ADDRESS_DISPLAY",
             type="shelleyTestCasesNoConfirm",
-            test_cases=shelleyTestCasesNoConfirm
+            test_cases=shelleyTestCasesNoConfirm,
         ),
         "test_derive_address_shelley_show_with_confirm": TestCaseCategory(
             p1_value="P1_ADDRESS_DISPLAY",
             type="shelleyTestCasesWithConfirm",
-            test_cases=shelleyTestCasesWithConfirm
+            test_cases=shelleyTestCasesWithConfirm,
         ),
     }
     return all_test_cases, categorized_test_cases
+
 
 # ==============================================================================
 # Step 2: Serialize Test Case to APDU Command
@@ -94,7 +97,7 @@ def _serialize_test_case_to_apdu(test_case: Any) -> bytes:
     Serialize a  test case into APDU command bytes.
 
     Uses CommandBuilder.derive_address() to serialize the test case with the
-    same logic used by ragger tests. 
+    same logic used by ragger tests.
 
     Args:
         test_case: DeriveAddressTestCase object from ragger tests
@@ -105,12 +108,12 @@ def _serialize_test_case_to_apdu(test_case: Any) -> bytes:
     Note:
         P1 parameter doesn't matter since we only need the payload.
     """
-    from application_client.command_builder import CommandBuilder, P1Type  # type: ignore
+    from tests.application_client.command_builder import CommandBuilder, P1Type  # type: ignore
 
     command_builder = CommandBuilder()
-    
+
     complete_apdu_command = command_builder.derive_address(
-        P1Type.P1_ADDRESS_RETURN, # P1 value doesn't matter for payload serialization
+        P1Type.P1_ADDRESS_RETURN,  # P1 value doesn't matter for payload serialization
         test_case,
     )
 
@@ -120,7 +123,6 @@ def _serialize_test_case_to_apdu(test_case: Any) -> bytes:
 # ==============================================================================
 # Step 3: Generate C Code for Fixtures
 # ==============================================================================
-
 
 
 def _generate_fixture_code_for_test_case(
@@ -165,7 +167,9 @@ def _generate_fixture_code_for_test_case(
     safe_test_name = sanitize_c_identifier(test_case.name)
 
     # Add source traceability comment
-    code_lines.append(f"// Source: tests/standalone/input_files/derive_address.py > {test_case.name}")
+    code_lines.append(
+        f"// Source: tests/standalone/input_files/derive_address.py > {test_case.name}"
+    )
 
     # Generate C array for complete APDU command
     payload_array_name = (
@@ -183,9 +187,7 @@ def _generate_fixture_code_for_test_case(
     expected_hex = getattr(test_case, "result_hex", None)
     if expected_hex:
         expected_bytes = bytes.fromhex(expected_hex)
-        expected_array_name = (
-            f"DERIVE_ADDRESS_{type_test}_{test_number:03d}_{safe_test_name}_EXPECTED_ADDRESS"
-        )
+        expected_array_name = f"DERIVE_ADDRESS_{type_test}_{test_number:03d}_{safe_test_name}_EXPECTED_ADDRESS"
         expected_array_code = format_bytes_as_c_array(
             expected_bytes,
             expected_array_name,
@@ -213,7 +215,9 @@ def _build_fixtures() -> str:
     # Load test cases from ragger tests
     all_test_cases, categorized_test_cases = _load_address_derivation_test_cases()
 
-    print(f"Generating fixtures for {len(categorized_test_cases)} categories of test cases...")
+    print(
+        f"Generating fixtures for {len(categorized_test_cases)} categories of test cases..."
+    )
     print()
 
     # Start building header content
@@ -259,26 +263,25 @@ def _build_fixtures() -> str:
                 test_number,
             )
             header_lines.extend(fixture_code)
-        
+
     # For each category, generate fixture arrays
     for category_name, category in categorized_test_cases.items():
         test_cases = category.test_cases
-        
+
         header_lines.append(
             f"static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_{category_name.upper()}[] = {{"
         )
 
         for test_number, test_case in enumerate(test_cases):
-
             # Generate fixture struct
             # Extract just the payload (skip the 5-byte APDU header: CLA, INS, P1, P2, Lc)
             safe_test_name = sanitize_c_identifier(test_case.name)
 
-            payload_array_name = (
-                f"DERIVE_ADDRESS_{category.type}_{test_number:03d}_{safe_test_name}_APDU"
-            )
+            payload_array_name = f"DERIVE_ADDRESS_{category.type}_{test_number:03d}_{safe_test_name}_APDU"
             # Add source traceability comment
-            header_lines.append(f"// Source: tests/standalone/input_files/derive_address.py > {category_name} > {test_case.name}")
+            header_lines.append(
+                f"// Source: tests/standalone/input_files/derive_address.py > {category_name} > {test_case.name}"
+            )
             header_lines.append("{")
 
             header_lines.append(f'    .name = "{test_case.name}",')
@@ -288,11 +291,11 @@ def _build_fixtures() -> str:
             header_lines.append("    .check_expected = SWO_SUCCESS,")
             expected_hex = getattr(test_case, "result_hex", None)
             if expected_hex:
-                expected_array_name = (
-                    f"DERIVE_ADDRESS_{category.type}_{test_number:03d}_{safe_test_name}_EXPECTED_ADDRESS"
-                )
+                expected_array_name = f"DERIVE_ADDRESS_{category.type}_{test_number:03d}_{safe_test_name}_EXPECTED_ADDRESS"
                 header_lines.append(f"    .expected_address = {expected_array_name},")
-                header_lines.append(f"    .expected_address_len = sizeof({expected_array_name}),")
+                header_lines.append(
+                    f"    .expected_address_len = sizeof({expected_array_name}),"
+                )
             else:
                 header_lines.append("    .expected_address = NULL,")
                 header_lines.append("    .expected_address_len = 0,")
@@ -302,6 +305,7 @@ def _build_fixtures() -> str:
         header_lines.append("")
 
     return "\n".join(header_lines)
+
 
 # ==============================================================================
 # Step 5: Main Entry Point
@@ -314,7 +318,7 @@ def generate_address_derivation_fixtures() -> None:
 
     This is the main entry point called from generate_unit_tests_from_ragger.py.
     Creates a single header file with all test fixtures.
-    
+
     """
 
     # Build header file content

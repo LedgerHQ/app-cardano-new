@@ -15,6 +15,7 @@ def _require(condition: bool, message: str) -> None:
 def unpack_get_app_name_response(response: bytes) -> str:
     return response.decode("ascii")
 
+
 # Unpack from response:
 # response = MAJOR (1)
 #            MINOR (1)
@@ -24,13 +25,17 @@ def unpack_get_version_response(response: bytes) -> Tuple[int, int, int]:
     major, minor, patch = unpack("BBB", response)
     return (major, minor, patch)
 
+
 # Unpack from response:
 # response = serial (7)
 def unpack_get_serial_response(response: bytes) -> bytes:
     SERIAL_LENGTH = 7
-    _require(len(response) == SERIAL_LENGTH,
-             f"Invalid serial response length: {len(response)}")
+    _require(
+        len(response) == SERIAL_LENGTH,
+        f"Invalid serial response length: {len(response)}",
+    )
     return response
+
 
 # Unpack from response:
 # response = pub_key (32)
@@ -38,48 +43,64 @@ def unpack_get_serial_response(response: bytes) -> bytes:
 def unpack_get_pubkey_response(response: bytes) -> Tuple[bytes, bytes]:
     PUBLIC_KEY_LENGTH = 32
     CHAIN_CODE_LENGTH = 32
-    _require(len(response) == PUBLIC_KEY_LENGTH + CHAIN_CODE_LENGTH,
-             f"Invalid pubkey response length: {len(response)}")
+    _require(
+        len(response) == PUBLIC_KEY_LENGTH + CHAIN_CODE_LENGTH,
+        f"Invalid pubkey response length: {len(response)}",
+    )
     public_key = response[:PUBLIC_KEY_LENGTH]
     chain_code = response[PUBLIC_KEY_LENGTH:]
     return public_key, chain_code
+
 
 # Unpack from response:
 # response = signature (64)
 def unpack_sign_opcert_response(response: bytes) -> bytes:
     SIGNATURE_LENGTH = 64
-    _require(len(response) == SIGNATURE_LENGTH,
-             f"Invalid opcert signature length: {len(response)}")
+    _require(
+        len(response) == SIGNATURE_LENGTH,
+        f"Invalid opcert signature length: {len(response)}",
+    )
     return response
+
 
 # Unpack from response:
 # response = signature (64)
 def unpack_sign_tx_witness_response(response: bytes) -> bytes:
     SIGNATURE_LENGTH = 64
-    _require(len(response) == SIGNATURE_LENGTH,
-             f"Invalid witness signature length: {len(response)}")
+    _require(
+        len(response) == SIGNATURE_LENGTH,
+        f"Invalid witness signature length: {len(response)}",
+    )
     return response
+
 
 # Unpack from response:
 # response = tx_hash (32)
 def unpack_sign_tx_hash_response(response: bytes) -> bytes:
     TX_HASH_LENGTH = 32
-    _require(len(response) == TX_HASH_LENGTH,
-             f"Invalid tx hash response length: {len(response)}")
+    _require(
+        len(response) == TX_HASH_LENGTH,
+        f"Invalid tx hash response length: {len(response)}",
+    )
     return response
+
 
 # Unpack from response:
 # response = address (var)
 def unpack_derive_address_response(response: bytes) -> bytes:
     return response
 
+
 # Unpack from response:
 # response = script_hash (28)
 def unpack_derive_native_script_hash_response(response: bytes) -> bytes:
     SCRIPT_HASH_LENGTH = 28
-    _require(len(response) == SCRIPT_HASH_LENGTH,
-             f"Invalid native script hash length: {len(response)}")
+    _require(
+        len(response) == SCRIPT_HASH_LENGTH,
+        f"Invalid native script hash length: {len(response)}",
+    )
     return response
+
 
 # Unpack from response:
 # response = signature (64)
@@ -94,48 +115,67 @@ def unpack_sign_message_response(response: bytes) -> Tuple[bytes, bytes, bytes]:
 
     # Validate minimum response length
     min_length = SIGNATURE_LENGTH + PUBLIC_KEY_LENGTH + ADDRESS_FIELD_SIZE_LENGTH
-    _require(len(response) >= min_length,
-             f"Response too short: {len(response)} < {min_length}")
-    _require(len(response) <= min_length + MAX_ADDRESS_FIELD_LENGTH,
-             f"Response too long: {len(response)} > {min_length + MAX_ADDRESS_FIELD_LENGTH}")
+    _require(
+        len(response) >= min_length,
+        f"Response too short: {len(response)} < {min_length}",
+    )
+    _require(
+        len(response) <= min_length + MAX_ADDRESS_FIELD_LENGTH,
+        f"Response too long: {len(response)} > {min_length + MAX_ADDRESS_FIELD_LENGTH}",
+    )
 
     # Extract signature
     offset = 0
-    signature = response[offset:offset + SIGNATURE_LENGTH]
-    _require(len(signature) == SIGNATURE_LENGTH,
-             f"Invalid sign-message signature length: {len(signature)}")
+    signature = response[offset : offset + SIGNATURE_LENGTH]
+    _require(
+        len(signature) == SIGNATURE_LENGTH,
+        f"Invalid sign-message signature length: {len(signature)}",
+    )
     offset += SIGNATURE_LENGTH
 
     # Extract public key
-    public_key = response[offset:offset + PUBLIC_KEY_LENGTH]
-    _require(len(public_key) == PUBLIC_KEY_LENGTH,
-             f"Invalid sign-message public key length: {len(public_key)}")
+    public_key = response[offset : offset + PUBLIC_KEY_LENGTH]
+    _require(
+        len(public_key) == PUBLIC_KEY_LENGTH,
+        f"Invalid sign-message public key length: {len(public_key)}",
+    )
     offset += PUBLIC_KEY_LENGTH
 
     # Extract address field size
-    address_field_size = int.from_bytes(response[offset:offset + ADDRESS_FIELD_SIZE_LENGTH], "big")
-    _require(address_field_size <= MAX_ADDRESS_FIELD_LENGTH,
-             f"Address field too long: {address_field_size} > {MAX_ADDRESS_FIELD_LENGTH}")
+    address_field_size = int.from_bytes(
+        response[offset : offset + ADDRESS_FIELD_SIZE_LENGTH], "big"
+    )
+    _require(
+        address_field_size <= MAX_ADDRESS_FIELD_LENGTH,
+        f"Address field too long: {address_field_size} > {MAX_ADDRESS_FIELD_LENGTH}",
+    )
     offset += ADDRESS_FIELD_SIZE_LENGTH
 
     # Extract address field
-    address_field = response[offset:offset + address_field_size]
-    _require(len(address_field) == address_field_size,
-             f"Address field truncated: expected {address_field_size}, got {len(address_field)}")
+    address_field = response[offset : offset + address_field_size]
+    _require(
+        len(address_field) == address_field_size,
+        f"Address field truncated: expected {address_field_size}, got {len(address_field)}",
+    )
     offset += address_field_size
 
-    _require(offset == len(response),
-             f"Trailing bytes in response: parsed {offset} of {len(response)}")
+    _require(
+        offset == len(response),
+        f"Trailing bytes in response: parsed {offset} of {len(response)}",
+    )
 
     return signature, public_key, address_field
+
 
 # Unpack from response:
 # response = votecast_hash (32) + signature (64)
 def unpack_sign_cip36_confirm_response(response: bytes) -> tuple[bytes, bytes]:
     HASH_LENGTH = 32
     SIGNATURE_LENGTH = 64
-    _require(len(response) == HASH_LENGTH + SIGNATURE_LENGTH,
-             f"Invalid CIP-36 confirm response length: {len(response)}")
+    _require(
+        len(response) == HASH_LENGTH + SIGNATURE_LENGTH,
+        f"Invalid CIP-36 confirm response length: {len(response)}",
+    )
     votecast_hash = response[:HASH_LENGTH]
     signature = response[HASH_LENGTH:]
     return votecast_hash, signature

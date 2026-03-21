@@ -16,8 +16,8 @@ from ragger.backend import BackendInterface
 
 from ragger.navigator import Navigator, NavInsID, NavIns
 
-from application_client.command_sender import CommandSender
-from application_client.status_words import StatusWord
+from tests.application_client.command_sender import CommandSender
+from tests.application_client.status_words import StatusWord
 
 
 class SettingID(Enum):
@@ -72,7 +72,9 @@ _known_setting_values_by_backend: "WeakKeyDictionary[BackendInterface, dict[Sett
 _debug_settings_apdu_supported_by_backend: "WeakKeyDictionary[BackendInterface, bool]" = WeakKeyDictionary()
 
 
-def _get_backend_setting_values(backend: BackendInterface) -> dict[SettingID, SettingValue]:
+def _get_backend_setting_values(
+    backend: BackendInterface,
+) -> dict[SettingID, SettingValue]:
     known_setting_values = _known_setting_values_by_backend.get(backend)
     if known_setting_values is None:
         known_setting_values = DEFAULT_SETTING_VALUES.copy()
@@ -80,8 +82,9 @@ def _get_backend_setting_values(backend: BackendInterface) -> dict[SettingID, Se
     return known_setting_values
 
 
-def get_settings_moves(device: Device,
-                       to_toggle: list[SettingID]) -> list[Union[NavIns, NavInsID]]:
+def get_settings_moves(
+    device: Device, to_toggle: list[SettingID]
+) -> list[Union[NavIns, NavInsID]]:
     """Get the navigation instructions to toggle the given settings.
 
     Assumes the app is on the home page.
@@ -126,29 +129,39 @@ def settings_toggle(device: Device, navigator: Navigator, to_toggle: list[Settin
     navigator.navigate(moves, screen_change_before_first_instruction=False)
 
 
-def settings_set(device: Device,
-                 navigator: Navigator,
-                 target_setting_values: Mapping[SettingID, SettingValue],
-                 backend: BackendInterface) -> None:
+def settings_set(
+    device: Device,
+    navigator: Navigator,
+    target_setting_values: Mapping[SettingID, SettingValue],
+    backend: BackendInterface,
+) -> None:
     """Reach the requested setting values using the current known state.
 
     Prefer the debug APDU when available because it is a real "set" operation.
     Fall back to UI toggles for production builds where only menu navigation exists.
     """
     if backend is None:
-        raise AssertionError("settings_set requires backend to probe debug APDU support")
+        raise AssertionError(
+            "settings_set requires backend to probe debug APDU support"
+        )
 
     known_setting_values = _get_backend_setting_values(backend)
 
     effective_target_setting_values = known_setting_values.copy()
     effective_target_setting_values.update(target_setting_values)
 
-    debug_settings_apdu_supported = _debug_settings_apdu_supported_by_backend.get(backend)
+    debug_settings_apdu_supported = _debug_settings_apdu_supported_by_backend.get(
+        backend
+    )
     if debug_settings_apdu_supported is not False:
         client = CommandSender(backend)
         response = client.try_set_debug_settings(
-            expert_mode=effective_target_setting_values[SettingID.EXPERT_MODE] == SettingValue.ENABLED,
-            silent_export=effective_target_setting_values[SettingID.SILENT_PUBKEY_EXPORT] == SettingValue.ENABLED,
+            expert_mode=effective_target_setting_values[SettingID.EXPERT_MODE]
+            == SettingValue.ENABLED,
+            silent_export=effective_target_setting_values[
+                SettingID.SILENT_PUBKEY_EXPORT
+            ]
+            == SettingValue.ENABLED,
         )
         if response.status == StatusWord.SWO_SUCCESS:
             _debug_settings_apdu_supported_by_backend[backend] = True

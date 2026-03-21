@@ -8,15 +8,15 @@ import pytest
 from hashlib import blake2b
 from ledgered.devices import Device
 from ragger.backend import BackendInterface
-from ragger.navigator import Navigator, NavInsID
+from ragger.navigator import Navigator, NavInsID, NavIns
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 from ragger.error import ExceptionRAPDU
 
-from application_client.status_words import StatusWord
-from application_client.command_builder import gather_witness_paths
-from application_client.command_sender import CommandSender
-from application_client.response_unpacker import unpack_sign_tx_witness_response
-from standalone.utils import (
+from tests.application_client.status_words import StatusWord
+from tests.application_client.command_builder import gather_witness_paths
+from tests.application_client.command_sender import CommandSender
+from tests.application_client.response_unpacker import unpack_sign_tx_witness_response
+from tests.standalone.utils import (
     verify_signature,
     idTestFunc,
     review_approve,
@@ -24,8 +24,8 @@ from standalone.utils import (
     nano_navigate_until_text_relaxed,
     NavContext,
 )
-from standalone.settings import SettingID, SettingValue, settings_set
-from standalone.input_files.signTx import (  # type: ignore
+from tests.standalone.settings import SettingID, SettingValue, settings_set
+from tests.standalone.input_files.signTx import (  # type: ignore
     testsByron,
     testsMary,
     testsShelleyNoCertificates,
@@ -65,17 +65,17 @@ from standalone.input_files.signTx import (  # type: ignore
     SignTxTestCase,
     TxAuxiliaryDataType,
     ThirdPartyAddressParams,
-    TransactionSigningMode
+    TransactionSigningMode,
 )
 
 
 def _reason_applies_to_device(device: Device, reason: str) -> tuple[bool, str]:
     if reason.startswith("nano:"):
-        return device.is_nano, reason[len("nano:"):].strip()
+        return device.is_nano, reason[len("nano:") :].strip()
     if reason.startswith("non_nano:"):
-        return (not device.is_nano), reason[len("non_nano:"):].strip()
+        return (not device.is_nano), reason[len("non_nano:") :].strip()
     if reason.startswith("all:"):
-        return True, reason[len("all:"):].strip()
+        return True, reason[len("all:") :].strip()
     return True, reason
 
 
@@ -87,12 +87,14 @@ def skip_in_ragger(device: Device, reasons: list[str | None]) -> None:
                 pytest.skip(f"Unsuitable in ragger: {message}")
 
 
-def _run_sign_tx_test(device: Device,
-                      backend: BackendInterface,
-                      navigator: Navigator,
-                      scenario_navigator: NavigateWithScenario,
-                      testCase: SignTxTestCase,
-                      expert_mode: bool) -> None:
+def _run_sign_tx_test(
+    device: Device,
+    backend: BackendInterface,
+    navigator: Navigator,
+    scenario_navigator: NavigateWithScenario,
+    testCase: SignTxTestCase,
+    expert_mode: bool,
+) -> None:
     """Helper function to run a single sign_tx test iteration.
 
     Args:
@@ -104,9 +106,9 @@ def _run_sign_tx_test(device: Device,
         expert_mode: Whether expert mode is enabled for this run
     """
     mode_str = "expert" if expert_mode else "non_expert"
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"Running test in {mode_str} mode: {testCase.name}")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     nav_ctx = NavContext(device, navigator, scenario_navigator)
     client = CommandSender(backend)
@@ -118,8 +120,8 @@ def _run_sign_tx_test(device: Device,
     print(f"Expected tx hash: {expected_hash.hex()}")
     auxiliary_data = testCase.tx.auxiliaryData
     is_cip36_auxiliary_review = (
-        auxiliary_data is not None and
-        auxiliary_data.type == TxAuxiliaryDataType.CIP36_REGISTRATION
+        auxiliary_data is not None
+        and auxiliary_data.type == TxAuxiliaryDataType.CIP36_REGISTRATION
     )
 
     def review_cvote() -> None:
@@ -133,7 +135,7 @@ def _run_sign_tx_test(device: Device,
                 detail_navigation = [NavInsID.RIGHT_HEADER_TAP]
                 if len(testCase.expected_aux_warnings) > 3:
                     detail_navigation += [
-                        NavIns(NavInsID.CHOICE_CHOOSE, (4, )),
+                        NavIns(NavInsID.CHOICE_CHOOSE, (4,)),
                         NavInsID.LEFT_HEADER_TAP,
                     ]
                 detail_navigation += [NavInsID.LEFT_HEADER_TAP]
@@ -169,7 +171,9 @@ def _run_sign_tx_test(device: Device,
         review_approve(
             nav_ctx,
             test_name=test_name,
-            target_text=r"^Confirm vote" if not testCase.expected_aux_warnings else r"^Reject operation$",
+            target_text=r"^Confirm vote"
+            if not testCase.expected_aux_warnings
+            else r"^Reject operation$",
             warnings=testCase.expected_aux_warnings,
             nano_review_instructions=(
                 [NavInsID.LEFT_CLICK, NavInsID.BOTH_CLICK]
@@ -226,10 +230,14 @@ def _run_sign_tx_test(device: Device,
             pair_count += 1
         if auxiliary_params.voteKey is not None:
             pair_count += 1
-            if isinstance(auxiliary_params.voteKey, str) and auxiliary_params.voteKey.startswith("m/"):
+            if isinstance(
+                auxiliary_params.voteKey, str
+            ) and auxiliary_params.voteKey.startswith("m/"):
                 vote_key_path = auxiliary_params.voteKey.replace("'", "").split("/")
                 try:
-                    account_index = int(vote_key_path[3]) if len(vote_key_path) > 3 else 0
+                    account_index = (
+                        int(vote_key_path[3]) if len(vote_key_path) > 3 else 0
+                    )
                 except ValueError:
                     account_index = 0
                 if account_index > 100:
@@ -265,14 +273,18 @@ def _run_sign_tx_test(device: Device,
             # `nb_steps == 2` is used for AUX init (registration + first delegation).
             # The registration part itself spans multiple Nano screens.
             initial_aux_init_advance_steps = 6 if expert_mode else 5
-            steps_to_advance = (initial_aux_init_advance_steps if nb_steps == 2 else 4)
-            navigator.navigate([NavInsID.RIGHT_CLICK] * steps_to_advance,
-                               screen_change_before_first_instruction=False,
-                               screen_change_after_last_instruction=False)
+            steps_to_advance = initial_aux_init_advance_steps if nb_steps == 2 else 4
+            navigator.navigate(
+                [NavInsID.RIGHT_CLICK] * steps_to_advance,
+                screen_change_before_first_instruction=False,
+                screen_change_after_last_instruction=False,
+            )
         else:
-            navigator.navigate([NavInsID.USE_CASE_REVIEW_NEXT] * nb_steps,
-                               screen_change_before_first_instruction=False,
-                               screen_change_after_last_instruction=False)
+            navigator.navigate(
+                [NavInsID.USE_CASE_REVIEW_NEXT] * nb_steps,
+                screen_change_before_first_instruction=False,
+                screen_change_after_last_instruction=False,
+            )
 
     tx_hash = client.sign_tx(
         tx=tx,
@@ -281,7 +293,7 @@ def _run_sign_tx_test(device: Device,
         options=testCase.options,
         on_review=review_tx,
         on_cvote_review=review_cvote,
-        on_advance=review_advance
+        on_advance=review_advance,
     )
 
     def _is_ordinary_witness_path(witness_path: str) -> bool:
@@ -327,7 +339,9 @@ def _run_sign_tx_test(device: Device,
 
     # Step 4: Get witness signatures
     # After user approval, request signatures for all witness paths
-    witness_paths = gather_witness_paths(tx, testCase.signingMode, testCase.additionalWitnessPaths or [])
+    witness_paths = gather_witness_paths(
+        tx, testCase.signingMode, testCase.additionalWitnessPaths or []
+    )
     print(f"Witness paths: {witness_paths}")
 
     for path_idx, path in enumerate(witness_paths):
@@ -342,7 +356,9 @@ def _run_sign_tx_test(device: Device,
             or testCase.signingMode in pool_or_plutus_modes
             or (
                 len(testCase.tx.outputs) > 0
-                and not isinstance(testCase.tx.outputs[0].destination.params, ThirdPartyAddressParams)
+                and not isinstance(
+                    testCase.tx.outputs[0].destination.params, ThirdPartyAddressParams
+                )
                 and auxiliary_data is not None
                 and auxiliary_data.type != TxAuxiliaryDataType.CIP36_REGISTRATION
             )
@@ -367,34 +383,49 @@ def _run_sign_tx_test(device: Device,
 
         response = client.get_async_response()
         assert response is not None, f"No response for witness {path_idx}: {path}"
-        assert response.status == StatusWord.SWO_SUCCESS, f"Witness failed for {path}: {hex(response.status)}"
+        assert response.status == StatusWord.SWO_SUCCESS, (
+            f"Witness failed for {path}: {hex(response.status)}"
+        )
 
         signature = unpack_sign_tx_witness_response(response.data)
-        print(f"Witness signature for {path} ({len(signature)} bytes): {signature.hex()}")
+        print(
+            f"Witness signature for {path} ({len(signature)} bytes): {signature.hex()}"
+        )
         verify_signature(path, signature, tx_hash)
 
 
-@pytest.mark.parametrize(
-    "expert_mode",
-    [False, True],
-    ids=["non_expert", "expert"]
-)
+@pytest.mark.parametrize("expert_mode", [False, True], ids=["non_expert", "expert"])
 @pytest.mark.parametrize(
     "testCase",
-    testsByron + testsMary + testsShelleyNoCertificates + testsShelleyWithCertificates +
-    testsAllegra + testsAlonzoTrezorComparison + testsBabbageTrezorComparison +
-    testsAlonzo + testsStreaming + testsBabbage + testsConwayWithCertificates +
-    testsConwayWithoutCertificates + testsConwayVotingProcedures +
-    testsMultidelegation + testsCatalystRegistration + testsCVoteRegistrationCIP36 +
-    testsMultisig + poolRegistrationOwnerTestCases + poolRegistrationOperatorTestCases,
-    ids=idTestFunc
+    testsByron
+    + testsMary
+    + testsShelleyNoCertificates
+    + testsShelleyWithCertificates
+    + testsAllegra
+    + testsAlonzoTrezorComparison
+    + testsBabbageTrezorComparison
+    + testsAlonzo
+    + testsStreaming
+    + testsBabbage
+    + testsConwayWithCertificates
+    + testsConwayWithoutCertificates
+    + testsConwayVotingProcedures
+    + testsMultidelegation
+    + testsCatalystRegistration
+    + testsCVoteRegistrationCIP36
+    + testsMultisig
+    + poolRegistrationOwnerTestCases
+    + poolRegistrationOperatorTestCases,
+    ids=idTestFunc,
 )
-def test_sign_tx(device: Device,
-                 backend: BackendInterface,
-                 navigator: Navigator,
-                 scenario_navigator: NavigateWithScenario,
-                 testCase: SignTxTestCase,
-                 expert_mode: bool) -> None:
+def test_sign_tx(
+    device: Device,
+    backend: BackendInterface,
+    navigator: Navigator,
+    scenario_navigator: NavigateWithScenario,
+    testCase: SignTxTestCase,
+    expert_mode: bool,
+) -> None:
     """Test transaction signing under a specific expert mode setting.
 
     Each run performs:
@@ -416,14 +447,23 @@ def test_sign_tx(device: Device,
         device,
         navigator,
         {
-            SettingID.EXPERT_MODE: SettingValue.ENABLED if expert_mode else SettingValue.DISABLED,
+            SettingID.EXPERT_MODE: SettingValue.ENABLED
+            if expert_mode
+            else SettingValue.DISABLED,
             SettingID.SILENT_PUBKEY_EXPORT: SettingValue.ENABLED,
         },
         backend=backend,
     )
 
     try:
-        _run_sign_tx_test(device, backend, navigator, scenario_navigator, testCase, expert_mode=expert_mode)
+        _run_sign_tx_test(
+            device,
+            backend,
+            navigator,
+            scenario_navigator,
+            testCase,
+            expert_mode=expert_mode,
+        )
     except Exception as e:
         mode_label = "EXPERT MODE" if expert_mode else "NON-EXPERT MODE"
         raise AssertionError(f"Test FAILED in {mode_label}: {testCase.name}") from e
@@ -431,36 +471,34 @@ def test_sign_tx(device: Device,
 
 # Collect all deny test cases
 all_deny_test_cases = (
-    transactionInitDenyTestCases +
-    addressParamsDenyTestCases +
-    certificateDenyTestCases +
-    certificateStakingDenyTestCases +
-    certificateStakePoolRetirementDenyTestCases +
-    withdrawalDenyTestCases +
-    witnessDenyTestCases +
-    singleAccountDenyTestCases +
-    collateralOutputDenyTestCases +
-    testsInvalidTokenBundleOrdering +
-    poolRegistrationOwnerDenyTestCases +
-    stakePoolRegistrationPoolIdDenyTestCases +
-    stakePoolRegistrationOwnerDenyTestCases +
-    invalidCertificates +
-    invalidPoolMetadataTestCases +
-    invalidRelayTestCases +
-    testsCVoteRegistrationDenies
+    transactionInitDenyTestCases
+    + addressParamsDenyTestCases
+    + certificateDenyTestCases
+    + certificateStakingDenyTestCases
+    + certificateStakePoolRetirementDenyTestCases
+    + withdrawalDenyTestCases
+    + witnessDenyTestCases
+    + singleAccountDenyTestCases
+    + collateralOutputDenyTestCases
+    + testsInvalidTokenBundleOrdering
+    + poolRegistrationOwnerDenyTestCases
+    + stakePoolRegistrationPoolIdDenyTestCases
+    + stakePoolRegistrationOwnerDenyTestCases
+    + invalidCertificates
+    + invalidPoolMetadataTestCases
+    + invalidRelayTestCases
+    + testsCVoteRegistrationDenies
 )
 
 
-@pytest.mark.parametrize(
-    "testCase",
-    all_deny_test_cases,
-    ids=idTestFunc
-)
-def test_sign_tx_deny(backend: BackendInterface,
-                        device: Device,
-                        navigator: Navigator,
-                        scenario_navigator: NavigateWithScenario,
-                        testCase: SignTxTestCase) -> None:
+@pytest.mark.parametrize("testCase", all_deny_test_cases, ids=idTestFunc)
+def test_sign_tx_deny(
+    backend: BackendInterface,
+    device: Device,
+    navigator: Navigator,
+    scenario_navigator: NavigateWithScenario,
+    testCase: SignTxTestCase,
+) -> None:
     """Test that invalid transaction parameters are correctly denied."""
 
     skip_in_ragger(
@@ -537,7 +575,9 @@ def test_sign_tx_deny(backend: BackendInterface,
         testCase.additionalWitnessPaths or [],
     )
     if len(witness_paths) == 0:
-        raise AssertionError("Transaction unexpectedly succeeded but no witness paths were found")
+        raise AssertionError(
+            "Transaction unexpectedly succeeded but no witness paths were found"
+        )
 
     witness_paths_to_try = (
         [testCase.additionalWitnessPaths[-1]]

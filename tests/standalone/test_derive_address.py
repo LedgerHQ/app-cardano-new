@@ -16,29 +16,25 @@ from ragger.navigator import Navigator
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 from ragger.error import ExceptionRAPDU
 
-from application_client.status_words import StatusWord
-from application_client.command_sender import CommandSender
-from application_client.command_builder import P1Type
+from tests.application_client.status_words import StatusWord
+from tests.application_client.command_sender import CommandSender
+from tests.application_client.command_builder import P1Type
 
-from standalone.input_files.derive_address import DeriveAddressTestCase
-from standalone.input_files.derive_address import byronTestCases
-from standalone.input_files.derive_address import (
+from tests.standalone.input_files.derive_address import DeriveAddressTestCase
+from tests.standalone.input_files.derive_address import byronTestCases
+from tests.standalone.input_files.derive_address import (
     shelleyTestCasesNoConfirm,
     shelleyTestCasesWithConfirm,
     denyTestCases,
 )
-from standalone.utils import idTestFunc, derive_address
+from tests.standalone.utils import idTestFunc, derive_address
 
 
-@pytest.mark.parametrize(
-    "mode",
-    ["return", "display"],
-    ids=["return", "display"]
-)
+@pytest.mark.parametrize("mode", ["return", "display"], ids=["return", "display"])
 @pytest.mark.parametrize(
     "testCase",
     byronTestCases + shelleyTestCasesNoConfirm + shelleyTestCasesWithConfirm,
-    ids=idTestFunc
+    ids=idTestFunc,
 )
 def test_derive_address(
     device: Device,
@@ -52,7 +48,9 @@ def test_derive_address(
 
     client = CommandSender(backend)
 
-    p1_type = P1Type.P1_ADDRESS_RETURN if mode == "return" else P1Type.P1_ADDRESS_DISPLAY
+    p1_type = (
+        P1Type.P1_ADDRESS_RETURN if mode == "return" else P1Type.P1_ADDRESS_DISPLAY
+    )
 
     # Shelley test cases without confirmation don't require UI interaction (return mode only)
     if testCase in shelleyTestCasesNoConfirm and mode == "return":
@@ -65,8 +63,7 @@ def test_derive_address(
     test_name = f"{testCase.name}-{mode}"
     with client.derive_address_async(p1_type, testCase):
         scenario_navigator.address_review_approve(
-            test_name=test_name,
-            do_comparison=True
+            test_name=test_name, do_comparison=True
         )
 
     response = client.get_async_response()
@@ -79,13 +76,10 @@ def test_derive_address(
         assert response.data == derive_address(testCase)
 
 
-@pytest.mark.parametrize(
-    "testCase",
-    denyTestCases,
-    ids=idTestFunc
-)
-def test_derive_address_deny(backend: BackendInterface,
-                               testCase: DeriveAddressTestCase) -> None:
+@pytest.mark.parametrize("testCase", denyTestCases, ids=idTestFunc)
+def test_derive_address_deny(
+    backend: BackendInterface, testCase: DeriveAddressTestCase
+) -> None:
     """Check deny behavior for invalid derive-address inputs."""
 
     client = CommandSender(backend)

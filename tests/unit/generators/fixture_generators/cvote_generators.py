@@ -4,21 +4,20 @@ from __future__ import annotations
 
 from typing import Any, List
 
-from common import (
-    _add_tests_to_sys_path,
+from tests.unit.generators.common import (
     extract_apdu_payload,
     write_generated_c_file,
     sanitize_c_identifier,
     format_bytes_as_c_array,
 )
-from paths import GENERATED_CVOTE_DIR
+from tests.unit.generators.paths import GENERATED_CVOTE_DIR
 
 FIXTURES_FILE = GENERATED_CVOTE_DIR / "test_cvote_fixtures.h"
 
 
 def _load_cvote_test_cases() -> List[Any]:
-    _add_tests_to_sys_path()
-    from standalone.input_files.cvote import cvoteTestCases  # type: ignore
+    from tests.standalone.input_files.cvote import cvoteTestCases  # type: ignore
+
     return cvoteTestCases
 
 
@@ -37,9 +36,7 @@ def generate_cvote_fixtures() -> None:
     test_cases = _load_cvote_test_cases()
     if not test_cases:
         raise RuntimeError("No cvote test cases found")
-
-    _add_tests_to_sys_path()
-    from application_client.command_builder import CommandBuilder  # type: ignore
+    from tests.application_client.command_builder import CommandBuilder  # type: ignore
 
     builder = CommandBuilder()
 
@@ -50,8 +47,8 @@ def generate_cvote_fixtures() -> None:
         "",
         "#include <stdint.h>",
         "#include <stddef.h>",
-        "#include \"securityWarnings.h\"",
-        "#include \"test_fixture_types.h\"",
+        '#include "securityWarnings.h"',
+        '#include "test_fixture_types.h"',
         "",
         "// ======================================================================",
         "// CIP-36 CVote Test Fixtures",
@@ -69,7 +66,9 @@ def generate_cvote_fixtures() -> None:
         init_payload = extract_apdu_payload(init_apdu)
         init_array_name = f"{base_name}_INIT_APDU"
         header_lines.extend(
-            format_bytes_as_c_array(init_payload, init_array_name, bytes_per_line=16, return_as_list=True)
+            format_bytes_as_c_array(
+                init_payload, init_array_name, bytes_per_line=16, return_as_list=True
+            )
         )
         header_lines.append("")
 
@@ -80,14 +79,21 @@ def generate_cvote_fixtures() -> None:
             chunk_payload = extract_apdu_payload(chunk_apdu)
             chunk_array_name = f"{base_name}_CHUNK_{chunk_idx:03d}_APDU"
             header_lines.extend(
-                format_bytes_as_c_array(chunk_payload, chunk_array_name, bytes_per_line=16, return_as_list=True)
+                format_bytes_as_c_array(
+                    chunk_payload,
+                    chunk_array_name,
+                    bytes_per_line=16,
+                    return_as_list=True,
+                )
             )
             header_lines.append("")
             chunk_array_names.append(chunk_array_name)
 
         if chunk_array_names:
             chunks_struct_name = f"{base_name}_CHUNKS"
-            header_lines.append(f"static const cvote_chunk_t {chunks_struct_name}[] = {{")
+            header_lines.append(
+                f"static const cvote_chunk_t {chunks_struct_name}[] = {{"
+            )
             for chunk_array_name in chunk_array_names:
                 header_lines.append(
                     f"    {{ .data = {chunk_array_name}, .data_len = sizeof({chunk_array_name}) }},"
@@ -100,16 +106,25 @@ def generate_cvote_fixtures() -> None:
         confirm_payload = extract_apdu_payload(confirm_apdu)
         confirm_array_name = f"{base_name}_CONFIRM_APDU"
         header_lines.extend(
-            format_bytes_as_c_array(confirm_payload, confirm_array_name, bytes_per_line=16, return_as_list=True)
+            format_bytes_as_c_array(
+                confirm_payload,
+                confirm_array_name,
+                bytes_per_line=16,
+                return_as_list=True,
+            )
         )
         header_lines.append("")
 
         # Fixture entry
         chunks_struct = f"{base_name}_CHUNKS" if chunk_array_names else "NULL"
-        chunk_count = f"sizeof({base_name}_CHUNKS) / sizeof(cvote_chunk_t)" if chunk_array_names else "0"
+        chunk_count = (
+            f"sizeof({base_name}_CHUNKS) / sizeof(cvote_chunk_t)"
+            if chunk_array_names
+            else "0"
+        )
         entry_lines = [
             "{",
-            f"    .name = \"{test_case.name}\",",
+            f'    .name = "{test_case.name}",',
             f"    .init_data = {init_array_name},",
             f"    .init_data_len = sizeof({init_array_name}),",
             f"    .chunks = {chunks_struct},",

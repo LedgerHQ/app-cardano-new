@@ -5,16 +5,15 @@ import hashlib
 import re
 from typing import Any, Sequence
 
-from common import (
+from tests.unit.generators.common import (
     _ensure_base58_module,
-    _add_tests_to_sys_path,
     read_file_safe,
     write_generated_c_file,
     sanitize_c_identifier,
     extract_apdu_payload,
     format_bytes_as_c_array,
 )
-from paths import GENERATED_SIGN_TX_DIR, UNIT_TESTS_DIR
+from tests.unit.generators.paths import GENERATED_SIGN_TX_DIR, UNIT_TESTS_DIR
 
 
 # ======================================================================
@@ -67,7 +66,7 @@ def _extract_braced_entries(body: str) -> list[str]:
             elif char == "}":
                 depth -= 1
                 if depth == 0:
-                    entries.append(body[entry_start:cursor + 1])
+                    entries.append(body[entry_start : cursor + 1])
                     start_index = cursor + 1
                     break
             cursor += 1
@@ -94,7 +93,9 @@ def _load_mock_signature_lookup() -> dict[tuple[tuple[int, ...], bytes], bytes]:
         message_hex_values = re.findall(r"0x[0-9a-fA-F]{2}", message_match.group(2))
         if not message_hex_values:
             continue
-        message_lookup[message_name] = bytes(int(value, 16) for value in message_hex_values)
+        message_lookup[message_name] = bytes(
+            int(value, 16) for value in message_hex_values
+        )
 
     signatures_match = re.search(
         r"static const mock_signature_data_t MOCK_SIGNATURES\[\]\s*=\s*\{(.*?)\n\};",
@@ -102,14 +103,18 @@ def _load_mock_signature_lookup() -> dict[tuple[tuple[int, ...], bytes], bytes]:
         flags=re.DOTALL,
     )
     if signatures_match is None:
-        raise ValueError("MOCK_SIGNATURES array not found in mock_crypto/crypto_mock_data.h")
+        raise ValueError(
+            "MOCK_SIGNATURES array not found in mock_crypto/crypto_mock_data.h"
+        )
 
     signature_lookup: dict[tuple[tuple[int, ...], bytes], bytes] = {}
     for signature_entry in _extract_braced_entries(signatures_match.group(1)):
         path_match = re.search(r"\.path\s*=\s*(\{[^}]+\})", signature_entry)
         path_len_match = re.search(r"\.path_len\s*=\s*(\d+)", signature_entry)
         message_name_match = re.search(r"\.message\s*=\s*(\w+)", signature_entry)
-        signature_match = re.search(r"\.signature\s*=\s*\{([^}]*)\}", signature_entry, flags=re.DOTALL)
+        signature_match = re.search(
+            r"\.signature\s*=\s*\{([^}]*)\}", signature_entry, flags=re.DOTALL
+        )
         if (
             path_match is None
             or path_len_match is None
@@ -132,7 +137,9 @@ def _load_mock_signature_lookup() -> dict[tuple[tuple[int, ...], bytes], bytes]:
     return signature_lookup
 
 
-def _compute_fallback_mock_signature(path_words: tuple[int, ...], message: bytes) -> bytes:
+def _compute_fallback_mock_signature(
+    path_words: tuple[int, ...], message: bytes
+) -> bytes:
     signature = bytearray(64)
     for signature_index in range(64):
         signature_byte = message[signature_index % len(message)]
@@ -186,7 +193,10 @@ def _generate_fixtures_for_era(
     tests: Sequence[Any],
     aux_data_classes: dict[str, Any],
 ) -> None:
-    from application_client.command_builder import CommandBuilder, gather_witness_paths  # type: ignore
+    from tests.application_client.command_builder import (
+        CommandBuilder,
+        gather_witness_paths,
+    )  # type: ignore
 
     TxAuxiliaryDataCIP36 = aux_data_classes["TxAuxiliaryDataCIP36"]
     TxAuxiliaryDataType = aux_data_classes["TxAuxiliaryDataType"]
@@ -292,7 +302,9 @@ def _generate_fixtures_for_era(
         protocol_magic_value = int(test_case.tx.network.protocol)
 
         header_lines.append(f"// Test {test_index}: {test_case.name}")
-        header_lines.append(f"// Source: tests/standalone/input_files/signTx.py > {era_key} era tests")
+        header_lines.append(
+            f"// Source: tests/standalone/input_files/signTx.py > {era_key} era tests"
+        )
         header_lines.append("//")
 
         array_lines = format_bytes_as_c_array(
@@ -317,9 +329,7 @@ def _generate_fixtures_for_era(
                 delegation_entries = []
                 for reg_index, payload in enumerate(aux_data_delegation_payloads):
                     entry_name = f"{fixture_prefix}_AUX_DATA_DELEGATION_{reg_index}"
-                    reg_lines = format_bytes_as_c_array(payload, entry_name).split(
-                        "\n"
-                    )
+                    reg_lines = format_bytes_as_c_array(payload, entry_name).split("\n")
                     header_lines.extend(reg_lines)
                     header_lines.append("")
                     delegation_entries.append(
@@ -342,7 +352,9 @@ def _generate_fixtures_for_era(
         expected_hash_bytes = bytes.fromhex(expected_hash_hex)
         for witness_index, witness_path in enumerate(witness_paths):
             witness_payload_name = f"{fixture_prefix}_WITNESS_{witness_index}_PAYLOAD"
-            witness_signature_name = f"{fixture_prefix}_WITNESS_{witness_index}_EXPECTED_SIGNATURE"
+            witness_signature_name = (
+                f"{fixture_prefix}_WITNESS_{witness_index}_EXPECTED_SIGNATURE"
+            )
             witness_apdu = builder.sign_tx_witness(witness_path)
             witness_payload = extract_apdu_payload(witness_apdu)
             witness_signature = _derive_witness_signature(
@@ -367,7 +379,9 @@ def _generate_fixtures_for_era(
                 f".expected_signature = {witness_signature_name} }},"
             )
         if witness_payload_entries:
-            witness_declaration_lines.append(f"static const witness_payload_t {witness_payloads_name}[] = {{")
+            witness_declaration_lines.append(
+                f"static const witness_payload_t {witness_payloads_name}[] = {{"
+            )
             witness_declaration_lines.extend(witness_payload_entries)
             witness_declaration_lines.append("};")
             witness_declaration_lines.append("")
@@ -526,8 +540,7 @@ def _generate_fixtures_for_era(
 
 def _load_sign_tx_tests() -> dict[str, Any]:
     _ensure_base58_module()
-    _add_tests_to_sys_path()
-    from standalone.input_files.signTx import (  # type: ignore
+    from tests.standalone.input_files.signTx import (  # type: ignore
         testsMary,
         testsShelleyNoCertificates,
         testsShelleyWithCertificates,

@@ -5,12 +5,12 @@ import re
 from pathlib import Path
 from typing import Sequence
 
-from common import (
+from tests.unit.generators.common import (
     read_file_safe,
     write_generated_c_file,
     sanitize_c_identifier,
 )
-from paths import GENERATED_SIGN_TX_DIR
+from tests.unit.generators.paths import GENERATED_SIGN_TX_DIR
 
 
 # ======================================================================
@@ -85,7 +85,6 @@ ERA_TEST_FILE_MAP: dict[str, tuple[str, str, str]] = {
 }
 
 
-
 def _fixture_has_cvote_aux_data(fixture_body: str) -> bool:
     aux_included_match = _AUX_INCLUDED_PATTERN.search(fixture_body)
     aux_type_match = _AUX_TYPE_PATTERN.search(fixture_body)
@@ -94,7 +93,10 @@ def _fixture_has_cvote_aux_data(fixture_body: str) -> bool:
 
     include_aux_data = aux_included_match.group(1) == "true"
     aux_type_token = aux_type_match.group(1)
-    return include_aux_data and aux_type_token in {"1", "AUX_DATA_TYPE_CVOTE_REGISTRATION"}
+    return include_aux_data and aux_type_token in {
+        "1",
+        "AUX_DATA_TYPE_CVOTE_REGISTRATION",
+    }
 
 
 def _build_test_functions(
@@ -197,26 +199,26 @@ def _build_common_header(fixture_file: str) -> str:
         "\n"
         "#include <cmocka.h>\n"
         "\n"
-        "#include \"apdu/dispatcher.h\"\n"
-        "#include \"handler/sign_tx.h\"\n"
-        "#include \"buffer.h\"\n"
-        "#include \"cardano_swo.h\"\n"
-        "#include \"cardano_constants.h\"\n"
-        "#include \"globals.h\"\n"
-        "#include \"tx.h\"\n"
-        "#include \"tx_parse.h\"\n"
-        "#include \"securityPolicy/securityPolicy.h\"\n"
-        "#include \"hexUtils.h\"\n"
-        "#include \"utils/utils.h\"\n"
-        "#include \"blake2b.h\"\n"
-        "#include \"init_apdu.h\"\n"
-        "#include \"io_capture.h\"\n"
-        "#include \"apdu_finalization_check.h\"\n"
+        '#include "apdu/dispatcher.h"\n'
+        '#include "handler/sign_tx.h"\n'
+        '#include "buffer.h"\n'
+        '#include "cardano_swo.h"\n'
+        '#include "cardano_constants.h"\n'
+        '#include "globals.h"\n'
+        '#include "tx.h"\n'
+        '#include "tx_parse.h"\n'
+        '#include "securityPolicy/securityPolicy.h"\n'
+        '#include "hexUtils.h"\n'
+        '#include "utils/utils.h"\n'
+        '#include "blake2b.h"\n'
+        '#include "init_apdu.h"\n'
+        '#include "io_capture.h"\n'
+        '#include "apdu_finalization_check.h"\n'
         "\n"
-        f"#include \"{fixture_file}\"\n"
+        f'#include "{fixture_file}"\n'
         "\n"
-        "#include \"test_sign_tx_common.h\"\n"
-        "#include \"app_mem_utils.h\"\n"
+        '#include "test_sign_tx_common.h"\n'
+        '#include "app_mem_utils.h"\n'
         "\n"
         "// ======================================================================\n"
         "// UI code: using REAL ui_display_*.c with mocked NBGL\n"
@@ -231,7 +233,7 @@ def _build_common_header(fixture_file: str) -> str:
 
 def _generate_complete_test_file(
     era: str, fixture_file: str, test_c_file: str, era_upper: str
-) -> None:
+) -> int:
     fixture_path = GENERATED_SIGN_TX_DIR / fixture_file
     test_path = GENERATED_SIGN_TX_DIR / test_c_file
 
@@ -276,11 +278,16 @@ def _generate_complete_test_file(
 
     write_generated_c_file(test_path, complete_file)
     print(f"Generated {test_c_file}: {len(test_names)} tests")
+    return len(test_names)
 
 
-def generate_tx_test_runners() -> None:
+def generate_tx_test_runners() -> int:
 
+    total_tests = 0
     for era, (fixture_file, test_c_file, era_upper) in ERA_TEST_FILE_MAP.items():
-        _generate_complete_test_file(era, fixture_file, test_c_file, era_upper)
+        total_tests += _generate_complete_test_file(
+            era, fixture_file, test_c_file, era_upper
+        )
 
     print("\nAll test files generated successfully!")
+    return total_tests

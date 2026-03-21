@@ -5,8 +5,12 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from common import read_file_safe, write_generated_c_file, sanitize_c_identifier
-from paths import GENERATED_OPCERT_DIR
+from tests.unit.generators.common import (
+    read_file_safe,
+    write_generated_c_file,
+    sanitize_c_identifier,
+)
+from tests.unit.generators.paths import GENERATED_OPCERT_DIR
 
 FIXTURE_HEADER = GENERATED_OPCERT_DIR / "test_opcert_fixtures.h"
 TEST_FILE = GENERATED_OPCERT_DIR / "test_opcert.c"
@@ -113,15 +117,17 @@ def _build_test_functions(fixture_names: list[str]) -> tuple[str, list[str]]:
         sanitized = sanitize_c_identifier(raw_name, uppercase=False)
         prefix = "sign_opcert_"
         if sanitized.startswith(prefix):
-            sanitized = sanitized[len(prefix):]
+            sanitized = sanitized[len(prefix) :]
         function_name = f"test_opCert_{sanitized}_{idx}"
-        lines.extend([
-            f"static void {function_name}(void **state) {{",
-            "    (void) state;",
-            f"    run_opcert_fixture(&OPCERT_FIXTURES[{idx}]);",
-            "}",
-            "",
-        ])
+        lines.extend(
+            [
+                f"static void {function_name}(void **state) {{",
+                "    (void) state;",
+                f"    run_opcert_fixture(&OPCERT_FIXTURES[{idx}]);",
+                "}",
+                "",
+            ]
+        )
         function_names.append(function_name)
     return "\n".join(lines), function_names
 
@@ -137,17 +143,21 @@ def _build_main(function_names: list[str]) -> str:
     ]
     for name in function_names:
         lines.append(f"        cmocka_unit_test({name}),")
-    lines.extend([
-        "    };",
-        "    return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);",
-        "}",
-    ])
+    lines.extend(
+        [
+            "    };",
+            "    return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);",
+            "}",
+        ]
+    )
     return "\n".join(lines)
 
 
-def generate_opcert_test_runners() -> None:
+def generate_opcert_test_runners() -> int:
     if not FIXTURE_HEADER.exists():
-        raise FileNotFoundError("Opcert fixtures missing. Run generate_unit_tests_from_ragger.py fixtures stage first.")
+        raise FileNotFoundError(
+            "Opcert fixtures missing. Run generate_unit_tests_from_ragger.py fixtures stage first."
+        )
 
     fixture_names = _extract_fixture_names(FIXTURE_HEADER)
     if not fixture_names:
@@ -158,5 +168,5 @@ def generate_opcert_test_runners() -> None:
     test_funcs, func_names = _build_test_functions(fixture_names)
     main = _build_main(func_names)
 
-    content = "\n".join([header, helpers, test_funcs, main, ""]) 
+    content = "\n".join([header, helpers, test_funcs, main, ""])
     write_generated_c_file(TEST_FILE, content)

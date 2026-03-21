@@ -4,19 +4,21 @@ from __future__ import annotations
 
 from typing import Any
 
-from common import (
+from tests.unit.generators.common import (
     write_generated_c_file,
     _ensure_base58_module,
-    _add_tests_to_sys_path,
 )
-from paths import GENERATED_NATIVE_SCRIPT_DIR
-from native_script_codegen import (
+from tests.unit.generators.paths import GENERATED_NATIVE_SCRIPT_DIR
+from tests.unit.generators.native_script_codegen import (
     generate_native_script_tree_recursive,
     generate_simple_script_fixture,
     generate_finish_apdu_payload,
 )
-    
-FIXTURES_FILE = GENERATED_NATIVE_SCRIPT_DIR / "test_derive_native_script_deny_fixtures.h"
+
+FIXTURES_FILE = (
+    GENERATED_NATIVE_SCRIPT_DIR / "test_derive_native_script_deny_fixtures.h"
+)
+
 
 def _load_native_script_test_cases() -> list[Any]:
     """
@@ -29,11 +31,10 @@ def _load_native_script_test_cases() -> list[Any]:
         List of InvalidScriptTestCase objects from ragger tests
     """
     _ensure_base58_module()
-    _add_tests_to_sys_path()
 
     # Import test cases from ragger standalone input files
-    from standalone.input_files.native_script import (  # type: ignore
-        InvalidScriptTestCases
+    from tests.standalone.input_files.native_script import (  # type: ignore
+        InvalidScriptTestCases,
     )
 
     return InvalidScriptTestCases
@@ -42,18 +43,18 @@ def _load_native_script_test_cases() -> list[Any]:
 def _build_fixtures() -> str:
     """
     Generate complete C file content for native script hash derivation fixtures.
-     
+
     Tree structure:
     - Each test case is a root of a native script tree
     - Leaf nodes: SIMPLE scripts (PUBKEY, INVALID_BEFORE/HEREAFTER)
     - Internal nodes: COMPLEX scripts (ALL, ANY, N_OF_K) with children
-    
+
     Returns:
         Complete C file content as string
     """
     # Load test cases from ragger tests
     all_test_cases = _load_native_script_test_cases()
-    
+
     print(f"  Loaded {len(all_test_cases)} test cases")
     print()
 
@@ -87,77 +88,98 @@ def _build_fixtures() -> str:
         "// ======================================================================",
         "",
     ]
-    
+
     # Generate each test case as a script tree
     test_case_root_identifiers = []
-    
+
     for test_case_index, test_case in enumerate(all_test_cases):
         test_case_name_sanitized = test_case.name.replace(" ", "_").replace("#", "NUM")
         base_id = f"TC{test_case_index}_{test_case_name_sanitized.upper()}"
-        
+
         print(f"  [{test_case_index:2d}] Generating tree for: {test_case.name}")
-        
-        header_lines.append("// ======================================================================")
+
+        header_lines.append(
+            "// ======================================================================"
+        )
         header_lines.append(f"// Test Case [{test_case_index}]: {test_case.name}")
-        header_lines.append("// Source: tests/standalone/input_files/native_script.py > deny tests")
-        header_lines.append("// ======================================================================")
+        header_lines.append(
+            "// Source: tests/standalone/input_files/native_script.py > deny tests"
+        )
+        header_lines.append(
+            "// ======================================================================"
+        )
         header_lines.append("")
-        
+
         # Recursively generate script tree
         tree_lines, root_script_id = generate_native_script_tree_recursive(
-            test_case.script,
-            base_id,
-            0,
-            generate_simple_script_fixture
+            test_case.script, base_id, 0, generate_simple_script_fixture
         )
         header_lines.extend(tree_lines)
         header_lines.append("")
-        
+
         # Generate finish APDU payload
         finish_lines, finish_array_name = generate_finish_apdu_payload(
-            base_id,
-            test_case.displayFormat
+            base_id, test_case.displayFormat
         )
         header_lines.extend(finish_lines)
-        
+
         # Store root identifier for test case array
-        test_case_root_identifiers.append((
-            base_id,
-            test_case.name,
-            root_script_id,
-            finish_array_name,
-            test_case.nano_skip,
-        test_case.expected_in_unit_test.sw.name
-        ))
+        test_case_root_identifiers.append(
+            (
+                base_id,
+                test_case.name,
+                root_script_id,
+                finish_array_name,
+                test_case.nano_skip,
+                test_case.expected_in_unit_test.sw.name,
+            )
+        )
     # Generate test case array
-    header_lines.extend([
-        "// ======================================================================",
-        "// Test Case Array",
-        "// ======================================================================",
-        "",
-        "static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {",
-    ])
-    
-    for base_id, name, root_id, finish_apdu_array, nano_skip, expected_swo in test_case_root_identifiers:
+    header_lines.extend(
+        [
+            "// ======================================================================",
+            "// Test Case Array",
+            "// ======================================================================",
+            "",
+            "static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {",
+        ]
+    )
+
+    for (
+        base_id,
+        name,
+        root_id,
+        finish_apdu_array,
+        nano_skip,
+        expected_swo,
+    ) in test_case_root_identifiers:
         nano_skip_str = "true" if nano_skip else "false"
         # Add source traceability comment
-        header_lines.append(f"    // Source: tests/standalone/input_files/native_script.py > deny tests > {name}")
+        header_lines.append(
+            f"    // Source: tests/standalone/input_files/native_script.py > deny tests > {name}"
+        )
         header_lines.append("    {")
         header_lines.append(f'        .name = "{name}",')
-        header_lines.append(f"        .root_script = (const native_script_t*)&{root_id},")
+        header_lines.append(
+            f"        .root_script = (const native_script_t*)&{root_id},"
+        )
         header_lines.append(f"        .expected_response = {expected_swo},")
         header_lines.append(f"        .nano_skip = {nano_skip_str},")
         header_lines.append(f"        .finish_apdu_payload = {finish_apdu_array},")
-        header_lines.append(f"        .finish_apdu_payload_length = sizeof({finish_apdu_array}),")
+        header_lines.append(
+            f"        .finish_apdu_payload_length = sizeof({finish_apdu_array}),"
+        )
         header_lines.append("    },")
-    
-    header_lines.extend([
-        "};",
-        "",
-        f"#define NATIVE_SCRIPT_FIXTURES_COUNT {len(test_case_root_identifiers)}",
-        "",
-    ])
-    
+
+    header_lines.extend(
+        [
+            "};",
+            "",
+            f"#define NATIVE_SCRIPT_FIXTURES_COUNT {len(test_case_root_identifiers)}",
+            "",
+        ]
+    )
+
     return "\n".join(header_lines)
 
 
@@ -169,7 +191,7 @@ def generate_derive_native_script_deny_fixtures() -> None:
     Creates a single header file with all test fixtures as script trees:
     - Leaf nodes: SIMPLE scripts (PUBKEY, INVALID_BEFORE/HEREAFTER)
     - Internal nodes: COMPLEX scripts (ALL, ANY, N_OF_K) containing children
-    
+
 
     """
     print("Generating derive_native_script_fixtures.h...")
@@ -177,6 +199,6 @@ def generate_derive_native_script_deny_fixtures() -> None:
 
     fixtures = _build_fixtures()
     write_generated_c_file(FIXTURES_FILE, fixtures)
-    
+
     print()
     print(f"Generated {FIXTURES_FILE}")

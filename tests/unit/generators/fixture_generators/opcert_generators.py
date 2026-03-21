@@ -4,23 +4,22 @@ from __future__ import annotations
 
 from typing import Sequence
 
-from common import (
-    _add_tests_to_sys_path,
+from tests.unit.generators.common import (
     _ensure_base58_module,
     extract_apdu_payload,
     write_generated_c_file,
     sanitize_c_identifier,
     format_bytes_as_c_array,
 )
-from paths import GENERATED_OPCERT_DIR
+from tests.unit.generators.paths import GENERATED_OPCERT_DIR
 
 FIXTURES_FILE = GENERATED_OPCERT_DIR / "test_opcert_fixtures.h"
 
 
 def _load_opcert_test_cases() -> Sequence[object]:
-    _add_tests_to_sys_path()
     _ensure_base58_module()
-    from standalone.input_files.signOpCert import opCertTestCases  # type: ignore
+    from tests.standalone.input_files.signOpCert import opCertTestCases  # type: ignore
+
     return opCertTestCases
 
 
@@ -40,7 +39,7 @@ def generate_opcert_fixtures() -> None:
     if not test_cases:
         raise RuntimeError("No opcert test cases found")
 
-    from application_client.command_builder import CommandBuilder  # type: ignore
+    from tests.application_client.command_builder import CommandBuilder  # type: ignore
 
     builder = CommandBuilder()
 
@@ -51,7 +50,7 @@ def generate_opcert_fixtures() -> None:
         "",
         "#include <stdint.h>",
         "#include <stddef.h>",
-        "#include \"test_fixture_types.h\"",
+        '#include "test_fixture_types.h"',
         "",
     ]
 
@@ -66,7 +65,7 @@ def generate_opcert_fixtures() -> None:
         header_lines.append("")
         entry_lines = [
             "{",
-            f"    .name = \"{test_case.name}\",",
+            f'    .name = "{test_case.name}",',
             f"    .payload = {array_name},",
             f"    .payload_len = sizeof({array_name}),",
             f"    .expected_warning_bits = {_warning_expr_from_test_case(test_case)},",

@@ -10,15 +10,17 @@ This module provides Ragger tests for CIP-36 Vote check
 from dataclasses import dataclass
 from typing import List, Optional
 
-from application_client.security_warnings import WarningBit
-from application_client.status_words import StatusWord
+from tests.application_client.security_warnings import WarningBit
+from tests.application_client.status_words import StatusWord
 
 MAX_CIP36_PAYLOAD_SIZE = 250
+
 
 @dataclass(kw_only=True)
 class CIP36Vote:
     voteCastDataHex: str  # bytestring to sign in hex
     witnessPath: str  # the witness path for which we need a signature
+
 
 @dataclass(kw_only=True)
 class CVoteTestCase:
@@ -37,11 +39,13 @@ class CVoteDenyTestCase:
     If send_chunk_before_init is True, a CHUNK APDU is sent without a prior
     INIT, expecting SWO_COMMAND_NOT_ALLOWED.
     """
+
     name: str
     expected_sw: StatusWord
     init_payload_hex: Optional[str] = None
     invalid_witness_path: Optional[str] = None
     send_chunk_before_init: bool = False
+
 
 # pylint: disable=line-too-long
 cvoteTestCases = [

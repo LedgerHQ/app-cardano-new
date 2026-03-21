@@ -64,10 +64,10 @@ Use this short checklist when adding or updating fixtures:
    - Standalone ragger inputs: `tests/standalone/input_files/`
    - Generated unit fixtures: the relevant generator under `tests/unit/generators/`
    - Handwritten unit tests: `tests/unit/test_*.c`
-2. Regenerate generated unit artifacts when needed:
-   - `source ../venv/bin/activate`
-   - `PYTHONPATH=../.. python3 generators/generate_unit_tests_from_ragger.py`
-3. Rebuild unit tests:
+2. Regenerate generated unit artifacts when needed (from repository root):
+   - `source tests/venv/bin/activate`
+   - `PYTHONPATH=. python3 -m tests.unit.generators.generate_unit_tests_from_ragger all`
+3. Rebuild unit tests (from `tests/unit`):
    - `cmake -Bbuild -H. && make -C build -j8`
 4. Run the relevant unit target:
    - `CTEST_OUTPUT_ON_FAILURE=1 ctest --test-dir build -R <test_name>`
@@ -88,14 +88,14 @@ For the shared Python environment used by generators, see `../../doc/testing.md`
 
 Fixtures for sign-tx tests are generated from ragger fixtures and serialized through the shared Python command builder.
 
-Generators (run from `tests/unit/`):
+Generators (run from repository root):
 
 ```bash
-cd tests/unit && source ../venv/bin/activate
-PYTHONPATH=../.. python3 generators/generate_unit_tests_from_ragger.py
+source tests/venv/bin/activate
+PYTHONPATH=. python3 -m tests.unit.generators.generate_unit_tests_from_ragger all
 # or individual steps:
-PYTHONPATH=../.. python3 generators/generate_unit_tests_from_ragger.py fixtures
-PYTHONPATH=../.. python3 generators/generate_unit_tests_from_ragger.py generate-test-runners
+PYTHONPATH=. python3 -m tests.unit.generators.generate_unit_tests_from_ragger fixtures
+PYTHONPATH=. python3 -m tests.unit.generators.generate_unit_tests_from_ragger generate-test-runners
 ```
 
 The default command runs all generators in order (fixtures, generate-test-runners, rejects, mock-data).

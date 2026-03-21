@@ -5,8 +5,12 @@ import re
 from pathlib import Path
 
 
-from common import read_file_safe, write_generated_c_file, sanitize_c_identifier
-from paths import GENERATED_DERIVE_ADDRESS_DIR
+from tests.unit.generators.common import (
+    read_file_safe,
+    write_generated_c_file,
+    sanitize_c_identifier,
+)
+from tests.unit.generators.paths import GENERATED_DERIVE_ADDRESS_DIR
 
 _DENY_ARRAY_PATTERN = re.compile(
     r"static\s+const\s+derive_address_fixture_t\s+DERIVE_ADDRESS_DENY_FIXTURES\[\]\s*=\s*\{(.*?)\};",
@@ -93,7 +97,9 @@ def _build_test_functions(fixture_names: list[str]) -> tuple[str, list[str]]:
     test_function_names: list[str] = []
 
     for idx, fixture_name in enumerate(fixture_names):
-        sanitized = sanitize_c_identifier(fixture_name, uppercase=False, handle_leading_digit=True)
+        sanitized = sanitize_c_identifier(
+            fixture_name, uppercase=False, handle_leading_digit=True
+        )
         test_function_name = f"test_derive_address_deny_{idx}_{sanitized}"
 
         test_functions.append(
@@ -114,7 +120,7 @@ def _build_main_function(test_function_names: list[str]) -> str:
 
     return (
         "int main(void) {\n"
-        "    TRACE(\"Starting test_derive_address_deny_tests\");\n"
+        '    TRACE("Starting test_derive_address_deny_tests");\n'
         "    const struct CMUnitTest tests[] = {\n"
         f"        {registrations},\n"
         "    };\n\n"
@@ -123,8 +129,10 @@ def _build_main_function(test_function_names: list[str]) -> str:
     )
 
 
-def generate_address_derivation_deny_test_runners() -> None:
-    fixture_header_path = GENERATED_DERIVE_ADDRESS_DIR / "test_address_derivation_fixtures_deny.h"
+def generate_address_derivation_deny_test_runners() -> int:
+    fixture_header_path = (
+        GENERATED_DERIVE_ADDRESS_DIR / "test_address_derivation_fixtures_deny.h"
+    )
     test_c_file = GENERATED_DERIVE_ADDRESS_DIR / "test_derive_address_deny_tests.c"
 
     fixture_names = _extract_deny_fixture_names(fixture_header_path)
@@ -132,10 +140,7 @@ def generate_address_derivation_deny_test_runners() -> None:
     main_section = _build_main_function(test_function_names)
 
     complete_file = (
-        _build_test_file_header()
-        + test_functions_section
-        + "\n"
-        + main_section
+        _build_test_file_header() + test_functions_section + "\n" + main_section
     )
 
     write_generated_c_file(test_c_file, complete_file)

@@ -70,3 +70,6 @@ Format: -> means explanation why not a bug.
 
 * `parse_opcert` reads `kesPeriod` before `issueCounter` from the wire, but `finalize_sign_opcert` serializes them in the opposite order (`issueCounter` then `kesPeriod`).
 -> intentional. The APDU wire protocol sends `kesPeriod` first (historical convention), but the opcert body that is actually signed must be `KES public key || issueCounter || kesPeriod` per the Cardano spec (see `doc/spec_pool_registration.md` section 3.3.4 and the cardano-crypto.js verification snippet). The parse order and the serialization order are deliberately different.
+
+* Mismatched test counts in generator output (WARNING: Mismatch between in-memory generation and file parsing).
+-> intentional validation redundancy. The unit test generator (`generate_unit_tests_from_ragger.py`) intentionally uses multiple methods to count generated test cases (in-memory tracking vs. regex parsing of generated C files) as a sanity check. Any mismatch is manually investigated during development. The generator does not live on its own and is only used to create testing data, so this warning is safe to ignore in automated runs unless explicitly debugging coverage.

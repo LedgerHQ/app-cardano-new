@@ -3,15 +3,14 @@
 import re
 from typing import List
 
-from common import (
-    _add_tests_to_sys_path,
+from tests.unit.generators.common import (
     extract_apdu_payload,
     format_bytes_as_c_array,
     read_file_safe,
     sanitize_c_identifier,
     write_generated_c_file,
 )
-from paths import GENERATED_SIGN_MSG_DIR
+from tests.unit.generators.paths import GENERATED_SIGN_MSG_DIR
 
 
 _FIXTURE_ARRAY_PATTERN = re.compile(
@@ -55,19 +54,19 @@ def _build_test_file_header() -> str:
 
 
 def _load_sign_msg_deny_test_cases() -> list:
-    _add_tests_to_sys_path()
-    from standalone.input_files.signMsg import signMsgDenyTestCases  # type: ignore
+    from tests.standalone.input_files.signMsg import signMsgDenyTestCases  # type: ignore
+
     return signMsgDenyTestCases
 
+
 def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
-    _add_tests_to_sys_path()
-    from standalone.input_files.signMsg import (  # type: ignore
+    from tests.standalone.input_files.signMsg import (  # type: ignore
         build_sign_msg_init_apdu_for_deny,
         build_sign_msg_chunk_apdu_for_deny,
         build_sign_msg_confirm_apdu_for_deny,
         SignMsgTestCase,
     )
-    from application_client.command_builder import CommandBuilder  # type: ignore
+    from tests.application_client.command_builder import CommandBuilder  # type: ignore
 
     deny_test_cases = _load_sign_msg_deny_test_cases()
     if len(deny_test_cases) == 0:
@@ -126,7 +125,9 @@ def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
             chunk_array_name = f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_CHUNK_APDU"
             helper_lines.extend(
                 format_bytes_as_c_array(
-                    extract_apdu_payload(build_sign_msg_chunk_apdu_for_deny(test_case, 0)),
+                    extract_apdu_payload(
+                        build_sign_msg_chunk_apdu_for_deny(test_case, 0)
+                    ),
                     chunk_array_name,
                     bytes_per_line=16,
                     return_as_list=True,
@@ -145,7 +146,9 @@ def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
         elif test_case.send_confirm_without_chunks:
             # Send INIT then CONFIRM (skip CHUNK phase)
             init_array_name = f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_INIT_APDU"
-            confirm_array_name = f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_CONFIRM_APDU"
+            confirm_array_name = (
+                f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_CONFIRM_APDU"
+            )
 
             helper_lines.extend(
                 format_bytes_as_c_array(
@@ -158,7 +161,9 @@ def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
             helper_lines.append("")
 
             # CONFIRM payload is empty
-            confirm_payload = extract_apdu_payload(build_sign_msg_confirm_apdu_for_deny(test_case))
+            confirm_payload = extract_apdu_payload(
+                build_sign_msg_confirm_apdu_for_deny(test_case)
+            )
             helper_lines.extend(
                 format_bytes_as_c_array(
                     confirm_payload,
@@ -176,9 +181,13 @@ def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
             helper_lines.append(
                 f"    run_deny_init_fixture({init_array_name}, sizeof({init_array_name}), SWO_SUCCESS);"
             )
-            helper_lines.append("    // Try to send CONFIRM before all chunks received (empty payload)")
+            helper_lines.append(
+                "    // Try to send CONFIRM before all chunks received (empty payload)"
+            )
             # Use explicit 0 for empty payloads instead of sizeof()
-            confirm_size = "0" if len(confirm_payload) == 0 else f"sizeof({confirm_array_name})"
+            confirm_size = (
+                "0" if len(confirm_payload) == 0 else f"sizeof({confirm_array_name})"
+            )
             helper_lines.append(
                 f"    run_deny_confirm_fixture({confirm_array_name}, {confirm_size}, {test_case.expected_status.name});"
             )
@@ -186,7 +195,10 @@ def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
             helper_lines.append("")
 
         elif test_case.invalid_chunk_size is not None or (
-            test_case.msgData.isAscii and not all(32 <= b < 127 for b in bytes.fromhex(test_case.msgData.messageHex))
+            test_case.msgData.isAscii
+            and not all(
+                32 <= b < 127 for b in bytes.fromhex(test_case.msgData.messageHex)
+            )
         ):
             # Send INIT successfully, then CHUNK with invalid size or non-ASCII data
             init_array_name = f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_INIT_APDU"
@@ -202,7 +214,9 @@ def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
             helper_lines.append("")
             helper_lines.extend(
                 format_bytes_as_c_array(
-                    extract_apdu_payload(build_sign_msg_chunk_apdu_for_deny(test_case, 0)),
+                    extract_apdu_payload(
+                        build_sign_msg_chunk_apdu_for_deny(test_case, 0)
+                    ),
                     chunk_array_name,
                     bytes_per_line=16,
                     return_as_list=True,
@@ -229,14 +243,18 @@ def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
         elif test_case.send_confirm_with_payload:
             # Send INIT, all CHUNKs successfully, then CONFIRM with payload
             init_array_name = f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_INIT_APDU"
-            confirm_array_name = f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_CONFIRM_APDU"
+            confirm_array_name = (
+                f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_CONFIRM_APDU"
+            )
 
             # Build normal chunks for this message
             transient_success_case = SignMsgTestCase(
                 name=test_case.name,
                 msgData=test_case.msgData,
             )
-            chunk_payloads = CommandBuilder().build_sign_msg_chunk_payloads(transient_success_case)
+            chunk_payloads = CommandBuilder().build_sign_msg_chunk_payloads(
+                transient_success_case
+            )
 
             helper_lines.extend(
                 format_bytes_as_c_array(
@@ -251,7 +269,9 @@ def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
             # Generate chunk arrays
             chunk_array_names = []
             for chunk_idx, chunk_payload in enumerate(chunk_payloads):
-                chunk_array_name = f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_CHUNK_{chunk_idx}_APDU"
+                chunk_array_name = (
+                    f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_CHUNK_{chunk_idx}_APDU"
+                )
                 chunk_array_names.append(chunk_array_name)
                 helper_lines.extend(
                     format_bytes_as_c_array(
@@ -265,7 +285,9 @@ def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
 
             helper_lines.extend(
                 format_bytes_as_c_array(
-                    extract_apdu_payload(build_sign_msg_confirm_apdu_for_deny(test_case)),
+                    extract_apdu_payload(
+                        build_sign_msg_confirm_apdu_for_deny(test_case)
+                    ),
                     confirm_array_name,
                     bytes_per_line=16,
                     return_as_list=True,
@@ -321,7 +343,9 @@ def _build_test_functions(names: List[str]) -> tuple[List[str], List[str]]:
     registrations: List[str] = []
 
     for index, name in enumerate(names):
-        sanitized = sanitize_c_identifier(name, uppercase=False, handle_leading_digit=True)
+        sanitized = sanitize_c_identifier(
+            name, uppercase=False, handle_leading_digit=True
+        )
         if not sanitized:
             sanitized = f"fixture_{index}"
         test_function_name = f"test_sign_message_{sanitized}_{index}"
@@ -337,7 +361,9 @@ def _build_test_functions(names: List[str]) -> tuple[List[str], List[str]]:
 
 
 def _build_main_function(test_names: List[str]) -> str:
-    registrations = ",\n        ".join(f"cmocka_unit_test({name})" for name in test_names)
+    registrations = ",\n        ".join(
+        f"cmocka_unit_test({name})" for name in test_names
+    )
     return (
         "// ======================================================================\n"
         "// Main\n"
@@ -351,7 +377,7 @@ def _build_main_function(test_names: List[str]) -> str:
     )
 
 
-def generate_sign_msg_test_runners() -> None:
+def generate_sign_msg_test_runners() -> int:
     fixture_header = GENERATED_SIGN_MSG_DIR / "test_sign_msg_fixtures.h"
     test_c_file = GENERATED_SIGN_MSG_DIR / "test_sign_msg.c"
 
@@ -376,3 +402,4 @@ def generate_sign_msg_test_runners() -> None:
 
     write_generated_c_file(test_c_file, complete_file)
     print(f"Generated {test_c_file}")
+    return len(all_test_names)

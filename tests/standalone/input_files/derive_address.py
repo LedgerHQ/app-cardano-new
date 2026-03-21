@@ -12,13 +12,14 @@ from dataclasses import dataclass
 
 from ragger.navigator import NavInsID
 
-from application_client.app_def import (
+from tests.application_client.app_def import (
     NetworkDesc,
     AddressType,
     Mainnet,
     Testnet,
     FakeNet,
 )
+
 
 @dataclass(kw_only=True)
 class DeriveAddressTestCase:
@@ -36,12 +37,14 @@ class DeriveAddressTestCase:
         None  # list of specific navigation instructions for Nano
     )
 
+
 def pointer_to_str(blockIndex: int, txIndex: int, certificateIndex: int) -> str:
     data: str = ""
     data += f"{blockIndex.to_bytes(4, 'big').hex()}"
     data += f"{txIndex.to_bytes(4, 'big').hex()}"
     data += f"{certificateIndex.to_bytes(4, 'big').hex()}"
     return data
+
 
 # pylint: disable=line-too-long
 byronTestCases = [
@@ -83,19 +86,19 @@ denyTestCases = [
         name="Derive_address_path_too_short",
         netDesc=Mainnet,
         addrType=AddressType.BYRON,
-        spendingValue="m/44'/1815'/1'"
+        spendingValue="m/44'/1815'/1'",
     ),
     DeriveAddressTestCase(
         name="Derive_address_invalid_path",
         netDesc=Mainnet,
         addrType=AddressType.BYRON,
-        spendingValue="m/44'/1815'/1'/5/10'"
+        spendingValue="m/44'/1815'/1'/5/10'",
     ),
     DeriveAddressTestCase(
         name="Derive_address_Byron_with_Shelley_path",
         netDesc=Mainnet,
         addrType=AddressType.BYRON,
-        spendingValue="m/1852'/1815'/1'/0/10"
+        spendingValue="m/1852'/1815'/1'/0/10",
     ),
     DeriveAddressTestCase(
         name="Derive_address_base_key_key_with_Byron_spending_path",

@@ -11,7 +11,7 @@ fixture generators (valid and reject test cases).
 from __future__ import annotations
 from typing import Any
 
-from common import extract_apdu_payload
+from tests.unit.generators.common import extract_apdu_payload
 
 
 def _is_simple_native_script(native_script: Any) -> bool:
@@ -24,7 +24,7 @@ def _is_simple_native_script(native_script: Any) -> bool:
     Returns:
         True if SIMPLE (leaf node), False if COMPLEX (internal node)
     """
-    from standalone.input_files.native_script import NativeScriptType  # type: ignore
+    from tests.standalone.input_files.native_script import NativeScriptType  # type: ignore
 
     simple_types = {
         NativeScriptType.PUBKEY_DEVICE_OWNED,
@@ -61,7 +61,7 @@ def generate_native_script_tree_recursive(
     Returns:
         Tuple of (list of C code lines, identifier of generated struct)
     """
-    from standalone.input_files.native_script import NativeScriptType  # type: ignore
+    from tests.standalone.input_files.native_script import NativeScriptType  # type: ignore
 
     current_unique_id = f"{base_unique_id}_C{child_index}"
     fixture_lines = []
@@ -71,8 +71,7 @@ def generate_native_script_tree_recursive(
     if is_leaf_node:
         # Leaf node: SIMPLE script (no children)
         simple_script_lines = simple_script_generator_func(
-            current_unique_id,
-            native_script
+            current_unique_id, native_script
         )
         fixture_lines.extend(simple_script_lines)
         return fixture_lines, f"SCRIPT_{current_unique_id}"
@@ -84,25 +83,28 @@ def generate_native_script_tree_recursive(
         required_count = getattr(native_script.params, "requiredCount", None)
 
         if script_type == NativeScriptType.N_OF_K:
-            fixture_lines.append(f"// N_OF_K (internal node): {required_count} of {len(child_scripts_list)} children required")
+            fixture_lines.append(
+                f"// N_OF_K (internal node): {required_count} of {len(child_scripts_list)} children required"
+            )
         else:
-            fixture_lines.append(f"// {script_type.name} (internal node): {len(child_scripts_list)} children")
+            fixture_lines.append(
+                f"// {script_type.name} (internal node): {len(child_scripts_list)} children"
+            )
 
         # Recursively generate each child (post-order traversal)
         child_script_identifiers = []
         for child_idx, child_script in enumerate(child_scripts_list):
             child_lines, child_struct_id = generate_native_script_tree_recursive(
-                child_script,
-                current_unique_id,
-                child_idx,
-                simple_script_generator_func
+                child_script, current_unique_id, child_idx, simple_script_generator_func
             )
             fixture_lines.extend(child_lines)
             fixture_lines.append("")
             child_script_identifiers.append(child_struct_id)
 
         # Generate array of child script pointers
-        fixture_lines.append(f"static const native_script_t* CHILDREN_{current_unique_id}[] = {{")
+        fixture_lines.append(
+            f"static const native_script_t* CHILDREN_{current_unique_id}[] = {{"
+        )
         if len(child_script_identifiers) == 0:
             fixture_lines.append("    NULL")
         else:
@@ -114,16 +116,24 @@ def generate_native_script_tree_recursive(
         # Generate parent COMPLEX script struct.
         # Union field name and contents differ per type; N_OF_K adds required_count.
         union_field = script_type.name.lower()  # "all", "any", or "n_of_k"
-        fixture_lines.append(f"static const native_script_t SCRIPT_{current_unique_id} = {{")
+        fixture_lines.append(
+            f"static const native_script_t SCRIPT_{current_unique_id} = {{"
+        )
         fixture_lines.append(f"    .type = NATIVE_SCRIPT_TYPE_{script_type.name},")
         fixture_lines.append("    .impl = {")
         fixture_lines.append("        .complex = {")
         fixture_lines.append("             .params = {")
         fixture_lines.append(f"                 .{union_field} = {{")
         if required_count is not None:
-            fixture_lines.append(f"                     .required_count = {required_count},")
-        fixture_lines.append(f"                     .scripts = CHILDREN_{current_unique_id},")
-        fixture_lines.append(f"                     .scripts_count = {len(child_scripts_list)},")
+            fixture_lines.append(
+                f"                     .required_count = {required_count},"
+            )
+        fixture_lines.append(
+            f"                     .scripts = CHILDREN_{current_unique_id},"
+        )
+        fixture_lines.append(
+            f"                     .scripts_count = {len(child_scripts_list)},"
+        )
         fixture_lines.append("                 }")
         fixture_lines.append("             }")
         fixture_lines.append("         }")
@@ -147,7 +157,7 @@ def generate_simple_script_apdu_array(
     Returns:
         Tuple of (C code lines, array name)
     """
-    from application_client.command_builder import CommandBuilder  # type: ignore
+    from tests.application_client.command_builder import CommandBuilder  # type: ignore
 
     command_builder = CommandBuilder()
     full_apdu = command_builder.derive_script_add_simple(script)
@@ -162,7 +172,7 @@ def generate_simple_script_apdu_array(
 
     # Format bytes in rows of 8 for readability
     for i in range(0, len(apdu_payload), 8):
-        byte_chunk = apdu_payload[i:i+8]
+        byte_chunk = apdu_payload[i : i + 8]
         hex_bytes = ", ".join(f"0x{b:02x}" for b in byte_chunk)
         trailing_comma = "," if i + 8 < len(apdu_payload) else ""
         lines.append(f"    {hex_bytes}{trailing_comma}")
@@ -226,7 +236,7 @@ def generate_finish_apdu_payload(
     Returns:
         Tuple of (C code lines, array name)
     """
-    from application_client.command_builder import CommandBuilder  # type: ignore
+    from tests.application_client.command_builder import CommandBuilder  # type: ignore
 
     command_builder = CommandBuilder()
     full_apdu = command_builder.derive_script_finish(display_format)
@@ -236,12 +246,14 @@ def generate_finish_apdu_payload(
     array_name = f"FINISH_APDU_PAYLOAD_{test_case_id}"
 
     lines.append("// APDU payload for P1_NATIVE_SCRIPT_FINISH")
-    lines.append(f"// Display format: {display_format.name} (0x{display_format.value:02x})")
+    lines.append(
+        f"// Display format: {display_format.name} (0x{display_format.value:02x})"
+    )
     lines.append(f"static const uint8_t {array_name}[{len(apdu_payload)}] = {{")
 
     # Format bytes in rows of 8 for readability
     for i in range(0, len(apdu_payload), 8):
-        byte_chunk = apdu_payload[i:i+8]
+        byte_chunk = apdu_payload[i : i + 8]
         hex_bytes = ", ".join(f"0x{b:02x}" for b in byte_chunk)
         trailing_comma = "," if i + 8 < len(apdu_payload) else ""
         lines.append(f"    {hex_bytes}{trailing_comma}")
