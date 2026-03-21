@@ -362,6 +362,31 @@ static void test_pool_registration_reward_account_path_compatibility(void **stat
     assert_int_equal(policy, POLICY_SHOW);
 }
 
+static void test_pool_registration_owner_with_script_hash_denied(void **state) {
+    (void) state;
+    reset_context();
+
+    // Hand-crafted test case to cover policy branch that is normally unreachable
+    // from ragger tests because the CommandBuilder does not allow invalid values for that enum
+    // (and specifically does not support script hash for pool owners).
+    static const uint8_t script_hash[] = {
+        0x29, 0xfb, 0x5f, 0xd4, 0xaa, 0x8c, 0xad, 0xd6, 0x70, 0x5a, 0xcc, 0x82, 0x63, 0xce, 0xe0, 0xfc,
+        0x62, 0xed, 0xca, 0x5a, 0xc3, 0x8d, 0xb5, 0x93, 0xfe, 0xc2, 0xf9, 0xfd,
+    };
+    ext_credential_t owner_credential = {
+        .type = EXT_CREDENTIAL_SCRIPT_HASH,
+        .scriptHash = script_hash,
+    };
+    warning_bits_t w = 0;
+
+    security_policy_t policy = policyForSignTxStakePoolRegistrationOwner(
+        SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR,
+        &owner_credential,
+        &w
+    );
+    assert_int_equal(policy, POLICY_DENY);
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_reward_key_third_party_output_denied),
@@ -377,6 +402,7 @@ int main(void) {
         cmocka_unit_test(test_pool_retirement_allowed_in_ordinary),
         cmocka_unit_test(test_pool_retirement_allowed_in_plutus),
         cmocka_unit_test(test_pool_registration_reward_account_path_compatibility),
+        cmocka_unit_test(test_pool_registration_owner_with_script_hash_denied),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

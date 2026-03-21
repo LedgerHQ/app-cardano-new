@@ -4695,6 +4695,33 @@ requiredSignerDenyTestCases: List[SignTxTestCase] = [
 # =================
 transactionInitDenyTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
+        name="Deny_ordinary_tx_with_collateral_inputs",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            collateralInputs=[inputs["utxoShelley"]],
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        deny_before_review=True,
+    ),
+    SignTxTestCase(
+        name="Deny_pool_registration_operator_with_script_data_hash",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoWithPath0"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            certificates=[certificates["poolRegistrationOperatorNoOwnersNoRelays"]],
+            scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
+        ),
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        deny_before_review=True,
+    ),
+    SignTxTestCase(
         name="Non_mainnet_protocol_magic",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824072),
@@ -6199,6 +6226,89 @@ certificateStakePoolRetirementDenyTestCases: List[SignTxTestCase] = [
 
 withdrawalDenyTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
+        name="Deny_withdrawal_with_key_hash_in_ordinary_tx",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            withdrawals=[
+                Withdrawal(
+                    CredentialParams(
+                        CredentialParamsType.KEY_HASH,
+                        "1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c",
+                    ),
+                    111,
+                )
+            ],
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        deny_before_review=True,
+    ),
+    SignTxTestCase(
+        name="Deny_withdrawal_with_script_hash_in_ordinary_tx",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            withdrawals=[
+                Withdrawal(
+                    CredentialParams(
+                        CredentialParamsType.SCRIPT_HASH,
+                        "29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd",
+                    ),
+                    111,
+                )
+            ],
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        deny_before_review=True,
+    ),
+    SignTxTestCase(
+        name="Deny_withdrawal_with_key_path_in_multisig_tx",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            withdrawals=[
+                Withdrawal(
+                    CredentialParams(
+                        CredentialParamsType.KEY_PATH, "m/1852'/1815'/0'/2/0"
+                    ),
+                    111,
+                )
+            ],
+        ),
+        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        deny_before_review=True,
+    ),
+    SignTxTestCase(
+        name="Deny_withdrawal_with_key_hash_in_multisig_tx",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            withdrawals=[
+                Withdrawal(
+                    CredentialParams(
+                        CredentialParamsType.KEY_HASH,
+                        "1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c",
+                    ),
+                    111,
+                )
+            ],
+        ),
+        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        deny_before_review=True,
+    ),
+    SignTxTestCase(
         name="Deny_tx_with_invalid_canonical_ordering_of_withdrawals",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
@@ -7250,6 +7360,19 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
 
 collateralOutputDenyTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
+        name="Deny_collateral_output_with_byron_address",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+            collateralOutput=outputs["externalByronMainnet"],
+        ),
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        deny_before_review=True,
+    ),
+    SignTxTestCase(
         name="Collateral_output_with_datum_hash",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
@@ -7348,19 +7471,6 @@ collateralOutputDenyTestCases: List[SignTxTestCase] = [
             certificates=[certificates["poolRegistrationOperatorNoOwnersNoRelays"]],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
-        txBody="",
-        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        deny_before_review=True,
-    ),
-    SignTxTestCase(
-        name="Deny_collateral_output_with_byron_address",
-        tx=Transaction(
-            network=Mainnet,
-            inputs=[inputs["utxoShelley"]],
-            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
-            collateralOutput=outputs["externalByronMainnet"],
-        ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="",
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
@@ -8243,6 +8353,32 @@ stakePoolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
 ]
 
 outputDenyTestCases: List[SignTxTestCase] = [
+    SignTxTestCase(
+        name="Deny_pool_registration_operator_with_datum_hash",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["trezorParityDatumHash1"]],
+            certificates=[certificates["poolRegistrationOperatorNoOwnersNoRelays"]],
+        ),
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        deny_before_review=True,
+    ),
+    SignTxTestCase(
+        name="Deny_pool_registration_operator_with_forbidden_ref_script_denied",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoWithPath0"]],
+            outputs=[outputs["refScriptExternalMap"]],
+            certificates=[certificates["poolRegistrationOperatorNoOwnersNoRelays"]],
+        ),
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        deny_before_review=True,
+    ),
     SignTxTestCase(
         name="Reward_address_key_third_party_output",
         tx=Transaction(

@@ -2230,15 +2230,11 @@ static inline security_policy_t _poolRegistrationOwnerWitnessPolicy(
     LEDGER_ASSERT(witnessPath != NULL, "NULL witnessPath");
     switch (bip44_classifyPath(witnessPath)) {
         case PATH_ORDINARY_STAKING_KEY:
-            if (poolOwnerPath != NULL) {
-                // an owner was given by path
-                // the witness path must be identical
-                DENY_UNLESS(bip44_pathsEqual(witnessPath, poolOwnerPath));
-            } else {
-                // no owner was given by path
-                // we must not allow witnesses because they might witness owners given by key hash
-                DENY();
-            }
+            LEDGER_ASSERT(poolOwnerPath != NULL, "NULL poolOwnerPath");
+            // an owner was given by path
+            // the witness path must be identical
+            DENY_UNLESS(bip44_pathsEqual(witnessPath, poolOwnerPath));
+
             SHOW_IF(mark_unusual_key_derivation(w, witnessPath));
             SHOW();
             break;
