@@ -2567,6 +2567,50 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_OUTPUT
 };
 
 
+// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Device_owned_output_in_Pool_Registration_Owner_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DEVICE_OWNED_OUTPUT_IN_POOL_REGISTRATION_OWNER_TX[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000003B020001058000073C800007178000000000000000000000002205"
+    "8000073C8000071780000000000000020000000000000000006CA79300010100"
+    "00000000000000002A000000000000000A0301450013381D918EC0283CEEFF60"
+    "F7F4FC21E1540E053CCF8A77307A7A32AD07821CD344D7FD7E3AE5F2ED863218"
+    "CB979FF1D59E50C4276BDC479B0D0844500000000BA43B7400000000001443FD"
+    "000000000000000003000000000000006400E1794D9B3408C9FB67B950A48A06"
+    "90F070F117E9978F7FC1D120FC58AD000200040202058000073C",
+        .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
+        .more = true,
+    },
+    {
+        .hex_payload =
+    "8000071780000000000000020000000000794D9B3408C9FB67B950A48A0690F0"
+    "70F117E9978F7FC1D120FC58AD00020BB80236E44B9A0100020BB80236E44B9B"
+    "0224FF780133A2E383A5C4340A07C276E501020BB8020D616161612E62626262"
+    "2E636F6D02020D616161612E626262632E636F6D002968747470733A2F2F7777"
+    "772E76616375756D6C6162732E636F6D2F73616D706C6555726C2E6A736F6ECD"
+    "B714FD722C24AEB10C93DBB0FF03BD4783441CD5BA2A8B6F373390520535BB",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000001",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
 // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Different_index
 static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DIFFERENT_INDEX[] = {
     {
@@ -2779,6 +2823,114 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_POOL_REGISTRATION_O
 };
 
 
+// Source: tests/standalone/input_files/signTx.py > votingDenyTestCases > Ordinary_tx_with_committee_hot_key_hash_voter
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_VOTING_ORDINARY_TX_WITH_COMMITTEE_HOT_KEY_HASH_VOTER[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000003B01002B82D818582183581C9E1C71DE652EC8B85FEC296F0685CA"
+    "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
+    "00000000000000002A000000000000000A007AFD028B504C3668102B129B37A8"
+    "6C09A2872F76741DC7A68E2149C800013B40265111D8BB3C3C608D95B3A0BF83"
+    "461ACE32D79336579A1939B3AAD1C0B700000003020200127777772E76616375"
+    "756D6C6162732E636F6D1AFD028B504C3668102B129B37A86C09A2872F76741D"
+    "C7A68E2149C8DEADBEEF",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+
+// Source: tests/standalone/input_files/signTx.py > requiredSignerDenyTestCases > Required_signer_path_pool_cold_key
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_POOL_COLD_KEY[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000000000000000002A000000000000000A00048000073D800007178000"
+    "000080000000",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "048000073D800007178000000080000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+// Source: tests/standalone/input_files/signTx.py > requiredSignerDenyTestCases > Required_signer_path_cvote_account
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_CVOTE_ACCOUNT[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000000000000000002A000000000000000A00038000069E800007178000"
+    "0000",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "038000069E8000071780000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+// Source: tests/standalone/input_files/signTx.py > requiredSignerDenyTestCases > Required_signer_path_cvote_key
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_CVOTE_KEY[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000000000000000002A000000000000000A00058000069E800007178000"
+    "00000000000000000000",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000069E80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+
 // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdDenyTestCases > Path_sent_in_for_Pool_Registration_Owner_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_ID_PATH_SENT_IN_FOR_POOL_REGISTRATION_OWNER_TX[] = {
     {
@@ -2892,6 +3044,48 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_NON_STAKING_PATH_FO
     },
 };
 
+
+// Source: tests/standalone/input_files/signTx.py > outputDenyTestCases > Reward_address_key_third_party_output
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_OUTPUT_REWARD_ADDRESS_KEY_THIRD_PARTY_OUTPUT[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000002D01001DE0DB219EE5CE9A74F98FDADC2DE13EFCED5A154EF8D4D4"
+    "1929D5BF9FF6000000000000000A0001010000000000000000002A0000000000"
+    "00000A",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+// Source: tests/standalone/input_files/signTx.py > outputDenyTestCases > Reward_address_script_third_party_output
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_OUTPUT_REWARD_ADDRESS_SCRIPT_THIRD_PARTY_OUTPUT[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000002D01001DF0122A946B9AD3D2DDF029D3A828F0468AECE76895F15C"
+    "9EFBD69B4277000000000000000A0001010000000000000000002A0000000000"
+    "00000A",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
 
 // Source: tests/standalone/input_files/signTx.py > outputDenyTestCases > Legacy_output_with_inline_datum
 static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_OUTPUT_LEGACY_OUTPUT_WITH_INLINE_DATUM[] = {
@@ -4528,6 +4722,18 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
+    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Device_owned_output_in_Pool_Registration_Owner_Tx
+    {
+        .name = "[DENY_POOL_OWNER] Device_owned_output_in_Pool_Registration_Owner_Tx",
+        .init_hex =
+        "0000000000000000012D964A0904000100010200010000010100000100000000"
+        "010101000000000101000201B9",
+        .chunks = SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DEVICE_OWNED_OUTPUT_IN_POOL_REGISTRATION_OWNER_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DEVICE_OWNED_OUTPUT_IN_POOL_REGISTRATION_OWNER_TX),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
     // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Different_index
     {
         .name = "[DENY_POOL_OWNER] Different_index",
@@ -4588,6 +4794,54 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
+    // Source: tests/standalone/input_files/signTx.py > votingDenyTestCases > Ordinary_tx_with_committee_hot_key_hash_voter
+    {
+        .name = "[DENY_VOTING] Ordinary_tx_with_committee_hot_key_hash_voter",
+        .init_hex =
+        "0000000000000000012D964A0903000100010200000000010100000100000000"
+        "010101000000010101000100EA",
+        .chunks = SIGN_TX_SEGMENTS_DENY_VOTING_ORDINARY_TX_WITH_COMMITTEE_HOT_KEY_HASH_VOTER,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_VOTING_ORDINARY_TX_WITH_COMMITTEE_HOT_KEY_HASH_VOTER),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > requiredSignerDenyTestCases > Required_signer_path_pool_cold_key
+    {
+        .name = "[DENY_REQUIRED_SIGNER] Required_signer_path_pool_cold_key",
+        .init_hex =
+        "0000000000000000012D964A0907000100000200000000010100000100000001"
+        "02010100000000010100020046",
+        .chunks = SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_POOL_COLD_KEY,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_POOL_COLD_KEY),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > requiredSignerDenyTestCases > Required_signer_path_cvote_account
+    {
+        .name = "[DENY_REQUIRED_SIGNER] Required_signer_path_cvote_account",
+        .init_hex =
+        "0000000000000000012D964A0907000100000200000000010100000100000001"
+        "02010100000000010100020042",
+        .chunks = SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_CVOTE_ACCOUNT,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_CVOTE_ACCOUNT),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > requiredSignerDenyTestCases > Required_signer_path_cvote_key
+    {
+        .name = "[DENY_REQUIRED_SIGNER] Required_signer_path_cvote_key",
+        .init_hex =
+        "0000000000000000012D964A0907000100000200000000010100000100000001"
+        "0201010000000001010002004A",
+        .chunks = SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_CVOTE_KEY,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_CVOTE_KEY),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
     // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdDenyTestCases > Path_sent_in_for_Pool_Registration_Owner_Tx
     {
         .name = "[DENY_POOL_ID] Path_sent_in_for_Pool_Registration_Owner_Tx",
@@ -4620,6 +4874,30 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         "0101010000000001010001016D",
         .chunks = SIGN_TX_SEGMENTS_DENY_POOL_OWNER_NON_STAKING_PATH_FOR_POOL_REGISTRATION_OWNER_TX,
         .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_POOL_OWNER_NON_STAKING_PATH_FOR_POOL_REGISTRATION_OWNER_TX),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > outputDenyTestCases > Reward_address_key_third_party_output
+    {
+        .name = "[DENY_OUTPUT] Reward_address_key_third_party_output",
+        .init_hex =
+        "0000000000000000012D964A0903000100010200000000010100000100000000"
+        "01010100000000010100010063",
+        .chunks = SIGN_TX_SEGMENTS_DENY_OUTPUT_REWARD_ADDRESS_KEY_THIRD_PARTY_OUTPUT,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_OUTPUT_REWARD_ADDRESS_KEY_THIRD_PARTY_OUTPUT),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > outputDenyTestCases > Reward_address_script_third_party_output
+    {
+        .name = "[DENY_OUTPUT] Reward_address_script_third_party_output",
+        .init_hex =
+        "0000000000000000012D964A0903000100010200000000010100000100000000"
+        "01010100000000010100010063",
+        .chunks = SIGN_TX_SEGMENTS_DENY_OUTPUT_REWARD_ADDRESS_SCRIPT_THIRD_PARTY_OUTPUT,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_OUTPUT_REWARD_ADDRESS_SCRIPT_THIRD_PARTY_OUTPUT),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,

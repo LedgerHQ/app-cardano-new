@@ -3149,6 +3149,29 @@ vote3_unique = Vote(
     VotingProcedure(VoteOption.YES),
 )
 
+votingDenyTestCases: List[SignTxTestCase] = [
+    SignTxTestCase(
+        name="Ordinary_tx_with_committee_hot_key_hash_voter",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            votingProcedures=[
+                VoterVotes(
+                    Voter(
+                        VoterType.COMMITTEE_KEY_HASH,
+                        "7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8",
+                    ),
+                    [vote1],
+                )
+            ],
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    ),
+]
+
 testsConwayVotingProcedures: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Sign_tx_with_voting_procedures_COMMITTEE_KEY_PATH_voter",
@@ -4293,6 +4316,54 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad581c0bd5d796f5e54866a14300ec2a18d706f7461b8f0502cc2a182bc88d848400190bb84436e44b9af68400190bb84436e44b9b500178ff2483e3a2330a34c4a5e576c2078301190bb86d616161612e626262622e636f6d82026d616161612e626262632e636f6d82782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
+    ),
+]
+
+requiredSignerDenyTestCases: List[SignTxTestCase] = [
+    SignTxTestCase(
+        name="Required_signer_path_pool_cold_key",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[],
+            requiredSigners=[
+                RequiredSigner(TxRequiredSignerType.PATH, "m/1853'/1815'/0'/0'")
+            ],
+            includeNetworkId=True,
+        ),
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    ),
+    SignTxTestCase(
+        name="Required_signer_path_cvote_account",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[],
+            requiredSigners=[
+                RequiredSigner(TxRequiredSignerType.PATH, "m/1694'/1815'/0'")
+            ],
+            includeNetworkId=True,
+        ),
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    ),
+    SignTxTestCase(
+        name="Required_signer_path_cvote_key",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[],
+            requiredSigners=[
+                RequiredSigner(TxRequiredSignerType.PATH, "m/1694'/1815'/0'/0/0")
+            ],
+            includeNetworkId=True,
+        ),
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
 ]
 
@@ -7130,6 +7201,77 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
 
 poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
+        name="Device_owned_output_in_Pool_Registration_Owner_Tx",
+        tx=Transaction(
+            network=NetworkDesc(networkId=1, protocol=764824073),
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            certificates=[
+                Certificate(
+                    type=CertificateType.STAKE_POOL_REGISTRATION,
+                    params=PoolRegistrationParams(
+                        poolKey=PoolKey(
+                            type=PoolKeyType.THIRD_PARTY,
+                            key="13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad",
+                        ),
+                        vrfKeyHashHex="07821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d084450",
+                        pledge=50000000000,
+                        cost=340000000,
+                        margin=Margin(numerator=3, denominator=100),
+                        rewardAccount=PoolKey(
+                            type=PoolKeyType.THIRD_PARTY,
+                            key="e1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad",
+                        ),
+                        poolOwners=[
+                            PoolKey(
+                                type=PoolKeyType.DEVICE_OWNED,
+                                key="m/1852'/1815'/0'/2/0",
+                            ),
+                            PoolKey(
+                                type=PoolKeyType.THIRD_PARTY,
+                                key="794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad",
+                            ),
+                        ],
+                        relays=[
+                            Relay(
+                                type=RelayType.SINGLE_HOST_IP_ADDR,
+                                params=SingleHostIpAddrRelayParams(
+                                    portNumber=3000, ipv4="54.228.75.154", ipv6=None
+                                ),
+                            ),
+                            Relay(
+                                type=RelayType.SINGLE_HOST_IP_ADDR,
+                                params=SingleHostIpAddrRelayParams(
+                                    portNumber=3000,
+                                    ipv4="54.228.75.155",
+                                    ipv6="24ff:7801:33a2:e383:a5c4:340a:07c2:76e5",
+                                ),
+                            ),
+                            Relay(
+                                type=RelayType.SINGLE_HOST_HOSTNAME,
+                                params=SingleHostHostnameRelayParams(
+                                    portNumber=3000, dnsName="aaaa.bbbb.com"
+                                ),
+                            ),
+                            Relay(
+                                type=RelayType.MULTI_HOST,
+                                params=MultiHostRelayParams(dnsName="aaaa.bbbc.com"),
+                            ),
+                        ],
+                        metadata=PoolMetadataParams(
+                            metadataUrl="https://www.vacuumlabs.com/sampleUrl.json",
+                            metadataHashHex="cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
+                        ),
+                    ),
+                )
+            ],
+            ),
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        txBody="",
+        additionalWitnessPaths=["m/1852'/1815'/0'/2/0", "m/1852'/1815'/0'/2/1"],
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    ),
+    SignTxTestCase(
         name="Different_index",
         tx=Transaction(
             network=NetworkDesc(networkId=1, protocol=764824073),
@@ -7591,6 +7733,54 @@ stakePoolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
 ]
 
 outputDenyTestCases: List[SignTxTestCase] = [
+    SignTxTestCase(
+        name="Reward_address_key_third_party_output",
+        tx=Transaction(
+            network=NetworkDesc(networkId=1, protocol=764824073),
+            inputs=[inputs["utxoShelley"]],
+            outputs=[
+                TxOutputAlonzo(
+                    destination=TxOutputDestination(
+                        type=TxOutputDestinationType.THIRD_PARTY,
+                        params=ThirdPartyAddressParams(
+                            addressHex="e0db219ee5ce9a74f98fdadc2de13efced5a154ef8d4d41929d5bf9ff6"
+                        ),
+                    ),
+                    amount=10,
+                    format=TxOutputFormat.ARRAY_LEGACY,
+                    tokenBundle=[],
+                    datum=None,
+                )
+            ],
+            ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    ),
+    SignTxTestCase(
+        name="Reward_address_script_third_party_output",
+        tx=Transaction(
+            network=NetworkDesc(networkId=1, protocol=764824073),
+            inputs=[inputs["utxoShelley"]],
+            outputs=[
+                TxOutputAlonzo(
+                    destination=TxOutputDestination(
+                        type=TxOutputDestinationType.THIRD_PARTY,
+                        params=ThirdPartyAddressParams(
+                            addressHex="f0122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277"
+                        ),
+                    ),
+                    amount=10,
+                    format=TxOutputFormat.ARRAY_LEGACY,
+                    tokenBundle=[],
+                    datum=None,
+                )
+            ],
+            ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    ),
     SignTxTestCase(
         name="Legacy_output_with_inline_datum",
         tx=Transaction(

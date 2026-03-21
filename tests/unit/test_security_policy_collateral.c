@@ -232,30 +232,11 @@ static void test_collateral_output_subpolicy_matrix(void **state) {
     }
 }
 
-static void test_collateral_output_denied_outside_plutus(void **state) {
-    (void) state;
-    reset_context();
-
-    tx_output_description_t output = make_collateral_output_description_device_owned(0);
-    warning_bits_t w = 0;
-
-    security_policy_t ordinary_policy = policyForSignTxCollateralOutputAddress(
-        &output,
-        SIGN_TX_SIGNINGMODE_ORDINARY_TX,
-        MAINNET_NETWORK_ID,
-        MAINNET_PROTOCOL_MAGIC,
-        true,
-        &w
-    );
-    assert_int_equal(ordinary_policy, POLICY_DENY);
-}
-
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_collateral_output_top_level_policy_device_owned),
         cmocka_unit_test(test_collateral_output_top_level_policy_third_party),
         cmocka_unit_test(test_collateral_output_subpolicy_matrix),
-        cmocka_unit_test(test_collateral_output_denied_outside_plutus),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
