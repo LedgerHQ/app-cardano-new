@@ -4,7 +4,7 @@
 from typing import Any
 
 from common import (
-    write_file_safe,
+    write_generated_c_file,
     sanitize_c_identifier,
     _ensure_base58_module,
     _add_tests_to_sys_path,
@@ -307,7 +307,7 @@ def _build_deny_fixtures_header() -> str:
         header_lines.append("{")
 
         header_lines.append(f'    .name = "{test_case.name}",')
-        header_lines.append(f"    .p1 = P1_ADDRESS_RETURN,")
+        header_lines.append("    .p1 = P1_ADDRESS_RETURN,")
         header_lines.append(f"    .data = {payload_array_name},")
         header_lines.append(f"    .data_len = sizeof({payload_array_name}),")
         header_lines.append(f"    .check_expected = {deny_reason},")
@@ -346,5 +346,5 @@ def generate_address_derivation_deny_fixtures() -> None:
     # Build header file content
     header_content = _build_deny_fixtures_header()
     # Write to file
-    write_file_safe(GENERATED_DENY_HEADER, header_content)
+    write_generated_c_file(GENERATED_DENY_HEADER, header_content)
     print(f"Generated {GENERATED_DENY_HEADER}")

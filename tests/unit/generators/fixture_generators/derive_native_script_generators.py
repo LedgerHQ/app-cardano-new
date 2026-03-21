@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from common import (
-    write_file_safe,
+    write_generated_c_file,
     _ensure_base58_module,
     _add_tests_to_sys_path,
 )
@@ -96,10 +96,10 @@ def _build_fixtures() -> str:
         test_case_name_sanitized = test_case.name.replace(" ", "_").replace("#", "NUM")
         base_id = f"TC{test_case_index}_{test_case_name_sanitized.upper()}"
 
-        header_lines.append(f"// ======================================================================")
+        header_lines.append("// ======================================================================")
         header_lines.append(f"// Test Case [{test_case_index}]: {test_case.name}")
-        header_lines.append(f"// Source: tests/standalone/input_files/native_script.py")
-        header_lines.append(f"// ======================================================================")
+        header_lines.append("// Source: tests/standalone/input_files/native_script.py")
+        header_lines.append("// ======================================================================")
         header_lines.append("")
 
         # Generate expected hash
@@ -152,14 +152,14 @@ def _build_fixtures() -> str:
         nano_skip_str = "true" if nano_skip else "false"
         # Add source traceability comment
         header_lines.append(f"    // Source: tests/standalone/input_files/native_script.py > {name}")
-        header_lines.append(f"    {{")
+        header_lines.append("    {")
         header_lines.append(f'        .name = "{name}",')
         header_lines.append(f"        .root_script = (const native_script_t*)&{root_id},")
         header_lines.append(f"        .expected_hash = EXPECTED_HASH_{base_id},")
         header_lines.append(f"        .nano_skip = {nano_skip_str},")
         header_lines.append(f"        .finish_apdu_payload = {finish_apdu_array},")
         header_lines.append(f"        .finish_apdu_payload_length = sizeof({finish_apdu_array}),")
-        header_lines.append(f"    }},")
+        header_lines.append("    },")
 
     header_lines.extend([
         "};",
@@ -186,7 +186,7 @@ def generate_derive_native_script_fixtures() -> None:
     print()
 
     fixtures = _build_fixtures()
-    write_file_safe(FIXTURES_FILE, fixtures)
+    write_generated_c_file(FIXTURES_FILE, fixtures)
 
     print()
     print(f"Generated {FIXTURES_FILE}")

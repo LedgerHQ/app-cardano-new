@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Sequence
 
-from common import read_file_safe, write_file_safe, sanitize_c_identifier
+from common import read_file_safe, write_generated_c_file, sanitize_c_identifier
 from paths import GENERATED_DERIVE_ADDRESS_DIR
 
 
@@ -320,5 +320,5 @@ def generate_address_derivation_test_runners() -> None:
         main_block
     )
 
-    write_file_safe(test_c_file, complete_file)
+    write_generated_c_file(test_c_file, complete_file)
     print(f"Generated {test_c_file} test")

@@ -7,7 +7,7 @@ from typing import Any, List
 from common import (
     _add_tests_to_sys_path,
     extract_apdu_payload,
-    write_file_safe,
+    write_generated_c_file,
     sanitize_c_identifier,
     format_bytes_as_c_array,
 )
@@ -126,5 +126,5 @@ def generate_cvote_fixtures() -> None:
     header_lines.append("};")
     header_lines.append("")
 
-    write_file_safe(FIXTURES_FILE, "\n".join(header_lines) + "\n")
+    write_generated_c_file(FIXTURES_FILE, "\n".join(header_lines) + "\n")
     print(f"Written cvote fixtures to {FIXTURES_FILE}")

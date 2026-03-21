@@ -15,7 +15,7 @@ import hashlib
 import re
 import sys
 
-from common import UNIT_TESTS_DIR
+from paths import UNIT_TESTS_DIR
 
 
 # ======================================================================

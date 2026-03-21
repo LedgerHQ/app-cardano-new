@@ -9,7 +9,7 @@ from common import (
     format_bytes_as_c_array,
     read_file_safe,
     sanitize_c_identifier,
-    write_file_safe,
+    write_generated_c_file,
 )
 from paths import GENERATED_SIGN_MSG_DIR
 
@@ -374,5 +374,5 @@ def generate_sign_msg_test_runners() -> None:
         + main_section
     )
 
-    write_file_safe(test_c_file, complete_file)
+    write_generated_c_file(test_c_file, complete_file)
     print(f"Generated {test_c_file}")

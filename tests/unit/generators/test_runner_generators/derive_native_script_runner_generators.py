@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 
 
-from common import read_file_safe, write_file_safe, sanitize_c_identifier
+from common import read_file_safe, write_generated_c_file, sanitize_c_identifier
 from paths import GENERATED_NATIVE_SCRIPT_DIR
 
 
@@ -97,9 +97,9 @@ def _build_test_functions(fixture_names: list[str]) -> tuple[str, list[str]]:
         
         test_functions_lines.extend([
             f"static void {test_function_name}(void **state) {{",
-            f"    (void) state;",
+            "    (void) state;",
             f"    run_fixture(&NATIVE_SCRIPT_FIXTURES[{test_case_index}]);",
-            f"}}",
+            "}",
             "",
         ])
         
@@ -186,10 +186,10 @@ def generate_native_script_test_runners() -> None:
     )
     
     # Write test file
-    write_file_safe(test_c_file, complete_file_content)
+    write_generated_c_file(test_c_file, complete_file_content)
     
     print(f"Generated {test_c_file}")
-    print(f"  - Generated test function names:")
+    print("  - Generated test function names:")
     for function_index, function_name in enumerate(test_function_names):
         print(f"      [{function_index:2d}] {function_name}")
     

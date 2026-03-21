@@ -4,7 +4,7 @@
 import re
 from pathlib import Path
 
-from common import read_file_safe, write_file_safe, sanitize_c_identifier
+from common import read_file_safe, write_generated_c_file, sanitize_c_identifier
 from paths import GENERATED_OPCERT_DIR
 
 _DENY_ARRAY_PATTERN = re.compile(
@@ -57,9 +57,9 @@ def _build_test_functions(fixture_names: list[str]) -> tuple[str, list[str]]:
         sanitized = sanitize_c_identifier(name, uppercase=False, handle_leading_digit=True)
         func_name = f"test_opcert_deny_{idx}_{sanitized}"
         lines.append(f"static void {func_name}(void **state) {{")
-        lines.append(f"    (void) state;")
+        lines.append("    (void) state;")
         lines.append(f"    run_opcert_deny_fixture(&OPCERT_DENY_FIXTURES[{idx}]);")
-        lines.append(f"}}")
+        lines.append("}")
         lines.append("")
         func_names.append(func_name)
     return "\n".join(lines), func_names
@@ -95,5 +95,5 @@ def generate_opcert_deny_test_runners() -> None:
         + "\n"
         + main
     )
-    write_file_safe(test_c_file, content)
+    write_generated_c_file(test_c_file, content)
     print(f"Generated {test_c_file}")

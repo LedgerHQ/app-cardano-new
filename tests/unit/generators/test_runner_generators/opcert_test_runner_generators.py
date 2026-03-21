@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from common import read_file_safe, write_file_safe, sanitize_c_identifier
+from common import read_file_safe, write_generated_c_file, sanitize_c_identifier
 from paths import GENERATED_OPCERT_DIR
 
 FIXTURE_HEADER = GENERATED_OPCERT_DIR / "test_opcert_fixtures.h"
@@ -117,9 +117,9 @@ def _build_test_functions(fixture_names: list[str]) -> tuple[str, list[str]]:
         function_name = f"test_opCert_{sanitized}_{idx}"
         lines.extend([
             f"static void {function_name}(void **state) {{",
-            f"    (void) state;",
+            "    (void) state;",
             f"    run_opcert_fixture(&OPCERT_FIXTURES[{idx}]);",
-            f"}}",
+            "}",
             "",
         ])
         function_names.append(function_name)
@@ -159,4 +159,4 @@ def generate_opcert_test_runners() -> None:
     main = _build_main(func_names)
 
     content = "\n".join([header, helpers, test_funcs, main, ""]) 
-    write_file_safe(TEST_FILE, content)
+    write_generated_c_file(TEST_FILE, content)

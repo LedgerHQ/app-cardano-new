@@ -8,7 +8,7 @@ from common import (
     _add_tests_to_sys_path,
     _ensure_base58_module,
     extract_apdu_payload,
-    write_file_safe,
+    write_generated_c_file,
     sanitize_c_identifier,
     format_bytes_as_c_array,
 )
@@ -78,5 +78,5 @@ def generate_opcert_fixtures() -> None:
     header_lines.extend(fixture_entries)
     header_lines.append("};")
 
-    write_file_safe(FIXTURES_FILE, "\n".join(header_lines) + "\n")
+    write_generated_c_file(FIXTURES_FILE, "\n".join(header_lines) + "\n")
     print(f"Written opcert fixtures to {FIXTURES_FILE}")

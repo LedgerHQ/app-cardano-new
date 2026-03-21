@@ -90,5 +90,6 @@ For detailed analysis, see:
 - When C code changes, run unit tests first. Use `-j8` for `make`.
 - After unit tests pass, run a fuzzing build as an additional compile-health gate.
 - When `tests/standalone/input_files/` or `tests/application_client/` changes, regenerate unit-test fixtures before re-running unit tests.
+- When modifying Python files, run `ruff check --fix` on them.
 - Do not run ragger tests or swap tests unless explicitly requested.
 - Compilation warnings are not acceptable; fix them.
