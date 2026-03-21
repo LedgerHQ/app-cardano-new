@@ -834,9 +834,11 @@ security_policy_t policyForSignTxOutput(const tx_output_description_t *output,
 security_policy_t policyForSignTxOutputDatumHash(security_policy_t outputPolicy, warning_bits_t *w) {
     POLICY_INIT();
     switch (outputPolicy) {
+        // LCOV_EXCL_START
         case POLICY_DENY:
             LEDGER_ASSERT(false, "Output policy DENY should not reach datum policy");
             break;
+        // LCOV_EXCL_STOP
         case POLICY_SHOW:
             SHOW_IF(is_expert_mode());
             HIDE();
@@ -857,9 +859,11 @@ security_policy_t policyForSignTxOutputDatumHash(security_policy_t outputPolicy,
 security_policy_t policyForSignTxOutputRefScript(security_policy_t outputPolicy, warning_bits_t *w) {
     POLICY_INIT();
     switch (outputPolicy) {
+        // LCOV_EXCL_START
         case POLICY_DENY:
             LEDGER_ASSERT(false, "Output policy DENY should not reach ref script policy");
             break;
+        // LCOV_EXCL_STOP
         case POLICY_SHOW:
             SHOW_IF(is_expert_mode());
             HIDE();
@@ -1162,9 +1166,10 @@ static security_policy_t _policyForSignTxCertificateStakeCredential(
         case EXT_CREDENTIAL_SCRIPT_HASH:
             // the rest is OK, forbidden credentials have been dealt with above
             break;
-
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     SHOW();
@@ -1188,9 +1193,10 @@ static inline security_policy_t _policyForSignTxCertificateDRep(
         case EXT_DREP_ABSTAIN:
         case EXT_DREP_NO_CONFIDENCE:
             break;
-
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     SHOW();
@@ -1211,9 +1217,10 @@ security_policy_t policyForSignTxCertificateStaking(sign_tx_signingmode_t txSign
         case CERTIFICATE_STAKE_DELEGATION:
             // this policy only applies to these types
             break;
-
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     RETURN(_policyForSignTxCertificateStakeCredential(txSigningMode, stakeCredential, w));
@@ -1287,9 +1294,10 @@ security_policy_t policyForSignTxCertificateCommitteeAuth(sign_tx_signingmode_t 
         case EXT_CREDENTIAL_SCRIPT_HASH:
             // the rest is OK, forbidden credentials have been dealt with above
             break;
-
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     switch (hotCredential->type) {
@@ -1301,9 +1309,10 @@ security_policy_t policyForSignTxCertificateCommitteeAuth(sign_tx_signingmode_t 
         case EXT_CREDENTIAL_KEY_PATH:
             DENY_UNLESS(bip44_isCommitteeHotKeyPath(&hotCredential->keyPath));
             break;
-
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     SHOW();
@@ -1328,9 +1337,10 @@ security_policy_t policyForSignTxCertificateCommitteeResign(
         case EXT_CREDENTIAL_SCRIPT_HASH:
             // the rest is OK, forbidden credentials have been dealt with above
             break;
-
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     SHOW();
@@ -1354,9 +1364,10 @@ security_policy_t policyForSignTxCertificateDRep(sign_tx_signingmode_t txSigning
         case EXT_CREDENTIAL_SCRIPT_HASH:
             // the rest is OK, forbidden credentials have been dealt with above
             break;
-
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     SHOW();
@@ -1383,9 +1394,10 @@ security_policy_t policyForSignTxCertificateStakePoolRetirement(
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
             DENY();
             break;
-
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -2034,9 +2046,11 @@ security_policy_t policyForSignTxVotingProcedure(sign_tx_signingmode_t txSigning
             // and there might be third-party key hashes in the tx
             break;
 
+        // LCOV_EXCL_START
         default:
             // this should not be called in POOL_REGISTRATION signing modes
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     SHOW();
