@@ -116,4 +116,4 @@ def generate_cvote_test_runners() -> int:
     content = "\n".join([header, test_funcs, main, ""])
     write_generated_c_file(TEST_FILE, content)
     print(f"Written cvote test runner to {TEST_FILE}")
-    return len(test_funcs)
+    return len(func_names)

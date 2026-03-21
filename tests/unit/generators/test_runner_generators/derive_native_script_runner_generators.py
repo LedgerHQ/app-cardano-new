@@ -198,5 +198,5 @@ def generate_native_script_test_runners() -> int:
         print(f"      [{function_index:2d}] {function_name}")
 
     print(f"  - CMocka test array with {len(test_function_names)} tests")
-    return len(test_function_names)
     print()
+    return len(test_function_names)

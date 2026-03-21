@@ -118,6 +118,7 @@ from tests.unit.generators.test_runner_generators.native_script_deny_runner_gene
     generate_native_script_deny_test_runners,
 )
 
+_REPORT_WIDTH = 88
 
 # Match deny fixtures array for counting individual deny cases
 _SIGN_TX_DENY_FIXTURES_PATTERN = re.compile(
@@ -359,13 +360,6 @@ def _count_unit_tests_by_command() -> tuple[dict[str, int], int, set[str], str]:
         registered_names.update(names)
         command_file_contents.append(content)
 
-    tx_test_files = sorted(
-        p
-        for p in GENERATED_SIGN_TX_DIR.glob("test_sign_tx_*.c")
-        if p.name != "test_sign_tx_deny_tests.c"
-    )
-    for path in tx_test_files:
-        _add_file_counts(path, "sign_tx")
     # Keep sign-tx deny runner out of cmocka-based counting (counted via fixtures),
     # but include its source for function-name coverage matching.
     _add_file_content_only(GENERATED_SIGN_TX_DIR / "test_sign_tx_deny_tests.c")
@@ -430,9 +424,7 @@ def _verify_ragger_test_coverage() -> None:
         )
         # Check for collection errors (non-zero return code indicates failure)
         if result.returncode != 0:
-            print(
-                f"ERROR: pytest collection failed with return code {result.returncode}"
-            )
+            print(f"ERROR: pytest collection failed with return code {result.returncode}")
             if result.stderr:
                 print("STDERR output:")
                 print(result.stderr)
@@ -451,9 +443,7 @@ def _verify_ragger_test_coverage() -> None:
         sys.exit(1)
 
     if not ragger_tests:
-        print(
-            "ERROR: No ragger tests found - check that test files are present and importable"
-        )
+        print("ERROR: No ragger tests found - check that test files are present and importable")
         sys.exit(1)
 
     # Count total test cases (including parameterized variants)
@@ -598,6 +588,7 @@ def _verify_ragger_test_coverage() -> None:
             f"{name}({count})" for name, count in sorted(unmapped_counts.items())
         )
         print(f"  Unmapped pytest modules ({unmapped_total} cases): {unmapped_details}")
+
     insufficient_commands = []
     mismatched_counts = []
     for cmd in COMMAND_REGISTRY:
@@ -605,17 +596,9 @@ def _verify_ragger_test_coverage() -> None:
         ragger_count = comparable_ragger_command_counts.get(command, 0)
         unit_count = unit_command_counts.get(command, 0)
 
-        # We intentionally use a third method of counting: tracking in-memory returns from the generators
-        # and validating them against the parsed cmocka registrations.
+        # Validate in-memory generation against parsed cmocka tests.
         if hasattr(cmd, "generated_entries_count") and cmd.generated_entries_count > 0:
             in_memory_count = cmd.generated_entries_count
-
-            # The deny fixtures for sign_tx are currently counted via a regex on SIGN_TX_DENY_FIXTURES
-            # in _count_sign_tx_deny_fixtures and added to unit_count. If the in-memory generators didn't
-            # count them directly in generated_entries_count, we adjust here for an apples-to-apples comparison.
-            if command == "sign_tx" and deny_fixture_count:
-                in_memory_count += deny_fixture_count
-
             if in_memory_count != unit_count:
                 mismatched_counts.append(
                     f"{cmd.display_name}: Generated {in_memory_count} entries in memory, but parsed {unit_count} cmocka tests from files."
@@ -627,11 +610,23 @@ def _verify_ragger_test_coverage() -> None:
             )
 
     if mismatched_counts:
+        print("\n" + "!" * _REPORT_WIDTH)
         print(
-            "  WARNING: Mismatch between in-memory generation and file parsing (Intentional validation redundancy):"
+            "!!! "
+            + "WARNING: Mismatch between in-memory generation and file parsing".center(
+                _REPORT_WIDTH - 8
+            )
+            + " !!!"
         )
+        print(
+            "!!! "
+            + "(Intentional validation redundancy)".center(_REPORT_WIDTH - 8)
+            + " !!!"
+        )
+        print("!" * _REPORT_WIDTH)
         for mismatch in mismatched_counts:
-            print(f"    - {mismatch}")
+            print(f"  - {mismatch}")
+        print("!" * _REPORT_WIDTH + "\n")
 
     if insufficient_commands:
         print(
@@ -663,23 +658,30 @@ def _verify_ragger_test_coverage() -> None:
                     if "::" in case:
                         _, test_case = case.split("::", 1)
                         print(f"      - {test_case}")
-        print("\n" + "=" * 88)
+        print("\n" + "=" * _REPORT_WIDTH)
         print(
             "COVERAGE FAILURE: missing unit-test coverage for one or more ragger test functions."
         )
         print(
             "The generator run is unsuccessful until all missing functions above are covered."
         )
-        print("=" * 88)
+        print("=" * _REPORT_WIDTH)
         sys.exit(1)
-    else:
-        print("\n  OK All ragger test functions have unit test coverage")
 
-    # Show breakdown of covered tests
-    if covered_coverage:
-        print("\n  Covered test functions:")
-        for test in covered_coverage:
-            print(f"    + {test}")
+    if mismatched_counts:
+        print("\n" + "=" * _REPORT_WIDTH)
+        print("MOCK DATA / COUNTING FAILURE: In-memory counts do not match file parsing.")
+        print("The generator run is unsuccessful until all mismatches are resolved.")
+        print("=" * _REPORT_WIDTH)
+        sys.exit(1)
+
+    if insufficient_commands:
+        print("\n" + "=" * _REPORT_WIDTH)
+        print("COVERAGE FAILURE: insufficient per-command coverage detected.")
+        print("=" * _REPORT_WIDTH)
+        sys.exit(1)
+
+    print("\n  OK All ragger test functions have unit test coverage and consistent counts")
 
 
 def run_all() -> None:

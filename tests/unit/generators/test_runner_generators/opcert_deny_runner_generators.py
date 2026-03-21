@@ -103,3 +103,7 @@ def generate_opcert_deny_test_runners() -> int:
     )
     write_generated_c_file(test_c_file, content)
     print(f"Generated {test_c_file}")
+
+
+
+    return len(fixture_names)

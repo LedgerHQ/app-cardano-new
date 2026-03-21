@@ -347,6 +347,7 @@ def _build_deny_fixtures() -> str:
         lines.append("")
         return "\n".join(lines)
 
+    total_count = 0
     fixtures: dict[str, list[FixtureInfo]] = {}
     for set_name, entries in fixtures_by_set.items():
         prefix = SET_PREFIX.get(set_name)
@@ -355,11 +356,13 @@ def _build_deny_fixtures() -> str:
         fixtures.setdefault(set_name, [])
         for entry in entries:
             fixtures[set_name].append(build_fixture(entry, prefix, set_name))
+            total_count += 1
 
-    return generate_header(fixtures)
+    return generate_header(fixtures), total_count
 
 
-def generate_tx_deny_fixtures() -> None:
-    header = _build_deny_fixtures()
+def generate_tx_deny_fixtures() -> int:
+    header, count = _build_deny_fixtures()
     write_generated_c_file(GENERATED_DENY_HEADER, header)
     print(f"Generated {GENERATED_DENY_HEADER}")
+    return count

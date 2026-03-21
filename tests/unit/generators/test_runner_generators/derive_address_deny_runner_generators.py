@@ -144,4 +144,6 @@ def generate_address_derivation_deny_test_runners() -> int:
     )
 
     write_generated_c_file(test_c_file, complete_file)
+
     print(f"Generated {test_c_file}")
+    return len(test_function_names)

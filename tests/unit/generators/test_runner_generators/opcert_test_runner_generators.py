@@ -170,3 +170,5 @@ def generate_opcert_test_runners() -> int:
 
     content = "\n".join([header, helpers, test_funcs, main, ""])
     write_generated_c_file(TEST_FILE, content)
+    print(f"Written opcert test runner to {TEST_FILE}")
+    return len(func_names)
