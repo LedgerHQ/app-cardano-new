@@ -189,6 +189,26 @@ static void test_sign_tx_with_voting_procedures_drep_script_hash_voter_reject_tx
     run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_SCRIPT_HASH_VOTER, true);
 }
 
+static void test_multisig_tx_with_script_hash_voting_procedures_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_MULTISIG_TX_WITH_SCRIPT_HASH_VOTING_PROCEDURES, false);
+}
+
+static void test_multisig_tx_with_script_hash_voting_procedures_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_MULTISIG_TX_WITH_SCRIPT_HASH_VOTING_PROCEDURES, false);
+}
+
+static void test_multisig_tx_with_script_hash_voting_procedures_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_MULTISIG_TX_WITH_SCRIPT_HASH_VOTING_PROCEDURES, true);
+}
+
+static void test_multisig_tx_with_script_hash_voting_procedures_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_MULTISIG_TX_WITH_SCRIPT_HASH_VOTING_PROCEDURES, true);
+}
+
 static void test_sign_tx_with_voting_procedures_stake_pool_key_hash_voter_expert_off(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_STAKE_POOL_KEY_HASH_VOTER, false);
@@ -303,6 +323,10 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_voting_procedures_drep_script_hash_voter_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_drep_script_hash_voter_expert_on),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_drep_script_hash_voter_reject_tx_expert_on),
+        cmocka_unit_test(test_multisig_tx_with_script_hash_voting_procedures_expert_off),
+        cmocka_unit_test(test_multisig_tx_with_script_hash_voting_procedures_reject_tx_expert_off),
+        cmocka_unit_test(test_multisig_tx_with_script_hash_voting_procedures_expert_on),
+        cmocka_unit_test(test_multisig_tx_with_script_hash_voting_procedures_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_stake_pool_key_hash_voter_expert_off),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_stake_pool_key_hash_voter_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_stake_pool_key_hash_voter_expert_on),

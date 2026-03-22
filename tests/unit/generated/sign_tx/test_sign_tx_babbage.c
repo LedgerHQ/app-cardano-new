@@ -249,6 +249,26 @@ static void test_sign_tx_with_change_output_as_map_and_total_collateral_reject_t
     run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_TOTAL_COLLATERAL, true);
 }
 
+static void test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL, false);
+}
+
+static void test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL, false);
+}
+
+static void test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL, true);
+}
+
+static void test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL, true);
+}
+
 static void test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_expert_off(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_COLLATERAL_OUTPUT_AS_ARRAY, false);
@@ -435,6 +455,10 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_change_output_as_map_and_total_collateral_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_change_output_as_map_and_total_collateral_expert_on),
         cmocka_unit_test(test_sign_tx_with_change_output_as_map_and_total_collateral_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_expert_off),
+        cmocka_unit_test(test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_expert_on),
+        cmocka_unit_test(test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_expert_off),
         cmocka_unit_test(test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_expert_on),

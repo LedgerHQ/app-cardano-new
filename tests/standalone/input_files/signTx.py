@@ -3527,6 +3527,32 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         ],
     ),
     SignTxTestCase(
+        name="Multisig_tx_with_script_hash_voting_procedures",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            votingProcedures=[
+                VoterVotes(
+                    Voter(
+                        VoterType.COMMITTEE_SCRIPT_HASH,
+                        "8afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8",
+                    ),
+                    [vote2_unique, vote3_unique],
+                ),
+                VoterVotes(
+                    Voter(
+                        VoterType.DREP_SCRIPT_HASH,
+                        "ba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1",
+                    ),
+                    [vote1_unique, vote2_unique],
+                ),
+            ],
+        ),
+        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a28201581c8afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a28258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f68258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7058201f68203581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1a28258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef8258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f6",
+    ),
+    SignTxTestCase(
         name="Sign_tx_with_voting_procedures_STAKE_POOL_KEY_HASH_voter",
         tx=Transaction(
             network=Mainnet,
@@ -4138,11 +4164,16 @@ testsAlonzo: List[SignTxTestCase] = [
                     "fea6646c67fb467f8a5425e9c752e1e262b0420ba4b638f39514049a",
                 ),
                 RequiredSigner(TxRequiredSignerType.PATH, "m/1852'/1815'/0'/0/0"),
+                RequiredSigner(TxRequiredSignerType.PATH, "m/1854'/1815'/0'/0/0"),
+                RequiredSigner(TxRequiredSignerType.PATH, "m/1854'/1815'/0'/2/0"),
+                RequiredSigner(TxRequiredSignerType.PATH, "m/1852'/1815'/0'/3/0"),
+                RequiredSigner(TxRequiredSignerType.PATH, "m/1852'/1815'/0'/4/0"),
+                RequiredSigner(TxRequiredSignerType.PATH, "m/1852'/1815'/0'/5/0"),
             ],
             includeNetworkId=True,
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
-        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0e82581cfea6646c67fb467f8a5425e9c752e1e262b0420ba4b638f39514049a581c14c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11240f01",
+        txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0e87581cfea6646c67fb467f8a5425e9c752e1e262b0420ba4b638f39514049a581c14c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f1124581c9a70dd7c77e9db9442b560a11446962e9d7c595274c587a62f8a0b61581cf699c6400f85bdca54e44d0cad1f6141ce049a411c0d695fc30c3f73581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba6581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c488390920f01",
         expected_warnings=[
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
@@ -4405,6 +4436,23 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7110a",
+        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL],
+    ),
+    SignTxTestCase(
+        name="Sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPathMap"]],
+            scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
+            collateralOutput=TxOutputBabbage(
+                destinations["internalPointer"],
+                7120787,
+            ),
+            totalCollateral=10,
+        ),
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b710a20058204114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f1124010203011a006ca793110a",
         expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL],
     ),
     SignTxTestCase(
@@ -4681,6 +4729,21 @@ requiredSignerDenyTestCases: List[SignTxTestCase] = [
             outputs=[],
             requiredSigners=[
                 RequiredSigner(TxRequiredSignerType.PATH, "m/1694'/1815'/0'/0/0")
+            ],
+            includeNetworkId=True,
+        ),
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    ),
+    SignTxTestCase(
+        name="Required_signer_path_invalid_multisig_chain_type",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[],
+            requiredSigners=[
+                RequiredSigner(TxRequiredSignerType.PATH, "m/1854'/1815'/0'/1/0")
             ],
             includeNetworkId=True,
         ),

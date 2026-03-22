@@ -100,9 +100,11 @@ Notes:
 
 ### Computing txBody for a new fixture
 
-`txBody` is the canonical CBOR encoding of the transaction body map. When adding a fixture that
-is a small variation of an existing one (e.g. different metadata URL, different cert field), derive
-it by mutating the closest existing fixture rather than building from scratch:
+`txBody` is the canonical CBOR encoding of the transaction body map. It must match **exactly** what
+the app will compute from the `tx=Transaction(...)` parameters — any mismatch causes the unit test
+to fail with a hash comparison error.
+
+**Option A: derive from an existing fixture** (preferred for small variations):
 
 ```python
 import cbor2, hashlib
@@ -118,8 +120,60 @@ print("txBody:", new_body.hex())
 print("hash:  ", hashlib.new('blake2b', data=new_body, digest_size=32).hexdigest())
 ```
 
-The printed hash matches `expected_hash_hex` in the generated C fixture.
-Run this snippet with `source tests/venv/bin/activate && python3 -c "..."` (cbor2 is available in the venv).
+Run with `source tests/venv/bin/activate && python3 -c "..."` (cbor2 is available in the venv).
+
+**Option B: capture from a unit test run** (most reliable for complex transactions):
+
+Add the fixture with a placeholder `txBody` (any valid hex), build and run the unit test, then
+read the exact body from the trace log:
+
+```
+[txHashBuilder_finalize:NNNN] tx_body (NNN bytes)
+[txHashBuilder_finalize:NNNN] <hex bytes of CBOR body>
+```
+
+Copy that hex as the `txBody` value. The printed hash matches `expected_hash_hex` in the C fixture.
+
+### Step-by-step guide for adding or modifying a sign-tx fixture
+
+1. **Edit `tests/standalone/input_files/signTx.py`** — add or update the `SignTxTestCase`. Do not
+   remove existing test cases. Ensure `txBody` matches the transaction structure (see above).
+
+2. **Update `MOCK_TX_HASH_*` in `tests/unit/mock_crypto/crypto_mock_data.h`** — if the txBody
+   changed or is new, update the corresponding `static const uint8_t MOCK_TX_HASH_FOO[]` constant
+   to the blake2b-256 of the new txBody hex:
+   ```python
+   import hashlib
+   hashlib.blake2b(bytes.fromhex("<txbody_hex>"), digest_size=32).hexdigest()
+   ```
+
+3. **Update `MOCK_SIGNATURES[]` in `crypto_mock_data.h`** — for each PATH-type witness the test
+   will request, add an entry pointing to the updated hash constant. Use zero bytes for `.signature`;
+   the generator will fill them in. Path encoding example:
+   `m/1852'/1815'/0'/0/0` → `{0x8000073c, 0x80000717, 0x80000000, 0x00000000, 0x00000000}`.
+
+4. **Regenerate mock data first**, then the full generator (from repository root):
+   ```bash
+   source tests/venv/bin/activate
+   python3 -m tests.unit.generators.generate_unit_tests_from_ragger mock-data
+   python3 -m tests.unit.generators.generate_unit_tests_from_ragger
+   ```
+   The `mock-data` pass must run before the `fixtures` pass so that real signatures are available
+   when the C fixture headers are written.
+
+5. **Build and run** (from `tests/unit`):
+   ```bash
+   cmake -Bbuild -H. && make -C build -j4
+   CTEST_OUTPUT_ON_FAILURE=1 make -C build -j4 test
+   ```
+
+### Diagnosing fixture failures
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `crypto_mock: missing signature path … message_hex=<hash>` | A PATH witness was requested but no `MOCK_SIGNATURES[]` entry exists for that path+hash pair. | Add the missing entry to `MOCK_SIGNATURES[]` and rerun `mock-data`. |
+| `difference at offset 0 …` / hash mismatch at `test_sign_tx_common.h:180` | The `txBody` in `signTx.py` doesn't match what the app computed from the transaction structure. | Capture the correct body from the `txHashBuilder_finalize` trace line and update `txBody`. Also update the `MOCK_TX_HASH_*` constant and rerun steps 4–5. |
+| `0x6982` (`SWO_SECURITY_CONDITION_NOT_SATISFIED`) during a witness | A PATH in `requiredSigners` is denied by the witness security policy (e.g. `PATH_MULTISIG_ACCOUNT` falls through to `DENY` in `_plutusWitnessPolicy`). | Remove that path from the PLUTUS_TRANSACTION fixture, or use a MULTISIG_TRANSACTION fixture where it is not added as a witness. |
 
 ### Mock Crypto Fixtures
 

@@ -2872,6 +2872,115 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_OUTPUT
 };
 
 
+// Source: tests/standalone/input_files/signTx.py > requiredSignerDenyTestCases > Required_signer_path_pool_cold_key
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_POOL_COLD_KEY[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000000000000000002A000000000000000A00048000073D800007178000"
+    "000080000000",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "048000073D800007178000000080000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+// Source: tests/standalone/input_files/signTx.py > requiredSignerDenyTestCases > Required_signer_path_cvote_account
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_CVOTE_ACCOUNT[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000000000000000002A000000000000000A00038000069E800007178000"
+    "0000",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "038000069E8000071780000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+// Source: tests/standalone/input_files/signTx.py > requiredSignerDenyTestCases > Required_signer_path_cvote_key
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_CVOTE_KEY[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000000000000000002A000000000000000A00058000069E800007178000"
+    "00000000000000000000",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000069E80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+// Source: tests/standalone/input_files/signTx.py > requiredSignerDenyTestCases > Required_signer_path_invalid_multisig_chain_type
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_INVALID_MULTISIG_CHAIN_TYPE[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000000000000000002A000000000000000A00058000073E800007178000"
+    "00000000000100000000",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073E80000717800000000000000100000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+
 // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationPoolIdDenyTestCases > Path_sent_in_for_Pool_Registration_Owner_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_ID_PATH_SENT_IN_FOR_POOL_REGISTRATION_OWNER_TX[] = {
     {
@@ -5190,6 +5299,54 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .chunks = SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_OUTPUT_TOKEN_GROUP_WITH_ZERO_TOKENS,
         .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_OUTPUT_TOKEN_GROUP_WITH_ZERO_TOKENS),
         .expected_sw = SWO_TX_PARSING_FAIL_OUTPUTS,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > requiredSignerDenyTestCases > Required_signer_path_pool_cold_key
+    {
+        .name = "[DENY_REQUIRED_SIGNER] Required_signer_path_pool_cold_key",
+        .init_hex =
+        "0000000000000000012D964A0907000100000200000000010100000100000001"
+        "02010100000000010100020046",
+        .chunks = SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_POOL_COLD_KEY,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_POOL_COLD_KEY),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > requiredSignerDenyTestCases > Required_signer_path_cvote_account
+    {
+        .name = "[DENY_REQUIRED_SIGNER] Required_signer_path_cvote_account",
+        .init_hex =
+        "0000000000000000012D964A0907000100000200000000010100000100000001"
+        "02010100000000010100020042",
+        .chunks = SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_CVOTE_ACCOUNT,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_CVOTE_ACCOUNT),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > requiredSignerDenyTestCases > Required_signer_path_cvote_key
+    {
+        .name = "[DENY_REQUIRED_SIGNER] Required_signer_path_cvote_key",
+        .init_hex =
+        "0000000000000000012D964A0907000100000200000000010100000100000001"
+        "0201010000000001010002004A",
+        .chunks = SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_CVOTE_KEY,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_CVOTE_KEY),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > requiredSignerDenyTestCases > Required_signer_path_invalid_multisig_chain_type
+    {
+        .name = "[DENY_REQUIRED_SIGNER] Required_signer_path_invalid_multisig_chain_type",
+        .init_hex =
+        "0000000000000000012D964A0907000100000200000000010100000100000001"
+        "0201010000000001010002004A",
+        .chunks = SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_INVALID_MULTISIG_CHAIN_TYPE,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_INVALID_MULTISIG_CHAIN_TYPE),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },

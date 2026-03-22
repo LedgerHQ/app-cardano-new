@@ -79,6 +79,7 @@ def _build_deny_fixtures() -> str:
         witnessDenyTestCases,
         singleAccountDenyTestCases,
         collateralOutputDenyTestCases,
+        requiredSignerDenyTestCases,
         testsInvalidTokenBundleOrdering,
         poolRegistrationOwnerDenyTestCases,
         stakePoolRegistrationPoolIdDenyTestCases,
@@ -100,6 +101,7 @@ def _build_deny_fixtures() -> str:
         "witnessDenyTestCases": witnessDenyTestCases,
         "singleAccountDenyTestCases": singleAccountDenyTestCases,
         "collateralOutputDenyTestCases": collateralOutputDenyTestCases,
+        "requiredSignerDenyTestCases": requiredSignerDenyTestCases,
         "testsInvalidTokenBundleOrdering": testsInvalidTokenBundleOrdering,
         "stakePoolRegistrationPoolIdDenyTestCases": stakePoolRegistrationPoolIdDenyTestCases,
         "stakePoolRegistrationOwnerDenyTestCases": poolRegistrationOwnerDenyTestCases

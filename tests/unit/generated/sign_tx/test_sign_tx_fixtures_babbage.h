@@ -15,7 +15,7 @@
 //   - Source file and era
 //   - Original Ragger test name
 //
-// Total tests in this era: 17
+// Total tests in this era: 18
 
 #pragma once
 
@@ -900,7 +900,84 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL),
 };
 
-// Test 10: Sign_tx_with_change_output_as_map_and_collateral_output_as_array
+// Test 10: Sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral
+// Source: tests/standalone/input_files/signTx.py > babbage era tests
+//
+static const uint8_t FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL_RAW_TX[] = {
+    0x3B, 0x40, 0x26, 0x51, 0x11, 0xD8, 0xBB, 0x3C, 0x3C, 0x60, 0x8D, 0x95, 0xB3, 0xA0, 0xBF, 0x83,
+    0x46, 0x1A, 0xCE, 0x32, 0xD7, 0x93, 0x36, 0x57, 0x9A, 0x19, 0x39, 0xB3, 0xAA, 0xD1, 0xC0, 0xB7,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x3B, 0x02, 0x00, 0x01, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00,
+    0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x22, 0x05,
+    0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x6C, 0xA7, 0x93, 0x01, 0x01, 0x01, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x0A, 0x3B, 0x40, 0x26, 0x51, 0x11, 0xD8, 0xBB, 0x3C, 0x3C, 0x60, 0x8D, 0x95, 0xB3, 0xA0, 0xBF,
+    0x83, 0x46, 0x1A, 0xCE, 0x32, 0xD7, 0x93, 0x36, 0x57, 0x9A, 0x19, 0x39, 0xB3, 0xAA, 0xD1, 0xC0,
+    0xB7, 0x00, 0x32, 0x02, 0x04, 0x01, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x44, 0x00, 0x00, 0x00, 0x01,
+    0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x6C, 0xA7, 0x93,
+    0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A,
+};
+
+static const uint8_t FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL_WITNESS_0_PAYLOAD[] = {
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL_WITNESS_0_EXPECTED_SIGNATURE[] = {
+    0xCB, 0x05, 0x2D, 0x70, 0x9D, 0xD7, 0x7C, 0x3D, 0x9B, 0x2A, 0x12, 0x72, 0x9E, 0x29, 0x81, 0x48,
+    0x85, 0xBB, 0xE2, 0x2A, 0xA8, 0x17, 0x81, 0xD8, 0x20, 0x7B, 0x82, 0xBF, 0xD5, 0x65, 0xC3, 0x43,
+    0xE9, 0x1C, 0xC4, 0xEE, 0x62, 0xD1, 0x48, 0xAF, 0xBA, 0x69, 0xB7, 0xD7, 0x25, 0x34, 0x7F, 0x5D,
+    0x63, 0xC6, 0x53, 0x63, 0x18, 0x25, 0x62, 0x95, 0x62, 0x9B, 0xEA, 0xAD, 0xB7, 0x4D, 0x64, 0x04,
+};
+
+static const witness_payload_t FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL_WITNESS_PAYLOADS[] = {
+    { .payload = FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL_WITNESS_0_PAYLOAD, .payload_len = sizeof(FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL_WITNESS_0_PAYLOAD), .expected_signature = FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL_WITNESS_0_EXPECTED_SIGNATURE },
+};
+
+static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL = {
+    .name = "Sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral",
+    .raw_tx = FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL_RAW_TX,
+    .raw_tx_len = sizeof(FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL_RAW_TX),
+    .tx_body_cbor_hex = "a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b710a20058204114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f1124010203011a006ca793110a",
+    .expected_hash_hex = "79024ba99500016ac41dbb8f817ca7c0b1fed1761732f5ee65d60e3b50c9962e",
+    .signing_mode = 7,
+    .network_id = 1,
+    .protocol_magic = 764824073,
+    .num_inputs = 1,
+    .num_outputs = 1,
+    .num_witnesses = 1,
+    .witness_payloads = FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL_WITNESS_PAYLOADS,
+    .witness_payload_count = 1,
+    .num_certificates = 0,
+    .num_withdrawals = 0,
+    .num_mint_asset_groups = 0,
+    .include_ttl = true,
+    .include_validity_interval_start = false,
+    .include_aux_data_hash = false,
+    .aux_data_type = 0,
+    .aux_data_init_payload = NULL,
+    .aux_data_init_payload_len = 0,
+    .aux_data_delegations = NULL,
+    .aux_data_delegation_count = 0,
+    .include_script_data_hash = true,
+    .num_collateral_inputs = 0,
+    .num_required_signers = 0,
+    .include_network_id = false,
+    .include_collateral_output = true,
+    .include_total_collateral = true,
+    .num_reference_inputs = 0,
+    .num_voters = 0,
+    .include_treasury = false,
+    .treasury = 0,
+    .include_donation = false,
+    .donation = 0,
+    .aux_data_hash_hex = NULL,
+    .options = 0,
+    .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL),
+};
+
+// Test 11: Sign_tx_with_change_output_as_map_and_collateral_output_as_array
 // Source: tests/standalone/input_files/signTx.py > babbage era tests
 //
 static const uint8_t FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_COLLATERAL_OUTPUT_AS_ARRAY_RAW_TX[] = {
@@ -977,7 +1054,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL),
 };
 
-// Test 11: Sign_tx_with_change_collateral_output_as_map_without_total_collateral
+// Test 12: Sign_tx_with_change_collateral_output_as_map_without_total_collateral
 // Source: tests/standalone/input_files/signTx.py > babbage era tests
 //
 static const uint8_t FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_AS_MAP_WITHOUT_TOTAL_COLLATERAL_RAW_TX[] = {
@@ -1060,7 +1137,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_COLLATERAL_OUTPUT_WARNING),
 };
 
-// Test 12: Sign_tx_with_change_collateral_output_as_map_with_total_collateral
+// Test 13: Sign_tx_with_change_collateral_output_as_map_with_total_collateral
 // Source: tests/standalone/input_files/signTx.py > babbage era tests
 //
 static const uint8_t FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL_RAW_TX[] = {
@@ -1143,7 +1220,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_
     .expected_warning_bits = 0,
 };
 
-// Test 13: Sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral
+// Test 14: Sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral
 // Source: tests/standalone/input_files/signTx.py > babbage era tests
 //
 static const uint8_t FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITHOUT_TOTAL_COLLATERAL_RAW_TX[] = {
@@ -1236,7 +1313,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUT
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL),
 };
 
-// Test 14: Sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral
+// Test 15: Sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral
 // Source: tests/standalone/input_files/signTx.py > babbage era tests
 //
 static const uint8_t FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL_RAW_TX[] = {
@@ -1329,7 +1406,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUT
     .expected_warning_bits = 0,
 };
 
-// Test 15: Sign_tx_Full_test_for_trezor_feature_parity_Babbage_elements_Plutus
+// Test 16: Sign_tx_Full_test_for_trezor_feature_parity_Babbage_elements_Plutus
 // Source: tests/standalone/input_files/signTx.py > babbage era tests
 //
 static const uint8_t FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_PLUTUS_RAW_TX[] = {
@@ -1422,7 +1499,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_P
     .expected_warning_bits = 0,
 };
 
-// Test 16: Sign_tx_Full_test_for_trezor_feature_parity_Babbage_elements_ordinary
+// Test 17: Sign_tx_Full_test_for_trezor_feature_parity_Babbage_elements_ordinary
 // Source: tests/standalone/input_files/signTx.py > babbage era tests
 //
 static const uint8_t FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_ORDINARY_RAW_TX[] = {
