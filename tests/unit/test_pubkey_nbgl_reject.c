@@ -37,6 +37,46 @@ static void reset_test_context(void) {
     assert_true(mem_utils_init(test_heap, sizeof(test_heap)));
 }
 
+static uint32_t harden_path(uint32_t value) {
+    return value | HARDENED_BIP32;
+}
+
+static size_t write_standard_payment_path(uint8_t *out, size_t out_size) {
+    const uint32_t path[] = {
+        harden_path(PURPOSE_SHELLEY),
+        harden_path(ADA_COIN_TYPE),
+        harden_path(0),
+        0,
+        0,
+    };
+    const size_t path_len = sizeof(path) / sizeof(path[0]);
+    const size_t required = 1 + path_len * 4;
+    assert_true(required <= out_size);
+    out[0] = (uint8_t) path_len;
+    for (size_t i = 0; i < path_len; i++) {
+        out[1 + i * 4] = (uint8_t) ((path[i] >> 24) & 0xFF);
+        out[2 + i * 4] = (uint8_t) ((path[i] >> 16) & 0xFF);
+        out[3 + i * 4] = (uint8_t) ((path[i] >> 8) & 0xFF);
+        out[4 + i * 4] = (uint8_t) (path[i] & 0xFF);
+    }
+    return required;
+}
+
+static void test_get_public_key_trailing_bytes(void **state) {
+    (void) state;
+    reset_test_context();
+
+    uint8_t path_raw[32];
+    size_t path_len = write_standard_payment_path(path_raw, sizeof(path_raw));
+    path_raw[path_len] = 0x00;
+
+    test_read_buffer_t pubkey_buffer = make_test_read_buffer(path_raw, path_len + 1);
+    apdu_response_begin(INS_GET_PUBLIC_KEY);
+    handler_get_public_key(&pubkey_buffer.sdk_buffer);
+    apdu_response_assert_sent_or_deferred();
+    assert_int_equal(g_last_response_sw, SWO_WRONG_DATA_LENGTH);
+}
+
 static void test_nbgl_reject_on_pubkey_export_resets_context(void **state) {
     (void) state;
     reset_test_context();
@@ -142,6 +182,7 @@ static void test_pubkey_review_title_matrix(void **state) {
 
 int main(void) {
     const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_get_public_key_trailing_bytes),
         cmocka_unit_test(test_nbgl_reject_on_pubkey_export_resets_context),
         cmocka_unit_test(test_pubkey_review_title_matrix),
     };

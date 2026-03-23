@@ -688,6 +688,62 @@ static void test_tx_witness_trailing_bytes(void **state) {
     assert_int_equal(g_last_response_sw, SWO_WRONG_DATA_LENGTH);
 }
 
+static void test_handler_state_during_active_request(void **state) {
+    (void) state;
+    reset_context();
+    assert_true(test_mem_init());
+
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    G_context.state.tx_state = TX_STATE_NONE;
+
+    uint8_t path_raw[32];
+    size_t path_len = write_standard_payment_path(path_raw, sizeof(path_raw));
+
+    G_context.tx_info.num_witnesses = 1;
+    run_sign_tx_witness_apdu(&(buffer_t){.ptr = path_raw, .size = path_len, .offset = 0});
+    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+}
+
+static void test_witness_extraction_with_wrong_state(void **state) {
+    (void) state;
+    reset_context();
+    assert_true(test_mem_init());
+
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    G_context.state.tx_state = TX_STATE_NONE;
+    G_context.tx_info.num_witnesses = 1;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.num_mint_asset_groups = 0;
+
+    uint8_t path_raw[32];
+    size_t path_len = write_standard_payment_path(path_raw, sizeof(path_raw));
+
+    run_sign_tx_witness_apdu(&(buffer_t){.ptr = path_raw, .size = path_len, .offset = 0});
+    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+}
+
+static void test_multiple_reinit_attempts(void **state) {
+    (void) state;
+
+    reset_context();
+    assert_true(test_mem_init());
+    uint8_t init_raw[256];
+    init_apdu_params_t params = make_default_init_apdu_params();
+    params.numInputs = 1;
+    size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
+    assert_true(init_len > 0);
+
+    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+
+    reset_context();
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    G_context.state.tx_state = TX_STATE_NONE;
+
+    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_tx_init_invalid_signing_mode),
@@ -736,6 +792,9 @@ int main(void) {
         cmocka_unit_test(test_tx_witness_rejects_too_many_witnesses),
         cmocka_unit_test(test_tx_witness_rejects_truncated_bip44_path),
         cmocka_unit_test(test_tx_witness_trailing_bytes),
+        cmocka_unit_test(test_handler_state_during_active_request),
+        cmocka_unit_test(test_witness_extraction_with_wrong_state),
+        cmocka_unit_test(test_multiple_reinit_attempts),
     };
     return _cmocka_run_group_tests("test_handler_denies_tx",
                                    tests,

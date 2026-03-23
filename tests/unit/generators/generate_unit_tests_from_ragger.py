@@ -32,7 +32,7 @@ from tests.unit.generators.mock_data_utils import regenerate_mock_data
 
 
 # Import fixture generators
-from tests.unit.generators.fixture_generators.tx_generators import (
+from tests.unit.generators.fixture_generators.sign_tx_generators import (
     generate_tx_fixtures,
 )
 
@@ -57,7 +57,7 @@ from tests.unit.generators.fixture_generators.cvote_generators import (
 )
 
 # Import deny generators
-from tests.unit.generators.deny_fixture_generators.tx_deny_generators import (
+from tests.unit.generators.deny_fixture_generators.sign_tx_deny_generators import (
     generate_tx_deny_fixtures,
 )
 
@@ -79,7 +79,7 @@ from tests.unit.generators.deny_fixture_generators.cvote_deny_generators import 
 )
 
 # Import test runners
-from tests.unit.generators.test_runner_generators.tx_test_runner_generators import (
+from tests.unit.generators.test_runner_generators.sign_tx_test_runner_generators import (
     generate_tx_test_runners,
     fixture_has_cvote_aux_data,
 )

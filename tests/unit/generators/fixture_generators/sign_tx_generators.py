@@ -191,7 +191,7 @@ def _generate_fixtures_for_era(
 
     header_lines = [
         "//",
-        "// Generator: fixture_generators/tx_generators.py",
+        "// Generator: fixture_generators/sign_tx_generators.py",
         f"// Source: tests/standalone/input_files/signTx.py ({era_key} era tests)",
         "//",
         "// To regenerate:",

@@ -79,6 +79,15 @@ include_directories(generated/opcert)
 
 set(UNIT_TEST_MEM_UTILS_STUB mock_sources/mem_utils_stub.c)
 
+# Helper: add a unit test executable, link it, and register it with CTest.
+# Usage: cardano_unit_test(<name> SOURCES <src>... LIBS <lib>...)
+function(cardano_unit_test name)
+    cmake_parse_arguments(ARG "" "" "SOURCES;LIBS" ${ARGN})
+    add_executable(${name} ${ARG_SOURCES})
+    target_link_libraries(${name} PUBLIC cmocka gcov ${ARG_LIBS})
+    add_test(${name} ${name})
+endfunction()
+
 add_compile_definitions(HAVE_CRC)
 add_compile_definitions(HAVE_PRINTF)
 add_compile_definitions(HAVE_SNPRINTF_FORMAT_U)
@@ -90,155 +99,6 @@ add_compile_definitions(APPVERSION=\"8.0.0\")
 add_compile_definitions(MAJOR_VERSION=8)
 add_compile_definitions(MINOR_VERSION=0)
 add_compile_definitions(PATCH_VERSION=0)
-
-# Test executables
-add_executable(test_hex_utils test_hex_utils.c)
-add_executable(test_bech32 test_bech32.c)
-add_executable(test_text_utils
-    test_text_utils.c
-    ../../src/ui/ui_formatters.c
-    ../../src/cardano_tokens/cardano_tokens.c
-    ../../src/utils/textUtils.c
-    ../../src/utils/ipUtils.c
-    mock_sources/hex_stub.c
-)
-add_executable(test_ui_formatters
-    test_ui_formatters.c
-    ../../src/ui/ui_formatters.c
-    ../../src/cardano_tokens/cardano_tokens.c
-    ../../src/utils/textUtils.c
-    ../../src/utils/ipUtils.c
-    mock_sources/hex_stub.c
-)
-add_executable(test_cardano_tokens
-    test_cardano_tokens.c
-    ../../src/cardano_tokens/cardano_tokens.c
-    ../../src/ui/ui_formatters.c
-    ../../src/utils/textUtils.c
-    ../../src/utils/ipUtils.c
-    mock_sources/hex_stub.c
-)
-add_executable(test_bip44 test_bip44.c)
-add_executable(test_cbor test_cbor.c)
-add_executable(test_cardano_buffer test_cardano_buffer.c)
-add_executable(test_ip_utils test_ip_utils.c ../../src/utils/ipUtils.c)
-add_executable(test_hash test_hash.c)
-add_executable(test_address_utils_byron
-    test_address_utils_byron.c
-    ../../src/addressUtils/addressUtilsByron.c
-    ../../src/keyDerivation/keyDerivation.c
-    ../../src/securityPolicy/securityPolicy_privkey.c
-)
-add_executable(test_address_utils_shelley
-    test_address_utils_shelley.c
-    ../../src/addressUtils/addressUtilsShelley.c
-    ../../src/addressUtils/addressUtilsByron.c
-    ../../src/keyDerivation/keyDerivation.c
-    ../../src/securityPolicy/securityPolicy_privkey.c
-)
-add_executable(test_key_derivation
-    test_key_derivation.c
-    ../../src/keyDerivation/keyDerivation.c
-    ../../src/securityPolicy/securityPolicy_privkey.c
-)
-add_executable(test_crypto
-    test_crypto.c
-    ../../src/crypto/crypto.c
-)
-add_executable(test_security_policy_privkey
-    test_security_policy_privkey.c
-    ../../src/securityPolicy/securityPolicy_privkey.c
-)
-add_executable(test_message_signing
-    test_message_signing.c
-    ../../src/messageSigning/messageSigning.c
-    ../../src/keyDerivation/keyDerivation.c
-    ../../src/securityPolicy/securityPolicy_privkey.c
-)
-add_executable(test_cvote
-    generated/cvote/test_cvote.c
-)
-add_executable(test_sign_msg
-    generated/sign_msg/test_sign_msg.c
-)
-add_executable(test_aux_data_hash_builder
-    test_aux_data_hash_builder.c
-    ../../src/cvote/aux_data_hash_builder.c
-)
-add_executable(test_tx_hash_builder
-    test_tx_hash_builder.c
-    ../../src/transaction/tx_hash_builder.c
-)
-add_executable(test_tx_validate
-    test_tx_validate.c
-    mock_sources/mock_globals.c
-    ../../src/transaction/tx_parse.c
-    ../../src/transaction/tx_processing.c
-    ../../src/transaction/tx_processing_outputs.c
-    ../../src/transaction/tx_processing_certificates.c
-    ../../src/transaction/tx_ui_render.c
-    ../../src/transaction/tx_ui_render_certificates.c
-    ../../src/transaction/tx_ui_render_outputs.c
-    ../../src/transaction/tx_parse_certificates.c
-    ../../src/transaction/tx_parse_outputs.c
-    ../../src/transaction/tx_utils.c
-    ../../src/transaction/tx_hash_builder.c
-    ../../src/addressUtils/addressUtilsShelley.c
-    ../../src/addressUtils/addressUtilsByron.c
-    ../../src/addressUtils/bip44.c
-    ../../src/parsers/cardano_parsers.c
-    ../../src/securityPolicy/securityPolicy.c
-    ../../src/securityPolicy/securityPolicy_privkey.c
-    ../../src/keyDerivation/keyDerivation.c
-    ../../src/utils/mem.c
-    $ENV{BOLOS_SDK}/lib_lists/lists.c
-    ../../src/cardano_tokens/cardano_tokens.c
-    ../../src/ui/ui_utils.c
-    ../../src/ui/ui_warnings.c
-    ../../src/ui/ui_formatters.c
-    ../../src/ui/ui_address_fields.c
-    ../../src/app_context.c
-    ${UNIT_TEST_MEM_UTILS_STUB}
-    mock_sources/glyphs_mock.c
-    mock_sources/hex_stub.c
-    test_utils/io_capture.c
-)
-add_executable(test_ui_warnings test_ui_warnings.c)
-add_executable(test_ui_utils
-    test_ui_utils.c
-    ../../src/ui/ui_utils.c
-    ../../src/utils/mem.c
-    ${UNIT_TEST_MEM_UTILS_STUB}
-)
-add_executable(test_ui_address_fields
-    test_ui_address_fields.c
-)
-
-set(TEST_EXECUTABLES
-    test_hex_utils
-    test_bech32
-    test_text_utils
-    test_ui_formatters
-    test_cardano_tokens
-    test_bip44
-    test_cbor
-    test_cardano_buffer
-    test_ip_utils
-    test_hash
-    test_address_utils_byron
-    test_address_utils_shelley
-    test_key_derivation
-    test_crypto
-    test_message_signing
-    test_cvote
-    test_sign_msg
-    test_aux_data_hash_builder
-    test_tx_hash_builder
-    test_tx_validate
-    test_ui_utils
-    test_ui_warnings
-    test_ui_address_fields
-)
 
 # SDK libraries
 add_library(base58 SHARED $ENV{BOLOS_SDK}/lib_standard_app/base58.c)
@@ -375,13 +235,24 @@ target_link_libraries(hash_mocks_lib PUBLIC c)
 target_link_libraries(hash_mocks_lib PUBLIC blake2b_lib sha3_lib)
 
 
-# Link test executables
-target_link_libraries(test_hex_utils PUBLIC cmocka gcov hex_utils)
-target_link_libraries(test_bech32 PUBLIC cmocka gcov bech32_lib hex_utils)
-target_link_libraries(test_text_utils
-    PUBLIC
-        cmocka
-        gcov
+# Early simple tests
+cardano_unit_test(test_hex_utils
+    SOURCES test_hex_utils.c
+    LIBS hex_utils mock_printf)
+
+cardano_unit_test(test_bech32
+    SOURCES test_bech32.c
+    LIBS bech32_lib hex_utils mock_printf)
+
+cardano_unit_test(test_text_utils
+    SOURCES
+        test_text_utils.c
+        ../../src/ui/ui_formatters.c
+        ../../src/cardano_tokens/cardano_tokens.c
+        ../../src/utils/textUtils.c
+        ../../src/utils/ipUtils.c
+        mock_sources/hex_stub.c
+    LIBS
         bech32_lib
         hex_utils
         hash_mocks_lib
@@ -389,11 +260,17 @@ target_link_libraries(test_text_utils
         sha3_lib
         cardano_buffer_lib
         format
-)
-target_link_libraries(test_ui_formatters
-    PUBLIC
-        cmocka
-        gcov
+        mock_printf)
+
+cardano_unit_test(test_ui_formatters
+    SOURCES
+        test_ui_formatters.c
+        ../../src/ui/ui_formatters.c
+        ../../src/cardano_tokens/cardano_tokens.c
+        ../../src/utils/textUtils.c
+        ../../src/utils/ipUtils.c
+        mock_sources/hex_stub.c
+    LIBS
         bech32_lib
         hex_utils
         hash_mocks_lib
@@ -401,11 +278,17 @@ target_link_libraries(test_ui_formatters
         sha3_lib
         cardano_buffer_lib
         format
-)
-target_link_libraries(test_cardano_tokens
-    PUBLIC
-        cmocka
-        gcov
+        mock_printf)
+
+cardano_unit_test(test_cardano_tokens
+    SOURCES
+        test_cardano_tokens.c
+        ../../src/cardano_tokens/cardano_tokens.c
+        ../../src/ui/ui_formatters.c
+        ../../src/utils/textUtils.c
+        ../../src/utils/ipUtils.c
+        mock_sources/hex_stub.c
+    LIBS
         bech32_lib
         hex_utils
         hash_mocks_lib
@@ -413,16 +296,35 @@ target_link_libraries(test_cardano_tokens
         sha3_lib
         cardano_buffer_lib
         format
-)
-target_link_libraries(test_bip44 PUBLIC cmocka gcov bip44_real)
-target_link_libraries(test_cbor PUBLIC cmocka gcov cbor_lib hex_utils read write c)
-target_link_libraries(test_cardano_buffer PUBLIC cmocka gcov cardano_buffer_lib buffer write varint bip32 parsers_lib)
-target_link_libraries(test_ip_utils PUBLIC cmocka gcov)
-target_link_libraries(test_hash PUBLIC cmocka gcov hex_utils blake2b_lib sha3_lib hash_mocks_lib)
-target_link_libraries(test_address_utils_byron
-    PUBLIC
-        cmocka
-        gcov
+        mock_printf)
+
+cardano_unit_test(test_bip44
+    SOURCES test_bip44.c
+    LIBS bip44_real mock_printf)
+
+cardano_unit_test(test_cbor
+    SOURCES test_cbor.c
+    LIBS cbor_lib hex_utils read write c mock_printf)
+
+cardano_unit_test(test_cardano_buffer
+    SOURCES test_cardano_buffer.c
+    LIBS cardano_buffer_lib buffer write varint bip32 parsers_lib mock_printf)
+
+cardano_unit_test(test_ip_utils
+    SOURCES test_ip_utils.c ../../src/utils/ipUtils.c
+    LIBS mock_printf)
+
+cardano_unit_test(test_hash
+    SOURCES test_hash.c
+    LIBS hex_utils blake2b_lib sha3_lib hash_mocks_lib mock_printf)
+
+cardano_unit_test(test_address_utils_byron
+    SOURCES
+        test_address_utils_byron.c
+        ../../src/addressUtils/addressUtilsByron.c
+        ../../src/keyDerivation/keyDerivation.c
+        ../../src/securityPolicy/securityPolicy_privkey.c
+    LIBS
         crypto_mocks_lib
         bip44_real
         hex_utils
@@ -437,11 +339,16 @@ target_link_libraries(test_address_utils_byron
         varint
         bip32
         cx_crc_support
-)
-target_link_libraries(test_address_utils_shelley
-    PUBLIC
-        cmocka
-        gcov
+        mock_printf)
+
+cardano_unit_test(test_address_utils_shelley
+    SOURCES
+        test_address_utils_shelley.c
+        ../../src/addressUtils/addressUtilsShelley.c
+        ../../src/addressUtils/addressUtilsByron.c
+        ../../src/keyDerivation/keyDerivation.c
+        ../../src/securityPolicy/securityPolicy_privkey.c
+    LIBS
         crypto_mocks_lib
         base58
         bech32_lib
@@ -459,17 +366,48 @@ target_link_libraries(test_address_utils_shelley
         varint
         bip32
         cx_crc_support
-)
-target_link_libraries(test_key_derivation PUBLIC cmocka gcov crypto_mocks_lib bip44_real hex_utils write hash_mocks_lib)
-target_link_libraries(test_crypto PUBLIC cmocka gcov mock_printf)
-target_link_libraries(test_security_policy_privkey PUBLIC cmocka gcov bip44_real mock_printf)
-target_link_libraries(test_message_signing PUBLIC cmocka gcov crypto_mocks_lib bip44_real hash_mocks_lib)
-target_link_libraries(test_cvote PUBLIC cmocka gcov cardano_sign_tx_core)
-target_link_libraries(test_sign_msg PUBLIC cmocka gcov cardano_sign_msg_core)
-target_link_libraries(test_aux_data_hash_builder
-    PUBLIC
-        cmocka
-        gcov
+        mock_printf)
+
+cardano_unit_test(test_key_derivation
+    SOURCES
+        test_key_derivation.c
+        ../../src/keyDerivation/keyDerivation.c
+        ../../src/securityPolicy/securityPolicy_privkey.c
+    LIBS crypto_mocks_lib bip44_real hex_utils write hash_mocks_lib mock_printf)
+
+cardano_unit_test(test_crypto
+    SOURCES
+        test_crypto.c
+        ../../src/crypto/crypto.c
+    LIBS mock_printf)
+
+cardano_unit_test(test_security_policy_privkey
+    SOURCES
+        test_security_policy_privkey.c
+        ../../src/securityPolicy/securityPolicy_privkey.c
+    LIBS bip44_real mock_printf)
+
+cardano_unit_test(test_message_signing
+    SOURCES
+        test_message_signing.c
+        ../../src/messageSigning/messageSigning.c
+        ../../src/keyDerivation/keyDerivation.c
+        ../../src/securityPolicy/securityPolicy_privkey.c
+    LIBS crypto_mocks_lib bip44_real hash_mocks_lib mock_printf)
+
+cardano_unit_test(test_cvote
+    SOURCES generated/cvote/test_cvote.c
+    LIBS cardano_sign_tx_core mock_printf)
+
+cardano_unit_test(test_sign_msg
+    SOURCES generated/sign_msg/test_sign_msg.c
+    LIBS cardano_sign_msg_core mock_printf)
+
+cardano_unit_test(test_aux_data_hash_builder
+    SOURCES
+        test_aux_data_hash_builder.c
+        ../../src/cvote/aux_data_hash_builder.c
+    LIBS
         hex_utils
         cbor_lib
         hash_mocks_lib
@@ -477,12 +415,13 @@ target_link_libraries(test_aux_data_hash_builder
         sha3_lib
         read
         write
-)
-add_test(test_aux_data_hash_builder test_aux_data_hash_builder)
-target_link_libraries(test_tx_hash_builder
-    PUBLIC
-        cmocka
-        gcov
+        mock_printf)
+
+cardano_unit_test(test_tx_hash_builder
+    SOURCES
+        test_tx_hash_builder.c
+        ../../src/transaction/tx_hash_builder.c
+    LIBS
         hash_mocks_lib
         blake2b_lib
         sha3_lib
@@ -494,11 +433,43 @@ target_link_libraries(test_tx_hash_builder
         read
         varint
         bip32
-)
-target_link_libraries(test_tx_validate
-    PUBLIC
-        cmocka
-        gcov
+        mock_printf)
+
+cardano_unit_test(test_tx_validate
+    SOURCES
+        test_tx_validate.c
+        mock_sources/mock_globals.c
+        ../../src/transaction/tx_parse.c
+        ../../src/transaction/tx_processing.c
+        ../../src/transaction/tx_processing_outputs.c
+        ../../src/transaction/tx_processing_certificates.c
+        ../../src/transaction/tx_ui_render.c
+        ../../src/transaction/tx_ui_render_certificates.c
+        ../../src/transaction/tx_ui_render_outputs.c
+        ../../src/transaction/tx_parse_certificates.c
+        ../../src/transaction/tx_parse_outputs.c
+        ../../src/transaction/tx_utils.c
+        ../../src/transaction/tx_hash_builder.c
+        ../../src/addressUtils/addressUtilsShelley.c
+        ../../src/addressUtils/addressUtilsByron.c
+        ../../src/addressUtils/bip44.c
+        ../../src/parsers/cardano_parsers.c
+        ../../src/securityPolicy/securityPolicy.c
+        ../../src/securityPolicy/securityPolicy_privkey.c
+        ../../src/keyDerivation/keyDerivation.c
+        ../../src/utils/mem.c
+        $ENV{BOLOS_SDK}/lib_lists/lists.c
+        ../../src/cardano_tokens/cardano_tokens.c
+        ../../src/ui/ui_utils.c
+        ../../src/ui/ui_warnings.c
+        ../../src/ui/ui_formatters.c
+        ../../src/ui/ui_address_fields.c
+        ../../src/app_context.c
+        ${UNIT_TEST_MEM_UTILS_STUB}
+        mock_sources/glyphs_mock.c
+        mock_sources/hex_stub.c
+        test_utils/io_capture.c
+    LIBS
         hex_utils
         text_utils
         blake2b_lib
@@ -517,280 +488,210 @@ target_link_libraries(test_tx_validate
         format
         crypto_mocks_lib
         cx_crc_support
-)
-add_test(test_tx_hash_builder test_tx_hash_builder)
+        mock_printf)
+
+cardano_unit_test(test_ui_utils
+    SOURCES
+        test_ui_utils.c
+        ../../src/ui/ui_utils.c
+        ../../src/utils/mem.c
+        ${UNIT_TEST_MEM_UTILS_STUB}
+    LIBS mock_printf)
+
+cardano_unit_test(test_ui_warnings
+    SOURCES test_ui_warnings.c
+    LIBS cardano_sign_tx_core mock_printf)
 
 # Mary era tests (multiasset/tokens)
-add_executable(test_sign_tx_mary generated/sign_tx/test_sign_tx_mary.c)
-target_link_libraries(test_sign_tx_mary PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_sign_tx_mary test_sign_tx_mary)
+cardano_unit_test(test_sign_tx_mary
+    SOURCES generated/sign_tx/test_sign_tx_mary.c
+    LIBS cardano_sign_tx_core)
 
+# Keep test_sign_tx_shelley as manual 3-line (has commented compile_definitions):
 add_executable(test_sign_tx_shelley generated/sign_tx/test_sign_tx_shelley.c)
 target_link_libraries(test_sign_tx_shelley PUBLIC cmocka gcov cardano_sign_tx_core)
 #target_compile_definitions(test_sign_tx_shelley PRIVATE TRACE_TX_HASH_BUILDER)
 add_test(test_sign_tx_shelley test_sign_tx_shelley)
 
-add_executable(test_sign_tx_byron generated/sign_tx/test_sign_tx_byron.c)
-target_link_libraries(test_sign_tx_byron PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_sign_tx_byron test_sign_tx_byron)
+cardano_unit_test(test_sign_tx_byron
+    SOURCES generated/sign_tx/test_sign_tx_byron.c
+    LIBS cardano_sign_tx_core)
 
 # Shelley era tests with certificates
-add_executable(test_sign_tx_shelley_certificates generated/sign_tx/test_sign_tx_shelley_certificates.c)
-target_link_libraries(test_sign_tx_shelley_certificates PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_sign_tx_shelley_certificates test_sign_tx_shelley_certificates)
+cardano_unit_test(test_sign_tx_shelley_certificates
+    SOURCES generated/sign_tx/test_sign_tx_shelley_certificates.c
+    LIBS cardano_sign_tx_core)
 
 # Allegra era tests (validity intervals)
-add_executable(test_sign_tx_allegra generated/sign_tx/test_sign_tx_allegra.c)
-target_link_libraries(test_sign_tx_allegra PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_sign_tx_allegra test_sign_tx_allegra)
+cardano_unit_test(test_sign_tx_allegra
+    SOURCES generated/sign_tx/test_sign_tx_allegra.c
+    LIBS cardano_sign_tx_core)
 
 # Alonzo era tests (Plutus scripts)
-add_executable(test_sign_tx_alonzo generated/sign_tx/test_sign_tx_alonzo.c)
-target_link_libraries(test_sign_tx_alonzo PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_sign_tx_alonzo test_sign_tx_alonzo)
-add_executable(test_sign_tx_streaming generated/sign_tx/test_sign_tx_streaming.c)
-target_link_libraries(test_sign_tx_streaming PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_sign_tx_streaming test_sign_tx_streaming)
-add_executable(test_sign_tx_alonzo_catalyst generated/sign_tx/test_sign_tx_alonzo_catalyst.c)
-target_link_libraries(test_sign_tx_alonzo_catalyst PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_sign_tx_alonzo_catalyst test_sign_tx_alonzo_catalyst)
-add_executable(test_sign_tx_alonzo_cip36 generated/sign_tx/test_sign_tx_alonzo_cip36.c)
-target_link_libraries(test_sign_tx_alonzo_cip36 PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_sign_tx_alonzo_cip36 test_sign_tx_alonzo_cip36)
+cardano_unit_test(test_sign_tx_alonzo
+    SOURCES generated/sign_tx/test_sign_tx_alonzo.c
+    LIBS cardano_sign_tx_core)
+cardano_unit_test(test_sign_tx_streaming
+    SOURCES generated/sign_tx/test_sign_tx_streaming.c
+    LIBS cardano_sign_tx_core)
+cardano_unit_test(test_sign_tx_alonzo_catalyst
+    SOURCES generated/sign_tx/test_sign_tx_alonzo_catalyst.c
+    LIBS cardano_sign_tx_core)
+cardano_unit_test(test_sign_tx_alonzo_cip36
+    SOURCES generated/sign_tx/test_sign_tx_alonzo_cip36.c
+    LIBS cardano_sign_tx_core)
 
-# Babbage era tests (reference inputs, inline datums)
+# Babbage era tests (reference inputs, inline datums) — keep manual (has commented compile_definitions):
 add_executable(test_sign_tx_babbage generated/sign_tx/test_sign_tx_babbage.c)
 target_link_libraries(test_sign_tx_babbage PUBLIC cmocka gcov cardano_sign_tx_core)
 #target_compile_definitions(test_sign_tx_babbage PRIVATE TRACE_TX_HASH_BUILDER)
 add_test(test_sign_tx_babbage test_sign_tx_babbage)
 
 # Conway era tests with governance certificates
-add_executable(test_sign_tx_conway generated/sign_tx/test_sign_tx_conway.c)
-target_link_libraries(test_sign_tx_conway PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_sign_tx_conway test_sign_tx_conway)
+cardano_unit_test(test_sign_tx_conway
+    SOURCES generated/sign_tx/test_sign_tx_conway.c
+    LIBS cardano_sign_tx_core)
 
 # Conway era tests without certificates (treasury/donation)
-add_executable(test_sign_tx_conway_without_certificates generated/sign_tx/test_sign_tx_conway_without_certificates.c)
-target_link_libraries(test_sign_tx_conway_without_certificates PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_sign_tx_conway_without_certificates test_sign_tx_conway_without_certificates)
+cardano_unit_test(test_sign_tx_conway_without_certificates
+    SOURCES generated/sign_tx/test_sign_tx_conway_without_certificates.c
+    LIBS cardano_sign_tx_core)
 
 # Conway era voting procedures tests
-add_executable(test_sign_tx_conway_voting generated/sign_tx/test_sign_tx_conway_voting.c)
-target_link_libraries(test_sign_tx_conway_voting PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_sign_tx_conway_voting test_sign_tx_conway_voting)
+cardano_unit_test(test_sign_tx_conway_voting
+    SOURCES generated/sign_tx/test_sign_tx_conway_voting.c
+    LIBS cardano_sign_tx_core)
 
 # Multisig tests
-add_executable(test_sign_tx_multisig generated/sign_tx/test_sign_tx_multisig.c)
-target_link_libraries(test_sign_tx_multisig PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_sign_tx_multisig test_sign_tx_multisig)
+cardano_unit_test(test_sign_tx_multisig
+    SOURCES generated/sign_tx/test_sign_tx_multisig.c
+    LIBS cardano_sign_tx_core)
 
 # Pool registration tests
-add_executable(test_sign_tx_pool_registration generated/sign_tx/test_sign_tx_pool_registration.c)
-target_link_libraries(test_sign_tx_pool_registration PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_sign_tx_pool_registration test_sign_tx_pool_registration)
+cardano_unit_test(test_sign_tx_pool_registration
+    SOURCES generated/sign_tx/test_sign_tx_pool_registration.c
+    LIBS cardano_sign_tx_core)
 
-add_executable(test_security_policy_certificates test_security_policy_certificates.c)
-target_link_libraries(test_security_policy_certificates PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_security_policy_certificates test_security_policy_certificates)
+cardano_unit_test(test_security_policy_certificates
+    SOURCES test_security_policy_certificates.c
+    LIBS cardano_sign_tx_core)
 
-target_link_libraries(test_ui_warnings PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_ui_warnings test_ui_warnings)
+cardano_unit_test(test_security_policy_collateral
+    SOURCES test_security_policy_collateral.c
+    LIBS cardano_sign_tx_core)
 
-add_executable(test_security_policy_collateral test_security_policy_collateral.c)
-target_link_libraries(test_security_policy_collateral PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_security_policy_collateral test_security_policy_collateral)
+cardano_unit_test(test_security_policy_reference_input
+    SOURCES test_security_policy_reference_input.c
+    LIBS cardano_sign_tx_core)
 
-add_executable(test_security_policy_reference_input test_security_policy_reference_input.c)
-target_link_libraries(test_security_policy_reference_input PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_security_policy_reference_input test_security_policy_reference_input)
+cardano_unit_test(test_security_policy_witness
+    SOURCES test_security_policy_witness.c
+    LIBS cardano_sign_tx_core)
 
-add_executable(test_security_policy_witness test_security_policy_witness.c)
-target_link_libraries(test_security_policy_witness PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_security_policy_witness test_security_policy_witness)
+cardano_unit_test(test_sign_tx_deny_tests
+    SOURCES generated/sign_tx/test_sign_tx_deny_tests.c
+    LIBS cardano_sign_tx_core)
 
-foreach(target IN LISTS TEST_EXECUTABLES)
-    target_link_libraries(${target} PUBLIC mock_printf)
-endforeach()
+cardano_unit_test(test_handler_denies_tx
+    SOURCES test_handler_denies_tx.c
+    LIBS cardano_sign_tx_core)
 
-add_executable(test_sign_tx_deny_tests
-    generated/sign_tx/test_sign_tx_deny_tests.c
-)
-target_link_libraries(test_sign_tx_deny_tests PUBLIC cmocka gcov cardano_sign_tx_core)
-target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
-add_test(test_sign_tx_deny_tests test_sign_tx_deny_tests)
+cardano_unit_test(test_dispatcher_interleaving
+    SOURCES
+        test_dispatcher_interleaving.c
+        mock_sources/mock_globals.c
+        ../../src/apdu/dispatcher.c
+    LIBS mock_printf)
 
-add_executable(test_handler_denies
-    test_handler_denies.c
-    ../../src/handler/get_public_key.c
-)
-target_link_libraries(test_handler_denies PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_handler_denies test_handler_denies)
+cardano_unit_test(test_handler_state_machines
+    SOURCES test_handler_state_machines.c
+    LIBS cardano_sign_tx_core)
 
-add_executable(test_handler_denies_tx
-    test_handler_denies_tx.c
-)
-target_link_libraries(test_handler_denies_tx PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_handler_denies_tx test_handler_denies_tx)
+cardano_unit_test(test_handler_sign_tx_swap
+    SOURCES test_handler_sign_tx_swap.c
+    LIBS cardano_sign_tx_core_swap)
 
-add_executable(test_dispatcher_interleaving
-    test_dispatcher_interleaving.c
-    mock_sources/mock_globals.c
-    ../../src/apdu/dispatcher.c
-)
-target_link_libraries(test_dispatcher_interleaving PUBLIC cmocka gcov mock_printf)
-add_test(test_dispatcher_interleaving test_dispatcher_interleaving)
+cardano_unit_test(test_sign_tx_witness_nbgl_reject
+    SOURCES test_sign_tx_witness_nbgl_reject.c
+    LIBS cardano_sign_tx_core)
 
-add_executable(test_handler_state_machines
-    test_handler_state_machines.c
-)
-target_link_libraries(test_handler_state_machines PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_handler_state_machines test_handler_state_machines)
+cardano_unit_test(test_sign_tx_streaming_nbgl_reject
+    SOURCES test_sign_tx_streaming_nbgl_reject.c
+    LIBS cardano_sign_tx_core)
 
-add_executable(test_handler_sign_tx_swap
-    test_handler_sign_tx_swap.c
-)
-target_link_libraries(test_handler_sign_tx_swap PUBLIC cmocka gcov cardano_sign_tx_core_swap)
-add_test(test_handler_sign_tx_swap test_handler_sign_tx_swap)
+cardano_unit_test(test_sign_msg_nbgl_reject
+    SOURCES test_sign_msg_nbgl_reject.c
+    LIBS cardano_sign_msg_core)
 
-add_executable(test_sign_tx_witness_nbgl_reject
-    test_sign_tx_witness_nbgl_reject.c
-)
-target_link_libraries(test_sign_tx_witness_nbgl_reject PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_sign_tx_witness_nbgl_reject test_sign_tx_witness_nbgl_reject)
+cardano_unit_test(test_sign_opcert_nbgl_reject
+    SOURCES
+        test_sign_opcert_nbgl_reject.c
+        ../../src/handler/sign_opcert.c
+        ../../src/opcert/opcert_parse.c
+        ../../src/ui/ui_display_opcert.c
+    LIBS cardano_sign_tx_core)
 
-add_executable(test_sign_tx_streaming_nbgl_reject
-    test_sign_tx_streaming_nbgl_reject.c
-)
-target_link_libraries(test_sign_tx_streaming_nbgl_reject PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_sign_tx_streaming_nbgl_reject test_sign_tx_streaming_nbgl_reject)
+cardano_unit_test(test_sign_cvote_nbgl_reject
+    SOURCES test_sign_cvote_nbgl_reject.c
+    LIBS cardano_sign_tx_core)
 
-add_executable(test_pubkey_nbgl_reject
-    test_pubkey_nbgl_reject.c
-)
-target_link_libraries(test_pubkey_nbgl_reject PUBLIC cmocka gcov cardano_pubkey_core)
-add_test(test_pubkey_nbgl_reject test_pubkey_nbgl_reject)
+cardano_unit_test(test_cvote_aux_data_ui
+    SOURCES test_cvote_aux_data_ui.c
+    LIBS cardano_sign_tx_core)
 
-add_executable(test_derive_address_nbgl_reject
-    test_derive_address_nbgl_reject.c
-)
-target_link_libraries(test_derive_address_nbgl_reject PUBLIC cmocka gcov cardano_derive_address_core)
-add_test(test_derive_address_nbgl_reject test_derive_address_nbgl_reject)
+cardano_unit_test(test_tx_parser
+    SOURCES test_tx_parser.c
+    LIBS cardano_sign_tx_core)
 
-add_executable(test_sign_msg_nbgl_reject
-    test_sign_msg_nbgl_reject.c
-)
-target_link_libraries(test_sign_msg_nbgl_reject PUBLIC cmocka gcov cardano_sign_msg_core)
-add_test(test_sign_msg_nbgl_reject test_sign_msg_nbgl_reject)
-
-add_executable(test_sign_opcert_nbgl_reject
-    test_sign_opcert_nbgl_reject.c
-    ../../src/handler/sign_opcert.c
-    ../../src/opcert/opcert_parse.c
-    ../../src/ui/ui_display_opcert.c
-)
-target_link_libraries(test_sign_opcert_nbgl_reject PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_sign_opcert_nbgl_reject test_sign_opcert_nbgl_reject)
-
-add_executable(test_sign_cvote_nbgl_reject
-    test_sign_cvote_nbgl_reject.c
-)
-target_link_libraries(test_sign_cvote_nbgl_reject PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_sign_cvote_nbgl_reject test_sign_cvote_nbgl_reject)
-
-add_executable(test_cvote_aux_data_ui
-    test_cvote_aux_data_ui.c
-)
-target_link_libraries(test_cvote_aux_data_ui PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_cvote_aux_data_ui test_cvote_aux_data_ui)
-
-add_executable(test_tx_parser
-    test_tx_parser.c
-)
-target_link_libraries(test_tx_parser PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_tx_parser test_tx_parser)
-
-add_executable(test_cvote_parser
-    test_cvote_parser.c
-)
+# test_cvote_parser: keep manual (needs target_link_options)
+add_executable(test_cvote_parser test_cvote_parser.c)
 target_link_libraries(test_cvote_parser PUBLIC cmocka gcov cardano_sign_tx_core)
 target_link_options(test_cvote_parser PRIVATE -Wl,--wrap=parse_output_destination)
 add_test(test_cvote_parser test_cvote_parser)
 
-add_executable(test_cardano_parsers
-    test_cardano_parsers.c
-)
-target_link_libraries(test_cardano_parsers PUBLIC cmocka gcov parsers_lib cardano_buffer_lib mock_printf)
-add_test(test_cardano_parsers test_cardano_parsers)
+cardano_unit_test(test_cardano_parsers
+    SOURCES test_cardano_parsers.c
+    LIBS parsers_lib cardano_buffer_lib mock_printf)
 
-add_executable(test_tx_utils
-    test_tx_utils.c
-)
-target_link_libraries(test_tx_utils PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_tx_utils test_tx_utils)
+cardano_unit_test(test_tx_utils
+    SOURCES test_tx_utils.c
+    LIBS cardano_sign_tx_core)
 
-# Register tests with CTest
-add_test(test_hex_utils test_hex_utils)
-add_test(test_bech32 test_bech32)
-add_test(test_text_utils test_text_utils)
-add_test(test_ui_formatters test_ui_formatters)
-add_test(test_cardano_tokens test_cardano_tokens)
-add_test(test_bip44 test_bip44)
-add_test(test_cbor test_cbor)
-add_test(test_cardano_buffer test_cardano_buffer)
-add_test(test_ip_utils test_ip_utils)
-add_test(test_hash test_hash)
-add_test(test_address_utils_byron test_address_utils_byron)
-add_test(test_address_utils_shelley test_address_utils_shelley)
-add_test(test_key_derivation test_key_derivation)
-add_test(test_crypto test_crypto)
-add_test(test_security_policy_privkey test_security_policy_privkey)
-add_test(test_message_signing test_message_signing)
-add_test(test_cvote test_cvote)
+cardano_unit_test(test_cvote_deny_tests
+    SOURCES generated/cvote/test_cvote_deny_tests.c
+    LIBS cardano_sign_tx_core)
 
-add_executable(test_cvote_deny_tests
-    generated/cvote/test_cvote_deny_tests.c
-)
-target_link_libraries(test_cvote_deny_tests PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_cvote_deny_tests test_cvote_deny_tests)
+cardano_unit_test(test_handler_denies_cvote
+    SOURCES
+        test_handler_denies_cvote.c
+        test_utils/io_capture.c
+    LIBS cardano_sign_tx_core)
 
-add_executable(test_handler_denies_cvote
-    test_handler_denies_cvote.c
-    test_utils/io_capture.c
-)
-target_link_libraries(test_handler_denies_cvote PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_handler_denies_cvote test_handler_denies_cvote)
+cardano_unit_test(test_opcert
+    SOURCES
+        generated/opcert/test_opcert.c
+        test_utils/hexUtils.c
+        ../../src/handler/sign_opcert.c
+        ../../src/opcert/opcert_parse.c
+        ../../src/ui/ui_display_opcert.c
+    LIBS cardano_sign_tx_core)
 
-add_test(test_sign_msg test_sign_msg)
-add_test(test_ui_utils test_ui_utils)
+cardano_unit_test(test_opcert_deny_tests
+    SOURCES
+        generated/opcert/test_opcert_deny_tests.c
+        test_utils/hexUtils.c
+        ../../src/handler/sign_opcert.c
+        ../../src/opcert/opcert_parse.c
+        ../../src/ui/ui_display_opcert.c
+    LIBS cardano_sign_tx_core)
 
-add_executable(test_opcert
-    generated/opcert/test_opcert.c
-    test_utils/hexUtils.c
-    ../../src/handler/sign_opcert.c
-    ../../src/opcert/opcert_parse.c
-    ../../src/ui/ui_display_opcert.c
-)
-target_link_libraries(test_opcert PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_opcert test_opcert)
-
-add_executable(test_opcert_deny_tests
-    generated/opcert/test_opcert_deny_tests.c
-    test_utils/hexUtils.c
-    ../../src/handler/sign_opcert.c
-    ../../src/opcert/opcert_parse.c
-    ../../src/ui/ui_display_opcert.c
-)
-target_link_libraries(test_opcert_deny_tests PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_opcert_deny_tests test_opcert_deny_tests)
-
-add_executable(test_handler_denies_opcert
-    test_handler_denies_opcert.c
-    ../../src/handler/sign_opcert.c
-    ../../src/opcert/opcert_parse.c
-    ../../src/ui/ui_display_opcert.c
-)
-target_link_libraries(test_handler_denies_opcert PUBLIC cmocka gcov cardano_sign_tx_core)
-add_test(test_handler_denies_opcert test_handler_denies_opcert)
+cardano_unit_test(test_handler_denies_opcert
+    SOURCES
+        test_handler_denies_opcert.c
+        ../../src/handler/sign_opcert.c
+        ../../src/opcert/opcert_parse.c
+        ../../src/ui/ui_display_opcert.c
+    LIBS cardano_sign_tx_core)
 
 
 # Common sources for address derivation tests
@@ -843,22 +744,22 @@ set(DERIVE_ADDRESS_COMMON_LIBS
 # Create a static library for address derivation core (reusable across tests)
 add_library(cardano_derive_address_core STATIC ${DERIVE_ADDRESS_COMMON_SOURCES})
 target_link_libraries(cardano_derive_address_core PUBLIC ${DERIVE_ADDRESS_COMMON_LIBS})
-add_executable(test_derive_address_deny_tests
-    generated/derive_address/test_derive_address_deny_tests.c
-)
-target_link_libraries(test_derive_address_deny_tests PUBLIC cmocka gcov cardano_derive_address_core)
-target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
-add_test(test_derive_address_deny_tests test_derive_address_deny_tests)
 
-add_executable(test_derive_address
-    generated/derive_address/test_derive_address.c
-)
-target_link_libraries(test_derive_address PUBLIC cmocka gcov cardano_derive_address_core)
-target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
-add_test(test_derive_address test_derive_address)
+cardano_unit_test(test_derive_address_deny_tests
+    SOURCES generated/derive_address/test_derive_address_deny_tests.c
+    LIBS cardano_derive_address_core)
 
-target_link_libraries(test_ui_address_fields PUBLIC cmocka gcov cardano_derive_address_core)
-add_test(test_ui_address_fields test_ui_address_fields)
+cardano_unit_test(test_derive_address
+    SOURCES generated/derive_address/test_derive_address.c
+    LIBS cardano_derive_address_core)
+
+cardano_unit_test(test_ui_address_fields
+    SOURCES test_ui_address_fields.c
+    LIBS cardano_derive_address_core mock_printf)
+
+cardano_unit_test(test_derive_address_nbgl_reject
+    SOURCES test_derive_address_nbgl_reject.c
+    LIBS cardano_derive_address_core)
 
 set(PUBKEY_COMMON_SOURCES
     mock_sources/mock_globals.c
@@ -904,6 +805,18 @@ set(PUBKEY_COMMON_LIBS
 )
 add_library(cardano_pubkey_core STATIC ${PUBKEY_COMMON_SOURCES})
 target_link_libraries(cardano_pubkey_core PUBLIC ${PUBKEY_COMMON_LIBS})
+
+cardano_unit_test(test_pubkey_nbgl_reject
+    SOURCES test_pubkey_nbgl_reject.c
+    LIBS cardano_pubkey_core)
+
+cardano_unit_test(test_pubkey
+    SOURCES generated/pubkey/test_pubkey.c
+    LIBS cardano_pubkey_core)
+
+cardano_unit_test(test_pubkey_deny_tests
+    SOURCES generated/pubkey/test_pubkey_deny_tests.c
+    LIBS cardano_pubkey_core)
 
 set(SIGN_MSG_COMMON_SOURCES
     mock_sources/mock_globals.c
@@ -959,18 +872,6 @@ set(SIGN_MSG_COMMON_LIBS
 add_library(cardano_sign_msg_core STATIC ${SIGN_MSG_COMMON_SOURCES})
 target_link_libraries(cardano_sign_msg_core PUBLIC ${SIGN_MSG_COMMON_LIBS})
 
-add_executable(test_pubkey
-    generated/pubkey/test_pubkey.c
-)
-target_link_libraries(test_pubkey PUBLIC cmocka gcov cardano_pubkey_core)
-add_test(test_pubkey test_pubkey)
-
-add_executable(test_pubkey_deny_tests
-    generated/pubkey/test_pubkey_deny_tests.c
-)
-target_link_libraries(test_pubkey_deny_tests PUBLIC cmocka gcov cardano_pubkey_core)
-add_test(test_pubkey_deny_tests test_pubkey_deny_tests)
-
 set(DERIVE_NATIVE_SCRIPT_COMMON_SOURCES
     ../../src/deriveNativeScriptHash/derive_native_script_hash_builder.c
     ../../src/handler/derive_native_script_hash.c
@@ -1017,47 +918,33 @@ set(DERIVE_NATIVE_SCRIPT_COMMON_LIBS
     mock_printf
     parsers_lib
 )
-add_executable(test_native_script
-    generated/native_script/test_native_script.c
-)
 add_library(cardano_derive_native_script_core STATIC ${DERIVE_NATIVE_SCRIPT_COMMON_SOURCES})
 target_link_libraries(cardano_derive_native_script_core PUBLIC ${DERIVE_NATIVE_SCRIPT_COMMON_LIBS})
-target_link_libraries(test_native_script PUBLIC cmocka gcov cardano_derive_native_script_core)
-target_link_libraries(test_ui_utils PUBLIC cmocka gcov)
-add_test(test_native_script test_native_script)
 
-add_executable(test_native_script_deny_tests
-    generated/native_script/test_native_script_deny_tests.c
-)
-target_link_libraries(test_native_script_deny_tests PUBLIC cmocka gcov cardano_derive_native_script_core)
-add_test(test_native_script_deny_tests test_native_script_deny_tests)
+cardano_unit_test(test_native_script
+    SOURCES generated/native_script/test_native_script.c
+    LIBS cardano_derive_native_script_core)
 
-add_executable(test_handler_reset_semantics
-    test_handler_reset_semantics.c
-)
-target_link_libraries(test_handler_reset_semantics PUBLIC cmocka gcov cardano_derive_native_script_core)
-add_test(test_handler_reset_semantics test_handler_reset_semantics)
+cardano_unit_test(test_native_script_deny_tests
+    SOURCES generated/native_script/test_native_script_deny_tests.c
+    LIBS cardano_derive_native_script_core)
 
-add_executable(test_native_script_state_machine
-    test_native_script_state_machine.c
-)
-target_link_libraries(test_native_script_state_machine PUBLIC cmocka gcov cardano_derive_native_script_core)
-add_test(test_native_script_state_machine test_native_script_state_machine)
+cardano_unit_test(test_handler_reset_semantics
+    SOURCES test_handler_reset_semantics.c
+    LIBS cardano_derive_native_script_core)
 
-add_executable(test_native_script_init_ui_completion
-    test_native_script_init_ui_completion.c
-)
-target_link_libraries(test_native_script_init_ui_completion PUBLIC cmocka gcov cardano_derive_native_script_core)
-add_test(test_native_script_init_ui_completion test_native_script_init_ui_completion)
+cardano_unit_test(test_native_script_state_machine
+    SOURCES test_native_script_state_machine.c
+    LIBS cardano_derive_native_script_core)
 
-add_executable(test_native_script_status_text
-    test_native_script_status_text.c
-)
-target_link_libraries(test_native_script_status_text PUBLIC cmocka gcov cardano_derive_native_script_core)
-add_test(test_native_script_status_text test_native_script_status_text)
+cardano_unit_test(test_native_script_init_ui_completion
+    SOURCES test_native_script_init_ui_completion.c
+    LIBS cardano_derive_native_script_core)
 
-add_executable(test_native_script_ui_render
-    test_native_script_ui_render.c
-)
-target_link_libraries(test_native_script_ui_render PUBLIC cmocka gcov cardano_derive_native_script_core)
-add_test(test_native_script_ui_render test_native_script_ui_render)
+cardano_unit_test(test_native_script_status_text
+    SOURCES test_native_script_status_text.c
+    LIBS cardano_derive_native_script_core)
+
+cardano_unit_test(test_native_script_ui_render
+    SOURCES test_native_script_ui_render.c
+    LIBS cardano_derive_native_script_core)

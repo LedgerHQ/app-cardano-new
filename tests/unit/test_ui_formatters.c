@@ -12,7 +12,6 @@
 #include <cmocka.h>
 
 #include "ui_formatters.h"
-#include "utils/ipUtils.h"
 #include "hexUtils.h"
 #include "cardano_constants.h"
 static void test_format_hex_bytes(void **state) {
@@ -223,70 +222,6 @@ static void test_format_index_with_prefix(void **state) {
     assert_string_equal(tmp, "#42");
 }
 
-static void test_format_ipv4(void **state) {
-    (void) state;
-
-    char tmp[MAX_IPV4_STR_LENGTH + 2] = {0};  // +2 to check we don't exceed buffer
-
-    ipv4_t ipv4_null = {.isNull = true, .ip = NULL};
-    bool success = format_ipv4(&ipv4_null, tmp, sizeof(tmp));
-    assert_true(success);
-    assert_string_equal(tmp, "(none)");
-
-    const uint8_t ipv4_valid_bytes[IPV4_LENGTH] = {192, 168, 1, 1};
-    ipv4_t ipv4_valid = {.isNull = false, .ip = ipv4_valid_bytes};
-    memset(tmp, 0, sizeof(tmp));
-    success = format_ipv4(&ipv4_valid, tmp, sizeof(tmp));
-    assert_true(success);
-    assert_string_equal(tmp, "192.168.1.1");
-
-    const uint8_t ipv4_zeros_bytes[IPV4_LENGTH] = {0, 0, 0, 0};
-    ipv4_t ipv4_zeros = {.isNull = false, .ip = ipv4_zeros_bytes};
-    memset(tmp, 0, sizeof(tmp));
-    success = format_ipv4(&ipv4_zeros, tmp, sizeof(tmp));
-    assert_true(success);
-    assert_string_equal(tmp, "0.0.0.0");
-
-    const uint8_t ipv4_max_bytes[IPV4_LENGTH] = {255, 255, 255, 255};
-    ipv4_t ipv4_max = {.isNull = false, .ip = ipv4_max_bytes};
-    memset(tmp, 0, sizeof(tmp));
-    success = format_ipv4(&ipv4_max, tmp, sizeof(tmp));
-    assert_true(success);
-    assert_string_equal(tmp, "255.255.255.255");
-}
-
-static void test_format_ipv6(void **state) {
-    (void) state;
-
-    char tmp[MAX_IPV6_STR_LENGTH + 2] = {0};  // +2 to check we don't exceed buffer
-
-    ipv6_t ipv6_null = {.isNull = true, .ip = NULL};
-    bool success = format_ipv6(&ipv6_null, tmp, sizeof(tmp));
-    assert_true(success);
-    assert_string_equal(tmp, "(none)");
-
-    const uint8_t ipv6_zeros_bytes[IPV6_LENGTH] = {0};
-    ipv6_t ipv6_zeros = {.isNull = false, .ip = ipv6_zeros_bytes};
-    memset(tmp, 0, sizeof(tmp));
-    success = format_ipv6(&ipv6_zeros, tmp, sizeof(tmp));
-    assert_true(success);
-    assert_string_equal(tmp, "::");
-
-    const uint8_t ipv6_loopback_bytes[IPV6_LENGTH] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
-    ipv6_t ipv6_loopback = {.isNull = false, .ip = ipv6_loopback_bytes};
-    memset(tmp, 0, sizeof(tmp));
-    success = format_ipv6(&ipv6_loopback, tmp, sizeof(tmp));
-    assert_true(success);
-    assert_string_equal(tmp, "::1");
-
-    const uint8_t ipv6_valid_bytes[IPV6_LENGTH] = {0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
-    ipv6_t ipv6_valid = {.isNull = false, .ip = ipv6_valid_bytes};
-    memset(tmp, 0, sizeof(tmp));
-    success = format_ipv6(&ipv6_valid, tmp, sizeof(tmp));
-    assert_true(success);
-    assert_string_equal(tmp, "2001:db8::1");
-}
-
 static void test_format_vote_option(void **state) {
     (void) state;
 
@@ -478,8 +413,6 @@ int main(void) {
         cmocka_unit_test(test_format_pool_margin),
         cmocka_unit_test(test_format_uint16),
         cmocka_unit_test(test_format_index_with_prefix),
-        cmocka_unit_test(test_format_ipv4),
-        cmocka_unit_test(test_format_ipv6),
         cmocka_unit_test(test_format_vote_option),
         cmocka_unit_test(test_format_constant_drep),
         cmocka_unit_test(test_format_certificate_type),

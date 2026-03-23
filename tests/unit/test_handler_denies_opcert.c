@@ -39,6 +39,23 @@ static const uint8_t VALID_OPCERT_PAYLOAD[] = {
     0x80, 0x00, 0x00, 0x00,
 };
 
+static void test_opcert_signing_during_tx_signing(void **state) {
+    (void) state;
+    reset_opcert_common_context();
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    G_context.state.tx_state = TX_STATE_APPROVED;
+
+    buffer_t buf = {
+        .ptr = (uint8_t *) VALID_OPCERT_PAYLOAD,
+        .size = sizeof(VALID_OPCERT_PAYLOAD),
+        .offset = 0,
+    };
+    apdu_response_begin(INS_SIGN_OPCERT);
+    handler_sign_opcert(&buf);
+    apdu_response_assert_sent_or_deferred();
+    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+}
+
 static void test_opcert_rejects_when_session_active(void **state) {
     (void) state;
     reset_opcert_common_context();
@@ -58,6 +75,7 @@ static void test_opcert_rejects_when_session_active(void **state) {
 
 int main(void) {
     const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_opcert_signing_during_tx_signing),
         cmocka_unit_test(test_opcert_rejects_when_session_active),
     };
     return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);

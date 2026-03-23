@@ -251,7 +251,7 @@ def _build_deny_fixtures() -> str:
     def generate_header(fixtures: dict[str, list[FixtureInfo]]) -> str:
         lines = [
             "//",
-            "// Generator: deny_fixture_generators/tx_deny_generators.py",
+            "// Generator: deny_fixture_generators/sign_tx_deny_generators.py",
             "// Source: tests/standalone/input_files/signTx.py (deny test cases)",
             "//",
             "// To regenerate:",
