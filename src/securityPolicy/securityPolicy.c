@@ -1809,12 +1809,12 @@ security_policy_t policyForSignTxScriptDataHash(const sign_tx_signingmode_t txSi
             HIDE();
             break;
 
+        // LCOV_EXCL_START
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
+            // unreachable: pool registration modes are rejected at tx init before script data hash processing
             DENY();
             break;
-
-        // LCOV_EXCL_START
         default:
             ASSERT(false);
         // LCOV_EXCL_STOP
@@ -1846,13 +1846,15 @@ security_policy_t policyForSignTxCollateralInput(const sign_tx_signingmode_t txS
             HIDE();
             break;
 
+        // LCOV_EXCL_START
         case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
         case SIGN_TX_SIGNINGMODE_MULTISIG_TX:
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
-            // collateral inputs allowed only if Plutus script is to be executed
+            // unreachable: these modes are rejected at tx init before collateral input processing
             DENY();
             break;
+        // LCOV_EXCL_STOP
 
         // LCOV_EXCL_START
         default:

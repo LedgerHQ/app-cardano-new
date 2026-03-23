@@ -123,10 +123,7 @@ static void cvote_hash_builder_add_nonce(cvote_aux_data_t *aux_data) {
 
 static void cvote_hash_builder_add_common_fields(cvote_aux_data_t *aux_data) {
     LEDGER_ASSERT(aux_data != NULL, "NULL aux_data");
-
-    if (aux_data->final_fields_processed) {
-        return;
-    }
+    LEDGER_ASSERT(!aux_data->final_fields_processed, "CVote common fields already processed"); // LCOV_EXCL_LINE
 
     cvote_hash_builder_add_vote_key(aux_data);
     cvote_hash_builder_add_staking_key(aux_data);
@@ -185,10 +182,7 @@ void cvote_hash_builder_add_delegation(cvote_aux_data_t *aux_data,
 
 void cvote_hash_finalize(void) {
     cvote_aux_data_t *aux_data = &tx_aux_data_ctx()->cvote_aux_data;
-
-    if (aux_data->hash_finalized) {
-        return;
-    }
+    LEDGER_ASSERT(!aux_data->hash_finalized, "CVote hash already finalized"); // LCOV_EXCL_LINE
 
     cvote_hash_builder_add_common_fields(aux_data);
     cvote_append_registration_signature(aux_data);
