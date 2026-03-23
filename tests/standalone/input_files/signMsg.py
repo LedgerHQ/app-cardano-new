@@ -74,12 +74,17 @@ class SignMsgDenyTestCase:
     invalid_address_field_type: Optional[int] = None
     invalid_msg_length: Optional[int] = None  # Override msgLength in INIT (4 bytes BE)
     truncate_init_apdu_at: Optional[int] = None  # Truncate INIT APDU at byte position
+    trailing_init_bytes: int = 0  # Append N extra garbage bytes after valid INIT payload
     # CHUNK-phase manipulation options
     invalid_chunk_size: Optional[int] = None  # Override chunk size in first CHUNK
+    truncate_chunk_data_at: Optional[int] = None  # Truncate chunk APDU payload to N bytes after size header
     # Multi-phase testing: if True, manually craft APDU sequence
     send_chunk_without_init: bool = False
+    send_init_when_active: bool = False  # Send a second INIT while a session is already active
     send_confirm_without_chunks: bool = False  # Skip CHUNK phase entirely
     send_confirm_with_payload: bool = False  # Add non-empty payload to CONFIRM
+    send_confirm_without_init: bool = False  # Send CONFIRM with no prior INIT (req_type mismatch)
+    send_chunk_when_in_confirm: bool = False  # Complete chunks, then send extra CHUNK in CONFIRM state
 
 
 def build_sign_msg_init_apdu_for_deny(test_case: SignMsgDenyTestCase) -> bytes:
@@ -111,6 +116,11 @@ def build_sign_msg_init_apdu_for_deny(test_case: SignMsgDenyTestCase) -> bytes:
         if new_payload_length >= 0:
             init_apdu[4] = new_payload_length
 
+    if test_case.trailing_init_bytes > 0:
+        # Append garbage bytes after the valid payload and update Lc
+        init_apdu.extend([0xFF] * test_case.trailing_init_bytes)
+        init_apdu[4] = len(init_apdu) - 5  # Update Lc
+
     return bytes(init_apdu)
 
 
@@ -138,6 +148,13 @@ def build_sign_msg_chunk_apdu_for_deny(
         # APDU format: CLA INS P1 P2 Lc [chunk_size(4) chunk_data(...)]
         # The chunk_size field starts at offset 5 (after CLA/INS/P1/P2/Lc)
         chunk_apdu[5:9] = test_case.invalid_chunk_size.to_bytes(4, "big")
+
+    if test_case.truncate_chunk_data_at is not None and chunk_index == 0:
+        # Truncate the APDU payload to N bytes total (header + N data bytes)
+        # This simulates a short-read where the chunk size header is present but data is cut short
+        total_len = 5 + test_case.truncate_chunk_data_at
+        chunk_apdu = chunk_apdu[:total_len]
+        chunk_apdu[4] = test_case.truncate_chunk_data_at  # Update Lc
 
     return bytes(chunk_apdu)
 
@@ -608,6 +625,18 @@ signMsgDenyTestCases = [
         ),
         expected_status=StatusWord.SWO_INSUFFICIENT_MEMORY,
     ),
+    SignMsgDenyTestCase(
+        name="Sign_msg_deny_ascii_nonhashed_msg_causing_sig_structure_overflow",
+        msgData=MessageData(
+            messageHex="41"
+            * 65280,  # 65280 bytes 'A'; SIG_STRUCTURE_OVERHEAD + 65280 = 65536 > UINT16_MAX
+            signingPath="m/1852'/1815'/0'/0/1",
+            hashPayload=False,  # Non-hashed: raw message used as Sig_structure payload
+            isAscii=True,  # ASCII flag skips hex-display overflow check; hits sig_structure check
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
+        ),
+        expected_status=StatusWord.SWO_INSUFFICIENT_MEMORY,
+    ),
     # ========== INIT APDU Truncation (Parsing Failures) ==========
     # Note: Truncate only in the payload data, after CLA/INS/P1/P2/Lc header is complete
     SignMsgDenyTestCase(
@@ -804,6 +833,45 @@ signMsgDenyTestCases = [
         ),
         expected_status=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
+    # ========== INIT Trailing Bytes ==========
+    SignMsgDenyTestCase(
+        name="Sign_msg_deny_init_trailing_garbage_byte",
+        msgData=MessageData(
+            messageHex="deadbeef",
+            signingPath="m/1852'/1815'/0'/0/1",
+            hashPayload=False,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
+        ),
+        trailing_init_bytes=1,
+        expected_status=StatusWord.SWO_WRONG_DATA_LENGTH,
+    ),
+    # ========== INIT When Active (Interleaving) ==========
+    SignMsgDenyTestCase(
+        name="Sign_msg_deny_init_when_already_active",
+        msgData=MessageData(
+            messageHex="deadbeef",
+            signingPath="m/1852'/1815'/0'/0/1",
+            hashPayload=False,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
+        ),
+        send_init_when_active=True,
+        expected_status=StatusWord.SWO_COMMAND_NOT_ALLOWED,
+    ),
+    # ========== Truncated CHUNK Data ==========
+    SignMsgDenyTestCase(
+        name="Sign_msg_deny_chunk_data_truncated_after_size_header",
+        msgData=MessageData(
+            messageHex="de" * 10,  # 10 bytes total, fits in one chunk
+            signingPath="m/1852'/1815'/0'/0/1",
+            hashPayload=False,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
+        ),
+        truncate_chunk_data_at=4,  # Only size header (4 bytes), no actual data bytes
+        expected_status=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_CHUNK_DATA,
+    ),
     SignMsgDenyTestCase(
         name="Sign_msg_deny_invalid_address_type_payment_script_in_address_mode",
         msgData=MessageData(
@@ -821,5 +889,44 @@ signMsgDenyTestCases = [
             ),
         ),
         expected_status=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS,  # Fails during parsing, not policy
+    ),
+    # ========== Truncated CHUNK (no size header) ==========
+    SignMsgDenyTestCase(
+        name="Sign_msg_deny_chunk_size_header_missing",
+        msgData=MessageData(
+            messageHex="de" * 10,
+            signingPath="m/1852'/1815'/0'/0/1",
+            hashPayload=False,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
+        ),
+        truncate_chunk_data_at=0,  # Zero bytes — buffer_read_u32 for chunk size fails
+        expected_status=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_CHUNK_SIZE,
+    ),
+    # ========== CONFIRM when no session active (req_type mismatch) ==========
+    SignMsgDenyTestCase(
+        name="Sign_msg_deny_confirm_without_init",
+        msgData=MessageData(
+            messageHex="deadbeef",
+            signingPath="m/1852'/1815'/0'/0/1",
+            hashPayload=False,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
+        ),
+        send_confirm_without_init=True,
+        expected_status=StatusWord.SWO_COMMAND_NOT_ALLOWED,
+    ),
+    # ========== CHUNK sent after CONFIRM state reached ==========
+    SignMsgDenyTestCase(
+        name="Sign_msg_deny_chunk_when_in_confirm_state",
+        msgData=MessageData(
+            messageHex="deadbeef",  # Short message; completes in one chunk -> reaches CONFIRM state
+            signingPath="m/1852'/1815'/0'/0/1",
+            hashPayload=False,
+            isAscii=False,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
+        ),
+        send_chunk_when_in_confirm=True,
+        expected_status=StatusWord.SWO_COMMAND_NOT_ALLOWED,
     ),
 ]

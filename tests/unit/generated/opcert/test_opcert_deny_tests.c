@@ -52,6 +52,11 @@ static void test_opcert_deny_5_opcert_deny_trailing_bytes(void **state) {
     run_opcert_deny_fixture(&OPCERT_DENY_FIXTURES[5]);
 }
 
+static void test_opcert_deny_6_opcert_deny_oversized_payload(void **state) {
+    (void) state;
+    run_opcert_deny_fixture(&OPCERT_DENY_FIXTURES[6]);
+}
+
 // ======================================================================
 // Main
 // ======================================================================
@@ -64,6 +69,7 @@ int main(void) {
         cmocka_unit_test(test_opcert_deny_3_opcert_deny_invalid_pool_key_path),
         cmocka_unit_test(test_opcert_deny_4_opcert_deny_wrong_pool_key_path_class),
         cmocka_unit_test(test_opcert_deny_5_opcert_deny_trailing_bytes),
+        cmocka_unit_test(test_opcert_deny_6_opcert_deny_oversized_payload),
     };
 
     return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);

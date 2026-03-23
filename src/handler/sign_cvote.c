@@ -253,7 +253,7 @@ void handler_sign_cvote(buffer_t *cdata, uint8_t p1) {
             G_context.req_type = REQUEST_CVOTE;
             explicit_bzero(&G_context.cvote_info, sizeof(G_context.cvote_info));
             if (!ensure_sign_cvote_state(VOTECAST_STATE_NONE)) {
-                return;
+                return; // LCOV_EXCL_LINE — req_type==REQUEST_NONE implies state==NONE
             }
             G_context.state.cvote_state = VOTECAST_STATE_INIT;
             handle_sign_cvote_init_apdu(cdata);

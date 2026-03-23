@@ -15,22 +15,6 @@
 
 #include "securityPolicy.h"
 
-// helper functions
-
-static inline security_policy_t _combine_policies(security_policy_t a,
-                                                  security_policy_t b) {
-    if (a == POLICY_DENY || b == POLICY_DENY) {
-        return POLICY_DENY;
-    }
-
-    if (a == POLICY_SHOW || b == POLICY_SHOW) {
-        return POLICY_SHOW;
-    }
-
-    LEDGER_ASSERT(a == POLICY_HIDE && b == POLICY_HIDE, "Unexpected policy combination");
-    return POLICY_HIDE;
-}
-
 // stake key path has the same account as the payment key path
 static inline bool is_standard_base_address(const address_params_t *address_params) {
     ASSERT(isValidAddressParams(address_params));
@@ -1233,7 +1217,7 @@ security_policy_t policyForSignTxCertificateVoteDelegation(sign_tx_signingmode_t
                                                           const ext_drep_t* drep,
                                                           warning_bits_t *w) {
     POLICY_INIT();
-    RETURN(_combine_policies(_policyForSignTxCertificateDRep(txSigningMode, drep, w),
+    RETURN(combine_security_policies(_policyForSignTxCertificateDRep(txSigningMode, drep, w),
                              _policyForSignTxCertificateStakeCredential(txSigningMode, stakeCredential, w)));
 }
 
@@ -1243,7 +1227,7 @@ security_policy_t policyForSignTxCertificateStakePoolAndDRepDelegation(
     const ext_drep_t* drep,
     warning_bits_t *w) {
     POLICY_INIT();
-    RETURN(_combine_policies(_policyForSignTxCertificateDRep(txSigningMode, drep, w),
+    RETURN(combine_security_policies(_policyForSignTxCertificateDRep(txSigningMode, drep, w),
                              _policyForSignTxCertificateStakeCredential(txSigningMode, stakeCredential, w)));
 }
 
@@ -1263,7 +1247,7 @@ security_policy_t policyForSignTxCertificateAccountRegistrationDelegationToDRep(
     const ext_drep_t* drep,
     warning_bits_t *w) {
     POLICY_INIT();
-    RETURN(_combine_policies(_policyForSignTxCertificateDRep(txSigningMode, drep, w),
+    RETURN(combine_security_policies(_policyForSignTxCertificateDRep(txSigningMode, drep, w),
                              _policyForSignTxCertificateStakeCredential(txSigningMode, stakeCredential, w)));
 }
 
@@ -1273,7 +1257,7 @@ security_policy_t policyForSignTxCertificateAccountRegistrationDelegationToStake
     const ext_drep_t* drep,
     warning_bits_t *w) {
     POLICY_INIT();
-    RETURN(_combine_policies(_policyForSignTxCertificateDRep(txSigningMode, drep, w),
+    RETURN(combine_security_policies(_policyForSignTxCertificateDRep(txSigningMode, drep, w),
                              _policyForSignTxCertificateStakeCredential(txSigningMode, stakeCredential, w)));
 }
 

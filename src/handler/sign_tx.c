@@ -429,9 +429,12 @@ static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
         uint16_t alloc_size = G_context.tx_info.raw_tx_total_length;
         TRACE("Allocating transaction buffer: %u bytes (advertised by client)", alloc_size);
         if (!APP_MEM_CALLOC((void **) &tx_body_ctx()->raw_tx, alloc_size)) {
+            // LCOV_EXCL_START
+            // APP_MEM_CALLOC failure requires OOM condition unreachable in unit tests
             TRACE("Failed to allocate %u byte transaction buffer!", alloc_size);
             send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
             return false;
+            // LCOV_EXCL_STOP
         }
         TRACE("Transaction buffer allocated: %u bytes at %p", alloc_size, tx_body_ctx()->raw_tx);
     }
@@ -447,13 +450,10 @@ static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
     }
 
     // Copy chunk data
-    if (!buffer_move(cdata,
+    bool chunk_copied = buffer_move(cdata,
                      tx_body_ctx()->raw_tx + tx_body_ctx()->raw_tx_current_length,
-                     chunk_size)) {
-        TRACE("Failed to copy transaction chunk");
-        send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
-        return false;
-    }
+                     chunk_size);
+    LEDGER_ASSERT(chunk_copied, "buffer_move failed unexpectedly");
     tx_body_ctx()->raw_tx_current_length += chunk_size;
     TRACE("Copied %u bytes, total: %u", (unsigned) chunk_size, (unsigned) tx_body_ctx()->raw_tx_current_length);
     return true;
@@ -556,10 +556,13 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 
             bool tx_ui_prepared = tx_render_ui_all();
             if (!tx_ui_prepared) {
+                // LCOV_EXCL_START
+                // tx_render_ui_all failure requires memory exhaustion unreachable in unit tests
                 tx_review_cleanup();
                 TRACE("TX UI preparation failed");
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
+                // LCOV_EXCL_STOP
             }
 
             apdu_response_deferred();

@@ -11,8 +11,10 @@
 #include <cmocka.h>
 
 #include "addressUtils/bip44.h"
+#include "apdu/dispatcher.h"
 #include "cardano_constants.h"
 #include "cardano_swo.h"
+#include "cvote/cvote_types.h"
 #include "handler/sign_tx.h"
 #include "globals.h"
 #include "sign_tx_ctx.h"
@@ -488,6 +490,133 @@ static void test_tx_aux_data_rejects_invalid_p2(void **state) {
     assert_int_equal(g_last_response_sw, SWO_INCORRECT_P1_P2);
 }
 
+static void test_tx_aux_data_rejects_wrong_request_type(void **state) {
+    (void) state;
+    reset_context();
+    assert_true(test_mem_init());
+
+    G_context.req_type = REQUEST_NONE;  // not REQUEST_SIGN_TRANSACTION
+    G_context.state.tx_state = TX_STATE_AUX_DATA;
+
+    run_sign_tx_aux_data_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0}, P2_AUX_DATA_INIT);
+    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+}
+
+static void test_tx_aux_data_rejects_wrong_tx_state(void **state) {
+    (void) state;
+    reset_context();
+    assert_true(test_mem_init());
+
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    G_context.state.tx_state = TX_STATE_CHUNKS;  // not TX_STATE_AUX_DATA
+
+    run_sign_tx_aux_data_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0}, P2_AUX_DATA_INIT);
+    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+}
+
+static void test_tx_aux_data_init_rejects_wrong_aux_state(void **state) {
+    (void) state;
+    reset_context();
+    assert_true(test_mem_init());
+
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    G_context.state.tx_state = TX_STATE_AUX_DATA;
+    // aux_data state is CVOTE_AUX_DATA_STATE_NONE (0) by default after reset, not EXPECTING_INIT
+    tx_aux_data_ctx()->cvote_aux_data.state = CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS;
+
+    run_sign_tx_aux_data_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0}, P2_AUX_DATA_INIT);
+    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+}
+
+static void test_tx_aux_data_delegation_rejects_wrong_aux_state(void **state) {
+    (void) state;
+    reset_context();
+    assert_true(test_mem_init());
+
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    G_context.state.tx_state = TX_STATE_AUX_DATA;
+    // aux_data state is EXPECTING_INIT, not RECEIVING_DELEGATIONS
+    tx_aux_data_ctx()->cvote_aux_data.state = CVOTE_AUX_DATA_STATE_EXPECTING_INIT;
+
+    run_sign_tx_aux_data_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0},
+                              P2_AUX_DATA_DELEGATION);
+    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+}
+
+// Delegation APDU with truncated credential (no bytes at all)
+static void test_tx_aux_data_delegation_rejects_truncated_credential(void **state) {
+    (void) state;
+    reset_context();
+    assert_true(test_mem_init());
+
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    G_context.state.tx_state = TX_STATE_AUX_DATA;
+    tx_aux_data_ctx()->cvote_aux_data.state = CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS;
+    tx_aux_data_ctx()->cvote_aux_data.remaining_delegations = 1;
+
+    run_sign_tx_aux_data_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0},
+                              P2_AUX_DATA_DELEGATION);
+    assert_int_equal(g_last_response_sw, SWO_CVOTE_AUX_DATA_PARSING_FAIL);
+}
+
+// Delegation APDU with valid credential but no weight bytes
+static void test_tx_aux_data_delegation_rejects_missing_weight(void **state) {
+    (void) state;
+    reset_context();
+    assert_true(test_mem_init());
+
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    G_context.state.tx_state = TX_STATE_AUX_DATA;
+    tx_aux_data_ctx()->cvote_aux_data.state = CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS;
+    tx_aux_data_ctx()->cvote_aux_data.remaining_delegations = 1;
+    tx_aux_data_ctx()->cvote_aux_data.format = CIP36;
+
+    // type=KEY (0x00) + 32-byte pubkey, no weight field
+    static const uint8_t delegation_no_weight[33] = {
+        0x00,  // CVOTE_CREDENTIAL_KEY
+        0x4B, 0x19, 0xE2, 0x7F, 0xFC, 0x00, 0x6A, 0xCE,
+        0x16, 0x59, 0x23, 0x11, 0xC4, 0xD2, 0xF0, 0xCA,
+        0xFC, 0x25, 0x5E, 0xAA, 0x47, 0xA6, 0x17, 0x8F,
+        0xF5, 0x40, 0xC0, 0xA4, 0x6D, 0x07, 0x02, 0x7C,
+    };
+    run_sign_tx_aux_data_apdu(
+        &(buffer_t){.ptr = (uint8_t *) delegation_no_weight,
+                    .size = sizeof(delegation_no_weight),
+                    .offset = 0},
+        P2_AUX_DATA_DELEGATION);
+    assert_int_equal(g_last_response_sw, SWO_CVOTE_AUX_DATA_PARSING_FAIL);
+}
+
+// Delegation APDU with valid credential + weight but trailing garbage byte
+static void test_tx_aux_data_delegation_rejects_trailing_bytes(void **state) {
+    (void) state;
+    reset_context();
+    assert_true(test_mem_init());
+
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    G_context.state.tx_state = TX_STATE_AUX_DATA;
+    tx_aux_data_ctx()->cvote_aux_data.state = CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS;
+    tx_aux_data_ctx()->cvote_aux_data.remaining_delegations = 1;
+    tx_aux_data_ctx()->cvote_aux_data.format = CIP36;
+
+    // type=KEY (0x00) + 32-byte pubkey + weight (4 bytes BE) + 1 trailing garbage byte
+    static const uint8_t delegation_trailing[38] = {
+        0x00,  // CVOTE_CREDENTIAL_KEY
+        0x4B, 0x19, 0xE2, 0x7F, 0xFC, 0x00, 0x6A, 0xCE,
+        0x16, 0x59, 0x23, 0x11, 0xC4, 0xD2, 0xF0, 0xCA,
+        0xFC, 0x25, 0x5E, 0xAA, 0x47, 0xA6, 0x17, 0x8F,
+        0xF5, 0x40, 0xC0, 0xA4, 0x6D, 0x07, 0x02, 0x7C,
+        0x00, 0x00, 0x00, 0x09,  // weight = 9
+        0xFF,                    // trailing garbage
+    };
+    run_sign_tx_aux_data_apdu(
+        &(buffer_t){.ptr = (uint8_t *) delegation_trailing,
+                    .size = sizeof(delegation_trailing),
+                    .offset = 0},
+        P2_AUX_DATA_DELEGATION);
+    assert_int_equal(g_last_response_sw, SWO_CVOTE_AUX_DATA_PARSING_FAIL);
+}
+
 static void test_tx_rejects_empty_non_final_chunk(void **state) {
     (void) state;
 
@@ -596,6 +725,13 @@ int main(void) {
         cmocka_unit_test(test_tx_confirm_rejects_oversized_final_chunk),
         cmocka_unit_test(test_tx_rejects_invalid_p1),
         cmocka_unit_test(test_tx_aux_data_rejects_invalid_p2),
+        cmocka_unit_test(test_tx_aux_data_rejects_wrong_request_type),
+        cmocka_unit_test(test_tx_aux_data_rejects_wrong_tx_state),
+        cmocka_unit_test(test_tx_aux_data_init_rejects_wrong_aux_state),
+        cmocka_unit_test(test_tx_aux_data_delegation_rejects_wrong_aux_state),
+        cmocka_unit_test(test_tx_aux_data_delegation_rejects_truncated_credential),
+        cmocka_unit_test(test_tx_aux_data_delegation_rejects_missing_weight),
+        cmocka_unit_test(test_tx_aux_data_delegation_rejects_trailing_bytes),
         cmocka_unit_test(test_tx_rejects_empty_non_final_chunk),
         cmocka_unit_test(test_tx_witness_rejects_too_many_witnesses),
         cmocka_unit_test(test_tx_witness_rejects_truncated_bip44_path),

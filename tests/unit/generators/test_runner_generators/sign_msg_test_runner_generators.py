@@ -120,7 +120,76 @@ def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
         )
 
         # Handle different deny test types
-        if test_case.send_chunk_without_init:
+        if test_case.send_confirm_without_init:
+            # Send CONFIRM with no prior INIT (req_type mismatch)
+            confirm_array_name = f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_CONFIRM_APDU"
+            confirm_payload = extract_apdu_payload(
+                build_sign_msg_confirm_apdu_for_deny(test_case)
+            )
+            helper_lines.extend(
+                format_bytes_as_c_array(
+                    confirm_payload,
+                    confirm_array_name,
+                    bytes_per_line=16,
+                    return_as_list=True,
+                )
+            )
+            helper_lines.append("")
+            helper_lines.append(f"static void {test_function_name}(void **state) {{")
+            helper_lines.append("    (void) state;")
+            helper_lines.append("    reset_sign_msg_test_state();")
+            confirm_size = (
+                "0" if len(confirm_payload) == 0 else f"sizeof({confirm_array_name})"
+            )
+            helper_lines.append(
+                f"    run_deny_confirm_fixture({confirm_array_name}, {confirm_size}, {test_case.expected_status.name});"
+            )
+            helper_lines.append("}")
+            helper_lines.append("")
+
+        elif test_case.send_chunk_when_in_confirm:
+            # Send INIT+all CHUNKs (reaching CONFIRM state), then send extra CHUNK
+            init_array_name = f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_INIT_APDU"
+            chunk_array_name = f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_CHUNK_APDU"
+            helper_lines.extend(
+                format_bytes_as_c_array(
+                    extract_apdu_payload(build_sign_msg_init_apdu_for_deny(test_case)),
+                    init_array_name,
+                    bytes_per_line=16,
+                    return_as_list=True,
+                )
+            )
+            helper_lines.append("")
+            helper_lines.extend(
+                format_bytes_as_c_array(
+                    extract_apdu_payload(
+                        build_sign_msg_chunk_apdu_for_deny(test_case, 0)
+                    ),
+                    chunk_array_name,
+                    bytes_per_line=16,
+                    return_as_list=True,
+                )
+            )
+            helper_lines.append("")
+            helper_lines.append(f"static void {test_function_name}(void **state) {{")
+            helper_lines.append("    (void) state;")
+            helper_lines.append("    reset_sign_msg_test_state();")
+            helper_lines.append("    // Send INIT successfully")
+            helper_lines.append(
+                f"    run_deny_init_fixture({init_array_name}, sizeof({init_array_name}), SWO_SUCCESS);"
+            )
+            helper_lines.append("    // Send CHUNK successfully (transitions to CONFIRM state)")
+            helper_lines.append(
+                f"    run_deny_chunk_fixture({chunk_array_name}, sizeof({chunk_array_name}), SWO_SUCCESS);"
+            )
+            helper_lines.append("    // Send extra CHUNK while already in CONFIRM state")
+            helper_lines.append(
+                f"    run_deny_chunk_fixture({chunk_array_name}, sizeof({chunk_array_name}), {test_case.expected_status.name});"
+            )
+            helper_lines.append("}")
+            helper_lines.append("")
+
+        elif test_case.send_chunk_without_init:
             # Send CHUNK without INIT
             chunk_array_name = f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_CHUNK_APDU"
             helper_lines.extend(
@@ -194,13 +263,50 @@ def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
             helper_lines.append("}")
             helper_lines.append("")
 
-        elif test_case.invalid_chunk_size is not None or (
+        elif test_case.send_init_when_active:
+            # Send a valid INIT, then send another INIT while session is active
+            init_array_name = f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_INIT_APDU"
+            helper_lines.extend(
+                format_bytes_as_c_array(
+                    extract_apdu_payload(build_sign_msg_init_apdu_for_deny(test_case)),
+                    init_array_name,
+                    bytes_per_line=16,
+                    return_as_list=True,
+                )
+            )
+            helper_lines.append("")
+            helper_lines.append(f"static void {test_function_name}(void **state) {{")
+            helper_lines.append("    (void) state;")
+            helper_lines.append("    reset_sign_msg_test_state();")
+            helper_lines.append("    // Send INIT successfully")
+            helper_lines.append(
+                f"    run_deny_init_fixture({init_array_name}, sizeof({init_array_name}), SWO_SUCCESS);"
+            )
+            helper_lines.append("    // Send INIT again while session is already active (do NOT reset state)")
+            helper_lines.append("    {")
+            helper_lines.append(
+                f"        test_read_buffer_t buf = make_test_read_buffer({init_array_name}, sizeof({init_array_name}));"
+            )
+            helper_lines.append("        apdu_response_begin(INS_SIGN_MSG);")
+            helper_lines.append("        handler_sign_msg(&buf.sdk_buffer, P1_SIGN_MSG_INIT);")
+            helper_lines.append("        apdu_response_assert_sent_or_deferred();")
+            helper_lines.append(
+                f"        assert_int_equal(g_last_response_sw, {test_case.expected_status.name});"
+            )
+            helper_lines.append(
+                f"        assert_read_buffer_unchanged_and_cleanup(&buf, {init_array_name});"
+            )
+            helper_lines.append("    }")
+            helper_lines.append("}")
+            helper_lines.append("")
+
+        elif test_case.truncate_chunk_data_at is not None or test_case.invalid_chunk_size is not None or (
             test_case.msgData.isAscii
             and not all(
                 32 <= b < 127 for b in bytes.fromhex(test_case.msgData.messageHex)
             )
         ):
-            # Send INIT successfully, then CHUNK with invalid size or non-ASCII data
+            # Send INIT successfully, then CHUNK with invalid size, truncated data, or non-ASCII data
             init_array_name = f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_INIT_APDU"
             chunk_array_name = f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_CHUNK_APDU"
             helper_lines.extend(
@@ -230,7 +336,9 @@ def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
             helper_lines.append(
                 f"    run_deny_init_fixture({init_array_name}, sizeof({init_array_name}), SWO_SUCCESS);"
             )
-            if test_case.invalid_chunk_size is not None:
+            if test_case.truncate_chunk_data_at is not None:
+                helper_lines.append("    // Send CHUNK with truncated data (size header present, data cut short)")
+            elif test_case.invalid_chunk_size is not None:
                 helper_lines.append("    // Send CHUNK with invalid size")
             else:
                 helper_lines.append("    // Send CHUNK with non-ASCII data")

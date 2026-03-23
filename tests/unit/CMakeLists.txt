@@ -709,6 +709,13 @@ add_executable(test_tx_parser
 target_link_libraries(test_tx_parser PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_tx_parser test_tx_parser)
 
+add_executable(test_cvote_parser
+    test_cvote_parser.c
+)
+target_link_libraries(test_cvote_parser PUBLIC cmocka gcov cardano_sign_tx_core)
+target_link_options(test_cvote_parser PRIVATE -Wl,--wrap=parse_output_destination)
+add_test(test_cvote_parser test_cvote_parser)
+
 add_executable(test_cardano_parsers
     test_cardano_parsers.c
 )
@@ -746,6 +753,13 @@ add_executable(test_cvote_deny_tests
 target_link_libraries(test_cvote_deny_tests PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_cvote_deny_tests test_cvote_deny_tests)
 
+add_executable(test_handler_denies_cvote
+    test_handler_denies_cvote.c
+    test_utils/io_capture.c
+)
+target_link_libraries(test_handler_denies_cvote PUBLIC cmocka gcov cardano_sign_tx_core)
+add_test(test_handler_denies_cvote test_handler_denies_cvote)
+
 add_test(test_sign_msg test_sign_msg)
 add_test(test_ui_utils test_ui_utils)
 
@@ -768,6 +782,15 @@ add_executable(test_opcert_deny_tests
 )
 target_link_libraries(test_opcert_deny_tests PUBLIC cmocka gcov cardano_sign_tx_core)
 add_test(test_opcert_deny_tests test_opcert_deny_tests)
+
+add_executable(test_handler_denies_opcert
+    test_handler_denies_opcert.c
+    ../../src/handler/sign_opcert.c
+    ../../src/opcert/opcert_parse.c
+    ../../src/ui/ui_display_opcert.c
+)
+target_link_libraries(test_handler_denies_opcert PUBLIC cmocka gcov cardano_sign_tx_core)
+add_test(test_handler_denies_opcert test_handler_denies_opcert)
 
 
 # Common sources for address derivation tests

@@ -73,9 +73,8 @@ static bool is_msg_length_valid_for_sign_msg_init(uint32_t message_length,
                                                   bool hash_payload,
                                                   bool is_ascii) {
     // msgBuffer allocation in INIT uses uint16_t-sized APP_MEM_CALLOC.
-    if (message_length > UINT16_MAX) {
-        return false;
-    }
+    // Caller already checked message_length <= UINT16_MAX before setting ctx->msgLength (uint16_t).
+    LEDGER_ASSERT(message_length <= UINT16_MAX, "message_length > UINT16_MAX");
 
     // Non-ASCII messages are displayed as hex in UI:
     // max_len = 2 * message_length + 1.
@@ -227,9 +226,12 @@ static void signMsg_handle_init(buffer_t *cdata) {
     // Dynamically allocate message buffer to accumulate all chunks
     if (ctx->msgLength > 0) {
         if (!APP_MEM_CALLOC((void **) &ctx->msgBuffer, (uint16_t) ctx->msgLength)) {
+            // LCOV_EXCL_START
+            // Requires allocator failure — not reachable in unit tests.
             TRACE("Failed to allocate %u byte message buffer", ctx->msgLength);
             send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
             return;
+            // LCOV_EXCL_STOP
         }
         ctx->msgBufferSize = ctx->msgLength;
     }
@@ -296,11 +298,8 @@ static void signMsg_handle_chunk(buffer_t *cdata) {
         LEDGER_ASSERT(writeOffset + chunkSize_u32 <= ctx->msgBufferSize, "Chunk would overflow message buffer");
 
         // Read chunk data directly into accumulated message buffer
-        if (!buffer_read_bytes(cdata, ctx->msgBuffer + writeOffset, chunkSize_u32)) {
-            TRACE("Failed to read chunk data");
-            send_swo_and_reset(SWO_SIGN_MSG_PARSING_FAIL_CHUNK_DATA);
-            return;
-        }
+        bool chunk_data_read = buffer_read_bytes(cdata, ctx->msgBuffer + writeOffset, chunkSize_u32);
+        LEDGER_ASSERT(chunk_data_read, "buffer_read_bytes failed unexpectedly");
 
         // Add chunk to hash
         blake2b_224_append(&ctx->msgHashCtx, ctx->msgBuffer + writeOffset, chunkSize_u32);
@@ -410,13 +409,16 @@ static bool build_sig_structure(sign_msg_ctx_t *ctx) {
 
     // Dynamically allocate Sig_structure buffer
     uint8_t *sigStructure = NULL;
-    if (sigStructureMaxSize > UINT16_MAX) {
-        TRACE("Sig_structure too large for allocation: %u", (unsigned) sigStructureMaxSize);
-        return false;
-    }
+    // For non-hashed payloads, is_msg_length_valid_for_sign_msg_init() already guaranteed
+    // sigStructureMaxSize <= UINT16_MAX at INIT time. For hashed payloads the size is
+    // SIG_STRUCTURE_OVERHEAD + sizeof(msgHash) which is always well within limits.
+    LEDGER_ASSERT(sigStructureMaxSize <= UINT16_MAX, "Sig_structure size overflow");
     if (!APP_MEM_CALLOC((void **) &sigStructure, (uint16_t) sigStructureMaxSize)) {
+        // LCOV_EXCL_START
+        // Requires allocator failure — not reachable in unit tests.
         TRACE("Failed to allocate %u byte Sig_structure buffer", (unsigned) sigStructureMaxSize);
         return false;
+        // LCOV_EXCL_STOP
     }
 
     buffer_t buffer = buffer_create(sigStructure, sigStructureMaxSize);
@@ -497,8 +499,11 @@ static void signMsg_handle_confirm(buffer_t *cdata) {
 
     // Build Sig_structure before UI confirmation so finalize path is infallible.
     if (!build_sig_structure(ctx)) {
+        // LCOV_EXCL_START
+        // Requires allocator failure — not reachable in unit tests.
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
+        // LCOV_EXCL_STOP
     }
 
     switch (ctx->signing_policy) {
@@ -508,13 +513,16 @@ static void signMsg_handle_confirm(buffer_t *cdata) {
             ui_display_sign_msg(ctx->signing_policy, ctx->warnings);
             return;
 
-        case POLICY_HIDE:
-            // Silently approve and return signature without UI.
-            finalize_sign_msg();
-            return;
-
-        case POLICY_DENY:
         // LCOV_EXCL_START
+        case POLICY_HIDE:
+            // policyForSignMsg currently never returns POLICY_HIDE;
+            // if it ever does, replace the assert with: finalize_sign_msg(); return;
+            LEDGER_ASSERT(false, "Unexpected POLICY_HIDE for sign_msg");
+            return;
+        // LCOV_EXCL_STOP
+
+        // LCOV_EXCL_START
+        case POLICY_DENY:
         default:
             LEDGER_ASSERT(false, "Invalid sign_msg policy at CONFIRM: %d", ctx->signing_policy);
             return;
@@ -572,7 +580,7 @@ void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
                 return;
             }
             if (!ensure_sign_msg_state(SIGN_MSG_STATE_NONE)) {
-                return;
+                return; // LCOV_EXCL_LINE — req_type==REQUEST_NONE implies state==NONE
             }
             G_context.req_type = REQUEST_SIGN_MSG;
             explicit_bzero(&G_context.sign_msg_info, sizeof(G_context.sign_msg_info));

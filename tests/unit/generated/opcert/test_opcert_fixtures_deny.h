@@ -93,6 +93,20 @@ static const uint8_t OPCERT_DENY_005_OPCERT_DENY_TRAILING_BYTES_PAYLOAD[] = {
     0x00, 0xFF,
 };
 
+// ----------------------------------------------------------------------
+// Deny Test 6: opcert_deny_oversized_payload
+// Expected SW: SWO_INVALID_OPCERT_LENGTH (0x6B14)
+// Source: tests/standalone/input_files/signOpCert.py > opCertDenyTestCases > opcert_deny_oversized_payload
+// ----------------------------------------------------------------------
+
+static const uint8_t OPCERT_DENY_006_OPCERT_DENY_OVERSIZED_PAYLOAD_PAYLOAD[] = {
+    0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
+    0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
+    0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
+    0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
+    0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA,
+};
+
 static const opcert_deny_fixture_t OPCERT_DENY_FIXTURES[] = {
 // Source: tests/standalone/input_files/signOpCert.py > opCertDenyTestCases > opcert_deny_truncated_kes_key
 {
@@ -134,6 +148,13 @@ static const opcert_deny_fixture_t OPCERT_DENY_FIXTURES[] = {
     .name = "opcert_deny_trailing_bytes",
     .payload = OPCERT_DENY_005_OPCERT_DENY_TRAILING_BYTES_PAYLOAD,
     .payload_len = sizeof(OPCERT_DENY_005_OPCERT_DENY_TRAILING_BYTES_PAYLOAD),
+    .expected_sw = SWO_INVALID_OPCERT_LENGTH,
+},
+// Source: tests/standalone/input_files/signOpCert.py > opCertDenyTestCases > opcert_deny_oversized_payload
+{
+    .name = "opcert_deny_oversized_payload",
+    .payload = OPCERT_DENY_006_OPCERT_DENY_OVERSIZED_PAYLOAD_PAYLOAD,
+    .payload_len = sizeof(OPCERT_DENY_006_OPCERT_DENY_OVERSIZED_PAYLOAD_PAYLOAD),
     .expected_sw = SWO_INVALID_OPCERT_LENGTH,
 },
 };

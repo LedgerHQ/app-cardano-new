@@ -284,6 +284,450 @@ static void test_pubkey_device_owned_invalid_classified_path_denied(void **state
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
 
+// --- Init APDU error paths ---
+
+static void test_init_apdu_with_extra_bytes(void **state) {
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+
+    uint8_t payload[1] = {0xFF};
+    buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
+    apdu_response_begin(INS_DERIVE_NATIVE_SCRIPT_HASH);
+    handler_derive_native_script_hash(&buf, P1_NATIVE_SCRIPT_INIT);
+    apdu_response_assert_sent_or_deferred();
+
+    assert_int_equal(get_last_sw(), SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_non_init_apdu_before_init_rejected(void **state) {
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+
+    // Send complex-start without init: req_type is REQUEST_NONE, not REQUEST_DERIVE_NATIVE_SCRIPT_HASH
+    uint8_t payload[5] = {0};
+    payload[0] = NATIVE_SCRIPT_ALL;
+    write_u32_be(&payload[1], 1);
+    buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
+    apdu_response_begin(INS_DERIVE_NATIVE_SCRIPT_HASH);
+    handler_derive_native_script_hash(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+    apdu_response_assert_sent_or_deferred();
+
+    assert_int_equal(get_last_sw(), SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_double_init_rejected(void **state) {
+    // Init while a request is already active
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(G_context.req_type, REQUEST_DERIVE_NATIVE_SCRIPT_HASH);
+
+    buffer_t init_buf = {.ptr = NULL, .size = 0, .offset = 0};
+    apdu_response_begin(INS_DERIVE_NATIVE_SCRIPT_HASH);
+    handler_derive_native_script_hash(&init_buf, P1_NATIVE_SCRIPT_INIT);
+    apdu_response_assert_sent_or_deferred();
+
+    assert_int_equal(get_last_sw(), SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+// --- Complex script start error paths ---
+
+static void test_complex_start_empty_apdu(void **state) {
+    // Zero-byte payload: can't read script type byte
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    buffer_t buf = {.ptr = NULL, .size = 0, .offset = 0};
+    run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+
+    assert_int_equal(get_last_sw(), SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_TYPE);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_complex_start_truncated_remaining_scripts(void **state) {
+    // 1-byte payload (script type only): can't read remainingScripts u32
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    uint8_t payload[1] = {NATIVE_SCRIPT_ALL};
+    buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
+    run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+
+    assert_int_equal(get_last_sw(), SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_complex_start_all_extra_bytes(void **state) {
+    // ALL with trailing padding byte
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    uint8_t payload[6] = {0};
+    payload[0] = NATIVE_SCRIPT_ALL;
+    write_u32_be(&payload[1], 1);
+    payload[5] = 0xFF;  // extra byte
+    buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
+    run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+
+    assert_int_equal(get_last_sw(), SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_complex_start_any_extra_bytes(void **state) {
+    // ANY with trailing padding byte
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    uint8_t payload[6] = {0};
+    payload[0] = NATIVE_SCRIPT_ANY;
+    write_u32_be(&payload[1], 1);
+    payload[5] = 0xFF;  // extra byte
+    buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
+    run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+
+    assert_int_equal(get_last_sw(), SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_complex_start_unknown_script_type(void **state) {
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    uint8_t payload[5] = {0};
+    payload[0] = 0xFF;  // unknown type
+    write_u32_be(&payload[1], 1);
+    buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
+    run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+
+    assert_int_equal(get_last_sw(), SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_TYPE);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_complex_start_nof_k_truncated_required(void **state) {
+    // N_OF_K with only 5 bytes: script type + remainingScripts, missing requiredScripts u32
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    uint8_t payload[5] = {0};
+    payload[0] = NATIVE_SCRIPT_N_OF_K;
+    write_u32_be(&payload[1], 2);
+    buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
+    run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+
+    assert_int_equal(get_last_sw(), SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_complex_start_nof_k_extra_bytes(void **state) {
+    // N_OF_K with a trailing byte after requiredScripts
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    uint8_t payload[10] = {0};
+    payload[0] = NATIVE_SCRIPT_N_OF_K;
+    write_u32_be(&payload[1], 2);  // remainingScripts
+    write_u32_be(&payload[5], 1);  // requiredScripts (valid: 1 <= 2)
+    payload[9] = 0xFF;             // extra trailing byte
+    buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
+    run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+
+    assert_int_equal(get_last_sw(), SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_complex_start_nesting_violation(void **state) {
+    // Send complex-start when no script is expected at current level (ALL with 0 children)
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    // Start an ALL with 1 child, then try to send a second complex-start at same level
+    uint8_t all1_payload[5] = {0};
+    all1_payload[0] = NATIVE_SCRIPT_ALL;
+    write_u32_be(&all1_payload[1], 1);
+    buffer_t all1_buf = {.ptr = all1_payload, .size = sizeof(all1_payload), .offset = 0};
+    run_derive_native_script_apdu(&all1_buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    // Add the one required child (simple pubkey hash)
+    uint8_t simple_payload[1 + 1 + ADDRESS_KEY_HASH_LENGTH] = {0};
+    simple_payload[0] = NATIVE_SCRIPT_PUBKEY;
+    simple_payload[1] = EXT_CREDENTIAL_KEY_HASH;
+    buffer_t simple_buf = {
+        .ptr = simple_payload,
+        .size = sizeof(simple_payload),
+        .offset = 0,
+    };
+    run_derive_native_script_apdu(&simple_buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    // Now the root level is also complete (propagated), so adding another script
+    // should trigger nesting failure
+    uint8_t all2_payload[5] = {0};
+    all2_payload[0] = NATIVE_SCRIPT_ALL;
+    write_u32_be(&all2_payload[1], 1);
+    buffer_t all2_buf = {.ptr = all2_payload, .size = sizeof(all2_payload), .offset = 0};
+    run_derive_native_script_apdu(&all2_buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+
+    assert_int_equal(get_last_sw(), SWO_NATIVE_SCRIPT_PARSING_FAIL_NESTING);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+// --- Simple script error paths ---
+
+static void test_simple_script_empty_apdu(void **state) {
+    // Zero-byte payload: can't read script type byte
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    buffer_t buf = {.ptr = NULL, .size = 0, .offset = 0};
+    run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+
+    assert_int_equal(get_last_sw(), SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_TYPE);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_simple_script_unknown_type(void **state) {
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    uint8_t payload[1] = {0xFF};  // unknown simple script type
+    buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
+    run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+
+    assert_int_equal(get_last_sw(), SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_TYPE);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_simple_script_nesting_violation(void **state) {
+    // Send simple script when none expected (root slot already consumed)
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    // Add the one root simple script
+    uint8_t simple_payload[1 + 1 + ADDRESS_KEY_HASH_LENGTH] = {0};
+    simple_payload[0] = NATIVE_SCRIPT_PUBKEY;
+    simple_payload[1] = EXT_CREDENTIAL_KEY_HASH;
+    buffer_t simple_buf = {
+        .ptr = simple_payload,
+        .size = sizeof(simple_payload),
+        .offset = 0,
+    };
+    run_derive_native_script_apdu(&simple_buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    // Now add a second simple script — no slot left at root
+    buffer_t simple_buf2 = {
+        .ptr = simple_payload,
+        .size = sizeof(simple_payload),
+        .offset = 0,
+    };
+    run_derive_native_script_apdu(&simple_buf2, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+
+    assert_int_equal(get_last_sw(), SWO_NATIVE_SCRIPT_PARSING_FAIL_NESTING);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_pubkey_script_hash_credential_rejected(void **state) {
+    // Pubkey APDU with credential type = SCRIPT_HASH is not allowed
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    uint8_t payload[1 + 1 + SCRIPT_HASH_LENGTH] = {0};
+    payload[0] = NATIVE_SCRIPT_PUBKEY;
+    payload[1] = EXT_CREDENTIAL_SCRIPT_HASH;
+    buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
+    run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+
+    assert_int_equal(get_last_sw(), SWO_NATIVE_SCRIPT_PARSING_FAIL_PUBKEY_CREDENTIAL);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_pubkey_apdu_extra_bytes(void **state) {
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    uint8_t payload[1 + 1 + ADDRESS_KEY_HASH_LENGTH + 1] = {0};
+    payload[0] = NATIVE_SCRIPT_PUBKEY;
+    payload[1] = EXT_CREDENTIAL_KEY_HASH;
+    payload[sizeof(payload) - 1] = 0xFF;  // extra trailing byte
+    buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
+    run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+
+    assert_int_equal(get_last_sw(), SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_invalid_before_truncated(void **state) {
+    // Only 4 of the 8 required bytes for timelock u64
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    uint8_t payload[1 + 4] = {0};
+    payload[0] = NATIVE_SCRIPT_INVALID_BEFORE;
+    buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
+    run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+
+    assert_int_equal(get_last_sw(), SWO_NATIVE_SCRIPT_PARSING_FAIL_TIMELOCK);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_invalid_before_extra_bytes(void **state) {
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    uint8_t payload[1 + 8 + 1] = {0};
+    payload[0] = NATIVE_SCRIPT_INVALID_BEFORE;
+    payload[sizeof(payload) - 1] = 0xFF;  // extra byte
+    buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
+    run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+
+    assert_int_equal(get_last_sw(), SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_invalid_hereafter_truncated(void **state) {
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    uint8_t payload[1 + 4] = {0};
+    payload[0] = NATIVE_SCRIPT_INVALID_HEREAFTER;
+    buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
+    run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+
+    assert_int_equal(get_last_sw(), SWO_NATIVE_SCRIPT_PARSING_FAIL_TIMELOCK);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_invalid_hereafter_extra_bytes(void **state) {
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    uint8_t payload[1 + 8 + 1] = {0};
+    payload[0] = NATIVE_SCRIPT_INVALID_HEREAFTER;
+    payload[sizeof(payload) - 1] = 0xFF;  // extra byte
+    buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
+    run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+
+    assert_int_equal(get_last_sw(), SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+// --- Finish APDU error paths ---
+
+static void test_finish_apdu_empty(void **state) {
+    // Missing displayFormat byte
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    uint8_t simple_payload[1 + 1 + ADDRESS_KEY_HASH_LENGTH] = {0};
+    simple_payload[0] = NATIVE_SCRIPT_PUBKEY;
+    simple_payload[1] = EXT_CREDENTIAL_KEY_HASH;
+    buffer_t simple_buf = {
+        .ptr = simple_payload,
+        .size = sizeof(simple_payload),
+        .offset = 0,
+    };
+    run_derive_native_script_apdu(&simple_buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    buffer_t finish_buf = {.ptr = NULL, .size = 0, .offset = 0};
+    run_derive_native_script_apdu(&finish_buf, P1_NATIVE_SCRIPT_FINISH);
+
+    assert_int_equal(get_last_sw(), SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
+static void test_finish_apdu_extra_bytes(void **state) {
+    (void) state;
+    reset_test_context();
+    reset_response_buffer();
+    run_derive_native_script_init_apdu();
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    uint8_t simple_payload[1 + 1 + ADDRESS_KEY_HASH_LENGTH] = {0};
+    simple_payload[0] = NATIVE_SCRIPT_PUBKEY;
+    simple_payload[1] = EXT_CREDENTIAL_KEY_HASH;
+    buffer_t simple_buf = {
+        .ptr = simple_payload,
+        .size = sizeof(simple_payload),
+        .offset = 0,
+    };
+    run_derive_native_script_apdu(&simple_buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
+    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+
+    uint8_t finish_payload[2] = {DISPLAY_NATIVE_SCRIPT_HASH_BECH32, 0xFF};  // extra byte
+    buffer_t finish_buf = {
+        .ptr = finish_payload,
+        .size = sizeof(finish_payload),
+        .offset = 0,
+    };
+    run_derive_native_script_apdu(&finish_buf, P1_NATIVE_SCRIPT_FINISH);
+
+    assert_int_equal(get_last_sw(), SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_finish_must_keep_request_lock_until_user_confirmation),
@@ -293,6 +737,32 @@ int main(void) {
         cmocka_unit_test(test_max_script_depth_exceeded),
         cmocka_unit_test(test_finish_with_remaining_scripts),
         cmocka_unit_test(test_pubkey_device_owned_invalid_classified_path_denied),
+        // Init error paths
+        cmocka_unit_test(test_init_apdu_with_extra_bytes),
+        cmocka_unit_test(test_non_init_apdu_before_init_rejected),
+        cmocka_unit_test(test_double_init_rejected),
+        // Complex script start error paths
+        cmocka_unit_test(test_complex_start_empty_apdu),
+        cmocka_unit_test(test_complex_start_truncated_remaining_scripts),
+        cmocka_unit_test(test_complex_start_all_extra_bytes),
+        cmocka_unit_test(test_complex_start_any_extra_bytes),
+        cmocka_unit_test(test_complex_start_unknown_script_type),
+        cmocka_unit_test(test_complex_start_nof_k_truncated_required),
+        cmocka_unit_test(test_complex_start_nof_k_extra_bytes),
+        cmocka_unit_test(test_complex_start_nesting_violation),
+        // Simple script error paths
+        cmocka_unit_test(test_simple_script_empty_apdu),
+        cmocka_unit_test(test_simple_script_unknown_type),
+        cmocka_unit_test(test_simple_script_nesting_violation),
+        cmocka_unit_test(test_pubkey_script_hash_credential_rejected),
+        cmocka_unit_test(test_pubkey_apdu_extra_bytes),
+        cmocka_unit_test(test_invalid_before_truncated),
+        cmocka_unit_test(test_invalid_before_extra_bytes),
+        cmocka_unit_test(test_invalid_hereafter_truncated),
+        cmocka_unit_test(test_invalid_hereafter_extra_bytes),
+        // Finish APDU error paths
+        cmocka_unit_test(test_finish_apdu_empty),
+        cmocka_unit_test(test_finish_apdu_extra_bytes),
     };
     return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }

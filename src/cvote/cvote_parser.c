@@ -104,11 +104,6 @@ cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
     LEDGER_ASSERT(out_data != NULL, "NULL out_data");
     LEDGER_ASSERT(tx_aux_data_ctx()->raw_cvote_init_data != NULL, "NULL raw_cvote_init_data");
 
-    if (tx_aux_data_ctx()->raw_cvote_init_data_len < 3) {
-        TRACE("CVote init payload too short: %u bytes", (unsigned)tx_aux_data_ctx()->raw_cvote_init_data_len);
-        return CVOTE_PARSER_INVALID_FORMAT;
-    }
-
     buffer_t parse_buf = {
         .ptr = tx_aux_data_ctx()->raw_cvote_init_data,
         .size = tx_aux_data_ctx()->raw_cvote_init_data_len,

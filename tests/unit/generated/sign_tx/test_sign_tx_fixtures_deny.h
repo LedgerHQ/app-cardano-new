@@ -86,6 +86,39 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_DENY_POOL_REGISTRATION_OP
     },
 };
 
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Deny_pool_registration_owner_with_script_data_hash
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_DENY_POOL_REGISTRATION_OWNER_WITH_SCRIPT_DATA_HASH[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000003B01002B82D818582183581C9E1C71DE652EC8B85FEC296F0685CA"
+    "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
+    "00000000000000002A000000000000000A030096000123456789012345678901"
+    "2345678901234567890123456789012345012345678901234567890123456789"
+    "0123456789012345678901234567890123000000000000000000000000000000"
+    "000000000000000000000000000000000100F123456789012345678901234567"
+    "890123456789012345678901234567000100000102058000073C",
+        .p1 = P1_TX_CHUNK,
+        .p2 = P2_UNUSED,
+        .more = true,
+    },
+    {
+        .hex_payload =
+    "800007178000000000000002000000003B40265111D8BB3C3C608D95B3A0BF83"
+    "461ACE32D79336579A1939B3AAD1C0B7",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000200000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
 // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Non_mainnet_protocol_magic
 static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_NON_MAINNET_PROTOCOL_MAGIC[] = {
     {
@@ -3636,6 +3669,100 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CVOTE_CIP36_REGISTRATION_WITH_
     },
 };
 
+// Source: tests/standalone/input_files/signTx.py > testsCVoteRegistrationDenies > CIP36_registration_with_bad_staking_key_path
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CVOTE_CIP36_REGISTRATION_WITH_BAD_STAKING_KEY_PATH[] = {
+    {
+        .hex_payload =
+    "02000002058000073C8000071780000000000000030000000002000105800007"
+    "3C8000071780000000000000000000000022058000073C800007178000000000"
+    "0000020000000000000000001631700000000000000000004B19E27FFC006ACE"
+    "16592311C4D2F0CAFC255EAA47A6178FF540C0A46D07027C",
+        .p1 = P1_TX_AUX_DATA,
+        .p2 = P2_AUX_DATA_INIT,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000003B020001058000073C800007178000000000000000000000002205"
+    "8000073C8000071780000000000000020000000000000000006CA79300010100"
+    "00000000000000002A000000000000000A",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+// Source: tests/standalone/input_files/signTx.py > testsCVoteRegistrationDenies > CIP36_registration_with_payment_destination_network_mismatch
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CVOTE_CIP36_REGISTRATION_WITH_PAYMENT_DESTINATION_NETWORK_MISMATCH[] = {
+    {
+        .hex_payload =
+    "02000002058000073C80000717800000000000000200000000010039235A5310"
+    "3829A7382C2AB76111FB69F13E69D616824C62058E44F1A8B3122A946B9AD3D2"
+    "DDF029D3A828F0468AECE76895F15C9EFBD69B42770000000000163170000000"
+    "0000000000004B19E27FFC006ACE16592311C4D2F0CAFC255EAA47A6178FF540"
+    "C0A46D07027C",
+        .p1 = P1_TX_AUX_DATA,
+        .p2 = P2_AUX_DATA_INIT,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000003B020001058000073C800007178000000000000000000000002205"
+    "8000073C8000071780000000000000020000000000000000006CA79300010100"
+    "00000000000000002A000000000000000A",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+// Source: tests/standalone/input_files/signTx.py > testsCVoteRegistrationDenies > CIP36_registration_with_vote_key_path_wrong_purpose
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CVOTE_CIP36_REGISTRATION_WITH_VOTE_KEY_PATH_WRONG_PURPOSE[] = {
+    {
+        .hex_payload =
+    "02000002058000073C8000071780000000000000020000000002000105800007"
+    "3C8000071780000000000000000000000022058000073C800007178000000000"
+    "000002000000000000000000163170000000000000000002058000073C800007"
+    "17800000000000000000000000",
+        .p1 = P1_TX_AUX_DATA,
+        .p2 = P2_AUX_DATA_INIT,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000003B020001058000073C800007178000000000000000000000002205"
+    "8000073C8000071780000000000000020000000000000000006CA79300010100"
+    "00000000000000002A000000000000000A",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
 
 // Source: tests/standalone/input_files/signTx.py > invalidCertificates > pool_registration_with_multiple_path_owners
 static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_INVALID_POOL_REGISTRATION_WITH_MULTIPLE_PATH_OWNERS[] = {
@@ -3942,6 +4069,18 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         "01010100000000010100020162",
         .chunks = SIGN_TX_SEGMENTS_DENY_INIT_DENY_POOL_REGISTRATION_OPERATOR_WITH_SCRIPT_DATA_HASH,
         .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_DENY_POOL_REGISTRATION_OPERATOR_WITH_SCRIPT_DATA_HASH),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = true,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases > Deny_pool_registration_owner_with_script_data_hash
+    {
+        .name = "[DENY_INIT] Deny_pool_registration_owner_with_script_data_hash",
+        .init_hex =
+        "0000000000000000012D964A0904000100010200010000010100000200000000"
+        "0101010000000001010001012A",
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_DENY_POOL_REGISTRATION_OWNER_WITH_SCRIPT_DATA_HASH,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_DENY_POOL_REGISTRATION_OWNER_WITH_SCRIPT_DATA_HASH),
         .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = true,
         .skip_reason = NULL,
@@ -5563,6 +5702,42 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .chunks = SIGN_TX_SEGMENTS_DENY_CVOTE_CIP36_REGISTRATION_WITH_INVALID_FORMAT_BYTE,
         .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CVOTE_CIP36_REGISTRATION_WITH_INVALID_FORMAT_BYTE),
         .expected_sw = SWO_CVOTE_AUX_DATA_PARSING_FAIL,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > testsCVoteRegistrationDenies > CIP36_registration_with_bad_staking_key_path
+    {
+        .name = "[DENY_CVOTE] CIP36_registration_with_bad_staking_key_path",
+        .init_hex =
+        "0000000000000000012D964A0903000100010200000000020101000001000000"
+        "0001010100000000010100010071",
+        .chunks = SIGN_TX_SEGMENTS_DENY_CVOTE_CIP36_REGISTRATION_WITH_BAD_STAKING_KEY_PATH,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CVOTE_CIP36_REGISTRATION_WITH_BAD_STAKING_KEY_PATH),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > testsCVoteRegistrationDenies > CIP36_registration_with_payment_destination_network_mismatch
+    {
+        .name = "[DENY_CVOTE] CIP36_registration_with_payment_destination_network_mismatch",
+        .init_hex =
+        "0000000000000000012D964A0903000100010200000000020101000001000000"
+        "0001010100000000010100010071",
+        .chunks = SIGN_TX_SEGMENTS_DENY_CVOTE_CIP36_REGISTRATION_WITH_PAYMENT_DESTINATION_NETWORK_MISMATCH,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CVOTE_CIP36_REGISTRATION_WITH_PAYMENT_DESTINATION_NETWORK_MISMATCH),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > testsCVoteRegistrationDenies > CIP36_registration_with_vote_key_path_wrong_purpose
+    {
+        .name = "[DENY_CVOTE] CIP36_registration_with_vote_key_path_wrong_purpose",
+        .init_hex =
+        "0000000000000000012D964A0903000100010200000000020101000001000000"
+        "0001010100000000010100010071",
+        .chunks = SIGN_TX_SEGMENTS_DENY_CVOTE_CIP36_REGISTRATION_WITH_VOTE_KEY_PATH_WRONG_PURPOSE,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CVOTE_CIP36_REGISTRATION_WITH_VOTE_KEY_PATH_WRONG_PURPOSE),
+        .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },

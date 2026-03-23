@@ -95,6 +95,12 @@ opCertDenyTestCases: List[OpCertDenyTestCase] = [
         payload_hex=_VALID_OPCERT + "ff",
         expected_sw=StatusWord.SWO_INVALID_OPCERT_LENGTH,
     ),
+    OpCertDenyTestCase(
+        name="opcert_deny_oversized_payload",
+        # Payload exceeds MAX_OPCERT_LENGTH (32+8+8+24 = 72 bytes); send 73 bytes.
+        payload_hex="aa" * 73,
+        expected_sw=StatusWord.SWO_INVALID_OPCERT_LENGTH,
+    ),
 ]
 
 # pylint: disable=line-too-long

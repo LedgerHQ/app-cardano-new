@@ -122,9 +122,10 @@ static inline bool isScriptExpectedAtCurrentLevel() {
     // is invalid in the current context, as Ledger was not expecting another
     // script to be parsed
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
-    if (ctx->level >= MAX_SCRIPT_DEPTH) {
-        return false;
-    }
+    // ctx->level is only incremented in handleComplexScriptStart which guards
+    // against reaching MAX_SCRIPT_DEPTH before incrementing, so this branch
+    // is an invariant that cannot be reached through supported app flow.
+    LEDGER_ASSERT(ctx->level < MAX_SCRIPT_DEPTH, "Script level overflow");  // LCOV_EXCL_LINE
     return ctx->complexScripts[ctx->level].remainingScripts > 0;
 }
 
@@ -496,10 +497,11 @@ void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
                 // LCOV_EXCL_STOP
             }
             break;
+        // LCOV_EXCL_START
         default:
-            TRACE("Bad script type: %d", script_type);
-            send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
+            LEDGER_ASSERT(false, "Bad script type: %d", script_type);
             break;
+        // LCOV_EXCL_STOP
     }
     return;
 }

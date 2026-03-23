@@ -621,6 +621,16 @@ destinations: dict[str, TxOutputDestination] = {
             stakingValue="m/1852'/1815'/456'/2/0",
         ),
     ),
+    "internalBaseWithCrossAccountStakingPath": TxOutputDestination(
+        TxOutputDestinationType.DEVICE_OWNED,
+        DeriveAddressTestCase(
+            name="",
+            netDesc=Mainnet,
+            addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
+            spendingValue="m/1852'/1815'/0'/0/0",
+            stakingValue="m/1852'/1815'/1'/2/0",
+        ),
+    ),
     "internalBaseWithStakingPathMap": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
         DeriveAddressTestCase(
@@ -4456,6 +4466,27 @@ testsBabbage: List[SignTxTestCase] = [
         expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL],
     ),
     SignTxTestCase(
+        name="Sign_tx_with_nonstandard_staking_path_collateral_output_and_total_collateral",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            fee=42,
+            ttl=10,
+            scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
+            collateralOutput=TxOutputBabbage(
+                destinations["internalBaseWithCrossAccountStakingPath"],
+                7120787,
+            ),
+            totalCollateral=10,
+        ),
+        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        txBody="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b710a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f1124876c29f8c45c3fa7d3af0ea45fb2564ace831f70e7d3d5b8c251739a011a006ca793110a",
+        expected_warnings=[
+            WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
+        ],
+    ),
+    SignTxTestCase(
         name="Sign_tx_with_change_output_as_map_and_collateral_output_as_array",
         tx=Transaction(
             network=Mainnet,
@@ -4533,6 +4564,27 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="a800818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a200583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff01821904d2a2581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a34003581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209015820000000000000000000000000000000000000000000000000000000000000000002581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a248456c204e69c3b16f1904d24874652474436f696e1a0078386202182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09011105",
+    ),
+    SignTxTestCase(
+        name="Sign_tx_with_device_owned_output_with_datum_hash",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[
+                TxOutputBabbage(
+                    destinations["internalBaseWithStakingPath"],
+                    7120787,
+                    datum=Datum(
+                        DatumType.HASH,
+                        "ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce188",
+                    ),
+                )
+            ],
+            fee=42,
+            ttl=10,
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a30058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a",
     ),
 ]
 
@@ -4780,6 +4832,46 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        deny_before_review=True,
+    ),
+    SignTxTestCase(
+        name="Deny_pool_registration_owner_with_script_data_hash",
+        tx=Transaction(
+            network=NetworkDesc(networkId=1, protocol=764824073),
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineByronMainnet3003112"]],
+            certificates=[
+                Certificate(
+                    type=CertificateType.STAKE_POOL_REGISTRATION,
+                    params=PoolRegistrationParams(
+                        poolKey=PoolKey(
+                            type=PoolKeyType.THIRD_PARTY,
+                            key="01234567890123456789012345678901234567890123456789012345",
+                        ),
+                        vrfKeyHashHex="0123456789012345678901234567890123456789012345678901234567890123",
+                        pledge=0,
+                        cost=0,
+                        margin=Margin(numerator=0, denominator=1),
+                        rewardAccount=PoolKey(
+                            type=PoolKeyType.THIRD_PARTY,
+                            key="f123456789012345678901234567890123456789012345678901234567",
+                        ),
+                        poolOwners=[
+                            PoolKey(
+                                type=PoolKeyType.DEVICE_OWNED,
+                                key="m/1852'/1815'/0'/2/0",
+                            )
+                        ],
+                        relays=[],
+                        metadata=None,
+                    ),
+                )
+            ],
+            scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
+        ),
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         txBody="",
         expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
@@ -8596,6 +8688,78 @@ testsCVoteRegistrationDenies: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         txBody="",
         expected_sw=StatusWord.SWO_CVOTE_AUX_DATA_PARSING_FAIL,
+        deny_before_review=True,
+        unsuitable_in_ragger_reason=None,
+    ),
+    SignTxTestCase(
+        name="CIP36_registration_with_bad_staking_key_path",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            auxiliaryData=TxAuxiliaryData(
+                TxAuxiliaryDataType.CIP36_REGISTRATION,
+                TxAuxiliaryDataCIP36(
+                    CIP36VoteRegistrationFormat.CIP_36,
+                    "m/1852'/1815'/0'/3/0",  # chain=3, not a valid staking key path (must be 2)
+                    destinations["internalBaseWithStakingPath"],
+                    1454448,
+                    "4b19e27ffc006ace16592311c4d2f0cafc255eaa47a6178ff540c0a46d07027c",
+                    votingPurpose=0,
+                ),
+            ),
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        deny_before_review=True,
+        unsuitable_in_ragger_reason=None,
+    ),
+    SignTxTestCase(
+        name="CIP36_registration_with_payment_destination_network_mismatch",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            auxiliaryData=TxAuxiliaryData(
+                TxAuxiliaryDataType.CIP36_REGISTRATION,
+                TxAuxiliaryDataCIP36(
+                    CIP36VoteRegistrationFormat.CIP_36,
+                    "m/1852'/1815'/0'/2/0",
+                    destinations["externalShelleyBaseKeyhashScripthashFakenet"],  # FakeNet addr on Mainnet tx
+                    1454448,
+                    "4b19e27ffc006ace16592311c4d2f0cafc255eaa47a6178ff540c0a46d07027c",
+                    votingPurpose=0,
+                ),
+            ),
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        deny_before_review=True,
+        unsuitable_in_ragger_reason=None,
+    ),
+    SignTxTestCase(
+        name="CIP36_registration_with_vote_key_path_wrong_purpose",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["internalBaseWithStakingPath"]],
+            auxiliaryData=TxAuxiliaryData(
+                TxAuxiliaryDataType.CIP36_REGISTRATION,
+                TxAuxiliaryDataCIP36(
+                    CIP36VoteRegistrationFormat.CIP_36,
+                    "m/1852'/1815'/0'/2/0",
+                    destinations["internalBaseWithStakingPath"],
+                    1454448,
+                    "m/1852'/1815'/0'/0/0",  # Shelley purpose, not CVote purpose (1694')
+                    votingPurpose=0,
+                ),
+            ),
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="",
+        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
         unsuitable_in_ragger_reason=None,
     ),

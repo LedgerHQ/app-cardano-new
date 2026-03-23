@@ -18,6 +18,20 @@
 
 #include "securityWarnings.h"
 
+static inline security_policy_t combine_security_policies(security_policy_t a,
+                                                  security_policy_t b) {
+    if (a == POLICY_DENY || b == POLICY_DENY) {
+        return POLICY_DENY;
+    }
+
+    if (a == POLICY_SHOW || b == POLICY_SHOW) {
+        return POLICY_SHOW;
+    }
+
+    LEDGER_ASSERT(a == POLICY_HIDE && b == POLICY_HIDE, "Unexpected policy combination");
+    return POLICY_HIDE;
+}
+
 typedef struct {
     warning_bit_e bit;
     const char* title;

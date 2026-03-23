@@ -72,7 +72,7 @@ For detailed analysis, see:
   - for two-line `if (cond) { ... } else { LEDGER_ASSERT(false, ...); }` patterns, prefer two single-line `// LCOV_EXCL_LINE` comments on the assert and the unreachable fallback/return.
 - Do **not** use LCOV exclusions for realistic malformed-input flow, parser-failure paths, or policy outcomes that can be exercised with valid APDU scenarios.
 - If a branch can be covered from a bad APDU / bad Tx / bad buffer path with concrete fixtures, do not exclude it; add a unit test.
-- Prefer per-line marks (`// LCOV_EXCL_LINE`) for small branches; use `LCOV_EXCL_START/STOP` only when a contiguous block is truly all structural invariants.
+- Prefer per-line marks (`// LCOV_EXCL_LINE`) for small branches. However, for `default:` switch cases, you **must** use `LCOV_EXCL_START/STOP` around the entire block (including the `default:` label) because `lcov` will otherwise flag the `default:` keyword itself as uncovered. Use `LCOV_EXCL_START/STOP` only when a contiguous block is truly all structural invariants or for these `default:` cases.
 
 ## Additional Resources
 - **BOLOS SDK:** `/opt/ledger-secure-sdk` (underlying library).

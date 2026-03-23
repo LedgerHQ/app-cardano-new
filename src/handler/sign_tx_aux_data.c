@@ -126,10 +126,12 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
         case POLICY_SHOW:
             aux_data->ui_show.staking_key = true;
             break;
-        case POLICY_HIDE:
-            aux_data->ui_show.staking_key = false;
-            break;
         // LCOV_EXCL_START
+        case POLICY_HIDE:
+            // policyForCVoteRegistrationStakingKey currently never returns POLICY_HIDE;
+            // if it ever does, replace the assert with: aux_data->ui_show.staking_key = false;
+            LEDGER_ASSERT(false, "Unexpected POLICY_HIDE for staking key");
+            return false;
         default:
             LEDGER_ASSERT(false, "Unknown staking key policy: %u", staking_key_policy);
             return false;
@@ -149,10 +151,12 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
         case POLICY_SHOW:
             aux_data->ui_show.payment_destination = true;
             break;
-        case POLICY_HIDE:
-            aux_data->ui_show.payment_destination = false;
-            break;
         // LCOV_EXCL_START
+        case POLICY_HIDE:
+            // policyForCVoteRegistrationPaymentDestination currently never returns POLICY_HIDE;
+            // if it ever does, replace the assert with: aux_data->ui_show.payment_destination = false;
+            LEDGER_ASSERT(false, "Unexpected POLICY_HIDE for payment destination");
+            return false;
         default:
             LEDGER_ASSERT(false, "Unknown destination policy: %u", destination_policy);
             return false;
@@ -163,16 +167,20 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
     security_policy_t nonce_policy = policyForCVoteRegistrationNonce(&tx_aux_data_ctx()->cvote_warning_bits);
 
     switch (nonce_policy) {
-        case POLICY_DENY:
-            TRACE("CVote nonce policy denied");
-            return false;
         case POLICY_SHOW:
             aux_data->ui_show.nonce = true;
             break;
-        case POLICY_HIDE:
-            aux_data->ui_show.nonce = false;
-            break;
         // LCOV_EXCL_START
+        case POLICY_DENY:
+            // policyForCVoteRegistrationNonce currently never returns POLICY_DENY;
+            // if it ever does, replace the assert with: return false;
+            LEDGER_ASSERT(false, "Unexpected POLICY_DENY for nonce");
+            return false;
+        case POLICY_HIDE:
+            // policyForCVoteRegistrationNonce currently never returns POLICY_HIDE;
+            // if it ever does, replace the assert with: aux_data->ui_show.nonce = false;
+            LEDGER_ASSERT(false, "Unexpected POLICY_HIDE for nonce");
+            return false;
         default:
             LEDGER_ASSERT(false, "Unknown nonce policy: %u", nonce_policy);
             return false;
@@ -183,9 +191,6 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
     security_policy_t voting_purpose_policy = policyForCVoteRegistrationVotingPurpose(&tx_aux_data_ctx()->cvote_warning_bits);
 
     switch (voting_purpose_policy) {
-        case POLICY_DENY:
-            TRACE("CVote voting purpose policy denied");
-            return false;
         case POLICY_SHOW:
             aux_data->ui_show.voting_purpose = true;
             break;
@@ -193,6 +198,11 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
             aux_data->ui_show.voting_purpose = false;
             break;
         // LCOV_EXCL_START
+        case POLICY_DENY:
+            // policyForCVoteRegistrationVotingPurpose currently never returns POLICY_DENY;
+            // if it ever does, replace the assert with: return false;
+            LEDGER_ASSERT(false, "Unexpected POLICY_DENY for voting purpose");
+            return false;
         default:
             LEDGER_ASSERT(false, "Unknown voting purpose policy: %u", voting_purpose_policy);
             return false;
@@ -217,11 +227,14 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
 
     // Allocate persistent buffer for CVote init data
     const size_t init_payload_len = buffer_data_size(cdata);
-    if ((init_payload_len > UINT16_MAX) ||
-        !APP_MEM_CALLOC((void **) &tx_aux_data_ctx()->raw_cvote_init_data, (uint16_t) init_payload_len)) {
+    LEDGER_ASSERT(init_payload_len <= UINT16_MAX, "init_payload_len > UINT16_MAX");
+    if (!APP_MEM_CALLOC((void **) &tx_aux_data_ctx()->raw_cvote_init_data, (uint16_t) init_payload_len)) {
+        // LCOV_EXCL_START
+        // Requires allocator failure — not reachable in unit tests.
         TRACE("CVote AUX_DATA init: failed to allocate %u byte buffer", (unsigned)init_payload_len);
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
+        // LCOV_EXCL_STOP
     }
 
     const uint8_t *payload_start = buffer_get_cur(cdata);
@@ -271,9 +284,12 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
     }
 
     if (!ui_cvote_aux_data_init_non_streaming(aux_data)) {
+        // LCOV_EXCL_START
+        // Requires NBGL pair-list allocator failure — not reachable without mock OOM injection.
         TRACE("CVote AUX_DATA non-streaming UI init failed");
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
+        // LCOV_EXCL_STOP
     }
 
     // Non-streaming with zero delegations: show final review immediately.
@@ -353,7 +369,7 @@ static void handler_tx_aux_data_delegation(buffer_t *cdata) {
         if (!ui_cvote_aux_data_add_delegation_streaming(aux_data,
                                                         &delegation_credential,
                                                         weight)) {
-            return;
+            return; // LCOV_EXCL_LINE — requires NBGL pair-list OOM during streaming
         }
 
         return;
@@ -362,7 +378,7 @@ static void handler_tx_aux_data_delegation(buffer_t *cdata) {
         if (!ui_cvote_aux_data_add_delegation_non_streaming(aux_data,
                                                             &delegation_credential,
                                                             weight)) {
-            return;
+            return; // LCOV_EXCL_LINE — requires NBGL pair-list OOM in non-streaming mode
         }
 
         if (aux_data->remaining_delegations == 0) {

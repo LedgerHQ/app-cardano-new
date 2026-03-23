@@ -62,12 +62,10 @@ void handler_sign_opcert(buffer_t *cdata) {
         send_swo_and_reset(SWO_INVALID_OPCERT_LENGTH);
         return;
     }
-    if (!buffer_move(cdata,
-                     G_context.opcert_info.raw_opcert,
-                     G_context.opcert_info.raw_opcert_len)) {
-        send_swo_and_reset(SWO_INVALID_OPCERT_LENGTH);
-        return;
-    }
+    bool moved_opcert = buffer_move(cdata,
+                                    G_context.opcert_info.raw_opcert,
+                                    G_context.opcert_info.raw_opcert_len);
+    LEDGER_ASSERT(moved_opcert, "buffer_move failed unexpectedly");
 
     buffer_t buf = {.ptr = G_context.opcert_info.raw_opcert,
                     .size = G_context.opcert_info.raw_opcert_len,

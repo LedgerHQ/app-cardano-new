@@ -362,6 +362,26 @@ static void test_pool_registration_reward_account_path_compatibility(void **stat
     assert_int_equal(policy, POLICY_SHOW);
 }
 
+// ======================================================================
+// combine_security_policies: exhaustive combination matrix
+// ======================================================================
+
+static void test_combine_security_policies_all_combinations(void **state) {
+    (void) state;
+    // DENY dominates: any DENY input yields DENY
+    assert_int_equal(combine_security_policies(POLICY_DENY, POLICY_DENY), POLICY_DENY);
+    assert_int_equal(combine_security_policies(POLICY_DENY, POLICY_SHOW), POLICY_DENY);
+    assert_int_equal(combine_security_policies(POLICY_DENY, POLICY_HIDE), POLICY_DENY);
+    assert_int_equal(combine_security_policies(POLICY_SHOW, POLICY_DENY), POLICY_DENY);
+    assert_int_equal(combine_security_policies(POLICY_HIDE, POLICY_DENY), POLICY_DENY);
+    // SHOW dominates over HIDE
+    assert_int_equal(combine_security_policies(POLICY_SHOW, POLICY_SHOW), POLICY_SHOW);
+    assert_int_equal(combine_security_policies(POLICY_SHOW, POLICY_HIDE), POLICY_SHOW);
+    assert_int_equal(combine_security_policies(POLICY_HIDE, POLICY_SHOW), POLICY_SHOW);
+    // HIDE only when both are HIDE
+    assert_int_equal(combine_security_policies(POLICY_HIDE, POLICY_HIDE), POLICY_HIDE);
+}
+
 static void test_pool_registration_owner_with_script_hash_denied(void **state) {
     (void) state;
     reset_context();
@@ -403,6 +423,7 @@ int main(void) {
         cmocka_unit_test(test_pool_retirement_allowed_in_plutus),
         cmocka_unit_test(test_pool_registration_reward_account_path_compatibility),
         cmocka_unit_test(test_pool_registration_owner_with_script_hash_denied),
+        cmocka_unit_test(test_combine_security_policies_all_combinations),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
