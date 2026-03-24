@@ -468,9 +468,8 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             if (!ensure_sign_tx_request_type(REQUEST_NONE)) {
                 return;
             }
-            if (!ensure_sign_tx_state(TX_STATE_NONE)) {
-                return;
-            }
+            LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_NONE,
+                          "Bad tx_state after REQUEST_NONE");
 #ifdef HAVE_SWAP
             if (G_called_from_swap && G_swap_response_ready) {
                 // Safety against trying to make the app sign multiple TXs in swap mode

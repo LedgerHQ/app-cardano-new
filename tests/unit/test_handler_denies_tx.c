@@ -722,6 +722,106 @@ static void test_witness_extraction_with_wrong_state(void **state) {
     assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
 }
 
+static void test_tx_init_missing_protocol_magic(void **state) {
+    (void) state;
+    const tx_fixture_t *fixture =
+        &FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_ALL_RELAYS_POOL_REGISTRATION;
+    init_apdu_params_t params = build_init_params_from_fixture(fixture, NULL, 0);
+    // Truncate after options(8) + networkId(1) = 9 bytes, before protocolMagic
+    run_sign_tx_init_case(&params, 9, SWO_WRONG_DATA_LENGTH);
+}
+
+static void test_tx_chunk_rejects_exceeding_advertised_size(void **state) {
+    (void) state;
+
+    reset_context();
+    assert_true(test_mem_init());
+
+    // Init with very small advertised tx size
+    init_apdu_params_t params = make_default_init_apdu_params();
+    params.rawTxTotalLength = 10;
+
+    uint8_t init_raw[512];
+    const size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
+    assert_true(init_len > 0);
+
+    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
+
+    // Send a chunk larger than advertised total
+    uint8_t chunk[MAX_SIGN_TX_CHUNK_SIZE];
+    memset(chunk, 0, sizeof(chunk));
+    run_sign_tx_apdu(&(buffer_t){.ptr = chunk, .size = sizeof(chunk), .offset = 0}, P1_TX_CHUNK);
+    assert_int_equal(g_last_response_sw, SWO_INVALID_TX_LENGTH);
+}
+
+static void test_tx_confirm_rejects_length_mismatch(void **state) {
+    (void) state;
+
+    reset_context();
+    assert_true(test_mem_init());
+
+    // Init with rawTxTotalLength larger than what we'll actually send
+    init_apdu_params_t params = make_default_init_apdu_params();
+    params.rawTxTotalLength = 200;
+
+    uint8_t init_raw[512];
+    const size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
+    assert_true(init_len > 0);
+
+    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
+
+    // Send a short final chunk — total received (10) != advertised (200)
+    uint8_t chunk[10];
+    memset(chunk, 0, sizeof(chunk));
+    run_sign_tx_apdu(&(buffer_t){.ptr = chunk, .size = sizeof(chunk), .offset = 0}, P1_TX_CONFIRM);
+    assert_int_equal(g_last_response_sw, SWO_INVALID_TX_LENGTH);
+}
+
+static void test_tx_chunk_rejects_wrong_tx_state(void **state) {
+    (void) state;
+    reset_context();
+    assert_true(test_mem_init());
+
+    // Correct req_type but wrong tx_state
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    G_context.state.tx_state = TX_STATE_AUX_DATA;
+
+    uint8_t chunk[2] = {0x00, 0x00};
+    run_sign_tx_apdu(&(buffer_t){.ptr = chunk, .size = sizeof(chunk), .offset = 0}, P1_TX_CHUNK);
+    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+}
+
+static void test_tx_confirm_rejects_wrong_request_type(void **state) {
+    (void) state;
+    reset_context();
+    assert_true(test_mem_init());
+
+    // Wrong req_type for CONFIRM
+    G_context.req_type = REQUEST_NONE;
+
+    uint8_t chunk[1] = {0x00};
+    run_sign_tx_apdu(&(buffer_t){.ptr = chunk, .size = sizeof(chunk), .offset = 0}, P1_TX_CONFIRM);
+    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+}
+
+static void test_tx_witness_rejects_wrong_request_type(void **state) {
+    (void) state;
+    reset_context();
+    assert_true(test_mem_init());
+
+    // Wrong req_type for witness
+    G_context.req_type = REQUEST_NONE;
+
+    uint8_t path_raw[32];
+    size_t path_len = write_standard_payment_path(path_raw, sizeof(path_raw));
+    run_sign_tx_witness_apdu(&(buffer_t){.ptr = path_raw, .size = path_len, .offset = 0});
+    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+}
+
 static void test_multiple_reinit_attempts(void **state) {
     (void) state;
 
@@ -795,6 +895,12 @@ int main(void) {
         cmocka_unit_test(test_handler_state_during_active_request),
         cmocka_unit_test(test_witness_extraction_with_wrong_state),
         cmocka_unit_test(test_multiple_reinit_attempts),
+        cmocka_unit_test(test_tx_init_missing_protocol_magic),
+        cmocka_unit_test(test_tx_chunk_rejects_exceeding_advertised_size),
+        cmocka_unit_test(test_tx_confirm_rejects_length_mismatch),
+        cmocka_unit_test(test_tx_chunk_rejects_wrong_tx_state),
+        cmocka_unit_test(test_tx_confirm_rejects_wrong_request_type),
+        cmocka_unit_test(test_tx_witness_rejects_wrong_request_type),
     };
     return _cmocka_run_group_tests("test_handler_denies_tx",
                                    tests,
