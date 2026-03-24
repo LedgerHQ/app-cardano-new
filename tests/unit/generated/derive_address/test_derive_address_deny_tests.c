@@ -115,6 +115,11 @@ static void test_derive_address_deny_11_derive_address_enterprise_with_wrong_spe
     run_deny_fixture(&DERIVE_ADDRESS_DENY_FIXTURES[11]);
 }
 
+static void test_derive_address_deny_12_derive_address_display_scripthash_keyhash_not_allowed(void **state) {
+    (void) state;
+    run_deny_fixture(&DERIVE_ADDRESS_DENY_FIXTURES[12]);
+}
+
 int main(void) {
     TRACE("Starting test_derive_address_deny_tests");
     const struct CMUnitTest tests[] = {
@@ -130,6 +135,7 @@ int main(void) {
         cmocka_unit_test(test_derive_address_deny_9_derive_address_pointer_with_wrong_spending_path),
         cmocka_unit_test(test_derive_address_deny_10_derive_address_enterprise_with_byron_spending_path),
         cmocka_unit_test(test_derive_address_deny_11_derive_address_enterprise_with_wrong_spending_path),
+        cmocka_unit_test(test_derive_address_deny_12_derive_address_display_scripthash_keyhash_not_allowed),
     };
 
     return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);

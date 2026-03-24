@@ -62,6 +62,34 @@ static size_t write_standard_payment_path(uint8_t *out, size_t out_size) {
     return required;
 }
 
+static void test_get_public_key_when_request_already_active(void **state) {
+    (void) state;
+    reset_test_context();
+
+    G_context.req_type = REQUEST_EXPORT_PUBKEY;  // simulate active request
+
+    uint8_t path_raw[32];
+    size_t path_len = write_standard_payment_path(path_raw, sizeof(path_raw));
+    test_read_buffer_t pubkey_buffer = make_test_read_buffer(path_raw, path_len);
+    apdu_response_begin(INS_GET_PUBLIC_KEY);
+    handler_get_public_key(&pubkey_buffer.sdk_buffer);
+    apdu_response_assert_sent_or_deferred();
+    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+}
+
+static void test_get_public_key_truncated_path(void **state) {
+    (void) state;
+    reset_test_context();
+
+    // 1-byte payload: path length byte = 5 but no path components follow
+    uint8_t path_raw[1] = {5};
+    test_read_buffer_t pubkey_buffer = make_test_read_buffer(path_raw, sizeof(path_raw));
+    apdu_response_begin(INS_GET_PUBLIC_KEY);
+    handler_get_public_key(&pubkey_buffer.sdk_buffer);
+    apdu_response_assert_sent_or_deferred();
+    assert_int_equal(g_last_response_sw, SWO_BIP44_PATH_PARSING_FAIL);
+}
+
 static void test_get_public_key_trailing_bytes(void **state) {
     (void) state;
     reset_test_context();
@@ -182,6 +210,8 @@ static void test_pubkey_review_title_matrix(void **state) {
 
 int main(void) {
     const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_get_public_key_when_request_already_active),
+        cmocka_unit_test(test_get_public_key_truncated_path),
         cmocka_unit_test(test_get_public_key_trailing_bytes),
         cmocka_unit_test(test_nbgl_reject_on_pubkey_export_resets_context),
         cmocka_unit_test(test_pubkey_review_title_matrix),
