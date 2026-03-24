@@ -20,6 +20,15 @@
 #include "ui_display_tx.h"
 #include "sign_tx.h"
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_UI_DISPLAY to trace UI flow details.
+ */
+#ifdef TRACE_UI_DISPLAY
+#define TRACE_MODULE(...) TRACE("[ui_display_tx] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 void tx_review_cleanup(void) {
     ui_all_cleanup();
 }
@@ -31,13 +40,13 @@ static void tx_review_choice(bool confirm) {
 
     // FINALIZE
     if (!confirm) {
-        TRACE("User rejected");
+        TRACE_MODULE("User rejected");
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
         nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main);
         return;
     }
 
-    TRACE("User confirmed");
+    TRACE_MODULE("User confirmed");
     const bool has_witnesses = (G_context.tx_info.num_witnesses > 0);
     if (has_witnesses) {
         // we will wait for a witness APDU
@@ -149,7 +158,7 @@ static void tx_streaming_continue_choice(bool confirm) {
     ASSERT(g_pairsList != NULL);
     g_pairsList->nbPairs = (uint8_t) rendered_count;
 
-    TRACE("Streaming chunk: from=%u rendered=%u next_ui_pair_index=%u total=%u",
+    TRACE_MODULE("Streaming chunk: from=%u rendered=%u next_ui_pair_index=%u total=%u",
           next_from, rendered_count, tx_body_ctx()->rendered_ui_pairs, total);
 
     nbgl_useCaseReviewStreamingContinue(g_pairsList, tx_streaming_continue_choice);

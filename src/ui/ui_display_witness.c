@@ -24,19 +24,28 @@
 #include "ui_utils.h"
 #include "sign_tx.h"
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_UI_DISPLAY to trace UI flow details.
+ */
+#ifdef TRACE_UI_DISPLAY
+#define TRACE_MODULE(...) TRACE("[ui_witness] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 static void witness_review_choice(bool confirm) {
     // CLEANUP
     // No dynamically allocated UI buffers to release in this flow.
 
     // FINALIZE
     if (!confirm) {
-        TRACE("User rejected");
+        TRACE_MODULE("User rejected");
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
         nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main);
         return;
     }
 
-    TRACE("User confirmed");
+    TRACE_MODULE("User confirmed");
     nbgl_useCaseSpinner("Processing");
     const bool is_last_witness = is_last_witness_to_process();
     finalize_witness();
@@ -51,8 +60,8 @@ static void witness_review_choice(bool confirm) {
 void ui_display_witness(const bip44_path_t* witnessPath,
                        security_policy_t securityPolicy,
                        warning_bits_t warnings) {
-    TRACE("=== ui_display_witness START ===");
-    TRACE("securityPolicy: %d", securityPolicy);
+    TRACE_MODULE("=== ui_display_witness START ===");
+    TRACE_MODULE("securityPolicy: %d", securityPolicy);
 
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION,
                   "ui_display_witness called with wrong request type: %d",
@@ -70,7 +79,7 @@ void ui_display_witness(const bip44_path_t* witnessPath,
 
     LEDGER_ASSERT(securityPolicy == POLICY_SHOW, "Unexpected security policy");
 
-    TRACE("isUnusual: %d", isUnusual);
+    TRACE_MODULE("isUnusual: %d", isUnusual);
 
     // Format the witness path into static buffer
     bool formatted = format_bip44_path(witnessPath,

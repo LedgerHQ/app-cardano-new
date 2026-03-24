@@ -19,6 +19,15 @@
 #include "app_context.h"
 #include "sign_cvote.h"
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_UI_DISPLAY to trace UI flow details.
+ */
+#ifdef TRACE_UI_DISPLAY
+#define TRACE_MODULE(...) TRACE("[ui_cvote] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 /**
  * Cleanup dynamically allocated buffers and UI pairs
  */
@@ -32,13 +41,13 @@ static void cvote_review_choice(bool confirm) {
 
     // FINALIZE
     if (!confirm) {
-        TRACE("User rejected");
+        TRACE_MODULE("User rejected");
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
         return;
     }
 
-    TRACE("User confirmed");
+    TRACE_MODULE("User confirmed");
     nbgl_useCaseSpinner("Processing");
     finalize_sign_cvote();
 
@@ -49,14 +58,14 @@ static void cvote_review_choice(bool confirm) {
 void ui_display_cvote_confirm(security_policy_t securityPolicy, warning_bits_t warnings) {
     cvote_ctx_t *ctx = &G_context.cvote_info;
 
-    TRACE("=== ui_display_cvote_confirm START ===");
+    TRACE_MODULE("=== ui_display_cvote_confirm START ===");
 
     // Check state
     LEDGER_ASSERT(G_context.req_type == REQUEST_CVOTE, "ui_display_cvote_confirm called with wrong request type: %d", G_context.req_type);
     LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STATE_CONFIRM, "ui_display_cvote_confirm called in wrong state: %d", G_context.state.cvote_state);
 
     // Check policy
-    TRACE("securityPolicy: %d", securityPolicy);
+    TRACE_MODULE("securityPolicy: %d", securityPolicy);
     LEDGER_ASSERT(securityPolicy == POLICY_SHOW, "ui_display_cvote_confirm called with wrong security policy: %d", securityPolicy);
 
     ui_status_t warning_status = ui_build_warnings(warnings);
@@ -69,7 +78,7 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy, warning_bits_t w
     ui_render_session_t session = {0};
     ui_render_scope_begin(&session);
     if (!ui_pairs_init(4)) {
-        TRACE("Failed to initialize pairs");
+        TRACE_MODULE("Failed to initialize pairs");
         ui_render_scope_end();
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;

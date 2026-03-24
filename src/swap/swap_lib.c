@@ -15,6 +15,15 @@
 #include "addressUtilsShelley.h"
 #include "utils.h"
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_SWAP to trace swap validation flow details.
+ */
+#ifdef TRACE_SWAP
+#define TRACE_MODULE(...) TRACE("[swap_lib] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 typedef struct swap_validated_s {
     bool initialized;
     uint64_t amount;
@@ -37,16 +46,16 @@ __attribute__((noreturn)) void swap_reject_and_exit(uint8_t common_error_code,
 }
 
 bool swap_copy_transaction_parameters(create_transaction_parameters_t *params) {
-    TRACE("Inside swap_copy_transaction_parameters");
+    TRACE_MODULE("Inside swap_copy_transaction_parameters");
     ASSERT(params != NULL);
 
     // Ensure no extra id (Cardano does not use extra IDs)
     if (params->destination_address_extra_id == NULL) {
-        TRACE("destination_address_extra_id expected");
+        TRACE_MODULE("destination_address_extra_id expected");
         return false;
     }
     if (params->destination_address_extra_id[0] != '\0') {
-        TRACE("destination_address_extra_id expected empty, not '%s'",
+        TRACE_MODULE("destination_address_extra_id expected empty, not '%s'",
               params->destination_address_extra_id);
         return false;
     }
@@ -68,21 +77,21 @@ bool swap_copy_transaction_parameters(create_transaction_parameters_t *params) {
             params->destination_address,
             sizeof(swap_validated.destination));
     if (swap_validated.destination[sizeof(swap_validated.destination) - 1] != '\0') {
-        TRACE("Address copy error");
+        TRACE_MODULE("Address copy error");
         return false;
     }
 
-    TRACE("Destination received %s", params->destination_address);
+    TRACE_MODULE("Destination received %s", params->destination_address);
 
     // Save amount and fees
     ASSERT(params->amount != NULL);
     ASSERT(params->fee_amount != NULL);
     if (!swap_str_to_u64(params->amount, params->amount_length, &swap_validated.amount)) {
-        TRACE("Amount copy error");
+        TRACE_MODULE("Amount copy error");
         return false;
     }
     if (!swap_str_to_u64(params->fee_amount, params->fee_amount_length, &swap_validated.fee)) {
-        TRACE("Fee copy error");
+        TRACE_MODULE("Fee copy error");
         return false;
     }
 
@@ -93,14 +102,14 @@ bool swap_copy_transaction_parameters(create_transaction_parameters_t *params) {
 
     // Commit from stack to global data, params becomes tainted but we won't access it anymore
     memcpy(&G_swap_validated, &swap_validated, sizeof(swap_validated));
-    TRACE("Swap params committed: initialized=%d", G_swap_validated.initialized);
+    TRACE_MODULE("Swap params committed: initialized=%d", G_swap_validated.initialized);
     return true;
 }
 
 bool swap_check_destination_validity(const tx_output_destination_t *destination) {
     char rawAddressHuman[MAX_HUMAN_ADDRESS_LENGTH] = {0};
 
-    TRACE("Inside swap_check_destination_validity");
+    TRACE_MODULE("Inside swap_check_destination_validity");
     ASSERT(destination != NULL);
     LEDGER_ASSERT(G_swap_validated.initialized, "Swap validation called before initialization");
 
@@ -110,11 +119,11 @@ bool swap_check_destination_validity(const tx_output_destination_t *destination)
                                                destination->address.length,
                                                rawAddressHuman,
                                                sizeof(rawAddressHuman))) {
-                TRACE("Failed to format address");
+                TRACE_MODULE("Failed to format address");
                 return false;
             }
             if (strcmp(G_swap_validated.destination, rawAddressHuman) != 0) {
-                TRACE("Destination mismatch: tx=%s, swap=%s",
+                TRACE_MODULE("Destination mismatch: tx=%s, swap=%s",
                       rawAddressHuman,
                       G_swap_validated.destination);
                 return false;
@@ -126,29 +135,29 @@ bool swap_check_destination_validity(const tx_output_destination_t *destination)
             return false;  // Unreachable
         // LCOV_EXCL_STOP
     }
-    TRACE("Destination VALID");
+    TRACE_MODULE("Destination VALID");
     return true;
 }
 
 bool swap_check_amount_validity(uint64_t amount) {
-    TRACE("Inside swap_check_amount_validity");
+    TRACE_MODULE("Inside swap_check_amount_validity");
     LEDGER_ASSERT(G_swap_validated.initialized, "Swap validation called before initialization");
     if (amount != G_swap_validated.amount) {
-        TRACE("Invalid swap amount!");
+        TRACE_MODULE("Invalid swap amount!");
         return false;
     }
-    TRACE("Amount VALID");
+    TRACE_MODULE("Amount VALID");
     return true;
 }
 
 bool swap_check_fee_validity(uint64_t fee) {
-    TRACE("Inside swap_check_fee_validity");
+    TRACE_MODULE("Inside swap_check_fee_validity");
     LEDGER_ASSERT(G_swap_validated.initialized, "Swap validation called before initialization");
     if (fee != G_swap_validated.fee) {
-        TRACE("Invalid swap fee!");
+        TRACE_MODULE("Invalid swap fee!");
         return false;
     }
-    TRACE("Fee VALID");
+    TRACE_MODULE("Fee VALID");
     return true;
 }
 

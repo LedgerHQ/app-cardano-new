@@ -25,6 +25,15 @@
 #include "addressUtilsShelley.h"
 #include "ui_warnings.h"
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_UI_DISPLAY to trace UI flow details.
+ */
+#ifdef TRACE_UI_DISPLAY
+#define TRACE_MODULE(...) TRACE("[ui_sign_msg] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 static bool format_ascii_chunk(const uint8_t *bytes, size_t size, char *out, size_t outSize) {
     ASSERT(bytes != NULL);
     ASSERT(out != NULL);
@@ -50,13 +59,13 @@ static void sign_msg_review_choice(bool confirm) {
 
     // FINALIZE
     if (!confirm) {
-        TRACE("User rejected");
+        TRACE_MODULE("User rejected");
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
         return;
     }
 
-    TRACE("User confirmed");
+    TRACE_MODULE("User confirmed");
     nbgl_useCaseSpinner("Processing");
     finalize_sign_msg();
 
@@ -67,14 +76,14 @@ static void sign_msg_review_choice(bool confirm) {
 void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnings) {
     sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
 
-    TRACE("=== ui_display_sign_msg START ===");
+    TRACE_MODULE("=== ui_display_sign_msg START ===");
 
     // Check state
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_MSG, "ui_display_sign_msg called with wrong request type: %d", G_context.req_type);
     LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CONFIRM, "ui_display_sign_msg called in wrong state: %d", G_context.state.sign_msg_state);
 
     // Check policy
-    TRACE("securityPolicy: %d", securityPolicy);
+    TRACE_MODULE("securityPolicy: %d", securityPolicy);
     LEDGER_ASSERT(securityPolicy == POLICY_SHOW, "ui_display_sign_msg called with wrong security policy: %d", securityPolicy);
 
     ui_render_session_t session = {0};
@@ -82,7 +91,7 @@ void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnin
 
     // Initialize pairs for display (6 fields)
     if (!ui_pairs_init(6)) {
-        TRACE("Failed to initialize pairs"); // LCOV_EXCL_LINE
+        TRACE_MODULE("Failed to initialize pairs"); // LCOV_EXCL_LINE
         ui_render_scope_end(); // LCOV_EXCL_LINE
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
         return; // LCOV_EXCL_LINE

@@ -17,9 +17,18 @@
 #include "ui_warnings.h"
 #include "ui_display_address_derivation.h"
 #include "ui_address_fields.h"
+
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_UI_DISPLAY to trace UI flow details.
+ */
+#ifdef TRACE_UI_DISPLAY
+#define TRACE_MODULE(...) TRACE("[ui_derive_addr] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
 // Called when long press button is touched or when reject footer is touched
 static void derive_address_review_choice(bool confirm) {
-    TRACE("confirmed = %d", confirm);
+    TRACE_MODULE("confirmed = %d", confirm);
     LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS, "derive_address_review_choice called without REQUEST_DERIVE_ADDRESS");
     LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED, "derive_address_review_choice called in wrong state: %d", G_context.state.derive_address_state);
 
@@ -28,13 +37,13 @@ static void derive_address_review_choice(bool confirm) {
 
     // FINALIZE
     if (!confirm) {
-        TRACE("User rejected");
+        TRACE_MODULE("User rejected");
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
         nbgl_useCaseReviewStatus(STATUS_TYPE_ADDRESS_REJECTED, ui_menu_main);
         return;
     }
 
-    TRACE("User confirmed");
+    TRACE_MODULE("User confirmed");
     // does not need a spinner
     finalize_derive_address();
 
@@ -73,7 +82,7 @@ static void format_address_fields(const address_params_t *params, warning_bits_t
             START_COUNT();
 
             if (hasUnusualPathWarning) {
-                TRACE("Adding warning banner");
+                TRACE_MODULE("Adding warning banner");
                 UI_ADD_STATIC(UI_STATIC_LABEL("Warning:"),
                               UI_STATIC_LABEL("Unusual request, be careful"));
             }
@@ -108,7 +117,7 @@ static void format_address_fields(const address_params_t *params, warning_bits_t
             START_COUNT();
 
             if (hasUnusualPathWarning) {
-                TRACE("Adding warning banner");
+                TRACE_MODULE("Adding warning banner");
                 UI_ADD_STATIC(UI_STATIC_LABEL("Warning:"),
                               UI_STATIC_LABEL("Unusual request, be careful"));
             }
@@ -144,7 +153,7 @@ static void ui_displayAddressReview(const char *title,
                                                              ctx->humanAddress,
                                                              SIZEOF(ctx->humanAddress));
     LEDGER_ASSERT(formattingSucceeded, "Failed to format derived address");
-    TRACE("Derived human-readable address (bech32/base58): %s", ctx->humanAddress);
+    TRACE_MODULE("Derived human-readable address (bech32/base58): %s", ctx->humanAddress);
     nbgl_useCaseAddressReview(ctx->humanAddress,
                               g_pairsList,
                               &ICON_APP_CARDANO,

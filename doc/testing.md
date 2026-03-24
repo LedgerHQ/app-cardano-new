@@ -173,11 +173,12 @@ To use a guard in your module:
 | `TRACE_TX_PARSE` | `src/transaction/tx_parse*.c`, `src/parsers/cardano_parsers.c` | Transaction component and core parsing |
 | `TRACE_TX_HASH_BUILDER` | `src/transaction/tx_hash_builder.c` | Core transaction hashing |
 | `TRACE_HANDLERS` | `src/handler/*.c` | APDU command handler flow |
-| `TRACE_UI_DISPLAY` | `src/ui/ui_display*.c` | UI rendering and state |
+| `TRACE_UI_DISPLAY` | `src/ui/ui_display*.c`, `src/ui/ui_sign_msg.c`, `src/ui/ui_cvote.c`, `src/ui/ui_display_pubkey.c`, `src/ui/ui_display_tx.c` | UI rendering and state |
 | `TRACE_CVOTE` | `src/cvote/cvote_parser.c` | Catalyst voting data parsing |
 | `TRACE_AUX_DATA_HASH_BUILDER` | `src/cvote/aux_data_hash_builder.c` | Voting aux data hashing |
 | `TRACE_VOTECAST_HASH_BUILDER` | `src/cvote/vote_cast_hash_builder.c` | Vote cast hashing |
 | `TRACE_NATIVE_SCRIPT_HASH_BUILDER` | `src/deriveNativeScriptHash/derive_native_script_hash_builder.c` | Native script hashing |
+| `TRACE_SWAP` | `src/swap/swap_lib.c` | Swap/library-mode validation flow |
 
 ### How to Build & Verify
 

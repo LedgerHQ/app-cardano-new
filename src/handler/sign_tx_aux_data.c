@@ -24,6 +24,15 @@
 #include "ui_display_cvote_aux_data.h"
 #include "utils.h"
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_HANDLERS to trace handler flow details.
+ */
+#ifdef TRACE_HANDLERS
+#define TRACE_MODULE(...) TRACE("[sign_tx_aux_data] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 // CVote AUX-DATA state machine (handler + UI callback transitions):
 // EXPECTING_INIT
 //   -> RECEIVING_DELEGATIONS      (non-streaming init with delegations)
@@ -231,7 +240,7 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
     if (!APP_MEM_CALLOC((void **) &tx_aux_data_ctx()->raw_cvote_init_data, (uint16_t) init_payload_len)) {
         // LCOV_EXCL_START
         // Requires allocator failure — not reachable in unit tests.
-        TRACE("CVote AUX_DATA init: failed to allocate %u byte buffer", (unsigned)init_payload_len);
+        TRACE_MODULE("CVote AUX_DATA init: failed to allocate %u byte buffer", (unsigned)init_payload_len);
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
         // LCOV_EXCL_STOP
@@ -269,7 +278,7 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
         aux_data->state = CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED;
     }
 
-    TRACE("CVote AUX_DATA init: format=%u, delegations=%u",
+    TRACE_MODULE("CVote AUX_DATA init: format=%u, delegations=%u",
           aux_data->format,
           aux_data->remaining_delegations);
 
@@ -286,7 +295,7 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
     if (!ui_cvote_aux_data_init_non_streaming(aux_data)) {
         // LCOV_EXCL_START
         // Requires NBGL pair-list allocator failure — not reachable without mock OOM injection.
-        TRACE("CVote AUX_DATA non-streaming UI init failed");
+        TRACE_MODULE("CVote AUX_DATA non-streaming UI init failed");
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
         // LCOV_EXCL_STOP
@@ -296,7 +305,7 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
     // State stays TX_STATE_AUX_DATA until user confirms (finalize_sign_tx_aux_data).
     if (aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED) {
         LEDGER_ASSERT(aux_data->remaining_delegations == 0, "Delegations remaining");
-        TRACE("CVote AUX_DATA ready for UI confirmation");
+        TRACE_MODULE("CVote AUX_DATA ready for UI confirmation");
         apdu_response_deferred();
         ui_cvote_aux_data_show_non_streaming_final_review(aux_data);
         return;
@@ -314,7 +323,7 @@ static void handler_tx_aux_data_delegation(buffer_t *cdata) {
     ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS);
     LEDGER_ASSERT(aux_data->remaining_delegations > 0, "No delegations remaining");
 
-    TRACE("CVote AUX_DATA delegation received, payload_len=%u",
+    TRACE_MODULE("CVote AUX_DATA delegation received, payload_len=%u",
           cdata->size);
     cvote_credential_t delegation_credential = {0};
     if (!buffer_read_cvote_credential(cdata, &delegation_credential)) {
@@ -359,7 +368,7 @@ static void handler_tx_aux_data_delegation(buffer_t *cdata) {
     if (aux_data->ui_streaming.on) {
         if (is_last_delegation_chunk) {
             aux_data->state = CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED;
-            TRACE("CVote AUX_DATA: all delegations received");
+            TRACE_MODULE("CVote AUX_DATA: all delegations received");
             // State stays TX_STATE_AUX_DATA until user confirms (finalize_sign_tx_aux_data).
         }
 
@@ -384,7 +393,7 @@ static void handler_tx_aux_data_delegation(buffer_t *cdata) {
         if (aux_data->remaining_delegations == 0) {
             // All delegations received. State stays TX_STATE_AUX_DATA until user confirms.
             aux_data->state = CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED;
-            TRACE("CVote AUX_DATA ready for UI confirmation");
+            TRACE_MODULE("CVote AUX_DATA ready for UI confirmation");
             apdu_response_deferred();
             ui_cvote_aux_data_show_non_streaming_final_review(aux_data);
             return;

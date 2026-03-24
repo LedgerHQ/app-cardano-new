@@ -29,6 +29,15 @@
 #include "ui_warnings.h"
 #include "ui_display_opcert.h"
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_UI_DISPLAY to trace UI flow details.
+ */
+#ifdef TRACE_UI_DISPLAY
+#define TRACE_MODULE(...) TRACE("[ui_opcert] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 /**
  * Cleanup dynamically allocated buffers and UI pairs
  */
@@ -47,7 +56,7 @@ static ui_status_t format_opcert_fields(const parsed_opcert_t* opcert) {
     ui_render_scope_begin(&session);
 
     if (!ui_pairs_init(5)) {
-        TRACE("Failed to initialize pairs");
+        TRACE_MODULE("Failed to initialize pairs");
         return ui_render_scope_end();
     }
 
@@ -89,13 +98,13 @@ static void opcert_review_choice(bool confirm) {
 
     // FINALIZE
     if (!confirm) {
-        TRACE("User rejected");
+        TRACE_MODULE("User rejected");
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
         return;
     }
 
-    TRACE("User confirmed");
+    TRACE_MODULE("User confirmed");
     nbgl_useCaseSpinner("Processing");
     finalize_sign_opcert();
 
@@ -106,8 +115,8 @@ static void opcert_review_choice(bool confirm) {
 void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_OPCERT, "ui_display_opcert called with wrong request type: %d", G_context.req_type);
     LEDGER_ASSERT(G_context.state.opcert_state == OPCERT_STATE_VALIDATED, "ui_display_opcert called in wrong state: %d", G_context.state.opcert_state);
-    TRACE("=== ui_display_opcert START ===");
-    TRACE("securityPolicy: %d", securityPolicy);
+    TRACE_MODULE("=== ui_display_opcert START ===");
+    TRACE_MODULE("securityPolicy: %d", securityPolicy);
 
     // Handle security policy
     switch (securityPolicy) {
@@ -117,7 +126,7 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
 
         case POLICY_HIDE:
             // Silent approval - finalize without showing UI
-            TRACE("POLICY_HIDE: silently approving opcert");
+            TRACE_MODULE("POLICY_HIDE: silently approving opcert");
             finalize_sign_opcert();
             return;
 
@@ -145,7 +154,7 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
     }
 
     // Build warnings if needed
-    TRACE("Security policy received: %d", securityPolicy);
+    TRACE_MODULE("Security policy received: %d", securityPolicy);
     ui_status_t warning_status = ui_build_warnings(warnings);
     switch (warning_status) {
         case UI_STATUS_SUCCESS:

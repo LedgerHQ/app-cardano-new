@@ -20,6 +20,15 @@
 #include "ui_display_native_script_hash.h"
 #include "utils.h"
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_UI_DISPLAY to trace UI flow details.
+ */
+#ifdef TRACE_UI_DISPLAY
+#define TRACE_MODULE(...) TRACE("[ui_native_script] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 void build_position_description(const derive_native_script_hash_ctx_t *ctx,
                                 uint8_t level,
                                 char *out,
@@ -87,7 +96,7 @@ bool format_position(derive_native_script_hash_ctx_t *ctx,
     }
 
     build_position_description(ctx, level, position_description, position_descriptionLen);
-    TRACE("Position: %s", position_description);
+    TRACE_MODULE("Position: %s", position_description);
     return true;
 }
 
@@ -127,9 +136,9 @@ static void derive_native_script_hash_streaming_continue_choice(bool confirm) {
 
     // SHOW STATUS
     if (confirm) {
-        TRACE("User confirmed");
+        TRACE_MODULE("User confirmed");
     } else {
-        TRACE("User rejected");
+        TRACE_MODULE("User rejected");
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
     }
 }
@@ -150,13 +159,13 @@ static void derive_native_script_hash_review_choice(bool confirm) {
 
     // FINALIZE
     if (!confirm) {
-        TRACE("User rejected");
+        TRACE_MODULE("User rejected");
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
         return;
     }
 
-    TRACE("User confirmed");
+    TRACE_MODULE("User confirmed");
     // does not need a spinner
     finalize_derive_native_script_hash();
 
@@ -170,10 +179,10 @@ static void derive_native_script_hash_streaming_finish_continue(bool confirm) {
 
     // FINALIZE
     if (confirm) {
-        TRACE("User confirmed");
+        TRACE_MODULE("User confirmed");
 
     } else {
-        TRACE("User rejected");
+        TRACE_MODULE("User rejected");
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
     }
 
@@ -204,7 +213,7 @@ static void derive_native_script_hash_streaming_finish_continue(bool confirm) {
 #define UI_PAIRS_POLICY_ID    1
 
 void display_complex_script_content(ui_native_script_type scriptType) {
-    TRACE("display_complex_script_content");
+    TRACE_MODULE("display_complex_script_content");
 
     const char *script_label = NULL;
     int expectedPairs = 0;
@@ -236,7 +245,7 @@ void display_complex_script_content(ui_native_script_type scriptType) {
     ui_render_session_t session = {0};
     ui_render_scope_begin(&session);
     if (!ui_pairs_init(expectedPairs)) {
-        TRACE("Failed to initialize pairs");
+        TRACE_MODULE("Failed to initialize pairs");
         ui_render_scope_end();
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
         return;
@@ -277,22 +286,22 @@ void ui_display_native_script_hash(void) {
 
     switch (ctx->ui_scriptType) {
         case UI_SCRIPT_ALL: {
-            TRACE("UI_SCRIPT_ALL");
+            TRACE_MODULE("UI_SCRIPT_ALL");
             display_complex_script_content(UI_SCRIPT_ALL);
             break;
         }
         case UI_SCRIPT_N_OF_K: {
-            TRACE("UI_SCRIPT_N_OF_K");
+            TRACE_MODULE("UI_SCRIPT_N_OF_K");
             display_complex_script_content(UI_SCRIPT_N_OF_K);
             break;
         }
         case UI_SCRIPT_ANY: {
-            TRACE("UI_SCRIPT_ANY");
+            TRACE_MODULE("UI_SCRIPT_ANY");
             display_complex_script_content(UI_SCRIPT_ANY);
             break;
         }
         case UI_SCRIPT_PUBKEY_PATH: {
-            TRACE("UI_SCRIPT_PUBKEY_PATH");
+            TRACE_MODULE("UI_SCRIPT_PUBKEY_PATH");
             int expectedPairs = UI_PAIRS_SCRIPT_TYPE + UI_PAIRS_PUBKEY_PATH;
             bool required_position = is_required_position(ctx);
             if (required_position) {
@@ -301,7 +310,7 @@ void ui_display_native_script_hash(void) {
             ui_render_session_t session = {0};
     ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
-                TRACE("Failed to initialize pairs");
+                TRACE_MODULE("Failed to initialize pairs");
                 ui_render_scope_end();
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
@@ -327,7 +336,7 @@ void ui_display_native_script_hash(void) {
             break;
         }
         case UI_SCRIPT_PUBKEY_HASH: {
-            TRACE("UI_SCRIPT_PUBKEY_HASH");
+            TRACE_MODULE("UI_SCRIPT_PUBKEY_HASH");
             int expectedPairs = UI_PAIRS_SCRIPT_TYPE + UI_PAIRS_PUBKEY_HASH;
             bool required_position = is_required_position(ctx);
             if (required_position) {
@@ -336,7 +345,7 @@ void ui_display_native_script_hash(void) {
             ui_render_session_t session = {0};
     ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
-                TRACE("Failed to initialize pairs");
+                TRACE_MODULE("Failed to initialize pairs");
                 ui_render_scope_end();
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
@@ -364,7 +373,7 @@ void ui_display_native_script_hash(void) {
             break;
         }
         case UI_SCRIPT_INVALID_BEFORE: {
-            TRACE("UI_SCRIPT_INVALID_BEFORE");
+            TRACE_MODULE("UI_SCRIPT_INVALID_BEFORE");
             int expectedPairs = UI_PAIRS_SCRIPT_TYPE + UI_PAIRS_TIMELOCK;
             bool required_position = is_required_position(ctx);
             if (required_position) {
@@ -373,7 +382,7 @@ void ui_display_native_script_hash(void) {
             ui_render_session_t session = {0};
     ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
-                TRACE("Failed to initialize pairs");
+                TRACE_MODULE("Failed to initialize pairs");
                 ui_render_scope_end();
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
@@ -400,7 +409,7 @@ void ui_display_native_script_hash(void) {
             break;
         }
         case UI_SCRIPT_INVALID_HEREAFTER: {
-            TRACE("UI_SCRIPT_INVALID_HEREAFTER");
+            TRACE_MODULE("UI_SCRIPT_INVALID_HEREAFTER");
             int expectedPairs = UI_PAIRS_SCRIPT_TYPE + UI_PAIRS_TIMELOCK;
             bool required_position = is_required_position(ctx);
             if (required_position) {
@@ -409,7 +418,7 @@ void ui_display_native_script_hash(void) {
             ui_render_session_t session = {0};
     ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
-                TRACE("Failed to initialize pairs");
+                TRACE_MODULE("Failed to initialize pairs");
                 ui_render_scope_end();
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
@@ -440,7 +449,7 @@ void ui_display_native_script_hash(void) {
             ui_render_session_t session = {0};
     ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
-                TRACE("Failed to initialize pairs");
+                TRACE_MODULE("Failed to initialize pairs");
                 ui_render_scope_end();
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;
@@ -466,7 +475,7 @@ void ui_display_native_script_hash(void) {
             ui_render_session_t session = {0};
     ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
-                TRACE("Failed to initialize pairs");
+                TRACE_MODULE("Failed to initialize pairs");
                 ui_render_scope_end();
                 send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
                 return;

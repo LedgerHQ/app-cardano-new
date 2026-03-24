@@ -29,6 +29,15 @@
 #include "ui_warnings.h"
 #include "utils.h"
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_UI_DISPLAY to trace UI flow details.
+ */
+#ifdef TRACE_UI_DISPLAY
+#define TRACE_MODULE(...) TRACE("[ui_cvote_aux_data] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 // Each delegation uses 3 UI pairs (index, key, weight), plus one optional warning pair.
 #define CVOTE_DELEGATION_UI_PAIRS 3
 #define CVOTE_DELEGATION_WARNING_UI_PAIRS 1
@@ -75,13 +84,13 @@ static void cvote_aux_data_review_choice(bool confirm) {
 
     // FINALIZE
     if (!confirm) {
-        TRACE("User rejected");
+        TRACE_MODULE("User rejected");
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
         return;
     }
 
-    TRACE("User confirmed");
+    TRACE_MODULE("User confirmed");
     nbgl_useCaseSpinner("Processing");
     finalize_sign_tx_aux_data();
 }
@@ -96,14 +105,14 @@ static void cvote_aux_data_streaming_continue_choice(bool confirm) {
     ui_free_pairs();
 
     if (!confirm) {
-        TRACE("User rejected");
+        TRACE_MODULE("User rejected");
         ui_free_warnings();
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
         return;
     }
 
-    TRACE("User confirmed");
+    TRACE_MODULE("User confirmed");
     if (cvote_is_last_chunk(aux_data)) {
         nbgl_useCaseReviewStreamingFinish("Confirm vote delegation",
                                           cvote_aux_data_review_choice);
@@ -325,7 +334,7 @@ static bool cvote_add_delegation_pairs(
                          (warning_bits_has(vote_key_warnings, WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)
                               ? CVOTE_DELEGATION_WARNING_UI_PAIRS : 0))
             : 0;
-        TRACE("CVote streaming page: shown=%u/%u, pair_count=%u, max_pairs=%u, is_last=%d",
+        TRACE_MODULE("CVote streaming page: shown=%u/%u, pair_count=%u, max_pairs=%u, is_last=%d",
               aux_data->ui_delegations_shown,
               aux_data->ui_delegations_total,
               pair_count,
@@ -389,12 +398,12 @@ bool ui_cvote_aux_data_init_non_streaming(cvote_aux_data_t *aux_data) {
     uint16_t total_pair_count = (uint16_t) total_pair_count_u32;
 
     if (!ui_pairs_init(total_pair_count)) {
-        TRACE("CVote UI: failed to initialize pairs");
+        TRACE_MODULE("CVote UI: failed to initialize pairs");
         return false;
     }
 
     if (!cvote_add_initial_pairs(aux_data)) {
-        TRACE("CVote UI: failed to add initial pairs");
+        TRACE_MODULE("CVote UI: failed to add initial pairs");
         return false;
     }
 
@@ -424,7 +433,7 @@ void ui_cvote_aux_data_streaming_show_initial_page(cvote_aux_data_t *aux_data) {
     uint16_t initial_pairs = cvote_initial_pairs_count(aux_data);
     ASSERT(initial_pairs > 0);
 
-    TRACE("CVote streaming initial page: initial_pairs=%u, max_pairs=%u",
+    TRACE_MODULE("CVote streaming initial page: initial_pairs=%u, max_pairs=%u",
           initial_pairs,
           MAX_UI_PAIRS);
 

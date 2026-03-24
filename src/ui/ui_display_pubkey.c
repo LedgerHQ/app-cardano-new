@@ -25,6 +25,15 @@
 #include "cardano_settings.h"
 #include "mem.h"
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_UI_DISPLAY to trace UI flow details.
+ */
+#ifdef TRACE_UI_DISPLAY
+#define TRACE_MODULE(...) TRACE("[ui_pubkey] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void)0  // Compiled out
+#endif
+
 #define PUBKEY_EXPORT_TITLE_BUFFER_SIZE 64
 #define PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE (PUBKEY_EXPORT_TITLE_BUFFER_SIZE + UI_BUFFER_SAFETY_MARGIN)
 
@@ -40,13 +49,13 @@ static void pubkey_review_choice(bool confirm) {
 
     // FINALIZE
     if (!confirm) {
-        TRACE("User rejected");
+        TRACE_MODULE("User rejected");
         send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
         return;
     }
 
-    TRACE("User confirmed");
+    TRACE_MODULE("User confirmed");
     // does not need a spinner
     finalize_pubkey_export();
 
@@ -57,8 +66,8 @@ static void pubkey_review_choice(bool confirm) {
 }
 
 void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings) {
-    TRACE("=== ui_display_pubkey START ===");
-    TRACE("securityPolicy: %d", securityPolicy);
+    TRACE_MODULE("=== ui_display_pubkey START ===");
+    TRACE_MODULE("securityPolicy: %d", securityPolicy);
 
     LEDGER_ASSERT(G_context.req_type == REQUEST_EXPORT_PUBKEY,
                   "ui_display_pubkey called with wrong request type: %d",
