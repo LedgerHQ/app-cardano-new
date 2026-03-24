@@ -815,13 +815,13 @@ def assert_response_unpacker_constants_match() -> None:
                     f"{literal_name} mismatch in response_unpacker.py: {value_str} != {expected_value}"
                 )
 
-    version_response = bytes([1, 2, 3])
-    if unpack_get_version_response(version_response) != (1, 2, 3):
+    version_response = bytes([1, 2, 3, 4])
+    if unpack_get_version_response(version_response) != (1, 2, 3, 4):
         raise AssertionError(
             "unpack_get_version_response failed to parse a valid response"
         )
     _assert_raises_value_error(
-        lambda: unpack_get_version_response(version_response + b"\x00"),
+        lambda: unpack_get_version_response(version_response[:-1]),
         "Invalid version response length",
     )
 

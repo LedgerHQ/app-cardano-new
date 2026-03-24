@@ -26,7 +26,7 @@ void handler_get_version(const buffer_t *data_buffer) {
         return;
     }
 
-    _Static_assert(APPVERSION_LEN == 3, "Length of (MAJOR || MINOR || PATCH) must be 3!");
+    _Static_assert(APPVERSION_LEN == 4, "Length of (MAJOR || MINOR || PATCH || FLAGS) must be 4!");
     _Static_assert(MAJOR_VERSION >= 0 && MAJOR_VERSION <= UINT8_MAX,
                    "MAJOR version must be between 0 and 255!");
     _Static_assert(MINOR_VERSION >= 0 && MINOR_VERSION <= UINT8_MAX,
@@ -34,10 +34,16 @@ void handler_get_version(const buffer_t *data_buffer) {
     _Static_assert(PATCH_VERSION >= 0 && PATCH_VERSION <= UINT8_MAX,
                    "PATCH version must be between 0 and 255!");
 
+    uint8_t response_flags = 0;
+#ifdef DEBUG
+    response_flags |= GET_VERSION_FLAG_DEBUG;
+#endif  // DEBUG
+
     apdu_response_send_data(
         (const uint8_t *) &(uint8_t[APPVERSION_LEN]){(uint8_t) MAJOR_VERSION,
                                                      (uint8_t) MINOR_VERSION,
-                                                     (uint8_t) PATCH_VERSION},
+                                                     (uint8_t) PATCH_VERSION,
+                                                     response_flags},
         APPVERSION_LEN,
         SWO_SUCCESS);
 }

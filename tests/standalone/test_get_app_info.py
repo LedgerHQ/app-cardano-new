@@ -14,7 +14,6 @@ from ragger.backend.interface import BackendInterface
 from tests.application_client.command_sender import CommandSender
 from tests.application_client.response_unpacker import (
     unpack_get_app_name_response,
-    unpack_get_version_response,
     unpack_get_serial_response,
 )
 from tests.application_client.status_words import StatusWord
@@ -39,11 +38,8 @@ def test_get_app_name(backend: BackendInterface) -> None:
 def test_get_version(backend: BackendInterface) -> None:
     """Check version returned by the app via GET_VERSION APDU and verify against OS."""
     client = CommandSender(backend)
-    rapdu = client.get_version()
-
-    # Parse the version response using the unpacker
-    major, minor, patch = unpack_get_version_response(rapdu.data)
-    vers_str = f"{major}.{minor}.{patch}"
+    version = client.get_version()
+    vers_str = f"{version.major}.{version.minor}.{version.patch}"
 
     print(f" Version: {vers_str}")
     verify_version(vers_str)

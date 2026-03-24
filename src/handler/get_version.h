@@ -5,7 +5,11 @@
 
 #include "buffer.h"
 
-#define APPVERSION_LEN 3
+#define APPVERSION_LEN 4
+
+enum {
+    GET_VERSION_FLAG_DEBUG = 1u << 0,
+};
 
 /**
  * Handler for INS_GET_VERSION command. Send APDU response with version

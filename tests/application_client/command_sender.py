@@ -22,7 +22,11 @@ from tests.application_client.command_builder import (
     TxAuxiliaryDataType,
     gather_witness_paths,
 )
-from tests.application_client.response_unpacker import unpack_sign_tx_hash_response
+from tests.application_client.response_unpacker import (
+    GetVersionResponse,
+    unpack_get_version_response,
+    unpack_sign_tx_hash_response,
+)
 from tests.application_client.status_words import StatusWord
 
 
@@ -66,8 +70,14 @@ class CommandSender:
 
         return self.backend.last_async_response
 
-    def get_version(self) -> RAPDU:
+    def get_version_raw(self) -> RAPDU:
         return self._exchange(self._cmd_builder.get_version())
+
+    def get_version(self) -> GetVersionResponse:
+        response = self.get_version_raw()
+        if response.status != StatusWord.SWO_SUCCESS:
+            raise AssertionError(f"GET_VERSION failed: {hex(response.status)}")
+        return unpack_get_version_response(response.data)
 
     def get_app_name(self) -> RAPDU:
         return self._exchange(self._cmd_builder.get_app_name())

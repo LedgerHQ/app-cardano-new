@@ -1,7 +1,8 @@
 # SPDX-FileCopyrightText: 2025-2026 Vacuumlabs
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Tuple
+from enum import IntFlag
+from typing import NamedTuple, Tuple
 from struct import unpack
 
 
@@ -16,14 +17,30 @@ def unpack_get_app_name_response(response: bytes) -> str:
     return response.decode("ascii")
 
 
+class GetVersionFlag(IntFlag):
+    DEBUG = 1 << 0
+
+
+class GetVersionResponse(NamedTuple):
+    major: int
+    minor: int
+    patch: int
+    flags: int
+
+    @property
+    def is_debug(self) -> bool:
+        return bool(self.flags & GetVersionFlag.DEBUG)
+
+
 # Unpack from response:
 # response = MAJOR (1)
 #            MINOR (1)
 #            PATCH (1)
-def unpack_get_version_response(response: bytes) -> Tuple[int, int, int]:
-    _require(len(response) == 3, f"Invalid version response length: {len(response)}")
-    major, minor, patch = unpack("BBB", response)
-    return (major, minor, patch)
+#            FLAGS (1)
+def unpack_get_version_response(response: bytes) -> GetVersionResponse:
+    _require(len(response) == 4, f"Invalid version response length: {len(response)}")
+    major, minor, patch, flags = unpack("BBBB", response)
+    return GetVersionResponse(major=major, minor=minor, patch=patch, flags=flags)
 
 
 # Unpack from response:
