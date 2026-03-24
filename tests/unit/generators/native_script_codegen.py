@@ -11,6 +11,7 @@ fixture generators (valid and reject test cases).
 from __future__ import annotations
 from typing import Any
 
+from tests.application_client.command_builder import NativeScriptType
 from tests.unit.generators.common import (
     extract_apdu_payload,
     format_bytes_as_c_array,
@@ -27,8 +28,6 @@ def _is_simple_native_script(native_script: Any) -> bool:
     Returns:
         True if SIMPLE (leaf node), False if COMPLEX (internal node)
     """
-    from tests.standalone.input_files.native_script import NativeScriptType  # type: ignore
-
     simple_types = {
         NativeScriptType.PUBKEY_DEVICE_OWNED,
         NativeScriptType.PUBKEY_THIRD_PARTY,
@@ -64,8 +63,6 @@ def generate_native_script_tree_recursive(
     Returns:
         Tuple of (list of C code lines, identifier of generated struct)
     """
-    from tests.standalone.input_files.native_script import NativeScriptType  # type: ignore
-
     current_unique_id = f"{base_unique_id}_C{child_index}"
     fixture_lines = []
 

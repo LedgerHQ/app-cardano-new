@@ -12,20 +12,18 @@ from ragger.error import ExceptionRAPDU
 
 from tests.application_client.command_sender import CommandSender
 from tests.application_client.command_builder import gather_witness_paths
-from tests.application_client.app_def import Mainnet
-from tests.standalone.input_files.signTx import (
+from tests.application_client.command_builder import (
+    AddressParams,
+    AddressType,
+    Mainnet,
+    ThirdPartyAddressParams,
     Transaction,
     TransactionSigningMode,
     TxInput,
     TxOutputBabbage,
-    TxOutputFormat,
     TxOutputDestination,
     TxOutputDestinationType,
-    ThirdPartyAddressParams,
-)
-from tests.standalone.input_files.derive_address import (
-    DeriveAddressTestCase,
-    AddressType,
+    TxOutputFormat,
 )
 
 from . import cal_helper as cal
@@ -118,13 +116,11 @@ class CardanoShelleySwapTests(ExchangeTestRunner):
             TxOutputBabbage(
                 destination=TxOutputDestination(
                     type=TxOutputDestinationType.DEVICE_OWNED,
-                    params=DeriveAddressTestCase(
-                        name="change_output",
+                    params=AddressParams(
                         netDesc=Mainnet,
                         addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
                         spendingValue="m/1852'/1815'/0'/1/0",
                         stakingValue="m/1852'/1815'/0'/2/0",
-                        result="",
                     ),
                 ),
                 amount=change_amount,

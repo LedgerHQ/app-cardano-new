@@ -16,19 +16,35 @@ for extra_path in (ROOT, TESTS_ROOT):
     if str_extra not in sys.path:
         sys.path.insert(0, str_extra)
 
-from tests.application_client.app_def import (
+from tests.application_client.command_builder import (
     AddressType,
     NetworkIds,
     ProtocolMagics,
     StakingDataSourceType,
 )
 from tests.application_client.command_builder import (
+    CertificateType,
     CLA,
+    CredentialParamsType,
     CVoteCredentialType,
+    DatumType,
+    DRepParamsType,
     InsType,
+    MAX_CIP36_PAYLOAD_SIZE,
     MAX_CIP8_MSG_CHUNK_SIZE,
+    MAX_SIGN_TX_CHUNK_SIZE,
+    MessageAddressFieldType,
+    NativeScriptHashDisplayFormat,
     P1Type,
     P2Type,
+    RelayType,
+    TransactionSigningMode,
+    TxAuxiliaryDataType,
+    TxOutputDestinationType,
+    TxOutputFormat,
+    TxRequiredSignerType,
+    VoteOption,
+    VoterType,
 )
 from tests.application_client.response_unpacker import (
     unpack_get_pubkey_response,
@@ -39,24 +55,6 @@ from tests.application_client.response_unpacker import (
 )
 from tests.application_client.security_warnings import WarningBit
 from tests.application_client.status_words import StatusWord
-from tests.standalone.input_files.cvote import MAX_CIP36_PAYLOAD_SIZE
-from tests.standalone.input_files.native_script import NativeScriptHashDisplayFormat
-from tests.standalone.input_files.signMsg import MessageAddressFieldType
-from tests.standalone.input_files.signTx import MAX_SIGN_TX_CHUNK_SIZE
-from tests.standalone.input_files.signTx import (
-    CertificateType,
-    CredentialParamsType,
-    DRepParamsType,
-    DatumType,
-    RelayType,
-    TransactionSigningMode,
-    TxAuxiliaryDataType,
-    TxOutputDestinationType,
-    TxOutputFormat,
-    TxRequiredSignerType,
-    VoteOption,
-    VoterType,
-)
 from tests.standalone.settings import (
     DEFAULT_SETTING_VALUES,
     SETTINGS_ORDER,

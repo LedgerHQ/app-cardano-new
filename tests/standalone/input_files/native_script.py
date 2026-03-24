@@ -7,62 +7,19 @@
 This module provides Ragger tests for Derive Native Script Hash check
 """
 
-from __future__ import annotations
-from enum import IntEnum
-from typing import List, Optional, Union
-from dataclasses import dataclass, field
+from typing import Optional
+from dataclasses import dataclass
 
-from tests.application_client.status_words import StatusWord
-
-
-class NativeScriptType(IntEnum):
-    PUBKEY_DEVICE_OWNED = 0x00
-    PUBKEY_THIRD_PARTY = 0xF0
-    ALL = 0x01
-    ANY = 0x02
-    N_OF_K = 0x03
-    INVALID_BEFORE = 0x04
-    INVALID_HEREAFTER = 0x05
-
-
-class NativeScriptHashDisplayFormat(IntEnum):
-    BECH32 = 0x01
-    POLICY_ID = 0x02
-
-
-@dataclass
-class NativeScript:
-    type: NativeScriptType
-    params: NativeScriptParams
-
-
-@dataclass
-class NativeScriptParamsPubkey:
-    key: str
-
-
-@dataclass
-class NativeScriptParamsScripts:
-    scripts: List[NativeScript] = field(default_factory=list)
-
-
-@dataclass
-class NativeScriptParamsNofK:
-    requiredCount: int
-    scripts: List[NativeScript] = field(default_factory=list)
-
-
-@dataclass
-class NativeScriptParamsInvalid:
-    slot: int
-
-
-NativeScriptParams = Union[
+from tests.application_client.command_builder import (
+    NativeScript,
+    NativeScriptHashDisplayFormat,
+    NativeScriptParamsInvalid,
+    NativeScriptParamsNofK,
     NativeScriptParamsPubkey,
     NativeScriptParamsScripts,
-    NativeScriptParamsNofK,
-    NativeScriptParamsInvalid,
-]
+    NativeScriptType,
+)
+from tests.application_client.status_words import StatusWord
 
 
 @dataclass

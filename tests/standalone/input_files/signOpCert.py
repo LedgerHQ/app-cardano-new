@@ -7,26 +7,12 @@
 This module provides Ragger tests for Sign Operational Certificate
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import List
 
+from tests.application_client.command_builder import OpCertTestCase, OperationalCertificate
 from tests.application_client.security_warnings import WarningBit
 from tests.application_client.status_words import StatusWord
-
-
-@dataclass
-class operationalCertificate:
-    kesPublicKeyHex: str
-    kesPeriod: int
-    issueCounter: int
-    path: str
-
-
-@dataclass(kw_only=True)
-class OpCertTestCase:
-    name: str
-    opCert: operationalCertificate
-    expected_warnings: List[WarningBit] = field(default_factory=list)
 
 
 @dataclass(kw_only=True)
@@ -107,7 +93,7 @@ opCertDenyTestCases: List[OpCertDenyTestCase] = [
 opCertTestCases = [
     OpCertTestCase(
         name="Sign_opcert_should_correctly_sign_operational_certificate",
-        opCert=operationalCertificate(
+        opCert=OperationalCertificate(
             "3d24bc547388cf2403fd978fc3d3a93d1f39acf68a9c00e40512084dc05f2822",
             47,
             42,
@@ -116,7 +102,7 @@ opCertTestCases = [
     ),
     OpCertTestCase(
         name="Sign_opcert_should_correctly_sign_operational_certificate_with_warning",  # New test case added for warning path (no ledgerjs equivalent)
-        opCert=operationalCertificate(
+        opCert=OperationalCertificate(
             "3d24bc547388cf2403fd978fc3d3a93d1f39acf68a9c00e40512084dc05f2822",
             47,
             42,

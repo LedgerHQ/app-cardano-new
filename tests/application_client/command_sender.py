@@ -7,27 +7,23 @@ from contextlib import contextmanager
 from ragger.backend.interface import BackendInterface, RAPDU
 from ragger.error import ExceptionRAPDU
 
-
-from tests.standalone.input_files.signOpCert import OpCertTestCase
 from tests.application_client.command_builder import (
+    AddressParams,
     CommandBuilder,
-    SETTINGS_DISABLED,
-    SETTINGS_ENABLED,
-    gather_witness_paths,
-    P1Type,
-)
-from tests.standalone.input_files.derive_address import DeriveAddressTestCase
-from tests.standalone.input_files.native_script import (
+    CVoteTestCase,
     NativeScript,
     NativeScriptHashDisplayFormat,
-)
-from tests.application_client.status_words import StatusWord
-from tests.standalone.input_files.signTx import (
+    OpCertTestCase,
+    P1Type,
+    SETTINGS_DISABLED,
+    SETTINGS_ENABLED,
     Transaction,
     TxAuxiliaryDataCIP36,
     TxAuxiliaryDataType,
+    gather_witness_paths,
 )
-from tests.standalone.input_files.cvote import CVoteTestCase
+from tests.application_client.response_unpacker import unpack_sign_tx_hash_response
+from tests.application_client.status_words import StatusWord
 
 
 class CommandSender:
@@ -156,7 +152,7 @@ class CommandSender:
         if response.status != StatusWord.SWO_SUCCESS:
             raise AssertionError(f"Transaction failed: {hex(response.status)}")
 
-        return response.data
+        return unpack_sign_tx_hash_response(response.data)
 
     def _send_tx_aux_data_if_present(
         self,
@@ -329,33 +325,33 @@ class CommandSender:
 
     @contextmanager
     def derive_address_async(
-        self, p1: P1Type, test_case: DeriveAddressTestCase
+        self, p1: P1Type, test_case_params: AddressParams
     ) -> Generator[None, None, None]:
         """APDU Derive Address
 
         Args:
             p1 (P1Type): APDU Parameter 1
-            test_case (DeriveAddressTestCase): Test parameters
+            test_case_params (AddressParams): Address parameters
 
         Returns:
             Generator
         """
 
-        with self._exchange_async(self._cmd_builder.derive_address(p1, test_case)):
+        with self._exchange_async(self._cmd_builder.derive_address(p1, test_case_params)):
             yield
 
-    def derive_address(self, p1: P1Type, test_case: DeriveAddressTestCase) -> RAPDU:
+    def derive_address(self, p1: P1Type, test_case_params: AddressParams) -> RAPDU:
         """APDU Derive Address
 
         Args:
             p1 (P1Type): APDU Parameter 1
-            test_case (DeriveAddressTestCase): Test parameters
+            test_case_params (AddressParams): Address parameters
 
         Returns:
             Response APDU
         """
 
-        return self._exchange(self._cmd_builder.derive_address(p1, test_case))
+        return self._exchange(self._cmd_builder.derive_address(p1, test_case_params))
 
     @contextmanager
     def derive_script_add_simple_async(
@@ -417,7 +413,7 @@ class CommandSender:
     def sign_cip36_init_async(
         self, testCase: CVoteTestCase
     ) -> Generator[None, None, None]:
-        """APDU CIP36 Vote - CHUNK step
+        """APDU CIP36 Vote - INIT step
 
         Args:
             testCase (CVoteTestCase): Test parameters
@@ -433,7 +429,7 @@ class CommandSender:
         return len(self._cmd_builder.sign_cvote_chunk(testCase)) > 0
 
     def sign_cip36_chunk(self, testCase: CVoteTestCase) -> RAPDU:
-        """APDU CIP36 Vote - INIT step
+        """APDU CIP36 Vote - CHUNK step
 
         Args:
             testCase (CVoteTestCase): Test parameters
@@ -468,19 +464,6 @@ class CommandSender:
         with self._exchange_async(self._cmd_builder.sign_cvote_confirm(testCase)):
             yield
 
-    @contextmanager
-    def sign_msg_init_async(self, testCase) -> Generator[None, None, None]:
-        """APDU Sign Message - INIT step
-
-        Args:
-            testCase: SignMsgTestCase with message data
-
-        Returns:
-            Generator
-        """
-        with self._exchange_async(self._cmd_builder.sign_msg_init(testCase)):
-            yield
-
     def sign_msg(
         self, testCase, on_review: Optional[Callable[[], None]] = None
     ) -> bytes:
@@ -503,7 +486,7 @@ class CommandSender:
             if response.status != StatusWord.SWO_SUCCESS:
                 raise AssertionError(f"Chunk failed: {hex(response.status)}")
 
-        with self.sign_msg_confirm_async():
+        with self._sign_msg_confirm_async():
             if on_review is not None:
                 on_review()
 
@@ -515,7 +498,7 @@ class CommandSender:
         return response.data
 
     @contextmanager
-    def sign_msg_confirm_async(self) -> Generator[None, None, None]:
+    def _sign_msg_confirm_async(self) -> Generator[None, None, None]:
         """APDU Sign Message - CONFIRM step
 
         Returns:

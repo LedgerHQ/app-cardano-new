@@ -114,7 +114,7 @@ def _serialize_test_case_to_apdu(test_case: Any) -> bytes:
 
     complete_apdu_command = command_builder.derive_address(
         P1Type.P1_ADDRESS_RETURN,  # P1 value doesn't matter for payload serialization
-        test_case,
+        test_case.params,
     )
 
     return complete_apdu_command
@@ -148,10 +148,10 @@ def _generate_fixture_code_for_test_case(
     )
     code_lines.append(f"// Test type: {type_test}")
     code_lines.append(f"// Test {test_number}: {test_case.name}")
-    code_lines.append(f"// Address Type: {test_case.addrType.name}")
-    code_lines.append(f"// Spending: {test_case.spendingValue}")
-    if test_case.stakingValue:
-        code_lines.append(f"// Staking: {test_case.stakingValue}")
+    code_lines.append(f"// Address Type: {test_case.params.addrType.name}")
+    code_lines.append(f"// Spending: {test_case.params.spendingValue}")
+    if test_case.params.stakingValue:
+        code_lines.append(f"// Staking: {test_case.params.stakingValue}")
     code_lines.append(
         "// ----------------------------------------------------------------------"
     )

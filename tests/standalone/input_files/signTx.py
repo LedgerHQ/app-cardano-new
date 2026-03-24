@@ -7,466 +7,84 @@
 This module provides Ragger tests for Sign TX check
 """
 
-from enum import IntEnum
-from typing import List, Optional, Union
+from typing import List, Optional
 from dataclasses import dataclass, field
 import base58
 
-from tests.application_client.app_def import (
+from tests.application_client.command_builder import (
+    AddressParams,
+    AddressType,
     FakeNet,
     NetworkDesc,
     Mainnet,
     Testnet,
     Testnet_legacy,
+    AccountRegistrationDelegationToDRepParams,
+    AccountRegistrationDelegationToStakePoolAndDRepParams,
+    AccountRegistrationDelegationToStakePoolParams,
+    AnchorParams,
+    AssetGroup,
+    AuthorizeCommitteeParams,
+    Certificate,
+    CertificateType,
+    CIP36VoteDelegation,
+    CIP36VoteDelegationType,
+    CIP36VoteRegistrationFormat,
+    CredentialParams,
+    CredentialParamsType,
+    Datum,
+    DatumType,
+    DRepParams,
+    DRepParamsType,
+    DRepRegistrationParams,
+    DRepUpdateParams,
+    GovActionId,
+    Margin,
+    MAX_SIGN_TX_CHUNK_SIZE,  # noqa: F401 — re-exported for callers that import from this module
+    MultiHostRelayParams,
+    PoolKey,
+    PoolKeyType,
+    PoolMetadataParams,
+    PoolRegistrationParams,
+    PoolRetirementParams,
+    Relay,
+    RelayType,
+    RequiredSigner,
+    ResignCommitteeParams,
+    SingleHostHostnameRelayParams,
+    SingleHostIpAddrRelayParams,
+    StakeDelegationParams,
+    StakePoolAndDRepDelegationParams,
+    StakeRegistrationConwayParams,
+    StakeRegistrationParams,
+    ThirdPartyAddressParams,
+    Token,
+    Transaction,
+    TransactionSigningMode,
+    TxAuxiliaryData,
+    TxAuxiliaryDataCIP36,
+    TxAuxiliaryDataHash,
+    TxAuxiliaryDataType,
+    TxInput,
+    TxOutput,
+    TxOutputAlonzo,
+    TxOutputBabbage,
+    TxOutputDestination,
+    TxOutputDestinationType,
+    TxOutputFormat,
+    TxRequiredSignerType,
+    VoteDelegationParams,
+    VoteOption,
+    Vote,
+    Voter,
+    VoterType,
+    VoterVotes,
+    VotingProcedure,
+    Withdrawal,
 )
 from tests.application_client.security_warnings import WarningBit
 from tests.application_client.status_words import StatusWord
-from tests.standalone.input_files.derive_address import (
-    DeriveAddressTestCase,
-    AddressType,
-    pointer_to_str,
-)
-
-MAX_SIGN_TX_CHUNK_SIZE = 250
-
-
-class TransactionSigningMode(IntEnum):
-    ORDINARY_TRANSACTION = 0x03
-    POOL_REGISTRATION_AS_OWNER = 0x04
-    POOL_REGISTRATION_AS_OPERATOR = 0x05
-    MULTISIG_TRANSACTION = 0x06
-    PLUTUS_TRANSACTION = 0x07
-
-
-class TxAuxiliaryDataType(IntEnum):
-    ARBITRARY_HASH = 0x00
-    CIP36_REGISTRATION = 0x01
-
-
-class CredentialParamsType(IntEnum):
-    KEY_HASH = 0x00
-    SCRIPT_HASH = 0x01
-    KEY_PATH = 0x02
-
-
-class TxOutputFormat(IntEnum):
-    ARRAY_LEGACY = 0x00
-    MAP_BABBAGE = 0x01
-
-
-class TxOutputDestinationType(IntEnum):
-    THIRD_PARTY = 0x01
-    DEVICE_OWNED = 0x02
-
-
-class PoolKeyType(IntEnum):
-    DEVICE_OWNED = 0x01
-    THIRD_PARTY = 0x02
-
-
-class VoteOption(IntEnum):
-    NO = 0x00
-    YES = 0x01
-    ABSTAIN = 0x02
-
-
-class VoterType(IntEnum):
-    COMMITTEE_KEY_HASH = 0
-    COMMITTEE_KEY_PATH = 100
-    COMMITTEE_SCRIPT_HASH = 1
-    DREP_KEY_HASH = 2
-    DREP_KEY_PATH = 102
-    DREP_SCRIPT_HASH = 3
-    STAKE_POOL_KEY_HASH = 4
-    STAKE_POOL_KEY_PATH = 104
-
-
-class CertificateType(IntEnum):
-    STAKE_REGISTRATION = 0
-    STAKE_DEREGISTRATION = 1
-    STAKE_DELEGATION = 2
-    STAKE_POOL_REGISTRATION = 3
-    STAKE_POOL_RETIREMENT = 4
-    STAKE_REGISTRATION_CONWAY = 7
-    STAKE_DEREGISTRATION_CONWAY = 8
-    VOTE_DELEGATION = 9
-    STAKE_POOL_AND_DREP_DELEGATION = 10
-    ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL = 11
-    ACCOUNT_REGISTRATION_DELEGATION_TO_DREP = 12
-    ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP = 13
-    AUTHORIZE_COMMITTEE_HOT = 14
-    RESIGN_COMMITTEE_COLD = 15
-    DREP_REGISTRATION = 16
-    DREP_DEREGISTRATION = 17
-    DREP_UPDATE = 18
-
-
-class CIP36VoteRegistrationFormat(IntEnum):
-    CIP_15 = 1
-    CIP_36 = 2
-
-
-class CIP36VoteDelegationType(IntEnum):
-    KEY = 1
-    PATH = 2
-
-
-class DRepParamsType(IntEnum):
-    KEY_HASH = 0
-    SCRIPT_HASH = 1
-    ABSTAIN = 2
-    NO_CONFIDENCE = 3
-    KEY_PATH = 100
-
-
-class TxRequiredSignerType(IntEnum):
-    PATH = 0
-    HASH = 1
-
-
-class DatumType(IntEnum):
-    HASH = 0
-    INLINE = 1
-
-
-class RelayType(IntEnum):
-    SINGLE_HOST_IP_ADDR = 0
-    SINGLE_HOST_HOSTNAME = 1
-    MULTI_HOST = 2
-
-
-@dataclass
-class TxInput:
-    txHashHex: str
-    path: Optional[str] = None
-    outputIndex: int = 0
-
-
-@dataclass
-class Token:
-    assetNameHex: str
-    amount: int
-
-
-@dataclass
-class AssetGroup:
-    policyIdHex: str
-    tokens: List[Token]
-
-
-@dataclass
-class ThirdPartyAddressParams:
-    addressHex: str
-
-
-@dataclass
-class TxOutputDestination:
-    type: TxOutputDestinationType
-    params: Union[ThirdPartyAddressParams, DeriveAddressTestCase]
-
-
-@dataclass
-class Datum:
-    type: DatumType
-    datumHex: str
-
-
-@dataclass
-class TxOutputAlonzo:
-    destination: TxOutputDestination
-    amount: int
-    format: TxOutputFormat = TxOutputFormat.ARRAY_LEGACY
-    tokenBundle: List[AssetGroup] = field(default_factory=list)
-    datum: Optional[Datum] = None
-
-
-@dataclass
-class TxOutputBabbage:
-    destination: TxOutputDestination
-    amount: int
-    format: TxOutputFormat = TxOutputFormat.MAP_BABBAGE
-    tokenBundle: List[AssetGroup] = field(default_factory=list)
-    datum: Optional[Datum] = None
-    referenceScriptHex: Optional[str] = None
-
-
-TxOutput = Union[TxOutputAlonzo, TxOutputBabbage]
-
-
-@dataclass
-class TxAuxiliaryDataHash:
-    hashHex: str
-
-
-@dataclass
-class CIP36VoteDelegation:
-    type: CIP36VoteDelegationType
-    votingKeyPath: str
-    weight: int
-
-
-@dataclass
-class TxAuxiliaryDataCIP36:
-    format: CIP36VoteRegistrationFormat
-    stakingPath: str
-    paymentDestination: TxOutputDestination
-    nonce: int
-    voteKey: Optional[str] = None
-    votingPurpose: Optional[int] = None
-    delegations: List[CIP36VoteDelegation] = field(default_factory=list)
-
-
-@dataclass
-class TxAuxiliaryData:
-    type: TxAuxiliaryDataType
-    params: Union[TxAuxiliaryDataHash, TxAuxiliaryDataCIP36]
-
-
-@dataclass
-class RequiredSigner:
-    type: TxRequiredSignerType
-    pathOrHashHex: (
-        str  # BIP44 path (for PATH type) or 28-byte key hash hex (for HASH type)
-    )
-
-
-@dataclass
-class CredentialParams:
-    type: CredentialParamsType
-    keyValue: Optional[str] = None  # keyPath, keyHash or scriptHash
-
-
-@dataclass
-class Withdrawal:
-    stakeCredential: CredentialParams
-    amount: int
-
-
-@dataclass
-class DRepParams:
-    type: DRepParamsType
-    keyValue: Optional[str] = None  # keyPath, keyHash or scriptHash
-
-
-@dataclass
-class GovActionId:
-    txHashHex: str
-    govActionIndex: int
-
-
-@dataclass
-class AnchorParams:
-    url: str
-    hashHex: str
-
-
-@dataclass
-class VotingProcedure:
-    vote: VoteOption
-    anchor: Optional[AnchorParams] = None
-
-
-@dataclass
-class Voter:
-    type: VoterType
-    keyValue: str  # keyPath, keyHash or scriptHash
-
-
-@dataclass
-class Vote:
-    govActionId: GovActionId
-    votingProcedure: VotingProcedure
-
-
-@dataclass
-class VoterVotes:
-    voter: Voter
-    votes: List[Vote]
-
-
-@dataclass
-class StakeRegistrationParams:
-    stakeCredential: CredentialParams
-
-
-@dataclass
-class StakeRegistrationConwayParams:
-    stakeCredential: CredentialParams
-    deposit: int
-
-
-@dataclass
-class StakeDelegationParams:
-    stakeCredential: CredentialParams
-    poolKeyHash: str
-
-
-@dataclass
-class VoteDelegationParams:
-    stakeCredential: CredentialParams
-    dRep: DRepParams
-
-
-@dataclass
-class AccountRegistrationDelegationToStakePoolParams:
-    stakeCredential: CredentialParams
-    poolKeyHash: str
-    coin: int
-
-
-@dataclass
-class AccountRegistrationDelegationToDRepParams:
-    stakeCredential: CredentialParams
-    dRep: DRepParams
-    coin: int
-
-
-@dataclass
-class AccountRegistrationDelegationToStakePoolAndDRepParams:
-    stakeCredential: CredentialParams
-    poolKeyHash: str
-    dRep: DRepParams
-    coin: int
-
-
-@dataclass
-class StakePoolAndDRepDelegationParams:
-    stakeCredential: CredentialParams
-    poolKeyHash: str
-    dRep: DRepParams
-
-
-@dataclass
-class AuthorizeCommitteeParams:
-    coldCredential: CredentialParams
-    hotCredential: CredentialParams
-
-
-@dataclass
-class ResignCommitteeParams:
-    coldCredential: CredentialParams
-    anchor: Optional[AnchorParams] = None
-
-
-@dataclass
-class DRepRegistrationParams:
-    dRepCredential: CredentialParams
-    deposit: int
-    anchor: Optional[AnchorParams] = None
-
-
-@dataclass
-class DRepUpdateParams:
-    dRepCredential: CredentialParams
-    anchor: Optional[AnchorParams] = None
-
-
-@dataclass
-class PoolRetirementParams:
-    poolCredential: CredentialParams
-    retirementEpoch: int
-
-
-@dataclass
-class Margin:
-    numerator: int
-    denominator: int
-
-
-@dataclass
-class PoolMetadataParams:
-    metadataUrl: str
-    metadataHashHex: str
-
-
-@dataclass
-class PoolKey:  # same for PoolRewardAccount and PoolOwner
-    type: PoolKeyType
-    key: str  # hex string or path
-
-
-@dataclass
-class SingleHostIpAddrRelayParams:
-    portNumber: Optional[int] = None
-    ipv4: Optional[str] = None
-    ipv6: Optional[str] = None
-
-
-@dataclass
-class SingleHostHostnameRelayParams:
-    portNumber: int
-    dnsName: Optional[str]
-
-
-@dataclass
-class MultiHostRelayParams:
-    dnsName: Optional[str]
-
-
-@dataclass
-class Relay:
-    type: RelayType
-    params: Union[
-        SingleHostIpAddrRelayParams, SingleHostHostnameRelayParams, MultiHostRelayParams
-    ]
-
-
-@dataclass
-class PoolRegistrationParams:
-    poolKey: PoolKey
-    vrfKeyHashHex: str
-    pledge: int
-    cost: int
-    margin: Margin
-    rewardAccount: PoolKey
-    poolOwners: List[PoolKey]
-    relays: List[Relay]
-    metadata: Optional[PoolMetadataParams] = None
-
-
-@dataclass
-class Certificate:
-    type: CertificateType
-    params: Union[
-        StakeRegistrationParams,
-        StakeRegistrationConwayParams,
-        StakeDelegationParams,
-        VoteDelegationParams,
-        StakePoolAndDRepDelegationParams,
-        AccountRegistrationDelegationToStakePoolParams,
-        AccountRegistrationDelegationToDRepParams,
-        AccountRegistrationDelegationToStakePoolAndDRepParams,
-        AuthorizeCommitteeParams,
-        ResignCommitteeParams,
-        DRepRegistrationParams,
-        DRepUpdateParams,
-        PoolRegistrationParams,
-        PoolRetirementParams,
-    ]
-
-
-@dataclass(kw_only=True)
-class Transaction:
-    network: NetworkDesc
-    inputs: List[TxInput]
-    outputs: List[TxOutput]
-    fee: int = 42
-    ttl: Optional[int] = 10
-    certificates: List[Certificate] = field(default_factory=list)
-    withdrawals: List[Withdrawal] = field(default_factory=list)
-    mint: List[AssetGroup] = field(default_factory=list)
-    collateralInputs: List[TxInput] = field(default_factory=list)
-    requiredSigners: List[RequiredSigner] = field(default_factory=list)
-    referenceInputs: List[TxInput] = field(default_factory=list)
-    votingProcedures: List[VoterVotes] = field(default_factory=list)
-    auxiliaryData: Optional[TxAuxiliaryData] = None
-    validityIntervalStart: Optional[int] = None
-    scriptDataHash: Optional[str] = None
-    includeNetworkId: Optional[bool] = None
-    collateralOutput: Optional[TxOutput] = None
-    totalCollateral: Optional[int] = None
-    treasury: Optional[int] = None
-    donation: Optional[int] = None
+from tests.standalone.input_files.derive_address import pointer_to_str
 
 
 @dataclass
@@ -565,8 +183,7 @@ destinations: dict[str, TxOutputDestination] = {
     ),
     "internalByronMainnet": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
-        DeriveAddressTestCase(
-            name="",
+        AddressParams(
             netDesc=Mainnet,
             addrType=AddressType.BYRON,
             spendingValue="m/44'/1815'/0'/0/55'",
@@ -574,8 +191,7 @@ destinations: dict[str, TxOutputDestination] = {
     ),
     "internalBaseWithStakingPath": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
-        DeriveAddressTestCase(
-            name="",
+        AddressParams(
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
             spendingValue="m/1852'/1815'/0'/0/0",
@@ -584,8 +200,7 @@ destinations: dict[str, TxOutputDestination] = {
     ),
     "internalBaseWithStakingKeyHash": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
-        DeriveAddressTestCase(
-            name="",
+        AddressParams(
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
             spendingValue="m/1852'/1815'/0'/0/0",
@@ -594,8 +209,7 @@ destinations: dict[str, TxOutputDestination] = {
     ),
     "internalEnterprise": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
-        DeriveAddressTestCase(
-            name="",
+        AddressParams(
             netDesc=Mainnet,
             addrType=AddressType.ENTERPRISE_KEY,
             spendingValue="m/1852'/1815'/0'/0/0",
@@ -603,8 +217,7 @@ destinations: dict[str, TxOutputDestination] = {
     ),
     "internalPointer": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
-        DeriveAddressTestCase(
-            name="",
+        AddressParams(
             netDesc=Mainnet,
             addrType=AddressType.POINTER_KEY,
             spendingValue="m/1852'/1815'/0'/0/0",
@@ -613,8 +226,7 @@ destinations: dict[str, TxOutputDestination] = {
     ),
     "internalBaseWithStakingPathNonReasonable": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
-        DeriveAddressTestCase(
-            name="",
+        AddressParams(
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
             spendingValue="m/1852'/1815'/456'/0/5000000",
@@ -623,8 +235,7 @@ destinations: dict[str, TxOutputDestination] = {
     ),
     "internalBaseWithCrossAccountStakingPath": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
-        DeriveAddressTestCase(
-            name="",
+        AddressParams(
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
             spendingValue="m/1852'/1815'/0'/0/0",
@@ -633,8 +244,7 @@ destinations: dict[str, TxOutputDestination] = {
     ),
     "internalBaseWithStakingPathMap": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
-        DeriveAddressTestCase(
-            name="",
+        AddressParams(
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
             spendingValue="m/1852'/1815'/0'/0/0",
@@ -706,8 +316,7 @@ destinations: dict[str, TxOutputDestination] = {
     ),
     "paymentScriptPath": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
-        DeriveAddressTestCase(
-            name="",
+        AddressParams(
             netDesc=Mainnet,
             addrType=AddressType.REWARD_KEY,
             spendingValue="",
@@ -716,8 +325,7 @@ destinations: dict[str, TxOutputDestination] = {
     ),
     "paymentScriptHash": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
-        DeriveAddressTestCase(
-            name="",
+        AddressParams(
             netDesc=Mainnet,
             addrType=AddressType.REWARD_SCRIPT,
             spendingValue="",
@@ -726,8 +334,7 @@ destinations: dict[str, TxOutputDestination] = {
     ),
     "paymentKeyPath": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
-        DeriveAddressTestCase(
-            name="",
+        AddressParams(
             netDesc=Mainnet,
             addrType=AddressType.REWARD_KEY,
             spendingValue="",
@@ -736,8 +343,7 @@ destinations: dict[str, TxOutputDestination] = {
     ),
     "deny1": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
-        DeriveAddressTestCase(
-            name="",
+        AddressParams(
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,
             spendingValue="29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd",
@@ -746,8 +352,7 @@ destinations: dict[str, TxOutputDestination] = {
     ),
     "deny2": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
-        DeriveAddressTestCase(
-            name="",
+        AddressParams(
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_SCRIPT,
             spendingValue="29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd",
@@ -756,8 +361,7 @@ destinations: dict[str, TxOutputDestination] = {
     ),
     "deny3": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
-        DeriveAddressTestCase(
-            name="",
+        AddressParams(
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,
             spendingValue="29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd",
@@ -766,8 +370,7 @@ destinations: dict[str, TxOutputDestination] = {
     ),
     "deny4": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
-        DeriveAddressTestCase(
-            name="",
+        AddressParams(
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
             spendingValue="m/1852'/1815'/1'/0/0",
@@ -776,8 +379,7 @@ destinations: dict[str, TxOutputDestination] = {
     ),
     "deny5": TxOutputDestination(
         TxOutputDestinationType.DEVICE_OWNED,
-        DeriveAddressTestCase(
-            name="",
+        AddressParams(
             netDesc=Mainnet,
             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
             spendingValue="m/1852'/1815'/1'/0/0",
@@ -5762,17 +5364,11 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
-                        params=DeriveAddressTestCase(
-                            name="",
-                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                        params=AddressParams(
+                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.REWARD_KEY,
                             spendingValue="",
-                            stakingValue="m/1852'/1815'/0'/2/0",
-                            result="",
-                            result_hex=None,
-                            nano_nav_confirm=None,
-                            nano_nav_show=None,
-                        ),
+                            stakingValue="m/1852'/1815'/0'/2/0",                        ),
                     ),
                     amount=10,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -5794,17 +5390,11 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
-                        params=DeriveAddressTestCase(
-                            name="",
-                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                        params=AddressParams(
+                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.REWARD_SCRIPT,
                             spendingValue="",
-                            stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
-                            result="",
-                            result_hex=None,
-                            nano_nav_confirm=None,
-                            nano_nav_show=None,
-                        ),
+                            stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",                        ),
                     ),
                     amount=10,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -5826,17 +5416,11 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
-                        params=DeriveAddressTestCase(
-                            name="",
-                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                        params=AddressParams(
+                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,
                             spendingValue="29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd",
-                            stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
-                            result="",
-                            result_hex=None,
-                            nano_nav_confirm=None,
-                            nano_nav_show=None,
-                        ),
+                            stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",                        ),
                     ),
                     amount=3003112,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -5858,17 +5442,11 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
-                        params=DeriveAddressTestCase(
-                            name="",
-                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                        params=AddressParams(
+                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_SCRIPT,
                             spendingValue="29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd",
-                            stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
-                            result="",
-                            result_hex=None,
-                            nano_nav_confirm=None,
-                            nano_nav_show=None,
-                        ),
+                            stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",                        ),
                     ),
                     amount=3003112,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -5890,17 +5468,11 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
-                        params=DeriveAddressTestCase(
-                            name="",
-                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                        params=AddressParams(
+                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,
                             spendingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
-                            stakingValue="m/1852'/1815'/456'/2/0",
-                            result="",
-                            result_hex=None,
-                            nano_nav_confirm=None,
-                            nano_nav_show=None,
-                        ),
+                            stakingValue="m/1852'/1815'/456'/2/0",                        ),
                     ),
                     amount=10,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -5922,17 +5494,11 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
-                        params=DeriveAddressTestCase(
-                            name="",
-                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                        params=AddressParams(
+                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
                             spendingValue="m/1852'/1815'/0'/0/0",
-                            stakingValue="m/1852'/1815'/0'/2/0",
-                            result="",
-                            result_hex=None,
-                            nano_nav_confirm=None,
-                            nano_nav_show=None,
-                        ),
+                            stakingValue="m/1852'/1815'/0'/2/0",                        ),
                     ),
                     amount=7120787,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -5954,17 +5520,11 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
-                        params=DeriveAddressTestCase(
-                            name="",
-                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                        params=AddressParams(
+                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
                             spendingValue="m/1852'/1815'/0'/0/0",
-                            stakingValue="m/1852'/1815'/0'/2/0",
-                            result="",
-                            result_hex=None,
-                            nano_nav_confirm=None,
-                            nano_nav_show=None,
-                        ),
+                            stakingValue="m/1852'/1815'/0'/2/0",                        ),
                     ),
                     amount=7120787,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -7153,17 +6713,11 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
-                        params=DeriveAddressTestCase(
-                            name="",
-                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                        params=AddressParams(
+                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
                             spendingValue="m/1852'/1815'/1'/0/0",
-                            stakingValue="m/1852'/1815'/0'/2/0",
-                            result="",
-                            result_hex=None,
-                            nano_nav_confirm=None,
-                            nano_nav_show=None,
-                        ),
+                            stakingValue="m/1852'/1815'/0'/2/0",                        ),
                     ),
                     amount=7120787,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -7239,17 +6793,11 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
-                        params=DeriveAddressTestCase(
-                            name="",
-                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                        params=AddressParams(
+                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
                             spendingValue="m/1852'/1815'/0'/0/0",
-                            stakingValue="m/1852'/1815'/0'/2/0",
-                            result="",
-                            result_hex=None,
-                            nano_nav_confirm=None,
-                            nano_nav_show=None,
-                        ),
+                            stakingValue="m/1852'/1815'/0'/2/0",                        ),
                     ),
                     amount=7120787,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -7295,17 +6843,11 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
-                        params=DeriveAddressTestCase(
-                            name="",
-                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                        params=AddressParams(
+                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
                             spendingValue="m/1852'/1815'/0'/0/0",
-                            stakingValue="m/1852'/1815'/0'/2/0",
-                            result="",
-                            result_hex=None,
-                            nano_nav_confirm=None,
-                            nano_nav_show=None,
-                        ),
+                            stakingValue="m/1852'/1815'/0'/2/0",                        ),
                     ),
                     amount=7120787,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -7405,17 +6947,11 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                 TxOutputAlonzo(
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
-                        params=DeriveAddressTestCase(
-                            name="",
-                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                        params=AddressParams(
+                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
                             spendingValue="m/1852'/1815'/1'/0/0",
-                            stakingValue="m/1852'/1815'/1'/2/0",
-                            result="",
-                            result_hex=None,
-                            nano_nav_confirm=None,
-                            nano_nav_show=None,
-                        ),
+                            stakingValue="m/1852'/1815'/1'/2/0",                        ),
                     ),
                     amount=7120787,
                     format=TxOutputFormat.ARRAY_LEGACY,

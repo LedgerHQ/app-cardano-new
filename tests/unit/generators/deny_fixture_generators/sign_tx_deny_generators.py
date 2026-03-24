@@ -62,12 +62,10 @@ def _build_deny_fixtures() -> str:
         CommandBuilder,
         P1Type,
         P2Type,
-        gather_witness_paths,
-    )
-    from tests.standalone.input_files.signTx import (
         TxAuxiliaryDataCIP36,
         TxAuxiliaryDataType,
-    )  # type: ignore
+        gather_witness_paths,
+    )
     from tests.application_client.status_words import StatusWord  # type: ignore
     from tests.standalone.input_files.signTx import (  # type: ignore
         transactionInitDenyTestCases,

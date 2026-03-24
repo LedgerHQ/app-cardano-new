@@ -11,107 +11,64 @@ flow, and utility helpers shared by the standalone tests that still rely on this
 module.
 """
 
+from __future__ import annotations
+
 import ipaddress
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import IntEnum
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from ragger.bip import pack_derivation_path
 
-from tests.application_client.app_def import AddressType, StakingDataSourceType
-from tests.standalone.input_files.signOpCert import OpCertTestCase
-from tests.standalone.input_files.cvote import CVoteTestCase, MAX_CIP36_PAYLOAD_SIZE
-from tests.standalone.input_files.derive_address import DeriveAddressTestCase
-from tests.standalone.input_files.native_script import (
-    NativeScript,
-    NativeScriptType,
-    NativeScriptHashDisplayFormat,
-)
-from tests.standalone.input_files.native_script import (
-    NativeScriptParamsPubkey,
-    NativeScriptParamsInvalid,
-)
-from tests.standalone.input_files.native_script import (
-    NativeScriptParamsScripts,
-    NativeScriptParamsNofK,
-)
-from tests.standalone.input_files.signTx import (
-    AnchorParams,
-    AuthorizeCommitteeParams,
-    Certificate,
-    CertificateType,
-    CredentialParams,
-    CredentialParamsType,
-    CIP36VoteDelegation,
-    CIP36VoteRegistrationFormat,
-    DRepParams,
-    DRepRegistrationParams,
-    DRepUpdateParams,
-    DatumType,
-    MultiHostRelayParams,
-    PoolKey,
-    PoolKeyType,
-    PoolMetadataParams,
-    PoolRegistrationParams,
-    PoolRetirementParams,
-    Relay,
-    RelayType,
-    ResignCommitteeParams,
-    SingleHostHostnameRelayParams,
-    SingleHostIpAddrRelayParams,
-    StakeDelegationParams,
-    StakePoolAndDRepDelegationParams,
-    AccountRegistrationDelegationToStakePoolParams,
-    AccountRegistrationDelegationToDRepParams,
-    AccountRegistrationDelegationToStakePoolAndDRepParams,
-    StakeRegistrationConwayParams,
-    StakeRegistrationParams,
-    Transaction,
-    TxAuxiliaryDataCIP36,
-    TxAuxiliaryDataHash,
-    TxAuxiliaryDataType,
-    TxOutput,
-    TxOutputBabbage,
-    TxOutputDestination,
-    TxOutputDestinationType,
-    TxRequiredSignerType,
-    TransactionSigningMode,
-    VoteDelegationParams,
-    VoterType,
-    MAX_SIGN_TX_CHUNK_SIZE,
-)
 
-CLA: int = 0xD7
+# ---------------------------------------------------------------------------
+# Network / address protocol types (formerly app_def.py)
+# ---------------------------------------------------------------------------
 
-FLAG_INCLUDED_NO: int = 0x01
-FLAG_INCLUDED_YES: int = 0x02
-SETTINGS_DISABLED: int = 0x00
-SETTINGS_ENABLED: int = 0x01
-MAX_UINT8: int = 0xFF
-MAX_UINT16: int = 0xFFFF
-MAX_CIP8_MSG_CHUNK_SIZE = 250
+class ProtocolMagics(IntEnum):
+    MAINNET = 0x2D964A09  # 764824073
+    TESTNET = 0x2A  # 42, For integration tests
+    TESTNET_LEGACY = 0x4170CB17  # 1097911063
+    TESTNET_PREPROD = 1
+    TESTNET_PREVIEW = 2
+    FAKE = 47
 
 
-# Mirrors `src/apdu/dispatcher.h::command_e`.
-# These are plain integer namespaces rather than IntEnums because APDU
-# constants intentionally reuse numeric values across different commands.
-class InsType:
-    INS_NONE = -1
-    INS_GET_VERSION = 0x00
-    INS_GET_APP_NAME = 0x04
-    INS_GET_SERIAL = 0x01
-    INS_GET_PUBLIC_KEY = 0x10
-    INS_DERIVE_ADDRESS = 0x11
-    INS_DERIVE_NATIVE_SCRIPT_HASH = 0x12
-    INS_SIGN_TX = 0x21
-    INS_SIGN_OPCERT = 0x22
-    INS_SIGN_CVOTE = 0x23
-    INS_SIGN_MSG = 0x24
-    INS_DEBUG_SET_SETTINGS = 0xF0  # Debug-only command
+class NetworkIds(IntEnum):
+    TESTNET = 0x00
+    MAINNET = 0x01
+    FAKE = 0x03
 
 
-# Matches `src/apdu/dispatcher.h::p1_e`.
+class AddressType(IntEnum):
+    BASE_PAYMENT_KEY_STAKE_KEY = 0x00
+    BASE_PAYMENT_SCRIPT_STAKE_KEY = 0x01
+    BASE_PAYMENT_KEY_STAKE_SCRIPT = 0x02
+    BASE_PAYMENT_SCRIPT_STAKE_SCRIPT = 0x03
+    POINTER_KEY = 0x04
+    POINTER_SCRIPT = 0x05
+    ENTERPRISE_KEY = 0x06
+    ENTERPRISE_SCRIPT = 0x07
+    BYRON = 0x08
+    REWARD_KEY = 0x0E
+    REWARD_SCRIPT = 0x0F
+
+
+class StakingDataSourceType(IntEnum):
+    NONE = 0x11
+    KEY_PATH = 0x22
+    KEY_HASH = 0x33
+    BLOCKCHAIN_POINTER = 0x44
+    SCRIPT_HASH = 0x55
+
+
+@dataclass
+class NetworkDesc:
+    networkId: Union[NetworkIds, int]
+    protocol: Union[ProtocolMagics, int]
+
+
 class P1Type:
     P1_UNUSED = 0x00
     P1_TX_INIT = 0x10
@@ -133,6 +90,609 @@ class P1Type:
     P1_SIGN_MSG_CONFIRM = 0x03
 
 
+@dataclass
+class AddressParams:
+    """Protocol-level address parameters used for serialization."""
+
+    addrType: AddressType
+    netDesc: NetworkDesc
+    spendingValue: str = ""
+    stakingValue: str = ""
+
+
+Mainnet = NetworkDesc(NetworkIds.MAINNET, ProtocolMagics.MAINNET)
+Testnet = NetworkDesc(NetworkIds.TESTNET, ProtocolMagics.TESTNET)
+Testnet_legacy = NetworkDesc(NetworkIds.TESTNET, ProtocolMagics.TESTNET_LEGACY)
+FakeNet = NetworkDesc(NetworkIds.FAKE, ProtocolMagics.FAKE)
+
+
+# ---------------------------------------------------------------------------
+# Sign TX protocol types
+# ---------------------------------------------------------------------------
+
+MAX_SIGN_TX_CHUNK_SIZE = 250
+
+
+class TransactionSigningMode(IntEnum):
+    ORDINARY_TRANSACTION = 0x03
+    POOL_REGISTRATION_AS_OWNER = 0x04
+    POOL_REGISTRATION_AS_OPERATOR = 0x05
+    MULTISIG_TRANSACTION = 0x06
+    PLUTUS_TRANSACTION = 0x07
+
+
+class TxAuxiliaryDataType(IntEnum):
+    ARBITRARY_HASH = 0x00
+    CIP36_REGISTRATION = 0x01
+
+
+class CredentialParamsType(IntEnum):
+    KEY_HASH = 0x00
+    SCRIPT_HASH = 0x01
+    KEY_PATH = 0x02
+
+
+class TxOutputFormat(IntEnum):
+    ARRAY_LEGACY = 0x00
+    MAP_BABBAGE = 0x01
+
+
+class TxOutputDestinationType(IntEnum):
+    THIRD_PARTY = 0x01
+    DEVICE_OWNED = 0x02
+
+
+class PoolKeyType(IntEnum):
+    DEVICE_OWNED = 0x01
+    THIRD_PARTY = 0x02
+
+
+class VoteOption(IntEnum):
+    NO = 0x00
+    YES = 0x01
+    ABSTAIN = 0x02
+
+
+class VoterType(IntEnum):
+    COMMITTEE_KEY_HASH = 0
+    COMMITTEE_KEY_PATH = 100
+    COMMITTEE_SCRIPT_HASH = 1
+    DREP_KEY_HASH = 2
+    DREP_KEY_PATH = 102
+    DREP_SCRIPT_HASH = 3
+    STAKE_POOL_KEY_HASH = 4
+    STAKE_POOL_KEY_PATH = 104
+
+
+class CertificateType(IntEnum):
+    STAKE_REGISTRATION = 0
+    STAKE_DEREGISTRATION = 1
+    STAKE_DELEGATION = 2
+    STAKE_POOL_REGISTRATION = 3
+    STAKE_POOL_RETIREMENT = 4
+    STAKE_REGISTRATION_CONWAY = 7
+    STAKE_DEREGISTRATION_CONWAY = 8
+    VOTE_DELEGATION = 9
+    STAKE_POOL_AND_DREP_DELEGATION = 10
+    ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL = 11
+    ACCOUNT_REGISTRATION_DELEGATION_TO_DREP = 12
+    ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP = 13
+    AUTHORIZE_COMMITTEE_HOT = 14
+    RESIGN_COMMITTEE_COLD = 15
+    DREP_REGISTRATION = 16
+    DREP_DEREGISTRATION = 17
+    DREP_UPDATE = 18
+
+
+class CIP36VoteRegistrationFormat(IntEnum):
+    CIP_15 = 1
+    CIP_36 = 2
+
+
+class CIP36VoteDelegationType(IntEnum):
+    KEY = 1
+    PATH = 2
+
+
+class DRepParamsType(IntEnum):
+    KEY_HASH = 0
+    SCRIPT_HASH = 1
+    ABSTAIN = 2
+    NO_CONFIDENCE = 3
+    KEY_PATH = 100
+
+
+class TxRequiredSignerType(IntEnum):
+    PATH = 0
+    HASH = 1
+
+
+class DatumType(IntEnum):
+    HASH = 0
+    INLINE = 1
+
+
+class RelayType(IntEnum):
+    SINGLE_HOST_IP_ADDR = 0
+    SINGLE_HOST_HOSTNAME = 1
+    MULTI_HOST = 2
+
+
+@dataclass
+class TxInput:
+    txHashHex: str
+    path: Optional[str] = None
+    outputIndex: int = 0
+
+
+@dataclass
+class Token:
+    assetNameHex: str
+    amount: int
+
+
+@dataclass
+class AssetGroup:
+    policyIdHex: str
+    tokens: List[Token]
+
+
+@dataclass
+class ThirdPartyAddressParams:
+    addressHex: str
+
+
+@dataclass
+class TxOutputDestination:
+    type: TxOutputDestinationType
+    params: Union[ThirdPartyAddressParams, AddressParams]
+
+
+@dataclass
+class Datum:
+    type: DatumType
+    datumHex: str
+
+
+@dataclass
+class TxOutputAlonzo:
+    destination: TxOutputDestination
+    amount: int
+    format: TxOutputFormat = TxOutputFormat.ARRAY_LEGACY
+    tokenBundle: List[AssetGroup] = field(default_factory=list)
+    datum: Optional[Datum] = None
+
+
+@dataclass
+class TxOutputBabbage:
+    destination: TxOutputDestination
+    amount: int
+    format: TxOutputFormat = TxOutputFormat.MAP_BABBAGE
+    tokenBundle: List[AssetGroup] = field(default_factory=list)
+    datum: Optional[Datum] = None
+    referenceScriptHex: Optional[str] = None
+
+
+TxOutput = Union[TxOutputAlonzo, TxOutputBabbage]
+
+
+@dataclass
+class TxAuxiliaryDataHash:
+    hashHex: str
+
+
+@dataclass
+class CIP36VoteDelegation:
+    type: CIP36VoteDelegationType
+    votingKeyPath: str
+    weight: int
+
+
+@dataclass
+class TxAuxiliaryDataCIP36:
+    format: CIP36VoteRegistrationFormat
+    stakingPath: str
+    paymentDestination: TxOutputDestination
+    nonce: int
+    voteKey: Optional[str] = None
+    votingPurpose: Optional[int] = None
+    delegations: List[CIP36VoteDelegation] = field(default_factory=list)
+
+
+@dataclass
+class TxAuxiliaryData:
+    type: TxAuxiliaryDataType
+    params: Union[TxAuxiliaryDataHash, TxAuxiliaryDataCIP36]
+
+
+@dataclass
+class RequiredSigner:
+    type: TxRequiredSignerType
+    pathOrHashHex: (
+        str  # BIP44 path (for PATH type) or 28-byte key hash hex (for HASH type)
+    )
+
+
+@dataclass
+class CredentialParams:
+    type: CredentialParamsType
+    keyValue: Optional[str] = None  # keyPath, keyHash or scriptHash
+
+
+@dataclass
+class Withdrawal:
+    stakeCredential: CredentialParams
+    amount: int
+
+
+@dataclass
+class DRepParams:
+    type: DRepParamsType
+    keyValue: Optional[str] = None  # keyPath, keyHash or scriptHash
+
+
+@dataclass
+class GovActionId:
+    txHashHex: str
+    govActionIndex: int
+
+
+@dataclass
+class AnchorParams:
+    url: str
+    hashHex: str
+
+
+@dataclass
+class VotingProcedure:
+    vote: VoteOption
+    anchor: Optional[AnchorParams] = None
+
+
+@dataclass
+class Voter:
+    type: VoterType
+    keyValue: str  # keyPath, keyHash or scriptHash
+
+
+@dataclass
+class Vote:
+    govActionId: GovActionId
+    votingProcedure: VotingProcedure
+
+
+@dataclass
+class VoterVotes:
+    voter: Voter
+    votes: List[Vote]
+
+
+@dataclass
+class StakeRegistrationParams:
+    stakeCredential: CredentialParams
+
+
+@dataclass
+class StakeRegistrationConwayParams:
+    stakeCredential: CredentialParams
+    deposit: int
+
+
+@dataclass
+class StakeDelegationParams:
+    stakeCredential: CredentialParams
+    poolKeyHash: str
+
+
+@dataclass
+class VoteDelegationParams:
+    stakeCredential: CredentialParams
+    dRep: DRepParams
+
+
+@dataclass
+class AccountRegistrationDelegationToStakePoolParams:
+    stakeCredential: CredentialParams
+    poolKeyHash: str
+    coin: int
+
+
+@dataclass
+class AccountRegistrationDelegationToDRepParams:
+    stakeCredential: CredentialParams
+    dRep: DRepParams
+    coin: int
+
+
+@dataclass
+class AccountRegistrationDelegationToStakePoolAndDRepParams:
+    stakeCredential: CredentialParams
+    poolKeyHash: str
+    dRep: DRepParams
+    coin: int
+
+
+@dataclass
+class StakePoolAndDRepDelegationParams:
+    stakeCredential: CredentialParams
+    poolKeyHash: str
+    dRep: DRepParams
+
+
+@dataclass
+class AuthorizeCommitteeParams:
+    coldCredential: CredentialParams
+    hotCredential: CredentialParams
+
+
+@dataclass
+class ResignCommitteeParams:
+    coldCredential: CredentialParams
+    anchor: Optional[AnchorParams] = None
+
+
+@dataclass
+class DRepRegistrationParams:
+    dRepCredential: CredentialParams
+    deposit: int
+    anchor: Optional[AnchorParams] = None
+
+
+@dataclass
+class DRepUpdateParams:
+    dRepCredential: CredentialParams
+    anchor: Optional[AnchorParams] = None
+
+
+@dataclass
+class PoolRetirementParams:
+    poolCredential: CredentialParams
+    retirementEpoch: int
+
+
+@dataclass
+class Margin:
+    numerator: int
+    denominator: int
+
+
+@dataclass
+class PoolMetadataParams:
+    metadataUrl: str
+    metadataHashHex: str
+
+
+@dataclass
+class PoolKey:  # same for PoolRewardAccount and PoolOwner
+    type: PoolKeyType
+    key: str  # hex string or path
+
+
+@dataclass
+class SingleHostIpAddrRelayParams:
+    portNumber: Optional[int] = None
+    ipv4: Optional[str] = None
+    ipv6: Optional[str] = None
+
+
+@dataclass
+class SingleHostHostnameRelayParams:
+    portNumber: int
+    dnsName: Optional[str]
+
+
+@dataclass
+class MultiHostRelayParams:
+    dnsName: Optional[str]
+
+
+@dataclass
+class Relay:
+    type: RelayType
+    params: Union[
+        SingleHostIpAddrRelayParams, SingleHostHostnameRelayParams, MultiHostRelayParams
+    ]
+
+
+@dataclass
+class PoolRegistrationParams:
+    poolKey: PoolKey
+    vrfKeyHashHex: str
+    pledge: int
+    cost: int
+    margin: Margin
+    rewardAccount: PoolKey
+    poolOwners: List[PoolKey]
+    relays: List[Relay]
+    metadata: Optional[PoolMetadataParams] = None
+
+
+@dataclass
+class Certificate:
+    type: CertificateType
+    params: Union[
+        StakeRegistrationParams,
+        StakeRegistrationConwayParams,
+        StakeDelegationParams,
+        VoteDelegationParams,
+        StakePoolAndDRepDelegationParams,
+        AccountRegistrationDelegationToStakePoolParams,
+        AccountRegistrationDelegationToDRepParams,
+        AccountRegistrationDelegationToStakePoolAndDRepParams,
+        AuthorizeCommitteeParams,
+        ResignCommitteeParams,
+        DRepRegistrationParams,
+        DRepUpdateParams,
+        PoolRegistrationParams,
+        PoolRetirementParams,
+    ]
+
+
+@dataclass(kw_only=True)
+class Transaction:
+    network: NetworkDesc
+    inputs: List[TxInput]
+    outputs: List[TxOutput]
+    fee: int = 42
+    ttl: Optional[int] = 10
+    certificates: List[Certificate] = field(default_factory=list)
+    withdrawals: List[Withdrawal] = field(default_factory=list)
+    mint: List[AssetGroup] = field(default_factory=list)
+    collateralInputs: List[TxInput] = field(default_factory=list)
+    requiredSigners: List[RequiredSigner] = field(default_factory=list)
+    referenceInputs: List[TxInput] = field(default_factory=list)
+    votingProcedures: List[VoterVotes] = field(default_factory=list)
+    auxiliaryData: Optional[TxAuxiliaryData] = None
+    validityIntervalStart: Optional[int] = None
+    scriptDataHash: Optional[str] = None
+    includeNetworkId: Optional[bool] = None
+    collateralOutput: Optional[TxOutput] = None
+    totalCollateral: Optional[int] = None
+    treasury: Optional[int] = None
+    donation: Optional[int] = None
+
+CLA: int = 0xD7
+
+FLAG_INCLUDED_NO: int = 0x01
+FLAG_INCLUDED_YES: int = 0x02
+SETTINGS_DISABLED: int = 0x00
+SETTINGS_ENABLED: int = 0x01
+MAX_UINT8: int = 0xFF
+MAX_UINT16: int = 0xFFFF
+MAX_CIP8_MSG_CHUNK_SIZE = 250
+MAX_CIP36_PAYLOAD_SIZE = 250
+
+
+# ---------------------------------------------------------------------------
+# OpCert protocol types
+# ---------------------------------------------------------------------------
+
+@dataclass
+class OperationalCertificate:
+    kesPublicKeyHex: str
+    kesPeriod: int
+    issueCounter: int
+    path: str
+
+
+@dataclass(kw_only=True)
+class OpCertTestCase:
+    name: str
+    opCert: OperationalCertificate
+    expected_warnings: List = field(default_factory=list)
+
+
+# ---------------------------------------------------------------------------
+# CIP-36 CVote protocol types
+# ---------------------------------------------------------------------------
+
+@dataclass(kw_only=True)
+class CIP36Vote:
+    voteCastDataHex: str
+    witnessPath: str
+
+
+@dataclass(kw_only=True)
+class CVoteTestCase:
+    name: str
+    cVote: CIP36Vote
+    expected_warnings: List
+
+
+# ---------------------------------------------------------------------------
+# Native script protocol types
+# ---------------------------------------------------------------------------
+
+class NativeScriptType(IntEnum):
+    PUBKEY_DEVICE_OWNED = 0x00
+    PUBKEY_THIRD_PARTY = 0xF0
+    ALL = 0x01
+    ANY = 0x02
+    N_OF_K = 0x03
+    INVALID_BEFORE = 0x04
+    INVALID_HEREAFTER = 0x05
+
+
+class NativeScriptHashDisplayFormat(IntEnum):
+    BECH32 = 0x01
+    POLICY_ID = 0x02
+
+
+@dataclass
+class NativeScriptParamsPubkey:
+    key: str
+
+
+@dataclass
+class NativeScriptParamsScripts:
+    scripts: List[NativeScript] = field(default_factory=list)
+
+
+@dataclass
+class NativeScriptParamsNofK:
+    requiredCount: int
+    scripts: List[NativeScript] = field(default_factory=list)
+
+
+@dataclass
+class NativeScriptParamsInvalid:
+    slot: int
+
+
+NativeScriptParams = Union[
+    NativeScriptParamsPubkey,
+    NativeScriptParamsScripts,
+    NativeScriptParamsNofK,
+    NativeScriptParamsInvalid,
+]
+
+
+@dataclass
+class NativeScript:
+    type: NativeScriptType
+    params: NativeScriptParams
+
+
+# ---------------------------------------------------------------------------
+# Sign Message protocol types
+# ---------------------------------------------------------------------------
+
+class MessageAddressFieldType(IntEnum):
+    ADDRESS = 0x01
+    KEY_HASH = 0x02
+
+
+@dataclass
+class MessageData:
+    """CIP-8 message signing"""
+
+    messageHex: str
+    signingPath: str
+    hashPayload: bool
+    isAscii: bool
+    addressFieldType: MessageAddressFieldType
+    addressDesc: Optional[AddressParams] = None
+
+
+# Mirrors `src/apdu/dispatcher.h::command_e`.
+# These are plain integer namespaces rather than IntEnums because APDU
+# constants intentionally reuse numeric values across different commands.
+class InsType:
+    INS_NONE = -1
+    INS_GET_VERSION = 0x00
+    INS_GET_APP_NAME = 0x04
+    INS_GET_SERIAL = 0x01
+    INS_GET_PUBLIC_KEY = 0x10
+    INS_DERIVE_ADDRESS = 0x11
+    INS_DERIVE_NATIVE_SCRIPT_HASH = 0x12
+    INS_SIGN_TX = 0x21
+    INS_SIGN_OPCERT = 0x22
+    INS_SIGN_CVOTE = 0x23
+    INS_SIGN_MSG = 0x24
+    INS_DEBUG_SET_SETTINGS = 0xF0  # Debug-only command
+
+
+# Matches `src/apdu/dispatcher.h::p1_e`.
 # Matches `src/apdu/dispatcher.h::p2_e`.
 class P2Type:
     P2_UNUSED = 0x00
@@ -145,6 +705,7 @@ class CVoteCredentialType(IntEnum):
     # Canonical names match `src/cvote/cvote_types.h`.
     CVOTE_CREDENTIAL_KEY = 0
     CVOTE_CREDENTIAL_KEY_PATH = 2
+
 
 
 def _credential_path_from_credential(credential: CredentialParams) -> Optional[str]:
@@ -249,16 +810,16 @@ def gather_witness_paths(
         if path and path not in witness_paths:
             witness_paths.append(path)
 
-    for required_signer in getattr(tx, "requiredSigners", []):
+    for required_signer in tx.requiredSigners:
         if required_signer.type == TxRequiredSignerType.PATH:
             if required_signer.pathOrHashHex not in witness_paths:
                 witness_paths.append(required_signer.pathOrHashHex)
 
-    for collateral_input in getattr(tx, "collateralInputs", []):
+    for collateral_input in tx.collateralInputs:
         if collateral_input.path and collateral_input.path not in witness_paths:
             witness_paths.append(collateral_input.path)
 
-    for voter_votes in getattr(tx, "votingProcedures", []):
+    for voter_votes in tx.votingProcedures:
         if voter_votes.voter.type in (
             VoterType.COMMITTEE_KEY_PATH,
             VoterType.DREP_KEY_PATH,
@@ -334,7 +895,7 @@ class CommandBuilder:
     def get_serial(self) -> bytes:
         return self._serialize(InsType.INS_GET_SERIAL)
 
-    def _serialize_voter(self, voter: object) -> bytes:
+    def _serialize_voter(self, voter: Voter) -> bytes:
         voter_type = VoterType(voter.type)
         voter_data = bytearray()
         voter_data.append(int(voter_type))
@@ -350,57 +911,57 @@ class CommandBuilder:
 
         return bytes(voter_data)
 
-    def _serialize_address_params(self, test_case: DeriveAddressTestCase) -> bytes:
+    def _serialize_address_params(self, params: AddressParams) -> bytes:
         """Serialize address parameters (shared by derive_address and sign_msg_init)"""
         data = bytes()
-        data += test_case.addrType.to_bytes(1, "big")
-        if test_case.addrType == AddressType.BYRON:
-            data += test_case.netDesc.protocol.to_bytes(4, "big")
+        data += params.addrType.to_bytes(1, "big")
+        if params.addrType == AddressType.BYRON:
+            data += params.netDesc.protocol.to_bytes(4, "big")
         else:
-            data += test_case.netDesc.networkId.to_bytes(1, "big")
+            data += params.netDesc.networkId.to_bytes(1, "big")
 
-        if not test_case.spendingValue.startswith("m/"):
-            data += bytes.fromhex(test_case.spendingValue)
-        elif test_case.spendingValue:
-            data += pack_derivation_path(test_case.spendingValue)
+        if not params.spendingValue.startswith("m/"):
+            data += bytes.fromhex(params.spendingValue)
+        else:
+            data += pack_derivation_path(params.spendingValue)
 
-        if test_case.addrType in (
+        if params.addrType in (
             AddressType.BYRON,
             AddressType.ENTERPRISE_KEY,
             AddressType.ENTERPRISE_SCRIPT,
         ):
             staking = StakingDataSourceType.NONE
-        elif test_case.addrType in (
+        elif params.addrType in (
             AddressType.BASE_PAYMENT_KEY_STAKE_SCRIPT,
             AddressType.BASE_PAYMENT_SCRIPT_STAKE_SCRIPT,
             AddressType.REWARD_SCRIPT,
         ):
             staking = StakingDataSourceType.SCRIPT_HASH
-        elif test_case.addrType in (
+        elif params.addrType in (
             AddressType.POINTER_KEY,
             AddressType.POINTER_SCRIPT,
         ):
             staking = StakingDataSourceType.BLOCKCHAIN_POINTER
-        elif not test_case.stakingValue.startswith("m/"):
+        elif not params.stakingValue.startswith("m/"):
             staking = StakingDataSourceType.KEY_HASH
         else:
             staking = StakingDataSourceType.KEY_PATH
         data += staking.to_bytes(1, "big")
 
         if staking == StakingDataSourceType.KEY_PATH:
-            data += pack_derivation_path(test_case.stakingValue)
+            data += pack_derivation_path(params.stakingValue)
         elif staking in (
             StakingDataSourceType.KEY_HASH,
             StakingDataSourceType.SCRIPT_HASH,
             StakingDataSourceType.BLOCKCHAIN_POINTER,
         ):
-            data += bytes.fromhex(test_case.stakingValue)
+            data += bytes.fromhex(params.stakingValue)
         elif staking != StakingDataSourceType.NONE:
             raise NotImplementedError("Not implemented yet")
         return data
 
-    def derive_address(self, p1: P1Type, test_case: DeriveAddressTestCase) -> bytes:
-        data = self._serialize_address_params(test_case)
+    def derive_address(self, p1: int, params: AddressParams) -> bytes:
+        data = self._serialize_address_params(params)
         return self._serialize(InsType.INS_DERIVE_ADDRESS, p1, P2Type.P2_UNUSED, data)
 
     def get_pubkey_path(self, path: str) -> bytes:
@@ -463,7 +1024,7 @@ class CommandBuilder:
                 self._serialize(
                     InsType.INS_SIGN_CVOTE,
                     P1Type.P1_CVOTE_CHUNK,
-                    0x00,
+                    P2Type.P2_UNUSED,
                     bytes.fromhex(payload[:max_payload_size]),
                 )
             )
@@ -651,23 +1212,15 @@ class CommandBuilder:
             include_validity_interval_start=tx.validityIntervalStart is not None,
             num_mint_asset_groups=len(tx.mint),
             include_script_data_hash=tx.scriptDataHash is not None,
-            num_collateral_inputs=len(tx.collateralInputs)
-            if getattr(tx, "collateralInputs", None)
-            else 0,
-            num_required_signers=len(tx.requiredSigners)
-            if getattr(tx, "requiredSigners", None)
-            else 0,
-            include_network_id=bool(getattr(tx, "includeNetworkId", False)),
-            include_collateral_output=getattr(tx, "collateralOutput", None) is not None,
-            include_total_collateral=getattr(tx, "totalCollateral", None) is not None,
-            num_reference_inputs=len(tx.referenceInputs)
-            if getattr(tx, "referenceInputs", None)
-            else 0,
-            num_voters=len(tx.votingProcedures)
-            if getattr(tx, "votingProcedures", None)
-            else 0,
-            include_treasury=getattr(tx, "treasury", None) is not None,
-            include_donation=getattr(tx, "donation", None) is not None,
+            num_collateral_inputs=len(tx.collateralInputs),
+            num_required_signers=len(tx.requiredSigners),
+            include_network_id=bool(tx.includeNetworkId),
+            include_collateral_output=tx.collateralOutput is not None,
+            include_total_collateral=tx.totalCollateral is not None,
+            num_reference_inputs=len(tx.referenceInputs),
+            num_voters=len(tx.votingProcedures),
+            include_treasury=tx.treasury is not None,
+            include_donation=tx.donation is not None,
             num_witnesses=len(witness_paths),
             raw_tx_total_length=raw_tx_total_length,
         )
@@ -799,64 +1352,54 @@ class CommandBuilder:
                 data.extend(asset_name_bytes)
                 data.extend(token.amount.to_bytes(8, "big", signed=True))
 
-        script_data_hash = getattr(tx, "scriptDataHash", None)
-        if script_data_hash is not None:
-            data.extend(bytes.fromhex(script_data_hash))
+        if tx.scriptDataHash is not None:
+            data.extend(bytes.fromhex(tx.scriptDataHash))
 
-        collateral_inputs = getattr(tx, "collateralInputs", None)
-        if collateral_inputs:
-            for collateral_input in collateral_inputs:
-                data.extend(bytes.fromhex(collateral_input.txHashHex))
-                data.extend(collateral_input.outputIndex.to_bytes(4, "big"))
+        for collateral_input in tx.collateralInputs:
+            data.extend(bytes.fromhex(collateral_input.txHashHex))
+            data.extend(collateral_input.outputIndex.to_bytes(4, "big"))
 
-        required_signers = getattr(tx, "requiredSigners", None)
-        if required_signers:
-            for required_signer in required_signers:
-                data.append(int(required_signer.type))
-                if required_signer.type == TxRequiredSignerType.PATH:
-                    data.extend(pack_derivation_path(required_signer.pathOrHashHex))
-                else:
-                    data.extend(bytes.fromhex(required_signer.pathOrHashHex))
+        for required_signer in tx.requiredSigners:
+            data.append(int(required_signer.type))
+            if required_signer.type == TxRequiredSignerType.PATH:
+                data.extend(pack_derivation_path(required_signer.pathOrHashHex))
+            else:
+                data.extend(bytes.fromhex(required_signer.pathOrHashHex))
 
-        collateral_output = getattr(tx, "collateralOutput", None)
-        if collateral_output is not None:
-            collateral_data = self._serialize_output(collateral_output, tx)
+        if tx.collateralOutput is not None:
+            collateral_data = self._serialize_output(tx.collateralOutput, tx)
             data.extend(len(collateral_data).to_bytes(2, "big"))
             data.extend(collateral_data)
 
-        if getattr(tx, "totalCollateral", None) is not None:
+        if tx.totalCollateral is not None:
             data.extend(tx.totalCollateral.to_bytes(8, "big"))
 
-        reference_inputs = getattr(tx, "referenceInputs", None)
-        if reference_inputs:
-            for reference_input in reference_inputs:
-                data.extend(bytes.fromhex(reference_input.txHashHex))
-                data.extend(reference_input.outputIndex.to_bytes(4, "big"))
+        for reference_input in tx.referenceInputs:
+            data.extend(bytes.fromhex(reference_input.txHashHex))
+            data.extend(reference_input.outputIndex.to_bytes(4, "big"))
 
-        voting_procedures = getattr(tx, "votingProcedures", None)
-        if voting_procedures:
-            for voter_votes in voting_procedures:
-                data.extend(self._serialize_voter(voter_votes.voter))
+        for voter_votes in tx.votingProcedures:
+            data.extend(self._serialize_voter(voter_votes.voter))
 
-                # Serialize number of votes for this voter
-                data.extend(len(voter_votes.votes).to_bytes(2, "big"))
+            # Serialize number of votes for this voter
+            data.extend(len(voter_votes.votes).to_bytes(2, "big"))
 
-                # Serialize each vote
-                for vote in voter_votes.votes:
-                    # gov_action_id: tx_hash + index
-                    data.extend(bytes.fromhex(vote.govActionId.txHashHex))
-                    data.extend(vote.govActionId.govActionIndex.to_bytes(4, "big"))
+            # Serialize each vote
+            for vote in voter_votes.votes:
+                # gov_action_id: tx_hash + index
+                data.extend(bytes.fromhex(vote.govActionId.txHashHex))
+                data.extend(vote.govActionId.govActionIndex.to_bytes(4, "big"))
 
-                    # voting_procedure: vote option
-                    data.append(vote.votingProcedure.vote)
+                # voting_procedure: vote option
+                data.append(vote.votingProcedure.vote)
 
-                    # anchor inclusion flag
-                    data.extend(self._serialize_anchor(vote.votingProcedure.anchor))
+                # anchor inclusion flag
+                data.extend(self._serialize_anchor(vote.votingProcedure.anchor))
 
-        if getattr(tx, "treasury", None) is not None:
+        if tx.treasury is not None:
             data.extend(tx.treasury.to_bytes(8, "big"))
 
-        if getattr(tx, "donation", None) is not None:
+        if tx.donation is not None:
             data.extend(tx.donation.to_bytes(8, "big"))
 
         return bytes(data)
@@ -868,9 +1411,9 @@ class CommandBuilder:
         )
 
         output_data.extend(tx_output.amount.to_bytes(8, "big"))
-        output_data.append(tx_output.format if hasattr(tx_output, "format") else 0)
+        output_data.append(tx_output.format)
 
-        has_datum = hasattr(tx_output, "datum") and tx_output.datum is not None
+        has_datum = tx_output.datum is not None
         output_data.append(FLAG_INCLUDED_YES if has_datum else FLAG_INCLUDED_NO)
         has_ref_script = (
             isinstance(tx_output, TxOutputBabbage)
@@ -878,9 +1421,7 @@ class CommandBuilder:
         )
         output_data.append(FLAG_INCLUDED_YES if has_ref_script else FLAG_INCLUDED_NO)
 
-        num_asset_groups = (
-            len(tx_output.tokenBundle) if hasattr(tx_output, "tokenBundle") else 0
-        )
+        num_asset_groups = len(tx_output.tokenBundle)
         output_data.extend(num_asset_groups.to_bytes(2, "big"))
 
         if num_asset_groups > 0:
@@ -1187,8 +1728,6 @@ class CommandBuilder:
         Returns:
             Serial data APDU
         """
-        from tests.standalone.input_files.signMsg import MessageAddressFieldType
-
         data = bytearray()
 
         # Message length (4 bytes BE)

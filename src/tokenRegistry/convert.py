@@ -26,8 +26,8 @@ def tokenLine(tokenEntry):
     subject = bytes.fromhex(tokenEntry["assetSubject"])
     fingerprint = hashlib.blake2b(subject, digest_size=20).digest()
 
-    policyId = subject[0:28]
-    assetName = subject[28:]
+    # policyId = subject[0:28]
+    # assetName = subject[28:]
     # print(f"{policyId.hex()},   {assetName.hex()},   {fingerprint.hex()},   {bytestringToC(policyId)},   {bytestringToC(assetName)}")
 
     if "ticker" in tokenEntry and len(tokenEntry["ticker"]) > 0:

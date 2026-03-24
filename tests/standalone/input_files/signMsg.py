@@ -7,39 +7,22 @@
 This module provides Ragger tests for Sign Message
 """
 
-from enum import IntEnum
 from typing import List, Optional
 from dataclasses import dataclass, field
 
 from ragger.navigator import NavInsID
 
-from tests.standalone.input_files.derive_address import DeriveAddressTestCase
-from tests.application_client.app_def import AddressType, Mainnet
+from tests.application_client.command_builder import AddressParams, AddressType, Mainnet
 from tests.application_client.security_warnings import WarningBit
 from tests.application_client.status_words import StatusWord
 from tests.application_client.command_builder import (
     CommandBuilder,
     InsType,
+    MessageAddressFieldType,
+    MessageData,
     P1Type,
     P2Type,
 )
-
-
-class MessageAddressFieldType(IntEnum):
-    ADDRESS = 0x01
-    KEY_HASH = 0x02
-
-
-@dataclass
-class MessageData:
-    """CIP-8 message signing"""
-
-    messageHex: str
-    signingPath: str
-    hashPayload: bool
-    isAscii: bool
-    addressFieldType: MessageAddressFieldType
-    addressDesc: Optional[DeriveAddressTestCase] = None
 
 
 @dataclass
@@ -448,8 +431,7 @@ signMsgTestCases = [
             hashPayload=False,
             isAscii=False,
             addressFieldType=MessageAddressFieldType.ADDRESS,
-            addressDesc=DeriveAddressTestCase(
-                name="",
+            addressDesc=AddressParams(
                 netDesc=Mainnet,
                 addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
                 spendingValue="m/1852'/1815'/0'/0/1",
@@ -483,8 +465,7 @@ signMsgTestCases = [
             hashPayload=False,
             isAscii=False,
             addressFieldType=MessageAddressFieldType.ADDRESS,
-            addressDesc=DeriveAddressTestCase(
-                name="",
+            addressDesc=AddressParams(
                 netDesc=Mainnet,
                 addrType=AddressType.REWARD_KEY,
                 spendingValue="",
@@ -805,8 +786,7 @@ signMsgDenyTestCases = [
             hashPayload=False,
             isAscii=False,
             addressFieldType=MessageAddressFieldType.ADDRESS,
-            addressDesc=DeriveAddressTestCase(
-                name="",
+            addressDesc=AddressParams(
                 netDesc=Mainnet,
                 addrType=AddressType.POINTER_KEY,  # POINTER_KEY: parsing will fail due to missing blockchain pointer data
                 spendingValue="m/1852'/1815'/0'/0/1",
@@ -823,8 +803,7 @@ signMsgDenyTestCases = [
             hashPayload=False,
             isAscii=False,
             addressFieldType=MessageAddressFieldType.ADDRESS,
-            addressDesc=DeriveAddressTestCase(
-                name="",
+            addressDesc=AddressParams(
                 netDesc=Mainnet,
                 addrType=AddressType.BYRON,  # BYRON not allowed by policyForSignMsg
                 spendingValue="m/44'/1815'/0'/0/1",
@@ -880,8 +859,7 @@ signMsgDenyTestCases = [
             hashPayload=False,
             isAscii=False,
             addressFieldType=MessageAddressFieldType.ADDRESS,
-            addressDesc=DeriveAddressTestCase(
-                name="",
+            addressDesc=AddressParams(
                 netDesc=Mainnet,
                 addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,  # Payment script: parsing will fail due to missing script hash
                 spendingValue="",  # Scripts don't have paths

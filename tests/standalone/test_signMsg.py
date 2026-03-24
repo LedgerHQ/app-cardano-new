@@ -17,7 +17,7 @@ from ledgered.devices import Device
 from ragger.navigator import Navigator, NavInsID
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
-from tests.application_client.app_def import AddressType, Mainnet
+from tests.application_client.command_builder import AddressType, Mainnet, MessageAddressFieldType
 from tests.application_client.status_words import StatusWord
 from tests.application_client.command_sender import CommandSender
 from tests.application_client.response_unpacker import unpack_sign_message_response
@@ -27,11 +27,11 @@ from tests.standalone.input_files.signMsg import (
     signMsgDenyTestCases,
     SignMsgTestCase,
     SignMsgDenyTestCase,
-    MessageAddressFieldType,
     build_sign_msg_init_apdu_for_deny,
 )
 
-from tests.standalone.test_derive_address import DeriveAddressTestCase
+from tests.application_client.command_builder import AddressParams
+from tests.standalone.input_files.derive_address import DeriveAddressTestCase
 
 from tests.standalone.utils import (
     idTestFunc,
@@ -206,9 +206,11 @@ def _check_result(
         address = derive_address(
             DeriveAddressTestCase(
                 name="sign_message_keyhash",
-                netDesc=Mainnet,
-                addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
-                spendingValue=testCase.msgData.signingPath,
+                params=AddressParams(
+                    netDesc=Mainnet,
+                    addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
+                    spendingValue=testCase.msgData.signingPath,
+                ),
             )
         )
         assert address_field == address[1:]

@@ -54,14 +54,14 @@ def test_derive_address(
 
     # Shelley test cases without confirmation don't require UI interaction (return mode only)
     if testCase in shelleyTestCasesNoConfirm and mode == "return":
-        response = client.derive_address(p1_type, testCase)
+        response = client.derive_address(p1_type, testCase.params)
         assert response and response.status == StatusWord.SWO_SUCCESS
         assert response.data == derive_address(testCase)
         return
 
     # Byron and Shelley with confirmation require navigation
     test_name = f"{testCase.name}-{mode}"
-    with client.derive_address_async(p1_type, testCase):
+    with client.derive_address_async(p1_type, testCase.params):
         scenario_navigator.address_review_approve(
             test_name=test_name, do_comparison=True
         )
@@ -85,6 +85,6 @@ def test_derive_address_deny(
     client = CommandSender(backend)
 
     with pytest.raises(ExceptionRAPDU) as err:
-        with client.derive_address_async(P1Type.P1_ADDRESS_RETURN, testCase):
+        with client.derive_address_async(testCase.p1, testCase.params):
             pass
     assert err.value.status == StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED

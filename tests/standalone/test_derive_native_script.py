@@ -25,15 +25,16 @@ from tests.application_client.response_unpacker import (
     unpack_derive_native_script_hash_response,
 )
 
-from tests.standalone.input_files.native_script import (
-    ValidNativeScriptTestCases,
-    ValidNativeScriptTestCase,
-)
-from tests.standalone.input_files.native_script import InvalidScriptTestCases
-from tests.standalone.input_files.native_script import NativeScript, NativeScriptType
-from tests.standalone.input_files.native_script import (
-    NativeScriptParamsScripts,
+from tests.application_client.command_builder import (
+    NativeScript,
     NativeScriptParamsNofK,
+    NativeScriptParamsScripts,
+    NativeScriptType,
+)
+from tests.standalone.input_files.native_script import (
+    InvalidScriptTestCases,
+    ValidNativeScriptTestCase,
+    ValidNativeScriptTestCases,
 )
 from tests.standalone.utils import (
     NavContext,

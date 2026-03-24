@@ -66,14 +66,13 @@ def _serialize_deny_test_case_to_apdu(test_case: Any) -> bytes:
         For deny tests, P1 parameter doesn't matter since the request
         should be denied before display logic is reached.
     """
-    from tests.application_client.command_builder import CommandBuilder, P1Type  # type: ignore
+    from tests.application_client.command_builder import CommandBuilder  # type: ignore
 
     command_builder = CommandBuilder()
 
-    # Use P1_ADDRESS_RETURN for deny tests (simpler, display shouldn't be reached)
     complete_apdu_command = command_builder.derive_address(
-        P1Type.P1_ADDRESS_RETURN,
-        test_case,
+        test_case.p1,
+        test_case.params,
     )
 
     return complete_apdu_command
@@ -203,13 +202,13 @@ def _generate_fixture_code_for_deny_test_case(
     )
     code_lines.append(f"// Deny Test {test_number}: {test_case.name}")
     code_lines.append(f"// Expected deny SW: {deny_reason}")
-    code_lines.append(f"// Address Type: {test_case.addrType.name}")
+    code_lines.append(f"// Address Type: {test_case.params.addrType.name}")
     code_lines.append(
         f"// Source: tests/standalone/input_files/derive_address.py > deny tests > {test_case.name}"
     )
-    code_lines.append(f"// Spending: {test_case.spendingValue}")
-    if test_case.stakingValue:
-        code_lines.append(f"// Staking: {test_case.stakingValue}")
+    code_lines.append(f"// Spending: {test_case.params.spendingValue}")
+    if test_case.params.stakingValue:
+        code_lines.append(f"// Staking: {test_case.params.stakingValue}")
     code_lines.append(
         "// ----------------------------------------------------------------------"
     )
@@ -273,7 +272,8 @@ def _build_deny_fixtures_header() -> str:
         '#include "test_fixture_types.h"',
         '#include "cardano_swo.h"',
         "",
-        f"#define P1_ADDRESS_RETURN  0x{int(P1Type.P1_ADDRESS_RETURN):02X}",
+        f"#define P1_ADDRESS_RETURN   0x{int(P1Type.P1_ADDRESS_RETURN):02X}",
+        f"#define P1_ADDRESS_DISPLAY  0x{int(P1Type.P1_ADDRESS_DISPLAY):02X}",
         "// ======================================================================",
         "// Address Derivation Deny Test Fixtures",
         "// ======================================================================",
@@ -311,8 +311,9 @@ def _build_deny_fixtures_header() -> str:
         )
         header_lines.append("{")
 
+        p1_name = "P1_ADDRESS_DISPLAY" if test_case.p1 == int(P1Type.P1_ADDRESS_DISPLAY) else "P1_ADDRESS_RETURN"
         header_lines.append(f'    .name = "{test_case.name}",')
-        header_lines.append("    .p1 = P1_ADDRESS_RETURN,")
+        header_lines.append(f"    .p1 = {p1_name},")
         header_lines.append(f"    .data = {payload_array_name},")
         header_lines.append(f"    .data_len = sizeof({payload_array_name}),")
         header_lines.append(f"    .check_expected = {deny_reason},")

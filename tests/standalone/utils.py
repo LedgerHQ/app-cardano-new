@@ -21,7 +21,7 @@ from ledgered.devices import Device
 from ragger.bip.seed import SPECULOS_MNEMONIC
 from ragger.backend import BackendInterface
 
-from tests.application_client.app_def import AddressType
+from tests.application_client.command_builder import AddressType
 
 from tests.standalone.input_files.derive_address import DeriveAddressTestCase
 from tests.standalone.input_files.pubkey import PubKeyTestCase
@@ -421,7 +421,7 @@ def derive_address(testCase: DeriveAddressTestCase) -> Union[bytes, str]:
         The derived address
     """
 
-    if testCase.addrType == AddressType.BYRON:
+    if testCase.params.addrType == AddressType.BYRON:
         return _deriveAddressByron(testCase)
     return _deriveAddressShelley(testCase)
 
@@ -438,7 +438,7 @@ def _deriveAddressByron(testCase: DeriveAddressTestCase) -> str:
     bip44_mst_ctx = Bip44.FromSeed(seed_bytes, Bip44Coins.CARDANO_BYRON_LEDGER)
 
     # Derive the key for the specified path
-    bip32Path: Bip32Path = Bip32PathParser.Parse(testCase.spendingValue).ToList()
+    bip32Path: Bip32Path = Bip32PathParser.Parse(testCase.params.spendingValue).ToList()
     bip44_acc = bip44_mst_ctx.Purpose().Coin().Account(bip32Path[2])
     bip44_chg = bip44_acc.Change(
         Bip44Changes.CHAIN_EXT if bip32Path[3] == 0 else Bip44Changes.CHAIN_INT
@@ -451,21 +451,22 @@ def _deriveAddressByron(testCase: DeriveAddressTestCase) -> str:
 
 def _deriveAddressShelley(testCase: DeriveAddressTestCase) -> bytes:
     """Derive the Shelley base address from the path"""
-    key = f"{(int(testCase.addrType) << 4) | int(testCase.netDesc.networkId):02x}"
-    if testCase.spendingValue.startswith("m/"):
-        pk, _ = get_device_pubkey(testCase.spendingValue)
+    params = testCase.params
+    key = f"{(int(params.addrType) << 4) | int(params.netDesc.networkId):02x}"
+    if params.spendingValue.startswith("m/"):
+        pk, _ = get_device_pubkey(params.spendingValue)
         key += hashlib.blake2b(pk, digest_size=28).digest().hex()
     else:
-        key += testCase.spendingValue
-    if testCase.addrType in (AddressType.POINTER_KEY, AddressType.POINTER_SCRIPT):
-        key += _appenduint32(int(testCase.stakingValue[0:8], 16))
-        key += _appenduint32(int(testCase.stakingValue[8:16], 16))
-        key += _appenduint32(int(testCase.stakingValue[16:24], 16))
-    elif testCase.stakingValue.startswith("m/"):
-        pk, _ = get_device_pubkey(testCase.stakingValue)
+        key += params.spendingValue
+    if params.addrType in (AddressType.POINTER_KEY, AddressType.POINTER_SCRIPT):
+        key += _appenduint32(int(params.stakingValue[0:8], 16))
+        key += _appenduint32(int(params.stakingValue[8:16], 16))
+        key += _appenduint32(int(params.stakingValue[16:24], 16))
+    elif params.stakingValue.startswith("m/"):
+        pk, _ = get_device_pubkey(params.stakingValue)
         key += hashlib.blake2b(pk, digest_size=28).digest().hex()
     else:
-        key += testCase.stakingValue
+        key += params.stakingValue
     return bytes.fromhex(key)
 
 
