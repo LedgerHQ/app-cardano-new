@@ -688,12 +688,19 @@ def _verify_ragger_test_coverage() -> None:
 
 
 def run_all() -> None:
+    # Regenerate mock data first so that updated MOCK_TX_HASH_* constants in
+    # crypto_mock_data.h produce correct signatures before the fixture headers
+    # are written.  A second pass at the end picks up any hash constants that
+    # were introduced by this very run.
+    _log_stage("Regenerating mock data (pre-pass)")
+    regenerate_mock_data()
+
     _log_stage("Generating fixtures")
     for cmd in COMMAND_REGISTRY:
         for gen in cmd.fixture_generators:
             count = gen()
             if count is not None:
-                # We do not add fixture counts to generated_entries_count because 
+                # We do not add fixture counts to generated_entries_count because
                 # the test_runner_generators (or deny_generators) will tally the actual test count.
                 pass
 
@@ -713,7 +720,7 @@ def run_all() -> None:
                 if not has_deny_runner:
                     cmd.generated_entries_count += count
 
-    _log_stage("Regenerating mock data")
+    _log_stage("Regenerating mock data (post-pass)")
     regenerate_mock_data()
     _log_stage("Verifying Ragger coverage")
     _verify_ragger_test_coverage()

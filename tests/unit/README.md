@@ -104,7 +104,7 @@ Notes:
 the app will compute from the `tx=Transaction(...)` parameters — any mismatch causes the unit test
 to fail with a hash comparison error.
 
-**Option A: derive from an existing fixture** (preferred for small variations):
+**Option A: derive from an existing fixture** (only safe when no APDU-encoded fields change):
 
 ```python
 import cbor2, hashlib
@@ -122,10 +122,18 @@ print("hash:  ", hashlib.new('blake2b', data=new_body, digest_size=32).hexdigest
 
 Run with `source tests/venv/bin/activate && python3 -c "..."` (cbor2 is available in the venv).
 
-**Option B: capture from a unit test run** (most reliable for complex transactions):
+> **Warning — APDU encoding ≠ CBOR encoding for some fields.** Certain fields are encoded
+> differently in the APDU wire format than they appear in canonical CBOR. For example, IPv6
+> addresses in pool relays are transmitted as raw bytes in a fixed wire order by the client
+> (`command_builder.py`), but the app stores and hashes them in a different byte order.
+> Mutating the CBOR directly will produce the wrong bytes for those fields.
+> Use Option B for any fixture that involves relays, or any other field where the app
+> performs a transformation between the APDU and the CBOR it emits.
 
-Add the fixture with a placeholder `txBody` (any valid hex), build and run the unit test, then
-read the exact body from the trace log:
+**Option B: capture from a unit test run** (most reliable, use for any complex or relay-containing transaction):
+
+Add the fixture with a placeholder `txBody` (any valid hex string of the right approximate length),
+build and run the unit test, then read the exact body from the trace log:
 
 ```
 [txHashBuilder_finalize:NNNN] tx_body (NNN bytes)
@@ -137,29 +145,37 @@ Copy that hex as the `txBody` value. The printed hash matches `expected_hash_hex
 ### Step-by-step guide for adding or modifying a sign-tx fixture
 
 1. **Edit `tests/standalone/input_files/signTx.py`** — add or update the `SignTxTestCase`. Do not
-   remove existing test cases. Ensure `txBody` matches the transaction structure (see above).
+   remove existing test cases. For `txBody`, use Option B above: put a placeholder, run the test,
+   capture the correct hex from the `txHashBuilder_finalize` trace, then update `txBody`.
 
-2. **Update `MOCK_TX_HASH_*` in `tests/unit/mock_crypto/crypto_mock_data.h`** — if the txBody
-   changed or is new, update the corresponding `static const uint8_t MOCK_TX_HASH_FOO[]` constant
-   to the blake2b-256 of the new txBody hex:
+2. **Update `MOCK_TX_HASH_*` in `tests/unit/mock_crypto/crypto_mock_data.h`** — for every fixture
+   whose txBody changed or is new, update the corresponding
+   `static const uint8_t MOCK_TX_HASH_FOO[]` constant to the blake2b-256 of the new txBody hex.
+   These named constants are **not** regenerated automatically; they must be edited by hand.
+   Compute the hash with:
    ```python
    import hashlib
    hashlib.blake2b(bytes.fromhex("<txbody_hex>"), digest_size=32).hexdigest()
    ```
+   The correct value is also printed as `expected_hash_hex` in the generated fixture header after
+   the first generator run.
 
 3. **Update `MOCK_SIGNATURES[]` in `crypto_mock_data.h`** — for each PATH-type witness the test
    will request, add an entry pointing to the updated hash constant. Use zero bytes for `.signature`;
    the generator will fill them in. Path encoding example:
    `m/1852'/1815'/0'/0/0` → `{0x8000073c, 0x80000717, 0x80000000, 0x00000000, 0x00000000}`.
 
-4. **Regenerate mock data first**, then the full generator (from repository root):
+4. **Run the generator twice, in order** (from repository root):
    ```bash
    source tests/venv/bin/activate
+   # First pass: regenerate signatures for the updated MOCK_TX_HASH_* constants
    python3 -m tests.unit.generators.generate_unit_tests_from_ragger mock-data
-   python3 -m tests.unit.generators.generate_unit_tests_from_ragger
+   # Second pass: regenerate fixture headers (picks up the new signatures)
+   python3 -m tests.unit.generators.generate_unit_tests_from_ragger all
    ```
-   The `mock-data` pass must run before the `fixtures` pass so that real signatures are available
-   when the C fixture headers are written.
+   The `mock-data` pass **must** run before the `all` pass so that real signatures are available
+   when the C fixture headers are written. Running `all` alone (without updating the hash constant
+   first) will write the wrong signature into the C fixture.
 
 5. **Build and run** (from `tests/unit`):
    ```bash
