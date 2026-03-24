@@ -636,9 +636,14 @@ def _verify_ragger_test_coverage() -> None:
     )
 
     if missing_coverage:
+        print("\n" + "=" * _REPORT_WIDTH)
         print(
-            f"\n  WARNING: {len(missing_coverage)} test function(s) lack unit test coverage:"
+            ("WARNING: "
+             f"{len(missing_coverage)} test function(s) lack unit test coverage").center(
+                _REPORT_WIDTH
+            )
         )
+        print("=" * _REPORT_WIDTH)
         for test in missing_coverage:
             print(f"    - {test}")
 

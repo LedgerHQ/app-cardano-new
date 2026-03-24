@@ -207,29 +207,29 @@ static void test_pubkey_without_confirmation_export_pubkey_cvote_keys_path_1_8(v
     run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_WITHOUT_CONFIRMATION[8]);
 }
 
-static void test_pubkey_without_confirmation_export_pubkey_drep_key_path_0_silent_9(void **state) {
+static void test_pubkey_confirm_even_with_silent_export_export_pubkey_drep_key_path_0_silent_0(void **state) {
     (void) state;
-    run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_WITHOUT_CONFIRMATION[9]);
+    run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_CONFIRM_EVEN_WITH_SILENT_EXPORT[0]);
 }
 
-static void test_pubkey_without_confirmation_export_pubkey_committee_cold_key_path_0_silent_10(void **state) {
+static void test_pubkey_confirm_even_with_silent_export_export_pubkey_committee_cold_key_path_0_silent_1(void **state) {
     (void) state;
-    run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_WITHOUT_CONFIRMATION[10]);
+    run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_CONFIRM_EVEN_WITH_SILENT_EXPORT[1]);
 }
 
-static void test_pubkey_without_confirmation_export_pubkey_committee_hot_key_path_0_silent_11(void **state) {
+static void test_pubkey_confirm_even_with_silent_export_export_pubkey_committee_hot_key_path_0_silent_2(void **state) {
     (void) state;
-    run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_WITHOUT_CONFIRMATION[11]);
+    run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_CONFIRM_EVEN_WITH_SILENT_EXPORT[2]);
 }
 
-static void test_pubkey_without_confirmation_export_pubkey_mint_key_path_0_silent_12(void **state) {
+static void test_pubkey_confirm_even_with_silent_export_export_pubkey_mint_key_path_0_silent_3(void **state) {
     (void) state;
-    run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_WITHOUT_CONFIRMATION[12]);
+    run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_CONFIRM_EVEN_WITH_SILENT_EXPORT[3]);
 }
 
-static void test_pubkey_without_confirmation_export_pubkey_cold_case_silent_13(void **state) {
+static void test_pubkey_confirm_even_with_silent_export_export_pubkey_cold_case_silent_4(void **state) {
     (void) state;
-    run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_WITHOUT_CONFIRMATION[13]);
+    run_fixture(&PUBKEY_FIXTURES_TEST_PUBKEY_CONFIRM_EVEN_WITH_SILENT_EXPORT[4]);
 }
 
 // ======================================================================
@@ -275,11 +275,11 @@ int main(void) {
         cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_multisig_staking_path_0_6),
         cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_cvote_keys_path_2_7),
         cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_cvote_keys_path_1_8),
-        cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_drep_key_path_0_silent_9),
-        cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_committee_cold_key_path_0_silent_10),
-        cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_committee_hot_key_path_0_silent_11),
-        cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_mint_key_path_0_silent_12),
-        cmocka_unit_test(test_pubkey_without_confirmation_export_pubkey_cold_case_silent_13),
+        cmocka_unit_test(test_pubkey_confirm_even_with_silent_export_export_pubkey_drep_key_path_0_silent_0),
+        cmocka_unit_test(test_pubkey_confirm_even_with_silent_export_export_pubkey_committee_cold_key_path_0_silent_1),
+        cmocka_unit_test(test_pubkey_confirm_even_with_silent_export_export_pubkey_committee_hot_key_path_0_silent_2),
+        cmocka_unit_test(test_pubkey_confirm_even_with_silent_export_export_pubkey_mint_key_path_0_silent_3),
+        cmocka_unit_test(test_pubkey_confirm_even_with_silent_export_export_pubkey_cold_case_silent_4),
     };
     return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }

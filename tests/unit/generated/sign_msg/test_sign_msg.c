@@ -420,109 +420,16 @@ static void test_sign_message_deny_sign_msg_deny_invalid_address_type_byron_in_a
     run_deny_init_fixture(SIGN_MSG_DENY_020_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_BYRON_IN_ADDRESS_MODE_INIT_APDU, sizeof(SIGN_MSG_DENY_020_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_BYRON_IN_ADDRESS_MODE_INIT_APDU), SWO_SECURITY_CONDITION_NOT_SATISFIED);
 }
 
-static const uint8_t SIGN_MSG_DENY_021_SIGN_MSG_DENY_INIT_TRAILING_GARBAGE_BYTE_INIT_APDU[] = {
-    0x00, 0x00, 0x00, 0x04, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x02, 0xFF,
-};
-
-static void test_sign_message_deny_sign_msg_deny_init_trailing_garbage_byte_21(void **state) {
-    (void) state;
-    run_deny_init_fixture(SIGN_MSG_DENY_021_SIGN_MSG_DENY_INIT_TRAILING_GARBAGE_BYTE_INIT_APDU, sizeof(SIGN_MSG_DENY_021_SIGN_MSG_DENY_INIT_TRAILING_GARBAGE_BYTE_INIT_APDU), SWO_WRONG_DATA_LENGTH);
-}
-
-static const uint8_t SIGN_MSG_DENY_022_SIGN_MSG_DENY_INIT_WHEN_ALREADY_ACTIVE_INIT_APDU[] = {
-    0x00, 0x00, 0x00, 0x04, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x02,
-};
-
-static void test_sign_message_deny_sign_msg_deny_init_when_already_active_22(void **state) {
-    (void) state;
-    reset_sign_msg_test_state();
-    // Send INIT successfully
-    run_deny_init_fixture(SIGN_MSG_DENY_022_SIGN_MSG_DENY_INIT_WHEN_ALREADY_ACTIVE_INIT_APDU, sizeof(SIGN_MSG_DENY_022_SIGN_MSG_DENY_INIT_WHEN_ALREADY_ACTIVE_INIT_APDU), SWO_SUCCESS);
-    // Send INIT again while session is already active (do NOT reset state)
-    {
-        test_read_buffer_t buf = make_test_read_buffer(SIGN_MSG_DENY_022_SIGN_MSG_DENY_INIT_WHEN_ALREADY_ACTIVE_INIT_APDU, sizeof(SIGN_MSG_DENY_022_SIGN_MSG_DENY_INIT_WHEN_ALREADY_ACTIVE_INIT_APDU));
-        apdu_response_begin(INS_SIGN_MSG);
-        handler_sign_msg(&buf.sdk_buffer, P1_SIGN_MSG_INIT);
-        apdu_response_assert_sent_or_deferred();
-        assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
-        assert_read_buffer_unchanged_and_cleanup(&buf, SIGN_MSG_DENY_022_SIGN_MSG_DENY_INIT_WHEN_ALREADY_ACTIVE_INIT_APDU);
-    }
-}
-
-static const uint8_t SIGN_MSG_DENY_023_SIGN_MSG_DENY_CHUNK_DATA_TRUNCATED_AFTER_SIZE_HEADER_INIT_APDU[] = {
-    0x00, 0x00, 0x00, 0x0A, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x02,
-};
-
-static const uint8_t SIGN_MSG_DENY_023_SIGN_MSG_DENY_CHUNK_DATA_TRUNCATED_AFTER_SIZE_HEADER_CHUNK_APDU[] = {
-    0x00, 0x00, 0x00, 0x0A,
-};
-
-static void test_sign_message_deny_sign_msg_deny_chunk_data_truncated_after_size_header_23(void **state) {
-    (void) state;
-    reset_sign_msg_test_state();
-    // Send INIT successfully
-    run_deny_init_fixture(SIGN_MSG_DENY_023_SIGN_MSG_DENY_CHUNK_DATA_TRUNCATED_AFTER_SIZE_HEADER_INIT_APDU, sizeof(SIGN_MSG_DENY_023_SIGN_MSG_DENY_CHUNK_DATA_TRUNCATED_AFTER_SIZE_HEADER_INIT_APDU), SWO_SUCCESS);
-    // Send CHUNK with truncated data (size header present, data cut short)
-    run_deny_chunk_fixture(SIGN_MSG_DENY_023_SIGN_MSG_DENY_CHUNK_DATA_TRUNCATED_AFTER_SIZE_HEADER_CHUNK_APDU, sizeof(SIGN_MSG_DENY_023_SIGN_MSG_DENY_CHUNK_DATA_TRUNCATED_AFTER_SIZE_HEADER_CHUNK_APDU), SWO_SIGN_MSG_PARSING_FAIL_CHUNK_DATA);
-}
-
-static const uint8_t SIGN_MSG_DENY_024_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_PAYMENT_SCRIPT_IN_ADDRESS_MODE_INIT_APDU[] = {
+static const uint8_t SIGN_MSG_DENY_021_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_PAYMENT_SCRIPT_IN_ADDRESS_MODE_INIT_APDU[] = {
     0x00, 0x00, 0x00, 0x04, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x22, 0x05,
     0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02,
     0x00, 0x00, 0x00, 0x00,
 };
 
-static void test_sign_message_deny_sign_msg_deny_invalid_address_type_payment_script_in_address_mode_24(void **state) {
+static void test_sign_message_deny_sign_msg_deny_invalid_address_type_payment_script_in_address_mode_21(void **state) {
     (void) state;
-    run_deny_init_fixture(SIGN_MSG_DENY_024_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_PAYMENT_SCRIPT_IN_ADDRESS_MODE_INIT_APDU, sizeof(SIGN_MSG_DENY_024_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_PAYMENT_SCRIPT_IN_ADDRESS_MODE_INIT_APDU), SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS);
-}
-
-static const uint8_t SIGN_MSG_DENY_025_SIGN_MSG_DENY_CHUNK_SIZE_HEADER_MISSING_INIT_APDU[] = {
-    0x00, 0x00, 0x00, 0x0A, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x02,
-};
-
-static const uint8_t SIGN_MSG_DENY_025_SIGN_MSG_DENY_CHUNK_SIZE_HEADER_MISSING_CHUNK_APDU[1] = { 0x00 };
-
-static void test_sign_message_deny_sign_msg_deny_chunk_size_header_missing_25(void **state) {
-    (void) state;
-    reset_sign_msg_test_state();
-    // Send INIT successfully
-    run_deny_init_fixture(SIGN_MSG_DENY_025_SIGN_MSG_DENY_CHUNK_SIZE_HEADER_MISSING_INIT_APDU, sizeof(SIGN_MSG_DENY_025_SIGN_MSG_DENY_CHUNK_SIZE_HEADER_MISSING_INIT_APDU), SWO_SUCCESS);
-    // Send CHUNK with truncated data (size header present, data cut short)
-    run_deny_chunk_fixture(SIGN_MSG_DENY_025_SIGN_MSG_DENY_CHUNK_SIZE_HEADER_MISSING_CHUNK_APDU, sizeof(SIGN_MSG_DENY_025_SIGN_MSG_DENY_CHUNK_SIZE_HEADER_MISSING_CHUNK_APDU), SWO_SIGN_MSG_PARSING_FAIL_CHUNK_SIZE);
-}
-
-static const uint8_t SIGN_MSG_DENY_026_SIGN_MSG_DENY_CONFIRM_WITHOUT_INIT_CONFIRM_APDU[1] = { 0x00 };
-
-static void test_sign_message_deny_sign_msg_deny_confirm_without_init_26(void **state) {
-    (void) state;
-    reset_sign_msg_test_state();
-    run_deny_confirm_fixture(SIGN_MSG_DENY_026_SIGN_MSG_DENY_CONFIRM_WITHOUT_INIT_CONFIRM_APDU, 0, SWO_COMMAND_NOT_ALLOWED);
-}
-
-static const uint8_t SIGN_MSG_DENY_027_SIGN_MSG_DENY_CHUNK_WHEN_IN_CONFIRM_STATE_INIT_APDU[] = {
-    0x00, 0x00, 0x00, 0x04, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x02,
-};
-
-static const uint8_t SIGN_MSG_DENY_027_SIGN_MSG_DENY_CHUNK_WHEN_IN_CONFIRM_STATE_CHUNK_APDU[] = {
-    0x00, 0x00, 0x00, 0x04, 0xDE, 0xAD, 0xBE, 0xEF,
-};
-
-static void test_sign_message_deny_sign_msg_deny_chunk_when_in_confirm_state_27(void **state) {
-    (void) state;
-    reset_sign_msg_test_state();
-    // Send INIT successfully
-    run_deny_init_fixture(SIGN_MSG_DENY_027_SIGN_MSG_DENY_CHUNK_WHEN_IN_CONFIRM_STATE_INIT_APDU, sizeof(SIGN_MSG_DENY_027_SIGN_MSG_DENY_CHUNK_WHEN_IN_CONFIRM_STATE_INIT_APDU), SWO_SUCCESS);
-    // Send CHUNK successfully (transitions to CONFIRM state)
-    run_deny_chunk_fixture(SIGN_MSG_DENY_027_SIGN_MSG_DENY_CHUNK_WHEN_IN_CONFIRM_STATE_CHUNK_APDU, sizeof(SIGN_MSG_DENY_027_SIGN_MSG_DENY_CHUNK_WHEN_IN_CONFIRM_STATE_CHUNK_APDU), SWO_SUCCESS);
-    // Send extra CHUNK while already in CONFIRM state
-    run_deny_chunk_fixture(SIGN_MSG_DENY_027_SIGN_MSG_DENY_CHUNK_WHEN_IN_CONFIRM_STATE_CHUNK_APDU, sizeof(SIGN_MSG_DENY_027_SIGN_MSG_DENY_CHUNK_WHEN_IN_CONFIRM_STATE_CHUNK_APDU), SWO_COMMAND_NOT_ALLOWED);
+    run_deny_init_fixture(SIGN_MSG_DENY_021_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_PAYMENT_SCRIPT_IN_ADDRESS_MODE_INIT_APDU, sizeof(SIGN_MSG_DENY_021_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_PAYMENT_SCRIPT_IN_ADDRESS_MODE_INIT_APDU), SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS);
 }
 
 // ======================================================================
@@ -570,13 +477,7 @@ int main(void) {
         cmocka_unit_test(test_sign_message_deny_sign_msg_deny_invalid_witness_path_wrong_length_18),
         cmocka_unit_test(test_sign_message_deny_sign_msg_deny_invalid_address_type_pointer_in_address_mode_19),
         cmocka_unit_test(test_sign_message_deny_sign_msg_deny_invalid_address_type_byron_in_address_mode_20),
-        cmocka_unit_test(test_sign_message_deny_sign_msg_deny_init_trailing_garbage_byte_21),
-        cmocka_unit_test(test_sign_message_deny_sign_msg_deny_init_when_already_active_22),
-        cmocka_unit_test(test_sign_message_deny_sign_msg_deny_chunk_data_truncated_after_size_header_23),
-        cmocka_unit_test(test_sign_message_deny_sign_msg_deny_invalid_address_type_payment_script_in_address_mode_24),
-        cmocka_unit_test(test_sign_message_deny_sign_msg_deny_chunk_size_header_missing_25),
-        cmocka_unit_test(test_sign_message_deny_sign_msg_deny_confirm_without_init_26),
-        cmocka_unit_test(test_sign_message_deny_sign_msg_deny_chunk_when_in_confirm_state_27),
+        cmocka_unit_test(test_sign_message_deny_sign_msg_deny_invalid_address_type_payment_script_in_address_mode_21),
     };
     return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }

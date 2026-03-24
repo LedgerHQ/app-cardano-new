@@ -349,6 +349,26 @@ static void test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_reje
     run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_MIXED_SCRIPT_HASH_CERTIFICATES_IN_PLUTUS_MODE, true);
 }
 
+static void test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_MISSING_SCRIPT_HASH_CONWAY_CERTIFICATES_IN_PLUTUS_MODE, false);
+}
+
+static void test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_MISSING_SCRIPT_HASH_CONWAY_CERTIFICATES_IN_PLUTUS_MODE, false);
+}
+
+static void test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_MISSING_SCRIPT_HASH_CONWAY_CERTIFICATES_IN_PLUTUS_MODE, true);
+}
+
+static void test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_MISSING_SCRIPT_HASH_CONWAY_CERTIFICATES_IN_PLUTUS_MODE, true);
+}
+
 // ======================================================================
 // Main
 // ======================================================================
@@ -415,6 +435,10 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_expert_on),
         cmocka_unit_test(test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_expert_off),
+        cmocka_unit_test(test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_expert_on),
+        cmocka_unit_test(test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_reject_tx_expert_on),
     };
     return _cmocka_run_group_tests("test_sign_tx_conway", tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);
 }

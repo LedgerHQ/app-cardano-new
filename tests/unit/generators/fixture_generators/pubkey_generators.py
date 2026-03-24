@@ -51,6 +51,7 @@ def _load_public_key_test_cases() -> dict[str, PubKeyTestGroup]:
         testsCommitteeHotKeys,
         testsMintKeys,
         testsSilentExport,
+        testsSilentExportRareKeys,
     )
 
     confirm_tests = (
@@ -77,6 +78,11 @@ def _load_public_key_test_cases() -> dict[str, PubKeyTestGroup]:
             test_cases=testsSilentExport,
             silent_export_enabled=True,
             expected_policy="POLICY_HIDE",
+        ),
+        "test_pubkey_confirm_even_with_silent_export": PubKeyTestGroup(
+            test_cases=testsSilentExportRareKeys,
+            silent_export_enabled=True,
+            expected_policy="POLICY_SHOW",
         ),
     }
 
