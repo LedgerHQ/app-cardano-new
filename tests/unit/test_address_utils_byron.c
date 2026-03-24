@@ -131,6 +131,123 @@ static void test_extract_protocol_magic_invalid_crc32(void **state) {
         "82d818582183581cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e0136881a0001ad7ed912e");
 }
 
+// ======================== Additional Protocol Magic Extraction Failure Tests ========================
+
+static void test_extract_protocol_magic_outer_array_wrong_count(void **state) {
+    (void) state;
+    // Outer array has 3 elements instead of 2: 83 instead of 82
+    testcase_extractProtocolMagicFails(
+        "83d818582183581cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e0136881a0001ad7ed912f");
+}
+
+static void test_extract_protocol_magic_wrong_tag(void **state) {
+    (void) state;
+    // Tag 25 (0xd819) instead of tag 24 (0xd818)
+    testcase_extractProtocolMagicFails(
+        "82d919582183581cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e0136881a0001ad7ed912f");
+}
+
+static void test_extract_protocol_magic_payload_size_exceeds_remaining(void **state) {
+    (void) state;
+    // array(2), tag(24), bytes(33) — but only 5 bytes of data follow (far fewer than 33)
+    testcase_extractProtocolMagicFails("82d81858210102030405");
+}
+
+static void test_extract_protocol_magic_inner_array_wrong_count(void **state) {
+    (void) state;
+    // Inner array (inside embedded CBOR) has 2 elements instead of 3.
+    // Original inner payload starts with 83 (array of 3); change to 82 (array of 2).
+    // The embedded payload is: 83581cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e0136881a000
+    // Replace 83 with 82 at the right offset.
+    testcase_extractProtocolMagicFails(
+        "82d818582182581cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e0136881a0001ad7ed912f");
+}
+
+static void test_extract_protocol_magic_address_root_wrong_size(void **state) {
+    (void) state;
+    // Address root declared as 27 bytes (0x5b = bytes(27)) instead of 28
+    // Original: 581c = bytes(28); replace with 581b = bytes(27)
+    testcase_extractProtocolMagicFails(
+        "82d818582183581bb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e0136881a0001ad7ed912f");
+}
+
+static void test_extract_protocol_magic_address_root_truncated(void **state) {
+    (void) state;
+    // Address root declared as 28 bytes but buffer ends before all 28 are present.
+    // Keep the size token (581c) but supply only 20 bytes of root data.
+    testcase_extractProtocolMagicFails(
+        "82d818581683581cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e013");
+}
+
+static void test_extract_protocol_magic_protocol_magic_not_unsigned(void **state) {
+    (void) state;
+    // Protocol magic attribute (key 2) value contains CBOR bytes wrapping a text string
+    // instead of an unsigned int.
+    // Custom magic address: 82d818582583581c...a10242182a00...
+    // The attribute value bytes (0242182a) = bytes(2) containing 0x182a (uint 42).
+    // Replace the inner value with 0x62 (text "ab" = 0x6261) to trigger type mismatch.
+    testcase_extractProtocolMagicFails(
+        "82d818582583581cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e0136881a102426162001a2b7c56f6");
+}
+
+static void test_extract_protocol_magic_protocol_magic_extra_bytes_in_value(void **state) {
+    (void) state;
+    // Protocol magic attribute value bytes(3) contains uint(42) + extra 0x00 byte;
+    // sub-buffer not fully consumed → return false
+    testcase_extractProtocolMagicFails(
+        "82d818582683581c1cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e01368a10243182a00001ab5228dc5");
+}
+
+static void test_extract_protocol_magic_protocol_magic_too_large(void **state) {
+    (void) state;
+    // Protocol magic > UINT32_MAX: encode 0x1_0000_0000 as CBOR uint = 1b 0000000100000000
+    // Attribute value bytes: 09 1b0000000100000000
+    testcase_extractProtocolMagicFails(
+        "82d8185830" // array(2), tag(24), bytes(0x30 = 48)
+        "83581cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e013"
+        "6881a1" // map(1)
+        "02"    // key: 2
+        "49"    // bytes(9)
+        "1b000000010000000000" // uint64 = 0x1_0000_0000_0000 — way above UINT32_MAX
+        "001a2b7c56f6");
+}
+
+static void test_extract_protocol_magic_attribute_seek_fails(void **state) {
+    (void) state;
+    // Attribute value size token claims 5 bytes but buffer ends before them.
+    // Take the custom magic address, change value size from 2 to 5, truncate buffer.
+    testcase_extractProtocolMagicFails(
+        "82d818582583581cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e0136881a102");
+}
+
+static void test_extract_protocol_magic_address_type_not_unsigned(void **state) {
+    (void) state;
+    // Address type field should be CBOR unsigned; replace with CBOR bytes token.
+    // Original ends with "...881a0001ad7ed912f" where "00" is address type uint(0)
+    // and "1ad7ed912f" is the CRC. Replace "00" with "40" (bytes(0)) to fail type check.
+    testcase_extractProtocolMagicFails(
+        "82d818582183581cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e0136881a0040ad7ed912f");
+}
+
+static void test_extract_protocol_magic_address_type_parse_fails(void **state) {
+    (void) state;
+    // Buffer is truncated while parsing address type token.
+    // The address type appears to be unsigned with 4-byte value (0x1a), but only 2 bytes of the
+    // value are available in the buffer. When cbor_parseToken tries to read the full 5-byte token
+    // (1 byte tag + 4 bytes value), it only finds 4 bytes, so it returns false.
+    testcase_extractProtocolMagicFails(
+        "82d8185821" // outer array(2), tag(24), bytes(0x21)
+        "83581cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e0136881a000" // embedded CBOR (33 bytes)
+        "1aef29"); // incomplete CRC (needs 5 bytes: 1a + 4 bytes value, but only 4 available)
+}
+
+static void test_extract_protocol_magic_trailing_bytes(void **state) {
+    (void) state;
+    // Append an extra byte to an otherwise valid address (after CRC)
+    testcase_extractProtocolMagicFails(
+        "82d818582183581cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e0136881a0001ad7ed912f00");
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         // Protocol magic extraction success tests
@@ -146,6 +263,21 @@ int main(void) {
         cmocka_unit_test(test_extract_protocol_magic_too_many_attributes),
         cmocka_unit_test(test_extract_protocol_magic_attribute_not_bytes),
         cmocka_unit_test(test_extract_protocol_magic_invalid_crc32),
+
+        // Additional structural failure tests
+        cmocka_unit_test(test_extract_protocol_magic_outer_array_wrong_count),
+        cmocka_unit_test(test_extract_protocol_magic_wrong_tag),
+        cmocka_unit_test(test_extract_protocol_magic_payload_size_exceeds_remaining),
+        cmocka_unit_test(test_extract_protocol_magic_inner_array_wrong_count),
+        cmocka_unit_test(test_extract_protocol_magic_address_root_wrong_size),
+        cmocka_unit_test(test_extract_protocol_magic_address_root_truncated),
+        cmocka_unit_test(test_extract_protocol_magic_protocol_magic_not_unsigned),
+        cmocka_unit_test(test_extract_protocol_magic_protocol_magic_extra_bytes_in_value),
+        cmocka_unit_test(test_extract_protocol_magic_protocol_magic_too_large),
+        cmocka_unit_test(test_extract_protocol_magic_attribute_seek_fails),
+        cmocka_unit_test(test_extract_protocol_magic_address_type_not_unsigned),
+        cmocka_unit_test(test_extract_protocol_magic_address_type_parse_fails),
+        cmocka_unit_test(test_extract_protocol_magic_trailing_bytes),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

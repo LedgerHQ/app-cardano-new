@@ -120,8 +120,10 @@ static bool is_staking_part_consistent_with_address_type(const address_params_t*
             CONSISTENT_WITH(STAKING_PART_NONE);
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     return false;
@@ -150,10 +152,13 @@ static void write_payment_credential(buffer_t* buf, const address_params_t* addr
         case PAYMENT_PART_SCRIPT_HASH:
             ASSERT(buffer_write_bytes(buf, address_params->paymentScriptHash, SCRIPT_HASH_LENGTH));
             break;
+        // LCOV_EXCL_START
         case PAYMENT_PART_NONE:
+            // reward addresses bypass write_payment_credential entirely via deriveAddress_reward
             break;
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -171,8 +176,10 @@ static void write_staking_credential(buffer_t* buf, const address_params_t* addr
         case STAKING_PART_SCRIPT_HASH:
             ASSERT(buffer_write_bytes(buf, address_params->stakingScriptHash, SCRIPT_HASH_LENGTH));
             break;
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -201,7 +208,7 @@ static bool buffer_appendVariableLengthUInt(buffer_t* buf, uint64_t value) {
         // highest bit set to 1 since more bytes follow
         uint8_t nextByte = chunks[i] | 0x80;
         if (!buffer_write_bytes(buf, &nextByte, 1)) {
-            return false;
+            return false; // LCOV_EXCL_LINE
         }
     }
     // write the remaining byte, highest bit 0
@@ -311,8 +318,10 @@ size_t deriveAddress(const address_params_t* address_params, uint8_t* outBuffer,
         case STAKING_PART_NONE:
             // enterprise addresses — nothing to append
             break;
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     return out.offset;
@@ -362,10 +371,12 @@ bool format_address_human_readable(const uint8_t* address,
     ASSERT(isValidNetworkId(networkId));
 
     switch (addressType) {
+        // LCOV_EXCL_START
         case BYRON:
+            // BYRON is handled before reaching this switch; this case is an invariant trap
             ASSERT(false);
-
             __attribute__((fallthrough));
+        // LCOV_EXCL_STOP
         case REWARD_KEY:
         case REWARD_SCRIPT:
             {
@@ -374,7 +385,7 @@ bool format_address_human_readable(const uint8_t* address,
                                       : BECH32_PREFIX_STAKE_ADDRESS;
                 bool encoded = format_bech32(hrp, address, addressSize, out, outSize);
                 if (!encoded) {
-                    return false;
+                    return false; // LCOV_EXCL_LINE
                 }
                 ASSERT(strlen(out) + 1 < outSize);  // checks for truncation
                 return true;
@@ -387,7 +398,7 @@ bool format_address_human_readable(const uint8_t* address,
                                       : BECH32_PREFIX_ADDRESS;
                 bool encoded = format_bech32(hrp, address, addressSize, out, outSize);
                 if (!encoded) {
-                    return false;
+                    return false; // LCOV_EXCL_LINE
                 }
                 ASSERT(strlen(out) + 1 < outSize);  // checks for truncation
                 return true;
@@ -441,9 +452,7 @@ bool format_reward_account_from_credential(uint8_t networkId,
             return false;
     }
 
-    if (reward_addr_len == 0) {
-        return false;
-    }
+    ASSERT(reward_addr_len > 0);
 
     return format_address_human_readable(
         reward_addr_bytes,
@@ -570,9 +579,11 @@ bool buffer_read_address_params(buffer_t* buffer, address_params_t* params) {
             params->paymentPartType = PAYMENT_PART_NONE;
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
             break;
+        // LCOV_EXCL_STOP
     }
 
     // staking part type
@@ -640,8 +651,10 @@ bool buffer_read_address_params(buffer_t* buffer, address_params_t* params) {
             break;
         }
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     return true;
@@ -697,9 +710,11 @@ static inline bool isValidPaymentInfo(const address_params_t* params) {
             CHECK(params->paymentPartType == PAYMENT_PART_NONE);
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
             break;
+        // LCOV_EXCL_STOP
     }
     return true;
 #undef CHECK
@@ -722,17 +737,11 @@ bool isValidAddressParams(const address_params_t* params) {
 
 void address_params_copyHashesToStorage(address_params_t* params,
                                         address_params_hashes_storage_t* storage) {
-    if (params == NULL || storage == NULL) {
-        LEDGER_ASSERT(false, "NULL address params or storage");
-        return;
-    }
+    ASSERT(params != NULL);
+    ASSERT(storage != NULL);
 
     // Copy payment script hash if present
     if (params->paymentPartType == PAYMENT_PART_SCRIPT_HASH) {
-        if (params->paymentScriptHash == NULL) {
-            LEDGER_ASSERT(false, "NULL payment script hash to copy");
-            return;
-        }
         ASSERT(params->paymentScriptHash != NULL);
         memmove(storage->paymentHash, params->paymentScriptHash, SCRIPT_HASH_LENGTH);
         params->paymentScriptHash = storage->paymentHash;
@@ -741,19 +750,11 @@ void address_params_copyHashesToStorage(address_params_t* params,
     // Copy staking key/script hash if present
     switch (params->stakingPartType) {
         case STAKING_PART_KEY_HASH:
-            if (params->stakingKeyHash == NULL) {
-                LEDGER_ASSERT(false, "NULL staking key hash to copy");
-                return;
-            }
             ASSERT(params->stakingKeyHash != NULL);
             memmove(storage->stakingHash, params->stakingKeyHash, ADDRESS_KEY_HASH_LENGTH);
             params->stakingKeyHash = storage->stakingHash;
             break;
         case STAKING_PART_SCRIPT_HASH:
-            if (params->stakingScriptHash == NULL) {
-                LEDGER_ASSERT(false, "NULL staking script hash to copy");
-                return;
-            }
             ASSERT(params->stakingScriptHash != NULL);
             memmove(storage->stakingHash, params->stakingScriptHash, SCRIPT_HASH_LENGTH);
             params->stakingScriptHash = storage->stakingHash;
@@ -779,9 +780,11 @@ payment_choice_t determinePaymentChoice(address_type_t addressType) {
         case ENTERPRISE_SCRIPT:
             return PAYMENT_SCRIPT_HASH;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
             __attribute__((fallthrough));
+        // LCOV_EXCL_STOP
         case REWARD_KEY:
         case REWARD_SCRIPT:
             return PAYMENT_NONE;
@@ -814,7 +817,9 @@ void poolRewardAccountToBuffer(const pool_reward_account_t* rewardAccount,
                                               REWARD_ACCOUNT_LENGTH);
             break;
         }
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 }

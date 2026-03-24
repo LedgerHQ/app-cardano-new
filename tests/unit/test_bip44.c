@@ -186,6 +186,89 @@ static void test_bip44_max_depth_paths(void **state) {
     assert_string_equal(result, "m/44'/1815'/0'/0/0");
 }
 
+// ======================== bip44_pathsEqual tests ========================
+
+static void test_paths_equal_different_lengths(void **state) {
+    (void) state;
+
+    bip44_path_t lhs, rhs;
+    pathSpec_init(&lhs, (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1}, 5);
+    pathSpec_init(&rhs, (uint32_t[]){HD + 1852, HD + 1815, HD + 0}, 3);
+    assert_false(bip44_pathsEqual(&lhs, &rhs));
+}
+
+// ======================== bip44_classifyPath invalid/PATH_INVALID tests ========================
+
+static void testcase_classify_path_invalid(const uint32_t* pathArray, uint32_t pathLength) {
+    bip44_path_t pathSpec;
+    pathSpec_init(&pathSpec, pathArray, pathLength);
+    assert_int_equal(bip44_classifyPath(&pathSpec), PATH_INVALID);
+}
+
+static void test_classify_ordinary_path_length_4(void **state) {
+    (void) state;
+    // Ordinary wallet prefix (1852'/1815') but length 4 — neither account (3) nor full key (5)
+    testcase_classify_path_invalid(
+        (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0},
+        4);
+}
+
+static void test_classify_ordinary_path_non_hardened_account(void **state) {
+    (void) state;
+    // Ordinary wallet prefix but account is not hardened
+    testcase_classify_path_invalid(
+        (uint32_t[]){HD + 1852, HD + 1815, 0, 0, 0},
+        5);
+}
+
+static void test_classify_multisig_path_no_account(void **state) {
+    (void) state;
+    // Multisig prefix (1854'/1815') but path ends at coin type — no account component
+    testcase_classify_path_invalid(
+        (uint32_t[]){HD + 1854, HD + 1815},
+        2);
+}
+
+static void test_classify_multisig_path_non_hardened_account(void **state) {
+    (void) state;
+    // Multisig prefix (1854'/1815') but account is not hardened
+    testcase_classify_path_invalid(
+        (uint32_t[]){HD + 1854, HD + 1815, 0, 0, 0},
+        5);
+}
+
+static void test_classify_multisig_path_length_4(void **state) {
+    (void) state;
+    // Multisig prefix but length 4 — neither account (3) nor full key (5)
+    testcase_classify_path_invalid(
+        (uint32_t[]){HD + 1854, HD + 1815, HD + 0, 0},
+        4);
+}
+
+static void test_classify_cvote_path_no_account(void **state) {
+    (void) state;
+    // CVote prefix (1694'/1815') but path ends at coin type — no account component
+    testcase_classify_path_invalid(
+        (uint32_t[]){HD + 1694, HD + 1815},
+        2);
+}
+
+static void test_classify_cvote_path_non_hardened_account(void **state) {
+    (void) state;
+    // CVote prefix (1694'/1815') but account is not hardened
+    testcase_classify_path_invalid(
+        (uint32_t[]){HD + 1694, HD + 1815, 0, 3, 0},
+        5);
+}
+
+static void test_classify_cvote_path_length_4(void **state) {
+    (void) state;
+    // CVote prefix but length 4 — neither account (3) nor full key (5)
+    testcase_classify_path_invalid(
+        (uint32_t[]){HD + 1694, HD + 1815, HD + 0, 3},
+        4);
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_bip44_simple_paths),
@@ -194,6 +277,19 @@ int main(void) {
         cmocka_unit_test(test_bip44_cardano_paths),
         cmocka_unit_test(test_bip44_buffer_size),
         cmocka_unit_test(test_bip44_max_depth_paths),
+
+        // bip44_pathsEqual tests
+        cmocka_unit_test(test_paths_equal_different_lengths),
+
+        // bip44_classifyPath PATH_INVALID tests
+        cmocka_unit_test(test_classify_ordinary_path_length_4),
+        cmocka_unit_test(test_classify_ordinary_path_non_hardened_account),
+        cmocka_unit_test(test_classify_multisig_path_no_account),
+        cmocka_unit_test(test_classify_multisig_path_non_hardened_account),
+        cmocka_unit_test(test_classify_multisig_path_length_4),
+        cmocka_unit_test(test_classify_cvote_path_no_account),
+        cmocka_unit_test(test_classify_cvote_path_non_hardened_account),
+        cmocka_unit_test(test_classify_cvote_path_length_4),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

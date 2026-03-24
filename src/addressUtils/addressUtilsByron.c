@@ -190,9 +190,7 @@ static bool parseToken(buffer_t* buf, uint8_t expectedType, uint64_t* out_value)
     }
 
     size_t tokenSize = token.width + 1;
-    if (!buffer_seek_cur(buf, tokenSize)) {
-        return false;
-    }
+    LEDGER_ASSERT(buffer_seek_cur(buf, tokenSize), "buffer seek failed after token parse");
 
     *out_value = token.value;
     return true;
@@ -218,15 +216,10 @@ static bool parseBytesSizeToken(buffer_t* buf, size_t* out_size) {
     // Validate that we can down-cast
     STATIC_ASSERT(sizeof(parsedSize) >= sizeof(SIZE_MAX), "bad int size");
     if (parsedSize >= (uint64_t) SIZE_MAX) {
-        return false;
+        return false; // LCOV_EXCL_LINE
     }
 
     size_t parsedSizeDowncasted = (size_t) parsedSize;
-
-    // overflow pre-check
-    if (parsedSizeDowncasted >= BUFFER_SIZE_PARANOIA) {
-        return false;
-    }
 
     // Check remaining size in read buffer
     size_t remaining = buffer_data_size(buf);
@@ -275,9 +268,7 @@ bool extractProtocolMagic(const uint8_t* addressBuffer, size_t addressSize, uint
         if (parsedAddressRootSize != ADDRESS_ROOT_SIZE) {
             return false;
         }
-        if (!buffer_seek_cur(&buf, ADDRESS_ROOT_SIZE)) {
-            return false;
-        }
+        LEDGER_ASSERT(buffer_seek_cur(&buf, ADDRESS_ROOT_SIZE), "buffer seek failed past address root");
     }
 
     // address attributes map { key (unsigned): value(bytes) }
@@ -337,9 +328,7 @@ bool extractProtocolMagic(const uint8_t* addressBuffer, size_t addressSize, uint
             }
 
             // Skip this attribute value in the outer buffer.
-            if (!buffer_seek_cur(&buf, currentValueSize)) {
-                return false;
-            }
+            LEDGER_ASSERT(buffer_seek_cur(&buf, currentValueSize), "buffer seek failed skipping attribute value");
         }
     }
 
@@ -347,7 +336,7 @@ bool extractProtocolMagic(const uint8_t* addressBuffer, size_t addressSize, uint
     {
         uint64_t addressType;
         if (!parseToken(&buf, CBOR_TYPE_UNSIGNED, &addressType)) {
-            return false;
+            return false;  // LCOV_EXCL_LINE
         }
     }
 

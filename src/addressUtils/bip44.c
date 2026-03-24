@@ -76,9 +76,10 @@ bool buffer_read_bip44_path(buffer_t *buf, bip44_path_t* path)
         return false;
     }
 
-    // Advance buffer by the number of bytes consumed
+    // Advance buffer by the number of bytes consumed; cannot fail since bip44_parse_path
+    // already verified length <= remaining
     if (!buffer_seek_cur(buf, length)) {
-        return false;
+        return false; // LCOV_EXCL_LINE
     }
 
     return true;
@@ -242,9 +243,11 @@ static bool bip44_isConwayPathRecommended(const bip44_path_t* pathSpec) {
         case PATH_COMMITTEE_HOT_KEY:
             // strongly recommended in CIP-0105 to only use 0 as address
             return (bip44_getAddressValue(pathSpec) == 0);
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
             return false;
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -586,11 +589,13 @@ bool bip44_isPathReasonable(const bip44_path_t* pathSpec) {
         case PATH_CVOTE_KEY:
             return bip44_hasReasonableAccount(pathSpec) && bip44_hasReasonableAddress(pathSpec);
 
+        // LCOV_EXCL_START
         default:
             // we are not supposed to call this for invalid paths
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
-    return false;
+    return false; // LCOV_EXCL_LINE
 }
 
 
