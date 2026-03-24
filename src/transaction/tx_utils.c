@@ -15,12 +15,12 @@
 uint8_t *tx_alloc_temp_buffer_or_fail(size_t size) {
     uint8_t *buffer = NULL;
     bool allocated = APP_MEM_CALLOC((void **) &buffer, (uint16_t) size);
-    LEDGER_ASSERT(allocated && buffer != NULL, "Temporary buffer allocation failed");
+    ASSERT(allocated && buffer != NULL);
     return buffer;
 }
 
 bool violatesSingleAccountOrStoreIt(const bip44_path_t* path) {
-    LEDGER_ASSERT(path != NULL, "NULL path");
+    ASSERT(path != NULL);
     TRACE("Considering path");
     BIP44_PRINTF(path);
     TRACE("");
@@ -61,9 +61,9 @@ bool tx_output_destination_to_address_bytes(const tx_output_destination_t* desti
                                             uint8_t* addressBuffer,
                                             size_t addressBufferSize,
                                             size_t* outAddressLength) {
-    LEDGER_ASSERT(destination != NULL, "NULL destination");
-    LEDGER_ASSERT(addressBuffer != NULL, "NULL addressBuffer");
-    LEDGER_ASSERT(outAddressLength != NULL, "NULL outAddressLength");
+    ASSERT(destination != NULL);
+    ASSERT(addressBuffer != NULL);
+    ASSERT(outAddressLength != NULL);
 
     LEDGER_ASSERT(addressBufferSize < BUFFER_SIZE_PARANOIA,
                   "address buffer size too large: %u",

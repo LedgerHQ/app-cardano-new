@@ -10,4 +10,6 @@
 
 #include "ledger_assert.h"
 
+// this short version is useful to decrease the .text footprint
+// which is a problem for debug builds
 #define ASSERT(x) LEDGER_ASSERT((x), "bug")

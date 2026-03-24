@@ -38,7 +38,7 @@ __attribute__((noreturn)) void swap_reject_and_exit(uint8_t common_error_code,
 
 bool swap_copy_transaction_parameters(create_transaction_parameters_t *params) {
     TRACE("Inside swap_copy_transaction_parameters");
-    LEDGER_ASSERT(params != NULL, "NULL params");
+    ASSERT(params != NULL);
 
     // Ensure no extra id (Cardano does not use extra IDs)
     if (params->destination_address_extra_id == NULL) {
@@ -61,7 +61,7 @@ bool swap_copy_transaction_parameters(create_transaction_parameters_t *params) {
     memset(&swap_validated, 0, sizeof(swap_validated));
 
     // Save destination address
-    LEDGER_ASSERT(params->destination_address != NULL, "NULL destination_address");
+    ASSERT(params->destination_address != NULL);
     LEDGER_ASSERT(strlen(params->destination_address) < sizeof(swap_validated.destination),
                   "Swap destination address too long");
     strlcpy(swap_validated.destination,
@@ -75,8 +75,8 @@ bool swap_copy_transaction_parameters(create_transaction_parameters_t *params) {
     TRACE("Destination received %s", params->destination_address);
 
     // Save amount and fees
-    LEDGER_ASSERT(params->amount != NULL, "NULL amount");
-    LEDGER_ASSERT(params->fee_amount != NULL, "NULL fee_amount");
+    ASSERT(params->amount != NULL);
+    ASSERT(params->fee_amount != NULL);
     if (!swap_str_to_u64(params->amount, params->amount_length, &swap_validated.amount)) {
         TRACE("Amount copy error");
         return false;
@@ -101,7 +101,7 @@ bool swap_check_destination_validity(const tx_output_destination_t *destination)
     char rawAddressHuman[MAX_HUMAN_ADDRESS_LENGTH] = {0};
 
     TRACE("Inside swap_check_destination_validity");
-    LEDGER_ASSERT(destination != NULL, "NULL destination");
+    ASSERT(destination != NULL);
     LEDGER_ASSERT(G_swap_validated.initialized, "Swap validation called before initialization");
 
     switch (destination->type) {

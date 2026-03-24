@@ -88,7 +88,7 @@ static void auxDataHashBuilder_append_buffer(aux_data_hash_builder_t* builder,
 }
 
 void auxDataHashBuilder_init(aux_data_hash_builder_t* builder) {
-    LEDGER_ASSERT(builder != NULL, "NULL builder");
+    ASSERT(builder != NULL);
 
     // Clear the entire structure to prevent stale data
     explicit_bzero(builder, sizeof(aux_data_hash_builder_t));

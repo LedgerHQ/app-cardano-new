@@ -416,7 +416,7 @@ bool format_reward_account_from_credential(uint8_t networkId,
             );
             break;
         case EXT_CREDENTIAL_KEY_HASH:
-            LEDGER_ASSERT(credential->keyHash != NULL, "NULL key hash in key-hash credential");
+            ASSERT(credential->keyHash != NULL);
             reward_addr_len = constructRewardAddressFromHash(
                 networkId,
                 REWARD_HASH_SOURCE_KEY,
@@ -427,7 +427,7 @@ bool format_reward_account_from_credential(uint8_t networkId,
             );
             break;
         case EXT_CREDENTIAL_SCRIPT_HASH:
-            LEDGER_ASSERT(credential->scriptHash != NULL, "NULL script hash in script-hash credential");
+            ASSERT(credential->scriptHash != NULL);
             reward_addr_len = constructRewardAddressFromHash(
                 networkId,
                 REWARD_HASH_SOURCE_SCRIPT,
@@ -558,7 +558,7 @@ bool buffer_read_address_params(buffer_t* buffer, address_params_t* params) {
             if (!buffer_read_bytes_ptr(buffer, &params->paymentScriptHash, SCRIPT_HASH_LENGTH)) {
                 return false;
             }
-            LEDGER_ASSERT(params->paymentScriptHash != NULL, "NULL params->paymentScriptHash");
+            ASSERT(params->paymentScriptHash != NULL);
             TRACE("Payment script hash: ");
             TRACE_BUFFER(params->paymentScriptHash, SCRIPT_HASH_LENGTH);
             break;
@@ -603,7 +603,7 @@ bool buffer_read_address_params(buffer_t* buffer, address_params_t* params) {
             if (!buffer_read_bytes_ptr(buffer, &params->stakingKeyHash, ADDRESS_KEY_HASH_LENGTH)) {
                 return false;
             }
-            LEDGER_ASSERT(params->stakingKeyHash != NULL, "NULL params->stakingKeyHash");
+            ASSERT(params->stakingKeyHash != NULL);
             TRACE("Stake key hash: ");
             TRACE_BUFFER(params->stakingKeyHash, ADDRESS_KEY_HASH_LENGTH);
             break;
@@ -613,7 +613,7 @@ bool buffer_read_address_params(buffer_t* buffer, address_params_t* params) {
             if (!buffer_read_bytes_ptr(buffer, &params->stakingScriptHash, SCRIPT_HASH_LENGTH)) {
                 return false;
             }
-            LEDGER_ASSERT(params->stakingScriptHash != NULL, "NULL params->stakingScriptHash");
+            ASSERT(params->stakingScriptHash != NULL);
             TRACE("Stake script hash: ");
             TRACE_BUFFER(params->stakingScriptHash, SCRIPT_HASH_LENGTH);
             break;
@@ -733,7 +733,7 @@ void address_params_copyHashesToStorage(address_params_t* params,
             LEDGER_ASSERT(false, "NULL payment script hash to copy");
             return;
         }
-        LEDGER_ASSERT(params->paymentScriptHash != NULL, "NULL payment script hash to copy");
+        ASSERT(params->paymentScriptHash != NULL);
         memmove(storage->paymentHash, params->paymentScriptHash, SCRIPT_HASH_LENGTH);
         params->paymentScriptHash = storage->paymentHash;
     }
@@ -745,7 +745,7 @@ void address_params_copyHashesToStorage(address_params_t* params,
                 LEDGER_ASSERT(false, "NULL staking key hash to copy");
                 return;
             }
-            LEDGER_ASSERT(params->stakingKeyHash != NULL, "NULL staking key hash to copy");
+            ASSERT(params->stakingKeyHash != NULL);
             memmove(storage->stakingHash, params->stakingKeyHash, ADDRESS_KEY_HASH_LENGTH);
             params->stakingKeyHash = storage->stakingHash;
             break;
@@ -754,7 +754,7 @@ void address_params_copyHashesToStorage(address_params_t* params,
                 LEDGER_ASSERT(false, "NULL staking script hash to copy");
                 return;
             }
-            LEDGER_ASSERT(params->stakingScriptHash != NULL, "NULL staking script hash to copy");
+            ASSERT(params->stakingScriptHash != NULL);
             memmove(storage->stakingHash, params->stakingScriptHash, SCRIPT_HASH_LENGTH);
             params->stakingScriptHash = storage->stakingHash;
             break;
@@ -789,12 +789,12 @@ payment_choice_t determinePaymentChoice(address_type_t addressType) {
 }
 
 payment_part_type_t addressParams_getPaymentPartType(const address_params_t* address_params) {
-    LEDGER_ASSERT(address_params != NULL, "NULL address_params");
+    ASSERT(address_params != NULL);
     return address_params->paymentPartType;
 }
 
 staking_part_type_t addressParams_getStakingPartType(const address_params_t* address_params) {
-    LEDGER_ASSERT(address_params != NULL, "NULL address_params");
+    ASSERT(address_params != NULL);
     return address_params->stakingPartType;
 }
 
@@ -803,7 +803,7 @@ void poolRewardAccountToBuffer(const pool_reward_account_t* rewardAccount,
                                uint8_t* rewardAccountBuffer) {
     switch (rewardAccount->keyReferenceType) {
         case KEY_REFERENCE_HASH: {
-            LEDGER_ASSERT(rewardAccount->hashBuffer != NULL, "NULL rewardAccount->hashBuffer");
+            ASSERT(rewardAccount->hashBuffer != NULL);
             memmove(rewardAccountBuffer, rewardAccount->hashBuffer, REWARD_ACCOUNT_LENGTH);
             break;
         }

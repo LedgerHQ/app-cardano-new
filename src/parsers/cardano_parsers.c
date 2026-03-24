@@ -22,8 +22,8 @@
 #endif
 
 bool buffer_read_flag_included(buffer_t *buf, bool* result) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(result != NULL, "NULL result");
+    ASSERT(buf != NULL);
+    ASSERT(result != NULL);
 
     uint8_t value;
     if (!buffer_read_u8(buf, &value)) {
@@ -44,8 +44,8 @@ bool buffer_read_flag_included(buffer_t *buf, bool* result) {
 }
 
 bool buffer_read_bytes(buffer_t *buffer, uint8_t *destBuffer, size_t n) {
-    LEDGER_ASSERT(buffer != NULL, "NULL buffer");
-    LEDGER_ASSERT(destBuffer != NULL, "NULL destination");
+    ASSERT(buffer != NULL);
+    ASSERT(destBuffer != NULL);
 
     if (!buffer_can_read(buffer, n)) {
         return false;
@@ -56,8 +56,8 @@ bool buffer_read_bytes(buffer_t *buffer, uint8_t *destBuffer, size_t n) {
 }
 
 bool buffer_read_int64(buffer_t *buffer, int64_t *value, endianness_t endianness) {
-    LEDGER_ASSERT(buffer != NULL, "NULL buffer");
-    LEDGER_ASSERT(value != NULL, "NULL value");
+    ASSERT(buffer != NULL);
+    ASSERT(value != NULL);
 
     uint64_t unsigned_value;
     if (!buffer_read_u64(buffer, &unsigned_value, endianness)) {
@@ -69,8 +69,8 @@ bool buffer_read_int64(buffer_t *buffer, int64_t *value, endianness_t endianness
 }
 
 bool buffer_read_anchor(buffer_t *buf, anchor_t *anchor) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(anchor != NULL, "NULL anchor");
+    ASSERT(buf != NULL);
+    ASSERT(anchor != NULL);
 
     // used also for pool medatadata which is essentially the same thing
     STATIC_ASSERT(MAX_ANCHOR_URL_LENGTH == MAX_POOL_METADATA_URL_LENGTH,
@@ -108,7 +108,7 @@ bool buffer_read_anchor(buffer_t *buf, anchor_t *anchor) {
         TRACE("Failed to read URL");
         return false;
     }
-    LEDGER_ASSERT(anchor->url != NULL, "NULL anchor url");
+    ASSERT(anchor->url != NULL);
     if (!str_isPrintableAsciiWithoutSpaces(anchor->url, anchor->urlLength)) {
         TRACE("Anchor URL contains non-printable ASCII or spaces");
         return false;
@@ -117,7 +117,7 @@ bool buffer_read_anchor(buffer_t *buf, anchor_t *anchor) {
         TRACE("Failed to read anchor hash");
         return false;
     }
-    LEDGER_ASSERT(anchor->hash != NULL, "NULL anchor hash");
+    ASSERT(anchor->hash != NULL);
 
     return true;
 }
@@ -189,7 +189,7 @@ bool buffer_read_drep(buffer_t *buf, ext_drep_t *drep) {
             break;
         // LCOV_EXCL_START
         default:
-            LEDGER_ASSERT(false, "Invalid internal DRep type: %u", drep_type);
+            ASSERT(false);
             return false;
         // LCOV_EXCL_STOP
     }
@@ -263,7 +263,7 @@ static bool _parse_credential_data(buffer_t *buf,
                 TRACE("Failed to read key hash");
                 return false;
             }
-            LEDGER_ASSERT(credential->keyHash != NULL, "NULL keyHash");
+            ASSERT(credential->keyHash != NULL);
             break;
         }
         case EXT_CREDENTIAL_SCRIPT_HASH: {
@@ -271,7 +271,7 @@ static bool _parse_credential_data(buffer_t *buf,
                 TRACE("Failed to read script hash");
                 return false;
             }
-            LEDGER_ASSERT(credential->scriptHash != NULL, "NULL scriptHash");
+            ASSERT(credential->scriptHash != NULL);
             break;
         }
         // LCOV_EXCL_START

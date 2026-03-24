@@ -41,8 +41,8 @@ drep_t drep_for_tx_hash_from_ext_drep(const ext_drep_t *ext_drep);
 
 static void hash_certificate(tx_hash_builder_t *hash_builder,
                               const certificate_data_t *parsed_certificate_data) {
-    LEDGER_ASSERT(hash_builder != NULL, "NULL hash_builder");
-    LEDGER_ASSERT(parsed_certificate_data != NULL, "NULL parsed_certificate_data");
+    ASSERT(hash_builder != NULL);
+    ASSERT(parsed_certificate_data != NULL);
 
     switch (parsed_certificate_data->type) {
         case CERTIFICATE_STAKE_REGISTRATION:
@@ -182,8 +182,7 @@ static void hash_certificate(tx_hash_builder_t *hash_builder,
                                      SIZEOF(pool_key_hash));
                     break;
                 case EXT_CREDENTIAL_KEY_HASH:
-                    LEDGER_ASSERT(pool_credential->keyHash != NULL,
-                                  "NULL pool retirement credential hash");
+                    ASSERT(pool_credential->keyHash != NULL);
                     STATIC_ASSERT(ADDRESS_KEY_HASH_LENGTH == POOL_KEY_HASH_LENGTH,
                                   "pool credential hash size mismatch");
                     memmove(pool_key_hash, pool_credential->keyHash, SIZEOF(pool_key_hash));
@@ -312,8 +311,8 @@ static bool scan_pool_owners_for_path_witnesses(buffer_t owners_buf,
                                                 uint16_t num_owners,
                                                 uint32_t *out_path_owner_count,
                                                 ext_credential_t *out_first_path_owner) {
-    LEDGER_ASSERT(out_path_owner_count != NULL, "NULL out_path_owner_count");
-    LEDGER_ASSERT(out_first_path_owner != NULL, "NULL out_first_path_owner");
+    ASSERT(out_path_owner_count != NULL);
+    ASSERT(out_first_path_owner != NULL);
 
     *out_path_owner_count = 0;
     explicit_bzero(out_first_path_owner, sizeof(*out_first_path_owner));
@@ -336,11 +335,9 @@ static bool scan_pool_owners_for_path_witnesses(buffer_t owners_buf,
 bool process_pool_registration_certificate(buffer_t *buf,
                                            tx_processing_state_t *state,
                                            const certificate_data_t *parsed_cert) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(state != NULL && state->tx_params != NULL && state->warning_bits != NULL,
-                  "tx_processing_state not initialized");
-    LEDGER_ASSERT(parsed_cert != NULL && parsed_cert->type == CERTIFICATE_STAKE_POOL_REGISTRATION,
-                  "NULL or wrong certificate type");
+    ASSERT(buf != NULL);
+    ASSERT(state != NULL && state->tx_params != NULL && state->warning_bits != NULL);
+    ASSERT(parsed_cert != NULL && parsed_cert->type == CERTIFICATE_STAKE_POOL_REGISTRATION);
 
     // buf is positioned at the start of the pool registration payload.
 
@@ -436,7 +433,7 @@ bool process_pool_registration_certificate(buffer_t *buf,
                 keyPathToKeyHash(&parsed_cert->poolId.path, pool_key_hash, SIZEOF(pool_key_hash));
                 break;
             case KEY_REFERENCE_HASH:
-                LEDGER_ASSERT(parsed_cert->poolId.hash != NULL, "NULL pool ID hash");
+                ASSERT(parsed_cert->poolId.hash != NULL);
                 memmove(pool_key_hash, parsed_cert->poolId.hash, SIZEOF(pool_key_hash));
                 break;
             // LCOV_EXCL_START
@@ -582,9 +579,8 @@ bool process_pool_registration_certificate(buffer_t *buf,
 }
 
 bool tx_process_certificates(buffer_t *buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(state != NULL && state->tx_params != NULL && state->warning_bits != NULL,
-                  "tx_processing_state not initialized");
+    ASSERT(buf != NULL);
+    ASSERT(state != NULL && state->tx_params != NULL && state->warning_bits != NULL);
     const tx_params_t *tx_params = state->tx_params;
     const tx_processing_mode_t *mode = &state->mode;
 

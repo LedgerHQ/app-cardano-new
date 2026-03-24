@@ -19,8 +19,8 @@ static const uint64_t VALUE_W4_UPPER_THRESHOLD = (uint64_t) 1 << 16;
 static const uint64_t VALUE_W8_UPPER_THRESHOLD = (uint64_t) 1 << 32;
 
 bool cbor_parseToken(const uint8_t* buf, size_t size, cbor_token_t* out_token) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(out_token != NULL, "NULL out_token");
+    ASSERT(buf != NULL);
+    ASSERT(out_token != NULL);
 
     // Need at least 1 byte for the tag
     if (size < 1) {

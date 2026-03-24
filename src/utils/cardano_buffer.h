@@ -45,7 +45,7 @@ static inline size_t buffer_data_size(const buffer_t *buffer) {
  * @return true if unconsumed bytes were found (error sent), false if buffer is fully consumed.
  */
 static inline bool deny_unconsumed_bytes(const buffer_t *buffer, uint16_t swo) {
-    LEDGER_ASSERT(buffer != NULL, "NULL buffer");
+    ASSERT(buffer != NULL);
     if (!buffer_can_read(buffer, 1)) {
         return false;
     }

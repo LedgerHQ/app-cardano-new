@@ -56,7 +56,7 @@ static void tx_processing_mode_validate(const tx_processing_mode_t *mode) __attr
 #pragma GCC diagnostic ignored "-Wnonnull-compare"
 #endif
 static void tx_processing_mode_validate(const tx_processing_mode_t *mode) {
-    LEDGER_ASSERT(mode != NULL, "NULL mode");
+    ASSERT(mode != NULL);
 
     LEDGER_ASSERT(!mode->ui_render || !mode->run_hash_builder,
                   "ui_render implies !run_hash_builder");
@@ -70,14 +70,13 @@ static void tx_processing_mode_validate(const tx_processing_mode_t *mode) {
 #endif
 
 static void tx_processing_state_assert_initialized(const tx_processing_state_t *state) {
-    LEDGER_ASSERT(state != NULL && state->tx_params != NULL && state->warning_bits != NULL,
-                  "tx_processing_state not initialized");
+    ASSERT(state != NULL && state->tx_params != NULL && state->warning_bits != NULL);
     tx_processing_mode_validate(&state->mode);
 }
 
 void tx_processing_setup_state(const tx_processing_mode_t *mode, warning_bits_t *warning_bits) {
     tx_processing_mode_validate(mode);
-    LEDGER_ASSERT(warning_bits != NULL, "NULL warning_bits");
+    ASSERT(warning_bits != NULL);
 
     tx_processing_state_t *state = &tx_body_ctx()->processing_state;
     explicit_bzero(state, sizeof(*state));
@@ -101,7 +100,7 @@ void tx_handle_parse_error(uint16_t swo) {
 // ---------------------------------------------------------------------------
 
 credential_t credential_for_tx_hash_from_ext_credential(const ext_credential_t *credential) {
-    LEDGER_ASSERT(credential != NULL, "NULL credential");
+    ASSERT(credential != NULL);
 
     credential_t result = {0};
     switch (credential->type) {
@@ -110,18 +109,18 @@ credential_t credential_for_tx_hash_from_ext_credential(const ext_credential_t *
             keyPathToKeyHash(&credential->keyPath, result.keyHash, SIZEOF(result.keyHash));
             break;
         case EXT_CREDENTIAL_KEY_HASH:
-            LEDGER_ASSERT(credential->keyHash != NULL, "NULL credential->keyHash");
+            ASSERT(credential->keyHash != NULL);
             result.type = CREDENTIAL_KEY_HASH;
             memmove(result.keyHash, credential->keyHash, SIZEOF(result.keyHash));
             break;
         case EXT_CREDENTIAL_SCRIPT_HASH:
-            LEDGER_ASSERT(credential->scriptHash != NULL, "NULL credential->scriptHash");
+            ASSERT(credential->scriptHash != NULL);
             result.type = CREDENTIAL_SCRIPT_HASH;
             memmove(result.scriptHash, credential->scriptHash, SIZEOF(result.scriptHash));
             break;
         // LCOV_EXCL_START
         default:
-            LEDGER_ASSERT(false, "Unknown ext credential type");
+            ASSERT(false);
             break;
         // LCOV_EXCL_STOP
     }
@@ -130,7 +129,7 @@ credential_t credential_for_tx_hash_from_ext_credential(const ext_credential_t *
 }
 
 drep_t drep_for_tx_hash_from_ext_drep(const ext_drep_t *ext_drep) {
-    LEDGER_ASSERT(ext_drep != NULL, "NULL ext_drep");
+    ASSERT(ext_drep != NULL);
 
     drep_t result = {
         .type = (drep_type_t) ext_drep->type,
@@ -142,12 +141,12 @@ drep_t drep_for_tx_hash_from_ext_drep(const ext_drep_t *ext_drep) {
             keyPathToKeyHash(&ext_drep->keyPath, result.keyHash, SIZEOF(result.keyHash));
             break;
         case EXT_DREP_KEY_HASH:
-            LEDGER_ASSERT(ext_drep->keyHash != NULL, "NULL ext_drep->keyHash");
+            ASSERT(ext_drep->keyHash != NULL);
             result.type = DREP_KEY_HASH;
             memmove(result.keyHash, ext_drep->keyHash, SIZEOF(result.keyHash));
             break;
         case EXT_DREP_SCRIPT_HASH:
-            LEDGER_ASSERT(ext_drep->scriptHash != NULL, "NULL ext_drep->scriptHash");
+            ASSERT(ext_drep->scriptHash != NULL);
             result.type = DREP_SCRIPT_HASH;
             memmove(result.scriptHash, ext_drep->scriptHash, SIZEOF(result.scriptHash));
             break;
@@ -159,7 +158,7 @@ drep_t drep_for_tx_hash_from_ext_drep(const ext_drep_t *ext_drep) {
             break;
         // LCOV_EXCL_START
         default:
-            LEDGER_ASSERT(false, "Unknown ext drep type");
+            ASSERT(false);
             break;
         // LCOV_EXCL_STOP
     }
@@ -168,7 +167,7 @@ drep_t drep_for_tx_hash_from_ext_drep(const ext_drep_t *ext_drep) {
 }
 
 voter_t voter_for_tx_hash_from_ext_voter(const ext_voter_t *ext_voter) {
-    LEDGER_ASSERT(ext_voter != NULL, "NULL ext_voter");
+    ASSERT(ext_voter != NULL);
 
     voter_t voter = {0};
     switch (ext_voter->type) {
@@ -185,33 +184,33 @@ voter_t voter_for_tx_hash_from_ext_voter(const ext_voter_t *ext_voter) {
             keyPathToKeyHash(&ext_voter->keyPath, voter.keyHash, SIZEOF(voter.keyHash));
             break;
         case EXT_VOTER_COMMITTEE_HOT_KEY_HASH:
-            LEDGER_ASSERT(ext_voter->keyHash != NULL, "NULL committee hot key hash voter");
+            ASSERT(ext_voter->keyHash != NULL);
             voter.type = VOTER_COMMITTEE_HOT_KEY_HASH;
             memmove(voter.keyHash, ext_voter->keyHash, SIZEOF(voter.keyHash));
             break;
         case EXT_VOTER_DREP_KEY_HASH:
-            LEDGER_ASSERT(ext_voter->keyHash != NULL, "NULL drep key hash voter");
+            ASSERT(ext_voter->keyHash != NULL);
             voter.type = VOTER_DREP_KEY_HASH;
             memmove(voter.keyHash, ext_voter->keyHash, SIZEOF(voter.keyHash));
             break;
         case EXT_VOTER_STAKE_POOL_KEY_HASH:
-            LEDGER_ASSERT(ext_voter->keyHash != NULL, "NULL stake pool key hash voter");
+            ASSERT(ext_voter->keyHash != NULL);
             voter.type = VOTER_STAKE_POOL_KEY_HASH;
             memmove(voter.keyHash, ext_voter->keyHash, SIZEOF(voter.keyHash));
             break;
         case EXT_VOTER_COMMITTEE_HOT_SCRIPT_HASH:
-            LEDGER_ASSERT(ext_voter->scriptHash != NULL, "NULL committee hot script hash voter");
+            ASSERT(ext_voter->scriptHash != NULL);
             voter.type = VOTER_COMMITTEE_HOT_SCRIPT_HASH;
             memmove(voter.scriptHash, ext_voter->scriptHash, SIZEOF(voter.scriptHash));
             break;
         case EXT_VOTER_DREP_SCRIPT_HASH:
-            LEDGER_ASSERT(ext_voter->scriptHash != NULL, "NULL drep script hash voter");
+            ASSERT(ext_voter->scriptHash != NULL);
             voter.type = VOTER_DREP_SCRIPT_HASH;
             memmove(voter.scriptHash, ext_voter->scriptHash, SIZEOF(voter.scriptHash));
             break;
         // LCOV_EXCL_START
         default:
-            LEDGER_ASSERT(false, "Unknown ext voter type");
+            ASSERT(false);
             break;
         // LCOV_EXCL_STOP
     }
@@ -222,7 +221,7 @@ voter_t voter_for_tx_hash_from_ext_voter(const ext_voter_t *ext_voter) {
 // ---------------------------------------------------------------------------
 
 bool tx_process_inputs(buffer_t *buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    ASSERT(buf != NULL);
     tx_processing_state_assert_initialized(state);
     const tx_params_t *tx_params = state->tx_params;
     const tx_processing_mode_t *mode = &state->mode;
@@ -256,7 +255,7 @@ bool tx_process_inputs(buffer_t *buf, tx_processing_state_t *state) {
 }
 
 bool tx_process_collateral_inputs(buffer_t *buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    ASSERT(buf != NULL);
     tx_processing_state_assert_initialized(state);
     const tx_params_t *tx_params = state->tx_params;
     const tx_processing_mode_t *mode = &state->mode;
@@ -295,7 +294,7 @@ bool tx_process_collateral_inputs(buffer_t *buf, tx_processing_state_t *state) {
 }
 
 bool tx_process_reference_inputs(buffer_t *buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    ASSERT(buf != NULL);
     tx_processing_state_assert_initialized(state);
     const tx_params_t *tx_params = state->tx_params;
     const tx_processing_mode_t *mode = &state->mode;
@@ -333,7 +332,7 @@ bool tx_process_reference_inputs(buffer_t *buf, tx_processing_state_t *state) {
 }
 
 static bool tx_process_fee(buffer_t *buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    ASSERT(buf != NULL);
     const tx_params_t *tx_params = state->tx_params;
     const tx_processing_mode_t *mode = &state->mode;
 
@@ -365,7 +364,7 @@ static bool tx_process_fee(buffer_t *buf, tx_processing_state_t *state) {
 }
 
 static bool tx_process_ttl(buffer_t *buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    ASSERT(buf != NULL);
     const tx_params_t *tx_params = state->tx_params;
     const tx_processing_mode_t *mode = &state->mode;
 
@@ -392,7 +391,7 @@ static bool tx_process_ttl(buffer_t *buf, tx_processing_state_t *state) {
 }
 
 static bool tx_process_withdrawals(buffer_t *buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    ASSERT(buf != NULL);
     const tx_params_t *tx_params = state->tx_params;
     const tx_processing_mode_t *mode = &state->mode;
 
@@ -504,7 +503,7 @@ static bool tx_process_aux_data_hash(tx_processing_state_t *state) {
 }
 
 static bool tx_process_validity_interval_start(buffer_t *buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    ASSERT(buf != NULL);
     const tx_params_t *tx_params = state->tx_params;
     const tx_processing_mode_t *mode = &state->mode;
 
@@ -536,8 +535,8 @@ static bool tx_process_mint_tokens(buffer_t *buf,
                                     const uint8_t *policy_id,
                                     uint16_t number_of_tokens,
                                     security_policy_t mint_policy) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(policy_id != NULL, "NULL policy_id");
+    ASSERT(buf != NULL);
+    ASSERT(policy_id != NULL);
     const tx_processing_mode_t *mode = &state->mode;
 
     ENFORCE_CANONICAL_ORDERING_START(asset_name_tracker);
@@ -569,7 +568,7 @@ static bool tx_process_mint_tokens(buffer_t *buf,
 }
 
 static bool tx_process_mint(buffer_t *buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    ASSERT(buf != NULL);
     const tx_params_t *tx_params = state->tx_params;
     const tx_processing_mode_t *mode = &state->mode;
 
@@ -630,7 +629,7 @@ static bool tx_process_mint(buffer_t *buf, tx_processing_state_t *state) {
 }
 
 static bool tx_process_script_data_hash(buffer_t *buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    ASSERT(buf != NULL);
     const tx_params_t *tx_params = state->tx_params;
     const tx_processing_mode_t *mode = &state->mode;
 
@@ -661,7 +660,7 @@ static bool tx_process_script_data_hash(buffer_t *buf, tx_processing_state_t *st
 }
 
 bool tx_process_required_signers(buffer_t *buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    ASSERT(buf != NULL);
     tx_processing_state_assert_initialized(state);
     const tx_params_t *tx_params = state->tx_params;
     const tx_processing_mode_t *mode = &state->mode;
@@ -701,8 +700,7 @@ bool tx_process_required_signers(buffer_t *buf, tx_processing_state_t *state) {
                                      SIZEOF(signer_key_hash));
                     break;
                 case REQUIRED_SIGNER_WITH_HASH:
-                    LEDGER_ASSERT(parsed_required_signer.keyHash != NULL,
-                                  "NULL required signer key hash");
+                    ASSERT(parsed_required_signer.keyHash != NULL);
                     memmove(signer_key_hash,
                             parsed_required_signer.keyHash,
                             SIZEOF(signer_key_hash));
@@ -738,7 +736,7 @@ static bool tx_process_network_id(tx_processing_state_t *state) {
 }
 
 static bool tx_process_total_collateral(buffer_t *buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    ASSERT(buf != NULL);
     const tx_params_t *tx_params = state->tx_params;
     const tx_processing_mode_t *mode = &state->mode;
 
@@ -826,7 +824,7 @@ static bool tx_process_votes(buffer_t *buf,
 }
 
 static bool tx_process_voting_procedures(buffer_t *buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    ASSERT(buf != NULL);
     const tx_params_t *tx_params = state->tx_params;
     const tx_processing_mode_t *mode = &state->mode;
 
@@ -881,7 +879,7 @@ static bool tx_process_voting_procedures(buffer_t *buf, tx_processing_state_t *s
 }
 
 static bool tx_process_treasury(buffer_t *buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    ASSERT(buf != NULL);
     const tx_params_t *tx_params = state->tx_params;
     const tx_processing_mode_t *mode = &state->mode;
 
@@ -911,7 +909,7 @@ static bool tx_process_treasury(buffer_t *buf, tx_processing_state_t *state) {
 }
 
 static bool tx_process_donation(buffer_t *buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    ASSERT(buf != NULL);
     const tx_params_t *tx_params = state->tx_params;
     const tx_processing_mode_t *mode = &state->mode;
 
@@ -1007,7 +1005,7 @@ static bool tx_process_all_fields(buffer_t *buf, tx_processing_state_t *state) {
 // - parsing/canonical-ordering failure (tx_handle_parse_error already sent SWO), or
 // - security policy denial (SWO_SECURITY_CONDITION_NOT_SATISFIED sent).
 static bool tx_plan_or_render_ui_for_tx_body(buffer_t *buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(state != NULL, "NULL state");
+    ASSERT(state != NULL);
 
     tx_ui_plan_or_render_network_details(&state->mode, state->tx_params);
 
@@ -1041,7 +1039,7 @@ bool tx_validate(void) {
     tx_processing_state_t *state = &tx_body_ctx()->processing_state;
 
     // Phase: Body processing
-    LEDGER_ASSERT(tx_body_ctx()->raw_tx != NULL, "Raw transaction buffer missing");
+    ASSERT(tx_body_ctx()->raw_tx != NULL);
     buffer_t buf = {
         .ptr = tx_body_ctx()->raw_tx,
         .size = G_context.tx_info.raw_tx_total_length,
@@ -1073,7 +1071,7 @@ bool tx_validate(void) {
 // Returns false when rendering aborts due to body parse/policy failure
 // (the failing subpath already sent SWO).
 bool tx_render_ui_chunk(uint16_t from) {
-    LEDGER_ASSERT(tx_body_ctx()->raw_tx != NULL, "Missing raw tx for UI rendering");
+    ASSERT(tx_body_ctx()->raw_tx != NULL);
     buffer_t buf = {
         .ptr = tx_body_ctx()->raw_tx,
         .size = G_context.tx_info.raw_tx_total_length,
@@ -1195,7 +1193,7 @@ bool tx_render_ui_all(void) {
     }
 
     // Finalize the pairs count for display (may be less than allocated).
-    LEDGER_ASSERT(g_pairsList != NULL, "NULL g_pairsList after rendering");
+    ASSERT(g_pairsList != NULL);
     g_pairsList->nbPairs = (uint8_t) ui_pairs_get_count();
 
     ui_status_t warning_status = ui_build_warnings(tx_body_ctx()->warning_bits);

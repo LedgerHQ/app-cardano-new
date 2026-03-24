@@ -115,7 +115,7 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
 
     LEDGER_ASSERT(written > 0, "snprintf UI title formatting failed");
     LEDGER_ASSERT((size_t) written + 1 < PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE, "UI title truncated");
-    LEDGER_ASSERT(icon != NULL, "NULL icon");
+    ASSERT(icon != NULL);
     nbgl_useCaseChoice(
                         icon,
                         g_pubkey_export_choice_title,

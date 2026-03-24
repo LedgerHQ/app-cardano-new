@@ -20,8 +20,8 @@
 
 __noinline_due_to_stack__
 uint16_t parse_output_destination(buffer_t* buf, tx_output_destination_t* destination) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(destination != NULL, "NULL destination");
+    ASSERT(buf != NULL);
+    ASSERT(destination != NULL);
 
     // Read destination type
     uint8_t dest_type = 0;
@@ -78,8 +78,8 @@ uint16_t parse_output_destination(buffer_t* buf, tx_output_destination_t* destin
 uint16_t parse_output_format(buffer_t* buf,
                              tx_output_serialization_format_t* format,
                              uint16_t parseFailureSwo) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(format != NULL, "NULL format");
+    ASSERT(buf != NULL);
+    ASSERT(format != NULL);
     LEDGER_ASSERT(parseFailureSwo != SWO_OK, "Invalid parse failure SWO");
 
     uint8_t output_format = 0;
@@ -103,8 +103,8 @@ uint16_t parse_output_format(buffer_t* buf,
 uint16_t parse_output_top_level(buffer_t* buf,
                                 tx_output_description_t* out_description,
                                 uint16_t parseFailureSwo) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(out_description != NULL, "NULL out_description");
+    ASSERT(buf != NULL);
+    ASSERT(out_description != NULL);
     LEDGER_ASSERT(parseFailureSwo != SWO_OK, "Invalid parse failure SWO");
 
     explicit_bzero(out_description, sizeof(*out_description));
@@ -157,8 +157,8 @@ uint16_t parse_output_top_level(buffer_t* buf,
 }
 
 bool parse_output_asset_group(buffer_t* buf, output_asset_group_t* out_group) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(out_group != NULL, "NULL out_group");
+    ASSERT(buf != NULL);
+    ASSERT(out_group != NULL);
 
     if (!buffer_read_bytes_ptr(buf, &out_group->policyId, MINTING_POLICY_ID_LENGTH) ||
         out_group->policyId == NULL) {
@@ -179,8 +179,8 @@ bool parse_output_asset_group(buffer_t* buf, output_asset_group_t* out_group) {
 }
 
 bool parse_output_token(buffer_t* buf, output_token_t* out_token) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(out_token != NULL, "NULL out_token");
+    ASSERT(buf != NULL);
+    ASSERT(out_token != NULL);
 
     if (!buffer_read_u8(buf, &out_token->assetNameLen) ||
         out_token->assetNameLen > MAX_ASSET_NAME_LENGTH) {
@@ -191,7 +191,7 @@ bool parse_output_token(buffer_t* buf, output_token_t* out_token) {
         TRACE("Failed to read asset name");
         return false;
     }
-    LEDGER_ASSERT(out_token->assetName != NULL, "NULL asset_name");
+    ASSERT(out_token->assetName != NULL);
 
     if (!buffer_read_u64(buf, &out_token->amount, BE)) {
         TRACE("Failed to read token amount");
@@ -206,8 +206,8 @@ bool parse_output_token(buffer_t* buf, output_token_t* out_token) {
 }
 
 bool parse_output_datum(buffer_t* buf, output_datum_t* datum) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(datum != NULL, "NULL datum");
+    ASSERT(buf != NULL);
+    ASSERT(datum != NULL);
 
     uint8_t datum_wire_type = 0;
     if (!buffer_read_u8(buf, &datum_wire_type)) {
@@ -267,8 +267,8 @@ bool parse_output_datum(buffer_t* buf, output_datum_t* datum) {
 }
 
 bool parse_output_ref_script(buffer_t* buf, ref_script_t* ref_script) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(ref_script != NULL, "NULL ref_script");
+    ASSERT(buf != NULL);
+    ASSERT(ref_script != NULL);
 
     uint16_t script_size;
     if (!buffer_read_u16(buf, &script_size, BE)) {

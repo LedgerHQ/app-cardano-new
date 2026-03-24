@@ -23,21 +23,20 @@ static ui_render_session_t *g_active_render_session = NULL;
 
 void ui_render_session_begin(ui_render_session_t *session,
                              uint16_t render_from_pair_index) {
-    LEDGER_ASSERT(session != NULL, "NULL render session");
-    LEDGER_ASSERT(g_active_render_session == NULL, "UI render session already active");
+    ASSERT(session != NULL);
+    ASSERT(g_active_render_session == NULL);
     explicit_bzero(session, SIZEOF(*session));
     session->render_from_pair_index = render_from_pair_index;
     g_active_render_session = session;
 }
 
 void ui_render_session_end(void) {
-    LEDGER_ASSERT(g_active_render_session != NULL, "No active UI render session");
+    ASSERT(g_active_render_session != NULL);
     g_active_render_session = NULL;
 }
 
 bool ui_render_should_skip(void) {
-    LEDGER_ASSERT(g_active_render_session != NULL,
-                  "UI_ADD_* called without active render session");
+    ASSERT(g_active_render_session != NULL);
     uint16_t current = g_active_render_session->next_pair_index;
     g_active_render_session->next_pair_index++;
     // Skip if before the window
@@ -46,8 +45,7 @@ bool ui_render_should_skip(void) {
         g_pending_force_page_start = false;
         return true;
     }
-    LEDGER_ASSERT(g_ui_error_status != UI_STATUS_UNINITIALIZED,
-                  "ui_reset_error_status() must be called before UI_ADD_* macros");
+    ASSERT(g_ui_error_status != UI_STATUS_UNINITIALIZED);
     // Skip if chunk is full or a real OOM occurred
     if (g_ui_error_status == UI_STATUS_CHUNK_FULL || g_ui_error_status == UI_STATUS_OUT_OF_MEMORY) {
         // Clear pending flag: this pair won't be rendered in this chunk.
@@ -58,8 +56,7 @@ bool ui_render_should_skip(void) {
 }
 
 void ui_check_expected_pair_delta(uint16_t pairs_before, uint16_t expected) {
-    LEDGER_ASSERT(g_active_render_session != NULL,
-                  "CHECK_COUNT called without active render session");
+    ASSERT(g_active_render_session != NULL);
     if (g_ui_error_status == UI_STATUS_SUCCESS &&
         g_active_render_session->render_from_pair_index == 0) {
         uint16_t actual_delta = ui_pairs_get_count() - pairs_before;
@@ -81,7 +78,7 @@ void ui_reset_error_status(void) {
  * Asserts if status was never initialized
  */
 ui_status_t ui_get_error_status(void) {
-    LEDGER_ASSERT(g_ui_error_status != UI_STATUS_UNINITIALIZED, "UI error status not initialized - must call ui_reset_error_status first");
+    ASSERT(g_ui_error_status != UI_STATUS_UNINITIALIZED);
     return g_ui_error_status;
 }
 
@@ -93,15 +90,15 @@ ui_status_t ui_get_error_status(void) {
  */
 void ui_set_error_status(ui_status_t status) {
     LEDGER_ASSERT(status != UI_STATUS_UNINITIALIZED, "Cannot set UI status to UNINITIALIZED");
-    LEDGER_ASSERT(g_ui_error_status != UI_STATUS_UNINITIALIZED, "UI error status not initialized - must call ui_reset_error_status first");
+    ASSERT(g_ui_error_status != UI_STATUS_UNINITIALIZED);
     // Once non-SUCCESS, cannot go back to success via this function
     LEDGER_ASSERT(g_ui_error_status == UI_STATUS_SUCCESS || status != UI_STATUS_SUCCESS,
-                  "Cannot change UI error status from non-success back to success");
+                  "bad state");
     // CHUNK_FULL and OUT_OF_MEMORY must not mix in either direction
     LEDGER_ASSERT(!(g_ui_error_status == UI_STATUS_CHUNK_FULL && status == UI_STATUS_OUT_OF_MEMORY),
-                  "Cannot set OUT_OF_MEMORY when CHUNK_FULL is already set");
+                  "bad state");
     LEDGER_ASSERT(!(g_ui_error_status == UI_STATUS_OUT_OF_MEMORY && status == UI_STATUS_CHUNK_FULL),
-                  "Cannot set CHUNK_FULL when OUT_OF_MEMORY is already set");
+                  "bad state");
     g_ui_error_status = status;
     // On OOM the pending flag can no longer be consumed by a subsequent UI_ADD_* (the macro would
     // have set OOM before calling add_static_label, or add_static_label itself set OOM on shrink
@@ -118,8 +115,7 @@ void ui_set_error_status(ui_status_t status) {
 void ui_free_pairs(void) {
     // A dangling flag here always means ui_pairs_force_new_page() was called without a subsequent
     // UI_ADD_* in any code path (skips always clear it in ui_render_should_skip).
-    LEDGER_ASSERT(!g_pending_force_page_start,
-                  "ui_pairs_force_new_page() called but no pair was added after it");
+    ASSERT(!g_pending_force_page_start);
     g_pending_force_page_start = false;
     if (g_pairs != NULL) {
         // g_pairs[i].item points to static labels (UI_STATIC_LABEL), so only values are owned/freed here.
@@ -152,8 +148,8 @@ void ui_pairs_force_new_page(void) {
 
 __noinline_due_to_stack__
 bool ui_pairs_add_static_label_impl(const char* label, char* tmp_buf, bool shrink) {
-    LEDGER_ASSERT(label != NULL && label[0] != '\0', "Invalid UI label");
-    LEDGER_ASSERT(tmp_buf != NULL && tmp_buf[0] != '\0', "Invalid UI value");
+    ASSERT(label != NULL && label[0] != '\0');
+    ASSERT(tmp_buf != NULL && tmp_buf[0] != '\0');
 
     #ifdef DEBUG
     {

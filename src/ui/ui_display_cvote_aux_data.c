@@ -56,7 +56,7 @@ static void cvote_add_vote_key_path_warning_pair(void) {
 }
 
 static void cvote_finalize_pairs_count_for_display(void) {
-    LEDGER_ASSERT(g_pairsList != NULL, "NULL g_pairsList");
+    ASSERT(g_pairsList != NULL);
     uint16_t actual_pair_count = ui_pairs_get_count();
     LEDGER_ASSERT(actual_pair_count <= UINT8_MAX, "UI pair count overflow");
     g_pairsList->nbPairs = (uint8_t) actual_pair_count;
@@ -67,8 +67,8 @@ static void cvote_aux_data_review_cleanup(void) {
 }
 
 static void cvote_aux_data_review_choice(bool confirm) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "CVote review choice callback in wrong request type: %d", G_context.req_type);
-    LEDGER_ASSERT(tx_aux_data_ctx()->cvote_aux_data.state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED, "CVote review choice callback in wrong state: %d", tx_aux_data_ctx()->cvote_aux_data.state);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "bad state");
+    LEDGER_ASSERT(tx_aux_data_ctx()->cvote_aux_data.state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED, "bad state");
 
     // CLEANUP
     cvote_aux_data_review_cleanup();
@@ -88,10 +88,10 @@ static void cvote_aux_data_review_choice(bool confirm) {
 
 static void cvote_aux_data_streaming_continue_choice(bool confirm) {
     cvote_aux_data_t *aux_data = &tx_aux_data_ctx()->cvote_aux_data;
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "CVote streaming callback in wrong request type: %d", G_context.req_type);
-    LEDGER_ASSERT(aux_data->ui_streaming.on, "CVote streaming callback with streaming disabled");
-    LEDGER_ASSERT(aux_data->ui_streaming.review_started, "CVote streaming callback before streaming review start");
-    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS || aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED, "Streaming continue callback in wrong state: %d", aux_data->state);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "bad state");
+    LEDGER_ASSERT(aux_data->ui_streaming.on, "bad state");
+    LEDGER_ASSERT(aux_data->ui_streaming.review_started, "bad state");
+    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS || aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED, "bad state");
 
     ui_free_pairs();
 
@@ -120,7 +120,7 @@ static void cvote_streaming_display_current_page(void) {
 }
 
 static bool cvote_start_streaming_review(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
+    ASSERT(aux_data != NULL);
     LEDGER_ASSERT(!aux_data->ui_streaming.review_started, "Streaming review already started");
 
     LEDGER_ASSERT(warning_bits_except_mask(tx_aux_data_ctx()->cvote_warning_bits, CVOTE_AUX_DATA_WARNING_BITS_MASK) == 0, "Transaction warnings leaked into CVote warning bits - cvote_warning_bits should only contain CVote AUX_DATA warnings");
@@ -148,7 +148,7 @@ static bool cvote_start_streaming_review(cvote_aux_data_t *aux_data) {
 static bool format_cvote_delegation_index(uint16_t delegation_index,
                                           char *out,
                                           size_t out_size) {
-    LEDGER_ASSERT(out != NULL, "NULL output buffer");
+    ASSERT(out != NULL);
     int written = snprintf(out, out_size, "#%u", delegation_index);
     return (written > 0) && ((size_t) written < out_size);
 }
@@ -165,8 +165,8 @@ static bool format_cvote_reward_address(const tx_output_destination_t *destinati
 static void cvote_add_vote_key_pair(const char *label,
                                     const cvote_credential_t *credential,
                                     warning_bits_t vote_key_warnings) {
-    LEDGER_ASSERT(label != NULL, "NULL label");
-    LEDGER_ASSERT(credential != NULL, "NULL vote credential");
+    ASSERT(label != NULL);
+    ASSERT(credential != NULL);
     LEDGER_ASSERT(warning_bits_except_mask(vote_key_warnings, warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)) == 0, "Unexpected vote-key warning bits");
 
     switch (credential->type) {
@@ -196,7 +196,7 @@ static void cvote_add_vote_key_pair(const char *label,
 }
 
 static uint16_t cvote_initial_pairs_count(const cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
+    ASSERT(aux_data != NULL);
 
     uint16_t pair_count = CVOTE_REGISTRATIONS_UI_PAIRS;
 
@@ -231,13 +231,13 @@ static uint16_t cvote_initial_pairs_count(const cvote_aux_data_t *aux_data) {
 }
 
 static uint32_t cvote_total_pairs_count(const cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
+    ASSERT(aux_data != NULL);
     return (uint32_t) cvote_initial_pairs_count(aux_data) +
            ((uint32_t) aux_data->remaining_delegations * (uint32_t) CVOTE_DELEGATION_UI_PAIRS_MAX);
 }
 
 static bool cvote_add_initial_pairs(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
+    ASSERT(aux_data != NULL);
     ui_render_session_t session = {0};
     ui_render_scope_begin(&session);
 
@@ -296,8 +296,8 @@ static bool cvote_add_delegation_pairs(
     cvote_aux_data_t *aux_data,
     const cvote_credential_t *credential,
     uint32_t weight) {
-    LEDGER_ASSERT(credential != NULL, "NULL delegation credential");
-    LEDGER_ASSERT(aux_data != NULL && aux_data->ui_delegations_shown < aux_data->ui_delegations_total, "Delegation count exceeded");
+    ASSERT(credential != NULL);
+    ASSERT(aux_data != NULL && aux_data->ui_delegations_shown < aux_data->ui_delegations_total);
 
     // Evaluate policy before opening the render scope so we know the exact pair
     // count — required for the streaming path, which calls ui_pairs_init here.
@@ -371,23 +371,21 @@ static bool cvote_add_delegation_pairs(
     }
 
     ui_status_t result = ui_render_scope_end();
-    LEDGER_ASSERT(result == UI_STATUS_SUCCESS, "Unexpected UI status: %d", result);
+    ASSERT(result == UI_STATUS_SUCCESS);
     return true;
 }
 
 bool ui_cvote_aux_data_init_non_streaming(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL && !aux_data->ui_streaming.on, "Called with streaming enabled");
-    LEDGER_ASSERT(aux_data != NULL &&
-                  (aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS ||
-                   aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED),
-                  "Non-streaming CVote UI init in wrong state: %d",
-                  aux_data != NULL ? aux_data->state : -1);
+    ASSERT(aux_data != NULL && !aux_data->ui_streaming.on);
+    ASSERT(aux_data != NULL &&
+           (aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS ||
+            aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED));
 
     uint32_t total_pair_count_u32 = cvote_total_pairs_count(aux_data);
     LEDGER_ASSERT(total_pair_count_u32 <= MAX_UI_PAIRS,
                   "Non-streaming pair count exceeds max: %u",
                   (unsigned) total_pair_count_u32);
-    LEDGER_ASSERT(total_pair_count_u32 <= UINT16_MAX, "Pair count exceeds uint16 range");
+    ASSERT(total_pair_count_u32 <= UINT16_MAX);
     uint16_t total_pair_count = (uint16_t) total_pair_count_u32;
 
     if (!ui_pairs_init(total_pair_count)) {
@@ -404,7 +402,7 @@ bool ui_cvote_aux_data_init_non_streaming(cvote_aux_data_t *aux_data) {
 }
 
 void ui_cvote_aux_data_init_vars(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL && (aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED || aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS || aux_data->state == CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE), "ui_cvote_aux_data_init_vars called in wrong state: %d", aux_data->state);
+    ASSERT(aux_data != NULL && (aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED || aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS || aux_data->state == CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE));
 
     // Initialize UI delegation tracking
     aux_data->ui_delegations_total = aux_data->remaining_delegations;
@@ -419,14 +417,12 @@ void ui_cvote_aux_data_init_vars(cvote_aux_data_t *aux_data) {
 }
 
 void ui_cvote_aux_data_streaming_show_initial_page(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL && aux_data->ui_streaming.on, "Called with streaming disabled");
-    LEDGER_ASSERT(aux_data != NULL &&
-                  aux_data->state == CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE,
-                  "Initial streaming page in wrong state: %d",
-                  aux_data != NULL ? aux_data->state : -1);
+    ASSERT(aux_data != NULL && aux_data->ui_streaming.on);
+    ASSERT(aux_data != NULL &&
+           aux_data->state == CVOTE_AUX_DATA_STATE_STREAMING_INITIAL_PAGE);
 
     uint16_t initial_pairs = cvote_initial_pairs_count(aux_data);
-    LEDGER_ASSERT(initial_pairs > 0, "No initial pairs for streaming page");
+    ASSERT(initial_pairs > 0);
 
     TRACE("CVote streaming initial page: initial_pairs=%u, max_pairs=%u",
           initial_pairs,
@@ -456,15 +452,12 @@ void ui_cvote_aux_data_streaming_show_initial_page(cvote_aux_data_t *aux_data) {
 bool ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
                                                 const cvote_credential_t *credential,
                                                 uint32_t weight) {
-    LEDGER_ASSERT(aux_data != NULL && aux_data->ui_streaming.on, "Called with streaming disabled");
-    LEDGER_ASSERT(aux_data != NULL &&
-                  (aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS ||
-                   aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED),
-                  "Streaming delegation page in wrong state: %d",
-                  aux_data != NULL ? aux_data->state : -1);
-    LEDGER_ASSERT(credential != NULL, "NULL credential");
-    LEDGER_ASSERT(aux_data != NULL && aux_data->ui_streaming.review_started,
-                  "Streaming review must be started before delegation pages");
+    ASSERT(aux_data != NULL && aux_data->ui_streaming.on);
+    ASSERT(aux_data != NULL &&
+           (aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS ||
+            aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED));
+    ASSERT(credential != NULL);
+    ASSERT(aux_data != NULL && aux_data->ui_streaming.review_started);
 
     if (!cvote_add_delegation_pairs(aux_data, credential, weight)) {
         return false;
@@ -478,17 +471,17 @@ bool ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
 bool ui_cvote_aux_data_add_delegation_non_streaming(cvote_aux_data_t *aux_data,
                                                     const cvote_credential_t *credential,
                                                     uint32_t weight) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
-    LEDGER_ASSERT(credential != NULL, "NULL credential");
-    LEDGER_ASSERT(aux_data != NULL && !aux_data->ui_streaming.on, "Called with streaming enabled");
-    LEDGER_ASSERT(aux_data != NULL && aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS, "ui_cvote_aux_data_add_delegation_non_streaming called in wrong state: %d", aux_data->state);
+    ASSERT(aux_data != NULL);
+    ASSERT(credential != NULL);
+    ASSERT(aux_data != NULL && !aux_data->ui_streaming.on);
+    ASSERT(aux_data != NULL && aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS);
 
     return cvote_add_delegation_pairs(aux_data, credential, weight);
 }
 
 void ui_cvote_aux_data_show_non_streaming_final_review(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL && aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED, "ui_cvote_aux_data_show_non_streaming_final_review called in wrong state: %d", aux_data->state);
-    LEDGER_ASSERT(aux_data != NULL && !aux_data->ui_streaming.on, "ui_cvote_aux_data_show_non_streaming_final_review called with streaming on");
+    ASSERT(aux_data != NULL && aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED);
+    ASSERT(aux_data != NULL && !aux_data->ui_streaming.on);
 
     LEDGER_ASSERT(warning_bits_except_mask(tx_aux_data_ctx()->cvote_warning_bits, CVOTE_AUX_DATA_WARNING_BITS_MASK) == 0, "Transaction warnings leaked into CVote warning bits - cvote_warning_bits should only contain CVote AUX_DATA warnings");
 

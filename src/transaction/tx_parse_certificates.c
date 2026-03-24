@@ -46,8 +46,8 @@ bool parse_certificate_stake_registration_deregistration(
 /// Parse CERTIFICATE_STAKE_DELEGATION
 bool parse_certificate_stake_delegation(buffer_t *buf,
                                                   certificate_data_t *cert_data) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(cert_data != NULL, "NULL certificate data");
+    ASSERT(buf != NULL);
+    ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_STAKE_DELEGATION;
 
     if (!buffer_read_credential(buf, &cert_data->stakeCredential)) {
@@ -60,7 +60,7 @@ bool parse_certificate_stake_delegation(buffer_t *buf,
         TRACE("Failed to read pool key hash");
         return false;
     }
-    LEDGER_ASSERT(cert_data->poolKeyHash != NULL, "NULL pool key hash");
+    ASSERT(cert_data->poolKeyHash != NULL);
     return true;
 }
 
@@ -97,8 +97,8 @@ bool parse_certificate_stake_registration_deregistration_conway(
 /// Parse CERTIFICATE_STAKE_POOL_RETIREMENT
 bool parse_certificate_stake_pool_retirement(buffer_t *buf,
                                                        certificate_data_t *cert_data) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(cert_data != NULL, "NULL certificate data");
+    ASSERT(buf != NULL);
+    ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_STAKE_POOL_RETIREMENT;
 
     if (!buffer_read_credential(buf, &cert_data->poolCredential)) {
@@ -119,8 +119,8 @@ bool parse_certificate_stake_pool_retirement(buffer_t *buf,
 /// Parse CERTIFICATE_VOTE_DELEGATION
 bool parse_certificate_vote_delegation(buffer_t *buf,
                                                  certificate_data_t *cert_data) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(cert_data != NULL, "NULL certificate data");
+    ASSERT(buf != NULL);
+    ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_VOTE_DELEGATION;
 
     if (!buffer_read_credential(buf, &cert_data->stakeCredential)) {
@@ -140,7 +140,7 @@ bool parse_certificate_vote_delegation(buffer_t *buf,
 /// Parse CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION
 bool parse_certificate_stake_pool_and_drep_delegation(buffer_t *buf,
                                                                  certificate_data_t *cert_data) {
-    LEDGER_ASSERT(cert_data != NULL, "NULL certificate data");
+    ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION;
 
     if (!buffer_read_credential(buf, &cert_data->stakeCredential)) {
@@ -167,7 +167,7 @@ bool parse_certificate_stake_pool_and_drep_delegation(buffer_t *buf,
 bool parse_certificate_account_registration_delegation_to_stake_pool(
     buffer_t *buf,
     certificate_data_t *cert_data) {
-    LEDGER_ASSERT(cert_data != NULL, "NULL certificate data");
+    ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL;
 
     if (!buffer_read_credential(buf, &cert_data->stakeCredential)) {
@@ -199,7 +199,7 @@ bool parse_certificate_account_registration_delegation_to_stake_pool(
 bool parse_certificate_account_registration_delegation_to_drep(
     buffer_t *buf,
     certificate_data_t *cert_data) {
-    LEDGER_ASSERT(cert_data != NULL, "NULL certificate data");
+    ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP;
 
     if (!buffer_read_credential(buf, &cert_data->stakeCredential)) {
@@ -231,7 +231,7 @@ bool parse_certificate_account_registration_delegation_to_drep(
 bool parse_certificate_account_registration_delegation_to_stake_pool_and_drep(
     buffer_t *buf,
     certificate_data_t *cert_data) {
-    LEDGER_ASSERT(cert_data != NULL, "NULL certificate data");
+    ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP;
 
     if (!buffer_read_credential(buf, &cert_data->stakeCredential)) {
@@ -268,8 +268,8 @@ bool parse_certificate_account_registration_delegation_to_stake_pool_and_drep(
 /// Parse CERTIFICATE_AUTHORIZE_COMMITTEE_HOT
 bool parse_certificate_authorize_committee_hot(buffer_t *buf,
                                                          certificate_data_t *cert_data) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(cert_data != NULL, "NULL certificate data");
+    ASSERT(buf != NULL);
+    ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_AUTHORIZE_COMMITTEE_HOT;
 
     if (!buffer_read_credential(buf, &cert_data->coldCredential)) {
@@ -289,8 +289,8 @@ bool parse_certificate_authorize_committee_hot(buffer_t *buf,
 /// Parse CERTIFICATE_RESIGN_COMMITTEE_COLD
 bool parse_certificate_resign_committee_cold(buffer_t *buf,
                                                        certificate_data_t *cert_data) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(cert_data != NULL, "NULL certificate data");
+    ASSERT(buf != NULL);
+    ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_RESIGN_COMMITTEE_COLD;
 
     if (!buffer_read_credential(buf, &cert_data->coldCredential)) {
@@ -310,8 +310,8 @@ bool parse_certificate_resign_committee_cold(buffer_t *buf,
 /// Parse CERTIFICATE_DREP_REGISTRATION
 bool parse_certificate_drep_registration(buffer_t *buf,
                                                    certificate_data_t *cert_data) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(cert_data != NULL, "NULL certificate data");
+    ASSERT(buf != NULL);
+    ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_DREP_REGISTRATION;
 
     if (!buffer_read_credential(buf, &cert_data->dRepCredential)) {
@@ -342,8 +342,8 @@ bool parse_certificate_drep_registration(buffer_t *buf,
 /// Parse CERTIFICATE_DREP_DEREGISTRATION
 bool parse_certificate_drep_deregistration(buffer_t *buf,
                                                      certificate_data_t *cert_data) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(cert_data != NULL, "NULL certificate data");
+    ASSERT(buf != NULL);
+    ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_DREP_DEREGISTRATION;
 
     if (!buffer_read_credential(buf, &cert_data->dRepCredential)) {
@@ -368,8 +368,8 @@ bool parse_certificate_drep_deregistration(buffer_t *buf,
 /// Parse CERTIFICATE_DREP_UPDATE
 bool parse_certificate_drep_update(buffer_t *buf,
                                              certificate_data_t *cert_data) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(cert_data != NULL, "NULL certificate data");
+    ASSERT(buf != NULL);
+    ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_DREP_UPDATE;
 
     if (!buffer_read_credential(buf, &cert_data->dRepCredential)) {
@@ -402,7 +402,7 @@ static bool _parse_pool_id(buffer_t *buf, pool_id_t *pool_id) {
                 TRACE("Failed to read pool id hash");
                 return false;
             }
-            LEDGER_ASSERT(pool_id->hash != NULL, "NULL pool id hash");
+            ASSERT(pool_id->hash != NULL);
             break;
         case EXT_CREDENTIAL_KEY_PATH:
             pool_id->keyReferenceType = KEY_REFERENCE_PATH;
@@ -466,8 +466,8 @@ static bool _parse_required_relay_dns_name(buffer_t *buf,
 }
 
 bool parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(relay != NULL, "NULL relay");
+    ASSERT(buf != NULL);
+    ASSERT(relay != NULL);
 
     uint8_t relay_type;
     if (!buffer_read_u8(buf, &relay_type)) {
@@ -598,8 +598,8 @@ bool parse_pool_relay(buffer_t *buf, pool_relay_t *relay) {
 
 /// Parse pool metadata URL and hash (presence already known from pool registration header)
 bool parse_pool_metadata(buffer_t *buf, pool_metadata_t *out_metadata) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(out_metadata != NULL, "NULL out_metadata");
+    ASSERT(buf != NULL);
+    ASSERT(out_metadata != NULL);
 
     uint16_t url_length = 0;
     if (!buffer_read_u16(buf, &url_length, BE)) {
@@ -771,8 +771,8 @@ bool parse_certificate_stake_pool_registration(buffer_t *buf,
 }
 
 bool parse_certificate(buffer_t *buf, certificate_data_t *out_certificate_data) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(out_certificate_data != NULL, "NULL out_certificate_data");
+    ASSERT(buf != NULL);
+    ASSERT(out_certificate_data != NULL);
 
     explicit_bzero(out_certificate_data, sizeof(*out_certificate_data));
 

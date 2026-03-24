@@ -17,8 +17,8 @@
 
 bool parse_opcert(buffer_t *buf, parsed_opcert_t *opcert)
 {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(opcert != NULL, "NULL opcert");
+    ASSERT(buf != NULL);
+    ASSERT(opcert != NULL);
 
     // KES public key
     if (!buffer_read_bytes_ptr(buf, &opcert->kesPublicKey, KES_PUBLIC_KEY_LENGTH)) {

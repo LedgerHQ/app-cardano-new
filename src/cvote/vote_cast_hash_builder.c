@@ -40,7 +40,7 @@ static void blake2b_256_append_buffer_tx_body(blake2b_256_context_t* hashCtx,
 // ==============================
 
 void vote_cast_hash_builder_init(votecast_hash_builder_t* builder, size_t votecastLength) {
-    LEDGER_ASSERT(builder != NULL, "NULL builder");
+    ASSERT(builder != NULL);
     LEDGER_ASSERT(votecastLength > 0, "Zero votecastLength");
 
     // Clear the entire structure to prevent stale data

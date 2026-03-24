@@ -30,8 +30,8 @@
 // ---------------------------------------------------------------------------
 
 bool parse_input(buffer_t *buf, tx_input_t *out_input) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(out_input != NULL, "NULL out_input");
+    ASSERT(buf != NULL);
+    ASSERT(out_input != NULL);
 
     if (!buffer_read_bytes_ptr(buf, &out_input->txHash, TX_HASH_LENGTH)) {
         TRACE("Failed to read input txHash");
@@ -48,8 +48,8 @@ bool parse_input(buffer_t *buf, tx_input_t *out_input) {
 }
 
 bool parse_required_signer(buffer_t *buf, required_signer_t *out_required_signer) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(out_required_signer != NULL, "NULL out_required_signer");
+    ASSERT(buf != NULL);
+    ASSERT(out_required_signer != NULL);
 
     uint8_t signer_type = 0;
     if (!buffer_read_u8(buf, &signer_type)) {
@@ -85,9 +85,9 @@ bool parse_required_signer(buffer_t *buf, required_signer_t *out_required_signer
 bool parse_voter_votes_header(buffer_t *buf,
                               ext_voter_t *out_voter,
                               uint16_t *out_num_votes) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(out_voter != NULL, "NULL out_voter");
-    LEDGER_ASSERT(out_num_votes != NULL, "NULL out_num_votes");
+    ASSERT(buf != NULL);
+    ASSERT(out_voter != NULL);
+    ASSERT(out_num_votes != NULL);
 
     explicit_bzero(out_voter, sizeof(*out_voter));
 
@@ -143,8 +143,8 @@ bool parse_voter_votes_header(buffer_t *buf,
 }
 
 bool parse_vote(buffer_t *buf, vote_item_t *out_vote_item) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(out_vote_item != NULL, "NULL out_vote_item");
+    ASSERT(buf != NULL);
+    ASSERT(out_vote_item != NULL);
 
     explicit_bzero(out_vote_item, sizeof(*out_vote_item));
 
@@ -185,8 +185,8 @@ bool parse_vote(buffer_t *buf, vote_item_t *out_vote_item) {
 }
 
 bool parse_withdrawal(buffer_t *buf, withdrawal_t *out_withdrawal) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(out_withdrawal != NULL, "NULL out_withdrawal");
+    ASSERT(buf != NULL);
+    ASSERT(out_withdrawal != NULL);
 
     ASSERT_TYPE(out_withdrawal->amount, uint64_t);
     if (!buffer_read_u64(buf, &out_withdrawal->amount, BE)) {
@@ -207,8 +207,8 @@ bool parse_withdrawal(buffer_t *buf, withdrawal_t *out_withdrawal) {
 }
 
 bool parse_mint_token(buffer_t *buf, mint_token_t *out_mint_token) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(out_mint_token != NULL, "NULL out_mint_token");
+    ASSERT(buf != NULL);
+    ASSERT(out_mint_token != NULL);
 
     uint8_t asset_name_length = 0;
     if (!buffer_read_u8(buf, &asset_name_length) || asset_name_length > MAX_MINT_ASSET_NAME_LENGTH) {
@@ -221,7 +221,7 @@ bool parse_mint_token(buffer_t *buf, mint_token_t *out_mint_token) {
         TRACE("Failed to read mint asset name");
         return false;
     }
-    LEDGER_ASSERT(asset_name != NULL, "NULL mint asset_name");
+    ASSERT(asset_name != NULL);
 
     int64_t token_amount = 0;
     if (!buffer_read_int64(buf, &token_amount, BE)) {

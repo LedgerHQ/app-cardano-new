@@ -19,7 +19,7 @@
 #include "cardano_settings.h"
 
 void handler_debug_set_settings(const buffer_t *buf) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
+    ASSERT(buf != NULL);
 
     // Expect exactly 2 bytes of data
     const size_t remaining = buffer_data_size(buf);

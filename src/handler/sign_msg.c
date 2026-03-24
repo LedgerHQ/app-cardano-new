@@ -102,8 +102,8 @@ static bool is_msg_length_valid_for_sign_msg_init(uint32_t message_length,
 // ============================== INIT ==============================
 
 static void signMsg_handle_init(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
-    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_INIT, "Invalid sign_msg state");
+    ASSERT(cdata != NULL);
+    ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_INIT);
 
     sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
 
@@ -253,8 +253,8 @@ static void signMsg_handle_init(buffer_t *cdata) {
 // ============================== CHUNK ==============================
 
 static void signMsg_handle_chunk(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
-    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CHUNK, "Invalid sign_msg state");
+    ASSERT(cdata != NULL);
+    ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CHUNK);
 
     sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
 
@@ -294,7 +294,7 @@ static void signMsg_handle_chunk(buffer_t *cdata) {
     if (chunkSize_u32 > 0) {
         // Compute write offset into the accumulated message buffer
         const uint32_t writeOffset = ctx->msgLength - ctx->remainingBytes;
-        LEDGER_ASSERT(ctx->msgBuffer != NULL, "Message buffer not allocated");
+        ASSERT(ctx->msgBuffer != NULL);
         LEDGER_ASSERT(writeOffset + chunkSize_u32 <= ctx->msgBufferSize, "Chunk would overflow message buffer");
 
         // Read chunk data directly into accumulated message buffer
@@ -311,7 +311,7 @@ static void signMsg_handle_chunk(buffer_t *cdata) {
     // Transition to CONFIRM if all bytes received
     if (ctx->remainingBytes == 0) {
         if (ctx->isAscii && ctx->msgLength > 0) {
-            LEDGER_ASSERT(ctx->msgBuffer != NULL, "Message buffer not allocated");
+            ASSERT(ctx->msgBuffer != NULL);
             if (!str_isUnambiguousAscii(ctx->msgBuffer, ctx->msgLength)) {
                 TRACE("ASCII validation failed for full message");
                 send_swo_and_reset(SWO_SIGN_MSG_INVALID_ASCII);
@@ -481,8 +481,8 @@ static void finalize_message_hash_to_context(sign_msg_ctx_t *ctx) {
 }
 
 static void signMsg_handle_confirm(buffer_t *cdata) {
-    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CONFIRM, "Invalid sign_msg state");
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CONFIRM);
+    ASSERT(cdata != NULL);
 
     sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
 
@@ -524,20 +524,20 @@ static void signMsg_handle_confirm(buffer_t *cdata) {
         // LCOV_EXCL_START
         case POLICY_DENY:
         default:
-            LEDGER_ASSERT(false, "Invalid sign_msg policy at CONFIRM: %d", ctx->signing_policy);
+            ASSERT(false);
             return;
         // LCOV_EXCL_STOP
     }
 }
 
 void finalize_sign_msg(void) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_MSG, "Bad req_type");
-    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CONFIRM, "Bad sign_msg state");
+    ASSERT(G_context.req_type == REQUEST_SIGN_MSG);
+    ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CONFIRM);
 
     sign_msg_ctx_t *ctx = &G_context.sign_msg_info;
 
     // User confirmed - sign already prepared Sig_structure.
-    LEDGER_ASSERT(ctx->sigStructureBuffer != NULL, "Sig_structure missing");
+    ASSERT(ctx->sigStructureBuffer != NULL);
     LEDGER_ASSERT(ctx->sigStructureSize > 0, "Sig_structure size missing");
     signRawMessageWithPath(&ctx->signingPath,
                            ctx->sigStructureBuffer,
@@ -570,7 +570,7 @@ void finalize_sign_msg(void) {
 // ============================== MAIN HANDLER ==============================
 
 void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    ASSERT(cdata != NULL);
     TRACE_BUFFER_T(cdata);
 
     switch (p1) {
@@ -613,7 +613,7 @@ void handler_sign_msg(buffer_t *cdata, uint8_t p1) {
         // LCOV_EXCL_START
         default:
             TRACE("Bad P1 value");
-            LEDGER_ASSERT(false, "P1 should be handled before");
+            ASSERT(false);
             break;
         // LCOV_EXCL_STOP
     }

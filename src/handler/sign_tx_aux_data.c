@@ -73,7 +73,7 @@ static bool ensure_sign_tx_aux_data_state(cvote_aux_data_state_e required_aux_st
 // Validate CVote aux data against security policies
 // Returns false if any policy denies, true if all policies allow
 static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux data");
+    ASSERT(aux_data != NULL);
 
     // Assert that CVote warnings are initially empty and TX warnings haven't leaked in
     LEDGER_ASSERT(warning_bits_is_empty(&tx_aux_data_ctx()->cvote_warning_bits), "Non-empty cvote_warning_bits");
@@ -104,7 +104,7 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
             break;
         // LCOV_EXCL_START
         default:
-            LEDGER_ASSERT(false, "Unknown vote key policy: %u", vote_key_policy);
+            ASSERT(false);
             return false;
         // LCOV_EXCL_STOP
     }
@@ -133,7 +133,7 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
             LEDGER_ASSERT(false, "Unexpected POLICY_HIDE for staking key");
             return false;
         default:
-            LEDGER_ASSERT(false, "Unknown staking key policy: %u", staking_key_policy);
+            ASSERT(false);
             return false;
         // LCOV_EXCL_STOP
     }
@@ -158,7 +158,7 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
             LEDGER_ASSERT(false, "Unexpected POLICY_HIDE for payment destination");
             return false;
         default:
-            LEDGER_ASSERT(false, "Unknown destination policy: %u", destination_policy);
+            ASSERT(false);
             return false;
         // LCOV_EXCL_STOP
     }
@@ -182,7 +182,7 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
             LEDGER_ASSERT(false, "Unexpected POLICY_HIDE for nonce");
             return false;
         default:
-            LEDGER_ASSERT(false, "Unknown nonce policy: %u", nonce_policy);
+            ASSERT(false);
             return false;
         // LCOV_EXCL_STOP
     }
@@ -204,7 +204,7 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
             LEDGER_ASSERT(false, "Unexpected POLICY_DENY for voting purpose");
             return false;
         default:
-            LEDGER_ASSERT(false, "Unknown voting purpose policy: %u", voting_purpose_policy);
+            ASSERT(false);
             return false;
         // LCOV_EXCL_STOP
     }
@@ -216,12 +216,12 @@ static bool cvote_aux_data_validate(cvote_aux_data_t *aux_data) {
 }
 
 static void handler_tx_aux_data_init(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
-    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_AUX_DATA, "Bad tx_state");
+    ASSERT(cdata != NULL);
+    ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION);
+    ASSERT(G_context.state.tx_state == TX_STATE_AUX_DATA);
     cvote_aux_data_t *aux_data = &tx_aux_data_ctx()->cvote_aux_data;
 
-    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_EXPECTING_INIT, "Bad aux state");
+    ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_EXPECTING_INIT);
     LEDGER_ASSERT(tx_aux_data_ctx()->raw_cvote_init_data == NULL, "Stale raw init ptr");
     LEDGER_ASSERT(tx_aux_data_ctx()->raw_cvote_init_data_len == 0, "Stale raw init len");
 
@@ -238,7 +238,7 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
     }
 
     const uint8_t *payload_start = buffer_get_cur(cdata);
-    LEDGER_ASSERT(payload_start != NULL, "NULL payload_start");
+    ASSERT(payload_start != NULL);
     memcpy(tx_aux_data_ctx()->raw_cvote_init_data, payload_start, init_payload_len);
     tx_aux_data_ctx()->raw_cvote_init_data_len = init_payload_len;
 
@@ -306,12 +306,12 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
 }
 
 static void handler_tx_aux_data_delegation(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
-    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_AUX_DATA, "Bad tx_state");
+    ASSERT(cdata != NULL);
+    ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION);
+    ASSERT(G_context.state.tx_state == TX_STATE_AUX_DATA);
     cvote_aux_data_t *aux_data = &tx_aux_data_ctx()->cvote_aux_data;
 
-    LEDGER_ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS, "Bad aux state");
+    ASSERT(aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS);
     LEDGER_ASSERT(aux_data->remaining_delegations > 0, "No delegations remaining");
 
     TRACE("CVote AUX_DATA delegation received, payload_len=%u",
@@ -396,7 +396,7 @@ static void handler_tx_aux_data_delegation(buffer_t *cdata) {
 }
 
 void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    ASSERT(cdata != NULL);
     TRACE_BUFFER_T(cdata);
 
     if (!ensure_sign_tx_aux_data_request_type(REQUEST_SIGN_TRANSACTION)) {
@@ -428,9 +428,9 @@ void handler_sign_tx_aux_data(buffer_t *cdata, uint8_t p2) {
 }
 
 void finalize_sign_tx_aux_data(void) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
-    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_AUX_DATA, "Bad tx_state");
-    LEDGER_ASSERT(tx_aux_data_ctx()->cvote_aux_data.state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED, "Bad aux state");
+    ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION);
+    ASSERT(G_context.state.tx_state == TX_STATE_AUX_DATA);
+    ASSERT(tx_aux_data_ctx()->cvote_aux_data.state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED);
 
     cvote_hash_finalize();
 

@@ -79,7 +79,7 @@ static void simpleScriptFinished(native_script_hash_builder_t* builder) {
 }
 
 void nativeScriptHashBuilder_init(native_script_hash_builder_t* builder) {
-    LEDGER_ASSERT(builder != NULL, "NULL builder");
+    ASSERT(builder != NULL);
 
     // Clear the entire structure to prevent stale data
     explicit_bzero(builder, sizeof(native_script_hash_builder_t));

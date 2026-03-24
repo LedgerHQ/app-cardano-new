@@ -92,7 +92,7 @@ bool format_position(derive_native_script_hash_ctx_t *ctx,
 }
 
 bool format_remaining(uint32_t remaining_scripts, char *out, size_t out_size) {
-    LEDGER_ASSERT(out != NULL, "NULL output buffer");
+    ASSERT(out != NULL);
     STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(remaining_scripts)), "signed type for %u");
     int chars_written = snprintf(out, out_size, "%u nested scripts", remaining_scripts);
     return (chars_written > 0 && chars_written < (int)out_size);
@@ -102,7 +102,7 @@ bool format_required_signatures(uint32_t requiredScripts,
                                 uint32_t remainingScripts,
                                 char *out,
                                 size_t out_size) {
-    LEDGER_ASSERT(out != NULL, "NULL output buffer");
+    ASSERT(out != NULL);
     STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(requiredScripts)), "signed type for %u");
     STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(remainingScripts)), "signed type for %u");
     int chars_written =

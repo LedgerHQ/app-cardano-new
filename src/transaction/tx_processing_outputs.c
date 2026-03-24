@@ -55,8 +55,8 @@ __noinline_due_to_stack__
 static void hash_add_output_top_level(tx_hash_builder_t *tx_hash_builder,
                                       const tx_output_description_t *output_description,
                                       hash_add_output_fn_t hash_fn) {
-    LEDGER_ASSERT(tx_hash_builder != NULL, "NULL tx_hash_builder");
-    LEDGER_ASSERT(output_description != NULL, "NULL output_description");
+    ASSERT(tx_hash_builder != NULL);
+    ASSERT(output_description != NULL);
 
     uint8_t *address_bytes = tx_alloc_temp_buffer_or_fail(MAX_ADDRESS_LENGTH);
 
@@ -85,9 +85,8 @@ static void hash_add_output_top_level(tx_hash_builder_t *tx_hash_builder,
 static bool tx_process_output(buffer_t *output_buf,
                                       uint16_t output_index,
                                       tx_processing_state_t *state) {
-    LEDGER_ASSERT(output_buf != NULL, "NULL output_buf");
-    LEDGER_ASSERT(state != NULL && state->tx_params != NULL && state->warning_bits != NULL,
-                  "tx_processing_state not initialized");
+    ASSERT(output_buf != NULL);
+    ASSERT(state != NULL && state->tx_params != NULL && state->warning_bits != NULL);
     const tx_params_t *tx_params = state->tx_params;
     const tx_processing_mode_t *mode = &state->mode;
     tx_hash_builder_t *hash_builder = &state->hash_builder;
@@ -277,12 +276,12 @@ static bool tx_process_output(buffer_t *output_buf,
  * Process the collateral return output from output_buf.
  */
 static bool tx_process_collateral_return_output(buffer_t *output_buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(output_buf != NULL, "NULL output_buf");
-    LEDGER_ASSERT(state != NULL, "NULL state");
+    ASSERT(output_buf != NULL);
+    ASSERT(state != NULL);
     const tx_params_t *tx_params = state->tx_params;
     warning_bits_t *warning_bits = state->warning_bits;
-    LEDGER_ASSERT(tx_params != NULL, "NULL state->tx_params");
-    LEDGER_ASSERT(warning_bits != NULL, "NULL state->warning_bits");
+    ASSERT(tx_params != NULL);
+    ASSERT(warning_bits != NULL);
     const tx_processing_mode_t *mode = &state->mode;
     tx_hash_builder_t *hash_builder = &state->hash_builder;
 
@@ -410,10 +409,10 @@ static bool tx_process_collateral_return_output(buffer_t *output_buf, tx_process
 // ---------------------------------------------------------------------------
 
 bool tx_process_outputs(buffer_t *buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(state != NULL, "NULL state");
+    ASSERT(buf != NULL);
+    ASSERT(state != NULL);
     const tx_params_t *tx_params = state->tx_params;
-    LEDGER_ASSERT(tx_params != NULL, "tx_processing_state not initialized");
+    ASSERT(tx_params != NULL);
     const tx_processing_mode_t *mode = &state->mode;
     TRACE_MODULE("tx_process_outputs: num_outputs=%u", (unsigned) tx_params->num_outputs);
 
@@ -459,11 +458,11 @@ bool tx_process_outputs(buffer_t *buf, tx_processing_state_t *state) {
 }
 
 bool tx_process_collateral_output(buffer_t *buf, tx_processing_state_t *state) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(state != NULL, "NULL state");
+    ASSERT(buf != NULL);
+    ASSERT(state != NULL);
 
     const tx_params_t *tx_params = state->tx_params;
-    LEDGER_ASSERT(tx_params != NULL, "tx_processing_state not initialized");
+    ASSERT(tx_params != NULL);
 
     if (!tx_params->includeCollateralOutput) {
         TRACE_MODULE("tx_process_collateral_output: no collateral output, skipping");

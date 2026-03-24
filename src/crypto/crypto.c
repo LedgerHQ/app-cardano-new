@@ -7,6 +7,7 @@
 #include <stdbool.h>  // bool
 
 #include "cardano_constants.h"
+#include "assert.h"
 #include "cx.h"
 #include "os.h"
 
@@ -75,7 +76,7 @@ end:
     if (error != CX_OK) {
         // Make sure the caller doesn't use uninitialized data if the operation failed.
         explicit_bzero(raw_pubkey, ED25519_PUBKEY_UNCOMPRESSED_LENGTH);
-        LEDGER_ASSERT(!error, "crypto_get_pubkey failed with error 0x%X", error);
+        LEDGER_ASSERT(!error, "crypto_eddsa_sign failed with error 0x%X", error);
     }
 }
 
@@ -86,11 +87,11 @@ void crypto_eddsa_sign(const uint32_t* path,
                        uint8_t* sig,
                        size_t expected_sig_len) {
 
-    LEDGER_ASSERT(path != NULL, "NULL path");
+    ASSERT(path != NULL);
     LEDGER_ASSERT(path_len > 0, "path is empty");
-    LEDGER_ASSERT(hash != NULL, "NULL hash");
+    ASSERT(hash != NULL);
     LEDGER_ASSERT(hash_len > 0, "hash_len is zero");
-    LEDGER_ASSERT(sig != NULL, "NULL sig");
+    ASSERT(sig != NULL);
     LEDGER_ASSERT(expected_sig_len == ED25519_SIGNATURE_LENGTH,
                   "expected_sig_len must equal ED25519_SIGNATURE_LENGTH");
 

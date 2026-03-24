@@ -29,8 +29,8 @@ bool cbor_mapKeyFulfillsCanonicalOrdering(const uint8_t *previous_key,
 bool cbor_canonical_tracker_check_and_advance(cbor_canonical_tracker_t *tracker,
                                                const uint8_t *next_key,
                                                size_t next_key_length) {
-    LEDGER_ASSERT(tracker != NULL, "NULL tracker");
-    LEDGER_ASSERT(next_key != NULL, "NULL next_key");
+    ASSERT(tracker != NULL);
+    ASSERT(next_key != NULL);
     ASSERT(next_key_length <= CBOR_CANONICAL_MAX_KEY_SIZE);
     if (tracker->has_previous &&
         !cbor_mapKeyFulfillsCanonicalOrdering(tracker->previous_key,

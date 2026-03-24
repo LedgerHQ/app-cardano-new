@@ -146,7 +146,7 @@ static void tx_streaming_continue_choice(bool confirm) {
     tx_body_ctx()->rendered_ui_pairs = next_from + rendered_count;
 
     // Finalize the pairs count for display.
-    LEDGER_ASSERT(g_pairsList != NULL, "NULL g_pairsList after rendering");
+    ASSERT(g_pairsList != NULL);
     g_pairsList->nbPairs = (uint8_t) rendered_count;
 
     TRACE("Streaming chunk: from=%u rendered=%u next_ui_pair_index=%u total=%u",

@@ -6,8 +6,8 @@
 #include "assert.h"
 
 bool buffer_read_bytes_ptr(buffer_t *buffer, const uint8_t **destBuffer, size_t n) {
-    LEDGER_ASSERT(buffer != NULL, "NULL buffer");
-    LEDGER_ASSERT(destBuffer != NULL, "NULL destination");
+    ASSERT(buffer != NULL);
+    ASSERT(destBuffer != NULL);
 
     if (!buffer_can_read(buffer, n)) {
         return false;
@@ -18,7 +18,7 @@ bool buffer_read_bytes_ptr(buffer_t *buffer, const uint8_t **destBuffer, size_t 
 }
 
 bool buffer_write_cbor_token(buffer_t *buffer, uint8_t type, uint64_t value) {
-    LEDGER_ASSERT(buffer != NULL, "NULL buffer");
+    ASSERT(buffer != NULL);
     ASSERT(buffer_data_size(buffer) < BUFFER_SIZE_PARANOIA);
 
     size_t written = 0;

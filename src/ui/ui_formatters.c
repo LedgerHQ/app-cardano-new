@@ -278,8 +278,8 @@ bool format_index_with_prefix(uint32_t value, char *out, size_t outSize) {
  */
 bool format_ipv4(const ipv4_t *ipv4, char *out, size_t outSize) {
     LEDGER_ASSERT(outSize < BUFFER_SIZE_PARANOIA, "Output buffer size exceeds paranoia limit");
-    LEDGER_ASSERT(out != NULL, "NULL out");
-    LEDGER_ASSERT(ipv4 != NULL, "NULL ipv4");
+    ASSERT(out != NULL);
+    ASSERT(ipv4 != NULL);
 
     explicit_bzero(out, outSize);
 
@@ -288,7 +288,7 @@ bool format_ipv4(const ipv4_t *ipv4, char *out, size_t outSize) {
         LEDGER_ASSERT(written > 0, "snprintf ipv4 null formatting failed");
         LEDGER_ASSERT((size_t)written + 1 < outSize, "IPv4 null string does not fit in output buffer");
     } else {
-        LEDGER_ASSERT(ipv4->ip != NULL, "NULL ipv4->ip");
+        ASSERT(ipv4->ip != NULL);
         inet_ntop4(ipv4->ip, out, outSize);
     }
 
@@ -303,8 +303,8 @@ bool format_ipv4(const ipv4_t *ipv4, char *out, size_t outSize) {
  */
 bool format_ipv6(const ipv6_t *ipv6, char *out, size_t outSize) {
     LEDGER_ASSERT(outSize < BUFFER_SIZE_PARANOIA, "Output buffer size exceeds paranoia limit");
-    LEDGER_ASSERT(out != NULL, "NULL out");
-    LEDGER_ASSERT(ipv6 != NULL, "NULL ipv6");
+    ASSERT(out != NULL);
+    ASSERT(ipv6 != NULL);
 
     explicit_bzero(out, outSize);
 
@@ -313,7 +313,7 @@ bool format_ipv6(const ipv6_t *ipv6, char *out, size_t outSize) {
         LEDGER_ASSERT(written > 0, "snprintf ipv6 null formatting failed");
         LEDGER_ASSERT((size_t)written + 1 < outSize, "IPv6 null string does not fit in output buffer");
     } else {
-        LEDGER_ASSERT(ipv6->ip != NULL, "NULL ipv6->ip");
+        ASSERT(ipv6->ip != NULL);
         inet_ntop6(ipv6->ip, out, outSize);
     }
 
@@ -444,8 +444,8 @@ bool format_asset_fingerprint_bech32(const uint8_t *policyId,
  * Formats as "deadbeefaf... (XXXX bytes)" where first 6 bytes show as hex.
  */
 bool format_input_with_index(const tx_input_t *input, char *out, size_t outSize) {
-    LEDGER_ASSERT(input != NULL, "NULL input");
-    LEDGER_ASSERT(out != NULL, "NULL output buffer");
+    ASSERT(input != NULL);
+    ASSERT(out != NULL);
     int hex_status = bytes_to_lowercase_hex(out, outSize, input->txHash, TX_HASH_LENGTH);
     if (hex_status != 0) {
         return false;
@@ -473,8 +473,8 @@ bool format_incomplete_hex_with_length(const uint8_t *data,
                                      size_t dataLen,
                                      char *out,
                                      size_t outSize) {
-    LEDGER_ASSERT(data != NULL, "NULL data");
-    LEDGER_ASSERT(out != NULL, "NULL output buffer");
+    ASSERT(data != NULL);
+    ASSERT(out != NULL);
     LEDGER_ASSERT(outSize > 0, "Zero output size");
 
     enum {

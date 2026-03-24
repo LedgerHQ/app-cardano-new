@@ -64,7 +64,7 @@ static void deriveNativeScriptHash_handleAny() {
 }
 
 static void deriveNativeScriptHash_handleNofK(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    ASSERT(cdata != NULL);
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     bool read32 = buffer_read_u32(cdata, &ctx->scriptContent.requiredScripts, BE);
     if (read32 == false) {
@@ -149,7 +149,7 @@ static bool parse_native_script_pubkey_credential(buffer_t *buf, ext_credential_
 
 // Simple native script handlers
 static bool deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    ASSERT(cdata != NULL);
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
 
     // Parse pubkey credential (only KEY_PATH and KEY_HASH allowed, not SCRIPT_HASH)
@@ -209,7 +209,7 @@ static bool deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
             break;
         // LCOV_EXCL_START
         default:
-            LEDGER_ASSERT(false, "Unexpected credential type: %d", credential.type);
+            ASSERT(false);
             return false;
         // LCOV_EXCL_STOP
     }
@@ -225,7 +225,7 @@ static bool deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
 }
 
 static bool deriveNativeScriptHash_handleInvalidBefore(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    ASSERT(cdata != NULL);
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     bool read_timelock = buffer_read_u64(cdata, &ctx->scriptContent.timelock, BE);
     if (!read_timelock) {
@@ -245,7 +245,7 @@ static bool deriveNativeScriptHash_handleInvalidBefore(buffer_t *cdata) {
 }
 
 static bool deriveNativeScriptHash_handleInvalidHereafter(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    ASSERT(cdata != NULL);
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     bool read_timelock = buffer_read_u64(cdata, &ctx->scriptContent.timelock, BE);
     if (!read_timelock) {
@@ -282,7 +282,7 @@ static void deriveNativeScriptHash_displayNativeScriptHash_policyId() {
 
 // Complex script start handler
 static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    ASSERT(cdata != NULL);
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
 
     if (!isScriptExpectedAtCurrentLevel()) {
@@ -350,7 +350,7 @@ static void deriveNativeScriptHash_handleComplexScriptStart(buffer_t *cdata) {
 
 // Simple script handler
 static void deriveNativeScriptHash_handleSimpleScript(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    ASSERT(cdata != NULL);
     if (!isScriptExpectedAtCurrentLevel()) {
         TRACE("More scripts expected");
         send_swo_and_reset(SWO_NATIVE_SCRIPT_PARSING_FAIL_NESTING);
@@ -393,7 +393,7 @@ static void deriveNativeScriptHash_handleSimpleScript(buffer_t *cdata) {
 }
 
 static void deriveNativeScriptHash_handleWholeNativeScriptFinish(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    ASSERT(cdata != NULL);
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
 
     // we finish only if there are no more scripts to be processed
@@ -440,7 +440,7 @@ static void deriveNativeScriptHash_handleWholeNativeScriptFinish(buffer_t *cdata
 }
 
 static void deriveNativeScriptHash_handleInit(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    ASSERT(cdata != NULL);
 
     // Init APDU should have no payload
     if (deny_unconsumed_bytes(cdata, SWO_WRONG_DATA_LENGTH)) {
@@ -462,7 +462,7 @@ static void deriveNativeScriptHash_handleInit(buffer_t *cdata) {
 }
 
 void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    ASSERT(cdata != NULL);
 
     TRACE_BUFFER_T(cdata);
 
@@ -492,14 +492,14 @@ void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
                     break;
                 // LCOV_EXCL_START
                 default:
-                    LEDGER_ASSERT(false, "Invalid native script type: %d", script_type);
+                    ASSERT(false);
                     break;
                 // LCOV_EXCL_STOP
             }
             break;
         // LCOV_EXCL_START
         default:
-            LEDGER_ASSERT(false, "Bad script type: %d", script_type);
+            ASSERT(false);
             break;
         // LCOV_EXCL_STOP
     }
@@ -507,14 +507,12 @@ void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
 }
 
 void finalize_derive_native_script_hash(void) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_NATIVE_SCRIPT_HASH, "Bad req_type");
+    ASSERT(G_context.req_type == REQUEST_DERIVE_NATIVE_SCRIPT_HASH);
 
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
-    LEDGER_ASSERT(ctx->hashBuilder.state == NATIVE_SCRIPT_HASH_BUILDER_FINISHED,
-                  "Hash builder not in finished state");
+    ASSERT(ctx->hashBuilder.state == NATIVE_SCRIPT_HASH_BUILDER_FINISHED);
 
-    LEDGER_ASSERT(ctx->scriptHashBuffer != NULL || SCRIPT_HASH_LENGTH == 0,
-                  "NULL response data with non-zero size");
+    ASSERT(ctx->scriptHashBuffer != NULL || SCRIPT_HASH_LENGTH == 0);
     apdu_response_send_data(ctx->scriptHashBuffer, SCRIPT_HASH_LENGTH, SWO_SUCCESS);
     reset_app_context();
 }

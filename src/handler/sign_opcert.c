@@ -46,7 +46,7 @@ static bool ensure_sign_opcert_init_request_state(void) {
 }
 
 void handler_sign_opcert(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    ASSERT(cdata != NULL);
     TRACE_BUFFER_T(cdata);
 
     if (!ensure_sign_opcert_init_request_state()) {
@@ -100,8 +100,8 @@ void handler_sign_opcert(buffer_t *cdata) {
 }
 
 void finalize_sign_opcert(void) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_OPCERT, "Bad req_type");
-    LEDGER_ASSERT(G_context.state.opcert_state == OPCERT_STATE_VALIDATED, "Bad opcert state");
+    ASSERT(G_context.req_type == REQUEST_SIGN_OPCERT);
+    ASSERT(G_context.state.opcert_state == OPCERT_STATE_VALIDATED);
 
     // user confirmed
     G_context.state.opcert_state = OPCERT_STATE_APPROVED;

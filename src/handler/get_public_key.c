@@ -44,7 +44,7 @@ static bool ensure_get_public_key_init_request_state(void) {
 }
 
 void handler_get_public_key(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    ASSERT(cdata != NULL);
     TRACE_BUFFER_T(cdata);
 
     if (!ensure_get_public_key_init_request_state()) {
@@ -89,8 +89,8 @@ void handler_get_public_key(buffer_t *cdata) {
 }
 
 void finalize_pubkey_export(void) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_EXPORT_PUBKEY, "Bad req_type");
-    LEDGER_ASSERT(G_context.state.pubkey_state == PUBKEY_STATE_VALIDATED, "Bad pubkey state");
+    ASSERT(G_context.req_type == REQUEST_EXPORT_PUBKEY);
+    ASSERT(G_context.state.pubkey_state == PUBKEY_STATE_VALIDATED);
     G_context.state.pubkey_state = PUBKEY_STATE_APPROVED;
 
     // Send the extended public key back to the client

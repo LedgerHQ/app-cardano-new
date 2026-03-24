@@ -74,8 +74,8 @@ static void _append_cbor_token(uint8_t* buffer,
                                size_t* offset,
                                uint8_t type,
                                uint64_t value) {
-    LEDGER_ASSERT(buffer != NULL, "NULL buffer");
-    LEDGER_ASSERT(offset != NULL, "NULL offset");
+    ASSERT(buffer != NULL);
+    ASSERT(offset != NULL);
     LEDGER_ASSERT(*offset < bufferLen, "CBOR buffer overflow");
 
     size_t tokenSize = 0;
@@ -101,8 +101,8 @@ static void _append_map_key_bytes(uint8_t* buffer,
 }
 
 static const uint8_t* _voter_key_data_with_size(const voter_t* voter, size_t* out_size) {
-    LEDGER_ASSERT(voter != NULL, "NULL voter");
-    LEDGER_ASSERT(out_size != NULL, "NULL out_size");
+    ASSERT(voter != NULL);
+    ASSERT(out_size != NULL);
 
     switch (voter->type) {
         case VOTER_COMMITTEE_HOT_KEY_HASH:
@@ -122,12 +122,12 @@ static const uint8_t* _voter_key_data_with_size(const voter_t* voter, size_t* ou
 size_t txHashBuilder_serializeVoterKey(const voter_t* voter,
                                        uint8_t* buffer,
                                        size_t bufferLen) {
-    LEDGER_ASSERT(voter != NULL, "NULL voter");
-    LEDGER_ASSERT(buffer != NULL, "NULL buffer");
+    ASSERT(voter != NULL);
+    ASSERT(buffer != NULL);
     size_t offset = 0;
     size_t keyLen = 0;
     const uint8_t* keyBytes = _voter_key_data_with_size(voter, &keyLen);
-    LEDGER_ASSERT(keyBytes != NULL, "Invalid voter type");
+    ASSERT(keyBytes != NULL);
 
     _append_cbor_token(buffer, bufferLen, &offset, CBOR_TYPE_ARRAY, 2);
     _append_cbor_token(buffer, bufferLen, &offset, CBOR_TYPE_UNSIGNED, voter->type);
@@ -140,9 +140,9 @@ size_t txHashBuilder_serializeVoterKey(const voter_t* voter,
 size_t txHashBuilder_serializeGovActionKey(const gov_action_id_t* govActionId,
                                            uint8_t* buffer,
                                            size_t bufferLen) {
-    LEDGER_ASSERT(govActionId != NULL, "NULL gov action id");
-    LEDGER_ASSERT(buffer != NULL, "NULL buffer");
-    LEDGER_ASSERT(govActionId != NULL && govActionId->txHash != NULL, "NULL tx hash");
+    ASSERT(govActionId != NULL);
+    ASSERT(buffer != NULL);
+    ASSERT(govActionId != NULL && govActionId->txHash != NULL);
     size_t offset = 0;
     _append_cbor_token(buffer, bufferLen, &offset, CBOR_TYPE_ARRAY, 2);
     _append_cbor_token(buffer, bufferLen, &offset, CBOR_TYPE_BYTES, TX_HASH_LENGTH);
@@ -318,8 +318,8 @@ static void assertCanLeaveCurrentOutput(tx_hash_builder_t* builder) {
 // ==============================
 
 void txHashBuilder_init(tx_hash_builder_t* builder, const tx_params_t* txParams) {
-    LEDGER_ASSERT(builder != NULL, "NULL builder");
-    LEDGER_ASSERT(txParams != NULL, "NULL txParams");
+    ASSERT(builder != NULL);
+    ASSERT(txParams != NULL);
 
     // Clear the entire structure to prevent stale data in unions
     explicit_bzero(builder, sizeof(tx_hash_builder_t));
@@ -849,7 +849,7 @@ static void _appendCredential(tx_hash_builder_t* builder, const credential_t* cr
 }
 
 static void _appendDRep(tx_hash_builder_t* builder, const drep_t* drep) {
-    LEDGER_ASSERT(drep != NULL, "NULL drep");
+    ASSERT(drep != NULL);
     {
         switch (drep->type) {
             case DREP_KEY_HASH: {
@@ -1429,7 +1429,7 @@ static void _relay_addIpv4(tx_hash_builder_t* builder, const ipv4_t* ipv4) {
     if (ipv4->isNull) {
         BUILDER_APPEND_CBOR(CBOR_TYPE_NULL, 0);
     } else {
-        LEDGER_ASSERT(ipv4->ip != NULL, "NULL ipv4");
+        ASSERT(ipv4->ip != NULL);
         BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, IPV4_LENGTH);
         BUILDER_APPEND_DATA(ipv4->ip, IPV4_LENGTH);
     }
@@ -1446,7 +1446,7 @@ static void _relay_addIpv6(tx_hash_builder_t* builder, const ipv6_t* ipv6) {
     if (ipv6->isNull) {
         BUILDER_APPEND_CBOR(CBOR_TYPE_NULL, 0);
     } else {
-        LEDGER_ASSERT(ipv6->ip != NULL, "NULL ipv6");
+        ASSERT(ipv6->ip != NULL);
         BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, IPV6_LENGTH);
 
         // The IPv6 address is stored as 4 little-endian uint32 words (Cardano's encoding).

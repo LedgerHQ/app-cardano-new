@@ -64,8 +64,8 @@ static size_t bip44_parse_path(bip44_path_t* pathSpec, const uint8_t* dataBuffer
 
 bool buffer_read_bip44_path(buffer_t *buf, bip44_path_t* path)
 {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(path != NULL, "NULL path");
+    ASSERT(buf != NULL);
+    ASSERT(path != NULL);
 
     const uint8_t *wire_ptr = buffer_get_cur(buf);
     size_t remaining = buffer_data_size(buf);

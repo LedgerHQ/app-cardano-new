@@ -12,9 +12,7 @@
  */
 static inline __attribute__((always_inline))
 typeof(G_context.tx_info.aux_data) *tx_aux_data_ctx(void) {
-    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_AUX_DATA,
-                  "tx_aux_data_ctx called in wrong state: %d",
-                  G_context.state.tx_state);
+    ASSERT(G_context.state.tx_state == TX_STATE_AUX_DATA);
     return &G_context.tx_info.aux_data;
 }
 
@@ -24,12 +22,10 @@ typeof(G_context.tx_info.aux_data) *tx_aux_data_ctx(void) {
  */
 static inline __attribute__((always_inline))
 typeof(G_context.tx_info.body) *tx_body_ctx(void) {
-    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_CHUNKS ||
-                  G_context.state.tx_state == TX_STATE_RECEIVED ||
-                  G_context.state.tx_state == TX_STATE_HASHED ||
-                  G_context.state.tx_state == TX_STATE_UI_REVIEW,
-                  "tx_body_ctx called in wrong state: %d",
-                  G_context.state.tx_state);
+    ASSERT(G_context.state.tx_state == TX_STATE_CHUNKS ||
+           G_context.state.tx_state == TX_STATE_RECEIVED ||
+           G_context.state.tx_state == TX_STATE_HASHED ||
+           G_context.state.tx_state == TX_STATE_UI_REVIEW);
     return &G_context.tx_info.body;
 }
 
@@ -39,8 +35,6 @@ typeof(G_context.tx_info.body) *tx_body_ctx(void) {
  */
 static inline __attribute__((always_inline))
 typeof(G_context.tx_info.witness) *tx_witness_ctx(void) {
-    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_APPROVED,
-                  "tx_witness_ctx called in wrong state: %d",
-                  G_context.state.tx_state);
+    ASSERT(G_context.state.tx_state == TX_STATE_APPROVED);
     return &G_context.tx_info.witness;
 }

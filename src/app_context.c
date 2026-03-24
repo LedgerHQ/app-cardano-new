@@ -43,7 +43,7 @@ static void free_request_owned_buffers(void) {
                     break;
                 // LCOV_EXCL_START
                 default:
-                    LEDGER_ASSERT(false, "Unknown tx state");
+                    LEDGER_ASSERT(false, "bad state");
                     break;
                 // LCOV_EXCL_STOP
             }
@@ -64,7 +64,7 @@ static void free_request_owned_buffers(void) {
 
         // LCOV_EXCL_START
         default:
-            LEDGER_ASSERT(false, "Unknown request type");
+            ASSERT(false);
             break;
         // LCOV_EXCL_STOP
     }

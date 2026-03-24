@@ -39,7 +39,7 @@ static void render_credential(const ext_credential_t *credential,
                                const char *key_hash_prefix,
                                const char *script_hash_label,
                                const char *script_hash_prefix) {
-    LEDGER_ASSERT(credential != NULL, "NULL credential");
+    ASSERT(credential != NULL);
 
     switch (credential->type) {
         case EXT_CREDENTIAL_KEY_PATH:
@@ -49,7 +49,7 @@ static void render_credential(const ext_credential_t *credential,
                            &credential->keyPath);
             break;
         case EXT_CREDENTIAL_KEY_HASH:
-            LEDGER_ASSERT(credential->keyHash != NULL, "NULL credential->keyHash");
+            ASSERT(credential->keyHash != NULL);
             UI_ADD_FORMAT3(key_hash_label,
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
@@ -58,7 +58,7 @@ static void render_credential(const ext_credential_t *credential,
                            ADDRESS_KEY_HASH_LENGTH);
             break;
         case EXT_CREDENTIAL_SCRIPT_HASH:
-            LEDGER_ASSERT(credential->scriptHash != NULL, "NULL credential->scriptHash");
+            ASSERT(credential->scriptHash != NULL);
             UI_ADD_FORMAT3(script_hash_label,
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
@@ -119,15 +119,15 @@ static void render_committee_hot_credential(const ext_credential_t *credential) 
 }
 
 static void render_drep(const ext_drep_t *drep, const char *label) {
-    LEDGER_ASSERT(drep != NULL, "NULL drep");
-    LEDGER_ASSERT(label != NULL, "NULL label");
+    ASSERT(drep != NULL);
+    ASSERT(label != NULL);
 
     switch (drep->type) {
         case EXT_DREP_KEY_PATH:
             UI_ADD_FORMAT1(label, MAX_BIP44_PATH_STRING_LENGTH, format_bip44_path, &drep->keyPath);
             break;
         case EXT_DREP_KEY_HASH:
-            LEDGER_ASSERT(drep->keyHash != NULL, "NULL drep->keyHash");
+            ASSERT(drep->keyHash != NULL);
             UI_ADD_FORMAT3(label,
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
@@ -136,7 +136,7 @@ static void render_drep(const ext_drep_t *drep, const char *label) {
                            ADDRESS_KEY_HASH_LENGTH);
             break;
         case EXT_DREP_SCRIPT_HASH:
-            LEDGER_ASSERT(drep->scriptHash != NULL, "NULL drep->scriptHash");
+            ASSERT(drep->scriptHash != NULL);
             UI_ADD_FORMAT3(label,
                            MAX_BECH32_STRING_LENGTH,
                            format_bech32,
@@ -161,8 +161,8 @@ static void render_drep(const ext_drep_t *drep, const char *label) {
 // ---------------------------------------------------------------------------
 
 static void plan_or_render_anchor(const tx_processing_mode_t *mode, const anchor_t *anchor) {
-    LEDGER_ASSERT(mode != NULL, "NULL mode");
-    LEDGER_ASSERT(anchor != NULL && anchor->isIncluded, "NULL anchor or anchor not included");
+    ASSERT(mode != NULL);
+    ASSERT(anchor != NULL && anchor->isIncluded);
 
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_ANCHOR;
@@ -291,8 +291,7 @@ static void plan_or_render_certificate_vote_delegation(
 
 static void plan_or_render_certificate_stake_pool_and_drep_delegation(
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
-    LEDGER_ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL,
-                  "Missing combined delegation pool hash");
+    ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL);
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION;
     } else if (mode->ui_render) {
@@ -312,8 +311,7 @@ static void plan_or_render_certificate_stake_pool_and_drep_delegation(
 
 static void plan_or_render_certificate_account_registration_delegation_to_stake_pool(
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
-    LEDGER_ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL,
-                  "Missing combined delegation pool hash");
+    ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL);
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs +=
             UI_PAIRS_CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL;
@@ -349,8 +347,7 @@ static void plan_or_render_certificate_account_registration_delegation_to_drep(
 
 static void plan_or_render_certificate_account_registration_delegation_to_stake_pool_and_drep(
     const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
-    LEDGER_ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL,
-                  "Missing combined delegation pool hash");
+    ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL);
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs +=
             UI_PAIRS_CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP;
@@ -448,7 +445,7 @@ static void plan_or_render_certificate_pool_retirement(
                 keyPathToKeyHash(&pool_credential->keyPath, pool_key_hash, sizeof(pool_key_hash));
                 break;
             case EXT_CREDENTIAL_KEY_HASH:
-                LEDGER_ASSERT(pool_credential->keyHash != NULL, "NULL pool credential key hash");
+                ASSERT(pool_credential->keyHash != NULL);
                 memcpy(pool_key_hash, pool_credential->keyHash, POOL_KEY_HASH_LENGTH);
                 break;
             // LCOV_EXCL_START
@@ -490,7 +487,7 @@ void plan_or_render_pool_registration_header(const tx_processing_mode_t *mode,
 }
 
 void plan_or_render_pool_id(const tx_processing_mode_t *mode, const pool_id_t *pool_id) {
-    LEDGER_ASSERT(pool_id != NULL, "NULL pool_id");
+    ASSERT(pool_id != NULL);
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_POOL_ID;
     } else if (mode->ui_render) {
@@ -501,7 +498,7 @@ void plan_or_render_pool_id(const tx_processing_mode_t *mode, const pool_id_t *p
                 keyPathToKeyHash(&pool_id->path, pool_key_hash, SIZEOF(pool_key_hash));
                 break;
             case KEY_REFERENCE_HASH:
-                LEDGER_ASSERT(pool_id->hash != NULL, "NULL pool ID hash");
+                ASSERT(pool_id->hash != NULL);
                 memmove(pool_key_hash, pool_id->hash, SIZEOF(pool_key_hash));
                 break;
             // LCOV_EXCL_START
@@ -521,7 +518,7 @@ void plan_or_render_pool_id(const tx_processing_mode_t *mode, const pool_id_t *p
 }
 
 void plan_or_render_pool_vrf_key_hash(const tx_processing_mode_t *mode, const uint8_t *vrf_key_hash) {
-    LEDGER_ASSERT(vrf_key_hash != NULL, "NULL vrf_key_hash");
+    ASSERT(vrf_key_hash != NULL);
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_POOL_VRF_KEY;
     } else if (mode->ui_render) {
@@ -538,7 +535,7 @@ void plan_or_render_pool_vrf_key_hash(const tx_processing_mode_t *mode, const ui
 
 void plan_or_render_pool_financials(const tx_processing_mode_t *mode,
                                     const pool_registration_data_t *pool_registration) {
-    LEDGER_ASSERT(pool_registration != NULL, "NULL pool_registration");
+    ASSERT(pool_registration != NULL);
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_POOL_FIXED;
     } else if (mode->ui_render) {
@@ -563,7 +560,7 @@ void plan_or_render_pool_financials(const tx_processing_mode_t *mode,
 void plan_or_render_pool_reward_account(const tx_processing_mode_t *mode,
                                         uint8_t network_id,
                                         const pool_reward_account_t *reward_account) {
-    LEDGER_ASSERT(reward_account != NULL, "NULL reward_account");
+    ASSERT(reward_account != NULL);
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_POOL_REWARD_ACCOUNT;
     } else if (mode->ui_render) {
@@ -580,7 +577,7 @@ void plan_or_render_pool_reward_account(const tx_processing_mode_t *mode,
 void plan_or_render_pool_owner(const tx_processing_mode_t *mode,
                                uint8_t network_id,
                                const ext_credential_t *owner_credential) {
-    LEDGER_ASSERT(owner_credential != NULL, "NULL owner_credential");
+    ASSERT(owner_credential != NULL);
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_POOL_OWNER;
     } else if (mode->ui_render) {
@@ -631,7 +628,7 @@ static uint16_t count_pool_relay_ui_pairs(const pool_relay_t *relay) {
 void plan_or_render_pool_relay(const tx_processing_mode_t *mode,
                                uint16_t relay_index,
                                const pool_relay_t *relay) {
-    LEDGER_ASSERT(relay != NULL, "NULL relay");
+    ASSERT(relay != NULL);
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += count_pool_relay_ui_pairs(relay);
     } else if (mode->ui_render) {
@@ -709,7 +706,7 @@ void plan_or_render_pool_no_relays(const tx_processing_mode_t *mode) {
 
 void plan_or_render_pool_metadata(const tx_processing_mode_t *mode,
                                   const pool_metadata_t *pool_metadata) {
-    LEDGER_ASSERT(pool_metadata != NULL, "NULL pool_metadata");
+    ASSERT(pool_metadata != NULL);
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_POOL_METADATA;
     } else if (mode->ui_render) {
@@ -749,8 +746,8 @@ void plan_or_render_pool_no_metadata(const tx_processing_mode_t *mode) {
 
 void tx_ui_plan_or_render_certificate(const tx_processing_mode_t *mode,
                                       const certificate_data_t *certificate_data) {
-    LEDGER_ASSERT(mode != NULL, "NULL mode");
-    LEDGER_ASSERT(certificate_data != NULL, "NULL certificate_data");
+    ASSERT(mode != NULL);
+    ASSERT(certificate_data != NULL);
     TRACE_MODULE("certificate type=%u count=%d render=%d",
                  (unsigned) certificate_data->type,
                  (int) mode->ui_count_pairs,

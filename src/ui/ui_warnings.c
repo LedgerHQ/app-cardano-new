@@ -32,19 +32,19 @@ bool build_warning_summary_text(const warning_definition_t *const *warning_defs,
                                        size_t warning_count,
                                        bool include_descriptions,
                                        char **out) {
-    LEDGER_ASSERT(warning_defs != NULL, "NULL warning_defs");
+    ASSERT(warning_defs != NULL);
     LEDGER_ASSERT(start_index < warning_count, "Invalid warning summary range");
-    LEDGER_ASSERT(out != NULL, "NULL out");
+    ASSERT(out != NULL);
 
     size_t total_length = 1;  // null terminator
     for (size_t i = start_index; i < warning_count; i++) {
         const warning_definition_t *def = (const warning_definition_t *) PIC(warning_defs[i]);
-        LEDGER_ASSERT(def != NULL && def->title != NULL, "NULL warning title");
+        ASSERT(def != NULL && def->title != NULL);
 
         total_length += strlen((const char *) PIC(def->title));
         total_length += 2;  // ": " or ". "
         if (include_descriptions) {
-            LEDGER_ASSERT(def->description != NULL, "NULL warning description");
+            ASSERT(def->description != NULL);
             total_length += strlen((const char *) PIC(def->description));
         }
         total_length += 1;  // newline
@@ -101,8 +101,8 @@ bool build_warning_summary_text(const warning_definition_t *const *warning_defs,
 static bool build_wallet_warning_details_page(const warning_definition_t *const *warning_defs,
                                               size_t warning_count,
                                               nbgl_warningDetails_t *page) {
-    LEDGER_ASSERT(warning_defs != NULL, "NULL warning_defs");
-    LEDGER_ASSERT(page != NULL, "NULL page");
+    ASSERT(warning_defs != NULL);
+    ASSERT(page != NULL);
 
     nbgl_warningDetails_t *details = NULL;
     const nbgl_icon_details_t **icons = NULL;

@@ -26,8 +26,8 @@
 #include "ui_warnings.h"
 
 static bool format_ascii_chunk(const uint8_t *bytes, size_t size, char *out, size_t outSize) {
-    LEDGER_ASSERT(bytes != NULL, "NULL input buffer");
-    LEDGER_ASSERT(out != NULL, "NULL output buffer");
+    ASSERT(bytes != NULL);
+    ASSERT(out != NULL);
     LEDGER_ASSERT(outSize > 0, "Zero output buffer size");
     if (size + 1 > outSize) {
         return false; // LCOV_EXCL_LINE

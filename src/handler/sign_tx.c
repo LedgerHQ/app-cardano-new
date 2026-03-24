@@ -180,7 +180,7 @@ static bool read_aux_data_params(buffer_t *cdata, tx_params_t *tx_params) {
  * Validates all transaction metadata and checks security policy
  */
 static void handle_tx_init_apdu(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    ASSERT(cdata != NULL);
     tx_params_t *tx_params = &G_context.tx_info.tx_params;
 
     if (!read_tx_options(cdata, tx_params)) {
@@ -403,8 +403,8 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
  * Returns true on success. On failure, sends SW and resets context.
  */
 static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
-    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_CHUNKS, "Invalid state for chunk reception");
+    ASSERT(cdata != NULL);
+    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_CHUNKS, "bad state");
     const size_t chunk_size = buffer_data_size(cdata);
     if (is_final_chunk) {
         if (chunk_size == 0 || chunk_size > MAX_SIGN_TX_CHUNK_SIZE) {
@@ -460,7 +460,7 @@ static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
 }
 
 void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    ASSERT(cdata != NULL);
     TRACE_BUFFER_T(cdata);
 
     switch (p1) {
@@ -468,8 +468,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             if (!ensure_sign_tx_request_type(REQUEST_NONE)) {
                 return;
             }
-            LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_NONE,
-                          "Bad tx_state after REQUEST_NONE");
+            ASSERT(G_context.state.tx_state == TX_STATE_NONE);
 #ifdef HAVE_SWAP
             if (G_called_from_swap && G_swap_response_ready) {
                 // Safety against trying to make the app sign multiple TXs in swap mode
@@ -525,7 +524,7 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             }
 
             // Parse and build hash
-            LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_CHUNKS, "Bad state before parse");
+            LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_CHUNKS, "bad state");
             G_context.state.tx_state = TX_STATE_RECEIVED;
 
             if (!tx_validate()) {
@@ -576,8 +575,8 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 }
 
 void finalize_sign_tx(void) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
-    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_UI_REVIEW, "Bad tx_state");
+    ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION);
+    ASSERT(G_context.state.tx_state == TX_STATE_UI_REVIEW);
 
     // Transition body -> witness slot. Free raw_tx while body slot is still valid,
     // before the union is repurposed. Then initialize witness sub-state.
@@ -594,8 +593,8 @@ void finalize_sign_tx(void) {
 
 
 bool is_last_witness_to_process(void) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
-    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_APPROVED, "Bad tx_state");
+    ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION);
+    ASSERT(G_context.state.tx_state == TX_STATE_APPROVED);
     LEDGER_ASSERT(G_context.tx_info.num_witnesses > 0, "No witnesses expected");
     LEDGER_ASSERT(tx_witness_ctx()->current_witness < G_context.tx_info.num_witnesses,
                   "Witness index out of range for final-witness check");
@@ -606,8 +605,8 @@ bool is_last_witness_to_process(void) {
 
 void finalize_witness(void)
 {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "Bad req_type");
-    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_APPROVED, "Bad tx_state");
+    ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION);
+    ASSERT(G_context.state.tx_state == TX_STATE_APPROVED);
     LEDGER_ASSERT(G_context.tx_info.num_witnesses > 0, "No witnesses expected");
     LEDGER_ASSERT(tx_witness_ctx()->current_witness < G_context.tx_info.num_witnesses,
                   "Witness index out of range");
@@ -651,7 +650,7 @@ void finalize_witness(void)
 }
 
 void handler_sign_tx_witness(buffer_t *cdata) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    ASSERT(cdata != NULL);
     TRACE_BUFFER_T(cdata);
 
     // Verify we're in correct state for witness signing
@@ -729,7 +728,7 @@ void handler_sign_tx_witness(buffer_t *cdata) {
 #ifdef HAVE_SWAP
     // Invariant: swap-validated params must only exist in swap invocation context.
     if (swap_transaction_params_initialized() && !G_called_from_swap) {
-        LEDGER_ASSERT(false, "Swap params initialized outside swap context");
+        ASSERT(false);
     }
 #endif
 
@@ -772,7 +771,7 @@ void handler_sign_tx_witness(buffer_t *cdata) {
 
         // LCOV_EXCL_START
         default:
-            LEDGER_ASSERT(false, "Invalid security policy");
+            ASSERT(false);
             return;
         // LCOV_EXCL_STOP
     }

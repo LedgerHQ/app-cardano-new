@@ -21,7 +21,7 @@
 #define SERIAL_LENGTH 7
 
 void handler_get_serial(const buffer_t *data_buffer) {
-    LEDGER_ASSERT(data_buffer != NULL, "NULL data_buffer");
+    ASSERT(data_buffer != NULL);
 
     // Verify no data is present
     if (deny_unconsumed_bytes(data_buffer, SWO_WRONG_DATA_LENGTH)) {

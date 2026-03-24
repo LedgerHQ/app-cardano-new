@@ -64,7 +64,7 @@ static command_e req_type_to_instruction(request_type_e req_type) {
             return INS_SIGN_MSG;
         // LCOV_EXCL_START
         default:
-            LEDGER_ASSERT(false, "Unknown request type");
+            ASSERT(false);
             return INS_GET_VERSION; // Unreachable
         // LCOV_EXCL_STOP
     }
@@ -72,7 +72,7 @@ static command_e req_type_to_instruction(request_type_e req_type) {
 
 
 void apdu_dispatcher(const command_t *cmd) {
-    LEDGER_ASSERT(cmd != NULL, "NULL cmd");
+    ASSERT(cmd != NULL);
     apdu_response_begin(cmd->ins);
     TRACE("G_context.req_type: %d", G_context.req_type);
 
@@ -188,8 +188,8 @@ void apdu_dispatcher(const command_t *cmd) {
                     apdu_response_assert_sent_or_deferred();
                     return;
             }
-            LEDGER_ASSERT(false, "Unreachable INS_DERIVE_ADDRESS dispatch path");
-return;
+            ASSERT(false);
+            return;
         case INS_DERIVE_NATIVE_SCRIPT_HASH:
             REJECT_USED_P2(cmd->p2);
             switch (cmd->p1) {

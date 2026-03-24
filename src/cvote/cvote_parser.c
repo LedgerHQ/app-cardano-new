@@ -33,8 +33,8 @@
  * Script hashes (type 1) are NOT allowed per CIP-36 spec.
  */
 bool buffer_read_cvote_credential(buffer_t *buf, cvote_credential_t *credential) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(credential != NULL, "NULL credential");
+    ASSERT(buf != NULL);
+    ASSERT(credential != NULL);
 
     uint8_t cred_type = 0;
     if (!buffer_read_u8(buf, &cred_type)) {
@@ -57,7 +57,7 @@ bool buffer_read_cvote_credential(buffer_t *buf, cvote_credential_t *credential)
                 TRACE("Failed to read CVote public key");
                 return false;
             }
-            LEDGER_ASSERT(credential->publicKey != NULL, "NULL public key");
+            ASSERT(credential->publicKey != NULL);
             break;
         default:
             TRACE("Invalid CVote credential type: %u (only 0=KEY, 2=KEY_PATH allowed)", cred_type);
@@ -79,8 +79,8 @@ static cvote_parser_status_t _map_output_parser_status(uint16_t swo) {
 
 cvote_parser_status_t cvote_parse_destination(buffer_t *buf,
                                               tx_output_destination_t *destination) {
-    LEDGER_ASSERT(buf != NULL, "NULL buf");
-    LEDGER_ASSERT(destination != NULL, "NULL destination");
+    ASSERT(buf != NULL);
+    ASSERT(destination != NULL);
 
     uint16_t output_status = parse_output_destination(buf, destination);
     cvote_parser_status_t cvote_status = _map_output_parser_status(output_status);
@@ -101,8 +101,8 @@ cvote_parser_status_t cvote_parse_destination(buffer_t *buf,
 }
 
 cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
-    LEDGER_ASSERT(out_data != NULL, "NULL out_data");
-    LEDGER_ASSERT(tx_aux_data_ctx()->raw_cvote_init_data != NULL, "NULL raw_cvote_init_data");
+    ASSERT(out_data != NULL);
+    ASSERT(tx_aux_data_ctx()->raw_cvote_init_data != NULL);
 
     buffer_t parse_buf = {
         .ptr = tx_aux_data_ctx()->raw_cvote_init_data,

@@ -34,7 +34,7 @@ void addPaymentInfoUIPairs(const address_params_t* address_params) {
 
         case PAYMENT_SCRIPT_HASH: {
             LEDGER_ASSERT(addressParams_getPaymentPartType(address_params) == PAYMENT_PART_SCRIPT_HASH, "Payment credential must be SCRIPT_HASH");
-            LEDGER_ASSERT(address_params->paymentScriptHash != NULL, "NULL payment script hash");
+            ASSERT(address_params->paymentScriptHash != NULL);
             UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Payment script hash", "Pay script"), MAX_BECH32_STRING_LENGTH, format_bech32, BECH32_PREFIX_SCRIPT_HASH, address_params->paymentScriptHash, SCRIPT_HASH_LENGTH);
             break;
         }
@@ -79,14 +79,14 @@ void addStakingInfoUIPairs(const address_params_t* address_params) {
 
         case STAKING_PART_KEY_HASH: {
             LEDGER_ASSERT(addressParams_getStakingPartType(address_params) == STAKING_PART_KEY_HASH, "Staking credential must be KEY_HASH");
-            LEDGER_ASSERT(address_params->stakingKeyHash != NULL, "NULL staking key hash");
+            ASSERT(address_params->stakingKeyHash != NULL);
             UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Stake key hash", "Stake key"), MAX_BECH32_STRING_LENGTH, format_bech32, BECH32_PREFIX_STAKE_KEY_HASH, address_params->stakingKeyHash, ADDRESS_KEY_HASH_LENGTH);
             break;
         }
 
         case STAKING_PART_SCRIPT_HASH: {
             LEDGER_ASSERT(addressParams_getStakingPartType(address_params) == STAKING_PART_SCRIPT_HASH, "Staking credential must be SCRIPT_HASH");
-            LEDGER_ASSERT(address_params->stakingScriptHash != NULL, "NULL staking script hash");
+            ASSERT(address_params->stakingScriptHash != NULL);
             UI_ADD_FORMAT3(UI_LABEL_BY_SCREEN("Stake script hash", "Stake hash"), MAX_BECH32_STRING_LENGTH, format_bech32, BECH32_PREFIX_SCRIPT_HASH, address_params->stakingScriptHash, SCRIPT_HASH_LENGTH);
             break;
         }

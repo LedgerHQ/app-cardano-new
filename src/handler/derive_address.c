@@ -36,9 +36,8 @@ static bool ensure_derive_address_init_request_state(void) {
 }
 
 static void prepareResponse(void) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS, "Bad req_type");
-    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_VALIDATED,
-                  "Bad derive_address state");
+    ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS);
+    ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_VALIDATED);
 
     derive_address_ctx_t *ctx = &G_context.derive_address_info;
     ctx->address.length =
@@ -51,7 +50,7 @@ static void prepareResponse(void) {
 }
 
 void handler_derive_address(buffer_t *cdata, uint8_t p1) {
-    LEDGER_ASSERT(cdata != NULL, "NULL cdata");
+    ASSERT(cdata != NULL);
     TRACE_BUFFER_T(cdata);
 
     if (!ensure_derive_address_init_request_state()) {
@@ -85,8 +84,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
         case P1_ADDRESS_RETURN: {
             TRACE_MODULE("ADDRESS_RETURN");
             ctx->should_export_address = true;
-            LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED,
-                          "Bad derive_address state");
+            ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED);
             warning_bits_t warnings = 0;
             security_policy_t policy = policyForReturnDeriveAddress(&ctx->address_params, &warnings);
             TRACE_MODULE("Policy: %d", (int) policy);
@@ -104,8 +102,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
         case P1_ADDRESS_DISPLAY: {
             TRACE_MODULE("ADDRESS_DISPLAY");
             ctx->should_export_address = false;
-            LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED,
-                          "Bad derive_address state");
+            ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED);
             warning_bits_t warnings = 0;
             security_policy_t policy = policyForShowDeriveAddress(&ctx->address_params, &warnings);
             TRACE_MODULE("Policy: %d", (int) policy);
@@ -123,7 +120,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
         // LCOV_EXCL_START
         default:
             TRACE("Bad display type");
-            LEDGER_ASSERT(false, "display type should be handled before");
+            ASSERT(false);
             break;
         // LCOV_EXCL_STOP
     }
@@ -131,8 +128,8 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
 }
 
 void finalize_derive_address(void) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS, "Bad req_type");
-    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED, "Bad derive_address state");
+    ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS);
+    ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PREPARED);
 
     derive_address_ctx_t *ctx = &G_context.derive_address_info;
     if (ctx->should_export_address) {

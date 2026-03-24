@@ -29,8 +29,8 @@
 void tx_ui_plan_or_render_output(const tx_processing_mode_t *mode,
                                  uint16_t output_index,
                                  const tx_output_description_t *output_desc) {
-    LEDGER_ASSERT(mode != NULL, "NULL mode");
-    LEDGER_ASSERT(output_desc != NULL, "NULL output_desc");
+    ASSERT(mode != NULL);
+    ASSERT(output_desc != NULL);
     TRACE_MODULE("output index=%u destination_type=%u count=%d render=%d",
                  (unsigned) output_index,
                  (unsigned) output_desc->destination.type,
@@ -71,8 +71,8 @@ void tx_ui_plan_or_render_output(const tx_processing_mode_t *mode,
 
 void tx_ui_plan_or_render_collateral_output_address(const tx_processing_mode_t *mode,
                                                     const tx_output_description_t *output_desc) {
-    LEDGER_ASSERT(mode != NULL, "NULL mode");
-    LEDGER_ASSERT(output_desc != NULL, "NULL output_desc");
+    ASSERT(mode != NULL);
+    ASSERT(output_desc != NULL);
 
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_COLLATERAL_OUTPUT_ADDRESS;
@@ -99,8 +99,8 @@ void tx_ui_plan_or_render_collateral_output_address(const tx_processing_mode_t *
 
 void tx_ui_plan_or_render_collateral_output_amount(const tx_processing_mode_t *mode,
                                                    const tx_output_description_t *output_desc) {
-    LEDGER_ASSERT(mode != NULL, "NULL mode");
-    LEDGER_ASSERT(output_desc != NULL, "NULL output_desc");
+    ASSERT(mode != NULL);
+    ASSERT(output_desc != NULL);
 
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_COLLATERAL_OUTPUT_AMOUNT;
@@ -117,9 +117,9 @@ void tx_ui_plan_or_render_collateral_output_amount(const tx_processing_mode_t *m
 void tx_ui_plan_or_render_output_token(const tx_processing_mode_t *mode,
                                        const uint8_t *policy_id,
                                        const output_token_t *token) {
-    LEDGER_ASSERT(mode != NULL, "NULL mode");
-    LEDGER_ASSERT(policy_id != NULL, "NULL policy_id");
-    LEDGER_ASSERT(token != NULL, "NULL token");
+    ASSERT(mode != NULL);
+    ASSERT(policy_id != NULL);
+    ASSERT(token != NULL);
 
     if (mode->ui_count_pairs) {
         // Pair count added in the caller (total_token_count known there)
@@ -144,8 +144,8 @@ void tx_ui_plan_or_render_output_token(const tx_processing_mode_t *mode,
 
 void tx_ui_plan_or_render_output_datum(const tx_processing_mode_t *mode,
                                        const output_datum_t *datum) {
-    LEDGER_ASSERT(mode != NULL, "NULL mode");
-    LEDGER_ASSERT(datum != NULL, "NULL datum");
+    ASSERT(mode != NULL);
+    ASSERT(datum != NULL);
     TRACE_MODULE("datum type=%u count=%d render=%d",
                  (unsigned) datum->type,
                  (int) mode->ui_count_pairs,
@@ -175,8 +175,8 @@ void tx_ui_plan_or_render_output_datum(const tx_processing_mode_t *mode,
 
 void tx_ui_plan_or_render_output_ref_script(const tx_processing_mode_t *mode,
                                             const ref_script_t *ref_script) {
-    LEDGER_ASSERT(mode != NULL, "NULL mode");
-    LEDGER_ASSERT(ref_script != NULL, "NULL ref_script");
+    ASSERT(mode != NULL);
+    ASSERT(ref_script != NULL);
 
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_OUTPUT_REF_SCRIPT;

@@ -19,13 +19,13 @@
 #include "utils.h"
 
 static void cvote_extract_pubkey(const cvote_credential_t *credential, uint8_t *out_pubkey, size_t out_pubkey_size) {
-    LEDGER_ASSERT(credential != NULL, "NULL credential");
-    LEDGER_ASSERT(out_pubkey != NULL, "NULL out_pubkey");
-    LEDGER_ASSERT(out_pubkey_size >= PUBLIC_KEY_LENGTH, "Output pubkey buffer too small: %u < %u", (unsigned) out_pubkey_size, PUBLIC_KEY_LENGTH);
+    ASSERT(credential != NULL);
+    ASSERT(out_pubkey != NULL);
+    ASSERT(out_pubkey_size >= PUBLIC_KEY_LENGTH);
 
     switch (credential->type) {
         case CVOTE_CREDENTIAL_KEY:
-            LEDGER_ASSERT(credential->publicKey != NULL, "NULL publicKey");
+            ASSERT(credential->publicKey != NULL);
             memmove(out_pubkey, credential->publicKey, PUBLIC_KEY_LENGTH);
             return;
         case CVOTE_CREDENTIAL_KEY_PATH: {
@@ -55,7 +55,7 @@ static void cvote_extract_destination_address(const tx_output_destination_t *des
 }
 
 void cvote_hash_builder_setup(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux_data");
+    ASSERT(aux_data != NULL);
 
     auxDataHashBuilder_init(&aux_data->hash_builder);
     auxDataHashBuilder_cVoteRegistration_enter(&aux_data->hash_builder, aux_data->format);
@@ -67,7 +67,7 @@ void cvote_hash_builder_setup(cvote_aux_data_t *aux_data) {
 }
 
 static void cvote_hash_builder_add_vote_key(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux_data");
+    ASSERT(aux_data != NULL);
 
     bool should_add_vote_key = false;
     switch (aux_data->format) {
@@ -81,8 +81,7 @@ static void cvote_hash_builder_add_vote_key(cvote_aux_data_t *aux_data) {
             break;
         // LCOV_EXCL_START
         default:
-            LEDGER_ASSERT(false, "Invalid CVote registration format %u (only CIP15=1, CIP36=2 allowed)",
-                         aux_data->format);
+            ASSERT(false);
     }
         // LCOV_EXCL_STOP
 
@@ -94,7 +93,7 @@ static void cvote_hash_builder_add_vote_key(cvote_aux_data_t *aux_data) {
 }
 
 static void cvote_hash_builder_add_staking_key(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux_data");
+    ASSERT(aux_data != NULL);
 
     uint8_t pubkey[PUBLIC_KEY_LENGTH] = {0};
     cvote_extract_pubkey(&aux_data->staking_credential, pubkey, sizeof(pubkey));
@@ -102,7 +101,7 @@ static void cvote_hash_builder_add_staking_key(cvote_aux_data_t *aux_data) {
 }
 
 static void cvote_hash_builder_add_payment_address(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux_data");
+    ASSERT(aux_data != NULL);
 
     uint8_t address_buffer[MAX_ADDRESS_LENGTH] = {0};
     size_t address_len = 0;
@@ -116,13 +115,13 @@ static void cvote_hash_builder_add_payment_address(cvote_aux_data_t *aux_data) {
 }
 
 static void cvote_hash_builder_add_nonce(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux_data");
+    ASSERT(aux_data != NULL);
 
     auxDataHashBuilder_cVoteRegistration_addNonce(&aux_data->hash_builder, aux_data->nonce);
 }
 
 static void cvote_hash_builder_add_common_fields(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux_data");
+    ASSERT(aux_data != NULL);
     LEDGER_ASSERT(!aux_data->final_fields_processed, "CVote common fields already processed"); // LCOV_EXCL_LINE
 
     cvote_hash_builder_add_vote_key(aux_data);
@@ -136,12 +135,10 @@ static void cvote_hash_builder_add_common_fields(cvote_aux_data_t *aux_data) {
 }
 
 static void cvote_append_registration_signature(cvote_aux_data_t *aux_data) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux_data");
+    ASSERT(aux_data != NULL);
 
     // Staking credential must be a key path - validated during parsing and UI policy check
-    LEDGER_ASSERT(aux_data->staking_credential.type == CVOTE_CREDENTIAL_KEY_PATH,
-                 "CVote staking credential must be KEY_PATH, got type %u",
-                 aux_data->staking_credential.type);
+    ASSERT(aux_data->staking_credential.type == CVOTE_CREDENTIAL_KEY_PATH);
 
     uint8_t payload_hash[CVOTE_REGISTRATION_PAYLOAD_HASH_LENGTH] = {0};
     auxDataHashBuilder_cVoteRegistration_finalizePayload(
@@ -169,8 +166,8 @@ static void cvote_append_registration_signature(cvote_aux_data_t *aux_data) {
 void cvote_hash_builder_add_delegation(cvote_aux_data_t *aux_data,
                                        const cvote_credential_t *credential,
                                        uint32_t weight) {
-    LEDGER_ASSERT(aux_data != NULL, "NULL aux_data");
-    LEDGER_ASSERT(credential != NULL, "NULL credential");
+    ASSERT(aux_data != NULL);
+    ASSERT(credential != NULL);
 
     uint8_t pubkey[PUBLIC_KEY_LENGTH] = {0};
     cvote_extract_pubkey(credential, pubkey, sizeof(pubkey));
