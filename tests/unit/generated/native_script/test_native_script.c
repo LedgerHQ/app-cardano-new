@@ -101,6 +101,11 @@ static void test_derive_native_script_nested_native_scripts_3_15(void **state) {
     (void) state;
     run_fixture(&NATIVE_SCRIPT_FIXTURES[15]);
 }
+
+static void test_derive_native_script_all_script_with_device_owned_pubkey_16(void **state) {
+    (void) state;
+    run_fixture(&NATIVE_SCRIPT_FIXTURES[16]);
+}
 // ======================================================================
 // Main
 // ======================================================================
@@ -123,6 +128,7 @@ int main(void) {
         cmocka_unit_test(test_derive_native_script_nested_native_scripts_13),
         cmocka_unit_test(test_derive_native_script_nested_native_scripts_2_14),
         cmocka_unit_test(test_derive_native_script_nested_native_scripts_3_15),
+        cmocka_unit_test(test_derive_native_script_all_script_with_device_owned_pubkey_16),
     };
     return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }

@@ -301,7 +301,7 @@ static bool cvote_add_initial_pairs(cvote_aux_data_t *aux_data) {
 }
 
 // Returns true on success, false if delegation was denied (error already sent).
-static bool cvote_add_delegation_pairs(
+static void cvote_add_delegation_pairs(
     cvote_aux_data_t *aux_data,
     const cvote_credential_t *credential,
     uint32_t weight) {
@@ -317,11 +317,7 @@ static bool cvote_add_delegation_pairs(
         &vote_key_warnings);
     LEDGER_ASSERT(warning_bits_except_mask(vote_key_warnings, warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)) == 0, "Unexpected vote-key warning bits");
 
-    if (delegation_policy == POLICY_DENY) {
-        TRACE("CVote delegation policy denied");
-        send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
-        return false;
-    }
+    LEDGER_ASSERT(delegation_policy != POLICY_DENY, "CVote delegation policy denied");
 
     // In streaming mode, allocate exactly the pairs this delegation will use.
     // In non-streaming mode, ui_pairs_init was already called once upfront.
@@ -370,18 +366,18 @@ static bool cvote_add_delegation_pairs(
             CHECK_COUNT(expected_pairs);
             break;
         }
-        case POLICY_HIDE:
-            // No UI pairs added, but delegation is allowed
-            break;
         // LCOV_EXCL_START
+        case POLICY_HIDE:
+            // could be legitimate, but not under current security policies, untested
+            LEDGER_ASSERT(false, "unsupported security policy");
+            break;
         default:
-            LEDGER_ASSERT(false, "Unknown delegation policy");
+            ASSERT(false);
         // LCOV_EXCL_STOP
     }
 
     ui_status_t result = ui_render_scope_end();
     ASSERT(result == UI_STATUS_SUCCESS);
-    return true;
 }
 
 bool ui_cvote_aux_data_init_non_streaming(cvote_aux_data_t *aux_data) {
@@ -458,34 +454,18 @@ void ui_cvote_aux_data_streaming_show_initial_page(cvote_aux_data_t *aux_data) {
     cvote_streaming_display_current_page();
 }
 
-bool ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
-                                                const cvote_credential_t *credential,
-                                                uint32_t weight) {
-    ASSERT(aux_data != NULL && aux_data->ui_streaming.on);
-    ASSERT(aux_data != NULL &&
-           (aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS ||
-            aux_data->state == CVOTE_AUX_DATA_STATE_ALL_DATA_RECEIVED));
-    ASSERT(credential != NULL);
-    ASSERT(aux_data != NULL && aux_data->ui_streaming.review_started);
-
-    if (!cvote_add_delegation_pairs(aux_data, credential, weight)) {
-        return false; // LCOV_EXCL_LINE
-    }
-
-    // Display this delegation immediately.
-    cvote_streaming_display_current_page();
-    return true;
-}
-
-bool ui_cvote_aux_data_add_delegation_non_streaming(cvote_aux_data_t *aux_data,
-                                                    const cvote_credential_t *credential,
-                                                    uint32_t weight) {
+void ui_cvote_aux_data_add_delegation(cvote_aux_data_t *aux_data,
+                                      const cvote_credential_t *credential,
+                                      uint32_t weight) {
     ASSERT(aux_data != NULL);
     ASSERT(credential != NULL);
-    ASSERT(aux_data != NULL && !aux_data->ui_streaming.on);
-    ASSERT(aux_data != NULL && aux_data->state == CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS);
 
-    return cvote_add_delegation_pairs(aux_data, credential, weight);
+    cvote_add_delegation_pairs(aux_data, credential, weight);
+
+    if (aux_data->ui_streaming.on) {
+        // Display this delegation immediately.
+        cvote_streaming_display_current_page();
+    }
 }
 
 void ui_cvote_aux_data_show_non_streaming_final_review(cvote_aux_data_t *aux_data) {

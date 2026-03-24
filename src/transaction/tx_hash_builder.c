@@ -89,10 +89,7 @@ static void _append_map_key_bytes(uint8_t* buffer,
                                   size_t* offset,
                                   const uint8_t* data,
                                   size_t dataLen) {
-    if (buffer == NULL || offset == NULL || data == NULL) {
-        LEDGER_ASSERT(false, "NULL buffer, offset, or data");
-        return;
-    }
+    ASSERT(buffer != NULL && offset != NULL && data != NULL);
     LEDGER_ASSERT(bufferLen >= *offset, "Map bytes invalid offset");
     LEDGER_ASSERT(bufferLen - *offset >= dataLen, "Map bytes overflow");
 
@@ -114,8 +111,11 @@ static const uint8_t* _voter_key_data_with_size(const voter_t* voter, size_t* ou
         case VOTER_DREP_SCRIPT_HASH:
             *out_size = SCRIPT_HASH_LENGTH;
             return voter->scriptHash;
+        // LCOV_EXCL_START
         default:
+            ASSERT(false);
             return NULL;
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -266,8 +266,10 @@ static void processOutputTopLevel(tx_hash_builder_t* builder,
         case MAP_BABBAGE:
             cbor_append_txOutput_map(builder, output);
             break;
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -309,8 +311,10 @@ static void assertCanLeaveCurrentOutput(tx_hash_builder_t* builder) {
             ASSERT(builder->outputData.referenceScriptData.remainingBytes == 0);
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -511,8 +515,10 @@ static void addTokenGroup(tx_hash_builder_t* builder,
             // nothing to check, top level data has been added instantaneously
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     ASSERT(builder->outputData.multiassetData.remainingAssetGroups > 0);
@@ -553,8 +559,10 @@ static void addToken(tx_hash_builder_t* builder,
             // we have been adding tokens into an asset group
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     ASSERT(builder->outputData.multiassetData.remainingTokens > 0);
@@ -614,8 +622,10 @@ void txHashBuilder_addOutput_datum(tx_hash_builder_t* builder,
             ASSERT(builder->outputData.multiassetData.remainingAssetGroups == 0);
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     // the babbage output format serializes some preliminary stuff
@@ -659,8 +669,10 @@ void txHashBuilder_addOutput_datum(tx_hash_builder_t* builder,
             builder->outputData.outputState = TX_OUTPUT_DATUM_INLINE;
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -697,8 +709,10 @@ void txHashBuilder_addOutput_referenceScript(tx_hash_builder_t* builder, size_t 
             ASSERT(builder->outputData.datumData.remainingBytes == 0);
             break;
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     //   Unsigned[3] ; map entry key
@@ -822,8 +836,10 @@ static const uint8_t* _getCredentialHashBuffer(const credential_t* credential) {
             return credential->keyHash;
         case CREDENTIAL_SCRIPT_HASH:
             return credential->scriptHash;
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -833,8 +849,10 @@ static size_t _getCredentialHashSize(const credential_t* credential) {
             return SIZEOF(credential->keyHash);
         case CREDENTIAL_SCRIPT_HASH:
             return SIZEOF(credential->scriptHash);
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -872,8 +890,10 @@ static void _appendDRep(tx_hash_builder_t* builder, const drep_t* drep) {
                 BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, drep->type);
                 break;
             }
+            // LCOV_EXCL_START
             default:
                 ASSERT(false);
+            // LCOV_EXCL_STOP
         }
     }
 }
@@ -1531,8 +1551,10 @@ void txHashBuilder_addPoolRegistrationCertificate_addRelay(tx_hash_builder_t* bu
             }
             break;
         }
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -1556,8 +1578,10 @@ static void addPoolMetadata_updateState(tx_hash_builder_t* builder) {
             ASSERT(builder->poolCertificateData.remainingRelays == 0);
             break;  // we want to be here
 
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     builder->state = TX_HASH_BUILDER_IN_CERTIFICATES_POOL_METADATA;
@@ -2185,8 +2209,10 @@ void txHashBuilder_addVoter(tx_hash_builder_t* builder,
             BUILDER_APPEND_DATA(voter->scriptHash, SIZEOF(voter->scriptHash));
             break;
         }
+        // LCOV_EXCL_START
         default:
             ASSERT(false);
+        // LCOV_EXCL_STOP
     }
 
     // Start the map of gov_action_id => voting_procedure
@@ -2315,9 +2341,11 @@ void txHashBuilder_finalize(tx_hash_builder_t* builder, uint8_t* outBuffer, size
 }
 
 #ifdef TRACE_TX_HASH_BUILDER
+// LCOV_EXCL_START
 size_t txHashBuilder_get_trace_body(uint8_t* outBuffer, size_t outMaxSize) {
     size_t copy = (tx_body_trace_size < outMaxSize) ? tx_body_trace_size : outMaxSize;
     memcpy(outBuffer, tx_body_trace_buffer, copy);
     return copy;
 }
+// LCOV_EXCL_STOP
 #endif

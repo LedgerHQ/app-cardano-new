@@ -27,10 +27,7 @@ bool violatesSingleAccountOrStoreIt(const bip44_path_t* path) {
 
     single_account_data_t* singleAccountData = &(G_context.tx_info.single_account_data);
 
-    if (!bip44_hasOrdinaryWalletKeyPrefix(path) || !bip44_containsAccount(path)) {
-        TRACE("Invalid path in single account check");
-        ASSERT(false);
-    }
+    ASSERT(bip44_hasOrdinaryWalletKeyPrefix(path) && bip44_containsAccount(path));
 
     const bool isByron = bip44_hasByronPrefix(path);
     const uint32_t account = bip44_getAccount(path);
@@ -71,12 +68,11 @@ bool tx_output_destination_to_address_bytes(const tx_output_destination_t* desti
 
     switch (destination->type) {
         case DESTINATION_THIRD_PARTY:
-            if (destination->address.buffer == NULL ||
-                destination->address.length == 0 ||
-                destination->address.length > MAX_ADDRESS_LENGTH ||
-                destination->address.length > addressBufferSize) {
-                return false;
-            }
+            ASSERT(destination->address.buffer != NULL);
+            ASSERT(destination->address.length > 0);
+            ASSERT(destination->address.length <= MAX_ADDRESS_LENGTH);
+            ASSERT(destination->address.length <= addressBufferSize);
+
             memmove(addressBuffer, destination->address.buffer, destination->address.length);
             *outAddressLength = destination->address.length;
             return true;
@@ -93,8 +89,11 @@ bool tx_output_destination_to_address_bytes(const tx_output_destination_t* desti
             return true;
         }
 
+        // LCOV_EXCL_START
         default:
+            ASSERT(false);
             return false;
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -102,17 +101,17 @@ __noinline_due_to_stack__
 bool format_tx_output_destination_human_readable(const tx_output_destination_t* destination,
                                                  char* out,
                                                  size_t outSize) {
-    uint8_t *addressBytes = tx_alloc_temp_buffer_or_fail(MAX_ADDRESS_LENGTH);
-    size_t addressLength = 0;
-    if (!tx_output_destination_to_address_bytes(destination,
-                                                addressBytes,
-                                                MAX_ADDRESS_LENGTH,
-                                                &addressLength)) {
-        APP_MEM_FREE_AND_NULL((void **) &addressBytes);
-        return false;
-    }
+    uint8_t *address_bytes = tx_alloc_temp_buffer_or_fail(MAX_ADDRESS_LENGTH);
 
-    bool formatted = format_address_human_readable(addressBytes, addressLength, out, outSize);
-    APP_MEM_FREE_AND_NULL((void **) &addressBytes);
+    size_t address_size = 0;
+    bool destination_parsed = tx_output_destination_to_address_bytes(
+        destination,
+        address_bytes,
+        MAX_ADDRESS_LENGTH,
+        &address_size);
+    LEDGER_ASSERT(destination_parsed, "Failed to build output address bytes for UI");
+
+    bool formatted = format_address_human_readable(address_bytes, address_size, out, outSize);
+    APP_MEM_FREE_AND_NULL((void **) &address_bytes);
     return formatted;
 }

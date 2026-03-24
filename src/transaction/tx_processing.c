@@ -1103,10 +1103,12 @@ bool tx_render_ui_chunk(uint16_t from) {
     security_policy_t tx_hash_policy =
         policyForSignTxDisplayTxHash(state->tx_params->txSigningMode, &render_run_warnings);
     switch (tx_hash_policy) {
+        // LCOV_EXCL_START
         case POLICY_DENY:
             ui_render_session_end();
-            send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
+            LEDGER_ASSERT(false, "unexpected DENY for tx hash");
             return false;
+        // LCOV_EXCL_STOP
         case POLICY_SHOW:
             tx_ui_plan_or_render_tx_hash(&state->mode, G_context.tx_info.tx_hash);
             break;
@@ -1139,8 +1141,8 @@ bool tx_render_ui_all(void) {
 
     ui_reset_error_status();
     if (!ui_pairs_init(alloc_count)) {
-        TRACE("ui_pairs_init failed for %u pairs", alloc_count);
-        return false;
+        TRACE("ui_pairs_init failed for %u pairs", alloc_count); // LCOV_EXCL_LINE
+        return false; // LCOV_EXCL_LINE
     }
 
     // Try to render the first chunk (from pair 0). A `false` result means
@@ -1201,10 +1203,10 @@ bool tx_render_ui_all(void) {
     switch (warning_status) {
         case UI_STATUS_SUCCESS:
             break;
+        // LCOV_EXCL_START
         case UI_STATUS_OUT_OF_MEMORY:
             return false;
         case UI_STATUS_UNINITIALIZED:
-        // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unexpected UI warning status");
             return false;

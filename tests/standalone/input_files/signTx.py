@@ -3128,6 +3128,16 @@ vote3_unique = Vote(
     GovActionId("3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7", 5),
     VotingProcedure(VoteOption.YES),
 )
+vote_empty_url = Vote(
+    GovActionId("3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7", 3),
+    VotingProcedure(
+        VoteOption.ABSTAIN,
+        AnchorParams(
+            "",
+            "1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef",
+        ),
+    ),
+)
 
 votingDenyTestCases: List[SignTxTestCase] = [
     SignTxTestCase(
@@ -3410,6 +3420,25 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
+        ],
+    ),
+    SignTxTestCase(
+        name="Sign_tx_with_voting_procedures_empty_anchor_url",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            votingProcedures=[
+                VoterVotes(
+                    Voter(VoterType.COMMITTEE_KEY_PATH, "m/1852'/1815'/0'/5/0"),
+                    [vote_empty_url],
+                )
+            ],
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c48839092a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038202826058201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef",
+        expected_warnings=[
+            WarningBit.WARNING_BIT_EMPTY_ANCHOR_URL,
         ],
     ),
 ]

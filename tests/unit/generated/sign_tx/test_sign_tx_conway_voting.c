@@ -289,6 +289,26 @@ static void test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_r
     run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_MULTIPLE_VOTERS_MULTIPLE_VOTES, true);
 }
 
+static void test_sign_tx_with_voting_procedures_empty_anchor_url_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_EMPTY_ANCHOR_URL, false);
+}
+
+static void test_sign_tx_with_voting_procedures_empty_anchor_url_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_EMPTY_ANCHOR_URL, false);
+}
+
+static void test_sign_tx_with_voting_procedures_empty_anchor_url_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_EMPTY_ANCHOR_URL, true);
+}
+
+static void test_sign_tx_with_voting_procedures_empty_anchor_url_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_EMPTY_ANCHOR_URL, true);
+}
+
 // ======================================================================
 // Main
 // ======================================================================
@@ -343,6 +363,10 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_expert_on),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_with_voting_procedures_empty_anchor_url_expert_off),
+        cmocka_unit_test(test_sign_tx_with_voting_procedures_empty_anchor_url_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_with_voting_procedures_empty_anchor_url_expert_on),
+        cmocka_unit_test(test_sign_tx_with_voting_procedures_empty_anchor_url_reject_tx_expert_on),
     };
     return _cmocka_run_group_tests("test_sign_tx_conway_voting", tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);
 }

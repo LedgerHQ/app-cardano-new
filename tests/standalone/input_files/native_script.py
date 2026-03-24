@@ -351,6 +351,24 @@ ValidNativeScriptTestCases = [
         ),
         nano_skip=True,
     ),
+    ValidNativeScriptTestCase(
+        name="Native_script_ALL_script_with_device_owned_pubkey",
+        script=NativeScript(
+            NativeScriptType.ALL,
+            NativeScriptParamsScripts(
+                [
+                    NativeScript(
+                        NativeScriptType.PUBKEY_DEVICE_OWNED,
+                        NativeScriptParamsPubkey("m/1852'/1815'/0'/0/0"),
+                    ),
+                ]
+            ),
+        ),
+        expected_in_unit_test=SignedData(
+            "b442025ae01ccb227ecbfc013d1c17eae7f8d04d366ffff5a091d03f"
+        ),
+        skip_expected_in_ragger=True,
+    ),
 ]
 
 InvalidScriptTestCases = [

@@ -74,9 +74,9 @@ static void format_address_fields(const address_params_t *params, warning_bits_t
                                      (hasUnusualPathWarning ? DERIVE_ADDRESS_PAIRS_WARNING : 0);
 
             if (!ui_pairs_init(expectedPairs)) {
-                ui_render_scope_end();
-                LEDGER_ASSERT(false, "Failed to initialize pairs");
-                return;
+                ui_render_scope_end(); // LCOV_EXCL_LINE
+                LEDGER_ASSERT(false, "Failed to initialize pairs"); // LCOV_EXCL_LINE
+                return; // LCOV_EXCL_LINE
             }
 
             START_COUNT();
@@ -109,9 +109,9 @@ static void format_address_fields(const address_params_t *params, warning_bits_t
                                      (hasUnusualPathWarning ? DERIVE_ADDRESS_PAIRS_WARNING : 0);
 
             if (!ui_pairs_init(expectedPairs)) {
-                ui_render_scope_end();
-                LEDGER_ASSERT(false, "Failed to initialize pairs");
-                return;
+                ui_render_scope_end(); // LCOV_EXCL_LINE
+                LEDGER_ASSERT(false, "Failed to initialize pairs"); // LCOV_EXCL_LINE
+                return; // LCOV_EXCL_LINE
             }
 
             START_COUNT();

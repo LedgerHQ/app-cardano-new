@@ -375,20 +375,12 @@ static void handler_tx_aux_data_delegation(buffer_t *cdata) {
         // Mark APDU as deferred before invoking UI code.
         // In unit tests, NBGL callbacks execute synchronously and may send SW immediately.
         apdu_response_deferred();
-        if (!ui_cvote_aux_data_add_delegation_streaming(aux_data,
-                                                        &delegation_credential,
-                                                        weight)) {
-            return; // LCOV_EXCL_LINE — requires NBGL pair-list OOM during streaming
-        }
+        ui_cvote_aux_data_add_delegation(aux_data, &delegation_credential, weight);
 
         return;
     } else {
         // Non-streaming mode
-        if (!ui_cvote_aux_data_add_delegation_non_streaming(aux_data,
-                                                            &delegation_credential,
-                                                            weight)) {
-            return; // LCOV_EXCL_LINE — requires NBGL pair-list OOM in non-streaming mode
-        }
+        ui_cvote_aux_data_add_delegation(aux_data, &delegation_credential, weight);
 
         if (aux_data->remaining_delegations == 0) {
             // All delegations received. State stays TX_STATE_AUX_DATA until user confirms.

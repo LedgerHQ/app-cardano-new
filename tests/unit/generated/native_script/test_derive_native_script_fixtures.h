@@ -1068,6 +1068,62 @@ static const uint8_t FINISH_APDU_PAYLOAD_TC15_NATIVE_SCRIPT_NESTED_NATIVE_SCRIPT
 };
 
 // ======================================================================
+// Test Case [16]: Native_script_ALL_script_with_device_owned_pubkey
+// Source: tests/standalone/input_files/native_script.py
+// ======================================================================
+
+static const uint8_t EXPECTED_HASH_TC16_NATIVE_SCRIPT_ALL_SCRIPT_WITH_DEVICE_OWNED_PUBKEY[SCRIPT_HASH_LENGTH] = {
+    0xb4, 0x42, 0x02, 0x5a, 0xe0, 0x1c, 0xcb, 0x22,
+    0x7e, 0xcb, 0xfc, 0x01, 0x3d, 0x1c, 0x17, 0xea,
+    0xe7, 0xf8, 0xd0, 0x4d, 0x36, 0x6f, 0xff, 0xf5,
+    0xa0, 0x91, 0xd0, 0x3f,
+};
+
+// ALL (internal node): 1 children
+// APDU payload for P1_NATIVE_SCRIPT_ADD_SIMPLE
+// Script type: PUBKEY_DEVICE_OWNED
+static const uint8_t APDU_PAYLOAD_TC16_NATIVE_SCRIPT_ALL_SCRIPT_WITH_DEVICE_OWNED_PUBKEY_C0_C0[] = {
+    0x00, 0x02, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80,
+    0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const native_script_t SCRIPT_TC16_NATIVE_SCRIPT_ALL_SCRIPT_WITH_DEVICE_OWNED_PUBKEY_C0_C0 = {
+    .type = NATIVE_SCRIPT_TYPE_PUBKEY_DEVICE_OWNED,
+    .impl = {
+        .simple = {
+            .apdu_payload = APDU_PAYLOAD_TC16_NATIVE_SCRIPT_ALL_SCRIPT_WITH_DEVICE_OWNED_PUBKEY_C0_C0,
+            .apdu_payload_length = sizeof(APDU_PAYLOAD_TC16_NATIVE_SCRIPT_ALL_SCRIPT_WITH_DEVICE_OWNED_PUBKEY_C0_C0),
+        }
+    }
+};
+
+
+static const native_script_t* CHILDREN_TC16_NATIVE_SCRIPT_ALL_SCRIPT_WITH_DEVICE_OWNED_PUBKEY_C0[] = {
+    (const native_script_t*)&SCRIPT_TC16_NATIVE_SCRIPT_ALL_SCRIPT_WITH_DEVICE_OWNED_PUBKEY_C0_C0,
+};
+
+static const native_script_t SCRIPT_TC16_NATIVE_SCRIPT_ALL_SCRIPT_WITH_DEVICE_OWNED_PUBKEY_C0 = {
+    .type = NATIVE_SCRIPT_TYPE_ALL,
+    .impl = {
+        .complex = {
+             .params = {
+                 .all = {
+                     .scripts = CHILDREN_TC16_NATIVE_SCRIPT_ALL_SCRIPT_WITH_DEVICE_OWNED_PUBKEY_C0,
+                     .scripts_count = 1,
+                 }
+             }
+         }
+     }
+};
+
+// APDU payload for P1_NATIVE_SCRIPT_FINISH
+// Display format: BECH32 (0x01)
+static const uint8_t FINISH_APDU_PAYLOAD_TC16_NATIVE_SCRIPT_ALL_SCRIPT_WITH_DEVICE_OWNED_PUBKEY[] = {
+    0x01,
+};
+
+// ======================================================================
 // Test Case Array
 // ======================================================================
 
@@ -1216,6 +1272,15 @@ static const native_script_test_case_t NATIVE_SCRIPT_FIXTURES[] = {
         .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC15_NATIVE_SCRIPT_NESTED_NATIVE_SCRIPTS_3,
         .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC15_NATIVE_SCRIPT_NESTED_NATIVE_SCRIPTS_3),
     },
+    // Source: tests/standalone/input_files/native_script.py > Native_script_ALL_script_with_device_owned_pubkey
+    {
+        .name = "Native_script_ALL_script_with_device_owned_pubkey",
+        .root_script = (const native_script_t*)&SCRIPT_TC16_NATIVE_SCRIPT_ALL_SCRIPT_WITH_DEVICE_OWNED_PUBKEY_C0,
+        .expected_hash = EXPECTED_HASH_TC16_NATIVE_SCRIPT_ALL_SCRIPT_WITH_DEVICE_OWNED_PUBKEY,
+        .nano_skip = false,
+        .finish_apdu_payload = FINISH_APDU_PAYLOAD_TC16_NATIVE_SCRIPT_ALL_SCRIPT_WITH_DEVICE_OWNED_PUBKEY,
+        .finish_apdu_payload_length = sizeof(FINISH_APDU_PAYLOAD_TC16_NATIVE_SCRIPT_ALL_SCRIPT_WITH_DEVICE_OWNED_PUBKEY),
+    },
 };
 
-#define NATIVE_SCRIPT_FIXTURES_COUNT 16
+#define NATIVE_SCRIPT_FIXTURES_COUNT 17
