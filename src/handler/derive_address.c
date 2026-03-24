@@ -35,40 +35,19 @@ static bool ensure_derive_address_init_request_state(void) {
     return true;
 }
 
-static bool ensure_derive_address_state(derive_address_state_e required_state) {
-    if (G_context.state.derive_address_state != required_state) {
-        TRACE_MODULE("DERIVE_ADDRESS rejected in state %d (expected %d)",
-                     G_context.state.derive_address_state,
-                     required_state);
-        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
-        return false;
-    }
-    return true;
-}
-
-static bool prepareResponse(void) {
-    if (G_context.req_type != REQUEST_DERIVE_ADDRESS) {
-        TRACE_MODULE("DERIVE_ADDRESS response preparation rejected: bad request type %d",
-                     G_context.req_type);
-        send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
-        return false;
-    }
-
-    if (!ensure_derive_address_state(DERIVE_ADDRESS_STATE_VALIDATED)) {
-        return false;
-    }
+static void prepareResponse(void) {
+    LEDGER_ASSERT(G_context.req_type == REQUEST_DERIVE_ADDRESS, "Bad req_type");
+    LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_VALIDATED,
+                  "Bad derive_address state");
 
     derive_address_ctx_t *ctx = &G_context.derive_address_info;
     ctx->address.length =
         deriveAddress(&ctx->address_params, ctx->address.buffer, SIZEOF(ctx->address.buffer));
-    if (ctx->address.length == 0 || ctx->address.length > SIZEOF(ctx->address.buffer)) {
-        send_swo_and_reset(SWO_INCORRECT_DATA);
-        return false;
-    }
+    LEDGER_ASSERT(ctx->address.length > 0 && ctx->address.length <= SIZEOF(ctx->address.buffer),
+                  "deriveAddress failed");
 
     // Address successfully derived and ready for display/response
     G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_PREPARED;
-    return true;
 }
 
 void handler_derive_address(buffer_t *cdata, uint8_t p1) {
@@ -106,9 +85,8 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
         case P1_ADDRESS_RETURN: {
             TRACE_MODULE("ADDRESS_RETURN");
             ctx->should_export_address = true;
-            if (!ensure_derive_address_state(DERIVE_ADDRESS_STATE_PARSED)) {
-                return;
-            }
+            LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED,
+                          "Bad derive_address state");
             warning_bits_t warnings = 0;
             security_policy_t policy = policyForReturnDeriveAddress(&ctx->address_params, &warnings);
             TRACE_MODULE("Policy: %d", (int) policy);
@@ -118,9 +96,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
                 return;
             }
             G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_VALIDATED;
-            if (!prepareResponse()) {
-                return;
-            }
+            prepareResponse();
             apdu_response_deferred();
             ui_deriveAddress_handleReturn(policy, warnings);
             break;
@@ -128,9 +104,8 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
         case P1_ADDRESS_DISPLAY: {
             TRACE_MODULE("ADDRESS_DISPLAY");
             ctx->should_export_address = false;
-            if (!ensure_derive_address_state(DERIVE_ADDRESS_STATE_PARSED)) {
-                return;
-            }
+            LEDGER_ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED,
+                          "Bad derive_address state");
             warning_bits_t warnings = 0;
             security_policy_t policy = policyForShowDeriveAddress(&ctx->address_params, &warnings);
             TRACE_MODULE("Policy: %d", (int) policy);
@@ -140,9 +115,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
                 return;
             }
             G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_VALIDATED;
-            if (!prepareResponse()) {
-                return;
-            }
+            prepareResponse();
             apdu_response_deferred();
             ui_deriveAddress_handleDisplay(policy, warnings);
             break;
