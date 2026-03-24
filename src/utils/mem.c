@@ -23,13 +23,6 @@
 #endif
 
 static uint8_t mem_buffer[SIZE_MEM_BUFFER] __attribute__((aligned(sizeof(intmax_t))));
-void *app_mem_get_buffer(void) {
-    return mem_buffer;
-}
-
-size_t app_mem_get_buffer_size(void) {
-    return sizeof(mem_buffer);
-}
 
 bool mem_utils_reset_app_heap(void) {
     explicit_bzero(mem_buffer, sizeof(mem_buffer));

@@ -166,6 +166,10 @@ static security_policy_t _policyForGetExtendedPublicKey_silent(const bip44_path_
             SHOW();
             break;
 
+        case PATH_INVALID:
+            DENY();
+            break;
+
         // LCOV_EXCL_START
         default:
             ASSERT(false);
@@ -205,9 +209,15 @@ security_policy_t policyForGetExtendedPublicKey(const bip44_path_t *path,
             SHOW();
             break;
 
-        default:
+        case PATH_INVALID:
             DENY();
             break;
+
+        // LCOV_EXCL_START
+        default:
+            ASSERT(false);
+            break;
+        // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1871,8 +1881,17 @@ static bool is_required_signer_allowed(bip44_path_t *path) {
         case PATH_MINT_KEY:
             return true;
 
-        default:
+        case PATH_POOL_COLD_KEY:
+        case PATH_CVOTE_ACCOUNT:
+        case PATH_CVOTE_KEY:
+        case PATH_INVALID:
             return false;
+
+        // LCOV_EXCL_START
+        default:
+            ASSERT(false);
+            return false;
+        // LCOV_EXCL_STOP
     }
 }
 

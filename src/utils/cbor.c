@@ -170,9 +170,7 @@ bool cbor_writeToken(uint8_t type, uint64_t value, uint8_t* buffer, size_t buffe
             STATIC_ASSERT(SIZEOF(negativeValue) == SIZEOF(value),
                           "incompatible signed and unsigned type sizes");
             memmove(&negativeValue, &value, SIZEOF(value));
-            if (negativeValue >= 0) {
-                return false;
-            }
+            ASSERT(negativeValue < 0);
             if (negativeValue == INT64_MIN) {
                 value = (uint64_t) INT64_MAX;
             } else {

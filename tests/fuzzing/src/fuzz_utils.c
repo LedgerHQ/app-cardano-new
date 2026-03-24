@@ -21,7 +21,7 @@ void fuzzing_reset_state(void) {
     explicit_bzero(&G_context, sizeof(G_context));
 
     // Reinitialize the SDK allocator so dangling pointers cannot trigger frees
-    if (!mem_utils_init(app_mem_get_buffer(), app_mem_get_buffer_size())) {
+    if (!mem_utils_reset_app_heap()) {
         abort();
     }
 }

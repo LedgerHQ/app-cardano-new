@@ -37,7 +37,7 @@ void app_main(void) {
     command_t cmd = {0};
 
     // Initialize SDK memory allocator
-    LEDGER_ASSERT(mem_utils_init(app_mem_get_buffer(), app_mem_get_buffer_size()),
+    LEDGER_ASSERT(mem_utils_reset_app_heap(),
                   "Failed to initialize memory allocator");
 
     io_init();

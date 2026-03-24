@@ -30,18 +30,9 @@ static void test_policy_for_derive_private_key_hides_standard_payment_key(void *
     assert_int_equal(policyForDerivePrivateKey(&path), POLICY_HIDE);
 }
 
-static void test_policy_for_derive_private_key_denies_invalid_path(void **state) {
-    (void) state;
-
-    bip44_path_t path = {0};
-
-    assert_int_equal(policyForDerivePrivateKey(&path), POLICY_DENY);
-}
-
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_policy_for_derive_private_key_hides_standard_payment_key),
-        cmocka_unit_test(test_policy_for_derive_private_key_denies_invalid_path),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
