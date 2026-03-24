@@ -588,6 +588,9 @@ bool tx_process_certificates(buffer_t *buf, tx_processing_state_t *state) {
         return true;
     }
 
+    certificate_data_t *parsed_certificate_data =
+        (certificate_data_t *) tx_alloc_temp_buffer_or_fail(sizeof(certificate_data_t));
+
     if (mode->run_hash_builder) {
         G_context.tx_info.pool_owner_path_present = false;
         txHashBuilder_enterCertificates(&state->hash_builder);
@@ -595,15 +598,17 @@ bool tx_process_certificates(buffer_t *buf, tx_processing_state_t *state) {
 
     for (uint16_t certificate_index = 0; certificate_index < tx_params->num_certificates;
          certificate_index++) {
-        certificate_data_t parsed_certificate_data = {0};
+        explicit_bzero(parsed_certificate_data, sizeof(certificate_data_t));
 
-        if (!parse_certificate(buf, &parsed_certificate_data)) {
+        if (!parse_certificate(buf, parsed_certificate_data)) {
+            APP_MEM_FREE_AND_NULL((void **) &parsed_certificate_data);
             tx_handle_parse_error(SWO_TX_PARSING_FAIL_CERTIFICATES);
             return false;
         }
 
-        if (parsed_certificate_data.type == CERTIFICATE_STAKE_POOL_REGISTRATION) {
-            if (!process_pool_registration_certificate(buf, state, &parsed_certificate_data)) {
+        if (parsed_certificate_data->type == CERTIFICATE_STAKE_POOL_REGISTRATION) {
+            if (!process_pool_registration_certificate(buf, state, parsed_certificate_data)) {
+                APP_MEM_FREE_AND_NULL((void **) &parsed_certificate_data);
                 return false;
             }
             continue;
@@ -611,28 +616,31 @@ bool tx_process_certificates(buffer_t *buf, tx_processing_state_t *state) {
 
         if (mode->run_validation) {
             security_policy_t certificate_policy =
-                determine_certificate_policy(parsed_certificate_data.type,
-                                             &parsed_certificate_data,
+                determine_certificate_policy(parsed_certificate_data->type,
+                                             parsed_certificate_data,
                                              tx_params,
                                              state->warning_bits);
 
-            APPLY_POLICY(certificate_policy, tx_ui_plan_or_render_certificate, mode, &parsed_certificate_data);
+            APPLY_POLICY(certificate_policy,
+                         tx_ui_plan_or_render_certificate,
+                         mode,
+                         parsed_certificate_data);
 
-            if (parsed_certificate_data.anchor.isIncluded) {
+            if (parsed_certificate_data->anchor.isIncluded) {
                 // Called for side-effect: sets WARNING_BIT_EMPTY_ANCHOR_URL if anchor URL is empty.
                 // The warning bit must be set during Pass 1 (planning) so that the render pass
                 // assertion in plan_or_render_anchor does not fire.
-                security_policy_t anchor_policy = policyForSignTxAnchor(
-                    &parsed_certificate_data.anchor,
-                    state->warning_bits);
+                security_policy_t anchor_policy =
+                    policyForSignTxAnchor(&parsed_certificate_data->anchor, state->warning_bits);
                 LEDGER_ASSERT(anchor_policy == POLICY_SHOW, "Unexpected anchor policy");
             }
         }
 
         if (mode->run_hash_builder) {
-            hash_certificate(&state->hash_builder, &parsed_certificate_data);
+            hash_certificate(&state->hash_builder, parsed_certificate_data);
         }
     }
 
+    APP_MEM_FREE_AND_NULL((void **) &parsed_certificate_data);
     return true;
 }
