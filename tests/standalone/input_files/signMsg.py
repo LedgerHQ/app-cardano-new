@@ -812,45 +812,6 @@ signMsgDenyTestCases = [
         ),
         expected_status=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
-    # ========== INIT Trailing Bytes ==========
-    SignMsgDenyTestCase(
-        name="Sign_msg_deny_init_trailing_garbage_byte",
-        msgData=MessageData(
-            messageHex="deadbeef",
-            signingPath="m/1852'/1815'/0'/0/1",
-            hashPayload=False,
-            isAscii=False,
-            addressFieldType=MessageAddressFieldType.KEY_HASH,
-        ),
-        trailing_init_bytes=1,
-        expected_status=StatusWord.SWO_WRONG_DATA_LENGTH,
-    ),
-    # ========== INIT When Active (Interleaving) ==========
-    SignMsgDenyTestCase(
-        name="Sign_msg_deny_init_when_already_active",
-        msgData=MessageData(
-            messageHex="deadbeef",
-            signingPath="m/1852'/1815'/0'/0/1",
-            hashPayload=False,
-            isAscii=False,
-            addressFieldType=MessageAddressFieldType.KEY_HASH,
-        ),
-        send_init_when_active=True,
-        expected_status=StatusWord.SWO_COMMAND_NOT_ALLOWED,
-    ),
-    # ========== Truncated CHUNK Data ==========
-    SignMsgDenyTestCase(
-        name="Sign_msg_deny_chunk_data_truncated_after_size_header",
-        msgData=MessageData(
-            messageHex="de" * 10,  # 10 bytes total, fits in one chunk
-            signingPath="m/1852'/1815'/0'/0/1",
-            hashPayload=False,
-            isAscii=False,
-            addressFieldType=MessageAddressFieldType.KEY_HASH,
-        ),
-        truncate_chunk_data_at=4,  # Only size header (4 bytes), no actual data bytes
-        expected_status=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_CHUNK_DATA,
-    ),
     SignMsgDenyTestCase(
         name="Sign_msg_deny_invalid_address_type_payment_script_in_address_mode",
         msgData=MessageData(
@@ -867,44 +828,5 @@ signMsgDenyTestCases = [
             ),
         ),
         expected_status=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS,  # Fails during parsing, not policy
-    ),
-    # ========== Truncated CHUNK (no size header) ==========
-    SignMsgDenyTestCase(
-        name="Sign_msg_deny_chunk_size_header_missing",
-        msgData=MessageData(
-            messageHex="de" * 10,
-            signingPath="m/1852'/1815'/0'/0/1",
-            hashPayload=False,
-            isAscii=False,
-            addressFieldType=MessageAddressFieldType.KEY_HASH,
-        ),
-        truncate_chunk_data_at=0,  # Zero bytes — buffer_read_u32 for chunk size fails
-        expected_status=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_CHUNK_SIZE,
-    ),
-    # ========== CONFIRM when no session active (req_type mismatch) ==========
-    SignMsgDenyTestCase(
-        name="Sign_msg_deny_confirm_without_init",
-        msgData=MessageData(
-            messageHex="deadbeef",
-            signingPath="m/1852'/1815'/0'/0/1",
-            hashPayload=False,
-            isAscii=False,
-            addressFieldType=MessageAddressFieldType.KEY_HASH,
-        ),
-        send_confirm_without_init=True,
-        expected_status=StatusWord.SWO_COMMAND_NOT_ALLOWED,
-    ),
-    # ========== CHUNK sent after CONFIRM state reached ==========
-    SignMsgDenyTestCase(
-        name="Sign_msg_deny_chunk_when_in_confirm_state",
-        msgData=MessageData(
-            messageHex="deadbeef",  # Short message; completes in one chunk -> reaches CONFIRM state
-            signingPath="m/1852'/1815'/0'/0/1",
-            hashPayload=False,
-            isAscii=False,
-            addressFieldType=MessageAddressFieldType.KEY_HASH,
-        ),
-        send_chunk_when_in_confirm=True,
-        expected_status=StatusWord.SWO_COMMAND_NOT_ALLOWED,
     ),
 ]

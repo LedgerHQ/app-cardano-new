@@ -623,6 +623,12 @@ cardano_unit_test(test_sign_msg_nbgl_reject
     SOURCES test_sign_msg_nbgl_reject.c
     LIBS cardano_sign_msg_core)
 
+cardano_unit_test(test_handler_denies_sign_msg
+    SOURCES
+        test_handler_denies_sign_msg.c
+        test_utils/io_capture.c
+    LIBS cardano_sign_msg_core)
+
 cardano_unit_test(test_sign_opcert_nbgl_reject
     SOURCES
         test_sign_opcert_nbgl_reject.c

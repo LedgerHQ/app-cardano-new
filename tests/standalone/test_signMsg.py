@@ -197,7 +197,12 @@ def _check_result(
 
     # Check the address field
     if testCase.msgData.addressFieldType == MessageAddressFieldType.ADDRESS:
-        assert address_field == derive_address(testCase.msgData.addressDesc)
+        assert address_field == derive_address(
+            DeriveAddressTestCase(
+                name="sign_message_address",
+                params=testCase.msgData.addressDesc,
+            )
+        )
     else:
         address = derive_address(
             DeriveAddressTestCase(

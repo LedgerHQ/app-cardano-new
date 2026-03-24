@@ -28,6 +28,7 @@ from tests.standalone.input_files.pubkey import (
     testsCommitteeHotKeys,
     testsMintKeys,
     testsSilentExport,
+    testsSilentExportRareKeys,
 )
 
 from tests.standalone.utils import (
@@ -120,6 +121,38 @@ def test_pubkey_without_confirmation(
     assert response and response.status == StatusWord.SWO_SUCCESS
 
     # Check the response
+    _check_pubkey_result(response.data, testCase.path)
+
+
+@pytest.mark.parametrize("testCase", testsSilentExportRareKeys, ids=idTestFunc)
+def test_pubkey_confirm_even_with_silent_export(
+    device: Device,
+    backend: BackendInterface,
+    navigator: Navigator,
+    scenario_navigator: NavigateWithScenario,
+    testCase: PubKeyTestCase,
+) -> None:
+    """Rare key paths (drep, committee, mint, pool cold) always require confirmation
+    even when silent pubkey export is enabled."""
+
+    client = CommandSender(backend)
+
+    settings_set(
+        device,
+        navigator,
+        {
+            SettingID.SILENT_PUBKEY_EXPORT: SettingValue.ENABLED,
+            SettingID.EXPERT_MODE: SettingValue.DISABLED,
+        },
+        backend=backend,
+    )
+    nav_ctx = NavContext(device, navigator, scenario_navigator)
+    with client.get_pubkey_async(testCase.path):
+        choice_approve(nav_ctx, test_name=testCase.name, confirm_text=r"^Export$")
+
+    response = client.get_async_response()
+    assert response and response.status == StatusWord.SWO_SUCCESS
+
     _check_pubkey_result(response.data, testCase.path)
 
 

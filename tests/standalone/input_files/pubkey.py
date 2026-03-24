@@ -191,7 +191,7 @@ testsSilentExport = [
         + testsMintKeys
     )
     if _is_silent_export_path(test_case.path)
-] + testsSilentExportRareKeys
+]
 
 denyTestCases = [
     PubKeyTestCase(
