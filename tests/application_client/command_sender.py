@@ -27,6 +27,7 @@ from tests.application_client.response_unpacker import (
     unpack_derive_address_response,
     unpack_get_version_response,
     unpack_sign_message_response,
+    unpack_sign_tx_aux_data_confirm_response,
     unpack_sign_tx_hash_response,
 )
 from tests.application_client.status_words import StatusWord
@@ -133,11 +134,11 @@ class CommandSender:
         on_review: Optional[Callable[[], None]] = None,
         on_cvote_review: Optional[Callable[[], None]] = None,
         on_advance: Optional[Callable[[int], None]] = None,
-    ) -> bytes:
-        """Sign a transaction and return the transaction hash bytes.
+    ) -> tuple[bytes, Optional[tuple[bytes, bytes]]]:
+        """Sign a transaction and return (tx_hash, cip36_aux_data).
 
-        This builds the init APDU from the transaction body, sends the raw chunks,
-        and waits for the final response after the user approves the transaction.
+        cip36_aux_data is (aux_data_hash, registration_signature) when the
+        transaction carries a CIP36 registration, otherwise None.
         """
         extra_paths = additional_witness_paths or []
         witness_paths = gather_witness_paths(tx, signing_mode, extra_paths)
@@ -152,7 +153,7 @@ class CommandSender:
         if response.status != StatusWord.SWO_SUCCESS:
             raise AssertionError(f"Init failed: {hex(response.status)}")
 
-        self._send_tx_aux_data_if_present(tx, on_cvote_review, on_advance)
+        cip36_aux_data = self._send_tx_aux_data_if_present(tx, on_cvote_review, on_advance)
 
         with self.sign_tx_send_chunks_async(tx) as has_data_available:
             if on_review is not None and not has_data_available:
@@ -164,18 +165,23 @@ class CommandSender:
         if response.status != StatusWord.SWO_SUCCESS:
             raise AssertionError(f"Transaction failed: {hex(response.status)}")
 
-        return unpack_sign_tx_hash_response(response.data)
+        return unpack_sign_tx_hash_response(response.data), cip36_aux_data
 
     def _send_tx_aux_data_if_present(
         self,
         tx: Transaction,
         on_review: Optional[Callable[[], None]] = None,
         on_advance: Optional[Callable[[int], None]] = None,
-    ) -> None:
+    ) -> Optional[tuple[bytes, bytes]]:
+        """Send CIP36 auxiliary data APDUs if present.
+
+        Returns (aux_data_hash, registration_signature) if CIP36 registration
+        was processed, otherwise None.
+        """
         if tx.auxiliaryData is None:
-            return
+            return None
         if tx.auxiliaryData.type != TxAuxiliaryDataType.CIP36_REGISTRATION:
-            return
+            return None
 
         aux_params = tx.auxiliaryData.params
         if not isinstance(aux_params, TxAuxiliaryDataCIP36):
@@ -245,6 +251,8 @@ class CommandSender:
                 raise AssertionError("No response from AUX_DATA init")
             if response.status != StatusWord.SWO_SUCCESS:
                 raise AssertionError(f"AUX_DATA init failed: {hex(response.status)}")
+
+        return unpack_sign_tx_aux_data_confirm_response(response.data)
 
     @contextmanager
     def sign_tx_send_chunks_async(self, tx) -> Generator[bool, None, None]:

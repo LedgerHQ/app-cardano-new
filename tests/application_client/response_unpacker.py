@@ -191,6 +191,20 @@ def unpack_sign_message_response(response: bytes) -> Tuple[bytes, bytes, bytes]:
 
 
 # Unpack from response:
+# response = aux_data_hash (32) + registration_signature (64)
+def unpack_sign_tx_aux_data_confirm_response(response: bytes) -> tuple[bytes, bytes]:
+    AUX_DATA_HASH_LENGTH = 32
+    SIGNATURE_LENGTH = 64
+    _require(
+        len(response) == AUX_DATA_HASH_LENGTH + SIGNATURE_LENGTH,
+        f"Invalid sign_tx aux data confirm response length: {len(response)}",
+    )
+    aux_data_hash = response[:AUX_DATA_HASH_LENGTH]
+    registration_signature = response[AUX_DATA_HASH_LENGTH:]
+    return aux_data_hash, registration_signature
+
+
+# Unpack from response:
 # response = votecast_hash (32) + signature (64)
 def unpack_sign_cip36_confirm_response(response: bytes) -> tuple[bytes, bytes]:
     HASH_LENGTH = 32

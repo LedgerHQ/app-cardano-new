@@ -443,6 +443,18 @@ void finalize_sign_tx_aux_data(void) {
 
     cvote_hash_finalize();
 
+    // Capture response fields before freeing aux_data context.
+    struct __attribute__((packed)) {
+        uint8_t auxDataHash[AUX_DATA_HASH_LENGTH];
+        uint8_t registrationSignature[ED25519_SIGNATURE_LENGTH];
+    } wireResponse;
+    memmove(wireResponse.auxDataHash,
+            G_context.tx_info.tx_params.auxDataHash,
+            AUX_DATA_HASH_LENGTH);
+    memmove(wireResponse.registrationSignature,
+            tx_aux_data_ctx()->cvote_aux_data.registration_signature,
+            ED25519_SIGNATURE_LENGTH);
+
     // CVote init buffer is no longer needed once aux-data hash is finalized.
     APP_MEM_FREE_AND_NULL((void **) &tx_aux_data_ctx()->raw_cvote_init_data);
     tx_aux_data_ctx()->raw_cvote_init_data_len = 0;
@@ -450,7 +462,7 @@ void finalize_sign_tx_aux_data(void) {
     // Single point of transition: aux_data slot -> body slot.
     G_context.state.tx_state = TX_STATE_CHUNKS;
 
-    apdu_response_send_data(G_context.tx_info.tx_params.auxDataHash,
-                             AUX_DATA_HASH_LENGTH,
+    apdu_response_send_data((const uint8_t *) &wireResponse,
+                             sizeof(wireResponse),
                              SWO_SUCCESS);
 }

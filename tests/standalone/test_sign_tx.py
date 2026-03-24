@@ -286,7 +286,7 @@ def _run_sign_tx_test(
                 screen_change_after_last_instruction=False,
             )
 
-    tx_hash = client.sign_tx(
+    tx_hash, cip36_aux_data = client.sign_tx(
         tx=tx,
         signing_mode=testCase.signingMode,
         additional_witness_paths=testCase.additionalWitnessPaths,
@@ -295,6 +295,10 @@ def _run_sign_tx_test(
         on_cvote_review=review_cvote,
         on_advance=review_advance,
     )
+    if cip36_aux_data is not None:
+        aux_data_hash, registration_signature = cip36_aux_data
+        print(f"CIP36 aux data hash: {aux_data_hash.hex()}")
+        print(f"CIP36 registration signature: {registration_signature.hex()}")
 
     def _is_ordinary_witness_path(witness_path: str) -> bool:
         path_elements = witness_path.replace("'", "").split("/")
