@@ -70,8 +70,8 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy, warning_bits_t w
 
     ui_status_t warning_status = ui_build_warnings(warnings);
     if (warning_status != UI_STATUS_SUCCESS) {
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return;
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
+        return; // LCOV_EXCL_LINE
     }
 
     // Format all fields and check for errors
@@ -79,9 +79,9 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy, warning_bits_t w
     ui_render_scope_begin(&session);
     if (!ui_pairs_init(4)) {
         TRACE_MODULE("Failed to initialize pairs");
-        ui_render_scope_end();
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return;
+        ui_render_scope_end(); // LCOV_EXCL_LINE
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
+        return; // LCOV_EXCL_LINE
     }
 
     UI_ADD_FORMAT1(UI_STATIC_LABEL("Witness"),

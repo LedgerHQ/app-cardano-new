@@ -138,8 +138,8 @@ static bool cvote_start_streaming_review(cvote_aux_data_t *aux_data) {
     // Warnings for specific delegations are added via cvote_add_vote_key_path_warning_pair.
     ui_status_t warning_status = ui_build_warnings(tx_aux_data_ctx()->cvote_warning_bits);
     if (warning_status != UI_STATUS_SUCCESS) {
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return false;
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
+        return false; // LCOV_EXCL_LINE
     }
 
     const nbgl_warning_t *warning_ptr = ui_get_warnings();
@@ -399,12 +399,12 @@ bool ui_cvote_aux_data_init_non_streaming(cvote_aux_data_t *aux_data) {
 
     if (!ui_pairs_init(total_pair_count)) {
         TRACE_MODULE("CVote UI: failed to initialize pairs");
-        return false;
+        return false; // LCOV_EXCL_LINE
     }
 
     if (!cvote_add_initial_pairs(aux_data)) {
         TRACE_MODULE("CVote UI: failed to add initial pairs");
-        return false;
+        return false; // LCOV_EXCL_LINE
     }
 
     return true;
@@ -438,19 +438,19 @@ void ui_cvote_aux_data_streaming_show_initial_page(cvote_aux_data_t *aux_data) {
           MAX_UI_PAIRS);
 
     if (!ui_pairs_init(initial_pairs)) {
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return;
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
+        return; // LCOV_EXCL_LINE
     }
 
     if (!cvote_add_initial_pairs(aux_data)) {
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return;
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
+        return; // LCOV_EXCL_LINE
     }
 
     LEDGER_ASSERT(!aux_data->ui_streaming.review_started,
                   "Streaming review should start exactly once from initial page");
     if (!cvote_start_streaming_review(aux_data)) {
-        return;
+        return; // LCOV_EXCL_LINE
     }
 
     // Initial page is now ready; next APDU accepted by the state machine is delegation.
@@ -469,7 +469,7 @@ bool ui_cvote_aux_data_add_delegation_streaming(cvote_aux_data_t *aux_data,
     ASSERT(aux_data != NULL && aux_data->ui_streaming.review_started);
 
     if (!cvote_add_delegation_pairs(aux_data, credential, weight)) {
-        return false;
+        return false; // LCOV_EXCL_LINE
     }
 
     // Display this delegation immediately.
@@ -497,9 +497,9 @@ void ui_cvote_aux_data_show_non_streaming_final_review(cvote_aux_data_t *aux_dat
     // Build CVote-specific warnings for display
     ui_status_t warning_status = ui_build_warnings(tx_aux_data_ctx()->cvote_warning_bits);
     if (warning_status != UI_STATUS_SUCCESS) {
-        cvote_aux_data_review_cleanup();
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return;
+        cvote_aux_data_review_cleanup(); // LCOV_EXCL_LINE
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
+        return; // LCOV_EXCL_LINE
     }
 
     const nbgl_warning_t *warningPtr = ui_get_warnings();

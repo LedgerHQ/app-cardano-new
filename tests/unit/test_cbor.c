@@ -200,6 +200,64 @@ static void test_cbor_write_token(void **state) {
     }
 }
 
+// Test that empty and truncated buffers are rejected
+static void test_cbor_parse_truncated(void **state) {
+    (void) state;
+
+    struct {
+        const char* hex;    // valid full encoding
+        size_t truncate_to; // feed only this many bytes
+    } testVectors[] = {
+        // empty buffer
+        {"00", 0},
+        // 1-byte width: tag 0x18 + 1 payload byte; feed only the tag
+        {"1818", 1},
+        // 2-byte width: tag 0x19 + 2 payload bytes; feed only 2 bytes
+        {"1903e8", 2},
+        // 4-byte width: tag 0x1a + 4 payload bytes; feed only 4 bytes
+        {"1a000f4240", 4},
+        // 8-byte width: tag 0x1b + 8 payload bytes; feed only 8 bytes
+        {"1b000000e8d4a51000", 8},
+    };
+
+    for (size_t i = 0; i < sizeof(testVectors) / sizeof(testVectors[0]); i++) {
+        uint8_t buf[20] = {0};
+        size_t bufSize;
+        bool success = decode_hex(testVectors[i].hex, buf, sizeof(buf), &bufSize);
+        assert_true(success);
+
+        cbor_token_t res = {0};
+        bool parseSuccess = cbor_parseToken(buf, testVectors[i].truncate_to, &res);
+
+        assert_false(parseSuccess);
+    }
+}
+
+// Test that CBOR NEGATIVE values > INT64_MAX are rejected
+static void test_cbor_parse_negative_overflow(void **state) {
+    (void) state;
+
+    // 0x3b prefix = CBOR NEGATIVE, 8-byte width; value field = UINT64_MAX = 0xffffffffffffffff
+    // This encodes -(UINT64_MAX + 1) which overflows int64_t
+    uint8_t buf[] = {0x3b, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+
+    cbor_token_t res = {0};
+    bool parseSuccess = cbor_parseToken(buf, sizeof(buf), &res);
+
+    assert_false(parseSuccess);
+}
+
+// Test that cbor_writeToken rejects unsupported-but-clean type values
+static void test_cbor_write_unsupported_clean_type(void **state) {
+    (void) state;
+
+    // CBOR_TYPE_PRIMITIVES = 0xe0 has no value bits set and is not in the supported list
+    uint8_t buf[10] = {0};
+    size_t out_size = 0;
+    bool success = cbor_writeToken(0xe0, 0, buf, sizeof(buf), &out_size);
+    assert_false(success);
+}
+
 // Test invalid types for writing
 static void test_cbor_write_invalid_type(void **state) {
     (void) state;
@@ -219,8 +277,11 @@ int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_cbor_parse_token),
         cmocka_unit_test(test_cbor_parse_noncanonical),
+        cmocka_unit_test(test_cbor_parse_truncated),
+        cmocka_unit_test(test_cbor_parse_negative_overflow),
         cmocka_unit_test(test_cbor_write_token),
         cmocka_unit_test(test_cbor_write_invalid_type),
+        cmocka_unit_test(test_cbor_write_unsupported_clean_type),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

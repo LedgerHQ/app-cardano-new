@@ -20,10 +20,8 @@ bool mem_utils_reset_app_heap(void);
  * Returns true on success, false on failure (out of memory).
  */
 static inline bool allocate_zeroed(void **result, size_t allocation_size) {
+    LEDGER_ASSERT(allocation_size > 0, "Zero allocation size");
     LEDGER_ASSERT(allocation_size <= UINT16_MAX, "Allocation size too large");
     *result = NULL;
-    if (allocation_size == 0) {
-        return true;
-    }
     return APP_MEM_CALLOC(result, (uint16_t) allocation_size);
 }

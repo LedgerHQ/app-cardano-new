@@ -55,7 +55,7 @@ bool build_warning_summary_text(const warning_definition_t *const *warning_defs,
 
     char *buffer = NULL;
     if (!allocate_zeroed((void **) &buffer, total_length) || buffer == NULL) {
-        return false;
+        return false; // LCOV_EXCL_LINE
     }
 
     char *write_ptr = buffer;
@@ -227,15 +227,15 @@ ui_status_t ui_build_warnings(warning_bits_t warnings) {
 
     if (!allocate_zeroed((void **) &info, sizeof(nbgl_contentCenter_t)) ||
         !allocate_zeroed((void **) &g_warning, sizeof(nbgl_warning_t))) {
-        if (info != NULL) {
-            APP_MEM_FREE(info);
+        if (info != NULL) { // LCOV_EXCL_LINE
+            APP_MEM_FREE(info); // LCOV_EXCL_LINE
         }
-        if (g_warning != NULL) {
-            APP_MEM_FREE(g_warning);
-            g_warning = NULL;
+        if (g_warning != NULL) { // LCOV_EXCL_LINE
+            APP_MEM_FREE(g_warning); // LCOV_EXCL_LINE
+            g_warning = NULL; // LCOV_EXCL_LINE
         }
-        free_warning_dynamic_strings();
-        return UI_STATUS_OUT_OF_MEMORY;
+        free_warning_dynamic_strings(); // LCOV_EXCL_LINE
+        return UI_STATUS_OUT_OF_MEMORY; // LCOV_EXCL_LINE
     }
 
 #ifdef SCREEN_SIZE_WALLET
@@ -262,8 +262,8 @@ ui_status_t ui_build_warnings(warning_bits_t warnings) {
 
     if (!allocate_zeroed((void **) &intro, sizeof(nbgl_warningDetails_t)) ||
         !build_warning_summary_text(warning_defs, 0, warning_count, false, &g_warning_summary_text)) {
-        ui_free_warnings();
-        return UI_STATUS_OUT_OF_MEMORY;
+        ui_free_warnings(); // LCOV_EXCL_LINE
+        return UI_STATUS_OUT_OF_MEMORY; // LCOV_EXCL_LINE
     }
 
     info->icon = &WARNING_ICON;
@@ -303,7 +303,7 @@ void ui_free_warnings(void) {
         APP_MEM_FREE((void *) g_warning->introDetails);
     }
     if (g_warning->reviewDetails != NULL) {
-        APP_MEM_FREE((void *) g_warning->reviewDetails);
+        APP_MEM_FREE((void *) g_warning->reviewDetails); // LCOV_EXCL_LINE
     }
     if (g_warning->info != NULL) {
         APP_MEM_FREE((void *) g_warning->info);

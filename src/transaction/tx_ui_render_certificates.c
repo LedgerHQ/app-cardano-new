@@ -605,13 +605,13 @@ static uint16_t count_pool_relay_ui_pairs(const pool_relay_t *relay) {
     uint16_t pairs = UI_PAIRS_POOL_RELAY_HEADER;
     switch (relay->format) {
         case RELAY_SINGLE_HOST_IP:
-            if (!relay->ipv4.isNull) pairs += UI_PAIRS_POOL_RELAY_IPV4;
-            if (!relay->ipv6.isNull) pairs += UI_PAIRS_POOL_RELAY_IPV6;
-            if (!relay->port.isNull) pairs += UI_PAIRS_POOL_RELAY_PORT;
+            pairs += UI_PAIRS_POOL_RELAY_IPV4;
+            pairs += UI_PAIRS_POOL_RELAY_IPV6;
+            pairs += UI_PAIRS_POOL_RELAY_PORT;
             break;
         case RELAY_SINGLE_HOST_NAME:
             if (relay->dnsNameSize > 0) pairs += UI_PAIRS_POOL_RELAY_DNS;
-            if (!relay->port.isNull)    pairs += UI_PAIRS_POOL_RELAY_PORT;
+            pairs += UI_PAIRS_POOL_RELAY_PORT;
             break;
         case RELAY_MULTIPLE_HOST_NAME:
             if (relay->dnsNameSize > 0) pairs += UI_PAIRS_POOL_RELAY_DNS;
@@ -641,24 +641,18 @@ void plan_or_render_pool_relay(const tx_processing_mode_t *mode,
                        relay_index + 1);
         switch (relay->format) {
             case RELAY_SINGLE_HOST_IP:
-                if (!relay->ipv4.isNull) {
-                    UI_ADD_FORMAT1(UI_STATIC_LABEL("IPv4"),
-                                   MAX_IPV4_TEXT_LENGTH,
-                                   format_ipv4,
-                                   &relay->ipv4);
-                }
-                if (!relay->ipv6.isNull) {
-                    UI_ADD_FORMAT1(UI_STATIC_LABEL("IPv6"),
-                                   MAX_IPV6_TEXT_LENGTH,
-                                   format_ipv6,
-                                   &relay->ipv6);
-                }
-                if (!relay->port.isNull) {
-                    UI_ADD_FORMAT1(UI_STATIC_LABEL("Port"),
-                                   MAX_UINT64_STRING_LENGTH,
-                                   format_uint16,
-                                   relay->port.number);
-                }
+                UI_ADD_FORMAT1(UI_STATIC_LABEL("IPv4"),
+                               MAX_IPV4_TEXT_LENGTH,
+                               format_ipv4,
+                               &relay->ipv4);
+                UI_ADD_FORMAT1(UI_STATIC_LABEL("IPv6"),
+                               MAX_IPV6_TEXT_LENGTH,
+                               format_ipv6,
+                               &relay->ipv6);
+                UI_ADD_FORMAT1(UI_STATIC_LABEL("Port"),
+                               MAX_UINT64_STRING_LENGTH,
+                               format_uint16,
+                               relay->port.number);
                 break;
             case RELAY_SINGLE_HOST_NAME:
                 if (relay->dnsNameSize > 0) {
@@ -668,12 +662,10 @@ void plan_or_render_pool_relay(const tx_processing_mode_t *mode,
                                    relay->dnsName,
                                    relay->dnsNameSize);
                 }
-                if (!relay->port.isNull) {
-                    UI_ADD_FORMAT1(UI_STATIC_LABEL("Port"),
-                                   MAX_UINT64_STRING_LENGTH,
-                                   format_uint16,
-                                   relay->port.number);
-                }
+                UI_ADD_FORMAT1(UI_STATIC_LABEL("Port"),
+                               MAX_UINT64_STRING_LENGTH,
+                               format_uint16,
+                               relay->port.number);
                 break;
             case RELAY_MULTIPLE_HOST_NAME:
                 if (relay->dnsNameSize > 0) {

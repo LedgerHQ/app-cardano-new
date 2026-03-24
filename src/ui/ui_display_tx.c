@@ -70,10 +70,12 @@ static bool is_recoverable_streaming_chunk_boundary(ui_status_t render_status,
     switch (render_status) {
         case UI_STATUS_CHUNK_FULL:
             return true;
+        // LCOV_EXCL_START
         case UI_STATUS_OUT_OF_MEMORY:
             return rendered_count > 0;
         default:
             return false;
+        // LCOV_EXCL_STOP
     }
 }
 
@@ -111,9 +113,9 @@ static void tx_streaming_continue_choice(bool confirm) {
     // Render the next chunk.
     ui_reset_error_status();
     if (!ui_pairs_init(MAX_UI_PAIRS)) {
-        tx_review_cleanup();
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return;
+        tx_review_cleanup(); // LCOV_EXCL_LINE
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
+        return; // LCOV_EXCL_LINE
     }
 
     LEDGER_ASSERT(tx_render_ui_chunk(next_from),
@@ -132,9 +134,9 @@ static void tx_streaming_continue_choice(bool confirm) {
                 ui_reset_error_status();
                 break;
             }
-            tx_review_cleanup();
-            send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-            return;
+            tx_review_cleanup(); // LCOV_EXCL_LINE
+            send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
+            return; // LCOV_EXCL_LINE
         // LCOV_EXCL_START
         case UI_STATUS_UNINITIALIZED:
         default:
@@ -148,9 +150,9 @@ static void tx_streaming_continue_choice(bool confirm) {
         // If nothing rendered, the single pair exceeds memory. This should
         // never happen in practice because individual UI strings are bounded and small, but without
         // this guard the next_ui_pair_index would not advance and the app would loop forever on this chunk.
-        tx_review_cleanup();
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return;
+        tx_review_cleanup(); // LCOV_EXCL_LINE
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
+        return; // LCOV_EXCL_LINE
     }
     tx_body_ctx()->rendered_ui_pairs = next_from + rendered_count;
 

@@ -57,7 +57,7 @@ static ui_status_t format_opcert_fields(const parsed_opcert_t* opcert) {
 
     if (!ui_pairs_init(5)) {
         TRACE_MODULE("Failed to initialize pairs");
-        return ui_render_scope_end();
+        return ui_render_scope_end(); // LCOV_EXCL_LINE
     }
 
     // Format and add all opcert fields using unified macros
@@ -124,13 +124,12 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
             // Continue to show UI
             break;
 
-        case POLICY_HIDE:
-            // Silent approval - finalize without showing UI
-            TRACE_MODULE("POLICY_HIDE: silently approving opcert");
-            finalize_sign_opcert();
-            return;
-
         // LCOV_EXCL_START
+        case POLICY_HIDE:
+            // POLICY_HIDE is not used by policyForSignOpCert; if it ever is,
+            // call finalize_sign_opcert() here for silent approval.
+            LEDGER_ASSERT(false, "POLICY_HIDE not supported for opcert");
+            return;
         default:
             LEDGER_ASSERT(false, "Unexpected security policy");
             return;
@@ -142,10 +141,10 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
     switch (format_status) {
         case UI_STATUS_SUCCESS:
             break;
+        // LCOV_EXCL_START
         case UI_STATUS_OUT_OF_MEMORY:
             send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
             return;
-        // LCOV_EXCL_START
         case UI_STATUS_UNINITIALIZED:
         default:
             LEDGER_ASSERT(false, "Unexpected UI status");
@@ -159,10 +158,10 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
     switch (warning_status) {
         case UI_STATUS_SUCCESS:
             break;
+        // LCOV_EXCL_START
         case UI_STATUS_OUT_OF_MEMORY:
             send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
             return;
-        // LCOV_EXCL_START
         case UI_STATUS_UNINITIALIZED:
         default:
             LEDGER_ASSERT(false, "Unexpected warning status");

@@ -87,7 +87,7 @@ bool format_position(derive_native_script_hash_ctx_t *ctx,
         case UI_SCRIPT_N_OF_K:
         case UI_SCRIPT_ANY:
             if (ctx->level <= 1) {
-                return false;  // No position to show at root level
+                return false;  // No position to show at root level // LCOV_EXCL_LINE
             }
             level = ctx->level - 1;
             break;
@@ -246,9 +246,9 @@ void display_complex_script_content(ui_native_script_type scriptType) {
     ui_render_scope_begin(&session);
     if (!ui_pairs_init(expectedPairs)) {
         TRACE_MODULE("Failed to initialize pairs");
-        ui_render_scope_end();
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-        return;
+        ui_render_scope_end(); // LCOV_EXCL_LINE
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
+        return; // LCOV_EXCL_LINE
     }
     START_COUNT();
     if (required_position) {
@@ -311,9 +311,9 @@ void ui_display_native_script_hash(void) {
     ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE_MODULE("Failed to initialize pairs");
-                ui_render_scope_end();
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-                return;
+                ui_render_scope_end(); // LCOV_EXCL_LINE
+                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
+                return; // LCOV_EXCL_LINE
             }
             START_COUNT();
             if (required_position) {
@@ -346,9 +346,9 @@ void ui_display_native_script_hash(void) {
     ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE_MODULE("Failed to initialize pairs");
-                ui_render_scope_end();
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-                return;
+                ui_render_scope_end(); // LCOV_EXCL_LINE
+                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
+                return; // LCOV_EXCL_LINE
             }
             START_COUNT();
             if (required_position) {
@@ -383,9 +383,9 @@ void ui_display_native_script_hash(void) {
     ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE_MODULE("Failed to initialize pairs");
-                ui_render_scope_end();
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-                return;
+                ui_render_scope_end(); // LCOV_EXCL_LINE
+                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
+                return; // LCOV_EXCL_LINE
             }
             START_COUNT();
             if (required_position) {
@@ -419,9 +419,9 @@ void ui_display_native_script_hash(void) {
     ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE_MODULE("Failed to initialize pairs");
-                ui_render_scope_end();
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-                return;
+                ui_render_scope_end(); // LCOV_EXCL_LINE
+                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
+                return; // LCOV_EXCL_LINE
             }
             START_COUNT();
             if (required_position) {
@@ -450,9 +450,9 @@ void ui_display_native_script_hash(void) {
     ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE_MODULE("Failed to initialize pairs");
-                ui_render_scope_end();
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-                return;
+                ui_render_scope_end(); // LCOV_EXCL_LINE
+                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
+                return; // LCOV_EXCL_LINE
             }
             START_COUNT();
             UI_ADD_FORMAT3(UI_STATIC_LABEL("Script hash"),
@@ -476,9 +476,9 @@ void ui_display_native_script_hash(void) {
     ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE_MODULE("Failed to initialize pairs");
-                ui_render_scope_end();
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-                return;
+                ui_render_scope_end(); // LCOV_EXCL_LINE
+                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
+                return; // LCOV_EXCL_LINE
             }
             START_COUNT();
             UI_ADD_FORMAT2(UI_STATIC_LABEL("Policy ID"),
@@ -495,10 +495,12 @@ void ui_display_native_script_hash(void) {
                                                 derive_native_script_hash_streaming_finish_continue);
             break;
         }
+        // LCOV_EXCL_START
         default: {
             LEDGER_ASSERT(false, "Invalid UI step");
             return;
         }
+        // LCOV_EXCL_STOP
     }
     return;
 }

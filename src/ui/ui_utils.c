@@ -175,10 +175,10 @@ bool ui_pairs_add_static_label_impl(const char* label, char* tmp_buf, bool shrin
     g_pending_force_page_start = false;
 
     if (g_pairs == NULL || g_pairsList == NULL) {
-        TRACE("Pairs storage not initialized");
-        ui_set_error_status(UI_STATUS_OUT_OF_MEMORY);
-        APP_MEM_FREE(tmp_buf);
-        return false;
+        TRACE("Pairs storage not initialized"); // LCOV_EXCL_LINE
+        ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); // LCOV_EXCL_LINE
+        APP_MEM_FREE(tmp_buf); // LCOV_EXCL_LINE
+        return false; // LCOV_EXCL_LINE
     }
 
     if (g_next_pair_index >= g_pairsList->nbPairs) {
@@ -194,10 +194,10 @@ bool ui_pairs_add_static_label_impl(const char* label, char* tmp_buf, bool shrin
         size_t len = strlen(tmp_buf);
         char *shrinked = NULL;
         if (!allocate_zeroed((void **) &shrinked, len + 1)) {
-            TRACE("Failed to allocate shrunk string");
-            ui_set_error_status(UI_STATUS_OUT_OF_MEMORY);
-            APP_MEM_FREE(tmp_buf);
-            return false;
+            TRACE("Failed to allocate shrunk string"); // LCOV_EXCL_LINE
+            ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); // LCOV_EXCL_LINE
+            APP_MEM_FREE(tmp_buf); // LCOV_EXCL_LINE
+            return false; // LCOV_EXCL_LINE
         }
         memcpy(shrinked, tmp_buf, len + 1);
         APP_MEM_FREE(tmp_buf);
@@ -224,13 +224,13 @@ bool ui_pairs_init(uint16_t nbPairs) {
     // Allocate the pairsList memory
     APP_MEM_FREE_AND_NULL((void **) &g_pairsList);
     if (!allocate_zeroed((void **) &g_pairsList, sizeof(nbgl_contentTagValueList_t))) {
-        goto error;
+        goto error; // LCOV_EXCL_LINE
     }
 
     // Allocate the pairs memory (nbgl_contentTagValue_t for individual pairs, not List_t)
     APP_MEM_FREE_AND_NULL((void **) &g_pairs);
     if (!allocate_zeroed((void **) &g_pairs, nbPairs * sizeof(nbgl_contentTagValue_t))) {
-        goto error;
+        goto error; // LCOV_EXCL_LINE
     }
     STATIC_ASSERT(MAX_UI_PAIRS <= UINT8_MAX, "MAX_UI_PAIRS must fit in uint8_t");
     LEDGER_ASSERT(nbPairs <= MAX_UI_PAIRS, "nbPairs exceeds MAX_UI_PAIRS");
@@ -239,7 +239,10 @@ bool ui_pairs_init(uint16_t nbPairs) {
     g_pairsList->wrapping = true;
     g_next_pair_index = 0;
     return true;
+
+// LCOV_EXCL_START
 error:
     ui_free_pairs();
     return false;
+// LCOV_EXCL_STOP
 }

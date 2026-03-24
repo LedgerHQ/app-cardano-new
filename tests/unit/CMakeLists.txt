@@ -947,6 +947,10 @@ cardano_unit_test(test_native_script_init_ui_completion
     SOURCES test_native_script_init_ui_completion.c
     LIBS cardano_derive_native_script_core)
 
+cardano_unit_test(test_native_script_nbgl_reject
+    SOURCES test_native_script_nbgl_reject.c
+    LIBS cardano_derive_native_script_core)
+
 cardano_unit_test(test_native_script_status_text
     SOURCES test_native_script_status_text.c
     LIBS cardano_derive_native_script_core)

@@ -355,6 +355,63 @@ static void test_cvote_user_reject_on_final_review_resets_context(void **state) 
 }
 
 // ---------------------------------------------------------------------------
+// Test 5: User rejects on the streaming start screen (streaming mode)
+//
+// cvote_aux_data_streaming_continue_choice is used both as the callback for
+// nbgl_useCaseAdvancedReviewStreamingStart (streaming start screen) and
+// nbgl_useCaseReviewStreamingContinue (per-delegation pages in streaming mode).
+// Streaming mode is only active when the total UI pair count exceeds MAX_UI_PAIRS,
+// which requires more than ~41 delegations.
+//
+// This test uses an AUX_DATA_INIT payload with 42 delegations to force streaming
+// mode, then rejects on the streaming start screen via nbgl_mock auto-complete
+// with confirm=false.  This exercises the !confirm branch in
+// cvote_aux_data_streaming_continue_choice without sending all 42 delegation APDUs.
+//
+// The streaming start screen fires the callback synchronously in the mock, so
+// the AUX_DATA_INIT APDU itself returns SWO_CONDITIONS_NOT_SATISFIED.
+// ---------------------------------------------------------------------------
+
+// AUX_DATA_INIT with 42 delegations: same as CVOTE_UI_TEST_AUX_DATA_INIT_PAYLOAD
+// but with delegation_count = 0x002A (42) instead of 0x0002 (2) at bytes [1:3].
+static const uint8_t CVOTE_UI_TEST_AUX_DATA_INIT_42_DELEGATIONS[] = {
+    0x02, 0x00, 0x2A, 0x02, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x01, 0x05, 0x80, 0x00, 0x07,
+    0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x22, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x16, 0x31, 0x70, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0xE6,
+};
+
+static void test_cvote_user_reject_on_streaming_start_screen_resets_context(void **state) {
+    (void) state;
+    reset_test_context();
+
+    send_tx_init_for_cvote_delegations();
+
+    // Force streaming mode by using an INIT with 42 delegations (exceeds MAX_UI_PAIRS).
+    //
+    // The streaming start screen (nbgl_useCaseAdvancedReviewStreamingStart) is NOT
+    // auto-completed (streaming_start_auto_complete remains false), because auto-completing
+    // start-with-reject causes the code to continue executing after the callback and hit
+    // the subsequent cvote_streaming_display_current_page() call with a reset context.
+    //
+    // Instead, we reject at the first nbgl_useCaseReviewStreamingContinue call (index 0),
+    // which is the INIT's initial page display (cvote_streaming_display_current_page()).
+    // At that point aux_data->ui_streaming.on is true and the context is intact.
+    nbgl_mock_set_streaming_continue_reject_at_call(0);
+
+    run_aux_data_apdu_helper(CVOTE_UI_TEST_AUX_DATA_INIT_42_DELEGATIONS,
+                             sizeof(CVOTE_UI_TEST_AUX_DATA_INIT_42_DELEGATIONS),
+                             P2_AUX_DATA_INIT);
+
+    assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+    assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
+    assert_int_not_equal(g_ui_error_status, UI_STATUS_OUT_OF_MEMORY);
+}
+
+// ---------------------------------------------------------------------------
 // main
 // ---------------------------------------------------------------------------
 
@@ -368,6 +425,8 @@ int main(void) {
             test_cvote_delegation_policy_deny_sends_one_sw_and_resets_context),
         cmocka_unit_test(
             test_cvote_user_reject_on_final_review_resets_context),
+        cmocka_unit_test(
+            test_cvote_user_reject_on_streaming_start_screen_resets_context),
     };
     return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }
