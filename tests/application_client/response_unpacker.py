@@ -103,8 +103,14 @@ def unpack_sign_tx_hash_response(response: bytes) -> bytes:
 
 
 # Unpack from response:
-# response = address (var)
+# response = address (var, 1..128 raw bytes)
 def unpack_derive_address_response(response: bytes) -> bytes:
+    MIN_ADDRESS_LENGTH = 1
+    MAX_ADDRESS_LENGTH = 128  # MAX_ADDRESS_LENGTH from addressUtilsShelley.h
+    _require(
+        MIN_ADDRESS_LENGTH <= len(response) <= MAX_ADDRESS_LENGTH,
+        f"Invalid derive-address response length: {len(response)}",
+    )
     return response
 
 

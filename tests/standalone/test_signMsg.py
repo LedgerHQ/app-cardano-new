@@ -20,7 +20,6 @@ from ragger.navigator.navigation_scenario import NavigateWithScenario
 from tests.application_client.command_builder import AddressType, Mainnet, MessageAddressFieldType
 from tests.application_client.status_words import StatusWord
 from tests.application_client.command_sender import CommandSender
-from tests.application_client.response_unpacker import unpack_sign_message_response
 
 from tests.standalone.input_files.signMsg import (
     signMsgTestCases,
@@ -72,10 +71,7 @@ def test_sign_message(
             ),
         )
 
-    signedData = client.sign_msg(testCase, on_review=review_msg)
-
-    # Unpack the response
-    signature, public_key, address_field = unpack_sign_message_response(signedData)
+    signature, public_key, address_field = client.sign_msg(testCase, on_review=review_msg)
 
     # Check the response
     _check_result(testCase, signature, public_key, address_field)

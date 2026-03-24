@@ -19,6 +19,7 @@ from ragger.error import ExceptionRAPDU
 from tests.application_client.status_words import StatusWord
 from tests.application_client.command_sender import CommandSender
 from tests.application_client.command_builder import P1Type
+from tests.application_client.response_unpacker import unpack_derive_address_response
 
 from tests.standalone.input_files.derive_address import DeriveAddressTestCase
 from tests.standalone.input_files.derive_address import byronTestCases
@@ -54,9 +55,8 @@ def test_derive_address(
 
     # Shelley test cases without confirmation don't require UI interaction (return mode only)
     if testCase in shelleyTestCasesNoConfirm and mode == "return":
-        response = client.derive_address(p1_type, testCase.params)
-        assert response and response.status == StatusWord.SWO_SUCCESS
-        assert response.data == derive_address(testCase)
+        address = client.derive_address(p1_type, testCase.params)
+        assert address == derive_address(testCase)
         return
 
     # Byron and Shelley with confirmation require navigation
@@ -69,11 +69,13 @@ def test_derive_address(
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS
 
-    if testCase in byronTestCases and mode == "return":
-        encoded = base58.b58encode(response.data).decode()
-        assert encoded == derive_address(testCase)
-    elif mode == "return":
-        assert response.data == derive_address(testCase)
+    if mode == "return":
+        address = unpack_derive_address_response(response.data)
+        if testCase in byronTestCases:
+            encoded = base58.b58encode(address).decode()
+            assert encoded == derive_address(testCase)
+        else:
+            assert address == derive_address(testCase)
 
 
 @pytest.mark.parametrize("testCase", denyTestCases, ids=idTestFunc)

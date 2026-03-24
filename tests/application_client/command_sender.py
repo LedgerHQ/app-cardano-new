@@ -24,7 +24,9 @@ from tests.application_client.command_builder import (
 )
 from tests.application_client.response_unpacker import (
     GetVersionResponse,
+    unpack_derive_address_response,
     unpack_get_version_response,
+    unpack_sign_message_response,
     unpack_sign_tx_hash_response,
 )
 from tests.application_client.status_words import StatusWord
@@ -350,7 +352,7 @@ class CommandSender:
         with self._exchange_async(self._cmd_builder.derive_address(p1, test_case_params)):
             yield
 
-    def derive_address(self, p1: P1Type, test_case_params: AddressParams) -> RAPDU:
+    def derive_address(self, p1: P1Type, test_case_params: AddressParams) -> bytes:
         """APDU Derive Address
 
         Args:
@@ -358,10 +360,13 @@ class CommandSender:
             test_case_params (AddressParams): Address parameters
 
         Returns:
-            Response APDU
+            Raw address bytes
         """
 
-        return self._exchange(self._cmd_builder.derive_address(p1, test_case_params))
+        response = self._exchange(self._cmd_builder.derive_address(p1, test_case_params))
+        if response.status != StatusWord.SWO_SUCCESS:
+            raise AssertionError(f"Derive address failed: {hex(response.status)}")
+        return unpack_derive_address_response(response.data)
 
     @contextmanager
     def derive_script_add_simple_async(
@@ -476,15 +481,15 @@ class CommandSender:
 
     def sign_msg(
         self, testCase, on_review: Optional[Callable[[], None]] = None
-    ) -> bytes:
-        """Sign a message, returning the composite response
+    ) -> tuple:
+        """Sign a message, returning the unpacked response components.
 
         Args:
             testCase: SignMsgTestCase data
             on_review: Optional callback invoked while waiting for user confirmation
 
         Returns:
-            Raw response bytes (signature + pubkey + address field)
+            Tuple of (signature: bytes, public_key: bytes, address_field: bytes)
         """
         response = self._exchange(self._cmd_builder.sign_msg_init(testCase))
         if response.status != StatusWord.SWO_SUCCESS:
@@ -505,7 +510,7 @@ class CommandSender:
             raise AssertionError("No response from confirm")
         if response.status != StatusWord.SWO_SUCCESS:
             raise AssertionError(f"Confirm failed: {hex(response.status)}")
-        return response.data
+        return unpack_sign_message_response(response.data)
 
     @contextmanager
     def _sign_msg_confirm_async(self) -> Generator[None, None, None]:
