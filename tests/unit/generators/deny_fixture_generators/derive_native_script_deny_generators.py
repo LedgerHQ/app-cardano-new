@@ -131,7 +131,6 @@ def _build_fixtures() -> str:
                 test_case.name,
                 root_script_id,
                 finish_array_name,
-                test_case.nano_skip,
                 test_case.expected_in_unit_test.sw.name,
             )
         )
@@ -151,10 +150,8 @@ def _build_fixtures() -> str:
         name,
         root_id,
         finish_apdu_array,
-        nano_skip,
         expected_swo,
     ) in test_case_root_identifiers:
-        nano_skip_str = "true" if nano_skip else "false"
         # Add source traceability comment
         header_lines.append(
             f"    // Source: tests/standalone/input_files/native_script.py > deny tests > {name}"
@@ -165,7 +162,6 @@ def _build_fixtures() -> str:
             f"        .root_script = (const native_script_t*)&{root_id},"
         )
         header_lines.append(f"        .expected_response = {expected_swo},")
-        header_lines.append(f"        .nano_skip = {nano_skip_str},")
         header_lines.append(f"        .finish_apdu_payload = {finish_apdu_array},")
         header_lines.append(
             f"        .finish_apdu_payload_length = sizeof({finish_apdu_array}),"

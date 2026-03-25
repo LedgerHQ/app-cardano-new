@@ -63,7 +63,7 @@ def test_derive_address(
     test_name = f"{testCase.name}-{mode}"
     with client.derive_address_async(p1_type, testCase.params):
         scenario_navigator.address_review_approve(
-            test_name=test_name, do_comparison=True
+            test_name=test_name
         )
 
     response = client.get_async_response()

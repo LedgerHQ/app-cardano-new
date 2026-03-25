@@ -36,7 +36,6 @@ class ValidNativeScriptTestCase:
     displayFormat: Optional[NativeScriptHashDisplayFormat] = (
         NativeScriptHashDisplayFormat.BECH32
     )
-    nano_skip: Optional[bool] = False
     skip_expected_in_ragger: bool = False
 
 
@@ -283,7 +282,6 @@ ValidNativeScriptTestCases = [
         expected_in_unit_test=SignedData(
             "0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425"
         ),
-        nano_skip=True,
     ),
     ValidNativeScriptTestCase(
         name="Native_script_Nested native scripts #2",
@@ -316,7 +314,6 @@ ValidNativeScriptTestCases = [
         expected_in_unit_test=SignedData(
             "903e52ef2421abb11562329130330763583bb87cd98006b70ecb1b1c"
         ),
-        nano_skip=True,
     ),
     ValidNativeScriptTestCase(
         name="Native_script_Nested native scripts #3",
@@ -349,7 +346,6 @@ ValidNativeScriptTestCases = [
         expected_in_unit_test=SignedData(
             "ed1dd7ef95caf389669c62618eb7f7aa7eadd08feb76618db2ae0cfc"
         ),
-        nano_skip=True,
     ),
     ValidNativeScriptTestCase(
         name="Native_script_ALL_script_with_device_owned_pubkey",

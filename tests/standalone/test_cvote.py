@@ -77,8 +77,6 @@ def _cvote_init(client: CommandSender, testCase: CVoteTestCase) -> None:
     """cVOTE INIT
 
     Args:
-        firmware (Firmware): The firmware version
-        navigator (Navigator): The navigator instance
         client (CommandSender): The command sender instance
         testCase (CVoteTestCase): The test case
     """

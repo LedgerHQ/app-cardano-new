@@ -214,7 +214,6 @@ typedef struct {
     const native_script_t* root_script;  // Root of script tree
     const uint16_t expected_response;
     const uint8_t* expected_hash;
-    bool nano_skip;
     const uint8_t* finish_apdu_payload;     // Raw APDU data from command_builder.derive_script_finish
     size_t finish_apdu_payload_length;      // Length of finish APDU payload
 } native_script_test_case_t;
