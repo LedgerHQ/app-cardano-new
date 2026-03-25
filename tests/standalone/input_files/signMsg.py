@@ -10,8 +10,6 @@ This module provides Ragger tests for Sign Message
 from typing import List, Optional
 from dataclasses import dataclass, field
 
-from ragger.navigator import NavInsID
-
 from tests.application_client.command_builder import AddressParams, AddressType, Mainnet
 from tests.application_client.security_warnings import WarningBit
 from tests.application_client.status_words import StatusWord
@@ -26,13 +24,6 @@ from tests.application_client.command_builder import (
 
 
 @dataclass
-class NavigationData:
-    init: List[NavInsID]
-    chunk: List[NavInsID]
-    confirm: List[NavInsID]
-
-
-@dataclass
 class SignMsgExpectedInUnitTest:
     signatureHex: str
     signingPublicKeyHex: str
@@ -43,7 +34,6 @@ class SignMsgExpectedInUnitTest:
 class SignMsgTestCase:
     name: str
     msgData: Optional[MessageData] = None
-    nav: Optional[NavigationData] = None
     expected_in_unit_test: Optional[SignMsgExpectedInUnitTest] = None
     expected_warnings: List[WarningBit] = field(default_factory=list)
 
@@ -166,13 +156,6 @@ signMsgTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 2
-            + [NavInsID.RIGHT_CLICK]
-            + [NavInsID.BOTH_CLICK],
-            chunk=[NavInsID.BOTH_CLICK],
-            confirm=[NavInsID.BOTH_CLICK] * 2,
-        ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
                 "4ac0d7422617cb794c166b7137a4f097d08bb01b58091ca8c6e0b3816288a286"
@@ -209,13 +192,6 @@ signMsgTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 2
-            + [NavInsID.RIGHT_CLICK]
-            + [NavInsID.BOTH_CLICK],
-            chunk=[NavInsID.BOTH_CLICK] * 2,
-            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
-        ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
                 "d1fc9388b6cc0d7e80f4f72267ef53caae6d53420997128004b6e44cc1618b90"
@@ -233,13 +209,6 @@ signMsgTestCases = [
             hashPayload=True,
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
-        ),
-        nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 2
-            + [NavInsID.RIGHT_CLICK]
-            + [NavInsID.BOTH_CLICK],
-            chunk=[NavInsID.BOTH_CLICK] * 2,
-            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
@@ -259,11 +228,6 @@ signMsgTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 3,
-            chunk=[NavInsID.BOTH_CLICK] * 2,
-            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
-        ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
                 "30ac6ab7f4ddc7779701324b163c52c68d4c0fd4af968122f1b43eea49b9586b"
@@ -281,13 +245,6 @@ signMsgTestCases = [
             hashPayload=False,
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
-        ),
-        nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 2
-            + [NavInsID.RIGHT_CLICK]
-            + [NavInsID.BOTH_CLICK],
-            chunk=[NavInsID.BOTH_CLICK] * 2,
-            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
@@ -307,13 +264,6 @@ signMsgTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 2
-            + [NavInsID.RIGHT_CLICK]
-            + [NavInsID.BOTH_CLICK],
-            chunk=[NavInsID.BOTH_CLICK] * 2,
-            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
-        ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
                 "0cd0dea4600a2eda7ab145bf600ca252d4a5911959a56fe0294e48e71a249db6"
@@ -331,13 +281,6 @@ signMsgTestCases = [
             hashPayload=True,
             isAscii=True,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
-        ),
-        nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 3,
-            chunk=[NavInsID.BOTH_CLICK]
-            + [NavInsID.RIGHT_CLICK] * 2
-            + [NavInsID.BOTH_CLICK],
-            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
@@ -357,13 +300,6 @@ signMsgTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 3,
-            chunk=[NavInsID.BOTH_CLICK]
-            + [NavInsID.RIGHT_CLICK] * 3
-            + [NavInsID.BOTH_CLICK],
-            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
-        ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
                 "4fadaf3541df071455d13d99da061b7b5056f19f88051c99ff59e7902ff15389"
@@ -382,13 +318,6 @@ signMsgTestCases = [
             isAscii=True,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 3,
-            chunk=[NavInsID.BOTH_CLICK]
-            + [NavInsID.RIGHT_CLICK] * 2
-            + [NavInsID.BOTH_CLICK],
-            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
-        ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
                 "87be8e7be2407ecb8324adb40d63cb4e7126378d0fa87f13e09226da896e1111"
@@ -406,13 +335,6 @@ signMsgTestCases = [
             hashPayload=True,
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
-        ),
-        nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 3,
-            chunk=[NavInsID.BOTH_CLICK]
-            + [NavInsID.RIGHT_CLICK] * 3
-            + [NavInsID.BOTH_CLICK],
-            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
@@ -437,13 +359,6 @@ signMsgTestCases = [
                 spendingValue="m/1852'/1815'/0'/0/1",
                 stakingValue="m/1852'/1815'/0'/2/0",
             ),
-        ),
-        nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 2
-            + [NavInsID.RIGHT_CLICK]
-            + [NavInsID.BOTH_CLICK],
-            chunk=[NavInsID.BOTH_CLICK] * 2,
-            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
@@ -471,13 +386,6 @@ signMsgTestCases = [
                 spendingValue="",
                 stakingValue="m/1852'/1815'/0'/2/0",
             ),
-        ),
-        nav=NavigationData(
-            init=[NavInsID.BOTH_CLICK] * 2
-            + [NavInsID.RIGHT_CLICK]
-            + [NavInsID.BOTH_CLICK],
-            chunk=[NavInsID.BOTH_CLICK] * 2,
-            confirm=[NavInsID.RIGHT_CLICK] + [NavInsID.BOTH_CLICK] * 2,
         ),
         expected_in_unit_test=SignMsgExpectedInUnitTest(
             signatureHex=(
