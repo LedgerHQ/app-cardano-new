@@ -439,11 +439,12 @@ static bool _parse_required_relay_dns_name(buffer_t *buf,
     }
     relay->dnsNameSize = dns_length;
 
+    if (dns_length > MAX_DNS_NAME_LENGTH) {
+        TRACE("DNS name too long: %u", (unsigned) dns_length);
+        return false;
+    }
+
     if (dns_length > 0) {
-        if (dns_length > MAX_DNS_NAME_LENGTH) {
-            TRACE("DNS name too long: %u", (unsigned) dns_length);
-            return false;
-        }
         if (!buffer_read_bytes_ptr(buf, &relay->dnsName, dns_length)) {
             TRACE("Failed to read dns name");
             return false;

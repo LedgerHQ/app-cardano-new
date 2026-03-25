@@ -410,6 +410,152 @@ static void test_validate_from_raw_success(void **state) {
     assert_true(hash_nonzero);
 }
 
+static void test_validate_fails_on_truncated_fee(void **state) {
+    (void) state;
+    reset_test_context();
+
+    uint8_t raw_tx[TX_HASH_LENGTH + 4 + 2 + 45 + 4] = {0}; // inputs + outputs + 4 bytes of fee
+    size_t offset = 0;
+    // one input
+    offset += TX_HASH_LENGTH + 4;
+    // one output (45 bytes)
+    raw_tx[offset++] = 0x00;
+    raw_tx[offset++] = 0x2D; // output total length
+    // destination type: third-party
+    raw_tx[offset++] = DESTINATION_THIRD_PARTY;
+    // address length: 29 bytes
+    raw_tx[offset++] = 0x00;
+    raw_tx[offset++] = 0x1D;
+    // address bytes
+    for (size_t i = 0; i < 29; i++) {
+        raw_tx[offset++] = (uint8_t) (0x40 + i);
+    }
+    // ADA amount (8 bytes)
+    for (int i = 0; i < 8; i++) raw_tx[offset++] = 0x00;
+    // output format
+    raw_tx[offset++] = ARRAY_LEGACY;
+    // datum absent
+    raw_tx[offset++] = 1;  // FLAG_INCLUDED_NO
+    // ref script absent
+    raw_tx[offset++] = 1;  // FLAG_INCLUDED_NO
+    // num asset groups
+    raw_tx[offset++] = 0x00;
+    raw_tx[offset++] = 0x00;
+    // fee (truncated: only 4 bytes instead of 8)
+    offset += 4;
+
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.num_inputs = 1;
+    G_context.tx_info.tx_params.num_outputs = 1;
+    tx_body_ctx()->raw_tx = raw_tx;
+    G_context.tx_info.raw_tx_total_length = offset;
+    tx_body_ctx()->raw_tx_current_length = offset;
+
+    apdu_response_begin(INS_SIGN_TX);
+    bool ok = tx_validate();
+    apdu_response_assert_sent_or_deferred();
+    assert_false(ok);
+    assert_int_equal(g_last_sw, SWO_TX_PARSING_FAIL_FEE);
+}
+
+static void test_validate_fails_on_truncated_ttl(void **state) {
+    (void) state;
+    reset_test_context();
+
+    uint8_t raw_tx[TX_HASH_LENGTH + 4 + 2 + 45 + 8 + 4] = {0}; // inputs + outputs + fee + 4 bytes of ttl
+    size_t offset = 0;
+    offset += TX_HASH_LENGTH + 4; // input
+    // one output (45 bytes)
+    raw_tx[offset++] = 0x00;
+    raw_tx[offset++] = 0x2D; // output total length
+    // destination type: third-party
+    raw_tx[offset++] = DESTINATION_THIRD_PARTY;
+    // address length: 29 bytes
+    raw_tx[offset++] = 0x00;
+    raw_tx[offset++] = 0x1D;
+    // address bytes
+    for (size_t i = 0; i < 29; i++) {
+        raw_tx[offset++] = (uint8_t) (0x40 + i);
+    }
+    // ADA amount (8 bytes)
+    for (int i = 0; i < 8; i++) raw_tx[offset++] = 0x00;
+    // output format
+    raw_tx[offset++] = ARRAY_LEGACY;
+    // datum absent
+    raw_tx[offset++] = 1;  // FLAG_INCLUDED_NO
+    // ref script absent
+    raw_tx[offset++] = 1;  // FLAG_INCLUDED_NO
+    // num asset groups
+    raw_tx[offset++] = 0x00;
+    raw_tx[offset++] = 0x00;
+    offset += 8; // fee
+    // ttl (truncated: only 4 bytes instead of 8)
+    offset += 4;
+
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.num_inputs = 1;
+    G_context.tx_info.tx_params.num_outputs = 1;
+    G_context.tx_info.tx_params.includeTtl = true;
+    tx_body_ctx()->raw_tx = raw_tx;
+    G_context.tx_info.raw_tx_total_length = offset;
+    tx_body_ctx()->raw_tx_current_length = offset;
+
+    apdu_response_begin(INS_SIGN_TX);
+    bool ok = tx_validate();
+    apdu_response_assert_sent_or_deferred();
+    assert_false(ok);
+    assert_int_equal(g_last_sw, SWO_TX_PARSING_FAIL_TTL);
+}
+
+static void test_validate_fails_on_truncated_withdrawals(void **state) {
+    (void) state;
+    reset_test_context();
+
+    uint8_t raw_tx[TX_HASH_LENGTH + 4 + 2 + 45 + 8 + 4] = {0};
+    size_t offset = 0;
+    offset += TX_HASH_LENGTH + 4; // input
+    // one output (45 bytes)
+    raw_tx[offset++] = 0x00;
+    raw_tx[offset++] = 0x2D; // output total length
+    // destination type: third-party
+    raw_tx[offset++] = DESTINATION_THIRD_PARTY;
+    // address length: 29 bytes
+    raw_tx[offset++] = 0x00;
+    raw_tx[offset++] = 0x1D;
+    // address bytes
+    for (size_t i = 0; i < 29; i++) {
+        raw_tx[offset++] = (uint8_t) (0x40 + i);
+    }
+    // ADA amount (8 bytes)
+    for (int i = 0; i < 8; i++) raw_tx[offset++] = 0x00;
+    // output format
+    raw_tx[offset++] = ARRAY_LEGACY;
+    // datum absent
+    raw_tx[offset++] = 1;  // FLAG_INCLUDED_NO
+    // ref script absent
+    raw_tx[offset++] = 1;  // FLAG_INCLUDED_NO
+    // num asset groups
+    raw_tx[offset++] = 0x00;
+    raw_tx[offset++] = 0x00;
+    offset += 8; // fee
+    // withdrawal: only 4 bytes of amount, credential missing
+    offset += 4;
+
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.num_inputs = 1;
+    G_context.tx_info.tx_params.num_outputs = 1;
+    G_context.tx_info.tx_params.num_withdrawals = 1;
+    tx_body_ctx()->raw_tx = raw_tx;
+    G_context.tx_info.raw_tx_total_length = offset;
+    tx_body_ctx()->raw_tx_current_length = offset;
+
+    apdu_response_begin(INS_SIGN_TX);
+    bool ok = tx_validate();
+    apdu_response_assert_sent_or_deferred();
+    assert_false(ok);
+    assert_int_equal(g_last_sw, SWO_TX_PARSING_FAIL_WITHDRAWALS);
+}
+
 static void test_validate_from_raw_with_tokens_and_mint_success(void **state) {
     (void) state;
     reset_test_context();
@@ -513,6 +659,237 @@ static void test_validate_from_raw_with_tokens_and_mint_success(void **state) {
     assert_int_equal(tx_body_ctx()->total_ui_pairs, 9);  // output base + output token + fee + mint summary + mint token
 }
 
+// ---------------------------------------------------------------------------
+// parse_required_signer error paths
+// ---------------------------------------------------------------------------
+
+static void test_parse_required_signer_truncated_type(void **state) {
+    (void) state;
+    // Empty buffer: buffer_read_u8 fails on the type byte.
+    uint8_t buf_data[1] = {0};
+    buffer_t buf = {.ptr = buf_data, .size = 0, .offset = 0};
+    required_signer_t out;
+    assert_false(parse_required_signer(&buf, &out));
+}
+
+static void test_parse_required_signer_path_truncated(void **state) {
+    (void) state;
+    // Type byte present (REQUIRED_SIGNER_WITH_PATH=0) but no path data follows.
+    uint8_t buf_data[1] = {REQUIRED_SIGNER_WITH_PATH};
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    required_signer_t out;
+    assert_false(parse_required_signer(&buf, &out));
+}
+
+static void test_parse_required_signer_hash_truncated(void **state) {
+    (void) state;
+    // Type byte present (REQUIRED_SIGNER_WITH_HASH=1) but no hash bytes follow.
+    uint8_t buf_data[1] = {REQUIRED_SIGNER_WITH_HASH};
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    required_signer_t out;
+    assert_false(parse_required_signer(&buf, &out));
+}
+
+// ---------------------------------------------------------------------------
+// parse_voter_votes_header error paths
+// ---------------------------------------------------------------------------
+
+static void test_parse_voter_votes_header_truncated_type(void **state) {
+    (void) state;
+    uint8_t buf_data[1] = {0};
+    buffer_t buf = {.ptr = buf_data, .size = 0, .offset = 0};
+    ext_voter_t voter;
+    uint16_t num_votes;
+    assert_false(parse_voter_votes_header(&buf, &voter, &num_votes));
+}
+
+static void test_parse_voter_votes_header_unknown_type(void **state) {
+    (void) state;
+    // 0xFF is not a valid ext_voter_type_t value.
+    uint8_t buf_data[1] = {0xFF};
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    ext_voter_t voter;
+    uint16_t num_votes;
+    assert_false(parse_voter_votes_header(&buf, &voter, &num_votes));
+}
+
+static void test_parse_voter_votes_header_path_truncated(void **state) {
+    (void) state;
+    // EXT_VOTER_DREP_KEY_PATH=102 — path data missing.
+    uint8_t buf_data[1] = {(uint8_t) EXT_VOTER_DREP_KEY_PATH};
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    ext_voter_t voter;
+    uint16_t num_votes;
+    assert_false(parse_voter_votes_header(&buf, &voter, &num_votes));
+}
+
+static void test_parse_voter_votes_header_key_hash_truncated(void **state) {
+    (void) state;
+    // EXT_VOTER_DREP_KEY_HASH=2 — hash bytes missing.
+    uint8_t buf_data[1] = {(uint8_t) EXT_VOTER_DREP_KEY_HASH};
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    ext_voter_t voter;
+    uint16_t num_votes;
+    assert_false(parse_voter_votes_header(&buf, &voter, &num_votes));
+}
+
+static void test_parse_voter_votes_header_script_hash_truncated(void **state) {
+    (void) state;
+    // EXT_VOTER_DREP_SCRIPT_HASH=3 — script hash bytes missing.
+    uint8_t buf_data[1] = {(uint8_t) EXT_VOTER_DREP_SCRIPT_HASH};
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    ext_voter_t voter;
+    uint16_t num_votes;
+    assert_false(parse_voter_votes_header(&buf, &voter, &num_votes));
+}
+
+static void test_parse_voter_votes_header_num_votes_truncated(void **state) {
+    (void) state;
+    // EXT_VOTER_STAKE_POOL_KEY_HASH=4 with full hash, but num_votes u16 missing.
+    uint8_t buf_data[1 + ADDRESS_KEY_HASH_LENGTH] = {0};
+    buf_data[0] = (uint8_t) EXT_VOTER_STAKE_POOL_KEY_HASH;
+    // hash bytes left as zero — valid pointer-read (buffer_read_bytes_ptr pointer only)
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    ext_voter_t voter;
+    uint16_t num_votes;
+    assert_false(parse_voter_votes_header(&buf, &voter, &num_votes));
+}
+
+static void test_parse_voter_votes_header_zero_votes(void **state) {
+    (void) state;
+    // Valid hash voter, but num_votes == 0 must be rejected.
+    uint8_t buf_data[1 + ADDRESS_KEY_HASH_LENGTH + 2] = {0};
+    buf_data[0] = (uint8_t) EXT_VOTER_STAKE_POOL_KEY_HASH;
+    // hash: 28 zero bytes (valid buffer pointer)
+    buf_data[1 + ADDRESS_KEY_HASH_LENGTH + 0] = 0x00;  // num_votes high byte
+    buf_data[1 + ADDRESS_KEY_HASH_LENGTH + 1] = 0x00;  // num_votes low byte  -> 0
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    ext_voter_t voter;
+    uint16_t num_votes;
+    assert_false(parse_voter_votes_header(&buf, &voter, &num_votes));
+}
+
+// ---------------------------------------------------------------------------
+// parse_vote error paths
+// ---------------------------------------------------------------------------
+
+static void test_parse_vote_truncated_tx_hash(void **state) {
+    (void) state;
+    uint8_t buf_data[1] = {0};
+    buffer_t buf = {.ptr = buf_data, .size = 0, .offset = 0};
+    vote_item_t item;
+    assert_false(parse_vote(&buf, &item));
+}
+
+static void test_parse_vote_truncated_gov_action_index(void **state) {
+    (void) state;
+    uint8_t buf_data[TX_HASH_LENGTH] = {0};
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    vote_item_t item;
+    assert_false(parse_vote(&buf, &item));
+}
+
+static void test_parse_vote_truncated_vote_option(void **state) {
+    (void) state;
+    uint8_t buf_data[TX_HASH_LENGTH + 4] = {0};
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    vote_item_t item;
+    assert_false(parse_vote(&buf, &item));
+}
+
+static void test_parse_vote_unknown_vote_option(void **state) {
+    (void) state;
+    uint8_t buf_data[TX_HASH_LENGTH + 4 + 1] = {0};
+    buf_data[TX_HASH_LENGTH + 4] = 0xFF;  // invalid vote option
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    vote_item_t item;
+    assert_false(parse_vote(&buf, &item));
+}
+
+static void test_parse_vote_truncated_anchor(void **state) {
+    (void) state;
+    // Valid tx hash + gov index + vote option (VOTE_NO=0), but no anchor bytes.
+    uint8_t buf_data[TX_HASH_LENGTH + 4 + 1] = {0};
+    buf_data[TX_HASH_LENGTH + 4] = (uint8_t) VOTE_NO;
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    vote_item_t item;
+    assert_false(parse_vote(&buf, &item));
+}
+
+// ---------------------------------------------------------------------------
+// parse_withdrawal error paths
+// ---------------------------------------------------------------------------
+
+static void test_parse_withdrawal_truncated_amount(void **state) {
+    (void) state;
+    uint8_t buf_data[4] = {0};  // only 4 bytes, need 8 for u64
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    withdrawal_t out;
+    assert_false(parse_withdrawal(&buf, &out));
+}
+
+static void test_parse_withdrawal_amount_too_large(void **state) {
+    (void) state;
+    // LOVELACE_MAX_SUPPLY = 45_000_000_000_000_000 = 0x00A0_AEA1_C0C4_0000
+    // Write exactly LOVELACE_MAX_SUPPLY (>= check, so this must fail).
+    uint8_t buf_data[8] = {0x00, 0xA0, 0xAE, 0xA1, 0xC0, 0xC4, 0x00, 0x00};
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    withdrawal_t out;
+    assert_false(parse_withdrawal(&buf, &out));
+}
+
+static void test_parse_withdrawal_truncated_credential(void **state) {
+    (void) state;
+    // Valid amount (1 lovelace), but no credential bytes follow.
+    uint8_t buf_data[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    withdrawal_t out;
+    assert_false(parse_withdrawal(&buf, &out));
+}
+
+// ---------------------------------------------------------------------------
+// parse_mint_token error paths
+// ---------------------------------------------------------------------------
+
+static void test_parse_mint_token_name_too_long(void **state) {
+    (void) state;
+    // asset_name_length = MAX_MINT_ASSET_NAME_LENGTH + 1 = 33
+    uint8_t buf_data[1] = {MAX_MINT_ASSET_NAME_LENGTH + 1};
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    mint_token_t out;
+    assert_false(parse_mint_token(&buf, &out));
+}
+
+static void test_parse_mint_token_name_truncated(void **state) {
+    (void) state;
+    // asset_name_length = 5, but only 3 name bytes follow.
+    uint8_t buf_data[4] = {5, 0xAA, 0xBB, 0xCC};
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    mint_token_t out;
+    assert_false(parse_mint_token(&buf, &out));
+}
+
+static void test_parse_mint_token_amount_truncated(void **state) {
+    (void) state;
+    // asset_name_length = 1, name present, but no amount bytes.
+    uint8_t buf_data[2] = {1, 0xAA};
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    mint_token_t out;
+    assert_false(parse_mint_token(&buf, &out));
+}
+
+static void test_parse_mint_token_zero_amount(void **state) {
+    (void) state;
+    // asset_name_length = 1, name byte, amount = 0 (must be rejected).
+    uint8_t buf_data[1 + 1 + 8] = {0};
+    buf_data[0] = 1;    // name length
+    buf_data[1] = 0xAA; // name byte
+    // amount bytes [2..9] remain 0 -> int64 = 0
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    mint_token_t out;
+    assert_false(parse_mint_token(&buf, &out));
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_parse_tx_fails_on_missing_inputs),
@@ -527,7 +904,37 @@ int main(void) {
         cmocka_unit_test(test_process_required_signers_field_parse_error_sends_required_swo),
         cmocka_unit_test(test_mode_allows_rendering_with_validation),
         cmocka_unit_test(test_validate_from_raw_success),
+        cmocka_unit_test(test_validate_fails_on_truncated_fee),
+        cmocka_unit_test(test_validate_fails_on_truncated_ttl),
+        cmocka_unit_test(test_validate_fails_on_truncated_withdrawals),
         cmocka_unit_test(test_validate_from_raw_with_tokens_and_mint_success),
+        // parse_required_signer
+        cmocka_unit_test(test_parse_required_signer_truncated_type),
+        cmocka_unit_test(test_parse_required_signer_path_truncated),
+        cmocka_unit_test(test_parse_required_signer_hash_truncated),
+        // parse_voter_votes_header
+        cmocka_unit_test(test_parse_voter_votes_header_truncated_type),
+        cmocka_unit_test(test_parse_voter_votes_header_unknown_type),
+        cmocka_unit_test(test_parse_voter_votes_header_path_truncated),
+        cmocka_unit_test(test_parse_voter_votes_header_key_hash_truncated),
+        cmocka_unit_test(test_parse_voter_votes_header_script_hash_truncated),
+        cmocka_unit_test(test_parse_voter_votes_header_num_votes_truncated),
+        cmocka_unit_test(test_parse_voter_votes_header_zero_votes),
+        // parse_vote
+        cmocka_unit_test(test_parse_vote_truncated_tx_hash),
+        cmocka_unit_test(test_parse_vote_truncated_gov_action_index),
+        cmocka_unit_test(test_parse_vote_truncated_vote_option),
+        cmocka_unit_test(test_parse_vote_unknown_vote_option),
+        cmocka_unit_test(test_parse_vote_truncated_anchor),
+        // parse_withdrawal
+        cmocka_unit_test(test_parse_withdrawal_truncated_amount),
+        cmocka_unit_test(test_parse_withdrawal_amount_too_large),
+        cmocka_unit_test(test_parse_withdrawal_truncated_credential),
+        // parse_mint_token
+        cmocka_unit_test(test_parse_mint_token_name_too_long),
+        cmocka_unit_test(test_parse_mint_token_name_truncated),
+        cmocka_unit_test(test_parse_mint_token_amount_truncated),
+        cmocka_unit_test(test_parse_mint_token_zero_amount),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
