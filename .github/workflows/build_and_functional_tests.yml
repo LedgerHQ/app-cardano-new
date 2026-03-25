@@ -72,7 +72,6 @@ jobs:
   ragger_tests:
     name: Run standalone ragger tests using the reusable workflow
     needs:
-      - check_generated_unit_test_files
       - run_unit_tests_gate
       - build_application
     uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_ragger_tests.yml@v1
