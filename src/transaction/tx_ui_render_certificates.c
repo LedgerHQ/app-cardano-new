@@ -102,10 +102,10 @@ static void render_drep_credential(const ext_credential_t *credential) {
 
 static void render_committee_cold_credential(const ext_credential_t *credential) {
     render_credential(credential,
-                      UI_LABEL_BY_SCREEN("Committee cold key", "Cmte cold key"),
-                      UI_LABEL_BY_SCREEN("Committee cold key hash", "Cmte cold key"),
+                      UI_LABEL_BY_SCREEN("Committee cold key", "Cmte c key"),
+                      UI_LABEL_BY_SCREEN("Committee cold key hash", "Cmte c key"),
                       BECH32_PREFIX_COMMITTEE_COLD_KEY_HASH,
-                      UI_LABEL_BY_SCREEN("Committee cold script hash", "Cmte cold script"),
+                      UI_LABEL_BY_SCREEN("Committee cold script hash", "Cmte c scr"),
                       BECH32_PREFIX_COMMITTEE_COLD_SCRIPT_HASH);
 }
 
@@ -114,7 +114,7 @@ static void render_committee_hot_credential(const ext_credential_t *credential) 
                       UI_LABEL_BY_SCREEN("Committee hot key", "Cmte hot key"),
                       UI_LABEL_BY_SCREEN("Committee hot key hash", "Cmte hot key"),
                       BECH32_PREFIX_COMMITTEE_HOT_KEY_HASH,
-                      UI_LABEL_BY_SCREEN("Committee hot script hash", "Cmte hot script"),
+                      UI_LABEL_BY_SCREEN("Committee hot script hash", "Cmte hot scr"),
                       BECH32_PREFIX_COMMITTEE_HOT_SCRIPT_HASH);
 }
 
