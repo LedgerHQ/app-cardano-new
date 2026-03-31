@@ -9,6 +9,7 @@ This module provides Ragger tests for Sign TX check
 
 from typing import List, Optional
 from dataclasses import dataclass, field
+from enum import Enum, auto
 import base58
 
 from tests.application_client.command_builder import (
@@ -93,6 +94,13 @@ class Witness:
     witnessSignatureHex: Optional[str] = None
 
 
+class BlindSigningMode(Enum):
+    DISABLED = auto()
+    ENABLED_NO_PROMPT = auto()
+    PROMPT_REVIEW_HASH = auto()
+    PROMPT_REVIEW_FULL = auto()
+
+
 @dataclass(kw_only=True)
 class SignTxTestCase:
     name: str
@@ -116,6 +124,7 @@ class SignTxTestCase:
     tx_streaming: bool = (
         False  # True when the tx body review uses NBGL streaming (multiple chunks)
     )
+    blind_signing_mode: BlindSigningMode = BlindSigningMode.DISABLED
 
 
 # pylint: disable=line-too-long
@@ -2966,6 +2975,17 @@ testsAlonzoTrezorComparison: List[SignTxTestCase] = [
         txBody="ab00818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821a001e8480a1581c0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425a14874657374436f696e1a0078386283581d71477e52b3116b62fe8cd34a312615f5fcd678c94e1d6cdb86c1a3964c0158203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b702182a030a048382008201581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd82018201581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd83028201581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb497305a1581df129fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd1903e807582058ec01578fcdfdc376f09631a7b2adc608eaf57e3720484c7ff37c13cff90fdf08182f09a1581c0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425a24874657374436f696e1a007838624875657374436f696e3a007838610b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70f01",
         additionalWitnessPaths=["m/1854'/1815'/0'/0/0", "m/1854'/1815'/0'/2/0"],
     ),
+    SignTxTestCase(
+        name="Sign_tx_blind_signing_enabled_without_prompt",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
+        ),
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a",
+        blind_signing_mode=BlindSigningMode.ENABLED_NO_PROMPT,
+    ),
 ]
 
 testsBabbageTrezorComparison: List[SignTxTestCase] = [
@@ -3718,18 +3738,23 @@ def _make_tx_streaming_many_required_signers(required_signer_count: int) -> Tran
 _tx_streaming_many_required_signers = _make_tx_streaming_many_required_signers(700)
 _tx_streaming_many_required_signers_nano = _make_tx_streaming_many_required_signers(256)
 
-_tx_streaming_many_outputs = Transaction(
-    network=Mainnet,
-    inputs=[inputs["utxoShelley"]],
-    outputs=[
-        TxOutputAlonzo(
-            destinations["externalShelleyBaseKeyhashKeyhash"],
-            1000000 + i,
-        )
-        for i in range(90)
-    ],
-    includeNetworkId=True,
-)
+def _make_tx_many_outputs(output_count: int) -> Transaction:
+    return Transaction(
+        network=Mainnet,
+        inputs=[inputs["utxoShelley"]],
+        outputs=[
+            TxOutputAlonzo(
+                destinations["externalShelleyBaseKeyhashKeyhash"],
+                1000000 + i,
+            )
+            for i in range(output_count)
+        ],
+        includeNetworkId=True,
+    )
+
+
+_tx_streaming_many_outputs = _make_tx_many_outputs(90)
+_tx_blind_signing_prompt_many_outputs = _make_tx_many_outputs(10)
 
 testsAlonzo: List[SignTxTestCase] = [
     SignTxTestCase(
@@ -4101,6 +4126,68 @@ testsStreaming: List[SignTxTestCase] = [
             + "02182a030a0f01"
         ),
         tx_streaming=True,
+    ),
+    SignTxTestCase(
+        name="Sign_tx_blind_signing_prompt_many_outputs",
+        tx=_tx_blind_signing_prompt_many_outputs,
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody=(
+            "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018a"
+            + "".join(
+                f"825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
+                f"1a000f42{0x40 + i:02x}"
+                for i in range(10)
+            )
+            + "02182a030a0f01"
+        ),
+        blind_signing_mode=BlindSigningMode.PROMPT_REVIEW_FULL,
+    ),
+    SignTxTestCase(
+        name="Sign_tx_blind_signing_prompt_many_outputs_hash_only",
+        tx=_tx_blind_signing_prompt_many_outputs,
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody=(
+            "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018a"
+            + "".join(
+                f"825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
+                f"1a000f42{0x40 + i:02x}"
+                for i in range(10)
+            )
+            + "02182a030a0f01"
+        ),
+        blind_signing_mode=BlindSigningMode.PROMPT_REVIEW_HASH,
+    ),
+    SignTxTestCase(
+        name="Sign_tx_blind_signing_prompt_streaming_many_outputs",
+        tx=_tx_streaming_many_outputs,
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody=(
+            "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001985a"
+            + "".join(
+                f"825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
+                f"1a000f42{0x40 + i:02x}"
+                for i in range(90)
+            )
+            + "02182a030a0f01"
+        ),
+        tx_streaming=True,
+        blind_signing_mode=BlindSigningMode.PROMPT_REVIEW_FULL,
+    ),
+    SignTxTestCase(
+        name="Sign_tx_blind_signing_prompt_streaming_many_outputs_hash_only",
+        tx=_tx_streaming_many_outputs,
+        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        txBody=(
+            "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001985a"
+            + "".join(
+                f"825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09"
+                f"1a000f42{0x40 + i:02x}"
+                for i in range(90)
+            )
+            + "02182a030a0f01"
+        ),
+        tx_streaming=True,
+        blind_signing_mode=BlindSigningMode.PROMPT_REVIEW_HASH,
     ),
 ]
 

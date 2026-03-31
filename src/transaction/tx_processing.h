@@ -26,6 +26,13 @@ typedef struct {
     bool ui_render;                   // validation run: false, UI render run: true
 } tx_processing_mode_t;
 
+typedef enum {
+    TX_UI_REVIEW_MODE_NONE = 0,
+    TX_UI_REVIEW_MODE_PENDING_BLIND_SIGNING_CHOICE = 1,
+    TX_UI_REVIEW_MODE_DETAILS = 2,
+    TX_UI_REVIEW_MODE_HASH_ONLY = 3,
+} tx_ui_review_mode_e;
+
 // Standard policy dispatch: deny → reject tx, show → call render_fn, hide → skip.
 // Requires render_fn to accept (mode, ...) where mode is const tx_processing_mode_t *.
 // Only suitable when SHOW and HIDE branches have no extra logic beyond the UI call.
@@ -97,4 +104,4 @@ typedef struct {
 
 bool tx_validate(void);
 bool tx_render_ui_chunk(uint16_t from);
-bool tx_render_ui_all(void);
+bool tx_render_ui(tx_ui_review_mode_e review_mode);

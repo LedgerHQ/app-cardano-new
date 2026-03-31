@@ -25,6 +25,7 @@
 #include "tx_utils.h"
 #include "addressUtilsShelley.h"
 #include "globals.h"
+#include "cardano_settings.h"
 #include "sign_tx_ctx.h"
 #include "ui_utils.h"
 #include "ui_warnings.h"
@@ -1130,10 +1131,18 @@ bool tx_render_ui_chunk(uint16_t from) {
     return true;
 }
 
-bool tx_render_ui_all(void) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "tx_render_ui_all called in wrong state");
-    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_HASHED, "tx_render_ui_all called too early");
-    uint16_t total_pairs = tx_body_ctx()->total_ui_pairs;
+bool tx_render_ui(tx_ui_review_mode_e review_mode) {
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "tx_render_ui called in wrong state");
+    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_HASHED ||
+                      G_context.state.tx_state == TX_STATE_UI_REVIEW,
+                  "tx_render_ui called in wrong tx state");
+    LEDGER_ASSERT(review_mode == TX_UI_REVIEW_MODE_DETAILS ||
+                      review_mode == TX_UI_REVIEW_MODE_HASH_ONLY,
+                  "tx_render_ui called with unsupported review mode");
+    const bool initial_render = (G_context.state.tx_state == TX_STATE_HASHED);
+    uint16_t total_pairs = (review_mode == TX_UI_REVIEW_MODE_HASH_ONLY)
+                               ? UI_PAIRS_TX_HASH
+                               : tx_body_ctx()->total_ui_pairs;
 
     TRACE("Preparing TX review: total_ui_pairs=%u max_ui_pairs=%u", total_pairs, MAX_UI_PAIRS);
     // Allocate the first slab (full size for non-streaming, capped for streaming).
@@ -1145,17 +1154,32 @@ bool tx_render_ui_all(void) {
         return false; // LCOV_EXCL_LINE
     }
 
-    // Try to render the first chunk (from pair 0). A `false` result means
-    // parsing/security/invariant failure during render pass, not a chunk-size
-    // condition (CHUNK_FULL/OOM are reported via UI status and handled below).
-    LEDGER_ASSERT(tx_render_ui_chunk(0),
-                  "First chunk render unexpectedly failed after successful validation");
+    if (review_mode == TX_UI_REVIEW_MODE_HASH_ONLY) {
+        static const tx_processing_mode_t render_mode = {
+            .run_validation = false,
+            .run_hash_builder = false,
+            .ui_count_pairs = false,
+            .ui_render = true,
+        };
+        ui_render_session_t session = {0};
+        ui_render_session_begin(&session, 0);
+        tx_ui_plan_or_render_tx_hash(&render_mode, G_context.tx_info.tx_hash);
+        ui_render_session_end();
+    } else {
+        // Try to render the first chunk (from pair 0). A `false` result means
+        // parsing/security/invariant failure during render pass, not a chunk-size
+        // condition (CHUNK_FULL/OOM are reported via UI status and handled below).
+        LEDGER_ASSERT(tx_render_ui_chunk(0),
+                      "First chunk render unexpectedly failed after successful validation");
+    }
 
     ui_status_t render_status = ui_get_error_status();
     switch (render_status) {
         case UI_STATUS_SUCCESS:
             // Everything fit in a single chunk --- non-streaming path.
             tx_body_ctx()->streaming_mode = false;
+            // Hash-only review always lands here; rendered_ui_pairs is irrelevant when
+            // streaming_mode is false and is never consulted by the non-streaming path.
             TRACE("tx ui non-streaming");
 
             // check for consistency in pair counting
@@ -1213,6 +1237,9 @@ bool tx_render_ui_all(void) {
         // LCOV_EXCL_STOP
     }
 
-    G_context.state.tx_state = TX_STATE_UI_REVIEW;
+    tx_body_ctx()->review_mode = review_mode;
+    if (initial_render) {
+        G_context.state.tx_state = TX_STATE_UI_REVIEW;
+    }
     return true;
 }

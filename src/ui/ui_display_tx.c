@@ -13,6 +13,7 @@
 #include "cardano_swo.h"
 #include "menu.h"
 #include "app_context.h"
+#include "cardano_settings.h"
 #include "sign_tx_ctx.h"
 #include "tx_processing.h"
 #include "ui_utils.h"
@@ -29,12 +30,27 @@
 #define TRACE_MODULE(...) (void)0  // Compiled out
 #endif
 
+static const char BLIND_SIGNING_CHOICE_TITLE[] = "Blind signing";
+static const char BLIND_SIGNING_CHOICE_DESCRIPTION[] = "Transaction is long. Show details?";
+static const char BLIND_SIGNING_CHOICE_CONFIRM[] = "Show details";
+static const char BLIND_SIGNING_CHOICE_REJECT[] = "View hash only";
+
 void tx_review_cleanup(void) {
     ui_all_cleanup();
 }
 
-static void tx_review_choice(bool confirm) {
+bool tx_render_ui_or_fail(tx_ui_review_mode_e review_mode) {
+    if (tx_render_ui(review_mode)) {
+        return true;
+    }
 
+    tx_review_cleanup();
+    TRACE_MODULE("TX UI render failed");
+    send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
+    return false;
+}
+
+static void tx_review_choice(bool confirm) {
     // CLEANUP
     tx_review_cleanup();
 
@@ -62,8 +78,33 @@ static void tx_review_choice(bool confirm) {
     }
 }
 
-// Forward declaration for streaming callbacks
-static void tx_streaming_continue_choice(bool confirm);
+static void tx_blind_signing_choice(bool confirm) {
+    tx_ui_review_mode_e review_mode =
+        confirm ? TX_UI_REVIEW_MODE_DETAILS : TX_UI_REVIEW_MODE_HASH_ONLY;
+    if (!tx_render_ui_or_fail(review_mode)) {
+        return;
+    }
+    ui_display_transaction();
+}
+
+void ui_display_blind_signing_choice(void) {
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION,
+                  "ui_display_blind_signing_choice called with wrong request type: %d",
+                  G_context.req_type);
+    LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_UI_REVIEW,
+                  "ui_display_blind_signing_choice called in wrong tx state: %d",
+                  G_context.state.tx_state);
+    LEDGER_ASSERT(is_blind_signing_enabled(), "Blind-signing choice shown when blind signing is off");
+    LEDGER_ASSERT(tx_body_ctx()->review_mode == TX_UI_REVIEW_MODE_PENDING_BLIND_SIGNING_CHOICE,
+                  "Blind-signing choice shown without pending choice");
+
+    nbgl_useCaseChoice(&ICON_APP_WARNING,
+                       BLIND_SIGNING_CHOICE_TITLE,
+                       BLIND_SIGNING_CHOICE_DESCRIPTION,
+                       BLIND_SIGNING_CHOICE_CONFIRM,
+                       BLIND_SIGNING_CHOICE_REJECT,
+                       tx_blind_signing_choice);
+}
 
 static bool is_recoverable_streaming_chunk_boundary(ui_status_t render_status,
                                                     uint16_t rendered_count) {
@@ -77,17 +118,6 @@ static bool is_recoverable_streaming_chunk_boundary(ui_status_t render_status,
             return false;
         // LCOV_EXCL_STOP
     }
-}
-
-static void tx_streaming_start_choice(bool confirm) {
-    if (!confirm) {
-        tx_review_cleanup();
-        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
-        nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main);
-        return;
-    }
-    // Serve the already-rendered first chunk.
-    nbgl_useCaseReviewStreamingContinue(g_pairsList, tx_streaming_continue_choice);
 }
 
 static void tx_streaming_continue_choice(bool confirm) {
@@ -166,6 +196,17 @@ static void tx_streaming_continue_choice(bool confirm) {
     nbgl_useCaseReviewStreamingContinue(g_pairsList, tx_streaming_continue_choice);
 }
 
+static void tx_streaming_start_choice(bool confirm) {
+    if (!confirm) {
+        tx_review_cleanup();
+        send_swo_and_reset(SWO_CONDITIONS_NOT_SATISFIED);
+        nbgl_useCaseReviewStatus(STATUS_TYPE_TRANSACTION_REJECTED, ui_menu_main);
+        return;
+    }
+    // Serve the already-rendered first chunk.
+    nbgl_useCaseReviewStreamingContinue(g_pairsList, tx_streaming_continue_choice);
+}
+
 void ui_display_transaction(void) {
     LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION,
                   "ui_display_transaction called with wrong request type: %d",
@@ -173,6 +214,10 @@ void ui_display_transaction(void) {
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_UI_REVIEW,
                   "ui_display_transaction called in wrong tx state: %d",
                   G_context.state.tx_state);
+    LEDGER_ASSERT(tx_body_ctx()->review_mode == TX_UI_REVIEW_MODE_DETAILS ||
+                      tx_body_ctx()->review_mode == TX_UI_REVIEW_MODE_HASH_ONLY,
+                  "ui_display_transaction called without prepared review mode: %d",
+                  tx_body_ctx()->review_mode);
 
     const char *review_subtitle = NULL;
     switch (G_context.tx_info.tx_params.txSigningMode) {
@@ -187,6 +232,10 @@ void ui_display_transaction(void) {
     }
 
     const nbgl_warning_t *warningPtr = ui_get_warnings();
+
+    if (tx_body_ctx()->review_mode == TX_UI_REVIEW_MODE_HASH_ONLY) {
+        review_subtitle = "Blind signing";
+    }
 
     if (!tx_body_ctx()->streaming_mode) {
         // Non-streaming: identical to before.

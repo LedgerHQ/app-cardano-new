@@ -39,3 +39,8 @@ static inline bool is_silent_pubkey_export_allowed()
 {
     return N_storage.silent_pubkey_export_enabled;
 }
+
+static inline bool is_blind_signing_enabled()
+{
+    return N_storage.blind_signing_enabled;
+}

@@ -1,6 +1,9 @@
 # SPDX-FileCopyrightText: 2025-2026 Vacuumlabs
 # SPDX-License-Identifier: Apache-2.0
 
+from unittest.mock import Mock
+
+import pytest
 from ledgered.devices import Device
 from ragger.navigator import Navigator, NavInsID
 
@@ -11,9 +14,18 @@ from tests.standalone.settings import SettingID, settings_toggle
 def test_app_mainmenu(
     device: Device, navigator: Navigator, test_name: str, default_screenshot_path: str
 ) -> None:
+    if isinstance(navigator, Mock):
+        pytest.skip("Menu test requires real navigation; skipping under --no-nav")
+
     # Toggle both settings to exercise the full menu
     settings_toggle(
-        device, navigator, [SettingID.SILENT_PUBKEY_EXPORT, SettingID.EXPERT_MODE]
+        device,
+        navigator,
+        [
+            SettingID.SILENT_PUBKEY_EXPORT,
+            SettingID.EXPERT_MODE,
+            SettingID.BLIND_SIGNING,
+        ],
     )
 
     if not device.is_nano:
@@ -21,6 +33,7 @@ def test_app_mainmenu(
         navigator.navigate(
             [
                 NavInsID.USE_CASE_HOME_SETTINGS,
+                NavInsID.USE_CASE_SETTINGS_NEXT,
                 NavInsID.USE_CASE_SETTINGS_NEXT,
                 NavInsID.USE_CASE_SETTINGS_MULTI_PAGE_EXIT,
             ],

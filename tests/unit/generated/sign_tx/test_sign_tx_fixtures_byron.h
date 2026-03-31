@@ -104,6 +104,7 @@ static const tx_fixture_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_MAINNET_OU
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -178,6 +179,7 @@ static const tx_fixture_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_DAEDALUS_M
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -250,6 +252,7 @@ static const tx_fixture_t FIXTURE_BYRON_SIGN_TX_WITH_THIRDPARTY_BYRON_TESTNET_OU
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_NETWORK_UNUSUAL),
 };
 
@@ -320,6 +323,7 @@ static const tx_fixture_t FIXTURE_BYRON_SIGN_TX_WITH_DEVICE_OWNED_BYRON_MAINNET_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH),
 };
 

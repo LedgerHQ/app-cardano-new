@@ -13,6 +13,13 @@ typedef struct {
     size_t payload_len;
 } aux_data_payload_t;
 
+typedef enum {
+    BLIND_SIGNING_MODE_DISABLED = 0,
+    BLIND_SIGNING_MODE_ENABLED_NO_PROMPT = 1,
+    BLIND_SIGNING_MODE_PROMPT_REVIEW_HASH = 2,
+    BLIND_SIGNING_MODE_PROMPT_REVIEW_FULL = 3,
+} blind_signing_mode_t;
+
 typedef struct {
     const uint8_t *payload;
     size_t payload_len;
@@ -58,6 +65,7 @@ typedef struct {
     uint8_t signing_mode;
     uint8_t network_id;
     uint32_t protocol_magic;
+    uint8_t blind_signing_mode;
     warning_bits_t expected_warning_bits;
 } tx_fixture_t;
 

@@ -57,6 +57,7 @@ void app_main(void) {
         internal_storage_t storage = {0};
         storage.expert_mode_enabled = SETTINGS_NO;
         storage.silent_pubkey_export_enabled = SETTINGS_YES;
+        storage.blind_signing_enabled = SETTINGS_NO;
         storage.initialized = STORAGE_INITIALIZED;
         nvm_write((void *) &N_storage, &storage, sizeof(internal_storage_t));
     }

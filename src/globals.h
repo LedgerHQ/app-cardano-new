@@ -149,6 +149,7 @@ typedef struct {
             uint16_t total_ui_pairs;
             uint16_t rendered_ui_pairs;         /// Number of pairs rendered so far (start of next chunk)
             bool     streaming_mode;            /// True when using streaming NBGL API
+            tx_ui_review_mode_e review_mode;    /// Current ui review mode
             /// Mutable parse state; lives in globals to keep tx_hash_builder_t off the stack.
             tx_processing_state_t processing_state;
         } body;
@@ -309,6 +310,7 @@ extern global_ctx_t G_context;
 typedef struct internal_storage_t {
     uint8_t expert_mode_enabled;
     uint8_t silent_pubkey_export_enabled;
+    uint8_t blind_signing_enabled;
     uint8_t initialized;
 } internal_storage_t;
 

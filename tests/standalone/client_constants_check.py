@@ -411,6 +411,7 @@ def assert_default_setting_values_match() -> None:
         "silent_pubkey_export_enabled": DEFAULT_SETTING_VALUES[
             SettingID.SILENT_PUBKEY_EXPORT
         ],
+        "blind_signing_enabled": DEFAULT_SETTING_VALUES[SettingID.BLIND_SIGNING],
     }
     for field_name, python_value in expected_assignments.items():
         match = re.search(rf"storage\.{field_name}\s*=\s*(SETTINGS_\w+)\s*;", text)
@@ -447,6 +448,11 @@ def assert_settings_menu_constants_match() -> None:
             "EXPERT_MODE",
             "expert_mode_enabled",
         ),
+        (
+            SettingID.BLIND_SIGNING,
+            "BLIND_SIGNING",
+            "blind_signing_enabled",
+        ),
     ]
 
     expected_order = [setting_id for setting_id, _, _ in expected_settings]
@@ -482,6 +488,7 @@ def assert_settings_menu_constants_match() -> None:
     expected_token_entries = [
         "SILENT_PUBKEY_EXPORT_TOKEN = FIRST_USER_TOKEN",
         "EXPERT_MODE_TOKEN",
+        "BLIND_SIGNING_TOKEN",
     ]
     if token_enum_entries != expected_token_entries:
         raise AssertionError(

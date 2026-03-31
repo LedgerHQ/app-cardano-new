@@ -23,6 +23,7 @@ from tests.application_client.status_words import StatusWord
 class SettingID(Enum):
     SILENT_PUBKEY_EXPORT = auto()
     EXPERT_MODE = auto()
+    BLIND_SIGNING = auto()
 
 
 class SettingValue(IntEnum):
@@ -31,7 +32,7 @@ class SettingValue(IntEnum):
 
 
 # Settings positions per device type. Returns the tuple (page, x, y).
-# Menu order: Silent public key export (top), Expert mode (bottom).
+# Menu order: Silent public key export (top), Expert mode (middle), Blind signing (bottom).
 # Coordinates are approximate and may need adjustment.
 # NBGL convention: origin (0,0) at top-left, +X right, +Y down.
 SETTINGS_POSITIONS = {
@@ -39,21 +40,25 @@ SETTINGS_POSITIONS = {
     DeviceType.STAX: {
         SettingID.SILENT_PUBKEY_EXPORT: (0, 350, 155),
         SettingID.EXPERT_MODE: (0, 350, 345),
+        SettingID.BLIND_SIGNING: (1, 350, 155),
     },
     # Flex: 480x600 px
     DeviceType.FLEX: {
         SettingID.SILENT_PUBKEY_EXPORT: (0, 420, 155),
         SettingID.EXPERT_MODE: (0, 420, 345),
+        SettingID.BLIND_SIGNING: (1, 420, 155),
     },
     # Apex P
     DeviceType.APEX_P: {
         SettingID.SILENT_PUBKEY_EXPORT: (0, 260, 90),
         SettingID.EXPERT_MODE: (0, 260, 235),
+        SettingID.BLIND_SIGNING: (1, 260, 90),
     },
     # Apex M
     DeviceType.APEX_M: {
         SettingID.SILENT_PUBKEY_EXPORT: (0, 260, 90),
         SettingID.EXPERT_MODE: (0, 260, 235),
+        SettingID.BLIND_SIGNING: (1, 260, 90),
     },
 }
 
@@ -61,11 +66,13 @@ SETTINGS_POSITIONS = {
 SETTINGS_ORDER = [
     SettingID.SILENT_PUBKEY_EXPORT,
     SettingID.EXPERT_MODE,
+    SettingID.BLIND_SIGNING,
 ]
 
 DEFAULT_SETTING_VALUES: dict[SettingID, SettingValue] = {
     SettingID.SILENT_PUBKEY_EXPORT: SettingValue.ENABLED,
     SettingID.EXPERT_MODE: SettingValue.DISABLED,
+    SettingID.BLIND_SIGNING: SettingValue.DISABLED,
 }
 
 _known_setting_values_by_backend: "WeakKeyDictionary[BackendInterface, dict[SettingID, SettingValue]]" = WeakKeyDictionary()
@@ -162,6 +169,8 @@ def settings_set(
                 SettingID.SILENT_PUBKEY_EXPORT
             ]
             == SettingValue.ENABLED,
+            blind_signing=effective_target_setting_values[SettingID.BLIND_SIGNING]
+            == SettingValue.ENABLED,
         )
         if response.status == StatusWord.SWO_SUCCESS:
             _debug_settings_apdu_supported_by_backend[backend] = True
@@ -175,7 +184,7 @@ def settings_set(
         pytest.skip(
             "Cannot apply app settings in this run: debug settings APDU is unavailable "
             "(likely non-DEBUG build) and navigation is disabled (--no-nav). Requested "
-            "expert-mode/silent-export settings cannot be applied."
+            "expert-mode/silent-export/blind-signing settings cannot be applied."
         )
 
     settings_to_toggle = [

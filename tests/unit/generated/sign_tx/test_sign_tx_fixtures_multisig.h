@@ -104,6 +104,7 @@ static const tx_fixture_t FIXTURE_MULTISIG_SIGN_TX_WITHOUT_CHANGE_ADDRESS_WITH_S
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_NETWORK_UNUSUAL) | ((warning_bits_t)1 << WARNING_BIT_OUTPUT_MISSING_DATUM),
 };
 
@@ -178,6 +179,7 @@ static const tx_fixture_t FIXTURE_MULTISIG_SIGN_TX_WITH_SCRIPT_BASED_WITHDRAWAL 
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -251,6 +253,7 @@ static const tx_fixture_t FIXTURE_MULTISIG_SIGN_TX_WITH_A_STAKE_REGISTRATION_SCR
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -326,6 +329,7 @@ static const tx_fixture_t FIXTURE_MULTISIG_SIGN_TX_WITH_A_STAKE_DELEGATION_SCRIP
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -399,6 +403,7 @@ static const tx_fixture_t FIXTURE_MULTISIG_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_S
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -479,6 +484,7 @@ static const tx_fixture_t FIXTURE_MULTISIG_SIGN_TX_WITH_MINT_KEY_WITNESS_IN_MULT
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_NETWORK_UNUSUAL) | ((warning_bits_t)1 << WARNING_BIT_OUTPUT_MISSING_DATUM),
 };
 

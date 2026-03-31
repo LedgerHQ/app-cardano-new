@@ -1277,12 +1277,15 @@ class CommandBuilder:
             InsType.INS_SIGN_TX, P1Type.P1_TX_SIGN_WITNESS, P2Type.P2_UNUSED, data
         )
 
-    def debug_set_settings(self, expert_mode: bool, silent_export: bool) -> bytes:
+    def debug_set_settings(
+        self, expert_mode: bool, silent_export: bool, blind_signing: bool
+    ) -> bytes:
         """Build debug settings APDU (only works with DEBUG builds).
 
         Args:
             expert_mode: True to enable expert mode, False to disable
             silent_export: True to enable silent pubkey export, False to disable
+            blind_signing: True to enable blind signing, False to disable
 
         Returns:
             Serialized APDU command
@@ -1290,6 +1293,7 @@ class CommandBuilder:
         data = bytearray()
         data.append(SETTINGS_ENABLED if expert_mode else SETTINGS_DISABLED)
         data.append(SETTINGS_ENABLED if silent_export else SETTINGS_DISABLED)
+        data.append(SETTINGS_ENABLED if blind_signing else SETTINGS_DISABLED)
         return self._serialize(
             InsType.INS_DEBUG_SET_SETTINGS,
             P1Type.P1_UNUSED,

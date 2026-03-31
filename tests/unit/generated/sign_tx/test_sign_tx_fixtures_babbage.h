@@ -112,6 +112,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_SHORT_INLINE_DATUM_IN_OUT
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL),
 };
 
@@ -218,6 +219,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_480_B_I
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL),
 };
 
@@ -317,6 +319,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_304_B_I
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL),
 };
 
@@ -393,6 +396,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SHORT_REF_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -483,6 +487,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_REF_SCRIPT
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -577,6 +582,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SCRIPT_REF
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -655,6 +661,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_WITH
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -743,6 +750,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTP
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -823,6 +831,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL),
 };
 
@@ -897,6 +906,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL),
 };
 
@@ -974,6 +984,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL),
 };
 
@@ -1052,6 +1063,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_STAKING_PATH_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL),
 };
 
@@ -1129,6 +1141,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL),
 };
 
@@ -1212,6 +1225,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_COLLATERAL_OUTPUT_WARNING),
 };
 
@@ -1295,6 +1309,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -1388,6 +1403,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUT
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL),
 };
 
@@ -1481,6 +1497,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUT
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -1555,6 +1572,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_WITH_DEVICE_OWNED_OUTPUT_WITH_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -1648,6 +1666,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_P
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -1724,6 +1743,7 @@ static const tx_fixture_t FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_P
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 

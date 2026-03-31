@@ -122,7 +122,7 @@ bool format_token_amount_mint(const uint8_t* policyId,
     explicit_bzero(out, outSize);
 
     out[0] = (amount >= 0)
-                 ? ' ' // + sign instead of the space would be nice, but is unreadable on Nano
+                 ? ' ' // + sign instead of the space would be nice, but is unreadable on Nano devices, bad font
                  : '-';
     out[1] = '\0';
 

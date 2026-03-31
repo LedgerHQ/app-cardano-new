@@ -124,6 +124,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_C
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -212,6 +213,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_D
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -300,6 +302,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_S
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -379,6 +382,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_C
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
@@ -455,6 +459,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_C
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
@@ -531,6 +536,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_D
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
@@ -610,6 +616,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_D
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
@@ -682,6 +689,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_MULTISIG_TX_WITH_SCRIPT_HASH_VOT
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -761,6 +769,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_S
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
@@ -857,6 +866,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_S
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -982,6 +992,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_M
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -1083,6 +1094,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_M
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
@@ -1174,6 +1186,7 @@ static const tx_fixture_t FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_E
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_EMPTY_ANCHOR_URL),
 };
 

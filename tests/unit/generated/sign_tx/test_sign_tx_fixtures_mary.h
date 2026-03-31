@@ -112,6 +112,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_OUTPUT = {
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -200,6 +201,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT 
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -276,6 +278,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_BIG_NUMBERS = {
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_HIGH_FEE),
 };
 
@@ -355,6 +358,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT =
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -427,6 +431,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_IN
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -506,6 +511,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES =
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -583,6 +589,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMO
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_NETWORK_NOT_VERIFIABLE),
 };
 
@@ -662,6 +669,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES = {
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -750,6 +758,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIEL
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -839,6 +848,7 @@ static const tx_fixture_t FIXTURE_MARY_SIGN_TX_WITH_MINT_KEY_WITNESS_IN_ORDINARY
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_NETWORK_NOT_VERIFIABLE),
 };
 

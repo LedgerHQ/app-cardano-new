@@ -369,6 +369,26 @@ static void test_sign_tx_full_test_for_trezor_feature_parity_reject_tx_expert_on
     run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY, true);
 }
 
+static void test_sign_tx_blind_signing_enabled_without_prompt_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_BLIND_SIGNING_ENABLED_WITHOUT_PROMPT, false);
+}
+
+static void test_sign_tx_blind_signing_enabled_without_prompt_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_BLIND_SIGNING_ENABLED_WITHOUT_PROMPT, false);
+}
+
+static void test_sign_tx_blind_signing_enabled_without_prompt_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_BLIND_SIGNING_ENABLED_WITHOUT_PROMPT, true);
+}
+
+static void test_sign_tx_blind_signing_enabled_without_prompt_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_BLIND_SIGNING_ENABLED_WITHOUT_PROMPT, true);
+}
+
 static void test_sign_tx_with_multidelegation_keys_in_all_tx_elements_expert_off(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MULTIDELEGATION_KEYS_IN_ALL_TX_ELEMENTS, false);
@@ -459,6 +479,10 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_full_test_for_trezor_feature_parity_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_full_test_for_trezor_feature_parity_expert_on),
         cmocka_unit_test(test_sign_tx_full_test_for_trezor_feature_parity_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_blind_signing_enabled_without_prompt_expert_off),
+        cmocka_unit_test(test_sign_tx_blind_signing_enabled_without_prompt_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_blind_signing_enabled_without_prompt_expert_on),
+        cmocka_unit_test(test_sign_tx_blind_signing_enabled_without_prompt_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_multidelegation_keys_in_all_tx_elements_expert_off),
         cmocka_unit_test(test_sign_tx_with_multidelegation_keys_in_all_tx_elements_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_multidelegation_keys_in_all_tx_elements_expert_on),

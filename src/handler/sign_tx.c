@@ -12,6 +12,7 @@
 #include "cardano_constants.h"
 #include "cardano_parsers.h"
 #include "cardano_swo.h"
+#include "cardano_settings.h"
 #include "globals.h"
 #include "messageSigning.h"
 #include "io.h"
@@ -552,19 +553,25 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 
             LEDGER_ASSERT(tx_body_ctx()->total_ui_pairs > 0, "Invalid UI plan");
 
-            bool tx_ui_prepared = tx_render_ui_all();
-            if (!tx_ui_prepared) {
-                // LCOV_EXCL_START
-                // tx_render_ui_all failure requires memory exhaustion unreachable in unit tests
-                tx_review_cleanup();
-                TRACE("TX UI preparation failed");
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
-                return;
-                // LCOV_EXCL_STOP
+            bool requires_blind_signing_choice =
+                is_blind_signing_enabled() &&
+                tx_body_ctx()->total_ui_pairs >= LONG_TX_REVIEW_THRESHOLD;
+
+            if (requires_blind_signing_choice) {
+                tx_body_ctx()->review_mode = TX_UI_REVIEW_MODE_PENDING_BLIND_SIGNING_CHOICE;
+                G_context.state.tx_state = TX_STATE_UI_REVIEW;
+            } else {
+                if (!tx_render_ui_or_fail(TX_UI_REVIEW_MODE_DETAILS)) {
+                    return;
+                }
             }
 
             apdu_response_deferred();
-            ui_display_transaction();
+            if (requires_blind_signing_choice) {
+                ui_display_blind_signing_choice();
+            } else {
+                ui_display_transaction();
+            }
             return;
 
         default:

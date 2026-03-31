@@ -37,6 +37,11 @@ static inline bool test_mem_init(void) {
 }
 extern bool unit_test_expert_mode_enabled;
 
+static inline bool fixture_blind_signing_enabled(const tx_fixture_t *fixture) {
+    LEDGER_ASSERT(fixture != NULL, "NULL fixture");
+    return fixture->blind_signing_mode != BLIND_SIGNING_MODE_DISABLED;
+}
+
 static inline void run_sign_tx_apdu(buffer_t *buffer, uint8_t p1) {
     apdu_response_begin(INS_SIGN_TX);
     handler_sign_tx(buffer, p1);
@@ -310,10 +315,14 @@ static inline void run_fixture(const tx_fixture_t *fixture) {
 
 static inline void run_fixture_with_expert_mode(const tx_fixture_t *fixture, bool expert_mode) {
     extern bool unit_test_expert_mode_enabled;
+    extern bool unit_test_blind_signing_enabled;
     const bool previous_mode = unit_test_expert_mode_enabled;
+    const bool previous_blind_signing_enabled = unit_test_blind_signing_enabled;
     unit_test_expert_mode_enabled = expert_mode;
+    unit_test_blind_signing_enabled = fixture_blind_signing_enabled(fixture);
     run_fixture(fixture);
     unit_test_expert_mode_enabled = previous_mode;
+    unit_test_blind_signing_enabled = previous_blind_signing_enabled;
 }
 
 static inline bool fixture_has_cvote_aux_data(const tx_fixture_t *fixture) {
@@ -337,8 +346,11 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
     }
 
     extern bool unit_test_expert_mode_enabled;
+    extern bool unit_test_blind_signing_enabled;
     const bool previous_mode = unit_test_expert_mode_enabled;
+    const bool previous_blind_signing_enabled = unit_test_blind_signing_enabled;
     unit_test_expert_mode_enabled = expert_mode;
+    unit_test_blind_signing_enabled = fixture_blind_signing_enabled(fixture);
 
     reset_context();
     assert_true(test_mem_init());
@@ -401,8 +413,20 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
     }
 
     if (reject_stage == REJECT_STAGE_TX) {
-        const bool final_decisions[] = {false};
-        nbgl_mock_set_final_decisions(final_decisions, ARRAY_LEN(final_decisions));
+        bool final_decisions[2] = {false, false};
+        size_t final_decision_count = 1;
+
+        if (fixture->blind_signing_mode == BLIND_SIGNING_MODE_PROMPT_REVIEW_FULL) {
+            final_decisions[0] = true;
+            final_decisions[1] = false;
+            final_decision_count = 2;
+        } else if (fixture->blind_signing_mode == BLIND_SIGNING_MODE_PROMPT_REVIEW_HASH) {
+            final_decisions[0] = false;
+            final_decisions[1] = false;
+            final_decision_count = 2;
+        }
+
+        nbgl_mock_set_final_decisions(final_decisions, final_decision_count);
     }
 
     // Enable streaming auto-complete for TX body review (after aux data processing).
@@ -416,6 +440,7 @@ expected_failure_assertions:
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
 
     unit_test_expert_mode_enabled = previous_mode;
+    unit_test_blind_signing_enabled = previous_blind_signing_enabled;
 }
 
 static inline void run_fixture_reject_tx_with_expert_mode(const tx_fixture_t *fixture,
@@ -440,8 +465,11 @@ static inline void run_fixture_reject_streaming_start_with_expert_mode(const tx_
     LEDGER_ASSERT(fixture != NULL, "NULL fixture");
 
     extern bool unit_test_expert_mode_enabled;
+    extern bool unit_test_blind_signing_enabled;
     const bool previous_mode = unit_test_expert_mode_enabled;
+    const bool previous_blind_signing_enabled = unit_test_blind_signing_enabled;
     unit_test_expert_mode_enabled = expert_mode;
+    unit_test_blind_signing_enabled = fixture_blind_signing_enabled(fixture);
 
     reset_context();
     assert_true(test_mem_init());
@@ -465,6 +493,7 @@ static inline void run_fixture_reject_streaming_start_with_expert_mode(const tx_
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
 
     unit_test_expert_mode_enabled = previous_mode;
+    unit_test_blind_signing_enabled = previous_blind_signing_enabled;
 }
 
 /**
@@ -478,8 +507,11 @@ static inline void run_fixture_reject_streaming_continue_with_expert_mode(
     LEDGER_ASSERT(fixture != NULL, "NULL fixture");
 
     extern bool unit_test_expert_mode_enabled;
+    extern bool unit_test_blind_signing_enabled;
     const bool previous_mode = unit_test_expert_mode_enabled;
+    const bool previous_blind_signing_enabled = unit_test_blind_signing_enabled;
     unit_test_expert_mode_enabled = expert_mode;
+    unit_test_blind_signing_enabled = fixture_blind_signing_enabled(fixture);
 
     reset_context();
     assert_true(test_mem_init());
@@ -504,6 +536,67 @@ static inline void run_fixture_reject_streaming_continue_with_expert_mode(
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
 
     unit_test_expert_mode_enabled = previous_mode;
+    unit_test_blind_signing_enabled = previous_blind_signing_enabled;
+}
+
+static inline void run_fixture_blind_signing_hash_only_with_expert_mode(
+    const tx_fixture_t *fixture,
+    bool expert_mode) {
+    LEDGER_ASSERT(fixture != NULL, "NULL fixture");
+    LEDGER_ASSERT(fixture->blind_signing_mode == BLIND_SIGNING_MODE_PROMPT_REVIEW_HASH,
+                  "Blind-signing hash-only path requires hash-only prompt fixture");
+
+    extern bool unit_test_expert_mode_enabled;
+    extern bool unit_test_blind_signing_enabled;
+    const bool previous_mode = unit_test_expert_mode_enabled;
+    const bool previous_blind_signing_enabled = unit_test_blind_signing_enabled;
+    unit_test_expert_mode_enabled = expert_mode;
+    unit_test_blind_signing_enabled = true;
+
+    reset_context();
+    assert_true(test_mem_init());
+
+    const bool final_decisions[] = {false, true};
+    nbgl_mock_set_final_decisions(final_decisions, ARRAY_LEN(final_decisions));
+
+    uint8_t init_raw[512];
+    uint8_t aux_data_hash[AUX_DATA_HASH_LENGTH] = {0};
+    size_t aux_hash_len = 0;
+    if (fixture->include_aux_data_hash && fixture->aux_data_type == AUX_DATA_TYPE_ARBITRARY_HASH) {
+        assert_non_null(fixture->aux_data_hash_hex);
+        aux_hash_len = hex_to_bytes(fixture->aux_data_hash_hex, aux_data_hash, sizeof(aux_data_hash));
+        assert_int_equal(aux_hash_len, AUX_DATA_HASH_LENGTH);
+    }
+
+    init_apdu_params_t params = build_init_params_from_fixture(fixture, aux_data_hash, aux_hash_len);
+    size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
+    assert_true(init_len > 0);
+
+    run_tx_and_verify(init_raw,
+                      init_len,
+                      fixture->raw_tx,
+                      fixture->raw_tx_len,
+                      fixture->include_aux_data_hash,
+                      fixture->aux_data_type,
+                      fixture->aux_data_init_payload,
+                      fixture->aux_data_init_payload_len,
+                      fixture->aux_data_delegations,
+                      fixture->aux_data_delegation_count,
+                      fixture->tx_body_cbor_hex,
+                      fixture->expected_hash_hex,
+                      fixture->num_witnesses,
+                      fixture->witness_payloads,
+                      fixture->witness_payload_count,
+                      fixture->include_ttl,
+                      fixture->include_validity_interval_start,
+                      fixture->expected_warning_bits,
+                      fixture->name,
+                      g_last_response,
+                      &g_last_response_len,
+                      &g_last_response_sw);
+
+    unit_test_expert_mode_enabled = previous_mode;
+    unit_test_blind_signing_enabled = previous_blind_signing_enabled;
 }
 
 // Free heap-allocated tx buffers and reset the UI pair count.

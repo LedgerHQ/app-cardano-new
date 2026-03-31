@@ -118,6 +118,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_A_STAKE_REGISTRATION_PATH_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -204,6 +205,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_PAT
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -301,6 +303,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_VOTE_DELEGATION_CERTIFICAT
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -408,6 +411,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_STAKE_POOL_AND_DREP_DELEGA
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -496,6 +500,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEG
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -584,6 +589,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEG
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -674,6 +680,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEG
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -854,6 +861,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_ALL_CERTIFICATES_EXCEPT_PO
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -948,6 +956,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_AUTHORIZE_COMMITTEE_HOT_CE
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -1046,6 +1055,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_CERT
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -1121,6 +1131,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
@@ -1213,6 +1224,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_DREP_REGISTRATION_CERTIFIC
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -1299,6 +1311,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_DREP_DEREGISTRATION_CERTIF
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -1390,6 +1403,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_DREP_UPDATE_CERTIFICATES =
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -1473,6 +1487,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_MIXED_SCRIPT_HASH_CERTIFIC
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 
@@ -1589,6 +1604,7 @@ static const tx_fixture_t FIXTURE_CONWAY_SIGN_TX_WITH_MISSING_SCRIPT_HASH_CONWAY
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL) | ((warning_bits_t)1 << WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH),
 };
 

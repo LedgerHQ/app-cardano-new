@@ -82,6 +82,7 @@ from tests.unit.generators.deny_fixture_generators.cvote_deny_generators import 
 from tests.unit.generators.test_runner_generators.sign_tx_test_runner_generators import (
     generate_tx_test_runners,
     fixture_has_cvote_aux_data,
+    fixture_has_blind_signing_hash_only_path,
 )
 
 from tests.unit.generators.test_runner_generators.derive_address_test_runner_generators import (
@@ -166,6 +167,7 @@ def _count_sign_tx_fine_grained_entries_from_fixtures() -> int:
     This mirrors tx runner generation granularity:
     - 4 entries per tx fixture (approve/reject-tx x expert-off/on)
     - +2 entries when fixture has CIP36 aux data (reject-aux x expert-off/on)
+    - +2 entries when fixture has a blind-signing hash-only path (x expert-off/on)
     - plus deny fixtures from SIGN_TX_DENY_FIXTURES
     """
     total_entries = 0
@@ -185,6 +187,8 @@ def _count_sign_tx_fine_grained_entries_from_fixtures() -> int:
             fixture_body = fixture_match.group(2)
             total_entries += 4
             if fixture_has_cvote_aux_data(fixture_body):
+                total_entries += 2
+            if fixture_has_blind_signing_hash_only_path(fixture_body):
                 total_entries += 2
 
     total_entries += _count_sign_tx_deny_fixtures()

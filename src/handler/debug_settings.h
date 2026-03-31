@@ -17,6 +17,7 @@
  * @param[in] buf Buffer containing settings data:
  *                - byte 0: expert_mode_enabled (0x00 = off, 0x01 = on)
  *                - byte 1: silent_pubkey_export_enabled (0x00 = off, 0x01 = on)
+ *                - byte 2: blind_signing_enabled (0x00 = off, 0x01 = on)
  */
 void handler_debug_set_settings(const buffer_t *buf);
 

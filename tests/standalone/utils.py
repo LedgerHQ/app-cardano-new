@@ -15,7 +15,11 @@ from bip_utils.bip.bip32.bip32_path import Bip32Path, Bip32PathParser
 
 from ragger.bip import calculate_public_key_and_chaincode, CurveChoice
 from ragger.navigator import Navigator, NavInsID, NavIns
-from ragger.navigator.navigation_scenario import NavigateWithScenario
+from ragger.navigator.navigation_scenario import (
+    NavigateWithScenario,
+    NavigationScenarioData,
+    UseCase,
+)
 from ledgered.devices import Device
 
 from ragger.bip.seed import SPECULOS_MNEMONIC
@@ -344,6 +348,7 @@ def review_approve(
     has_warning_screen: bool = False,
     do_comparison: bool = True,
     nano_review_instructions: Sequence[object] | None = None,
+    screen_change_before_first_instruction: bool = True,
 ) -> None:
     if has_warning_screen or warnings:
         _review_approve_with_warning(
@@ -357,11 +362,37 @@ def review_approve(
         return
 
     if not ctx.is_nano:
-        ctx.scenario_navigator.review_approve(
-            test_name=test_name,
-            custom_screen_text=target_text,
-            do_comparison=do_comparison,
-        )
+        if screen_change_before_first_instruction:
+            ctx.scenario_navigator.review_approve(
+                test_name=test_name,
+                custom_screen_text=target_text,
+                do_comparison=do_comparison,
+            )
+        else:
+            scenario = NavigationScenarioData(
+                ctx.device, ctx.navigator._backend, UseCase.TX_REVIEW, True
+            )
+            if target_text is not None:
+                scenario.pattern = target_text
+
+            screen_change_after_last_instruction = (
+                scenario.post_validation_spinner is None
+            )
+            _navigate_until_text_optional_compare(
+                ctx,
+                test_name=test_name,
+                navigate_instruction=scenario.navigation,
+                validation_instructions=scenario.validation,
+                text=scenario.pattern,
+                do_comparison=do_comparison,
+                screen_change_before_first_instruction=False,
+                screen_change_after_last_instruction=screen_change_after_last_instruction,
+            )
+
+            if scenario.post_validation_spinner is not None:
+                ctx.navigator._backend.wait_for_text_on_screen(
+                    scenario.post_validation_spinner
+                )
         return
 
     if target_text is not None:
@@ -374,6 +405,7 @@ def review_approve(
             ),
             text=target_text,
             do_comparison=do_comparison,
+            screen_change_before_first_instruction=screen_change_before_first_instruction,
         )
         return
 
@@ -386,17 +418,25 @@ def review_approve(
         ),
         text=_REJECT_TEXT,
         do_comparison=do_comparison,
+        screen_change_before_first_instruction=screen_change_before_first_instruction,
     )
 
 
 def choice_approve(
-    ctx: NavContext, test_name: str, confirm_text: str, do_comparison: bool = True
+    ctx: NavContext,
+    test_name: str,
+    confirm_text: str,
+    do_comparison: bool = True,
+    dismiss_status: bool = True,
 ) -> None:
     if not ctx.is_nano:
+        instructions = [NavInsID.USE_CASE_CHOICE_CONFIRM]
+        if dismiss_status:
+            instructions.append(NavInsID.USE_CASE_STATUS_DISMISS)
         _navigate_maybe_compare(
             ctx,
             test_name,
-            [NavInsID.USE_CASE_CHOICE_CONFIRM, NavInsID.USE_CASE_STATUS_DISMISS],
+            instructions,
             do_comparison,
         )
         return
@@ -407,6 +447,35 @@ def choice_approve(
         navigate_instruction=NavInsID.RIGHT_CLICK,
         validation_instructions=NANO_CHOICE_CONFIRM_INSTRUCTIONS,
         text=confirm_text,
+        do_comparison=do_comparison,
+    )
+
+
+def choice_reject(
+    ctx: NavContext,
+    test_name: str,
+    reject_text: str,
+    do_comparison: bool = True,
+    dismiss_status: bool = True,
+) -> None:
+    if not ctx.is_nano:
+        instructions = [NavInsID.USE_CASE_CHOICE_REJECT]
+        if dismiss_status:
+            instructions.append(NavInsID.USE_CASE_STATUS_DISMISS)
+        _navigate_maybe_compare(
+            ctx,
+            test_name,
+            instructions,
+            do_comparison,
+        )
+        return
+
+    _navigate_until_text_optional_compare(
+        ctx,
+        test_name=test_name,
+        navigate_instruction=NavInsID.RIGHT_CLICK,
+        validation_instructions=[NavInsID.LEFT_CLICK, NavInsID.BOTH_CLICK],
+        text=reject_text,
         do_comparison=do_comparison,
     )
 

@@ -292,7 +292,9 @@ class CommandSender:
         """
         return self._exchange(self._cmd_builder.sign_tx_witness(path))
 
-    def set_debug_settings(self, expert_mode: bool, silent_export: bool) -> RAPDU:
+    def set_debug_settings(
+        self, expert_mode: bool, silent_export: bool, blind_signing: bool
+    ) -> RAPDU:
         """Set app settings via debug APDU (only works with DEBUG builds).
 
         This is a debug-only command that allows tests to programmatically set
@@ -302,43 +304,59 @@ class CommandSender:
         Args:
             expert_mode: True to enable expert mode, False to disable
             silent_export: True to enable silent pubkey export, False to disable
+            blind_signing: True to enable blind signing, False to disable
 
         Returns:
-            Response APDU with current settings as confirmation (2 bytes)
+            Response APDU with current settings as confirmation (3 bytes)
 
         Raises:
             AssertionError: If the command fails or returns unexpected status
         """
-        response = self.try_set_debug_settings(expert_mode, silent_export)
+        response = self.try_set_debug_settings(
+            expert_mode, silent_export, blind_signing
+        )
 
         if response.status != StatusWord.SWO_SUCCESS:
             raise AssertionError(f"Debug set settings failed: {hex(response.status)}")
 
-        # Verify response contains 2 bytes (current settings)
-        if len(response.data) != 2:
+        # Verify response contains 3 bytes (current settings)
+        if len(response.data) != 3:
             raise AssertionError(
-                f"Expected 2 bytes in response, got {len(response.data)}"
+                f"Expected 3 bytes in response, got {len(response.data)}"
             )
 
         # Verify settings were applied correctly
         actual_expert = response.data[0]
         actual_silent = response.data[1]
+        actual_blind_signing = response.data[2]
         expected_expert = SETTINGS_ENABLED if expert_mode else SETTINGS_DISABLED
         expected_silent = SETTINGS_ENABLED if silent_export else SETTINGS_DISABLED
+        expected_blind_signing = (
+            SETTINGS_ENABLED if blind_signing else SETTINGS_DISABLED
+        )
 
-        if actual_expert != expected_expert or actual_silent != expected_silent:
+        if (
+            actual_expert != expected_expert
+            or actual_silent != expected_silent
+            or actual_blind_signing != expected_blind_signing
+        ):
             raise AssertionError(
-                f"Settings mismatch: expected expert={expected_expert}, silent={expected_silent}, "
-                f"got expert={actual_expert}, silent={actual_silent}"
+                "Settings mismatch: "
+                f"expected expert={expected_expert}, silent={expected_silent}, blind={expected_blind_signing}, "
+                f"got expert={actual_expert}, silent={actual_silent}, blind={actual_blind_signing}"
             )
 
         return response
 
-    def try_set_debug_settings(self, expert_mode: bool, silent_export: bool) -> RAPDU:
+    def try_set_debug_settings(
+        self, expert_mode: bool, silent_export: bool, blind_signing: bool
+    ) -> RAPDU:
         """Send the debug settings APDU and return the raw response."""
         try:
             return self._exchange(
-                self._cmd_builder.debug_set_settings(expert_mode, silent_export)
+                self._cmd_builder.debug_set_settings(
+                    expert_mode, silent_export, blind_signing
+                )
             )
         except ExceptionRAPDU as err:
             return RAPDU(data=err.data, status=err.status)

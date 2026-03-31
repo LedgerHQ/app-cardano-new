@@ -147,6 +147,11 @@ def _bool_to_c(value: bool) -> str:
     return "true" if value else "false"
 
 
+def _blind_signing_mode_to_c_enum(blind_signing_mode: Any) -> str:
+    blind_signing_mode_name = getattr(blind_signing_mode, "name", "DISABLED")
+    return f"BLIND_SIGNING_MODE_{blind_signing_mode_name}"
+
+
 def _cbor_hex_to_bytes(hex_str: str) -> bytes:
     return bytes.fromhex(hex_str.replace(" ", "").replace("\n", ""))
 
@@ -487,6 +492,10 @@ def _generate_fixtures_for_era(
         else:
             header_lines.append("    .aux_data_hash_hex = NULL,")
         header_lines.append(f"    .options = {options_value},")
+        header_lines.append(
+            "    .blind_signing_mode = "
+            f"{_blind_signing_mode_to_c_enum(getattr(test_case, 'blind_signing_mode', None))},"
+        )
 
         expected_warnings = getattr(test_case, "expected_warnings", [])
         if expected_warnings:

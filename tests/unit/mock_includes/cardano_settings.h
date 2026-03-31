@@ -17,6 +17,7 @@ enum {
 
 extern bool unit_test_expert_mode_enabled;
 extern bool unit_test_silent_pubkey_export_enabled;
+extern bool unit_test_blind_signing_enabled;
 
 static inline uint8_t flip_bool_setting(uint8_t value)
 {
@@ -39,4 +40,9 @@ static inline bool is_expert_mode()
 static inline bool is_silent_pubkey_export_allowed()
 {
     return unit_test_silent_pubkey_export_enabled;
+}
+
+static inline bool is_blind_signing_enabled()
+{
+    return unit_test_blind_signing_enabled;
 }

@@ -26,6 +26,9 @@ _FIXTURE_PATTERN = re.compile(
 _NAME_FIELD_PATTERN = re.compile(r'\.name\s*=\s*"([^"]+)"')
 AUX_INCLUDED_PATTERN = re.compile(r"\.include_aux_data_hash\s*=\s*(true|false)")
 AUX_TYPE_PATTERN = re.compile(r"\.aux_data_type\s*=\s*([A-Z0-9_]+|\d+)")
+BLIND_SIGNING_MODE_PATTERN = re.compile(
+    r"\.blind_signing_mode\s*=\s*(BLIND_SIGNING_MODE_[A-Z_]+|\d+)"
+)
 
 
 ERA_COMMENT_OVERRIDES = {
@@ -99,12 +102,36 @@ def fixture_has_cvote_aux_data(fixture_body: str) -> bool:
     }
 
 
+def fixture_has_blind_signing_prompt(fixture_body: str) -> bool:
+    blind_signing_mode_match = BLIND_SIGNING_MODE_PATTERN.search(fixture_body)
+    if blind_signing_mode_match is None:
+        return False
+
+    return blind_signing_mode_match.group(1) in {
+        "BLIND_SIGNING_MODE_PROMPT_REVIEW_HASH",
+        "BLIND_SIGNING_MODE_PROMPT_REVIEW_FULL",
+    }
+
+
+def fixture_has_blind_signing_hash_only_path(fixture_body: str) -> bool:
+    blind_signing_mode_match = BLIND_SIGNING_MODE_PATTERN.search(fixture_body)
+    if blind_signing_mode_match is None:
+        return False
+
+    return blind_signing_mode_match.group(1) == "BLIND_SIGNING_MODE_PROMPT_REVIEW_HASH"
+
+
 def _build_test_functions(
-    fixtures: Sequence[tuple[str, str, bool]],
+    fixtures: Sequence[tuple[str, str, bool, bool]],
 ) -> tuple[list[str], list[str]]:
     functions: list[str] = []
     names: list[str] = []
-    for fixture_name, display_name, has_cvote_aux_data in fixtures:
+    for (
+        fixture_name,
+        display_name,
+        has_cvote_aux_data,
+        has_blind_signing_hash_only_path,
+    ) in fixtures:
         func_suffix = sanitize_c_identifier(display_name, uppercase=False)
         if not func_suffix:
             raise ValueError(f"Unable to sanitize fixture name {display_name}")
@@ -149,6 +176,23 @@ def _build_test_functions(
                     )
                 )
                 names.append(reject_aux_function_name)
+
+            if has_blind_signing_hash_only_path:
+                blind_signing_hash_only_function_name = (
+                    f"{test_name}_blind_signing_hash_only_{suffix}"
+                )
+                functions.append(
+                    "static void {function_name}(void **state) {{\n"
+                    "    (void) state;\n"
+                    "    run_fixture_blind_signing_hash_only_with_expert_mode("
+                    "&{fixture_name}, {expert_flag});\n"
+                    "}}".format(
+                        function_name=blind_signing_hash_only_function_name,
+                        fixture_name=fixture_name,
+                        expert_flag=expert_flag,
+                    )
+                )
+                names.append(blind_signing_hash_only_function_name)
     return functions, names
 
 
@@ -170,9 +214,9 @@ def _build_main_function(test_names: Sequence[str], test_c_file: str) -> str:
     )
 
 
-def _extract_fixtures_from_header(fixture_path: Path) -> list[tuple[str, str, bool]]:
+def _extract_fixtures_from_header(fixture_path: Path) -> list[tuple[str, str, bool, bool]]:
     content = read_file_safe(fixture_path)
-    fixtures: list[tuple[str, str, bool]] = []
+    fixtures: list[tuple[str, str, bool, bool]] = []
     for match in _FIXTURE_PATTERN.finditer(content):
         fixture_name = match.group(1)
         body = match.group(2)
@@ -180,7 +224,14 @@ def _extract_fixtures_from_header(fixture_path: Path) -> list[tuple[str, str, bo
         if not name_match:
             continue
         display_name = name_match.group(1)
-        fixtures.append((fixture_name, display_name, fixture_has_cvote_aux_data(body)))
+        fixtures.append(
+            (
+                fixture_name,
+                display_name,
+                fixture_has_cvote_aux_data(body),
+                fixture_has_blind_signing_hash_only_path(body),
+            )
+        )
     return fixtures
 
 
@@ -248,9 +299,11 @@ def _generate_complete_test_file(
 
     test_functions, test_names = _build_test_functions(fixtures)
     expected_test_count = 0
-    for _, _, has_cvote_aux_data in fixtures:
+    for _, _, has_cvote_aux_data, has_blind_signing_hash_only_path in fixtures:
         expected_test_count += 4
         if has_cvote_aux_data:
+            expected_test_count += 2
+        if has_blind_signing_hash_only_path:
             expected_test_count += 2
     if len(test_names) != expected_test_count:
         raise ValueError(

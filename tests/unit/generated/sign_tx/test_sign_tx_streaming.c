@@ -109,6 +109,106 @@ static void test_sign_tx_streaming_many_outputs_reject_tx_expert_on(void **state
     run_fixture_reject_tx_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_STREAMING_MANY_OUTPUTS, true);
 }
 
+static void test_sign_tx_blind_signing_prompt_many_outputs_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_MANY_OUTPUTS, false);
+}
+
+static void test_sign_tx_blind_signing_prompt_many_outputs_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_MANY_OUTPUTS, false);
+}
+
+static void test_sign_tx_blind_signing_prompt_many_outputs_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_MANY_OUTPUTS, true);
+}
+
+static void test_sign_tx_blind_signing_prompt_many_outputs_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_MANY_OUTPUTS, true);
+}
+
+static void test_sign_tx_blind_signing_prompt_many_outputs_hash_only_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_MANY_OUTPUTS_HASH_ONLY, false);
+}
+
+static void test_sign_tx_blind_signing_prompt_many_outputs_hash_only_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_MANY_OUTPUTS_HASH_ONLY, false);
+}
+
+static void test_sign_tx_blind_signing_prompt_many_outputs_hash_only_blind_signing_hash_only_expert_off(void **state) {
+    (void) state;
+    run_fixture_blind_signing_hash_only_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_MANY_OUTPUTS_HASH_ONLY, false);
+}
+
+static void test_sign_tx_blind_signing_prompt_many_outputs_hash_only_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_MANY_OUTPUTS_HASH_ONLY, true);
+}
+
+static void test_sign_tx_blind_signing_prompt_many_outputs_hash_only_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_MANY_OUTPUTS_HASH_ONLY, true);
+}
+
+static void test_sign_tx_blind_signing_prompt_many_outputs_hash_only_blind_signing_hash_only_expert_on(void **state) {
+    (void) state;
+    run_fixture_blind_signing_hash_only_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_MANY_OUTPUTS_HASH_ONLY, true);
+}
+
+static void test_sign_tx_blind_signing_prompt_streaming_many_outputs_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_STREAMING_MANY_OUTPUTS, false);
+}
+
+static void test_sign_tx_blind_signing_prompt_streaming_many_outputs_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_STREAMING_MANY_OUTPUTS, false);
+}
+
+static void test_sign_tx_blind_signing_prompt_streaming_many_outputs_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_STREAMING_MANY_OUTPUTS, true);
+}
+
+static void test_sign_tx_blind_signing_prompt_streaming_many_outputs_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_STREAMING_MANY_OUTPUTS, true);
+}
+
+static void test_sign_tx_blind_signing_prompt_streaming_many_outputs_hash_only_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_STREAMING_MANY_OUTPUTS_HASH_ONLY, false);
+}
+
+static void test_sign_tx_blind_signing_prompt_streaming_many_outputs_hash_only_reject_tx_expert_off(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_STREAMING_MANY_OUTPUTS_HASH_ONLY, false);
+}
+
+static void test_sign_tx_blind_signing_prompt_streaming_many_outputs_hash_only_blind_signing_hash_only_expert_off(void **state) {
+    (void) state;
+    run_fixture_blind_signing_hash_only_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_STREAMING_MANY_OUTPUTS_HASH_ONLY, false);
+}
+
+static void test_sign_tx_blind_signing_prompt_streaming_many_outputs_hash_only_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_STREAMING_MANY_OUTPUTS_HASH_ONLY, true);
+}
+
+static void test_sign_tx_blind_signing_prompt_streaming_many_outputs_hash_only_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_STREAMING_MANY_OUTPUTS_HASH_ONLY, true);
+}
+
+static void test_sign_tx_blind_signing_prompt_streaming_many_outputs_hash_only_blind_signing_hash_only_expert_on(void **state) {
+    (void) state;
+    run_fixture_blind_signing_hash_only_with_expert_mode(&FIXTURE_STREAMING_SIGN_TX_BLIND_SIGNING_PROMPT_STREAMING_MANY_OUTPUTS_HASH_ONLY, true);
+}
+
 // ======================================================================
 // Main
 // ======================================================================
@@ -127,6 +227,26 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_streaming_many_outputs_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_streaming_many_outputs_expert_on),
         cmocka_unit_test(test_sign_tx_streaming_many_outputs_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_many_outputs_expert_off),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_many_outputs_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_many_outputs_expert_on),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_many_outputs_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_many_outputs_hash_only_expert_off),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_many_outputs_hash_only_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_many_outputs_hash_only_blind_signing_hash_only_expert_off),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_many_outputs_hash_only_expert_on),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_many_outputs_hash_only_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_many_outputs_hash_only_blind_signing_hash_only_expert_on),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_streaming_many_outputs_expert_off),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_streaming_many_outputs_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_streaming_many_outputs_expert_on),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_streaming_many_outputs_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_streaming_many_outputs_hash_only_expert_off),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_streaming_many_outputs_hash_only_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_streaming_many_outputs_hash_only_blind_signing_hash_only_expert_off),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_streaming_many_outputs_hash_only_expert_on),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_streaming_many_outputs_hash_only_reject_tx_expert_on),
+        cmocka_unit_test(test_sign_tx_blind_signing_prompt_streaming_many_outputs_hash_only_blind_signing_hash_only_expert_on),
     };
     return _cmocka_run_group_tests("test_sign_tx_streaming", tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);
 }

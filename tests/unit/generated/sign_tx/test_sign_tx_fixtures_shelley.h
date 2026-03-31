@@ -100,6 +100,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITHOUT_OUTPUTS = {
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_NETWORK_NOT_VERIFIABLE),
 };
 
@@ -168,6 +169,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_258_TAG_ON_INPUTS = {
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = TX_OPTIONS_TAG_CBOR_SETS,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_NETWORK_NOT_VERIFIABLE),
 };
 
@@ -240,6 +242,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITHOUT_CHANGE_ADDRESS = {
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -315,6 +318,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -391,6 +395,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_CHANGE_BASE_ADDRESS_WITH_
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -465,6 +470,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_ENTERPRISE_CHANGE_ADDRESS
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -540,6 +546,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_POINTER_CHANGE_ADDRESS = 
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -612,6 +619,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_NONREASONABLE_ACCOUNT_AND
     .donation = 0,
     .aux_data_hash_hex = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH),
 };
 
@@ -698,6 +706,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_PATH_BASED_WITHDRAWAL = {
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -784,6 +793,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_UNUSUAL_PATH_BASED_WITHDR
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH),
 };
 
@@ -856,6 +866,7 @@ static const tx_fixture_t FIXTURE_SHELLEY_SIGN_TX_WITH_AUXILIARY_DATA_HASH = {
     .donation = 0,
     .aux_data_hash_hex = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 

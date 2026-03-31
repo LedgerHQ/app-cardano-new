@@ -21,6 +21,7 @@ from tests.standalone.utils import (
     idTestFunc,
     review_approve,
     choice_approve,
+    choice_reject,
     nano_navigate_until_text_relaxed,
     NavContext,
 )
@@ -42,6 +43,7 @@ from tests.standalone.input_files.signTx import (  # type: ignore
     testsMultidelegation,
     testsCatalystRegistration,
     testsCVoteRegistrationCIP36,
+    BlindSigningMode,
     testsMultisig,
     poolRegistrationOwnerTestCases,
     poolRegistrationOperatorTestCases,
@@ -185,7 +187,28 @@ def _run_sign_tx_test(
     def review_tx() -> None:
         # Main transaction review
         test_name = f"{testCase.name}-{mode_str}/review"
-        if testCase.tx_streaming:
+        resume_tx_review_from_current_screen = False
+        effective_tx_review_streaming = testCase.tx_streaming
+        if testCase.blind_signing_mode == BlindSigningMode.PROMPT_REVIEW_FULL:
+            choice_approve(
+                nav_ctx,
+                test_name=f"{test_name}/blind_signing",
+                confirm_text=r"^Show details$",
+                do_comparison=False,
+                dismiss_status=False,
+            )
+            resume_tx_review_from_current_screen = True
+        elif testCase.blind_signing_mode == BlindSigningMode.PROMPT_REVIEW_HASH:
+            choice_reject(
+                nav_ctx,
+                test_name=f"{test_name}/blind_signing",
+                reject_text=r"^View hash only$",
+                do_comparison=False,
+                dismiss_status=False,
+            )
+            effective_tx_review_streaming = False
+            resume_tx_review_from_current_screen = True
+        if effective_tx_review_streaming:
             if device.is_nano:
                 nano_navigate_until_text_relaxed(
                     backend=backend,
@@ -193,7 +216,7 @@ def _run_sign_tx_test(
                     navigate_instruction=NavInsID.RIGHT_CLICK,
                     validation_instructions=[NavInsID.BOTH_CLICK],
                     text=r"^Sign transaction$",
-                    screen_change_before_first_instruction=True,
+                    screen_change_before_first_instruction=not resume_tx_review_from_current_screen,
                 )
             else:
                 # Streaming tx review: navigate through intermediate chunks without snapshots,
@@ -202,6 +225,7 @@ def _run_sign_tx_test(
                     navigate_instruction=NavInsID.USE_CASE_REVIEW_NEXT,
                     validation_instructions=[NavInsID.USE_CASE_REVIEW_CONFIRM],
                     text="Sign transaction",
+                    screen_change_before_first_instruction=not resume_tx_review_from_current_screen,
                 )
         elif len(testCase.expected_warnings) > 0:
             review_approve(
@@ -215,6 +239,7 @@ def _run_sign_tx_test(
                 nav_ctx,
                 test_name=test_name,
                 target_text="Sign transaction",
+                screen_change_before_first_instruction=not resume_tx_review_from_current_screen,
             )
 
     def _is_cip36_aux_review_streaming() -> bool:
@@ -455,6 +480,9 @@ def test_sign_tx(
             if expert_mode
             else SettingValue.DISABLED,
             SettingID.SILENT_PUBKEY_EXPORT: SettingValue.ENABLED,
+            SettingID.BLIND_SIGNING: SettingValue.ENABLED
+            if testCase.blind_signing_mode != BlindSigningMode.DISABLED
+            else SettingValue.DISABLED,
         },
         backend=backend,
     )

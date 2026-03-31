@@ -126,6 +126,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIP
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -213,6 +214,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_SINGLE
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -302,6 +304,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIP
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -392,6 +395,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIP
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -483,6 +487,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIP
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -570,6 +575,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_SINGLE
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_POOL_REGISTRATION_NO_RELAYS),
 };
 
@@ -653,6 +659,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTR
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -738,6 +745,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTR
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL),
 };
 
@@ -828,6 +836,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTR
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
@@ -926,6 +935,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTR
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_POOL_REGISTRATION_NO_OWNERS) | ((warning_bits_t)1 << WARNING_BIT_POOL_REGISTRATION_NO_RELAYS),
 };
 
@@ -1025,6 +1035,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTR
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = ((warning_bits_t)1 << WARNING_BIT_POOL_REGISTRATION_NO_RELAYS),
 };
 
@@ -1131,6 +1142,7 @@ static const tx_fixture_t FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_POOL_REGISTR
     .donation = 0,
     .aux_data_hash_hex = NULL,
     .options = 0,
+    .blind_signing_mode = BLIND_SIGNING_MODE_DISABLED,
     .expected_warning_bits = 0,
 };
 
