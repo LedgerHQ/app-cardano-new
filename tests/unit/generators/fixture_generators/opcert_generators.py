@@ -24,7 +24,6 @@ def _load_opcert_test_cases() -> Sequence[object]:
     return opCertTestCases
 
 
-
 def generate_opcert_fixtures() -> None:
     print("Generating opcert fixtures...")
 

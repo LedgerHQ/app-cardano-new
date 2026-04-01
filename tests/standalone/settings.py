@@ -75,7 +75,7 @@ DEFAULT_SETTING_VALUES: dict[SettingID, SettingValue] = {
     SettingID.BLIND_SIGNING: SettingValue.DISABLED,
 }
 
-_known_setting_values_by_backend: "WeakKeyDictionary[BackendInterface, dict[SettingID, SettingValue]]" = WeakKeyDictionary()
+_known_setting_values_by_backend: "WeakKeyDictionary[BackendInterface, dict[SettingID, SettingValue]]" = WeakKeyDictionary()  # pylint: disable=line-too-long
 _debug_settings_apdu_supported_by_backend: "WeakKeyDictionary[BackendInterface, bool]" = WeakKeyDictionary()
 
 

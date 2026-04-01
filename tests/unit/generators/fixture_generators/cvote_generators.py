@@ -22,7 +22,6 @@ def _load_cvote_test_cases() -> List[Any]:
     return cvoteTestCases
 
 
-
 def generate_cvote_fixtures() -> int:
     print("Generating cvote fixtures...")
 

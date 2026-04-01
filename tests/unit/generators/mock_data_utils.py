@@ -110,7 +110,9 @@ def regenerate_mock_data() -> None:
 
     mock_paths_body = mock_paths_match.group(2)
 
-    path_entries = extract_brace_delimited_entries(mock_paths_body, _ENTRY_START_PATTERN)
+    path_entries = extract_brace_delimited_entries(
+        mock_paths_body, _ENTRY_START_PATTERN
+    )
     if not path_entries:
         raise ValueError("No mock path entries were found")
     print(f"Regenerating {len(path_entries)} mock path entries...")
@@ -163,7 +165,6 @@ def regenerate_mock_data() -> None:
         except Exception as exc:
             print(f"ERROR: Failed to derive key for {path_desc}: {exc}")
             sys.exit(1)
-
 
     regenerated_paths = [_build_path_entry(entry) for entry in path_entries]
     new_mock_body = "\n".join(regenerated_paths).rstrip()
@@ -221,7 +222,9 @@ def regenerate_mock_data() -> None:
         )
 
     signature_body = signature_match.group(2)
-    signature_entries = extract_brace_delimited_entries(signature_body, _ENTRY_START_PATTERN)
+    signature_entries = extract_brace_delimited_entries(
+        signature_body, _ENTRY_START_PATTERN
+    )
     if not signature_entries:
         raise ValueError("No mock signature entries were found")
     print(f"\nRegenerating {len(signature_entries)} mock signature entries...")

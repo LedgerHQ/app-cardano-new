@@ -20,6 +20,7 @@ from tests.application_client.command_builder import (
     Transaction,
     TransactionSigningMode,
     TxInput,
+    TxOutputAlonzo,
     TxOutputBabbage,
     TxOutputDestination,
     TxOutputDestinationType,
@@ -37,11 +38,11 @@ class CardanoShelleySwapTests(ExchangeTestRunner):
     currency_configuration = cal.ADA_SHELLEY_CURRENCY_CONFIGURATION
 
     # Valid destination addresses (bech32 mainnet Shelley addresses)
-    valid_destination_1 = "addr1q80r70qggedqy90z4rzy6kynv4xqejxfxqmangwhz8ugalfwlqyt4mswmh4hl0nnq53r4rp798vj4c7p7f2wdgqnc8uqt2xltv"
-    valid_destination_2 = "addr1q84sh2j72ux0l03fxndjnhctdg7hcppsaejafsa84vh7lwgmcs5wgus8qt4atk45lvt4xfxpjtwfhdmvchdf2m3u3hlsd5tq5r"
+    valid_destination_1 = "addr1q80r70qggedqy90z4rzy6kynv4xqejxfxqmangwhz8ugalfwlqyt4mswmh4hl0nnq53r4rp798vj4c7p7f2wdgqnc8uqt2xltv"  # pylint: disable=line-too-long
+    valid_destination_2 = "addr1q84sh2j72ux0l03fxndjnhctdg7hcppsaejafsa84vh7lwgmcs5wgus8qt4atk45lvt4xfxpjtwfhdmvchdf2m3u3hlsd5tq5r"  # pylint: disable=line-too-long
 
     # Refund address (device-owned, derived from Speculos seed at m/1852'/1815'/0'/0/0)
-    valid_refund = "addr1q9kl5z2zd9vakyprvw0g68c8hv0y0rnj93htc82hh2rs8wwmyx0wtn56wnuclkku9hsnal8dtg25a7x56svjn4dlnlmq7quz6p"
+    valid_refund = "addr1q9kl5z2zd9vakyprvw0g68c8hv0y0rnj93htc82hh2rs8wwmyx0wtn56wnuclkku9hsnal8dtg25a7x56svjn4dlnlmq7quz6p"  # pylint: disable=line-too-long
     valid_refund_memo = ""
     valid_destination_memo_1 = ""
     valid_destination_memo_2 = ""
@@ -81,7 +82,9 @@ class CardanoShelleySwapTests(ExchangeTestRunner):
         if data_part is None:
             # Not a valid bech32 address - pass as-is for denial testing
             return destination.encode().hex()
-        destination_bytes = bytes(bech32.convertbits(data_part, 5, 8, False))
+        converted = bech32.convertbits(data_part, 5, 8, False)
+        assert converted is not None, "bech32.convertbits returned None"
+        destination_bytes = bytes(converted)
         return destination_bytes.hex()
 
     def _build_swap_tx(
@@ -97,7 +100,7 @@ class CardanoShelleySwapTests(ExchangeTestRunner):
         input_amount = send_amount * third_party_output_count + fees + 2000000
         change_amount = input_amount - send_amount * third_party_output_count - fees
 
-        outputs = []
+        outputs: list[TxOutputAlonzo | TxOutputBabbage] = []
         for _ in range(third_party_output_count):
             outputs.append(
                 TxOutputBabbage(

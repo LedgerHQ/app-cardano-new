@@ -17,7 +17,6 @@ import re
 from pathlib import Path
 
 from ragger.bip import calculate_public_key_and_chaincode, CurveChoice
-from ragger.backend import BackendInterface
 
 # Standard test mnemonic used in all unit tests
 MNEMONIC = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
@@ -65,17 +64,17 @@ def parse_mock_paths_from_header():
     if not header_file.exists():
         pytest.skip(f"Mock data header not found: {header_file}")
 
-    with open(header_file, "r") as f:
+    with open(header_file, "r", encoding="utf-8") as f:
         content = f.read()
 
     entries = []
 
     # Split content by entries - find each mock path block
-    blocks = re.findall(
-        r'/\* Path "([^"]+)".*?\.path = (\{[^}]+\}).*?\.public_key = (\{[^}]+\}).*?\.chain_code = (\{[^}]+\}).*?\.key_hash = (\{[^}]+\})',
-        content,
-        re.DOTALL,
+    pattern = (
+        r'/\* Path "([^"]+)".*?\.path = (\{[^}]+\}).*?'
+        r"\.public_key = (\{[^}]+\}).*?\.chain_code = (\{[^}]+\}).*?\.key_hash = (\{[^}]+\})"
     )
+    blocks = re.findall(pattern, content, re.DOTALL)
 
     for path_desc, path_array, pubkey_array, chaincode_array, keyhash_array in blocks:
         # Parse the BIP32 path
@@ -99,7 +98,7 @@ def parse_mock_paths_from_header():
     return entries
 
 
-def test_all_mock_key_derivation(backend: BackendInterface) -> None:
+def test_all_mock_key_derivation() -> None:
     """
     Verify that ALL mock path entries match key derivation from test mnemonic.
 

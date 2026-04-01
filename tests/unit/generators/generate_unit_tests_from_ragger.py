@@ -135,6 +135,7 @@ _TX_FIXTURE_PATTERN = re.compile(
     flags=re.DOTALL,
 )
 
+
 def _log_stage(message: str) -> None:
     print(f"\n--- {message} ---")
 
@@ -156,8 +157,6 @@ def _count_sign_tx_deny_fixtures() -> int:
 
     fixture_body = match.group(1)
     return len(_SIGN_TX_DENY_ENTRY_PATTERN.findall(fixture_body))
-
-
 
 
 def _count_sign_tx_fine_grained_entries_from_fixtures() -> int:
@@ -307,7 +306,7 @@ def _candidate_function_names_for_coverage_match(function_name: str) -> set[str]
     if function_name.endswith("_hash"):
         candidate_names.add(function_name[:-5])
     if function_name.startswith("test_sign_tx_"):
-        candidate_names.add("test_" + function_name[len("test_sign_tx_"):])
+        candidate_names.add("test_" + function_name[len("test_sign_tx_") :])
     return candidate_names
 
 
@@ -424,9 +423,13 @@ def _verify_ragger_test_coverage() -> None:
         # Check for collection errors (non-zero return code indicates failure)
         if result.returncode != 0:
             if result.returncode == 5:
-                print("WARNING: pytest returned 5 (no tests collected). Continuing anyway.")
+                print(
+                    "WARNING: pytest returned 5 (no tests collected). Continuing anyway."
+                )
             else:
-                print(f"ERROR: pytest collection failed with return code {result.returncode}")
+                print(
+                    f"ERROR: pytest collection failed with return code {result.returncode}"
+                )
                 if result.stderr:
                     print("STDERR output:")
                     print(result.stderr)
@@ -445,7 +448,9 @@ def _verify_ragger_test_coverage() -> None:
         sys.exit(1)
 
     if not ragger_tests:
-        print("ERROR: No ragger tests found - check that test files are present and importable")
+        print(
+            "ERROR: No ragger tests found - check that test files are present and importable"
+        )
         sys.exit(1)
 
     # Count total test cases (including parameterized variants)
@@ -642,10 +647,10 @@ def _verify_ragger_test_coverage() -> None:
     if missing_coverage:
         print("\n" + "=" * _REPORT_WIDTH)
         print(
-            ("WARNING: "
-             f"{len(missing_coverage)} test function(s) lack unit test coverage").center(
-                _REPORT_WIDTH
-            )
+            (
+                "WARNING: "
+                f"{len(missing_coverage)} test function(s) lack unit test coverage"
+            ).center(_REPORT_WIDTH)
         )
         print("=" * _REPORT_WIDTH)
         for test in missing_coverage:
@@ -677,7 +682,9 @@ def _verify_ragger_test_coverage() -> None:
 
     if mismatched_counts:
         print("\n" + "=" * _REPORT_WIDTH)
-        print("MOCK DATA / COUNTING FAILURE: In-memory counts do not match file parsing.")
+        print(
+            "MOCK DATA / COUNTING FAILURE: In-memory counts do not match file parsing."
+        )
         print("The generator run is unsuccessful until all mismatches are resolved.")
         print("=" * _REPORT_WIDTH)
         sys.exit(1)
@@ -688,7 +695,9 @@ def _verify_ragger_test_coverage() -> None:
         print("=" * _REPORT_WIDTH)
         sys.exit(1)
 
-    print("\n  OK All ragger test functions have unit test coverage and consistent counts")
+    print(
+        "\n  OK All ragger test functions have unit test coverage and consistent counts"
+    )
 
 
 def run_all() -> None:
@@ -720,7 +729,9 @@ def run_all() -> None:
         for gen in cmd.deny_generators:
             count = gen()
             if count is not None:
-                has_deny_runner = any("deny" in r.__name__ for r in cmd.runner_generators)
+                has_deny_runner = any(
+                    "deny" in r.__name__ for r in cmd.runner_generators
+                )
                 if not has_deny_runner:
                     cmd.generated_entries_count += count
 

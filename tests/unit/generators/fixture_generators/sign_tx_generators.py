@@ -51,8 +51,6 @@ def _parse_path_to_words(path: str) -> tuple[int, ...]:
     return tuple(path_words)
 
 
-
-
 def _load_mock_signature_lookup() -> dict[tuple[tuple[int, ...], bytes], bytes]:
     global _MOCK_SIGNATURE_LOOKUP
     if _MOCK_SIGNATURE_LOOKUP is not None:
@@ -138,7 +136,9 @@ def _derive_witness_signature(witness_path: str, message: bytes) -> bytes:
     if signature is None:
         print(f"WARNING: No mock signature found for path {witness_path!r}.")
         print("  The generated fixture will contain a fake deterministic signature.")
-        print("  Run the generator with the 'mock-data' subcommand first to generate it.")
+        print(
+            "  Run the generator with the 'mock-data' subcommand first to generate it."
+        )
         return _compute_fallback_mock_signature(path_words, message)
     return signature
 
@@ -267,7 +267,7 @@ def _generate_fixtures_for_era(
                 aux_data_type = int(TxAuxiliaryDataType.CIP36_REGISTRATION)
                 aux_params = tx.auxiliaryData.params
                 if isinstance(aux_params, TxAuxiliaryDataCIP36):
-                    aux_data_init_apdu = builder.sign_tx_aux_data_init(tx, aux_params)
+                    aux_data_init_apdu = builder.sign_tx_aux_data_init(aux_params)
                     aux_data_init_payload = extract_apdu_payload(aux_data_init_apdu)
                     for delegation in aux_params.delegations:
                         reg_apdu = builder.sign_tx_aux_data_delegation(delegation)

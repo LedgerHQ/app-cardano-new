@@ -190,7 +190,7 @@ testsSilentExport = [
         + testsCommitteeHotKeys
         + testsMintKeys
     )
-    if _is_silent_export_path(test_case.path)
+    if test_case.path is not None and _is_silent_export_path(test_case.path)
 ]
 
 denyTestCases = [

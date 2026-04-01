@@ -10,7 +10,10 @@ This module provides Ragger tests for CIP-36 Vote check
 from dataclasses import dataclass
 from typing import List, Optional
 
-from tests.application_client.command_builder import CIP36Vote, CVoteTestCase, MAX_CIP36_PAYLOAD_SIZE  # noqa: F401 — re-exported for callers that import from this module
+from tests.application_client.command_builder import (
+    CIP36Vote,
+    CVoteTestCase,
+)
 from tests.application_client.security_warnings import WarningBit
 from tests.application_client.status_words import StatusWord
 

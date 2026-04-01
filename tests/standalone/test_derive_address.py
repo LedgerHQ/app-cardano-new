@@ -10,9 +10,7 @@ This module provides Ragger tests for Derive Address check
 import pytest
 import base58
 
-from ledgered.devices import Device
 from ragger.backend import BackendInterface
-from ragger.navigator import Navigator
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 from ragger.error import ExceptionRAPDU
 
@@ -38,9 +36,7 @@ from tests.standalone.utils import idTestFunc, derive_address
     ids=idTestFunc,
 )
 def test_derive_address(
-    device: Device,
     backend: BackendInterface,
-    navigator: Navigator,
     scenario_navigator: NavigateWithScenario,
     testCase: DeriveAddressTestCase,
     mode: str,
@@ -62,9 +58,7 @@ def test_derive_address(
     # Byron and Shelley with confirmation require navigation
     test_name = f"{testCase.name}-{mode}"
     with client.derive_address_async(p1_type, testCase.params):
-        scenario_navigator.address_review_approve(
-            test_name=test_name
-        )
+        scenario_navigator.address_review_approve(test_name=test_name)
 
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS

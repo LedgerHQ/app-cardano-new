@@ -311,7 +311,11 @@ def _build_deny_fixtures_header() -> str:
         )
         header_lines.append("{")
 
-        p1_name = "P1_ADDRESS_DISPLAY" if test_case.p1 == int(P1Type.P1_ADDRESS_DISPLAY) else "P1_ADDRESS_RETURN"
+        p1_name = (
+            "P1_ADDRESS_DISPLAY"
+            if test_case.p1 == int(P1Type.P1_ADDRESS_DISPLAY)
+            else "P1_ADDRESS_RETURN"
+        )
         header_lines.append(f'    .name = "{test_case.name}",')
         header_lines.append(f"    .p1 = {p1_name},")
         header_lines.append(f"    .data = {payload_array_name},")

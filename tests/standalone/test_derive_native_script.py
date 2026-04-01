@@ -27,7 +27,9 @@ from tests.application_client.response_unpacker import (
 
 from tests.application_client.command_builder import (
     NativeScript,
+    NativeScriptParamsInvalid,
     NativeScriptParamsNofK,
+    NativeScriptParamsPubkey,
     NativeScriptParamsScripts,
     NativeScriptType,
 )
@@ -52,9 +54,11 @@ def _resolve_key_hash(script: NativeScript) -> bytes:
     the public key from the device mnemonic and blake2b-224 it.
     """
     if script.type == NativeScriptType.PUBKEY_THIRD_PARTY:
+        assert isinstance(script.params, NativeScriptParamsPubkey)
         return bytes.fromhex(script.params.key)
 
     # PUBKEY_DEVICE_OWNED — derive pubkey from path, then hash it
+    assert isinstance(script.params, NativeScriptParamsPubkey)
     pubkey_bytes, _ = get_device_pubkey(script.params.key)
     return hashlib.blake2b(pubkey_bytes, digest_size=28).digest()
 
@@ -77,12 +81,15 @@ def _native_script_to_cbor_structure(script: NativeScript) -> list:
         return [0, _resolve_key_hash(script)]
 
     if script.type == NativeScriptType.ALL:
+        assert isinstance(script.params, NativeScriptParamsScripts)
         return [1, [_native_script_to_cbor_structure(s) for s in script.params.scripts]]
 
     if script.type == NativeScriptType.ANY:
+        assert isinstance(script.params, NativeScriptParamsScripts)
         return [2, [_native_script_to_cbor_structure(s) for s in script.params.scripts]]
 
     if script.type == NativeScriptType.N_OF_K:
+        assert isinstance(script.params, NativeScriptParamsNofK)
         return [
             3,
             script.params.requiredCount,
@@ -90,9 +97,11 @@ def _native_script_to_cbor_structure(script: NativeScript) -> list:
         ]
 
     if script.type == NativeScriptType.INVALID_BEFORE:
+        assert isinstance(script.params, NativeScriptParamsInvalid)
         return [4, script.params.slot]
 
     if script.type == NativeScriptType.INVALID_HEREAFTER:
+        assert isinstance(script.params, NativeScriptParamsInvalid)
         return [5, script.params.slot]
 
     raise ValueError(f"Unknown NativeScriptType: {script.type}")
@@ -156,6 +165,7 @@ def test_derive_native_script_hash(
     step_counter = [0]
 
     _deriveNativeScriptHash_init(nav_ctx, client, testCase.name, step_counter)
+    assert testCase.script is not None
     _deriveNativeScriptHash_addScript(
         nav_ctx, client, testCase.script, testCase.name, step_counter
     )
@@ -340,6 +350,7 @@ def _deriveNativeScriptHash_finishWholeNativeScript(
         step_counter (list[int]): Mutable step counter for unique snapshot names
     """
 
+    assert testCase.displayFormat is not None
     with client.derive_script_finish_async(testCase.displayFormat):
         if nav_ctx.is_nano:
             snap_name = f"{testCase.name}/step_{step_counter[0]:02d}_finish"
@@ -363,10 +374,12 @@ def _deriveNativeScriptHash_finishWholeNativeScript(
     # Check the response
     script_hash = unpack_derive_native_script_hash_response(response.data)
     if not testCase.skip_expected_in_ragger:
+        assert testCase.expected_in_unit_test is not None
         assert script_hash.hex() == testCase.expected_in_unit_test.hash
     # Independently verify the hash by serializing the script to CBOR and
     # hashing it.  For PUBKEY_DEVICE_OWNED scripts the key hash is derived
     # from the device mnemonic at runtime via get_device_pubkey().
+    assert testCase.script is not None
     assert script_hash.hex() == _compute_expected_script_hash(testCase.script)
 
 
@@ -385,9 +398,11 @@ def test_derive_native_script_hash_deny(
 
     _deriveNativeScriptHash_init(nav_ctx, client, testCase.name, step_counter)
 
+    assert testCase.script is not None
     with pytest.raises(ExceptionRAPDU) as err:
         _deriveNativeScriptHash_addScript(
             nav_ctx, client, testCase.script, testCase.name, step_counter
         )
 
+    assert testCase.expected_in_unit_test is not None
     assert err.value.status == testCase.expected_in_unit_test.sw

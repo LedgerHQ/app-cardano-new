@@ -14,7 +14,6 @@ from tests.application_client.command_builder import (
     NativeScript,
     NativeScriptHashDisplayFormat,
     OpCertTestCase,
-    P1Type,
     SETTINGS_DISABLED,
     SETTINGS_ENABLED,
     Transaction,
@@ -62,6 +61,7 @@ class CommandSender:
         """
 
         with self.backend.exchange_async_raw(payload) as has_data_available:
+            assert has_data_available is not None
             yield has_data_available
 
     def get_async_response(self) -> Optional[RAPDU]:
@@ -153,19 +153,21 @@ class CommandSender:
         if response.status != StatusWord.SWO_SUCCESS:
             raise AssertionError(f"Init failed: {hex(response.status)}")
 
-        cip36_aux_data = self._send_tx_aux_data_if_present(tx, on_cvote_review, on_advance)
+        cip36_aux_data = self._send_tx_aux_data_if_present(
+            tx, on_cvote_review, on_advance
+        )
 
         with self.sign_tx_send_chunks_async(tx) as has_data_available:
             if on_review is not None and not has_data_available:
                 on_review()
 
-        response = self.get_async_response()
-        if response is None:
+        final_response = self.get_async_response()
+        if final_response is None:
             raise AssertionError("No response from final chunk")
-        if response.status != StatusWord.SWO_SUCCESS:
-            raise AssertionError(f"Transaction failed: {hex(response.status)}")
+        if final_response.status != StatusWord.SWO_SUCCESS:
+            raise AssertionError(f"Transaction failed: {hex(final_response.status)}")
 
-        return unpack_sign_tx_hash_response(response.data), cip36_aux_data
+        return unpack_sign_tx_hash_response(final_response.data), cip36_aux_data
 
     def _send_tx_aux_data_if_present(
         self,
@@ -192,7 +194,7 @@ class CommandSender:
         if has_delegations:
             if on_advance:
                 with self._exchange_async(
-                    self._cmd_builder.sign_tx_aux_data_init(tx, aux_params)
+                    self._cmd_builder.sign_tx_aux_data_init(aux_params)
                 ) as has_data_available:
                     if not has_data_available:
                         on_advance(2)
@@ -201,7 +203,7 @@ class CommandSender:
                     raise AssertionError("No response from AUX_DATA init")
             else:
                 response = self._exchange(
-                    self._cmd_builder.sign_tx_aux_data_init(tx, aux_params)
+                    self._cmd_builder.sign_tx_aux_data_init(aux_params)
                 )
             if response.status != StatusWord.SWO_SUCCESS:
                 raise AssertionError(f"AUX_DATA init failed: {hex(response.status)}")
@@ -241,7 +243,7 @@ class CommandSender:
                 )
         else:
             with self._exchange_async(
-                self._cmd_builder.sign_tx_aux_data_init(tx, aux_params)
+                self._cmd_builder.sign_tx_aux_data_init(aux_params)
             ) as has_data_available:
                 if on_review and not has_data_available:
                     on_review()
@@ -363,33 +365,37 @@ class CommandSender:
 
     @contextmanager
     def derive_address_async(
-        self, p1: P1Type, test_case_params: AddressParams
+        self, p1: int, test_case_params: AddressParams
     ) -> Generator[None, None, None]:
         """APDU Derive Address
 
         Args:
-            p1 (P1Type): APDU Parameter 1
+            p1 (int): APDU Parameter 1
             test_case_params (AddressParams): Address parameters
 
         Returns:
             Generator
         """
 
-        with self._exchange_async(self._cmd_builder.derive_address(p1, test_case_params)):
+        with self._exchange_async(
+            self._cmd_builder.derive_address(p1, test_case_params)
+        ):
             yield
 
-    def derive_address(self, p1: P1Type, test_case_params: AddressParams) -> bytes:
+    def derive_address(self, p1: int, test_case_params: AddressParams) -> bytes:
         """APDU Derive Address
 
         Args:
-            p1 (P1Type): APDU Parameter 1
+            p1 (int): APDU Parameter 1
             test_case_params (AddressParams): Address parameters
 
         Returns:
             Raw address bytes
         """
 
-        response = self._exchange(self._cmd_builder.derive_address(p1, test_case_params))
+        response = self._exchange(
+            self._cmd_builder.derive_address(p1, test_case_params)
+        )
         if response.status != StatusWord.SWO_SUCCESS:
             raise AssertionError(f"Derive address failed: {hex(response.status)}")
         return unpack_derive_address_response(response.data)
@@ -531,12 +537,12 @@ class CommandSender:
             if on_review is not None:
                 on_review()
 
-        response = self.get_async_response()
-        if response is None:
+        confirm_response = self.get_async_response()
+        if confirm_response is None:
             raise AssertionError("No response from confirm")
-        if response.status != StatusWord.SWO_SUCCESS:
-            raise AssertionError(f"Confirm failed: {hex(response.status)}")
-        return unpack_sign_message_response(response.data)
+        if confirm_response.status != StatusWord.SWO_SUCCESS:
+            raise AssertionError(f"Confirm failed: {hex(confirm_response.status)}")
+        return unpack_sign_message_response(confirm_response.data)
 
     @contextmanager
     def _sign_msg_confirm_async(self) -> Generator[None, None, None]:

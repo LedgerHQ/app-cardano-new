@@ -290,5 +290,4 @@ def generate_native_script_deny_test_runners() -> int:
     write_generated_c_file(test_c_file, content)
     print(f"Generated {test_c_file} ({len(fixture_names)} deny fixtures)")
 
-
     return len(fixture_names)

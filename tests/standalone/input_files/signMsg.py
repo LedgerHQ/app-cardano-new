@@ -47,17 +47,27 @@ class SignMsgDenyTestCase:
     invalid_address_field_type: Optional[int] = None
     invalid_msg_length: Optional[int] = None  # Override msgLength in INIT (4 bytes BE)
     truncate_init_apdu_at: Optional[int] = None  # Truncate INIT APDU at byte position
-    trailing_init_bytes: int = 0  # Append N extra garbage bytes after valid INIT payload
+    trailing_init_bytes: int = (
+        0  # Append N extra garbage bytes after valid INIT payload
+    )
     # CHUNK-phase manipulation options
     invalid_chunk_size: Optional[int] = None  # Override chunk size in first CHUNK
-    truncate_chunk_data_at: Optional[int] = None  # Truncate chunk APDU payload to N bytes after size header
+    truncate_chunk_data_at: Optional[int] = (
+        None  # Truncate chunk APDU payload to N bytes after size header
+    )
     # Multi-phase testing: if True, manually craft APDU sequence
     send_chunk_without_init: bool = False
-    send_init_when_active: bool = False  # Send a second INIT while a session is already active
+    send_init_when_active: bool = (
+        False  # Send a second INIT while a session is already active
+    )
     send_confirm_without_chunks: bool = False  # Skip CHUNK phase entirely
     send_confirm_with_payload: bool = False  # Add non-empty payload to CONFIRM
-    send_confirm_without_init: bool = False  # Send CONFIRM with no prior INIT (req_type mismatch)
-    send_chunk_when_in_confirm: bool = False  # Complete chunks, then send extra CHUNK in CONFIRM state
+    send_confirm_without_init: bool = (
+        False  # Send CONFIRM with no prior INIT (req_type mismatch)
+    )
+    send_chunk_when_in_confirm: bool = (
+        False  # Complete chunks, then send extra CHUNK in CONFIRM state
+    )
 
 
 def build_sign_msg_init_apdu_for_deny(test_case: SignMsgDenyTestCase) -> bytes:
@@ -109,7 +119,7 @@ def build_sign_msg_chunk_apdu_for_deny(
 
     if chunk_index >= len(chunk_apdus):
         # Return empty chunk if no chunks needed (e.g., empty message)
-        return CommandBuilder()._serialize(
+        return CommandBuilder().serialize(
             InsType.INS_SIGN_MSG, P1Type.P1_SIGN_MSG_CHUNK, P2Type.P2_UNUSED, bytes()
         )
 
@@ -140,7 +150,7 @@ def build_sign_msg_confirm_apdu_for_deny(test_case: SignMsgDenyTestCase) -> byte
     else:
         payload = bytes()
 
-    return CommandBuilder()._serialize(
+    return CommandBuilder().serialize(
         InsType.INS_SIGN_MSG, P1Type.P1_SIGN_MSG_CONFIRM, P2Type.P2_UNUSED, payload
     )
 

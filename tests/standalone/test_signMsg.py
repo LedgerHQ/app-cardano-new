@@ -17,7 +17,11 @@ from ledgered.devices import Device
 from ragger.navigator import Navigator, NavInsID
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
-from tests.application_client.command_builder import AddressType, Mainnet, MessageAddressFieldType
+from tests.application_client.command_builder import (
+    AddressType,
+    Mainnet,
+    MessageAddressFieldType,
+)
 from tests.application_client.status_words import StatusWord
 from tests.application_client.command_sender import CommandSender
 
@@ -29,7 +33,7 @@ from tests.standalone.input_files.signMsg import (
     build_sign_msg_init_apdu_for_deny,
 )
 
-from tests.application_client.command_builder import AddressParams
+from tests.application_client.command_builder import AddressParams, CommandBuilder
 from tests.standalone.input_files.derive_address import DeriveAddressTestCase
 
 from tests.standalone.utils import (
@@ -71,7 +75,9 @@ def test_sign_message(
             ),
         )
 
-    signature, public_key, address_field = client.sign_msg(testCase, on_review=review_msg)
+    signature, public_key, address_field = client.sign_msg(
+        testCase, on_review=review_msg
+    )
 
     # Check the response
     _check_result(testCase, signature, public_key, address_field)
@@ -157,9 +163,6 @@ def test_sign_message_deny(
 
     if testCase.send_confirm_with_payload:
         # Send all normal chunks first
-        from tests.application_client.command_builder import CommandBuilder
-        from tests.standalone.input_files.signMsg import SignMsgTestCase
-
         transient_success_case = SignMsgTestCase(
             name=testCase.name,
             msgData=testCase.msgData,
@@ -191,12 +194,15 @@ def _check_result(
         address_field: Address field (up to 128 bytes)
     """
 
+    assert testCase.msgData is not None
+
     # Check the public key
     expected_pk, _ = get_device_pubkey(testCase.msgData.signingPath)
     assert public_key == expected_pk
 
     # Check the address field
     if testCase.msgData.addressFieldType == MessageAddressFieldType.ADDRESS:
+        assert isinstance(testCase.msgData.addressDesc, AddressParams)
         assert address_field == derive_address(
             DeriveAddressTestCase(
                 name="sign_message_address",
@@ -231,7 +237,9 @@ def _generate_payload(testCase: SignMsgTestCase, addressField: bytes) -> bytes:
         The payload
     """
 
-    array = []
+    assert testCase.msgData is not None
+
+    array: list[object] = []
     dico = {1: -8, "address": addressField}
 
     array.append("Signature1")

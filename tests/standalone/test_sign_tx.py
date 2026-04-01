@@ -13,7 +13,10 @@ from ragger.navigator.navigation_scenario import NavigateWithScenario
 from ragger.error import ExceptionRAPDU
 
 from tests.application_client.status_words import StatusWord
-from tests.application_client.command_builder import gather_witness_paths
+from tests.application_client.command_builder import (
+    gather_witness_paths,
+    TxAuxiliaryDataCIP36,
+)
 from tests.application_client.command_sender import CommandSender
 from tests.application_client.response_unpacker import unpack_sign_tx_witness_response
 from tests.standalone.utils import (
@@ -114,6 +117,9 @@ def _run_sign_tx_test(
 
     nav_ctx = NavContext(device, navigator, scenario_navigator)
     client = CommandSender(backend)
+    assert testCase.tx is not None
+    assert testCase.txBody is not None
+    assert testCase.signingMode is not None
     tx = testCase.tx
 
     # Calculate expected transaction hash from the CBOR txBody
@@ -134,7 +140,7 @@ def _run_sign_tx_test(
         test_name = f"{testCase.name}-{mode_str}/cvote_review"
         if not device.is_nano:
             if testCase.expected_aux_warnings:
-                detail_navigation = [NavInsID.RIGHT_HEADER_TAP]
+                detail_navigation: list[NavIns | NavInsID] = [NavInsID.RIGHT_HEADER_TAP]
                 if len(testCase.expected_aux_warnings) > 3:
                     detail_navigation += [
                         NavIns(NavInsID.CHOICE_CHOOSE, (4,)),
@@ -243,9 +249,10 @@ def _run_sign_tx_test(
             )
 
     def _is_cip36_aux_review_streaming() -> bool:
-        if not is_cip36_auxiliary_review:
+        if not is_cip36_auxiliary_review or auxiliary_data is None:
             return False
 
+        assert isinstance(auxiliary_data.params, TxAuxiliaryDataCIP36)
         auxiliary_params = auxiliary_data.params
         pair_count = 1  # "Delegations"
         pair_count += 1  # "Staking key"
@@ -384,9 +391,9 @@ def _run_sign_tx_test(
             _is_unusual_witness_path_for_navigation(path)
             or testCase.signingMode in pool_or_plutus_modes
             or (
-                len(testCase.tx.outputs) > 0
+                len(tx.outputs) > 0
                 and not isinstance(
-                    testCase.tx.outputs[0].destination.params, ThirdPartyAddressParams
+                    tx.outputs[0].destination.params, ThirdPartyAddressParams
                 )
                 and auxiliary_data is not None
                 and auxiliary_data.type != TxAuxiliaryDataType.CIP36_REGISTRATION
@@ -542,15 +549,19 @@ def test_sign_tx_deny(
 
     nav_ctx = NavContext(device, navigator, scenario_navigator)
     client = CommandSender(backend)
+    assert testCase.tx is not None
+    assert testCase.signingMode is not None
+    deny_tx = testCase.tx
+    deny_signing_mode = testCase.signingMode
 
     def _requires_warning_navigation() -> bool:
         if len(testCase.expected_warnings) > 0:
             return True
 
-        if testCase.signingMode == TransactionSigningMode.PLUTUS_TRANSACTION:
+        if deny_signing_mode == TransactionSigningMode.PLUTUS_TRANSACTION:
             return True
 
-        for certificate in testCase.tx.certificates:
+        for certificate in deny_tx.certificates:
             cert_params = getattr(certificate, "params", None)
             if cert_params is None:
                 continue
@@ -590,8 +601,8 @@ def test_sign_tx_deny(
     # Phase 1: try to observe expected failure during init/chunk/review.
     try:
         client.sign_tx(
-            tx=testCase.tx,
-            signing_mode=testCase.signingMode,
+            tx=deny_tx,
+            signing_mode=deny_signing_mode,
             additional_witness_paths=testCase.additionalWitnessPaths,
             options=testCase.options,
             on_review=review_tx,
@@ -602,8 +613,8 @@ def test_sign_tx_deny(
 
     # Phase 2: tx body passed; expected denial must happen in witness phase.
     witness_paths = gather_witness_paths(
-        testCase.tx,
-        testCase.signingMode,
+        deny_tx,
+        deny_signing_mode,
         testCase.additionalWitnessPaths or [],
     )
     if len(witness_paths) == 0:

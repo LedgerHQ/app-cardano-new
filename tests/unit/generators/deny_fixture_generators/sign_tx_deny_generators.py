@@ -177,7 +177,7 @@ def _build_deny_fixtures() -> str:
                     "Expected TxAuxiliaryDataCIP36 params for CIP36 registration"
                 )
             aux_chunks: list[ChunkInfo] = []
-            aux_init_apdu = builder.sign_tx_aux_data_init(tx, aux_params)
+            aux_init_apdu = builder.sign_tx_aux_data_init(aux_params)
             aux_chunks.append(
                 ChunkInfo(
                     p1=aux_init_apdu[2],

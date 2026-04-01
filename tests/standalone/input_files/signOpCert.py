@@ -10,7 +10,10 @@ This module provides Ragger tests for Sign Operational Certificate
 from dataclasses import dataclass
 from typing import List
 
-from tests.application_client.command_builder import OpCertTestCase, OperationalCertificate
+from tests.application_client.command_builder import (
+    OpCertTestCase,
+    OperationalCertificate,
+)
 from tests.application_client.security_warnings import WarningBit
 from tests.application_client.status_words import StatusWord
 

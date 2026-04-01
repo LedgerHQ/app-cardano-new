@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from pathlib import Path
-from typing import List, Sequence, Tuple, Union
+from typing import List, Sequence, Tuple, Union, cast
 import re
 import hashlib
 from time import time
@@ -14,7 +14,7 @@ from bip_utils import Bip44, Bip44Coins, Bip44Changes, Bip39SeedGenerator
 from bip_utils.bip.bip32.bip32_path import Bip32Path, Bip32PathParser
 
 from ragger.bip import calculate_public_key_and_chaincode, CurveChoice
-from ragger.navigator import Navigator, NavInsID, NavIns
+from ragger.navigator import Navigator, NavInsID, NavIns, BaseNavInsID
 from ragger.navigator.navigation_scenario import (
     NavigateWithScenario,
     NavigationScenarioData,
@@ -58,7 +58,7 @@ class NavContext:
 
     @property
     def is_nano(self) -> bool:
-        return self.device.is_nano
+        return cast(bool, self.device.is_nano)
 
     @property
     def screenshot_path(self) -> Path:
@@ -66,15 +66,16 @@ class NavContext:
 
 
 def _nano_instructions(
-    instructions: Sequence[object] | None, default: Sequence[object]
-) -> Sequence[object]:
+    instructions: Sequence[NavIns | BaseNavInsID] | None,
+    default: Sequence[NavIns | BaseNavInsID],
+) -> Sequence[NavIns | BaseNavInsID]:
     return list(instructions) if instructions is not None else default
 
 
 def nano_navigate_without_waits(
     backend: BackendInterface,
     navigator: Navigator,
-    instructions: Sequence[object],
+    instructions: Sequence[NavIns | BaseNavInsID],
     timeout: float = 10.0,
     screen_change_before_first_instruction: bool = True,
 ) -> None:
@@ -94,8 +95,8 @@ def nano_navigate_without_waits(
 def nano_navigate_until_text_relaxed(
     backend: BackendInterface,
     navigator: Navigator,
-    navigate_instruction: object,
-    validation_instructions: Sequence[object],
+    navigate_instruction: NavIns | BaseNavInsID,
+    validation_instructions: Sequence[NavIns | BaseNavInsID],
     text: str,
     timeout: float = 300.0,
     screen_change_before_first_instruction: bool = True,
@@ -155,7 +156,7 @@ def nano_navigate_until_text_relaxed(
 def _navigate_maybe_compare(
     ctx: NavContext,
     test_name: str,
-    instructions: Sequence[object],
+    instructions: Sequence[NavIns | BaseNavInsID],
     do_comparison: bool = True,
     **kwargs,
 ) -> None:
@@ -177,8 +178,8 @@ def _navigate_maybe_compare(
 def _navigate_until_text_optional_compare(
     ctx: NavContext,
     test_name: str,
-    navigate_instruction: object,
-    validation_instructions: Sequence[object],
+    navigate_instruction: NavIns | BaseNavInsID,
+    validation_instructions: Sequence[NavIns | BaseNavInsID],
     text: str,
     do_comparison: bool = True,
     screen_change_before_first_instruction: bool = True,
@@ -282,10 +283,10 @@ def _review_approve_with_warning(
     target_text: str,
     warnings: Sequence[object],
     do_comparison: bool = True,
-    nano_review_instructions: Sequence[object] | None = None,
+    nano_review_instructions: Sequence[NavIns | BaseNavInsID] | None = None,
 ) -> None:
     if not ctx.is_nano:
-        detail_navigation = [NavInsID.RIGHT_HEADER_TAP]
+        detail_navigation: list[NavIns | BaseNavInsID] = [NavInsID.RIGHT_HEADER_TAP]
         if len(warnings) > 3:
             detail_navigation += [
                 NavIns(NavInsID.CHOICE_CHOOSE, (4,)),
@@ -347,7 +348,7 @@ def review_approve(
     warnings: Sequence[object] = (),
     has_warning_screen: bool = False,
     do_comparison: bool = True,
-    nano_review_instructions: Sequence[object] | None = None,
+    nano_review_instructions: Sequence[NavIns | BaseNavInsID] | None = None,
     screen_change_before_first_instruction: bool = True,
 ) -> None:
     if has_warning_screen or warnings:
@@ -369,8 +370,9 @@ def review_approve(
                 do_comparison=do_comparison,
             )
         else:
+            navigator_backend = ctx.navigator._backend  # pylint: disable=protected-access
             scenario = NavigationScenarioData(
-                ctx.device, ctx.navigator._backend, UseCase.TX_REVIEW, True
+                ctx.device, navigator_backend, UseCase.TX_REVIEW, True
             )
             if target_text is not None:
                 scenario.pattern = target_text
@@ -390,7 +392,7 @@ def review_approve(
             )
 
             if scenario.post_validation_spinner is not None:
-                ctx.navigator._backend.wait_for_text_on_screen(
+                navigator_backend.wait_for_text_on_screen(
                     scenario.post_validation_spinner
                 )
         return
@@ -515,7 +517,7 @@ def _deriveAddressByron(testCase: DeriveAddressTestCase) -> str:
     bip44_addr = bip44_chg.AddressIndex(bip32Path[4])
 
     # Get the address
-    return bip44_addr.PublicKey().ToAddress()
+    return cast(str, bip44_addr.PublicKey().ToAddress())
 
 
 def _deriveAddressShelley(testCase: DeriveAddressTestCase) -> bytes:

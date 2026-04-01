@@ -78,6 +78,7 @@ def test_pubkey_confirm(
         backend=backend,
     )
     nav_ctx = NavContext(device, navigator, scenario_navigator)
+    assert testCase.path is not None
     with client.get_pubkey_async(testCase.path):
         if testCase.nav:
             choice_approve(nav_ctx, test_name=testCase.name, confirm_text=r"^Export$")
@@ -113,6 +114,7 @@ def test_pubkey_without_confirmation(
         backend=backend,
     )
 
+    assert testCase.path is not None
     with client.get_pubkey_async(testCase.path):
         pass
 
@@ -147,6 +149,7 @@ def test_pubkey_confirm_even_with_silent_export(
         backend=backend,
     )
     nav_ctx = NavContext(device, navigator, scenario_navigator)
+    assert testCase.path is not None
     with client.get_pubkey_async(testCase.path):
         choice_approve(nav_ctx, test_name=testCase.name, confirm_text=r"^Export$")
 
@@ -163,6 +166,7 @@ def test_pubkey_deny(backend: BackendInterface, testCase: PubKeyTestCase) -> Non
     # Use the app interface instead of raw interface
     client = CommandSender(backend)
 
+    assert testCase.path is not None
     with pytest.raises(ExceptionRAPDU) as err:
         with client.get_pubkey_async(testCase.path):
             pass

@@ -15,7 +15,6 @@ from tests.unit.generators.paths import GENERATED_SIGN_MSG_DIR
 FIXTURES_FILE = GENERATED_SIGN_MSG_DIR / "test_sign_msg_fixtures.h"
 
 
-
 # ==============================================================================
 # Step 1: Load Test Cases from Ragger Tests
 # ==============================================================================
@@ -329,4 +328,5 @@ def generate_sign_msg_fixtures() -> int:
     write_generated_c_file(FIXTURES_FILE, content)
     print(f"Generated {FIXTURES_FILE}")
     from tests.standalone.input_files.signMsg import signMsgTestCases  # type: ignore
+
     return len(signMsgTestCases)

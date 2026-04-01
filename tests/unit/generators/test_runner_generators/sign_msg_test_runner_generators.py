@@ -122,7 +122,9 @@ def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
         # Handle different deny test types
         if test_case.send_confirm_without_init:
             # Send CONFIRM with no prior INIT (req_type mismatch)
-            confirm_array_name = f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_CONFIRM_APDU"
+            confirm_array_name = (
+                f"SIGN_MSG_DENY_{index:03d}_{safe_test_name}_CONFIRM_APDU"
+            )
             confirm_payload = extract_apdu_payload(
                 build_sign_msg_confirm_apdu_for_deny(test_case)
             )
@@ -178,11 +180,15 @@ def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
             helper_lines.append(
                 f"    run_deny_init_fixture({init_array_name}, sizeof({init_array_name}), SWO_SUCCESS);"
             )
-            helper_lines.append("    // Send CHUNK successfully (transitions to CONFIRM state)")
+            helper_lines.append(
+                "    // Send CHUNK successfully (transitions to CONFIRM state)"
+            )
             helper_lines.append(
                 f"    run_deny_chunk_fixture({chunk_array_name}, sizeof({chunk_array_name}), SWO_SUCCESS);"
             )
-            helper_lines.append("    // Send extra CHUNK while already in CONFIRM state")
+            helper_lines.append(
+                "    // Send extra CHUNK while already in CONFIRM state"
+            )
             helper_lines.append(
                 f"    run_deny_chunk_fixture({chunk_array_name}, sizeof({chunk_array_name}), {test_case.expected_status.name});"
             )
@@ -282,13 +288,17 @@ def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
             helper_lines.append(
                 f"    run_deny_init_fixture({init_array_name}, sizeof({init_array_name}), SWO_SUCCESS);"
             )
-            helper_lines.append("    // Send INIT again while session is already active (do NOT reset state)")
+            helper_lines.append(
+                "    // Send INIT again while session is already active (do NOT reset state)"
+            )
             helper_lines.append("    {")
             helper_lines.append(
                 f"        test_read_buffer_t buf = make_test_read_buffer({init_array_name}, sizeof({init_array_name}));"
             )
             helper_lines.append("        apdu_response_begin(INS_SIGN_MSG);")
-            helper_lines.append("        handler_sign_msg(&buf.sdk_buffer, P1_SIGN_MSG_INIT);")
+            helper_lines.append(
+                "        handler_sign_msg(&buf.sdk_buffer, P1_SIGN_MSG_INIT);"
+            )
             helper_lines.append("        apdu_response_assert_sent_or_deferred();")
             helper_lines.append(
                 f"        assert_int_equal(g_last_response_sw, {test_case.expected_status.name});"
@@ -300,10 +310,14 @@ def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
             helper_lines.append("}")
             helper_lines.append("")
 
-        elif test_case.truncate_chunk_data_at is not None or test_case.invalid_chunk_size is not None or (
-            test_case.msgData.isAscii
-            and not all(
-                32 <= b < 127 for b in bytes.fromhex(test_case.msgData.messageHex)
+        elif (
+            test_case.truncate_chunk_data_at is not None
+            or test_case.invalid_chunk_size is not None
+            or (
+                test_case.msgData.isAscii
+                and not all(
+                    32 <= b < 127 for b in bytes.fromhex(test_case.msgData.messageHex)
+                )
             )
         ):
             # Send INIT successfully, then CHUNK with invalid size, truncated data, or non-ASCII data
@@ -337,7 +351,9 @@ def _build_deny_fixture_code() -> tuple[List[str], List[str]]:
                 f"    run_deny_init_fixture({init_array_name}, sizeof({init_array_name}), SWO_SUCCESS);"
             )
             if test_case.truncate_chunk_data_at is not None:
-                helper_lines.append("    // Send CHUNK with truncated data (size header present, data cut short)")
+                helper_lines.append(
+                    "    // Send CHUNK with truncated data (size header present, data cut short)"
+                )
             elif test_case.invalid_chunk_size is not None:
                 helper_lines.append("    // Send CHUNK with invalid size")
             else:

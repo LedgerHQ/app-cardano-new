@@ -7,7 +7,7 @@
 This module provides Ragger tests for Sign TX check
 """
 
-from typing import List, Optional
+from typing import List, Optional, cast
 from dataclasses import dataclass, field
 from enum import Enum, auto
 import base58
@@ -41,7 +41,6 @@ from tests.application_client.command_builder import (
     DRepUpdateParams,
     GovActionId,
     Margin,
-    MAX_SIGN_TX_CHUNK_SIZE,  # noqa: F401 — re-exported for callers that import from this module
     MultiHostRelayParams,
     PoolKey,
     PoolKeyType,
@@ -3737,6 +3736,7 @@ def _make_tx_streaming_many_required_signers(required_signer_count: int) -> Tran
 _tx_streaming_many_required_signers = _make_tx_streaming_many_required_signers(700)
 _tx_streaming_many_required_signers_nano = _make_tx_streaming_many_required_signers(256)
 
+
 def _make_tx_many_outputs(output_count: int) -> Transaction:
     return Transaction(
         network=Mainnet,
@@ -5636,10 +5636,11 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
                         params=AddressParams(
-                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.REWARD_KEY,
                             spendingValue="",
-                            stakingValue="m/1852'/1815'/0'/2/0",                        ),
+                            stakingValue="m/1852'/1815'/0'/2/0",
+                        ),
                     ),
                     amount=10,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -5662,10 +5663,11 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
                         params=AddressParams(
-                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.REWARD_SCRIPT,
                             spendingValue="",
-                            stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",                        ),
+                            stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
+                        ),
                     ),
                     amount=10,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -5688,10 +5690,11 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
                         params=AddressParams(
-                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,
                             spendingValue="29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd",
-                            stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",                        ),
+                            stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
+                        ),
                     ),
                     amount=3003112,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -5714,10 +5717,11 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
                         params=AddressParams(
-                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_SCRIPT,
                             spendingValue="29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd",
-                            stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",                        ),
+                            stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
+                        ),
                     ),
                     amount=3003112,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -5740,10 +5744,11 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
                         params=AddressParams(
-                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.BASE_PAYMENT_SCRIPT_STAKE_KEY,
                             spendingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
-                            stakingValue="m/1852'/1815'/456'/2/0",                        ),
+                            stakingValue="m/1852'/1815'/456'/2/0",
+                        ),
                     ),
                     amount=10,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -5766,10 +5771,11 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
                         params=AddressParams(
-                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
                             spendingValue="m/1852'/1815'/0'/0/0",
-                            stakingValue="m/1852'/1815'/0'/2/0",                        ),
+                            stakingValue="m/1852'/1815'/0'/2/0",
+                        ),
                     ),
                     amount=7120787,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -5792,10 +5798,11 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
                         params=AddressParams(
-                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
                             spendingValue="m/1852'/1815'/0'/0/0",
-                            stakingValue="m/1852'/1815'/0'/2/0",                        ),
+                            stakingValue="m/1852'/1815'/0'/2/0",
+                        ),
                     ),
                     amount=7120787,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -6985,10 +6992,11 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
                         params=AddressParams(
-                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
                             spendingValue="m/1852'/1815'/1'/0/0",
-                            stakingValue="m/1852'/1815'/0'/2/0",                        ),
+                            stakingValue="m/1852'/1815'/0'/2/0",
+                        ),
                     ),
                     amount=7120787,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -7065,10 +7073,11 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
                         params=AddressParams(
-                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
                             spendingValue="m/1852'/1815'/0'/0/0",
-                            stakingValue="m/1852'/1815'/0'/2/0",                        ),
+                            stakingValue="m/1852'/1815'/0'/2/0",
+                        ),
                     ),
                     amount=7120787,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -7115,10 +7124,11 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
                         params=AddressParams(
-                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
                             spendingValue="m/1852'/1815'/0'/0/0",
-                            stakingValue="m/1852'/1815'/0'/2/0",                        ),
+                            stakingValue="m/1852'/1815'/0'/2/0",
+                        ),
                     ),
                     amount=7120787,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -7219,10 +7229,11 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                     destination=TxOutputDestination(
                         type=TxOutputDestinationType.DEVICE_OWNED,
                         params=AddressParams(
-                                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
+                            netDesc=NetworkDesc(networkId=1, protocol=764824073),
                             addrType=AddressType.BASE_PAYMENT_KEY_STAKE_KEY,
                             spendingValue="m/1852'/1815'/1'/0/0",
-                            stakingValue="m/1852'/1815'/1'/2/0",                        ),
+                            stakingValue="m/1852'/1815'/1'/2/0",
+                        ),
                     ),
                     amount=7120787,
                     format=TxOutputFormat.ARRAY_LEGACY,
@@ -7417,7 +7428,9 @@ collateralOutputDenyTestCases: List[SignTxTestCase] = [
             network=NetworkDesc(networkId=1, protocol=764824073),
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
-            collateralOutput=TxOutputBabbage(destination=destinations["deny2"], amount=7120787),
+            collateralOutput=TxOutputBabbage(
+                destination=destinations["deny2"], amount=7120787
+            ),
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
         txBody="",
@@ -8484,7 +8497,9 @@ testsCVoteRegistrationDenies: List[SignTxTestCase] = [
             auxiliaryData=TxAuxiliaryData(
                 TxAuxiliaryDataType.CIP36_REGISTRATION,
                 TxAuxiliaryDataCIP36(
-                    3,  # invalid: only CIP_15=1 and CIP_36=2 are valid
+                    cast(
+                        CIP36VoteRegistrationFormat, 3
+                    ),  # invalid: only CIP_15=1 and CIP_36=2 are valid
                     "m/1852'/1815'/0'/2/0",
                     destinations["internalBaseWithStakingPath"],
                     1454448,
@@ -8533,7 +8548,9 @@ testsCVoteRegistrationDenies: List[SignTxTestCase] = [
                 TxAuxiliaryDataCIP36(
                     CIP36VoteRegistrationFormat.CIP_36,
                     "m/1852'/1815'/0'/2/0",
-                    destinations["externalShelleyBaseKeyhashScripthashFakenet"],  # FakeNet addr on Mainnet tx
+                    destinations[
+                        "externalShelleyBaseKeyhashScripthashFakenet"
+                    ],  # FakeNet addr on Mainnet tx
                     1454448,
                     "4b19e27ffc006ace16592311c4d2f0cafc255eaa47a6178ff540c0a46d07027c",
                     votingPurpose=0,

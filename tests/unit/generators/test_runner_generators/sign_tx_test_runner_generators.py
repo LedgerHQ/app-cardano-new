@@ -214,7 +214,9 @@ def _build_main_function(test_names: Sequence[str], test_c_file: str) -> str:
     )
 
 
-def _extract_fixtures_from_header(fixture_path: Path) -> list[tuple[str, str, bool, bool]]:
+def _extract_fixtures_from_header(
+    fixture_path: Path,
+) -> list[tuple[str, str, bool, bool]]:
     content = read_file_safe(fixture_path)
     fixtures: list[tuple[str, str, bool, bool]] = []
     for match in _FIXTURE_PATTERN.finditer(content):

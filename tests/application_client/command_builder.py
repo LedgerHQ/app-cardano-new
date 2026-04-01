@@ -26,6 +26,7 @@ from ragger.bip import pack_derivation_path
 # Network / address protocol types (formerly app_def.py)
 # ---------------------------------------------------------------------------
 
+
 class ProtocolMagics(IntEnum):
     MAINNET = 0x2D964A09  # 764824073
     TESTNET = 0x2A  # 42, For integration tests
@@ -551,6 +552,7 @@ class Transaction:
     treasury: Optional[int] = None
     donation: Optional[int] = None
 
+
 CLA: int = 0xD7
 
 FLAG_INCLUDED_NO: int = 0x01
@@ -566,6 +568,7 @@ MAX_CIP36_PAYLOAD_SIZE = 250
 # ---------------------------------------------------------------------------
 # OpCert protocol types
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class OperationalCertificate:
@@ -586,6 +589,7 @@ class OpCertTestCase:
 # CIP-36 CVote protocol types
 # ---------------------------------------------------------------------------
 
+
 @dataclass(kw_only=True)
 class CIP36Vote:
     voteCastDataHex: str
@@ -602,6 +606,7 @@ class CVoteTestCase:
 # ---------------------------------------------------------------------------
 # Native script protocol types
 # ---------------------------------------------------------------------------
+
 
 class NativeScriptType(IntEnum):
     PUBKEY_DEVICE_OWNED = 0x00
@@ -657,6 +662,7 @@ class NativeScript:
 # Sign Message protocol types
 # ---------------------------------------------------------------------------
 
+
 class MessageAddressFieldType(IntEnum):
     ADDRESS = 0x01
     KEY_HASH = 0x02
@@ -707,7 +713,6 @@ class CVoteCredentialType(IntEnum):
     CVOTE_CREDENTIAL_KEY_PATH = 2
 
 
-
 def _credential_path_from_credential(credential: CredentialParams) -> Optional[str]:
     if credential.type.name == "KEY_PATH":
         return credential.keyValue
@@ -739,6 +744,19 @@ def _credential_paths_from_certificate(certificate: Certificate) -> List[str]:
         CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_DREP,
         CertificateType.ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP,
     ):
+        assert isinstance(
+            params,
+            (
+                StakeRegistrationParams,
+                StakeRegistrationConwayParams,
+                StakeDelegationParams,
+                VoteDelegationParams,
+                StakePoolAndDRepDelegationParams,
+                AccountRegistrationDelegationToStakePoolParams,
+                AccountRegistrationDelegationToDRepParams,
+                AccountRegistrationDelegationToStakePoolAndDRepParams,
+            ),
+        )
         path = _credential_path_from_credential(params.stakeCredential)
         if path:
             paths.append(path)
@@ -748,6 +766,7 @@ def _credential_paths_from_certificate(certificate: Certificate) -> List[str]:
         CertificateType.AUTHORIZE_COMMITTEE_HOT,
         CertificateType.RESIGN_COMMITTEE_COLD,
     ):
+        assert isinstance(params, (AuthorizeCommitteeParams, ResignCommitteeParams))
         path = _credential_path_from_credential(params.coldCredential)
         if path:
             paths.append(path)
@@ -758,12 +777,14 @@ def _credential_paths_from_certificate(certificate: Certificate) -> List[str]:
         CertificateType.DREP_DEREGISTRATION,
         CertificateType.DREP_UPDATE,
     ):
+        assert isinstance(params, (DRepRegistrationParams, DRepUpdateParams))
         path = _credential_path_from_credential(params.dRepCredential)
         if path:
             paths.append(path)
         return paths
 
     if certificate.type == CertificateType.STAKE_POOL_REGISTRATION:
+        assert isinstance(params, PoolRegistrationParams)
         pool_key_path = _pool_key_path(params.poolKey)
         if pool_key_path:
             paths.append(pool_key_path)
@@ -774,6 +795,7 @@ def _credential_paths_from_certificate(certificate: Certificate) -> List[str]:
         return paths
 
     if certificate.type == CertificateType.STAKE_POOL_RETIREMENT:
+        assert isinstance(params, PoolRetirementParams)
         path = _credential_path_from_credential(params.poolCredential)
         if path:
             paths.append(path)
@@ -866,9 +888,9 @@ class TxInitParams:
 
 
 class CommandBuilder:
-    def _serialize(
+    def serialize(
         self,
-        ins: InsType,
+        ins: int,
         p1: int = P1Type.P1_UNUSED,
         p2: int = P2Type.P2_UNUSED,
         cdata: bytes = bytes(),
@@ -887,13 +909,13 @@ class CommandBuilder:
         return header + cdata
 
     def get_version(self) -> bytes:
-        return self._serialize(InsType.INS_GET_VERSION)
+        return self.serialize(InsType.INS_GET_VERSION)
 
     def get_app_name(self) -> bytes:
-        return self._serialize(InsType.INS_GET_APP_NAME)
+        return self.serialize(InsType.INS_GET_APP_NAME)
 
     def get_serial(self) -> bytes:
-        return self._serialize(InsType.INS_GET_SERIAL)
+        return self.serialize(InsType.INS_GET_SERIAL)
 
     def _serialize_voter(self, voter: Voter) -> bytes:
         voter_type = VoterType(voter.type)
@@ -962,11 +984,11 @@ class CommandBuilder:
 
     def derive_address(self, p1: int, params: AddressParams) -> bytes:
         data = self._serialize_address_params(params)
-        return self._serialize(InsType.INS_DERIVE_ADDRESS, p1, P2Type.P2_UNUSED, data)
+        return self.serialize(InsType.INS_DERIVE_ADDRESS, p1, P2Type.P2_UNUSED, data)
 
     def get_pubkey_path(self, path: str) -> bytes:
         data = pack_derivation_path(path)
-        return self._serialize(
+        return self.serialize(
             InsType.INS_GET_PUBLIC_KEY, P1Type.P1_UNUSED, P2Type.P2_UNUSED, data
         )
 
@@ -976,7 +998,7 @@ class CommandBuilder:
         data.extend(test_case.opCert.kesPeriod.to_bytes(8, "big"))
         data.extend(test_case.opCert.issueCounter.to_bytes(8, "big"))
         data.extend(pack_derivation_path(test_case.opCert.path))
-        return self._serialize(
+        return self.serialize(
             InsType.INS_SIGN_OPCERT, P1Type.P1_UNUSED, P2Type.P2_UNUSED, bytes(data)
         )
 
@@ -1000,7 +1022,7 @@ class CommandBuilder:
         chunk_size = min(MAX_CIP36_PAYLOAD_SIZE * 2, len(payload_hex))
         data += data_size.to_bytes(4, "big")
         data += bytes.fromhex(payload_hex[:chunk_size])
-        return self._serialize(
+        return self.serialize(
             InsType.INS_SIGN_CVOTE, P1Type.P1_CVOTE_INIT, P2Type.P2_UNUSED, data
         )
 
@@ -1021,7 +1043,7 @@ class CommandBuilder:
         max_payload_size = MAX_CIP36_PAYLOAD_SIZE * 2  # 2 hex chars per byte
         while len(payload) > 0:
             chunks.append(
-                self._serialize(
+                self.serialize(
                     InsType.INS_SIGN_CVOTE,
                     P1Type.P1_CVOTE_CHUNK,
                     P2Type.P2_UNUSED,
@@ -1045,7 +1067,7 @@ class CommandBuilder:
         # Serialization format:
         #    Witness path (1B for length + [0-5] x 4B)
         data = pack_derivation_path(testCase.cVote.witnessPath)
-        return self._serialize(
+        return self.serialize(
             InsType.INS_SIGN_CVOTE, P1Type.P1_CVOTE_CONFIRM, P2Type.P2_UNUSED, data
         )
 
@@ -1102,7 +1124,7 @@ class CommandBuilder:
         data.append(FLAG_INCLUDED_YES if params.include_donation else FLAG_INCLUDED_NO)
         data.extend(params.num_witnesses.to_bytes(2, "big"))
         data.extend(params.raw_tx_total_length.to_bytes(2, "big"))
-        return self._serialize(
+        return self.serialize(
             InsType.INS_SIGN_TX, P1Type.P1_TX_INIT, P2Type.P2_UNUSED, bytes(data)
         )
 
@@ -1132,7 +1154,7 @@ class CommandBuilder:
         ):
             assert isinstance(script.params, NativeScriptParamsInvalid)
             data += script.params.slot.to_bytes(8, "big")
-        return self._serialize(
+        return self.serialize(
             InsType.INS_DERIVE_NATIVE_SCRIPT_HASH,
             P1Type.P1_NATIVE_SCRIPT_ADD_SIMPLE,
             P2Type.P2_UNUSED,
@@ -1140,7 +1162,7 @@ class CommandBuilder:
         )
 
     def derive_script_init(self) -> bytes:
-        return self._serialize(
+        return self.serialize(
             InsType.INS_DERIVE_NATIVE_SCRIPT_HASH,
             P1Type.P1_NATIVE_SCRIPT_INIT,
             P2Type.P2_UNUSED,
@@ -1157,7 +1179,7 @@ class CommandBuilder:
             assert isinstance(script.params, NativeScriptParamsNofK)
             data += len(script.params.scripts).to_bytes(4, "big")
             data += script.params.requiredCount.to_bytes(4, "big")
-        return self._serialize(
+        return self.serialize(
             InsType.INS_DERIVE_NATIVE_SCRIPT_HASH,
             P1Type.P1_NATIVE_SCRIPT_START_COMPLEX,
             P2Type.P2_UNUSED,
@@ -1166,7 +1188,7 @@ class CommandBuilder:
 
     def derive_script_finish(self, disp: NativeScriptHashDisplayFormat) -> bytes:
         data = disp.to_bytes(1, "big")
-        return self._serialize(
+        return self.serialize(
             InsType.INS_DERIVE_NATIVE_SCRIPT_HASH,
             P1Type.P1_NATIVE_SCRIPT_FINISH,
             P2Type.P2_UNUSED,
@@ -1183,7 +1205,7 @@ class CommandBuilder:
         include_aux_data_hash = tx.auxiliaryData is not None
         aux_data_type = None
         aux_data_hash_hex = None
-        if include_aux_data_hash:
+        if include_aux_data_hash and tx.auxiliaryData is not None:
             if tx.auxiliaryData.type == TxAuxiliaryDataType.ARBITRARY_HASH:
                 aux_data_type = TxAuxiliaryDataType.ARBITRARY_HASH
                 aux_params = tx.auxiliaryData.params
@@ -1225,16 +1247,12 @@ class CommandBuilder:
             raw_tx_total_length=raw_tx_total_length,
         )
 
-    def sign_tx_aux_data_init(
-        self, tx: Transaction, aux_params: TxAuxiliaryDataCIP36
-    ) -> bytes:
+    def sign_tx_aux_data_init(self, aux_params: TxAuxiliaryDataCIP36) -> bytes:
         data = bytearray()
         data.append(aux_params.format)
         data.extend(len(aux_params.delegations).to_bytes(2, "big"))
         data.extend(self._serialize_cvote_key_or_path(aux_params.stakingPath))
-        data.extend(
-            self._serialize_output_destination(aux_params.paymentDestination, tx)
-        )
+        data.extend(self._serialize_output_destination(aux_params.paymentDestination))
         data.extend(aux_params.nonce.to_bytes(8, "big"))
 
         if aux_params.format == CIP36VoteRegistrationFormat.CIP_36:
@@ -1253,7 +1271,7 @@ class CommandBuilder:
                 raise ValueError("CIP-15 vote key is required")
             data.extend(self._serialize_cvote_key_or_path(aux_params.voteKey))
 
-        return self._serialize(
+        return self.serialize(
             InsType.INS_SIGN_TX,
             P1Type.P1_TX_AUX_DATA,
             P2Type.P2_AUX_DATA_INIT,
@@ -1264,7 +1282,7 @@ class CommandBuilder:
         data = bytearray()
         data.extend(self._serialize_cvote_key_or_path(delegation.votingKeyPath))
         data.extend(delegation.weight.to_bytes(4, "big"))
-        return self._serialize(
+        return self.serialize(
             InsType.INS_SIGN_TX,
             P1Type.P1_TX_AUX_DATA,
             P2Type.P2_AUX_DATA_DELEGATION,
@@ -1273,7 +1291,7 @@ class CommandBuilder:
 
     def sign_tx_witness(self, path: str) -> bytes:
         data = pack_derivation_path(path)
-        return self._serialize(
+        return self.serialize(
             InsType.INS_SIGN_TX, P1Type.P1_TX_SIGN_WITNESS, P2Type.P2_UNUSED, data
         )
 
@@ -1294,7 +1312,7 @@ class CommandBuilder:
         data.append(SETTINGS_ENABLED if expert_mode else SETTINGS_DISABLED)
         data.append(SETTINGS_ENABLED if silent_export else SETTINGS_DISABLED)
         data.append(SETTINGS_ENABLED if blind_signing else SETTINGS_DISABLED)
-        return self._serialize(
+        return self.serialize(
             InsType.INS_DEBUG_SET_SETTINGS,
             P1Type.P1_UNUSED,
             P2Type.P2_UNUSED,
@@ -1315,7 +1333,7 @@ class CommandBuilder:
             offset += chunk_size
             more = offset < len(tx_data)
             p1 = P1Type.P1_TX_CHUNK if more else P1Type.P1_TX_CONFIRM
-            chunk_apdu = self._serialize(
+            chunk_apdu = self.serialize(
                 InsType.INS_SIGN_TX, p1, P2Type.P2_UNUSED, chunk_data
             )
             chunks.append(chunk_apdu)
@@ -1328,7 +1346,7 @@ class CommandBuilder:
             data.extend(tx_input.outputIndex.to_bytes(4, "big"))
 
         for tx_output in tx.outputs:
-            output_data = self._serialize_output(tx_output, tx)
+            output_data = self._serialize_output(tx_output)
             data.extend(len(output_data).to_bytes(2, "big"))
             data.extend(output_data)
 
@@ -1371,7 +1389,7 @@ class CommandBuilder:
                 data.extend(bytes.fromhex(required_signer.pathOrHashHex))
 
         if tx.collateralOutput is not None:
-            collateral_data = self._serialize_output(tx.collateralOutput, tx)
+            collateral_data = self._serialize_output(tx.collateralOutput)
             data.extend(len(collateral_data).to_bytes(2, "big"))
             data.extend(collateral_data)
 
@@ -1408,11 +1426,9 @@ class CommandBuilder:
 
         return bytes(data)
 
-    def _serialize_output(self, tx_output: TxOutput, tx: Transaction) -> bytearray:
+    def _serialize_output(self, tx_output: TxOutput) -> bytearray:
         output_data = bytearray()
-        output_data.extend(
-            self._serialize_output_destination(tx_output.destination, tx)
-        )
+        output_data.extend(self._serialize_output_destination(tx_output.destination))
 
         output_data.extend(tx_output.amount.to_bytes(8, "big"))
         output_data.append(tx_output.format)
@@ -1438,7 +1454,7 @@ class CommandBuilder:
                     output_data.extend(asset_name_bytes)
                     output_data.extend(token.amount.to_bytes(8, "big"))
 
-        if has_datum:
+        if has_datum and tx_output.datum is not None:
             datum_type = tx_output.datum.type
             if datum_type == DatumType.HASH:
                 output_data.append(int(DatumType.HASH))
@@ -1448,7 +1464,11 @@ class CommandBuilder:
                 datum_bytes = bytes.fromhex(tx_output.datum.datumHex)
                 output_data.extend(len(datum_bytes).to_bytes(2, "big"))
                 output_data.extend(datum_bytes)
-        if has_ref_script:
+        if (
+            has_ref_script
+            and isinstance(tx_output, TxOutputBabbage)
+            and tx_output.referenceScriptHex is not None
+        ):
             script_bytes = bytes.fromhex(tx_output.referenceScriptHex)
             output_data.extend(len(script_bytes).to_bytes(2, "big"))
             output_data.extend(script_bytes)
@@ -1456,17 +1476,19 @@ class CommandBuilder:
         return output_data
 
     def _serialize_output_destination(
-        self, tx_output_destination: TxOutputDestination, tx: Transaction
+        self, tx_output_destination: TxOutputDestination
     ) -> bytes:
         destination_data = bytearray()
         destination_data.append(tx_output_destination.type)
 
         if tx_output_destination.type == TxOutputDestinationType.THIRD_PARTY:
+            assert isinstance(tx_output_destination.params, ThirdPartyAddressParams)
             address_bytes = bytes.fromhex(tx_output_destination.params.addressHex)
             destination_data.extend(len(address_bytes).to_bytes(2, "big"))
             destination_data.extend(address_bytes)
             return bytes(destination_data)
 
+        assert isinstance(tx_output_destination.params, AddressParams)
         address_params = tx_output_destination.params
         destination_data.extend(self._serialize_address_params(address_params))
         return bytes(destination_data)
@@ -1754,7 +1776,7 @@ class CommandBuilder:
         if testCase.msgData.addressFieldType == MessageAddressFieldType.ADDRESS:
             data.extend(self._serialize_address_params(testCase.msgData.addressDesc))
 
-        return self._serialize(
+        return self.serialize(
             InsType.INS_SIGN_MSG, P1Type.P1_SIGN_MSG_INIT, P2Type.P2_UNUSED, bytes(data)
         )
 
@@ -1785,7 +1807,7 @@ class CommandBuilder:
         apdus: list[bytes] = []
         for payload in payloads:
             apdus.append(
-                self._serialize(
+                self.serialize(
                     InsType.INS_SIGN_MSG,
                     P1Type.P1_SIGN_MSG_CHUNK,
                     P2Type.P2_UNUSED,
@@ -1800,6 +1822,6 @@ class CommandBuilder:
         Returns:
             Serial data APDU (empty payload)
         """
-        return self._serialize(
+        return self.serialize(
             InsType.INS_SIGN_MSG, P1Type.P1_SIGN_MSG_CONFIRM, P2Type.P2_UNUSED, bytes()
         )

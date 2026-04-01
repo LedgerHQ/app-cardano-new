@@ -20,7 +20,6 @@ def format_display_name(prefix: str, test_name: str) -> str:
     return f"[{prefix}] {cleaned}"
 
 
-
 def read_file_safe(file_path: Path) -> str:
     """Read file with proper error handling. Exits immediately on error."""
     if not file_path.exists():
@@ -86,7 +85,9 @@ def write_file_safe(file_path: Path, content: str) -> None:
             try:
                 temp_file_path.unlink()
             except OSError as exc:
-                print(f"WARNING: Failed to clean up temporary file {temp_file_path}: {exc}")
+                print(
+                    f"WARNING: Failed to clean up temporary file {temp_file_path}: {exc}"
+                )
 
 
 def write_generated_c_file(file_path: Path, content: str) -> None:

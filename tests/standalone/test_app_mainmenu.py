@@ -11,9 +11,7 @@ from tests.standalone.settings import SettingID, settings_toggle
 
 
 # In this test we check the behavior of the device main menu
-def test_app_mainmenu(
-    device: Device, navigator: Navigator, test_name: str, default_screenshot_path: str
-) -> None:
+def test_app_mainmenu(device: Device, navigator: Navigator) -> None:
     if isinstance(navigator, Mock):
         pytest.skip("Menu test requires real navigation; skipping under --no-nav")
 

@@ -757,7 +757,8 @@ def assert_sign_msg_and_native_script_constants_match() -> None:
 
     if sign_msg_defines["MAX_CIP8_MSG_CHUNK_SIZE"] != MAX_CIP8_MSG_CHUNK_SIZE:
         raise AssertionError(
-            f"MAX_CIP8_MSG_CHUNK_SIZE mismatch: {MAX_CIP8_MSG_CHUNK_SIZE} != {sign_msg_defines['MAX_CIP8_MSG_CHUNK_SIZE']}"
+            f"MAX_CIP8_MSG_CHUNK_SIZE mismatch: {MAX_CIP8_MSG_CHUNK_SIZE}"
+            f" != {sign_msg_defines['MAX_CIP8_MSG_CHUNK_SIZE']}"
         )
 
     _assert_exact_enum_mapping(
