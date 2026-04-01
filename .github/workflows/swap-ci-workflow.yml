@@ -9,8 +9,47 @@ on:
   pull_request:
 
 jobs:
-  job_functional_tests:
-    uses: LedgerHQ/app-exchange/.github/workflows/reusable_swap_functional_tests.yml@develop
+  python_checks:
+    name: Python lint and type checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r tests/requirements.txt
+
+      - name: Run Python checks
+        run: |
+          make -C tests python-checks
+
+  run_unit_tests_gate:
+    name: Run unit tests
+    needs:
+      - python_checks
+    uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_unit_tests.yml@v1
+    secrets: inherit
     with:
-      branch_for_cardano: ${{ github.ref }}
-      test_filter: '"ADA or ada or Cardano or cardano"'
+      test_directory: tests/unit
+
+  build_application:
+    name: Build application using the reusable workflow
+    uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_build.yml@v1
+    with:
+      upload_app_binaries_artifact: "compiled_app_binaries"
+
+  tests_swap:
+    name: Run swap tests using the reusable workflow
+    needs:
+      - run_unit_tests_gate
+      - build_application
+    uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_swap_tests.yml@v1
+    with:
+      download_app_binaries_artifact: "compiled_app_binaries"

@@ -6,6 +6,16 @@ See **[doc/testing.md](../../doc/testing.md)** for system dependencies and envir
 
 ## Overview
 
+From the repository root, the shortest wrapper is:
+
+```shell
+make -C tests tests-unit
+```
+
+This regenerates unit fixtures, verifies there is no generated-file drift, builds the unit tests, and runs them.
+
+The underlying manual steps are:
+
 In `tests/unit` folder, compile with
 
 ```shell

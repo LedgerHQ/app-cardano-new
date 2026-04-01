@@ -54,6 +54,13 @@ ruff format . --exclude tests/venv
 ruff check --fix . --exclude tests/venv
 ```
 
+Run the Python lint and type checks used in CI from the repository root:
+
+```bash
+source tests/venv/bin/activate
+make -C tests python-checks
+```
+
 Notes:
 - The project follows absolute import patterns (`from tests.pkg...`).
 - Most `E402` (imports not at top) errors have been resolved by moving path bootstrapping to module execution (`python3 -m ...`). Avoid introducing new `sys.path` hacks.
@@ -92,6 +99,10 @@ Notes:
 - Use the shared venv above when running generator scripts or other Python-based
   test tooling.
 - Run ragger and swap tests only when explicitly requested.
+- Convenience wrappers from the repository root:
+  - `make -C tests python-checks` runs Ruff format check, pylint, and mypy.
+  - `make -C tests tests-unit` regenerates unit fixtures, checks drift, builds, and runs unit tests.
+  - `make -C tests fuzzing` builds fuzzing harnesses and runs each for 1 second by default (override with `FUZZ_SECONDS=<n>`, requires `BOLOS_SDK`).
 
 ## Coverage Exclusion Policy
 

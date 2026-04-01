@@ -8,6 +8,19 @@ This directory contains 13 fuzzing harnesses covering APDU handlers, transaction
 parsing, address derivation, script hashing, and other security-critical components.
 Each harness implements `int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)`.
 
+For a local compile-health build from the repository root, a convenience wrapper is available:
+
+```bash
+make -C tests fuzzing
+```
+
+This builds the fuzzing harnesses and runs each built fuzzer for 1 second by default.
+Override the duration with `FUZZ_SECONDS`, for example:
+
+```bash
+make -C tests fuzzing FUZZ_SECONDS=30
+```
+
 Quick start to build and run all fuzzers locally:
 
 ```bash

@@ -34,7 +34,7 @@ pytest -v --tb=short --device nanox --display
 -s
 -k <pattern>
 --tb=short
---device <nanox|nanosp|stax|flex|all>
+--device <nanox|nanosp|stax|flex|apex_p|all>
 --backend <speculos>
 --display
 --golden_run

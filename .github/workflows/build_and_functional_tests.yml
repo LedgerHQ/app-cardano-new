@@ -20,51 +20,19 @@ on:
         options:
           - 'Raise an error (default)'
           - 'Open a PR'
-  push:
+  workflow_run:
+    workflows:
+      - Unit tests
+    types:
+      - completed
     branches:
       - master
       - develop
-  pull_request:
 
 jobs:
-  check_generated_unit_test_files:
-    name: Verify generated unit-test files are up to date
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-dev-tools:latest
-    steps:
-      - name: Clone
-        uses: actions/checkout@v4
-
-      - name: Install Python dependencies for generator
-        run: |
-          python3 -m pip install --upgrade pip
-          pip install --extra-index-url https://test.pypi.org/simple/ -r tests/standalone/requirements.txt
-
-      - name: Regenerate unit-test files
-        run: |
-          cd tests/unit
-          python3 generators/generate_unit_tests_from_ragger.py
-
-      - name: Verify no generated file drift
-        run: |
-          if [ -n "$(git status --porcelain -- tests/unit)" ]; then
-            echo "Generated unit-test files are out of date. Run tests/unit/generators/generate_unit_tests_from_ragger.py and commit the changes."
-            git status --short -- tests/unit
-            exit 1
-          fi
-
-  run_unit_tests_gate:
-    name: Run unit tests
-    needs:
-      - check_generated_unit_test_files
-    uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_unit_tests.yml@v1
-    secrets: inherit
-    with:
-      test_directory: tests/unit
-
   build_application:
     name: Build application using the reusable workflow
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_build.yml@v1
     with:
       upload_app_binaries_artifact: "compiled_app_binaries"
@@ -72,8 +40,8 @@ jobs:
   ragger_tests:
     name: Run standalone ragger tests using the reusable workflow
     needs:
-      - run_unit_tests_gate
       - build_application
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_ragger_tests.yml@v1
     with:
       download_app_binaries_artifact: "compiled_app_binaries"

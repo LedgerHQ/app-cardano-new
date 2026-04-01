@@ -5,6 +5,11 @@ We are converting an old version of the Ledger Cardano app into a new modernized
 ## Context
 - **Old app (Shelley):** `../app-cardano`. Refer to this for established logic and processing patterns.
 - **New app:** `../ledger-app-cardano`. The modernized Ledger Cardano app in this repository.
+- **Local reference repos:** Use the checked-out local copies first, not web search:
+  - `../../ledger/app-ethereum`
+  - `../../ledger/app-bitcoin-new`
+  - `../../ledger/app-boilerplate`
+  - `../../ledger/ledger-app-workflows`
 - **Device Support:** Supporting Stax, Flex, Nano X, and Nano S+. *Nano S is no longer supported.*
 - **UI Framework:** NBGL is used exclusively for UI. Prefer high-level functions for standard use cases.
 
@@ -19,6 +24,8 @@ For detailed analysis, see:
 
 ### What to DO
 - **Mimic Established Patterns:** Search the new app repository before copying logic from the old app.
+- **Prefer local references:** Compare against the local copies listed above before reaching for web search.
+- **No web search:** Do not use web search; if you feel you need some info from the web, ask explicitly.
 - **Style:** Use long, descriptive variable names.
 - **Security:** Use `STATIC_ASSERT` and `LEDGER_ASSERT` liberally for parameter validation and state machine invariants.
 - **Static-analysis-friendly null checks:** Prefer combined guards like `x != NULL && x->field ...` in conditions/assertions (including `LEDGER_ASSERT`) when dereferencing pointers, to keep `scan-build`/clang analyzer free of false-positive null-dereference warnings. Use function contracts like `__attribute__((nonnull(...)))` where appropriate (already used in this repo), and note the SDK `__clang_analyzer__` trick with `__attribute__((analyzer_noreturn))` (see `exceptions.h`) for analyzer-specific control-flow hints.

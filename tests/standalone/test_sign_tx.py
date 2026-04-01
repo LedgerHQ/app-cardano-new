@@ -26,7 +26,7 @@ from tests.standalone.utils import (
     NavContext,
 )
 from tests.standalone.settings import SettingID, SettingValue, settings_set
-from tests.standalone.input_files.signTx import (  # type: ignore
+from tests.standalone.input_files.signTx import (
     testsByron,
     testsMary,
     testsShelleyNoCertificates,
