@@ -114,7 +114,6 @@ class SignTxTestCase:
     expected_aux_warnings: List[WarningBit] = field(
         default_factory=list
     )  # Warnings in auxiliary data (CVote) review
-    # TODO: Debug navigation
     unsuitable_in_ragger_reason: Optional[str] = (
         None  # If set, explains why this vector is unsuitable for direct ragger execution
     )

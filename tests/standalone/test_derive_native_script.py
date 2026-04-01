@@ -10,7 +10,7 @@ This module provides Ragger tests for Derive Native Script Hash check
 import hashlib
 import re
 
-import cbor2  # type: ignore
+import cbor2
 import pytest
 
 from ragger.backend import BackendInterface

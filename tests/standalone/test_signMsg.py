@@ -9,7 +9,7 @@ This module provides Ragger tests for Sign Message check
 
 from hashlib import blake2b
 import pytest
-import cbor
+import cbor2
 
 from ragger.backend import BackendInterface
 from ragger.error import ExceptionRAPDU
@@ -235,7 +235,7 @@ def _generate_payload(testCase: SignMsgTestCase, addressField: bytes) -> bytes:
     dico = {1: -8, "address": addressField}
 
     array.append("Signature1")
-    array.append(cbor.cbor.dumps_dict(dico))
+    array.append(cbor2.dumps(dico))
     array.append(b"")
     if testCase.msgData.hashPayload:
         msgHash = blake2b(
@@ -245,4 +245,4 @@ def _generate_payload(testCase: SignMsgTestCase, addressField: bytes) -> bytes:
     else:
         array.append(bytes.fromhex(testCase.msgData.messageHex))
 
-    return cbor.cbor.dumps_array(array)
+    return cbor2.dumps(array)
