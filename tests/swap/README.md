@@ -11,19 +11,18 @@ In this repository workflow, swap tests are run only on explicit request.
 make ENABLE_SWAP=1
 
 # 2. Set up and activate the shared Python environment
-# See ../../doc/testing.md
+# See doc/testing.md
 source tests/venv/bin/activate
 
 # 3. Clone and build test dependencies (first time only)
-cd tests/swap
-python helper_tool_clone_dependencies.py
+# These scripts can be run from the repository root
+python3 tests/swap/helper_tool_clone_dependencies.py
 docker run --user "$(id -u)":"$(id -g)" --rm -ti \
-  -v "$(realpath ../../):/app" \
+  -v "$(realpath .):/app" \
   ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest \
   bash -c "cd /app/tests/swap && python3 helper_tool_build_dependencies.py"
 
-# 4. Run tests (activate venv first each time)
-source tests/venv/bin/activate
+# 4. Run tests
 pytest tests/swap/ --device stax
 ```
 
@@ -55,10 +54,9 @@ The swap tests require the Exchange app and Ethereum app binaries.
 **Clone dependencies:**
 
 ```bash
-# From tests/swap/ with venv activated
+# From the repository root with venv activated
 source tests/venv/bin/activate
-cd tests/swap
-python3 helper_tool_clone_dependencies.py
+python3 tests/swap/helper_tool_clone_dependencies.py
 ```
 
 This creates `tests/swap/.test_dependencies/` and clones:
@@ -68,8 +66,9 @@ This creates `tests/swap/.test_dependencies/` and clones:
 **Build dependencies (inside Ledger Docker):**
 
 ```bash
+# From the repository root
 docker run --user "$(id -u)":"$(id -g)" --rm -ti \
-  -v "$(realpath ../../):/app" \
+  -v "$(realpath .):/app" \
   ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest \
   bash -c "cd /app/tests/swap && python3 helper_tool_build_dependencies.py"
 ```
@@ -84,23 +83,32 @@ This builds Exchange and Ethereum apps for all devices (stax, flex, nanox, nanos
 source tests/venv/bin/activate
 ```
 
-### List Available Tests
-
-```bash
-pytest . --device all --collect-only
-```
-
 ### Run All Swap Tests
+
+From the repository root:
 
 ```bash
 # Run on all devices
-pytest . --device all
+pytest tests/swap/ --device all
 
 # Run on specific device
+pytest tests/swap/ --device stax
+pytest tests/swap/ --device flex
+pytest tests/swap/ --device nanox
+pytest tests/swap/ --device nanos+
+```
+
+Alternatively, you can run them from the `tests/swap/` directory:
+
+```bash
+cd tests/swap
 pytest . --device stax
-pytest . --device flex
-pytest . --device nanox
-pytest . --device nanos+
+```
+
+### List Available Tests
+
+```bash
+pytest tests/swap/ --device all --collect-only
 ```
 
 ### Run Specific Test Scenarios
@@ -109,12 +117,12 @@ The test suite includes multiple scenarios via parametrization:
 
 ```bash
 # List all test scenarios
-pytest . --device stax --collect-only
+pytest tests/swap/ --device stax --collect-only
 
 # Run specific scenario
-pytest . -k "test_swap" --device stax -v
-pytest . -k "test_swap_wrong_destination" --device stax -v
-pytest . -k "test_swap_wrong_amount" --device stax -v
+pytest tests/swap/ -k "test_swap" --device stax -v
+pytest tests/swap/ -k "test_swap_wrong_destination" --device stax -v
+pytest tests/swap/ -k "test_swap_wrong_amount" --device stax -v
 ```
 
 ### Update UI Snapshots
@@ -122,7 +130,7 @@ pytest . -k "test_swap_wrong_amount" --device stax -v
 After making UI changes, update the golden snapshots:
 
 ```bash
-pytest . --device stax --golden_run
+pytest tests/swap/ --device stax --golden_run
 ```
 
 ### Deactivate Virtual Environment
@@ -166,8 +174,8 @@ The test suite validates:
 - Your prompt should show `(venv)` prefix when activated
 
 **"No such file or directory: app-exchange"**
-- Run `python helper_tool_clone_dependencies.py` and `python helper_tool_build_dependencies.py` from `tests/swap/`
-- Make sure you're in the `tests/swap/` directory
+- Ensure you have run `python3 tests/swap/helper_tool_clone_dependencies.py` and the build script as described in the Quick Start.
+- Check that `tests/swap/.test_dependencies/` exists and contains the cloned repositories.
 
 **"ImportError: ledger_app_clients.exchange"**
 - Activate venv: `source tests/venv/bin/activate`

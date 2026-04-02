@@ -43,6 +43,7 @@ For detailed analysis, see:
 - **Do NOT perform git write operations** (modifications/writes). Read-only commands like `git diff` are allowed.
 - **Do NOT install anything**.
 - **Do NOT add extended-length APDU support.** This app uses short-form APDUs only (5-byte header, Lc ≤ 255). Do not modify `tests/unit/generators/common.py::extract_apdu_payload()` or any parser/generator to handle the extended-length case.
+- **Do NOT generate golden snapshots** (`--golden_run` flag or equivalent). Golden snapshots must be reviewed and approved by a human before being committed. If a snapshot test fails, report the mismatch and stop.
 
 ### License Comment Policy
 - **Preserve attribution:** Apache-2.0 requires preserving copyright/attribution notices from upstream code.
