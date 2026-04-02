@@ -37,7 +37,7 @@ For detailed analysis, see:
 - **Use cheap fast model to gather context if possible (e.g. Haiku)**.
 
 ### What NOT to DO
-- **Do NOT modify `src/transaction/tx_hash_builder.c`, `src/addressUtils/addressUtilsShelley.c`, or `src/addressUtils/bip44.c`** without explicit confirmation. They are trusted components.
+- **Do NOT modify `src/transaction/tx_hash_builder.c` or `src/addressUtils/bip44.c`** without explicit confirmation. They are trusted components.
 - **Do NOT add custom CBOR serialization**, address manipulation, or BIP44 path functions. Use existing utilities.
 - **Do NOT remove original comments** explaining crucial details without confirmation.
 - **Do NOT perform git write operations** (modifications/writes). Read-only commands like `git diff` are allowed.

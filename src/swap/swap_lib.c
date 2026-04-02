@@ -71,8 +71,7 @@ bool swap_copy_transaction_parameters(create_transaction_parameters_t *params) {
 
     // Save destination address
     ASSERT(params->destination_address != NULL);
-    LEDGER_ASSERT(strlen(params->destination_address) < sizeof(swap_validated.destination),
-                  "Swap destination address too long");
+    ASSERT(strlen(params->destination_address) < sizeof(swap_validated.destination));
     strlcpy(swap_validated.destination,
             params->destination_address,
             sizeof(swap_validated.destination));
