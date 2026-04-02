@@ -3,19 +3,15 @@
 
 from dataclasses import dataclass
 from typing import Any
-import re
 
 from tests.unit.generators.common import (
     write_generated_c_file,
     sanitize_c_identifier,
-    _ensure_base58_module,
     format_bytes_as_c_array,
-    resolve_mnemonic,
 )
 from tests.unit.generators.paths import GENERATED_PUBKEY_DIR, UNIT_TESTS_DIR
 
 FIXTURES_FILE = GENERATED_PUBKEY_DIR / "test_pubkey_fixtures.h"
-MOCK_DATA_FILE = UNIT_TESTS_DIR / "mock_crypto" / "crypto_mock_data.h"
 
 
 @dataclass(frozen=True)
@@ -121,135 +117,15 @@ def _serialize_pubkey_test_case_to_apdu(test_case: Any) -> bytes:
     return bytes(data)
 
 
-# ==============================================================================
-# Step 3: Derive Expected Pubkey + Chaincode
-# ==============================================================================
+def _get_expected_response_bytes(test_case: Any) -> bytes:
+    if test_case.unit_test_expect is None:
+        raise ValueError(
+            f"pubkey fixture {test_case.name!r} is missing unit_test_expect"
+        )
 
-
-def _derive_expected_response_bytes(test_case: Any, mnemonic: str) -> bytes:
-    """
-    Derive expected extended public key bytes for a test case.
-
-    Returns:
-        Bytes: pubkey (32) + chaincode (32)
-    """
-    try:
-        from ragger.bip import calculate_public_key_and_chaincode, CurveChoice  # type: ignore
-    except ImportError:
-        return _derive_expected_response_from_mock_data(test_case.path)
-
-    pubkey_hex, chaincode_hex = calculate_public_key_and_chaincode(
-        CurveChoice.Ed25519Kholaw,
-        test_case.path,
-        mnemonic=mnemonic,
+    return bytes.fromhex(test_case.unit_test_expect.publicKeyHex) + bytes.fromhex(
+        test_case.unit_test_expect.chainCodeHex
     )
-
-    public_key = bytes.fromhex(pubkey_hex[2:])
-    chain_code = bytes.fromhex(chaincode_hex)
-    return public_key + chain_code
-
-
-_MOCK_PATH_MAP: dict[str, bytes] | None = None
-
-
-def _derive_expected_response_from_mock_data(path: str) -> bytes:
-    global _MOCK_PATH_MAP
-
-    if _MOCK_PATH_MAP is None:
-        _MOCK_PATH_MAP = _build_mock_path_map()
-
-    if path not in _MOCK_PATH_MAP:
-        raise ValueError(f"Mock data missing for path: {path}")
-
-    return _MOCK_PATH_MAP[path]
-
-
-def _build_mock_path_map() -> dict[str, bytes]:
-    if not MOCK_DATA_FILE.exists():
-        raise FileNotFoundError(f"Mock data file not found: {MOCK_DATA_FILE}")
-
-    content = MOCK_DATA_FILE.read_text(encoding="utf-8")
-
-    mock_paths_match = re.search(
-        r"(static\s+const\s+mock_path_data_t\s+MOCK_PATHS\[\]\s*=\s*\{)(.*?)(\};)",
-        content,
-        flags=re.DOTALL,
-    )
-    if not mock_paths_match:
-        raise ValueError("MOCK_PATHS definition not found in crypto_mock_data.h")
-
-    body = mock_paths_match.group(2)
-    entry_start_pattern = re.compile(r"\{\s*\.path\s*=")
-
-    def extract_entries(text: str) -> list[str]:
-        entries: list[str] = []
-        search_pos = 0
-        while True:
-            match = entry_start_pattern.search(text, search_pos)
-            if not match:
-                break
-            start = match.start()
-            depth = 0
-            idx = start
-            while idx < len(text):
-                char = text[idx]
-                if char == "{":
-                    depth += 1
-                elif char == "}":
-                    depth -= 1
-                    if depth == 0:
-                        end_idx = idx + 1
-                        break
-                idx += 1
-            else:
-                raise ValueError("Unbalanced braces while parsing mock entries")
-            while end_idx < len(text) and text[end_idx] in " \t\r\n,":
-                end_idx += 1
-            entries.append(text[start:end_idx])
-            search_pos = end_idx
-        return entries
-
-    def parse_bip32_path(path_array_str: str, path_len: int) -> str:
-        hex_values = re.findall(r"0x[0-9a-fA-F]+", path_array_str)
-        hex_values = hex_values[:path_len]
-        path_parts = ["m"]
-        for hex_val in hex_values:
-            val = int(hex_val, 16)
-            if val & 0x80000000:
-                path_parts.append(f"{val & 0x7FFFFFFF}'")
-            else:
-                path_parts.append(str(val))
-        return "/".join(path_parts)
-
-    def parse_c_byte_array(array_str: str) -> bytes:
-        hex_values = re.findall(r"0x[0-9a-fA-F]+", array_str)
-        return bytes(int(val, 16) for val in hex_values)
-
-    path_map: dict[str, bytes] = {}
-    for entry in extract_entries(body):
-        path_match = re.search(r"\.path\s*=\s*(\{[^}]+\})", entry)
-        path_len_match = re.search(r"\.path_len\s*=\s*(\d+)", entry)
-        pubkey_match = re.search(r"\.public_key\s*=\s*\{(.*?)\}", entry, re.DOTALL)
-        chaincode_match = re.search(r"\.chain_code\s*=\s*\{(.*?)\}", entry, re.DOTALL)
-
-        if (
-            not path_match
-            or not path_len_match
-            or not pubkey_match
-            or not chaincode_match
-        ):
-            raise ValueError("Failed to parse mock path entry")
-
-        path_array = path_match.group(1)
-        path_len = int(path_len_match.group(1))
-        path_desc = parse_bip32_path(path_array, path_len)
-
-        public_key = parse_c_byte_array(pubkey_match.group(1))
-        chain_code = parse_c_byte_array(chaincode_match.group(1))
-
-        path_map[path_desc] = public_key + chain_code
-
-    return path_map
 
 
 # ==============================================================================
@@ -335,11 +211,10 @@ def _generate_fixture_code_for_test_case(
 def _build_fixtures_for_group(
     group_name: str,
     group: PubKeyTestGroup,
-    mnemonic: str,
 ) -> list[str]:
     header_lines: list[str] = []
     for idx, test_case in enumerate(group.test_cases):
-        expected_response = _derive_expected_response_bytes(test_case, mnemonic)
+        expected_response = _get_expected_response_bytes(test_case)
         header_lines.extend(
             _generate_fixture_code_for_test_case(
                 group_name,
@@ -357,8 +232,6 @@ def generate_pubkey_fixtures() -> int:
     Returns:
         Total number of fixture entries generated.
     """
-    _ensure_base58_module()
-    mnemonic = resolve_mnemonic()
     categorized_test_cases = _load_public_key_test_cases()
 
     header_lines: list[str] = [
@@ -387,7 +260,7 @@ def generate_pubkey_fixtures() -> int:
 
     total_fixtures = 0
     for group_name, group in categorized_test_cases.items():
-        header_lines.extend(_build_fixtures_for_group(group_name, group, mnemonic))
+        header_lines.extend(_build_fixtures_for_group(group_name, group))
         total_fixtures += len(group.test_cases)
 
     for group_name, group in categorized_test_cases.items():

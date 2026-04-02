@@ -30,6 +30,7 @@ def _build_file_header() -> str:
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <stdio.h>
 #include <stdarg.h>
 #include <setjmp.h>
 
@@ -105,6 +106,14 @@ static void run_opcert_fixture(const opcert_fixture_t *fixture) {
     assert_read_buffer_unchanged_and_cleanup(&opcert_buffer, fixture->payload);
     assert_int_equal(g_last_sw, SWO_SUCCESS);
     assert_int_equal(g_last_response_len, ED25519_SIGNATURE_LENGTH);
+    if (fixture->expected_signature == NULL || fixture->expected_signature_len == 0) {
+        fprintf(stderr, "UNIT_CAPTURE [%s] signatureHex=", fixture->name);
+        for (size_t i = 0; i < g_last_response_len; i++) fprintf(stderr, "%02x", g_last_response[i]);
+        fprintf(stderr, "\\n");
+        fail_msg("Missing unit expected result for opcert fixture '%s'", fixture->name);
+    }
+    assert_int_equal(fixture->expected_signature_len, ED25519_SIGNATURE_LENGTH);
+    assert_memory_equal(g_last_response, fixture->expected_signature, fixture->expected_signature_len);
 }
 
 """

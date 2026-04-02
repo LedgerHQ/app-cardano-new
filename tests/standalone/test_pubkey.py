@@ -89,7 +89,7 @@ def test_pubkey_confirm(
     assert response and response.status == StatusWord.SWO_SUCCESS
 
     # Check the response
-    _check_pubkey_result(response.data, testCase.path)
+    _check_pubkey_result(response.data, testCase)
 
 
 @pytest.mark.parametrize("testCase", testsSilentExport, ids=idTestFunc)
@@ -123,7 +123,7 @@ def test_pubkey_without_confirmation(
     assert response and response.status == StatusWord.SWO_SUCCESS
 
     # Check the response
-    _check_pubkey_result(response.data, testCase.path)
+    _check_pubkey_result(response.data, testCase)
 
 
 @pytest.mark.parametrize("testCase", testsSilentExportRareKeys, ids=idTestFunc)
@@ -156,7 +156,7 @@ def test_pubkey_confirm_even_with_silent_export(
     response = client.get_async_response()
     assert response and response.status == StatusWord.SWO_SUCCESS
 
-    _check_pubkey_result(response.data, testCase.path)
+    _check_pubkey_result(response.data, testCase)
 
 
 @pytest.mark.parametrize("testCase", denyTestCases, ids=idTestFunc)
@@ -173,8 +173,19 @@ def test_pubkey_deny(backend: BackendInterface, testCase: PubKeyTestCase) -> Non
     assert err.value.status == StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED
 
 
-def _check_pubkey_result(data: bytes, path: str) -> None:
+def _check_ragger_expect_pubkey(
+    testCase: PubKeyTestCase, public_key: bytes, chain_code: bytes
+) -> None:
+    if testCase.ragger_expect is None:
+        pytest.fail(f"Missing ragger_expect for pubkey fixture {testCase.name!r}")
+    assert public_key.hex() == testCase.ragger_expect.publicKeyHex
+    assert chain_code.hex() == testCase.ragger_expect.chainCodeHex
+
+
+def _check_pubkey_result(data: bytes, testCase: PubKeyTestCase) -> None:
+    assert testCase.path is not None
     public_key, chain_code = unpack_get_pubkey_response(data)
-    ref_pk, ref_chaincode = get_device_pubkey(path)
+    ref_pk, ref_chaincode = get_device_pubkey(testCase.path)
     assert public_key.hex() == ref_pk.hex()
     assert chain_code.hex() == ref_chaincode
+    _check_ragger_expect_pubkey(testCase, public_key, chain_code)

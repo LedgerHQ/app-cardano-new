@@ -26,7 +26,7 @@
 
 #include "blake2b.h"
 
-#include "test_address_derivation_fixtures_deny.h"
+#include "test_derive_address_fixtures_deny.h"
 #include "test_fixture_types.h"
 #include "apdu_finalization_check.h"
 #include "io_capture.h"

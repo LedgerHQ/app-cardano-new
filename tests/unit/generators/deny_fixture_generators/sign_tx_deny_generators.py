@@ -138,7 +138,7 @@ def _build_deny_fixtures() -> str:
         sanitized_name: str
         init_hex: str
         chunks: list[ChunkInfo]
-        expected_sw: str
+        expected_swo: str
         expect_init_failure: bool
         source_set: str
         source_file: str
@@ -207,8 +207,8 @@ def _build_deny_fixtures() -> str:
                     hex_payload=witness_apdu[5:].hex().upper(),
                 )
             )
-        expected_sw = test_case.expected_sw or StatusWord.SWO_SUCCESS
-        expected_sw_name = expected_sw.name
+        expected_swo = test_case.expected_swo or StatusWord.SWO_SUCCESS
+        expected_swo_name = expected_swo.name
         expect_init_failure = prefix == "DENY_INIT"
         if prefix == "DENY_ADDRESS":
             normalized_name = sanitize_c_identifier(test_case.name).upper()
@@ -226,7 +226,7 @@ def _build_deny_fixtures() -> str:
             sanitized_name=sanitize_c_identifier(test_case.name).upper(),
             init_hex=init_payload.hex().upper(),
             chunks=chunks,
-            expected_sw=expected_sw_name,
+            expected_swo=expected_swo_name,
             expect_init_failure=expect_init_failure,
             source_set=source_set,
             source_file="tests/standalone/input_files/signTx.py",
@@ -317,7 +317,7 @@ def _build_deny_fixtures() -> str:
                 else:
                     lines.append("        .chunks = NULL,")
                     lines.append("        .chunk_count = 0,")
-                lines.append(f"        .expected_sw = {fixture.expected_sw},")
+                lines.append(f"        .expected_swo = {fixture.expected_swo},")
                 lines.append(
                     f"        .expect_init_failure = {'true' if fixture.expect_init_failure else 'false'},"
                 )

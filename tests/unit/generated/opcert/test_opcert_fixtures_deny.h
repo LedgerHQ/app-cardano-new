@@ -113,48 +113,48 @@ static const opcert_deny_fixture_t OPCERT_DENY_FIXTURES[] = {
     .name = "opcert_deny_truncated_kes_key",
     .payload = OPCERT_DENY_000_OPCERT_DENY_TRUNCATED_KES_KEY_PAYLOAD,
     .payload_len = sizeof(OPCERT_DENY_000_OPCERT_DENY_TRUNCATED_KES_KEY_PAYLOAD),
-    .expected_sw = SWO_OPCERT_PARSING_FAIL_KES_KEY,
+    .expected_swo = SWO_OPCERT_PARSING_FAIL_KES_KEY,
 },
 // Source: tests/standalone/input_files/signOpCert.py > opCertDenyTestCases > opcert_deny_truncated_kes_period
 {
     .name = "opcert_deny_truncated_kes_period",
     .payload = OPCERT_DENY_001_OPCERT_DENY_TRUNCATED_KES_PERIOD_PAYLOAD,
     .payload_len = sizeof(OPCERT_DENY_001_OPCERT_DENY_TRUNCATED_KES_PERIOD_PAYLOAD),
-    .expected_sw = SWO_OPCERT_PARSING_FAIL_KES_PERIOD,
+    .expected_swo = SWO_OPCERT_PARSING_FAIL_KES_PERIOD,
 },
 // Source: tests/standalone/input_files/signOpCert.py > opCertDenyTestCases > opcert_deny_truncated_issue_counter
 {
     .name = "opcert_deny_truncated_issue_counter",
     .payload = OPCERT_DENY_002_OPCERT_DENY_TRUNCATED_ISSUE_COUNTER_PAYLOAD,
     .payload_len = sizeof(OPCERT_DENY_002_OPCERT_DENY_TRUNCATED_ISSUE_COUNTER_PAYLOAD),
-    .expected_sw = SWO_OPCERT_PARSING_FAIL_ISSUE_COUNTER,
+    .expected_swo = SWO_OPCERT_PARSING_FAIL_ISSUE_COUNTER,
 },
 // Source: tests/standalone/input_files/signOpCert.py > opCertDenyTestCases > opcert_deny_invalid_pool_key_path
 {
     .name = "opcert_deny_invalid_pool_key_path",
     .payload = OPCERT_DENY_003_OPCERT_DENY_INVALID_POOL_KEY_PATH_PAYLOAD,
     .payload_len = sizeof(OPCERT_DENY_003_OPCERT_DENY_INVALID_POOL_KEY_PATH_PAYLOAD),
-    .expected_sw = SWO_OPCERT_PARSING_FAIL_POOL_KEY_PATH,
+    .expected_swo = SWO_OPCERT_PARSING_FAIL_POOL_KEY_PATH,
 },
 // Source: tests/standalone/input_files/signOpCert.py > opCertDenyTestCases > opcert_deny_wrong_pool_key_path_class
 {
     .name = "opcert_deny_wrong_pool_key_path_class",
     .payload = OPCERT_DENY_004_OPCERT_DENY_WRONG_POOL_KEY_PATH_CLASS_PAYLOAD,
     .payload_len = sizeof(OPCERT_DENY_004_OPCERT_DENY_WRONG_POOL_KEY_PATH_CLASS_PAYLOAD),
-    .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    .expected_swo = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 // Source: tests/standalone/input_files/signOpCert.py > opCertDenyTestCases > opcert_deny_trailing_bytes
 {
     .name = "opcert_deny_trailing_bytes",
     .payload = OPCERT_DENY_005_OPCERT_DENY_TRAILING_BYTES_PAYLOAD,
     .payload_len = sizeof(OPCERT_DENY_005_OPCERT_DENY_TRAILING_BYTES_PAYLOAD),
-    .expected_sw = SWO_INVALID_OPCERT_LENGTH,
+    .expected_swo = SWO_INVALID_OPCERT_LENGTH,
 },
 // Source: tests/standalone/input_files/signOpCert.py > opCertDenyTestCases > opcert_deny_oversized_payload
 {
     .name = "opcert_deny_oversized_payload",
     .payload = OPCERT_DENY_006_OPCERT_DENY_OVERSIZED_PAYLOAD_PAYLOAD,
     .payload_len = sizeof(OPCERT_DENY_006_OPCERT_DENY_OVERSIZED_PAYLOAD_PAYLOAD),
-    .expected_sw = SWO_INVALID_OPCERT_LENGTH,
+    .expected_swo = SWO_INVALID_OPCERT_LENGTH,
 },
 };

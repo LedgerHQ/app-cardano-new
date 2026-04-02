@@ -22,6 +22,8 @@ pytest -v --tb=short --device nanox --display
 ## Important Notes
 
 - `test_sign_tx.py` uses a DEBUG-only settings APDU to toggle expert mode between runs.
+- `test_sign_tx.py` keeps all happy-path ragger expectations directly in
+  `input_files/signTx.py`; sign-tx fixtures are edited there directly.
 - In `test_sign_tx_deny`, some deny cases are witness-phase policy denials: tx review is approved first, then deny is expected on `SIGN_TX_WITNESS`.
 - In this repository workflow, ragger tests are run only on explicit request.
 - Build the app first; if automated app build is unavailable, use the unit tests build flow as a compile-health proxy.

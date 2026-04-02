@@ -5,7 +5,6 @@
 # Test file for Cardano transaction signing with simple chunked flow
 
 import pytest
-from hashlib import blake2b
 from ledgered.devices import Device
 from ragger.backend import BackendInterface
 from ragger.navigator import Navigator, NavInsID, NavIns
@@ -71,6 +70,7 @@ from tests.standalone.input_files.signTx import (
     TxAuxiliaryDataType,
     ThirdPartyAddressParams,
     TransactionSigningMode,
+    Witness,
 )
 
 
@@ -118,14 +118,13 @@ def _run_sign_tx_test(
     nav_ctx = NavContext(device, navigator, scenario_navigator)
     client = CommandSender(backend)
     assert testCase.tx is not None
-    assert testCase.txBody is not None
     assert testCase.signingMode is not None
+    if testCase.ragger_expect is None:
+        pytest.fail(
+            f"Missing ragger_expect for happy-path signTx fixture {testCase.name!r}"
+        )
     tx = testCase.tx
 
-    # Calculate expected transaction hash from the CBOR txBody
-    expected_cbor = bytes.fromhex(testCase.txBody)
-    expected_hash = blake2b(expected_cbor, digest_size=32).digest()
-    print(f"Expected tx hash: {expected_hash.hex()}")
     auxiliary_data = testCase.tx.auxiliaryData
     is_cip36_auxiliary_review = (
         auxiliary_data is not None
@@ -380,6 +379,7 @@ def _run_sign_tx_test(
     )
     print(f"Witness paths: {witness_paths}")
 
+    collected_witnesses: list[Witness] = []
     for path_idx, path in enumerate(witness_paths):
         # Pool registration witnesses (owner/operator) always need confirmation.
         pool_or_plutus_modes = (
@@ -428,6 +428,42 @@ def _run_sign_tx_test(
             f"Witness signature for {path} ({len(signature)} bytes): {signature.hex()}"
         )
         verify_signature(path, signature, tx_hash)
+        collected_witnesses.append(
+            Witness(path=path, witnessSignatureHex=signature.hex())
+        )
+
+    _check_ragger_expect_sign_tx(testCase, tx_hash, collected_witnesses)
+
+
+def _check_ragger_expect_sign_tx(
+    testCase: SignTxTestCase,
+    tx_hash: bytes,
+    collected_witnesses: list[Witness],
+) -> None:
+    assert testCase.ragger_expect is not None, (
+        f"Missing ragger_expect for happy-path signTx fixture {testCase.name!r}"
+    )
+    assert testCase.ragger_expect.txHashHex is not None, (
+        f"Missing ragger_expect.txHashHex for happy-path signTx fixture {testCase.name!r}"
+    )
+    assert testCase.ragger_expect.witnesses is not None, (
+        f"Missing ragger_expect.witnesses for happy-path signTx fixture {testCase.name!r}"
+    )
+
+    assert tx_hash.hex() == testCase.ragger_expect.txHashHex, (
+        f"Tx hash mismatch for {testCase.name!r}"
+    )
+
+    assert len(collected_witnesses) == len(testCase.ragger_expect.witnesses), (
+        f"Witness count mismatch for {testCase.name!r}: "
+        f"got {len(collected_witnesses)}, expected {len(testCase.ragger_expect.witnesses)}"
+    )
+    for idx, (actual, expected) in enumerate(
+        zip(collected_witnesses, testCase.ragger_expect.witnesses)
+    ):
+        assert actual.witnessSignatureHex == expected.witnessSignatureHex, (
+            f"Witness[{idx}] signature mismatch for {testCase.name!r} path={actual.path!r}"
+        )
 
 
 @pytest.mark.parametrize("expert_mode", [False, True], ids=["non_expert", "expert"])
@@ -608,7 +644,7 @@ def test_sign_tx_deny(
             on_review=review_tx,
         )
     except ExceptionRAPDU as err:
-        assert err.status == testCase.expected_sw
+        assert err.status == testCase.expected_swo
         return
 
     # Phase 2: tx body passed; expected denial must happen in witness phase.
@@ -633,7 +669,7 @@ def test_sign_tx_deny(
         try:
             client.sign_tx_witness(witness_path)
         except ExceptionRAPDU as err:
-            if err.status == testCase.expected_sw:
+            if err.status == testCase.expected_swo:
                 deny_observed = True
                 break
             raise

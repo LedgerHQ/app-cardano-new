@@ -8,8 +8,6 @@ This module provides Ragger tests for Derive Address check
 """
 
 import pytest
-import base58
-
 from ragger.backend import BackendInterface
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 from ragger.error import ExceptionRAPDU
@@ -53,6 +51,7 @@ def test_derive_address(
     if testCase in shelleyTestCasesNoConfirm and mode == "return":
         address = client.derive_address(p1_type, testCase.params)
         assert address == derive_address(testCase)
+        _check_ragger_expect_address(testCase, address)
         return
 
     # Byron and Shelley with confirmation require navigation
@@ -66,10 +65,21 @@ def test_derive_address(
     if mode == "return":
         address = unpack_derive_address_response(response.data)
         if testCase in byronTestCases:
-            encoded = base58.b58encode(address).decode()
-            assert encoded == derive_address(testCase)
+            assert testCase.ragger_expect is not None
+            assert address.hex() == testCase.ragger_expect.addressHex
         else:
             assert address == derive_address(testCase)
+        _check_ragger_expect_address(testCase, address)
+
+
+def _check_ragger_expect_address(
+    testCase: DeriveAddressTestCase, address: bytes
+) -> None:
+    if testCase.ragger_expect is None:
+        pytest.fail(
+            f"Missing ragger_expect for derive_address fixture {testCase.name!r}"
+        )
+    assert address.hex() == testCase.ragger_expect.addressHex
 
 
 @pytest.mark.parametrize("testCase", denyTestCases, ids=idTestFunc)
@@ -83,4 +93,8 @@ def test_derive_address_deny(
     with pytest.raises(ExceptionRAPDU) as err:
         with client.derive_address_async(testCase.p1, testCase.params):
             pass
-    assert err.value.status == StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED
+    if testCase.expected_swo is None:
+        pytest.fail(
+            f"MISSING_EXPECTED_SWO [{testCase.name}] expected_swo must be set for deny fixtures"
+        )
+    assert err.value.status == testCase.expected_swo

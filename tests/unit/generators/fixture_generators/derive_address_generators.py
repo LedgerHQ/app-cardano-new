@@ -184,18 +184,23 @@ def _generate_fixture_code_for_test_case(
     code_lines.extend(payload_array_code)
     code_lines.append("")
 
-    expected_hex = getattr(test_case, "result_hex", None)
-    if expected_hex:
-        expected_bytes = bytes.fromhex(expected_hex)
-        expected_array_name = f"DERIVE_ADDRESS_{type_test}_{test_number:03d}_{safe_test_name}_EXPECTED_ADDRESS"
-        expected_array_code = format_bytes_as_c_array(
-            expected_bytes,
-            expected_array_name,
-            bytes_per_line=16,
-            return_as_list=True,
+    expected = getattr(test_case, "unit_test_expect", None)
+    expected_hex = getattr(expected, "addressHex", None)
+    if expected_hex is None or expected_hex == "":
+        raise ValueError(
+            f"derive_address fixture {test_case.name!r} is missing unit_test_expect.addressHex"
         )
-        code_lines.extend(expected_array_code)
-        code_lines.append("")
+
+    expected_bytes = bytes.fromhex(expected_hex)
+    expected_array_name = f"DERIVE_ADDRESS_{type_test}_{test_number:03d}_{safe_test_name}_EXPECTED_ADDRESS"
+    expected_array_code = format_bytes_as_c_array(
+        expected_bytes,
+        expected_array_name,
+        bytes_per_line=16,
+        return_as_list=True,
+    )
+    code_lines.extend(expected_array_code)
+    code_lines.append("")
 
     return code_lines
 
@@ -291,7 +296,8 @@ def _build_fixtures() -> str:
             header_lines.append(f"    .data = {payload_array_name},")
             header_lines.append(f"    .data_len = sizeof({payload_array_name}),")
             header_lines.append("    .check_expected = SWO_SUCCESS,")
-            expected_hex = getattr(test_case, "result_hex", None)
+            expected = getattr(test_case, "unit_test_expect", None)
+            expected_hex = getattr(expected, "addressHex", None)
             if expected_hex:
                 expected_array_name = f"DERIVE_ADDRESS_{category.type}_{test_number:03d}_{safe_test_name}_EXPECTED_ADDRESS"
                 header_lines.append(f"    .expected_address = {expected_array_name},")

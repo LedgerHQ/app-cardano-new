@@ -98,7 +98,7 @@ def test_sign_message_deny(
         chunk_apdu = build_sign_msg_chunk_apdu_for_deny(testCase, 0)
         with pytest.raises(ExceptionRAPDU) as err:
             backend.exchange_raw(chunk_apdu)
-        assert err.value.status == testCase.expected_status
+        assert err.value.status == testCase.expected_swo
         return
 
     # Standard flow: always send INIT first
@@ -113,14 +113,14 @@ def test_sign_message_deny(
         or testCase.truncate_init_apdu_at is not None
         or
         # Security policy deny (happens during INIT after parsing succeeds)
-        testCase.expected_status == StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED
+        testCase.expected_swo == StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED
         or
         # Address params parsing failure (happens during INIT)
-        testCase.expected_status == StatusWord.SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS
+        testCase.expected_swo == StatusWord.SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS
         or
         # Memory overflow during INIT validation (SWO_INSUFFICIENT_MEMORY)
         (
-            testCase.expected_status == StatusWord.SWO_INSUFFICIENT_MEMORY
+            testCase.expected_swo == StatusWord.SWO_INSUFFICIENT_MEMORY
             and (
                 msg_len > 65535  # Exceeds UINT16_MAX
                 or (
@@ -134,7 +134,7 @@ def test_sign_message_deny(
     if expect_init_failure:
         with pytest.raises(ExceptionRAPDU) as err:
             backend.exchange_raw(init_apdu)
-        assert err.value.status == testCase.expected_status
+        assert err.value.status == testCase.expected_swo
         return
 
     # INIT succeeded, continue to CHUNK phase
@@ -149,7 +149,7 @@ def test_sign_message_deny(
         chunk_apdu = build_sign_msg_chunk_apdu_for_deny(testCase, 0)
         with pytest.raises(ExceptionRAPDU) as err:
             backend.exchange_raw(chunk_apdu)
-        assert err.value.status == testCase.expected_status
+        assert err.value.status == testCase.expected_swo
         return
 
     # Handle CONFIRM-phase deny scenarios
@@ -158,7 +158,7 @@ def test_sign_message_deny(
         confirm_apdu = build_sign_msg_confirm_apdu_for_deny(testCase)
         with pytest.raises(ExceptionRAPDU) as err:
             backend.exchange_raw(confirm_apdu)
-        assert err.value.status == testCase.expected_status
+        assert err.value.status == testCase.expected_swo
         return
 
     if testCase.send_confirm_with_payload:
@@ -175,7 +175,7 @@ def test_sign_message_deny(
         confirm_apdu = build_sign_msg_confirm_apdu_for_deny(testCase)
         with pytest.raises(ExceptionRAPDU) as err:
             backend.exchange_raw(confirm_apdu)
-        assert err.value.status == testCase.expected_status
+        assert err.value.status == testCase.expected_swo
         return
 
     # If we reach here, the test case configuration is incomplete
@@ -225,6 +225,26 @@ def _check_result(
     # Check the signature
     payload = _generate_payload(testCase, address_field)
     verify_signature(testCase.msgData.signingPath, signature, payload)
+    _check_ragger_expect_sign_msg(testCase, signature, public_key, address_field)
+
+
+def _check_ragger_expect_sign_msg(
+    testCase: SignMsgTestCase,
+    signature: bytes,
+    public_key: bytes,
+    address_field: bytes,
+) -> None:
+    if testCase.ragger_expect is None:
+        pytest.fail(f"Missing ragger_expect for signMsg fixture {testCase.name!r}")
+    assert signature.hex() == testCase.ragger_expect.signatureHex, (
+        f"Signature mismatch for {testCase.name!r}"
+    )
+    assert public_key.hex() == testCase.ragger_expect.signingPublicKeyHex, (
+        f"Signing public key mismatch for {testCase.name!r}"
+    )
+    assert address_field.hex() == testCase.ragger_expect.addressFieldHex, (
+        f"Address field mismatch for {testCase.name!r}"
+    )
 
 
 def _generate_payload(testCase: SignMsgTestCase, addressField: bytes) -> bytes:

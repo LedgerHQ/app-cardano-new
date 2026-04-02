@@ -6,6 +6,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdarg.h>
 #include <setjmp.h>
 
@@ -73,8 +74,14 @@ static inline void run_fixture(const derive_address_fixture_t *fixture) {
     assert_read_buffer_unchanged_and_cleanup(&derive_address_buffer, fixture->data);
     assert_int_equal(g_last_response_sw, fixture->check_expected);
 
-    if (fixture->expected_address != NULL && fixture->expected_address_len > 0) {
-        assert_int_equal(fixture->check_expected, SWO_SUCCESS);
+    if (fixture->check_expected == SWO_SUCCESS && fixture->p1 == P1_ADDRESS_RETURN) {
+        if (fixture->expected_address == NULL || fixture->expected_address_len == 0) {
+            fprintf(stderr, "UNIT_CAPTURE [%s] expectedAddressHex=", fixture->name);
+            for (size_t i = 0; i < g_last_response_len; i++) fprintf(stderr, "%02x", g_last_response[i]);
+            fprintf(stderr, "\n");
+            fail_msg("Missing unit expected result for derive_address fixture '%s'", fixture->name);
+        }
+
         assert_int_equal(g_last_response_len, fixture->expected_address_len);
         assert_memory_equal(g_last_response,
                             fixture->expected_address,

@@ -107,6 +107,45 @@ def generate_cvote_fixtures() -> int:
         )
         header_lines.append("")
 
+        expected_votecast_hash_array_name = "NULL"
+        expected_votecast_hash_len = "0"
+        expected_witness_signature_array_name = "NULL"
+        expected_witness_signature_len = "0"
+        if getattr(test_case, "unit_test_expect", None) is not None:
+            expected_votecast_hash_bytes = bytes.fromhex(
+                test_case.unit_test_expect.votecastHashHex
+            )
+            expected_votecast_hash_array_name = f"{base_name}_EXPECTED_VOTECAST_HASH"
+            header_lines.extend(
+                format_bytes_as_c_array(
+                    expected_votecast_hash_bytes,
+                    expected_votecast_hash_array_name,
+                    bytes_per_line=16,
+                    return_as_list=True,
+                )
+            )
+            header_lines.append("")
+            expected_votecast_hash_len = f"sizeof({expected_votecast_hash_array_name})"
+
+            expected_witness_signature_bytes = bytes.fromhex(
+                test_case.unit_test_expect.witnessSignatureHex
+            )
+            expected_witness_signature_array_name = (
+                f"{base_name}_EXPECTED_WITNESS_SIGNATURE"
+            )
+            header_lines.extend(
+                format_bytes_as_c_array(
+                    expected_witness_signature_bytes,
+                    expected_witness_signature_array_name,
+                    bytes_per_line=16,
+                    return_as_list=True,
+                )
+            )
+            header_lines.append("")
+            expected_witness_signature_len = (
+                f"sizeof({expected_witness_signature_array_name})"
+            )
+
         # Fixture entry
         chunks_struct = f"{base_name}_CHUNKS" if chunk_array_names else "NULL"
         chunk_count = (
@@ -124,6 +163,10 @@ def generate_cvote_fixtures() -> int:
             f"    .confirm_data = {confirm_array_name},",
             f"    .confirm_data_len = sizeof({confirm_array_name}),",
             f"    .expected_warning_bits = {warning_expr_from_test_case(test_case)},",
+            f"    .expected_votecast_hash = {expected_votecast_hash_array_name},",
+            f"    .expected_votecast_hash_len = {expected_votecast_hash_len},",
+            f"    .expected_witness_signature = {expected_witness_signature_array_name},",
+            f"    .expected_witness_signature_len = {expected_witness_signature_len},",
             "},",
         ]
         fixture_entries.append("\n".join(entry_lines))

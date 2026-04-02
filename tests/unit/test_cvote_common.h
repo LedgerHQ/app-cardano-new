@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 
 #include <cmocka.h>
 
@@ -92,6 +93,28 @@ static inline void run_cvote_fixture(const cvote_fixture_t *fixture) {
     assert_memory_equal(g_mock_last_signed_message,
                         g_mock_last_signature_entry->message,
                         g_mock_last_signature_entry->message_len);
+
+    if (fixture->expected_votecast_hash == NULL
+        || fixture->expected_votecast_hash_len == 0
+        || fixture->expected_witness_signature == NULL
+        || fixture->expected_witness_signature_len == 0) {
+        fprintf(stderr, "UNIT_CAPTURE [%s] votecastHashHex=", fixture->name);
+        for (size_t i = 0; i < VOTECAST_HASH_LENGTH; i++) fprintf(stderr, "%02x", g_last_response[i]);
+        fprintf(stderr, "\n");
+        fprintf(stderr, "UNIT_CAPTURE [%s] witnessSignatureHex=", fixture->name);
+        for (size_t i = 0; i < ED25519_SIGNATURE_LENGTH; i++) fprintf(stderr, "%02x", g_last_response[VOTECAST_HASH_LENGTH + i]);
+        fprintf(stderr, "\n");
+        fail_msg("Missing unit expected result for cvote fixture '%s'", fixture->name);
+    }
+
+    assert_int_equal(fixture->expected_votecast_hash_len, VOTECAST_HASH_LENGTH);
+    assert_memory_equal(g_last_response,
+                        fixture->expected_votecast_hash,
+                        fixture->expected_votecast_hash_len);
+    assert_int_equal(fixture->expected_witness_signature_len, ED25519_SIGNATURE_LENGTH);
+    assert_memory_equal(g_last_response + VOTECAST_HASH_LENGTH,
+                        fixture->expected_witness_signature,
+                        fixture->expected_witness_signature_len);
 }
 
 // ----------------------------------------------------------------------
@@ -113,7 +136,7 @@ static inline void run_cvote_deny_fixture(const cvote_deny_fixture_t *fixture) {
         apdu_response_begin(INS_SIGN_CVOTE);
         handler_sign_cvote(&buf, P1_CVOTE_CHUNK);
         apdu_response_assert_sent_or_deferred();
-        assert_int_equal(g_last_response_sw, fixture->expected_sw);
+        assert_int_equal(g_last_response_sw, fixture->expected_swo);
         return;
     }
 
@@ -127,7 +150,7 @@ static inline void run_cvote_deny_fixture(const cvote_deny_fixture_t *fixture) {
         apdu_response_begin(INS_SIGN_CVOTE);
         handler_sign_cvote(&buf, P1_CVOTE_INIT);
         apdu_response_assert_sent_or_deferred();
-        assert_int_equal(g_last_response_sw, fixture->expected_sw);
+        assert_int_equal(g_last_response_sw, fixture->expected_swo);
         return;
     }
 
@@ -167,5 +190,5 @@ static inline void run_cvote_deny_fixture(const cvote_deny_fixture_t *fixture) {
     apdu_response_begin(INS_SIGN_CVOTE);
     handler_sign_cvote(&confirm_buf, P1_CVOTE_CONFIRM);
     apdu_response_assert_sent_or_deferred();
-    assert_int_equal(g_last_response_sw, fixture->expected_sw);
+    assert_int_equal(g_last_response_sw, fixture->expected_swo);
 }

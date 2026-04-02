@@ -14,7 +14,7 @@ from tests.unit.generators.paths import GENERATED_DERIVE_ADDRESS_DIR
 from tests.application_client.command_builder import P1Type
 
 GENERATED_DENY_HEADER = (
-    GENERATED_DERIVE_ADDRESS_DIR / "test_address_derivation_fixtures_deny.h"
+    GENERATED_DERIVE_ADDRESS_DIR / "test_derive_address_fixtures_deny.h"
 )
 
 # ==============================================================================
@@ -138,43 +138,17 @@ def _generate_c_byte_array_for_apdu(
 
 def _get_expected_deny_reason(test_case: Any) -> str:
     """
-    Determine the expected deny reason based on test case characteristics.
+    Return the explicit expected deny status for a fixture.
 
-    This maps the test case to the expected error code from securityPolicy.c
-    validation logic.
-
-    Args:
-        test_case: DeriveAddressTestCase from deny tests
-
-    Returns:
-        String describing expected deny reason (for documentation)
-
-    Note:
-        The actual deny is tested by verifying the handler returns an
-        error status code. This string is for human-readable documentation.
+    Deny fixtures must declare their expected status word directly. Inferring
+    it from the test name is lenient and masks fixture bugs.
     """
-    test_name_lower = test_case.name.lower()
-
-    # Check if expected_sw is explicitly provided in the test case
-    if getattr(test_case, "expected_sw", None):
-        return test_case.expected_sw.name
-
-    # Map test characteristics to expected deny reasons
-    if "path too short" in test_name_lower:
-        return "SWO_SECURITY_CONDITION_NOT_SATISFIED"
-    elif "invalid path" in test_name_lower:
-        return "SWO_SECURITY_CONDITION_NOT_SATISFIED"
-    elif "byron with shelley" in test_name_lower or "shelley path" in test_name_lower:
-        return "SWO_SECURITY_CONDITION_NOT_SATISFIED"
-    elif (
-        "wrong spending path" in test_name_lower
-        or "wrong staking path" in test_name_lower
-    ):
-        return "SWO_SECURITY_CONDITION_NOT_SATISFIED"
-    elif "scripthash/keyhash not allowed" in test_name_lower:
-        return "SWO_SECURITY_CONDITION_NOT_SATISFIED"
-    else:
-        return "SWO_SECURITY_CONDITION_NOT_SATISFIED"
+    expected_swo = getattr(test_case, "expected_swo", None)
+    if expected_swo is None:
+        raise ValueError(
+            f"derive_address deny fixture {test_case.name!r} is missing expected_swo"
+        )
+    return expected_swo.name
 
 
 def _generate_fixture_code_for_deny_test_case(

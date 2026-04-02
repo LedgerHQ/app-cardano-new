@@ -94,6 +94,9 @@ Notes:
 - Regenerate unit-test fixtures when `tests/standalone/input_files/` or
   `tests/application_client/` changes via:
   `PYTHONPATH=. tests/venv/bin/python -m tests.unit.generators.generate_unit_tests_from_ragger all` from the repository root.
+- Happy-path unit fixtures must have explicit expected output values. Missing unit
+  expected results are a hard error: generators must report them, and unit tests
+  must not silently skip response verification for those fixtures.
 - For the concrete edit/regenerate/build/run sequence, see
   `../tests/unit/README.md` -> `Fixture Workflow`.
 - Use the shared venv above when running generator scripts or other Python-based

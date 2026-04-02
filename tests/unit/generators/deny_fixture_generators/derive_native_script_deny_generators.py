@@ -96,6 +96,10 @@ def _build_fixtures() -> str:
     for test_case_index, test_case in enumerate(all_test_cases):
         test_case_name_sanitized = sanitize_c_identifier(test_case.name)
         base_id = f"TC{test_case_index}_{test_case_name_sanitized.upper()}"
+        if test_case.unit_test_expect is None or test_case.unit_test_expect.swo is None:
+            raise ValueError(
+                f"native_script deny fixture {test_case.name!r} is missing unit_test_expect.swo"
+            )
 
         print(f"  [{test_case_index:2d}] Generating tree for: {test_case.name}")
 
@@ -131,7 +135,7 @@ def _build_fixtures() -> str:
                 test_case.name,
                 root_script_id,
                 finish_array_name,
-                test_case.expected_in_unit_test.sw.name,
+                test_case.unit_test_expect.swo.name,
             )
         )
     # Generate test case array

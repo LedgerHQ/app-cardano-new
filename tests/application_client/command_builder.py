@@ -579,10 +579,17 @@ class OperationalCertificate:
 
 
 @dataclass(kw_only=True)
+class OpCertExpectedResult:
+    signatureHex: str
+
+
+@dataclass(kw_only=True)
 class OpCertTestCase:
     name: str
     opCert: OperationalCertificate
     expected_warnings: List = field(default_factory=list)
+    unit_test_expect: Optional[OpCertExpectedResult] = None
+    ragger_expect: Optional[OpCertExpectedResult] = None
 
 
 # ---------------------------------------------------------------------------
@@ -597,10 +604,18 @@ class CIP36Vote:
 
 
 @dataclass(kw_only=True)
+class CVoteExpectedResult:
+    votecastHashHex: str
+    witnessSignatureHex: str
+
+
+@dataclass(kw_only=True)
 class CVoteTestCase:
     name: str
     cVote: CIP36Vote
     expected_warnings: List
+    unit_test_expect: Optional[CVoteExpectedResult] = None
+    ragger_expect: Optional[CVoteExpectedResult] = None
 
 
 # ---------------------------------------------------------------------------

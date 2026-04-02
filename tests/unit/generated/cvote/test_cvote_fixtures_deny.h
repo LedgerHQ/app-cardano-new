@@ -151,7 +151,7 @@ static const cvote_deny_fixture_t CVOTE_DENY_FIXTURES[] = {
     .chunk_count = 0,
     .confirm_data = NULL,
     .confirm_data_len = 0,
-    .expected_sw = SWO_WRONG_DATA_LENGTH,
+    .expected_swo = SWO_WRONG_DATA_LENGTH,
 },
 // Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases > cvote_deny_init_no_chunk_data
 {
@@ -163,7 +163,7 @@ static const cvote_deny_fixture_t CVOTE_DENY_FIXTURES[] = {
     .chunk_count = 0,
     .confirm_data = NULL,
     .confirm_data_len = 0,
-    .expected_sw = SWO_WRONG_DATA_LENGTH,
+    .expected_swo = SWO_WRONG_DATA_LENGTH,
 },
 // Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases > cvote_deny_init_chunk_exceeds_declared_length
 {
@@ -175,7 +175,7 @@ static const cvote_deny_fixture_t CVOTE_DENY_FIXTURES[] = {
     .chunk_count = 0,
     .confirm_data = NULL,
     .confirm_data_len = 0,
-    .expected_sw = SWO_WRONG_DATA_LENGTH,
+    .expected_swo = SWO_WRONG_DATA_LENGTH,
 },
 // Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases > cvote_deny_chunk_before_init
 {
@@ -187,7 +187,7 @@ static const cvote_deny_fixture_t CVOTE_DENY_FIXTURES[] = {
     .chunk_count = 0,
     .confirm_data = NULL,
     .confirm_data_len = 0,
-    .expected_sw = SWO_COMMAND_NOT_ALLOWED,
+    .expected_swo = SWO_COMMAND_NOT_ALLOWED,
 },
 // Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases > cvote_deny_invalid_witness_path
 {
@@ -199,7 +199,7 @@ static const cvote_deny_fixture_t CVOTE_DENY_FIXTURES[] = {
     .chunk_count = CVOTE_DENY_CONFIRM_SHARED_CHUNK_COUNT,
     .confirm_data = CVOTE_DENY_004_CVOTE_DENY_INVALID_WITNESS_PATH_CONFIRM,
     .confirm_data_len = sizeof(CVOTE_DENY_004_CVOTE_DENY_INVALID_WITNESS_PATH_CONFIRM),
-    .expected_sw = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    .expected_swo = SWO_SECURITY_CONDITION_NOT_SATISFIED,
 },
 };
 

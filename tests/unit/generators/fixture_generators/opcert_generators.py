@@ -55,12 +55,31 @@ def generate_opcert_fixtures() -> None:
         array_lines = format_bytes_as_c_array(payload, array_name).split("\n")
         header_lines.extend(array_lines)
         header_lines.append("")
+
+        expected_signature_array_name = "NULL"
+        expected_signature_len = "0"
+        if getattr(test_case, "unit_test_expect", None) is not None:
+            expected_signature_bytes = bytes.fromhex(
+                test_case.unit_test_expect.signatureHex
+            )
+            expected_signature_array_name = (
+                f"OPCERT_FIXTURE_{safe_name}_EXPECTED_SIGNATURE"
+            )
+            expected_signature_lines = format_bytes_as_c_array(
+                expected_signature_bytes, expected_signature_array_name
+            ).split("\n")
+            header_lines.extend(expected_signature_lines)
+            header_lines.append("")
+            expected_signature_len = f"sizeof({expected_signature_array_name})"
+
         entry_lines = [
             "{",
             f'    .name = "{test_case.name}",',
             f"    .payload = {array_name},",
             f"    .payload_len = sizeof({array_name}),",
             f"    .expected_warning_bits = {warning_expr_from_test_case(test_case)},",
+            f"    .expected_signature = {expected_signature_array_name},",
+            f"    .expected_signature_len = {expected_signature_len},",
             "},",
         ]
         fixture_entries.append("\n".join(entry_lines))

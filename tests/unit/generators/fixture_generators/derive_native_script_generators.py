@@ -107,7 +107,8 @@ def _build_fixtures() -> str:
         header_lines.append("")
 
         # Generate expected hash
-        expected_hash_bytes = bytes.fromhex(test_case.expected_in_unit_test.hash)
+        assert test_case.unit_test_expect is not None
+        expected_hash_bytes = bytes.fromhex(test_case.unit_test_expect.hash)
         header_lines.append(
             f"static const uint8_t EXPECTED_HASH_{base_id}[SCRIPT_HASH_LENGTH] = {{"
         )

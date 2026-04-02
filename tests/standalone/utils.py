@@ -7,6 +7,7 @@ import re
 import hashlib
 from time import time
 
+import base58
 from ecdsa.curves import Ed25519
 from ecdsa.keys import VerifyingKey
 
@@ -28,7 +29,10 @@ from ragger.backend import BackendInterface
 from tests.application_client.command_builder import AddressType
 
 from tests.standalone.input_files.derive_address import DeriveAddressTestCase
-from tests.standalone.input_files.pubkey import PubKeyTestCase
+from tests.standalone.input_files.pubkey import (
+    PubKeyTestCase,
+    convert_ragger_bip_pubkey_to_app_pubkey,
+)
 from tests.standalone.input_files.cvote import CVoteTestCase
 from tests.standalone.input_files.signOpCert import OpCertTestCase
 from tests.standalone.input_files.signMsg import SignMsgTestCase
@@ -482,7 +486,7 @@ def choice_reject(
     )
 
 
-def derive_address(testCase: DeriveAddressTestCase) -> Union[bytes, str]:
+def derive_address(testCase: DeriveAddressTestCase) -> bytes:
     """Derive an address from a test case
 
     Args:
@@ -497,10 +501,8 @@ def derive_address(testCase: DeriveAddressTestCase) -> Union[bytes, str]:
     return _deriveAddressShelley(testCase)
 
 
-def _deriveAddressByron(testCase: DeriveAddressTestCase) -> str:
-    """Derive the Byron address from the path"""
-    if testCase.result:
-        return testCase.result
+def _deriveAddressByron(testCase: DeriveAddressTestCase) -> bytes:
+    """Derive the Byron address from the path."""
     # Generate seed from mnemonic
     # Use the deterministic Speculos mnemonic for reproducible tests.
     seed_bytes = Bip39SeedGenerator(SPECULOS_MNEMONIC).Generate()
@@ -516,8 +518,8 @@ def _deriveAddressByron(testCase: DeriveAddressTestCase) -> str:
     )
     bip44_addr = bip44_chg.AddressIndex(bip32Path[4])
 
-    # Get the address
-    return cast(str, bip44_addr.PublicKey().ToAddress())
+    # Convert the human-readable Byron address back to the raw APDU payload.
+    return base58.b58decode(cast(str, bip44_addr.PublicKey().ToAddress()))
 
 
 def _deriveAddressShelley(testCase: DeriveAddressTestCase) -> bytes:
@@ -571,7 +573,10 @@ def get_device_pubkey(path: str) -> Tuple[bytes, str]:
     ref_pk, ref_chain_code = calculate_public_key_and_chaincode(
         CurveChoice.Ed25519Kholaw, path
     )
-    return bytes.fromhex(ref_pk[2:]), ref_chain_code
+    return (
+        bytes.fromhex(convert_ragger_bip_pubkey_to_app_pubkey(ref_pk)),
+        ref_chain_code,
+    )
 
 
 def verify_signature(path: str, signature: bytes, data: bytes) -> None:

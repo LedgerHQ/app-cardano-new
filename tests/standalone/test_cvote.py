@@ -71,6 +71,20 @@ def test_cvote(
     # Check the signature validity
     # Note: The signature is over the hash, not the raw votecast data
     verify_signature(testCase.cVote.witnessPath, signature, votecast_hash)
+    _check_ragger_expect_cvote(testCase, votecast_hash, signature)
+
+
+def _check_ragger_expect_cvote(
+    testCase: CVoteTestCase, votecast_hash: bytes, signature: bytes
+) -> None:
+    if testCase.ragger_expect is None:
+        pytest.fail(f"Missing ragger_expect for cvote fixture {testCase.name!r}")
+    assert votecast_hash.hex() == testCase.ragger_expect.votecastHashHex, (
+        f"Vote cast hash mismatch for {testCase.name!r}"
+    )
+    assert signature.hex() == testCase.ragger_expect.witnessSignatureHex, (
+        f"Witness signature mismatch for {testCase.name!r}"
+    )
 
 
 def _cvote_init(client: CommandSender, testCase: CVoteTestCase) -> None:
@@ -135,7 +149,7 @@ def test_cvote_deny(backend: BackendInterface, testCase: CVoteDenyTestCase) -> N
         )
         with pytest.raises(ExceptionRAPDU) as err:
             backend.exchange_raw(chunk_apdu)
-        assert err.value.status == testCase.expected_sw
+        assert err.value.status == testCase.expected_swo
         return
 
     if testCase.invalid_witness_path is not None:
@@ -160,7 +174,7 @@ def test_cvote_deny(backend: BackendInterface, testCase: CVoteDenyTestCase) -> N
         )
         with pytest.raises(ExceptionRAPDU) as err:
             backend.exchange_raw(confirm_apdu)
-        assert err.value.status == testCase.expected_sw
+        assert err.value.status == testCase.expected_swo
         return
 
     # Malformed INIT payload.
@@ -180,4 +194,4 @@ def test_cvote_deny(backend: BackendInterface, testCase: CVoteDenyTestCase) -> N
     )
     with pytest.raises(ExceptionRAPDU) as err:
         backend.exchange_raw(init_apdu)
-    assert err.value.status == testCase.expected_sw
+    assert err.value.status == testCase.expected_swo

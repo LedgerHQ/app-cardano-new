@@ -236,13 +236,13 @@ def _generate_fixtures_for_era(
         builder = CommandBuilder()
         raw_tx_bytes = builder._serialize_transaction_unpacked_raw(tx)
 
-        if test_case.txBody is None:
+        unit_test_expect = getattr(test_case, "unit_test_expect", None)
+        if unit_test_expect is None:
             raise ValueError(
-                f"Test case '{test_case.name}' is missing txBody. "
-                "Every sign-tx fixture must supply the expected CBOR-encoded transaction body hex. "
-                "The fallback of using the raw APDU wire format is incorrect and was removed."
+                f"Test case '{test_case.name}' is missing unit_test_expect. "
+                "Every happy-path sign-tx fixture must supply the expected CBOR-encoded transaction body hex."
             )
-        expected_cbor_hex = test_case.txBody
+        expected_cbor_hex = unit_test_expect.txBodyHex
         cbor_bytes = _cbor_hex_to_bytes(expected_cbor_hex)
         expected_hash_hex = _compute_blake2b_256(cbor_bytes)
         body_aux_data_hash = _extract_aux_data_hash_from_tx_body(expected_cbor_hex)

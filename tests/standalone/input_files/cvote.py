@@ -12,6 +12,7 @@ from typing import List, Optional
 
 from tests.application_client.command_builder import (
     CIP36Vote,
+    CVoteExpectedResult,
     CVoteTestCase,
 )
 from tests.application_client.security_warnings import WarningBit
@@ -30,7 +31,7 @@ class CVoteDenyTestCase:
     """
 
     name: str
-    expected_sw: StatusWord
+    expected_swo: StatusWord
     init_payload_hex: Optional[str] = None
     invalid_witness_path: Optional[str] = None
     send_chunk_before_init: bool = False
@@ -45,6 +46,14 @@ cvoteTestCases = [
             witnessPath="m/1694'/1815'/0'/0/1",
         ),
         expected_warnings=[WarningBit.WARNING_BIT_CVOTE_WITNESS_NOT_FULLY_VERIFIABLE],
+        unit_test_expect=CVoteExpectedResult(
+            votecastHashHex="f51473df863be3e0383ce5a8da79c7ff51b3d98dadbbefbf9f042e8601901269",
+            witnessSignatureHex="cbc615a8aa970cfffc6d122289f5379109cde5395cdc41c0c16b053283e3ac844e773ddca9c7df30e26910dcac54afc566126f42efc10150385f2639fcaa6102",
+        ),
+        ragger_expect=CVoteExpectedResult(
+            votecastHashHex="f51473df863be3e0383ce5a8da79c7ff51b3d98dadbbefbf9f042e8601901269",
+            witnessSignatureHex="ed8bc7b082a43750e216ea1bfbdd74b836b582caa4671845092595b66e6e6e824d1c7c99dd1dc13741d967a0f8013f4c7b42f05f147583edc36373f3b4e1c00d",
+        ),
     )
 ]
 
@@ -54,32 +63,32 @@ cvoteDenyTestCases: List[CVoteDenyTestCase] = [
         name="cvote_deny_zero_remaining_bytes",
         # 4-byte length field is zero — app rejects before reading any chunk data.
         init_payload_hex="00000000",
-        expected_sw=StatusWord.SWO_WRONG_DATA_LENGTH,
+        expected_swo=StatusWord.SWO_WRONG_DATA_LENGTH,
     ),
     CVoteDenyTestCase(
         name="cvote_deny_init_no_chunk_data",
         # Total length claims 100 bytes but no chunk follows — mismatch with
         # expected first-chunk size of min(100, 250) = 100.
         init_payload_hex="00000064",
-        expected_sw=StatusWord.SWO_WRONG_DATA_LENGTH,
+        expected_swo=StatusWord.SWO_WRONG_DATA_LENGTH,
     ),
     CVoteDenyTestCase(
         name="cvote_deny_init_chunk_exceeds_declared_length",
         # Total length is 2 bytes but 3 bytes of data follow — chunk_size > total.
         init_payload_hex="00000002" + "aabbcc",
-        expected_sw=StatusWord.SWO_WRONG_DATA_LENGTH,
+        expected_swo=StatusWord.SWO_WRONG_DATA_LENGTH,
     ),
     CVoteDenyTestCase(
         name="cvote_deny_chunk_before_init",
         # Attempt to send a CHUNK APDU before INIT has been performed.
         send_chunk_before_init=True,
-        expected_sw=StatusWord.SWO_COMMAND_NOT_ALLOWED,
+        expected_swo=StatusWord.SWO_COMMAND_NOT_ALLOWED,
     ),
     CVoteDenyTestCase(
         name="cvote_deny_invalid_witness_path",
         # Valid INIT followed by CONFIRM with a non-cvote key path
         # (m/44'/1815'/0'/0/0 is a payment path, not PATH_CVOTE_KEY).
         invalid_witness_path="m/44'/1815'/0'/0/0",
-        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
 ]

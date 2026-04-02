@@ -90,7 +90,7 @@ static init_apdu_params_t make_default_init_apdu_params(void) {
 
 static void run_sign_tx_init_case(const init_apdu_params_t *params,
                                   size_t expected_apdu_size,
-                                  uint16_t expected_sw) {
+                                  uint16_t expected_swo) {
     assert_non_null(params);
 
     reset_context();
@@ -104,10 +104,10 @@ static void run_sign_tx_init_case(const init_apdu_params_t *params,
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = expected_apdu_size, .offset = 0},
                      P1_TX_INIT);
 
-    assert_int_equal(g_last_response_sw, expected_sw);
+    assert_int_equal(g_last_response_sw, expected_swo);
 }
 
-static void run_sign_tx_init_case_full(const init_apdu_params_t *params, uint16_t expected_sw) {
+static void run_sign_tx_init_case_full(const init_apdu_params_t *params, uint16_t expected_swo) {
     assert_non_null(params);
 
     reset_context();
@@ -119,7 +119,7 @@ static void run_sign_tx_init_case_full(const init_apdu_params_t *params, uint16_
 
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
 
-    assert_int_equal(g_last_response_sw, expected_sw);
+    assert_int_equal(g_last_response_sw, expected_swo);
 }
 
 static void test_tx_init_invalid_signing_mode(void **state) {

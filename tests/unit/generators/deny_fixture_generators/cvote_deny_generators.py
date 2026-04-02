@@ -151,7 +151,7 @@ def _build_deny_fixtures() -> str:
             "// ----------------------------------------------------------------------"
         )
         header_lines.append(f"// Deny Test {idx}: {tc.name}")
-        header_lines.append(f"// Phase: {phase}  Expected SW: {tc.expected_sw.name}")
+        header_lines.append(f"// Phase: {phase}  Expected SW: {tc.expected_swo.name}")
         header_lines.append(
             f"// Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases > {tc.name}"
         )
@@ -235,7 +235,7 @@ def _build_deny_fixtures() -> str:
         header_lines.append(f"    .chunk_count = {chunk_count_expr},")
         header_lines.append(f"    .confirm_data = {confirm_arr_expr},")
         header_lines.append(f"    .confirm_data_len = {confirm_len_expr},")
-        header_lines.append(f"    .expected_sw = {tc.expected_sw.name},")
+        header_lines.append(f"    .expected_swo = {tc.expected_swo.name},")
         header_lines.append("},")
     header_lines.append("};")
     header_lines.append("")

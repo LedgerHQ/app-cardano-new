@@ -122,13 +122,15 @@ typedef struct {
     const uint8_t *payload;
     size_t payload_len;
     warning_bits_t expected_warning_bits;
+    const uint8_t *expected_signature;
+    size_t expected_signature_len;
 } opcert_fixture_t;
 
 typedef struct {
     const char *name;
     const uint8_t *payload;
     size_t payload_len;
-    uint16_t expected_sw;
+    uint16_t expected_swo;
 } opcert_deny_fixture_t;
 
 typedef struct {
@@ -145,6 +147,10 @@ typedef struct {
     const uint8_t *confirm_data;
     size_t confirm_data_len;
     warning_bits_t expected_warning_bits;
+    const uint8_t *expected_votecast_hash;
+    size_t expected_votecast_hash_len;
+    const uint8_t *expected_witness_signature;
+    size_t expected_witness_signature_len;
 } cvote_fixture_t;
 
 typedef enum {
@@ -166,7 +172,7 @@ typedef struct {
     // Used only for CONFIRM phase: the bad CONFIRM payload.
     const uint8_t *confirm_data;
     size_t confirm_data_len;
-    uint16_t expected_sw;
+    uint16_t expected_swo;
 } cvote_deny_fixture_t;
 
 

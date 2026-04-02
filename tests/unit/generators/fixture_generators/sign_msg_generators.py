@@ -76,7 +76,7 @@ def _generate_expected_data_section(
     test_number: int,
     safe_test_name: str,
 ) -> tuple[list[str], str | None]:
-    expected = getattr(test_case, "expected_in_unit_test", None)
+    expected = getattr(test_case, "unit_test_expect", None)
     if expected is None:
         return [], None
 

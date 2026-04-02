@@ -34,26 +34,33 @@ from tests.unit.generators.mock_data_utils import regenerate_mock_data
 # Import fixture generators
 from tests.unit.generators.fixture_generators.sign_tx_generators import (
     generate_tx_fixtures,
+    _load_sign_tx_tests,
 )
 
 from tests.unit.generators.fixture_generators.derive_address_generators import (
     generate_address_derivation_fixtures,
+    _load_address_derivation_test_cases,
 )
 
 from tests.unit.generators.fixture_generators.derive_native_script_generators import (
     generate_derive_native_script_fixtures,
+    _load_native_script_test_cases,
 )
 from tests.unit.generators.fixture_generators.pubkey_generators import (
     generate_pubkey_fixtures,
+    _load_public_key_test_cases,
 )
 from tests.unit.generators.fixture_generators.sign_msg_generators import (
     generate_sign_msg_fixtures,
+    _load_sign_msg_test_cases,
 )
 from tests.unit.generators.fixture_generators.opcert_generators import (
     generate_opcert_fixtures,
+    _load_opcert_test_cases,
 )
 from tests.unit.generators.fixture_generators.cvote_generators import (
     generate_cvote_fixtures,
+    _load_cvote_test_cases,
 )
 
 # Import deny generators
@@ -716,6 +723,159 @@ def _verify_ragger_test_coverage() -> None:
     )
 
 
+def _collect_missing_unit_expected_results() -> list[str]:
+    missing_reports: list[str] = []
+
+    def _extract_name_from_source_line(line: str) -> str | None:
+        source_prefix = "// Source:"
+        if not line.startswith(source_prefix):
+            return None
+        _, separator, name = line.rpartition(" > ")
+        if separator == "":
+            return None
+        return name.strip()
+
+    sign_msg_header_path = GENERATED_SIGN_MSG_DIR / "test_sign_msg_fixtures.h"
+    if sign_msg_header_path.exists():
+        current_name: str | None = None
+        for line in sign_msg_header_path.read_text(encoding="utf-8").splitlines():
+            source_name = _extract_name_from_source_line(line)
+            if source_name is not None:
+                current_name = source_name
+                continue
+            if ".expected = NULL," in line:
+                missing_reports.append(
+                    f"Sign Message: {current_name or '<unknown fixture>'}"
+                )
+
+    derive_address_header_path = (
+        GENERATED_DERIVE_ADDRESS_DIR / "test_derive_address_fixtures.h"
+    )
+    if derive_address_header_path.exists():
+        current_name: str | None = None
+        fixture_expects_success_response = False
+        for line in derive_address_header_path.read_text(encoding="utf-8").splitlines():
+            source_name = _extract_name_from_source_line(line)
+            if source_name is not None:
+                current_name = source_name
+                fixture_expects_success_response = False
+                continue
+            if ".check_expected = SWO_SUCCESS," in line:
+                fixture_expects_success_response = True
+                continue
+            if fixture_expects_success_response and ".expected_address = NULL," in line:
+                missing_reports.append(
+                    f"Derive Address: {current_name or '<unknown fixture>'}"
+                )
+                fixture_expects_success_response = False
+
+    opcert_header_path = GENERATED_OPCERT_DIR / "test_opcert_fixtures.h"
+    if opcert_header_path.exists():
+        current_name: str | None = None
+        for line in opcert_header_path.read_text(encoding="utf-8").splitlines():
+            if '.name = "' in line:
+                current_name = line.split('"')[1]
+                continue
+            if ".expected_signature = NULL," in line:
+                missing_reports.append(
+                    f"Sign Opcert: {current_name or '<unknown fixture>'}"
+                )
+
+    cvote_header_path = GENERATED_CVOTE_DIR / "test_cvote_fixtures.h"
+    if cvote_header_path.exists():
+        current_name: str | None = None
+        missing_votecast_hash = False
+        missing_witness_signature = False
+        for line in cvote_header_path.read_text(encoding="utf-8").splitlines():
+            if line.strip() == "{":
+                current_name = None
+                missing_votecast_hash = False
+                missing_witness_signature = False
+                continue
+            if '.name = "' in line:
+                current_name = line.split('"')[1]
+                continue
+            if ".expected_votecast_hash = NULL," in line:
+                missing_votecast_hash = True
+                continue
+            if ".expected_witness_signature = NULL," in line:
+                missing_witness_signature = True
+                continue
+            if line.strip() == "}," and (
+                missing_votecast_hash or missing_witness_signature
+            ):
+                missing_reports.append(
+                    f"Sign CVote: {current_name or '<unknown fixture>'}"
+                )
+
+    return missing_reports
+
+
+def _collect_python_fixture_cases() -> list[tuple[str, object]]:
+    python_fixture_cases: list[tuple[str, object]] = []
+
+    sign_tx_data = _load_sign_tx_tests()
+    for era_name, test_cases in sign_tx_data["era_tests"].items():
+        python_fixture_cases.extend(
+            (f"SignTx/{era_name}", test_case) for test_case in test_cases
+        )
+
+    for test_case in _load_sign_msg_test_cases():
+        python_fixture_cases.append(("SignMsg", test_case))
+
+    all_address_test_cases, _ = _load_address_derivation_test_cases()
+    for category_name, test_cases in all_address_test_cases.items():
+        python_fixture_cases.extend(
+            (f"DeriveAddress/{category_name}", test_case) for test_case in test_cases
+        )
+
+    for test_case in _load_native_script_test_cases():
+        python_fixture_cases.append(("NativeScript", test_case))
+
+    pubkey_test_groups = _load_public_key_test_cases()
+    for group_name, test_group in pubkey_test_groups.items():
+        python_fixture_cases.extend(
+            (f"PubKey/{group_name}", test_case) for test_case in test_group.test_cases
+        )
+
+    for test_case in _load_opcert_test_cases():
+        python_fixture_cases.append(("OpCert", test_case))
+
+    for test_case in _load_cvote_test_cases():
+        python_fixture_cases.append(("CVote", test_case))
+
+    return python_fixture_cases
+
+
+def _collect_missing_python_expected_results() -> list[str]:
+    missing_reports: list[str] = []
+
+    for suite_name, test_case in _collect_python_fixture_cases():
+        if getattr(test_case, "expected_swo", None) is not None:
+            continue
+
+        if (
+            hasattr(test_case, "unit_test_expect")
+            and getattr(test_case, "unit_test_expect") is None
+        ):
+            missing_reports.append(
+                f"{suite_name}: {getattr(test_case, 'name', '<unknown fixture>')} "
+                "is missing unit_test_expect"
+            )
+
+        if (
+            hasattr(test_case, "ragger_expect")
+            and getattr(test_case, "ragger_expect") is None
+            and getattr(test_case, "unsuitable_in_ragger_reason", None) is None
+        ):
+            missing_reports.append(
+                f"{suite_name}: {getattr(test_case, 'name', '<unknown fixture>')} "
+                "is missing ragger_expect"
+            )
+
+    return missing_reports
+
+
 def run_all() -> None:
     # Regenerate mock data first so that updated MOCK_TX_HASH_* constants in
     # crypto_mock_data.h produce correct signatures before the fixture headers
@@ -723,6 +883,17 @@ def run_all() -> None:
     # were introduced by this very run.
     _log_stage("Regenerating mock data (pre-pass)")
     regenerate_mock_data()
+
+    _log_stage("Validating Python fixture expectations")
+    python_expected_result_reports = _collect_missing_python_expected_results()
+    if python_expected_result_reports:
+        print("\n" + "=" * _REPORT_WIDTH)
+        print("EXPECTED-RESULT FAILURE: missing expectations in Python fixtures.")
+        print("=" * _REPORT_WIDTH)
+        for report in python_expected_result_reports:
+            print(f"  - {report}")
+        print("=" * _REPORT_WIDTH)
+        sys.exit(1)
 
     _log_stage("Generating fixtures")
     for cmd in COMMAND_REGISTRY:
@@ -732,13 +903,6 @@ def run_all() -> None:
                 # We do not add fixture counts to generated_entries_count because
                 # the test_runner_generators (or deny_generators) will tally the actual test count.
                 pass
-
-    _log_stage("Generating test runners")
-    for cmd in COMMAND_REGISTRY:
-        for gen in cmd.runner_generators:
-            count = gen()
-            if count is not None:
-                cmd.generated_entries_count += count
 
     _log_stage("Generating deny fixtures")
     for cmd in COMMAND_REGISTRY:
@@ -761,10 +925,28 @@ def run_all() -> None:
             )
             sys.exit(1)
 
+    _log_stage("Generating test runners")
+    for cmd in COMMAND_REGISTRY:
+        for gen in cmd.runner_generators:
+            count = gen()
+            if count is not None:
+                cmd.generated_entries_count += count
+
     _log_stage("Regenerating mock data (post-pass)")
     regenerate_mock_data()
     _log_stage("Verifying Ragger coverage")
     _verify_ragger_test_coverage()
+    missing_expected_reports = _collect_missing_unit_expected_results()
+    if missing_expected_reports:
+        print("\n" + "=" * _REPORT_WIDTH)
+        print(
+            "EXPECTED-RESULT FAILURE: missing unit expected results in generated fixtures."
+        )
+        print("=" * _REPORT_WIDTH)
+        for report in missing_expected_reports:
+            print(f"  - {report}")
+        print("=" * _REPORT_WIDTH)
+        sys.exit(1)
 
 
 def main() -> None:

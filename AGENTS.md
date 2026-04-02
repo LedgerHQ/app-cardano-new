@@ -105,3 +105,7 @@ Brief summary:
 - **Linting**: `source tests/venv/bin/activate && ruff check --fix . --exclude tests/venv` (run when Python code changes).
 - **Ragger/Swap tests**: Run only on explicit request.
 - **Strictness**: Compilation warnings and lint errors are treated as failures.
+- **No leniency for expected outputs:** if a happy-path fixture is missing unit-side
+  expected results, treat it as an error. Do not omit the fixture, do not leave
+  generated success fixtures with null expected outputs unnoticed, and do not skip
+  assertions at runtime for that reason.

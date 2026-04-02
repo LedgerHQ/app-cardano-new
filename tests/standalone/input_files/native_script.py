@@ -23,20 +23,23 @@ from tests.application_client.status_words import StatusWord
 
 
 @dataclass
-class SignedData:
+class NativeScriptExpectedResult:
     hash: Optional[str] = None
-    sw: Optional[StatusWord] = StatusWord.SWO_SUCCESS
+    swo: Optional[StatusWord] = StatusWord.SWO_SUCCESS
+
+
+SignedData = NativeScriptExpectedResult
 
 
 @dataclass(kw_only=True)
 class ValidNativeScriptTestCase:
     name: str
     script: Optional[NativeScript] = None
-    expected_in_unit_test: Optional[SignedData] = None
     displayFormat: Optional[NativeScriptHashDisplayFormat] = (
         NativeScriptHashDisplayFormat.BECH32
     )
-    skip_expected_in_ragger: bool = False
+    unit_test_expect: Optional[NativeScriptExpectedResult] = None
+    ragger_expect: Optional[NativeScriptExpectedResult] = None
 
 
 # pylint: disable=line-too-long
@@ -47,10 +50,12 @@ ValidNativeScriptTestCases = [
             NativeScriptType.PUBKEY_DEVICE_OWNED,
             NativeScriptParamsPubkey("m/1852'/1815'/0'/0/0"),
         ),
-        expected_in_unit_test=SignedData(
+        unit_test_expect=SignedData(
             "5102a193b3d5f0c256fcc425836ffb15e7d96d3389f5e57dc6bea726"
         ),
-        skip_expected_in_ragger=True,
+        ragger_expect=SignedData(
+            hash="e02316efa0632d53c28c521fc7bcade6e929849ff8b44efb5a2cffc0"
+        ),
     ),
     ValidNativeScriptTestCase(
         name="Native_script_PUBKEY_third_party",
@@ -60,8 +65,11 @@ ValidNativeScriptTestCases = [
                 "3a55d9f68255dfbefa1efd711f82d005fae1be2e145d616c90cf0fa9"
             ),
         ),
-        expected_in_unit_test=SignedData(
+        unit_test_expect=SignedData(
             "855228f5ecececf9c85618007cc3c2e5bdf5e6d41ef8d6fa793fe0eb"
+        ),
+        ragger_expect=SignedData(
+            hash="855228f5ecececf9c85618007cc3c2e5bdf5e6d41ef8d6fa793fe0eb"
         ),
     ),
     ValidNativeScriptTestCase(
@@ -72,10 +80,13 @@ ValidNativeScriptTestCases = [
                 "3a55d9f68255dfbefa1efd711f82d005fae1be2e145d616c90cf0fa9"
             ),
         ),
-        expected_in_unit_test=SignedData(
+        unit_test_expect=SignedData(
             "855228f5ecececf9c85618007cc3c2e5bdf5e6d41ef8d6fa793fe0eb"
         ),
         displayFormat=NativeScriptHashDisplayFormat.POLICY_ID,
+        ragger_expect=SignedData(
+            hash="855228f5ecececf9c85618007cc3c2e5bdf5e6d41ef8d6fa793fe0eb"
+        ),
     ),
     ValidNativeScriptTestCase(
         name="Native_script_ALL_script",
@@ -98,15 +109,21 @@ ValidNativeScriptTestCases = [
                 ]
             ),
         ),
-        expected_in_unit_test=SignedData(
+        unit_test_expect=SignedData(
             "af5c2ce476a6ede1c879f7b1909d6a0b96cb2081391712d4a355cef6"
+        ),
+        ragger_expect=SignedData(
+            hash="af5c2ce476a6ede1c879f7b1909d6a0b96cb2081391712d4a355cef6"
         ),
     ),
     ValidNativeScriptTestCase(
         name="Native_script_ALL_script_no_subscripts",
         script=NativeScript(NativeScriptType.ALL, NativeScriptParamsScripts()),
-        expected_in_unit_test=SignedData(
+        unit_test_expect=SignedData(
             "d441227553a0f1a965fee7d60a0f724b368dd1bddbc208730fccebcf"
+        ),
+        ragger_expect=SignedData(
+            hash="d441227553a0f1a965fee7d60a0f724b368dd1bddbc208730fccebcf"
         ),
     ),
     ValidNativeScriptTestCase(
@@ -130,15 +147,21 @@ ValidNativeScriptTestCases = [
                 ]
             ),
         ),
-        expected_in_unit_test=SignedData(
+        unit_test_expect=SignedData(
             "d6428ec36719146b7b5fb3a2d5322ce702d32762b8c7eeeb797a20db"
+        ),
+        ragger_expect=SignedData(
+            hash="d6428ec36719146b7b5fb3a2d5322ce702d32762b8c7eeeb797a20db"
         ),
     ),
     ValidNativeScriptTestCase(
         name="Native_script_ANY_script_no_subscripts",
         script=NativeScript(NativeScriptType.ANY, NativeScriptParamsScripts()),
-        expected_in_unit_test=SignedData(
+        unit_test_expect=SignedData(
             "52dc3d43b6d2465e96109ce75ab61abe5e9c1d8a3c9ce6ff8a3af528"
+        ),
+        ragger_expect=SignedData(
+            hash="52dc3d43b6d2465e96109ce75ab61abe5e9c1d8a3c9ce6ff8a3af528"
         ),
     ),
     ValidNativeScriptTestCase(
@@ -163,15 +186,21 @@ ValidNativeScriptTestCases = [
                 ],
             ),
         ),
-        expected_in_unit_test=SignedData(
+        unit_test_expect=SignedData(
             "78963f8baf8e6c99ed03e59763b24cf560bf12934ec3793eba83377b"
+        ),
+        ragger_expect=SignedData(
+            hash="78963f8baf8e6c99ed03e59763b24cf560bf12934ec3793eba83377b"
         ),
     ),
     ValidNativeScriptTestCase(
         name="Native_script_N_OF_K_script_no_subscripts",
         script=NativeScript(NativeScriptType.N_OF_K, NativeScriptParamsNofK(0)),
-        expected_in_unit_test=SignedData(
+        unit_test_expect=SignedData(
             "3530cc9ae7f2895111a99b7a02184dd7c0cea7424f1632d73951b1d7"
+        ),
+        ragger_expect=SignedData(
+            hash="3530cc9ae7f2895111a99b7a02184dd7c0cea7424f1632d73951b1d7"
         ),
     ),
     ValidNativeScriptTestCase(
@@ -179,8 +208,11 @@ ValidNativeScriptTestCases = [
         script=NativeScript(
             NativeScriptType.INVALID_BEFORE, NativeScriptParamsInvalid(42)
         ),
-        expected_in_unit_test=SignedData(
+        unit_test_expect=SignedData(
             "2a25e608a683057e32ea38b50ce8875d5b34496b393da8d25d314c4e"
+        ),
+        ragger_expect=SignedData(
+            hash="2a25e608a683057e32ea38b50ce8875d5b34496b393da8d25d314c4e"
         ),
     ),
     ValidNativeScriptTestCase(
@@ -189,8 +221,11 @@ ValidNativeScriptTestCases = [
             NativeScriptType.INVALID_BEFORE,
             NativeScriptParamsInvalid(18446744073709551615),
         ),
-        expected_in_unit_test=SignedData(
+        unit_test_expect=SignedData(
             "d2469adac494849dd27d1b344b74cc6cd5bf31fbd01c879eae84c04b"
+        ),
+        ragger_expect=SignedData(
+            hash="d2469adac494849dd27d1b344b74cc6cd5bf31fbd01c879eae84c04b"
         ),
     ),
     ValidNativeScriptTestCase(
@@ -198,8 +233,11 @@ ValidNativeScriptTestCases = [
         script=NativeScript(
             NativeScriptType.INVALID_HEREAFTER, NativeScriptParamsInvalid(42)
         ),
-        expected_in_unit_test=SignedData(
+        unit_test_expect=SignedData(
             "1620dc65993296335183f23ff2f7747268168fabbeecbf24c8a20194"
+        ),
+        ragger_expect=SignedData(
+            hash="1620dc65993296335183f23ff2f7747268168fabbeecbf24c8a20194"
         ),
     ),
     ValidNativeScriptTestCase(
@@ -208,8 +246,11 @@ ValidNativeScriptTestCases = [
             NativeScriptType.INVALID_HEREAFTER,
             NativeScriptParamsInvalid(18446744073709551615),
         ),
-        expected_in_unit_test=SignedData(
+        unit_test_expect=SignedData(
             "da60fa40290f93b889a88750eb141fd2275e67a1255efb9bac251005"
+        ),
+        ragger_expect=SignedData(
+            hash="da60fa40290f93b889a88750eb141fd2275e67a1255efb9bac251005"
         ),
     ),
     ValidNativeScriptTestCase(
@@ -279,8 +320,11 @@ ValidNativeScriptTestCases = [
                 ]
             ),
         ),
-        expected_in_unit_test=SignedData(
+        unit_test_expect=SignedData(
             "0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425"
+        ),
+        ragger_expect=SignedData(
+            hash="0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425"
         ),
     ),
     ValidNativeScriptTestCase(
@@ -311,8 +355,11 @@ ValidNativeScriptTestCases = [
                 ]
             ),
         ),
-        expected_in_unit_test=SignedData(
+        unit_test_expect=SignedData(
             "903e52ef2421abb11562329130330763583bb87cd98006b70ecb1b1c"
+        ),
+        ragger_expect=SignedData(
+            hash="903e52ef2421abb11562329130330763583bb87cd98006b70ecb1b1c"
         ),
     ),
     ValidNativeScriptTestCase(
@@ -343,8 +390,11 @@ ValidNativeScriptTestCases = [
                 ],
             ),
         ),
-        expected_in_unit_test=SignedData(
+        unit_test_expect=SignedData(
             "ed1dd7ef95caf389669c62618eb7f7aa7eadd08feb76618db2ae0cfc"
+        ),
+        ragger_expect=SignedData(
+            hash="ed1dd7ef95caf389669c62618eb7f7aa7eadd08feb76618db2ae0cfc"
         ),
     ),
     ValidNativeScriptTestCase(
@@ -360,10 +410,12 @@ ValidNativeScriptTestCases = [
                 ]
             ),
         ),
-        expected_in_unit_test=SignedData(
+        unit_test_expect=SignedData(
             "b442025ae01ccb227ecbfc013d1c17eae7f8d04d366ffff5a091d03f"
         ),
-        skip_expected_in_ragger=True,
+        ragger_expect=SignedData(
+            hash="4bbf1d9a376372acd25fba87de0a9e6da080e8f51b1e7bc153917fe2"
+        ),
     ),
 ]
 
@@ -374,15 +426,15 @@ InvalidScriptTestCases = [
             NativeScriptType.PUBKEY_DEVICE_OWNED,
             NativeScriptParamsPubkey("m/0/0/0/0/0/0"),
         ),
-        expected_in_unit_test=SignedData(
-            sw=StatusWord.SWO_NATIVE_SCRIPT_PARSING_FAIL_PUBKEY_CREDENTIAL
+        unit_test_expect=NativeScriptExpectedResult(
+            swo=StatusWord.SWO_NATIVE_SCRIPT_PARSING_FAIL_PUBKEY_CREDENTIAL
         ),
     ),
     ValidNativeScriptTestCase(
         name="Native_script_N_OF_K invalid required count higher than number of scripts",
         script=NativeScript(NativeScriptType.N_OF_K, NativeScriptParamsNofK(1)),
-        expected_in_unit_test=SignedData(
-            sw=StatusWord.SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_COUNT
+        unit_test_expect=NativeScriptExpectedResult(
+            swo=StatusWord.SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_COUNT
         ),
     ),
     ValidNativeScriptTestCase(
@@ -393,16 +445,16 @@ InvalidScriptTestCases = [
             NativeScriptType.PUBKEY_DEVICE_OWNED,
             NativeScriptParamsPubkey("m/44'/1815'/0/0/0"),
         ),
-        expected_in_unit_test=SignedData(
-            sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED
+        unit_test_expect=NativeScriptExpectedResult(
+            swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED
         ),
     ),
     ValidNativeScriptTestCase(
         name="Native_script_N_OF_K_required_count_equals_zero_with_subscripts",
         # requiredCount=0 is valid but requiredCount=3 with 0 scripts is not.
         script=NativeScript(NativeScriptType.N_OF_K, NativeScriptParamsNofK(3)),
-        expected_in_unit_test=SignedData(
-            sw=StatusWord.SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_COUNT
+        unit_test_expect=NativeScriptExpectedResult(
+            swo=StatusWord.SWO_NATIVE_SCRIPT_PARSING_FAIL_SCRIPT_COUNT
         ),
     ),
 ]

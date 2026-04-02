@@ -26,7 +26,7 @@ def _generate_fixture_code(test_case: Any, test_number: int) -> list[str]:
     )
     code_lines.append(f"// Deny Test {test_number}: {test_case.name}")
     code_lines.append(
-        f"// Expected SW: {test_case.expected_sw.name} (0x{test_case.expected_sw.value:04X})"
+        f"// Expected SW: {test_case.expected_swo.name} (0x{test_case.expected_swo.value:04X})"
     )
     code_lines.append(
         f"// Source: tests/standalone/input_files/signOpCert.py > opCertDenyTestCases > {test_case.name}"
@@ -83,7 +83,7 @@ def _build_deny_fixtures() -> str:
         header_lines.append(f'    .name = "{test_case.name}",')
         header_lines.append(f"    .payload = {array_name},")
         header_lines.append(f"    .payload_len = sizeof({array_name}),")
-        header_lines.append(f"    .expected_sw = {test_case.expected_sw.name},")
+        header_lines.append(f"    .expected_swo = {test_case.expected_swo.name},")
         header_lines.append("},")
     header_lines.append("};")
     header_lines.append("")

@@ -89,7 +89,7 @@ typedef struct {
     const char *init_hex;
     const apdu_segment_t *chunks;
     size_t chunk_count;
-    uint16_t expected_sw;
+    uint16_t expected_swo;
     bool expect_init_failure;
     const char *skip_reason;
 } sign_tx_deny_fixture_t;
@@ -127,7 +127,7 @@ static void run_sign_tx_deny_fixture(const sign_tx_deny_fixture_t *fixture) {
     run_sign_tx_apdu(&init_buf, P1_TX_INIT);
 
     if (fixture->expect_init_failure) {
-        assert_int_equal(g_last_sw, fixture->expected_sw);
+        assert_int_equal(g_last_sw, fixture->expected_swo);
         assert_int_equal(G_context.req_type, REQUEST_NONE);
         tx_context_cleanup();
         return;
@@ -163,7 +163,7 @@ static void run_sign_tx_deny_fixture(const sign_tx_deny_fixture_t *fixture) {
             if (g_last_sw == SWO_SUCCESS) {
                 continue;
             }
-            assert_int_equal(g_last_sw, fixture->expected_sw);
+            assert_int_equal(g_last_sw, fixture->expected_swo);
             failure_seen = true;
             break;
         }

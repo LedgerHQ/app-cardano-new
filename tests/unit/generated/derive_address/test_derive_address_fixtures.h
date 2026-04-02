@@ -43,6 +43,12 @@ static const uint8_t DERIVE_ADDRESS_byronTestCases_000_DERIVE_ADDRESS_BYRON_MAIN
     0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x37, 0x11,
 };
 
+static const uint8_t DERIVE_ADDRESS_byronTestCases_000_DERIVE_ADDRESS_BYRON_MAINNET_1_EXPECTED_ADDRESS[] = {
+    0x82, 0xD8, 0x18, 0x58, 0x21, 0x83, 0x58, 0x1C, 0x9C, 0x93, 0xA3, 0x4E, 0x91, 0xC1, 0x6E, 0x3C,
+    0xE1, 0x18, 0x74, 0x6D, 0x1B, 0xD3, 0x7F, 0xB5, 0x5F, 0xA8, 0x24, 0x88, 0x01, 0x11, 0x74, 0xA5,
+    0x18, 0xCF, 0x60, 0x52, 0xA0, 0x00, 0x1A, 0xD1, 0x81, 0x75, 0x31,
+};
+
 // ----------------------------------------------------------------------
 // Test type: byronTestCases
 // Test 1: Derive_address_byron_mainnet_2
@@ -54,6 +60,12 @@ static const uint8_t DERIVE_ADDRESS_byronTestCases_000_DERIVE_ADDRESS_BYRON_MAIN
 static const uint8_t DERIVE_ADDRESS_byronTestCases_001_DERIVE_ADDRESS_BYRON_MAINNET_2_APDU[] = {
     0x08, 0x2D, 0x96, 0x4A, 0x09, 0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
     0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x0C, 0x11,
+};
+
+static const uint8_t DERIVE_ADDRESS_byronTestCases_001_DERIVE_ADDRESS_BYRON_MAINNET_2_EXPECTED_ADDRESS[] = {
+    0x82, 0xD8, 0x18, 0x58, 0x21, 0x83, 0x58, 0x1C, 0x54, 0x87, 0xA0, 0xE1, 0xEA, 0xAD, 0x2A, 0x8A,
+    0xAB, 0x74, 0xA7, 0xFB, 0x8F, 0xDD, 0x94, 0x6C, 0x86, 0xAA, 0xDC, 0x53, 0xD1, 0x3B, 0x3E, 0xC2,
+    0x02, 0x67, 0x4B, 0x24, 0xA0, 0x00, 0x1A, 0x21, 0x43, 0x00, 0x04,
 };
 
 // ----------------------------------------------------------------------
@@ -69,6 +81,12 @@ static const uint8_t DERIVE_ADDRESS_byronTestCases_002_DERIVE_ADDRESS_BYRON_MAIN
     0x00, 0x65, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x0C, 0x11,
 };
 
+static const uint8_t DERIVE_ADDRESS_byronTestCases_002_DERIVE_ADDRESS_BYRON_MAINNET_3_EXPECTED_ADDRESS[] = {
+    0x82, 0xD8, 0x18, 0x58, 0x21, 0x83, 0x58, 0x1C, 0x0E, 0xA2, 0xC5, 0x67, 0xA5, 0xA8, 0x89, 0x0D,
+    0xBF, 0x46, 0x0B, 0x3B, 0x6A, 0xD7, 0x3C, 0x89, 0x55, 0xAE, 0x25, 0x45, 0x25, 0xA8, 0x74, 0xF2,
+    0xEC, 0x09, 0x81, 0xDE, 0xA0, 0x00, 0x1A, 0xE2, 0x6B, 0x01, 0x53,
+};
+
 // ----------------------------------------------------------------------
 // Test type: byronTestCases
 // Test 3: Derive_address_byron_mainnet_4
@@ -82,6 +100,12 @@ static const uint8_t DERIVE_ADDRESS_byronTestCases_003_DERIVE_ADDRESS_BYRON_MAIN
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x0F, 0x42, 0x41, 0x11,
 };
 
+static const uint8_t DERIVE_ADDRESS_byronTestCases_003_DERIVE_ADDRESS_BYRON_MAINNET_4_EXPECTED_ADDRESS[] = {
+    0x82, 0xD8, 0x18, 0x58, 0x21, 0x83, 0x58, 0x1C, 0x80, 0x6B, 0x1F, 0xCD, 0x6C, 0x54, 0x13, 0x2F,
+    0xBE, 0xAF, 0x75, 0x1D, 0x09, 0x6A, 0x22, 0x98, 0x76, 0xD9, 0x9D, 0x46, 0x81, 0xEE, 0xF4, 0x34,
+    0x88, 0xFC, 0x62, 0x85, 0xA0, 0x00, 0x1A, 0x9D, 0x2B, 0x91, 0x60,
+};
+
 // ----------------------------------------------------------------------
 // Test type: byronTestCases
 // Test 4: Derive_address_byron_testnet_1
@@ -93,6 +117,12 @@ static const uint8_t DERIVE_ADDRESS_byronTestCases_003_DERIVE_ADDRESS_BYRON_MAIN
 static const uint8_t DERIVE_ADDRESS_byronTestCases_004_DERIVE_ADDRESS_BYRON_TESTNET_1_APDU[] = {
     0x08, 0x00, 0x00, 0x00, 0x2A, 0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
     0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x0C, 0x11,
+};
+
+static const uint8_t DERIVE_ADDRESS_byronTestCases_004_DERIVE_ADDRESS_BYRON_TESTNET_1_EXPECTED_ADDRESS[] = {
+    0x82, 0xD8, 0x18, 0x58, 0x25, 0x83, 0x58, 0x1C, 0x54, 0x87, 0xA0, 0xE1, 0xEA, 0xAD, 0x2A, 0x8A,
+    0xAB, 0x74, 0xA7, 0xFB, 0x8F, 0xDD, 0x94, 0x6C, 0x86, 0xAA, 0xDC, 0x53, 0xD1, 0x3B, 0x3E, 0xC2,
+    0x02, 0x67, 0x4B, 0x24, 0xA1, 0x02, 0x42, 0x18, 0x2A, 0x00, 0x1A, 0xC4, 0xC4, 0x6A, 0x40,
 };
 
 // ----------------------------------------------------------------------
@@ -312,6 +342,11 @@ static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_009_DERIVE_ADDRESS
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x11,
 };
 
+static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_009_DERIVE_ADDRESS_SHELLEY_TESTNET_ENTERPRISE_PATH_1_EXPECTED_ADDRESS[] = {
+    0x60, 0x5A, 0x53, 0x10, 0x38, 0x29, 0xA7, 0x38, 0x2C, 0x2A, 0xB7, 0x61, 0x11, 0xFB, 0x69, 0xF1,
+    0x3E, 0x69, 0xD6, 0x16, 0x82, 0x4C, 0x62, 0x05, 0x8E, 0x44, 0xF1, 0xA8, 0xB3,
+};
+
 // ----------------------------------------------------------------------
 // Test type: shelleyTestCasesNoConfirm
 // Test 10: Derive_address_shelley_fakenet_enterprise_path_2
@@ -323,6 +358,11 @@ static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_009_DERIVE_ADDRESS
 static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_010_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_PATH_2_APDU[] = {
     0x06, 0x03, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x11,
+};
+
+static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_010_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_PATH_2_EXPECTED_ADDRESS[] = {
+    0x63, 0x5A, 0x53, 0x10, 0x38, 0x29, 0xA7, 0x38, 0x2C, 0x2A, 0xB7, 0x61, 0x11, 0xFB, 0x69, 0xF1,
+    0x3E, 0x69, 0xD6, 0x16, 0x82, 0x4C, 0x62, 0x05, 0x8E, 0x44, 0xF1, 0xA8, 0xB3,
 };
 
 // ----------------------------------------------------------------------
@@ -338,6 +378,11 @@ static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_011_DERIVE_ADDRESS
     0x46, 0x8A, 0xEC, 0xE7, 0x68, 0x95, 0xF1, 0x5C, 0x9E, 0xFB, 0xD6, 0x9B, 0x42, 0x77, 0x11,
 };
 
+static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_011_DERIVE_ADDRESS_SHELLEY_TESTNET_ENTERPRISE_SCRIPT_1_EXPECTED_ADDRESS[] = {
+    0x70, 0x12, 0x2A, 0x94, 0x6B, 0x9A, 0xD3, 0xD2, 0xDD, 0xF0, 0x29, 0xD3, 0xA8, 0x28, 0xF0, 0x46,
+    0x8A, 0xEC, 0xE7, 0x68, 0x95, 0xF1, 0x5C, 0x9E, 0xFB, 0xD6, 0x9B, 0x42, 0x77,
+};
+
 // ----------------------------------------------------------------------
 // Test type: shelleyTestCasesNoConfirm
 // Test 12: Derive_address_shelley_fakenet_enterprise_script_2
@@ -349,6 +394,11 @@ static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_011_DERIVE_ADDRESS
 static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_012_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_SCRIPT_2_APDU[] = {
     0x07, 0x03, 0x12, 0x2A, 0x94, 0x6B, 0x9A, 0xD3, 0xD2, 0xDD, 0xF0, 0x29, 0xD3, 0xA8, 0x28, 0xF0,
     0x46, 0x8A, 0xEC, 0xE7, 0x68, 0x95, 0xF1, 0x5C, 0x9E, 0xFB, 0xD6, 0x9B, 0x42, 0x77, 0x11,
+};
+
+static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_012_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_SCRIPT_2_EXPECTED_ADDRESS[] = {
+    0x73, 0x12, 0x2A, 0x94, 0x6B, 0x9A, 0xD3, 0xD2, 0xDD, 0xF0, 0x29, 0xD3, 0xA8, 0x28, 0xF0, 0x46,
+    0x8A, 0xEC, 0xE7, 0x68, 0x95, 0xF1, 0x5C, 0x9E, 0xFB, 0xD6, 0x9B, 0x42, 0x77,
 };
 
 // ----------------------------------------------------------------------
@@ -366,6 +416,11 @@ static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_013_DERIVE_ADDRESS
     0x00, 0x00, 0x00, 0x03,
 };
 
+static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_013_DERIVE_ADDRESS_SHELLEY_TESTNET_POINTER_PATH_1_EXPECTED_ADDRESS[] = {
+    0x40, 0x5A, 0x53, 0x10, 0x38, 0x29, 0xA7, 0x38, 0x2C, 0x2A, 0xB7, 0x61, 0x11, 0xFB, 0x69, 0xF1,
+    0x3E, 0x69, 0xD6, 0x16, 0x82, 0x4C, 0x62, 0x05, 0x8E, 0x44, 0xF1, 0xA8, 0xB3, 0x01, 0x02, 0x03,
+};
+
 // ----------------------------------------------------------------------
 // Test type: shelleyTestCasesNoConfirm
 // Test 14: Derive_address_shelley_fakenet_pointer_path_2
@@ -379,6 +434,12 @@ static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_014_DERIVE_ADDRESS
     0x04, 0x03, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x44, 0x00, 0x00, 0x5E, 0x5D, 0x00, 0x00, 0x00, 0xB1,
     0x00, 0x00, 0x00, 0x2A,
+};
+
+static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_014_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_PATH_2_EXPECTED_ADDRESS[] = {
+    0x43, 0x5A, 0x53, 0x10, 0x38, 0x29, 0xA7, 0x38, 0x2C, 0x2A, 0xB7, 0x61, 0x11, 0xFB, 0x69, 0xF1,
+    0x3E, 0x69, 0xD6, 0x16, 0x82, 0x4C, 0x62, 0x05, 0x8E, 0x44, 0xF1, 0xA8, 0xB3, 0x81, 0xBC, 0x5D,
+    0x81, 0x31, 0x2A,
 };
 
 // ----------------------------------------------------------------------
@@ -396,6 +457,11 @@ static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_015_DERIVE_ADDRESS
     0x00, 0x00, 0x00, 0x00,
 };
 
+static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_015_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_PATH_3_EXPECTED_ADDRESS[] = {
+    0x43, 0x5A, 0x53, 0x10, 0x38, 0x29, 0xA7, 0x38, 0x2C, 0x2A, 0xB7, 0x61, 0x11, 0xFB, 0x69, 0xF1,
+    0x3E, 0x69, 0xD6, 0x16, 0x82, 0x4C, 0x62, 0x05, 0x8E, 0x44, 0xF1, 0xA8, 0xB3, 0x00, 0x00, 0x00,
+};
+
 // ----------------------------------------------------------------------
 // Test type: shelleyTestCasesNoConfirm
 // Test 16: Derive_address_shelley_testnet_pointer_script_1
@@ -409,6 +475,11 @@ static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_016_DERIVE_ADDRESS
     0x05, 0x00, 0x12, 0x2A, 0x94, 0x6B, 0x9A, 0xD3, 0xD2, 0xDD, 0xF0, 0x29, 0xD3, 0xA8, 0x28, 0xF0,
     0x46, 0x8A, 0xEC, 0xE7, 0x68, 0x95, 0xF1, 0x5C, 0x9E, 0xFB, 0xD6, 0x9B, 0x42, 0x77, 0x44, 0x00,
     0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x03,
+};
+
+static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_016_DERIVE_ADDRESS_SHELLEY_TESTNET_POINTER_SCRIPT_1_EXPECTED_ADDRESS[] = {
+    0x50, 0x12, 0x2A, 0x94, 0x6B, 0x9A, 0xD3, 0xD2, 0xDD, 0xF0, 0x29, 0xD3, 0xA8, 0x28, 0xF0, 0x46,
+    0x8A, 0xEC, 0xE7, 0x68, 0x95, 0xF1, 0x5C, 0x9E, 0xFB, 0xD6, 0x9B, 0x42, 0x77, 0x01, 0x02, 0x03,
 };
 
 // ----------------------------------------------------------------------
@@ -426,6 +497,12 @@ static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_017_DERIVE_ADDRESS
     0x00, 0x5E, 0x5D, 0x00, 0x00, 0x00, 0xB1, 0x00, 0x00, 0x00, 0x2A,
 };
 
+static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_017_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_SCRIPT_2_EXPECTED_ADDRESS[] = {
+    0x53, 0x12, 0x2A, 0x94, 0x6B, 0x9A, 0xD3, 0xD2, 0xDD, 0xF0, 0x29, 0xD3, 0xA8, 0x28, 0xF0, 0x46,
+    0x8A, 0xEC, 0xE7, 0x68, 0x95, 0xF1, 0x5C, 0x9E, 0xFB, 0xD6, 0x9B, 0x42, 0x77, 0x81, 0xBC, 0x5D,
+    0x81, 0x31, 0x2A,
+};
+
 // ----------------------------------------------------------------------
 // Test type: shelleyTestCasesNoConfirm
 // Test 18: Derive_address_shelley_fakenet_pointer_script_3
@@ -439,6 +516,11 @@ static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_018_DERIVE_ADDRESS
     0x05, 0x03, 0x12, 0x2A, 0x94, 0x6B, 0x9A, 0xD3, 0xD2, 0xDD, 0xF0, 0x29, 0xD3, 0xA8, 0x28, 0xF0,
     0x46, 0x8A, 0xEC, 0xE7, 0x68, 0x95, 0xF1, 0x5C, 0x9E, 0xFB, 0xD6, 0x9B, 0x42, 0x77, 0x44, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_018_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_SCRIPT_3_EXPECTED_ADDRESS[] = {
+    0x53, 0x12, 0x2A, 0x94, 0x6B, 0x9A, 0xD3, 0xD2, 0xDD, 0xF0, 0x29, 0xD3, 0xA8, 0x28, 0xF0, 0x46,
+    0x8A, 0xEC, 0xE7, 0x68, 0x95, 0xF1, 0x5C, 0x9E, 0xFB, 0xD6, 0x9B, 0x42, 0x77, 0x00, 0x00, 0x00,
 };
 
 // ----------------------------------------------------------------------
@@ -455,6 +537,11 @@ static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_019_DERIVE_ADDRESS
     0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,
 };
 
+static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_019_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_PATH_1_EXPECTED_ADDRESS[] = {
+    0xE0, 0x1D, 0x22, 0x7A, 0xEF, 0xA4, 0xB7, 0x73, 0x14, 0x91, 0x70, 0x88, 0x5A, 0xAD, 0xBA, 0x30,
+    0xAA, 0xB3, 0x12, 0x7C, 0xC6, 0x11, 0xDD, 0xBC, 0x49, 0x99, 0xDE, 0xF6, 0x1C,
+};
+
 // ----------------------------------------------------------------------
 // Test type: shelleyTestCasesNoConfirm
 // Test 20: Derive_address_shelley_fakenet_reward_path_2
@@ -467,6 +554,11 @@ static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_019_DERIVE_ADDRESS
 static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_020_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_PATH_2_APDU[] = {
     0x0E, 0x03, 0x22, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_020_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_PATH_2_EXPECTED_ADDRESS[] = {
+    0xE3, 0x1D, 0x22, 0x7A, 0xEF, 0xA4, 0xB7, 0x73, 0x14, 0x91, 0x70, 0x88, 0x5A, 0xAD, 0xBA, 0x30,
+    0xAA, 0xB3, 0x12, 0x7C, 0xC6, 0x11, 0xDD, 0xBC, 0x49, 0x99, 0xDE, 0xF6, 0x1C,
 };
 
 // ----------------------------------------------------------------------
@@ -502,6 +594,11 @@ static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_022_DERIVE_ADDRESS
     0xF0, 0x46, 0x8A, 0xEC, 0xE7, 0x68, 0x95, 0xF1, 0x5C, 0x9E, 0xFB, 0xD6, 0x9B, 0x42, 0x77,
 };
 
+static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_022_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_SCRIPT_1_EXPECTED_ADDRESS[] = {
+    0xF0, 0x12, 0x2A, 0x94, 0x6B, 0x9A, 0xD3, 0xD2, 0xDD, 0xF0, 0x29, 0xD3, 0xA8, 0x28, 0xF0, 0x46,
+    0x8A, 0xEC, 0xE7, 0x68, 0x95, 0xF1, 0x5C, 0x9E, 0xFB, 0xD6, 0x9B, 0x42, 0x77,
+};
+
 // ----------------------------------------------------------------------
 // Test type: shelleyTestCasesNoConfirm
 // Test 23: Derive_address_shelley_fakenet_reward_script_2
@@ -514,6 +611,11 @@ static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_022_DERIVE_ADDRESS
 static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_023_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_SCRIPT_2_APDU[] = {
     0x0F, 0x03, 0x55, 0x12, 0x2A, 0x94, 0x6B, 0x9A, 0xD3, 0xD2, 0xDD, 0xF0, 0x29, 0xD3, 0xA8, 0x28,
     0xF0, 0x46, 0x8A, 0xEC, 0xE7, 0x68, 0x95, 0xF1, 0x5C, 0x9E, 0xFB, 0xD6, 0x9B, 0x42, 0x77,
+};
+
+static const uint8_t DERIVE_ADDRESS_shelleyTestCasesNoConfirm_023_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_SCRIPT_2_EXPECTED_ADDRESS[] = {
+    0xF3, 0x12, 0x2A, 0x94, 0x6B, 0x9A, 0xD3, 0xD2, 0xDD, 0xF0, 0x29, 0xD3, 0xA8, 0x28, 0xF0, 0x46,
+    0x8A, 0xEC, 0xE7, 0x68, 0x95, 0xF1, 0x5C, 0x9E, 0xFB, 0xD6, 0x9B, 0x42, 0x77,
 };
 
 // ----------------------------------------------------------------------
@@ -814,6 +916,11 @@ static const uint8_t DERIVE_ADDRESS_shelleyTestCasesWithConfirm_013_DERIVE_ADDRE
     0x00, 0x00, 0x00, 0x02, 0x01, 0x31, 0x2D, 0x00,
 };
 
+static const uint8_t DERIVE_ADDRESS_shelleyTestCasesWithConfirm_013_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_MULTIDELEGATION_UNUSUAL_INDEX_EXPECTED_ADDRESS[] = {
+    0xE0, 0xD1, 0x32, 0xD4, 0x1C, 0x7E, 0x5C, 0xB5, 0xE9, 0x3E, 0xFD, 0x60, 0x1D, 0x4B, 0x74, 0x64,
+    0x99, 0x4E, 0x45, 0x16, 0x5E, 0x58, 0x22, 0x57, 0x50, 0x50, 0x26, 0x55, 0x12,
+};
+
 // ----------------------------------------------------------------------
 // Test type: shelleyTestCasesWithConfirm
 // Test 14: Derive_address_shelley_fakenet_reward_unusual_account
@@ -841,8 +948,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_byronTestCases_000_DERIVE_ADDRESS_BYRON_MAINNET_1_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_byronTestCases_000_DERIVE_ADDRESS_BYRON_MAINNET_1_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_byronTestCases_000_DERIVE_ADDRESS_BYRON_MAINNET_1_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_byronTestCases_000_DERIVE_ADDRESS_BYRON_MAINNET_1_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_byron > Derive_address_byron_mainnet_2
 {
@@ -851,8 +958,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_byronTestCases_001_DERIVE_ADDRESS_BYRON_MAINNET_2_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_byronTestCases_001_DERIVE_ADDRESS_BYRON_MAINNET_2_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_byronTestCases_001_DERIVE_ADDRESS_BYRON_MAINNET_2_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_byronTestCases_001_DERIVE_ADDRESS_BYRON_MAINNET_2_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_byron > Derive_address_byron_mainnet_3
 {
@@ -861,8 +968,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_byronTestCases_002_DERIVE_ADDRESS_BYRON_MAINNET_3_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_byronTestCases_002_DERIVE_ADDRESS_BYRON_MAINNET_3_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_byronTestCases_002_DERIVE_ADDRESS_BYRON_MAINNET_3_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_byronTestCases_002_DERIVE_ADDRESS_BYRON_MAINNET_3_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_byron > Derive_address_byron_mainnet_4
 {
@@ -871,8 +978,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_byronTestCases_003_DERIVE_ADDRESS_BYRON_MAINNET_4_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_byronTestCases_003_DERIVE_ADDRESS_BYRON_MAINNET_4_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_byronTestCases_003_DERIVE_ADDRESS_BYRON_MAINNET_4_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_byronTestCases_003_DERIVE_ADDRESS_BYRON_MAINNET_4_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_byron > Derive_address_byron_testnet_1
 {
@@ -881,8 +988,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_byronTestCases_004_DERIVE_ADDRESS_BYRON_TESTNET_1_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_byronTestCases_004_DERIVE_ADDRESS_BYRON_TESTNET_1_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_byronTestCases_004_DERIVE_ADDRESS_BYRON_TESTNET_1_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_byronTestCases_004_DERIVE_ADDRESS_BYRON_TESTNET_1_EXPECTED_ADDRESS),
 },
 };
 
@@ -894,8 +1001,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_byronTestCases_000_DERIVE_ADDRESS_BYRON_MAINNET_1_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_byronTestCases_000_DERIVE_ADDRESS_BYRON_MAINNET_1_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_byronTestCases_000_DERIVE_ADDRESS_BYRON_MAINNET_1_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_byronTestCases_000_DERIVE_ADDRESS_BYRON_MAINNET_1_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_byron_show > Derive_address_byron_mainnet_2
 {
@@ -904,8 +1011,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_byronTestCases_001_DERIVE_ADDRESS_BYRON_MAINNET_2_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_byronTestCases_001_DERIVE_ADDRESS_BYRON_MAINNET_2_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_byronTestCases_001_DERIVE_ADDRESS_BYRON_MAINNET_2_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_byronTestCases_001_DERIVE_ADDRESS_BYRON_MAINNET_2_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_byron_show > Derive_address_byron_mainnet_3
 {
@@ -914,8 +1021,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_byronTestCases_002_DERIVE_ADDRESS_BYRON_MAINNET_3_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_byronTestCases_002_DERIVE_ADDRESS_BYRON_MAINNET_3_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_byronTestCases_002_DERIVE_ADDRESS_BYRON_MAINNET_3_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_byronTestCases_002_DERIVE_ADDRESS_BYRON_MAINNET_3_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_byron_show > Derive_address_byron_mainnet_4
 {
@@ -924,8 +1031,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_byronTestCases_003_DERIVE_ADDRESS_BYRON_MAINNET_4_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_byronTestCases_003_DERIVE_ADDRESS_BYRON_MAINNET_4_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_byronTestCases_003_DERIVE_ADDRESS_BYRON_MAINNET_4_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_byronTestCases_003_DERIVE_ADDRESS_BYRON_MAINNET_4_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_byron_show > Derive_address_byron_testnet_1
 {
@@ -934,8 +1041,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_byronTestCases_004_DERIVE_ADDRESS_BYRON_TESTNET_1_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_byronTestCases_004_DERIVE_ADDRESS_BYRON_TESTNET_1_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_byronTestCases_004_DERIVE_ADDRESS_BYRON_TESTNET_1_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_byronTestCases_004_DERIVE_ADDRESS_BYRON_TESTNET_1_EXPECTED_ADDRESS),
 },
 };
 
@@ -1037,8 +1144,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_009_DERIVE_ADDRESS_SHELLEY_TESTNET_ENTERPRISE_PATH_1_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_009_DERIVE_ADDRESS_SHELLEY_TESTNET_ENTERPRISE_PATH_1_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_009_DERIVE_ADDRESS_SHELLEY_TESTNET_ENTERPRISE_PATH_1_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_009_DERIVE_ADDRESS_SHELLEY_TESTNET_ENTERPRISE_PATH_1_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley > Derive_address_shelley_fakenet_enterprise_path_2
 {
@@ -1047,8 +1154,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_010_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_PATH_2_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_010_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_PATH_2_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_010_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_PATH_2_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_010_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_PATH_2_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley > Derive_address_shelley_testnet_enterprise_script_1
 {
@@ -1057,8 +1164,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_011_DERIVE_ADDRESS_SHELLEY_TESTNET_ENTERPRISE_SCRIPT_1_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_011_DERIVE_ADDRESS_SHELLEY_TESTNET_ENTERPRISE_SCRIPT_1_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_011_DERIVE_ADDRESS_SHELLEY_TESTNET_ENTERPRISE_SCRIPT_1_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_011_DERIVE_ADDRESS_SHELLEY_TESTNET_ENTERPRISE_SCRIPT_1_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley > Derive_address_shelley_fakenet_enterprise_script_2
 {
@@ -1067,8 +1174,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_012_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_SCRIPT_2_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_012_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_SCRIPT_2_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_012_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_SCRIPT_2_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_012_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_SCRIPT_2_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley > Derive_address_shelley_testnet_pointer_path_1
 {
@@ -1077,8 +1184,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_013_DERIVE_ADDRESS_SHELLEY_TESTNET_POINTER_PATH_1_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_013_DERIVE_ADDRESS_SHELLEY_TESTNET_POINTER_PATH_1_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_013_DERIVE_ADDRESS_SHELLEY_TESTNET_POINTER_PATH_1_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_013_DERIVE_ADDRESS_SHELLEY_TESTNET_POINTER_PATH_1_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley > Derive_address_shelley_fakenet_pointer_path_2
 {
@@ -1087,8 +1194,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_014_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_PATH_2_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_014_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_PATH_2_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_014_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_PATH_2_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_014_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_PATH_2_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley > Derive_address_shelley_fakenet_pointer_path_3
 {
@@ -1097,8 +1204,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_015_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_PATH_3_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_015_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_PATH_3_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_015_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_PATH_3_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_015_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_PATH_3_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley > Derive_address_shelley_testnet_pointer_script_1
 {
@@ -1107,8 +1214,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_016_DERIVE_ADDRESS_SHELLEY_TESTNET_POINTER_SCRIPT_1_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_016_DERIVE_ADDRESS_SHELLEY_TESTNET_POINTER_SCRIPT_1_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_016_DERIVE_ADDRESS_SHELLEY_TESTNET_POINTER_SCRIPT_1_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_016_DERIVE_ADDRESS_SHELLEY_TESTNET_POINTER_SCRIPT_1_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley > Derive_address_shelley_fakenet_pointer_script_2
 {
@@ -1117,8 +1224,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_017_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_SCRIPT_2_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_017_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_SCRIPT_2_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_017_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_SCRIPT_2_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_017_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_SCRIPT_2_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley > Derive_address_shelley_fakenet_pointer_script_3
 {
@@ -1127,8 +1234,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_018_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_SCRIPT_3_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_018_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_SCRIPT_3_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_018_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_SCRIPT_3_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_018_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_SCRIPT_3_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley > Derive_address_shelley_testnet_reward_path_1
 {
@@ -1137,8 +1244,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_019_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_PATH_1_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_019_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_PATH_1_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_019_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_PATH_1_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_019_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_PATH_1_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley > Derive_address_shelley_fakenet_reward_path_2
 {
@@ -1147,8 +1254,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_020_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_PATH_2_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_020_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_PATH_2_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_020_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_PATH_2_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_020_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_PATH_2_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley > Derive_address_shelley_testnet_reward_multidelegation
 {
@@ -1167,8 +1274,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_022_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_SCRIPT_1_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_022_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_SCRIPT_1_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_022_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_SCRIPT_1_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_022_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_SCRIPT_1_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley > Derive_address_shelley_fakenet_reward_script_2
 {
@@ -1177,8 +1284,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_023_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_SCRIPT_2_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_023_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_SCRIPT_2_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_023_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_SCRIPT_2_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_023_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_SCRIPT_2_EXPECTED_ADDRESS),
 },
 };
 
@@ -1320,8 +1427,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesWithConfirm_013_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_MULTIDELEGATION_UNUSUAL_INDEX_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesWithConfirm_013_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_MULTIDELEGATION_UNUSUAL_INDEX_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesWithConfirm_013_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_MULTIDELEGATION_UNUSUAL_INDEX_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesWithConfirm_013_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_MULTIDELEGATION_UNUSUAL_INDEX_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley_confirm > Derive_address_shelley_fakenet_reward_unusual_account
 {
@@ -1433,8 +1540,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_009_DERIVE_ADDRESS_SHELLEY_TESTNET_ENTERPRISE_PATH_1_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_009_DERIVE_ADDRESS_SHELLEY_TESTNET_ENTERPRISE_PATH_1_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_009_DERIVE_ADDRESS_SHELLEY_TESTNET_ENTERPRISE_PATH_1_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_009_DERIVE_ADDRESS_SHELLEY_TESTNET_ENTERPRISE_PATH_1_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley_show_no_confirm > Derive_address_shelley_fakenet_enterprise_path_2
 {
@@ -1443,8 +1550,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_010_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_PATH_2_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_010_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_PATH_2_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_010_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_PATH_2_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_010_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_PATH_2_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley_show_no_confirm > Derive_address_shelley_testnet_enterprise_script_1
 {
@@ -1453,8 +1560,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_011_DERIVE_ADDRESS_SHELLEY_TESTNET_ENTERPRISE_SCRIPT_1_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_011_DERIVE_ADDRESS_SHELLEY_TESTNET_ENTERPRISE_SCRIPT_1_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_011_DERIVE_ADDRESS_SHELLEY_TESTNET_ENTERPRISE_SCRIPT_1_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_011_DERIVE_ADDRESS_SHELLEY_TESTNET_ENTERPRISE_SCRIPT_1_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley_show_no_confirm > Derive_address_shelley_fakenet_enterprise_script_2
 {
@@ -1463,8 +1570,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_012_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_SCRIPT_2_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_012_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_SCRIPT_2_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_012_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_SCRIPT_2_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_012_DERIVE_ADDRESS_SHELLEY_FAKENET_ENTERPRISE_SCRIPT_2_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley_show_no_confirm > Derive_address_shelley_testnet_pointer_path_1
 {
@@ -1473,8 +1580,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_013_DERIVE_ADDRESS_SHELLEY_TESTNET_POINTER_PATH_1_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_013_DERIVE_ADDRESS_SHELLEY_TESTNET_POINTER_PATH_1_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_013_DERIVE_ADDRESS_SHELLEY_TESTNET_POINTER_PATH_1_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_013_DERIVE_ADDRESS_SHELLEY_TESTNET_POINTER_PATH_1_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley_show_no_confirm > Derive_address_shelley_fakenet_pointer_path_2
 {
@@ -1483,8 +1590,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_014_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_PATH_2_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_014_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_PATH_2_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_014_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_PATH_2_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_014_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_PATH_2_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley_show_no_confirm > Derive_address_shelley_fakenet_pointer_path_3
 {
@@ -1493,8 +1600,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_015_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_PATH_3_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_015_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_PATH_3_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_015_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_PATH_3_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_015_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_PATH_3_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley_show_no_confirm > Derive_address_shelley_testnet_pointer_script_1
 {
@@ -1503,8 +1610,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_016_DERIVE_ADDRESS_SHELLEY_TESTNET_POINTER_SCRIPT_1_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_016_DERIVE_ADDRESS_SHELLEY_TESTNET_POINTER_SCRIPT_1_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_016_DERIVE_ADDRESS_SHELLEY_TESTNET_POINTER_SCRIPT_1_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_016_DERIVE_ADDRESS_SHELLEY_TESTNET_POINTER_SCRIPT_1_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley_show_no_confirm > Derive_address_shelley_fakenet_pointer_script_2
 {
@@ -1513,8 +1620,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_017_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_SCRIPT_2_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_017_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_SCRIPT_2_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_017_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_SCRIPT_2_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_017_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_SCRIPT_2_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley_show_no_confirm > Derive_address_shelley_fakenet_pointer_script_3
 {
@@ -1523,8 +1630,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_018_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_SCRIPT_3_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_018_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_SCRIPT_3_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_018_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_SCRIPT_3_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_018_DERIVE_ADDRESS_SHELLEY_FAKENET_POINTER_SCRIPT_3_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley_show_no_confirm > Derive_address_shelley_testnet_reward_path_1
 {
@@ -1533,8 +1640,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_019_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_PATH_1_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_019_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_PATH_1_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_019_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_PATH_1_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_019_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_PATH_1_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley_show_no_confirm > Derive_address_shelley_fakenet_reward_path_2
 {
@@ -1543,8 +1650,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_020_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_PATH_2_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_020_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_PATH_2_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_020_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_PATH_2_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_020_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_PATH_2_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley_show_no_confirm > Derive_address_shelley_testnet_reward_multidelegation
 {
@@ -1563,8 +1670,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_022_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_SCRIPT_1_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_022_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_SCRIPT_1_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_022_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_SCRIPT_1_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_022_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_SCRIPT_1_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley_show_no_confirm > Derive_address_shelley_fakenet_reward_script_2
 {
@@ -1573,8 +1680,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_023_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_SCRIPT_2_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_023_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_SCRIPT_2_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesNoConfirm_023_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_SCRIPT_2_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesNoConfirm_023_DERIVE_ADDRESS_SHELLEY_FAKENET_REWARD_SCRIPT_2_EXPECTED_ADDRESS),
 },
 };
 
@@ -1716,8 +1823,8 @@ static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRES
     .data = DERIVE_ADDRESS_shelleyTestCasesWithConfirm_013_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_MULTIDELEGATION_UNUSUAL_INDEX_APDU,
     .data_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesWithConfirm_013_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_MULTIDELEGATION_UNUSUAL_INDEX_APDU),
     .check_expected = SWO_SUCCESS,
-    .expected_address = NULL,
-    .expected_address_len = 0,
+    .expected_address = DERIVE_ADDRESS_shelleyTestCasesWithConfirm_013_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_MULTIDELEGATION_UNUSUAL_INDEX_EXPECTED_ADDRESS,
+    .expected_address_len = sizeof(DERIVE_ADDRESS_shelleyTestCasesWithConfirm_013_DERIVE_ADDRESS_SHELLEY_TESTNET_REWARD_MULTIDELEGATION_UNUSUAL_INDEX_EXPECTED_ADDRESS),
 },
 // Source: tests/standalone/input_files/derive_address.py > test_derive_address_shelley_show_with_confirm > Derive_address_shelley_fakenet_reward_unusual_account
 {

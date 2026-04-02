@@ -69,6 +69,15 @@ def test_opCert(
     msg += testCase.opCert.kesPeriod.to_bytes(8, "big")
 
     verify_signature(testCase.opCert.path, signature, msg)
+    _check_ragger_expect_opcert(testCase, signature)
+
+
+def _check_ragger_expect_opcert(testCase: OpCertTestCase, signature: bytes) -> None:
+    if testCase.ragger_expect is None:
+        pytest.fail(f"Missing ragger_expect for opcert fixture {testCase.name!r}")
+    assert signature.hex() == testCase.ragger_expect.signatureHex, (
+        f"Signature mismatch for {testCase.name!r}"
+    )
 
 
 @pytest.mark.parametrize("testCase", opCertDenyTestCases, ids=idTestFunc)
@@ -85,4 +94,4 @@ def test_opcert_deny(backend: BackendInterface, testCase: OpCertDenyTestCase) ->
     ) + bytes.fromhex(testCase.payload_hex)
     with pytest.raises(ExceptionRAPDU) as err:
         backend.exchange_raw(apdu)
-    assert err.value.status == testCase.expected_sw
+    assert err.value.status == testCase.expected_swo

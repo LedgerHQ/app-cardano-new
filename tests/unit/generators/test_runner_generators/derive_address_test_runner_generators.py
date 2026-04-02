@@ -67,13 +67,13 @@ class FixtureArrayDetails:
 
 def extract_fixture_array_names_from_header(fixture_header_path: Path) -> list[str]:
     """
-    Extract all fixture array names from test_address_derivation_fixtures.h.
+    Extract all fixture array names from `test_derive_address_fixtures.h`.
 
     Looks for patterns like:
         static const derive_address_fixture_t DERIVE_ADDRESS_FIXTURES_TEST_DERIVE_ADDRESS_BYRON[] = {
 
     Args:
-        fixture_header_path: Path to test_address_derivation_fixtures.h
+        fixture_header_path: Path to `test_derive_address_fixtures.h`
 
     Returns:
         List of fixture array names in declaration order
@@ -250,7 +250,7 @@ def _build_test_file_header() -> str:
 
 #include <cmocka.h>
 
-#include "test_address_derivation_fixtures.h"
+#include "test_derive_address_fixtures.h"
 #include "apdu_finalization_check.h"
 
 """

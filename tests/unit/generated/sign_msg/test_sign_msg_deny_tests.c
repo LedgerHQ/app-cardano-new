@@ -26,32 +26,32 @@
 // Deny Test Helpers
 // ======================================================================
 
-static void run_deny_init_fixture(const uint8_t *init_data, size_t init_data_len, uint16_t expected_sw) {
+static void run_deny_init_fixture(const uint8_t *init_data, size_t init_data_len, uint16_t expected_swo) {
     reset_sign_msg_test_state();
     test_read_buffer_t init_buffer = make_test_read_buffer(init_data, init_data_len);
     apdu_response_begin(INS_SIGN_MSG);
     handler_sign_msg(&init_buffer.sdk_buffer, P1_SIGN_MSG_INIT);
     apdu_response_assert_sent_or_deferred();
     assert_read_buffer_unchanged_and_cleanup(&init_buffer, init_data);
-    assert_int_equal(g_last_response_sw, expected_sw);
+    assert_int_equal(g_last_response_sw, expected_swo);
 }
 
-static void run_deny_chunk_fixture(const uint8_t *chunk_data, size_t chunk_data_len, uint16_t expected_sw) {
+static void run_deny_chunk_fixture(const uint8_t *chunk_data, size_t chunk_data_len, uint16_t expected_swo) {
     test_read_buffer_t chunk_buffer = make_test_read_buffer(chunk_data, chunk_data_len);
     apdu_response_begin(INS_SIGN_MSG);
     handler_sign_msg(&chunk_buffer.sdk_buffer, P1_SIGN_MSG_CHUNK);
     apdu_response_assert_sent_or_deferred();
     assert_read_buffer_unchanged_and_cleanup(&chunk_buffer, chunk_data);
-    assert_int_equal(g_last_response_sw, expected_sw);
+    assert_int_equal(g_last_response_sw, expected_swo);
 }
 
-static void run_deny_confirm_fixture(const uint8_t *confirm_data, size_t confirm_data_len, uint16_t expected_sw) {
+static void run_deny_confirm_fixture(const uint8_t *confirm_data, size_t confirm_data_len, uint16_t expected_swo) {
     test_read_buffer_t confirm_buffer = make_test_read_buffer(confirm_data, confirm_data_len);
     apdu_response_begin(INS_SIGN_MSG);
     handler_sign_msg(&confirm_buffer.sdk_buffer, P1_SIGN_MSG_CONFIRM);
     apdu_response_assert_sent_or_deferred();
     assert_read_buffer_unchanged_and_cleanup(&confirm_buffer, confirm_data);
-    assert_int_equal(g_last_response_sw, expected_sw);
+    assert_int_equal(g_last_response_sw, expected_swo);
 }
 
 // ======================================================================

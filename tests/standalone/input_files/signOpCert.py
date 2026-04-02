@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from typing import List
 
 from tests.application_client.command_builder import (
+    OpCertExpectedResult,
     OpCertTestCase,
     OperationalCertificate,
 )
@@ -30,7 +31,7 @@ class OpCertDenyTestCase:
 
     name: str
     payload_hex: str  # hex-encoded APDU body (no header)
-    expected_sw: StatusWord
+    expected_swo: StatusWord
 
 
 _KES_KEY = "3d24bc547388cf2403fd978fc3d3a93d1f39acf68a9c00e40512084dc05f2822"
@@ -49,25 +50,25 @@ opCertDenyTestCases: List[OpCertDenyTestCase] = [
         name="opcert_deny_truncated_kes_key",
         # KES key is 32 bytes; send only 16 bytes
         payload_hex=_KES_KEY[:32],
-        expected_sw=StatusWord.SWO_OPCERT_PARSING_FAIL_KES_KEY,
+        expected_swo=StatusWord.SWO_OPCERT_PARSING_FAIL_KES_KEY,
     ),
     OpCertDenyTestCase(
         name="opcert_deny_truncated_kes_period",
         # Full KES key present but KES period (8 bytes) is cut to 4
         payload_hex=_KES_KEY + _KES_PERIOD[:8],
-        expected_sw=StatusWord.SWO_OPCERT_PARSING_FAIL_KES_PERIOD,
+        expected_swo=StatusWord.SWO_OPCERT_PARSING_FAIL_KES_PERIOD,
     ),
     OpCertDenyTestCase(
         name="opcert_deny_truncated_issue_counter",
         # KES key + period present but issue counter (8 bytes) is cut to 4
         payload_hex=_KES_KEY + _KES_PERIOD + _ISSUE_COUNTER[:8],
-        expected_sw=StatusWord.SWO_OPCERT_PARSING_FAIL_ISSUE_COUNTER,
+        expected_swo=StatusWord.SWO_OPCERT_PARSING_FAIL_ISSUE_COUNTER,
     ),
     OpCertDenyTestCase(
         name="opcert_deny_invalid_pool_key_path",
         # KES key + period + counter present; path count claims 5 elements but only 0 follow
         payload_hex=_KES_KEY + _KES_PERIOD + _ISSUE_COUNTER + "05",
-        expected_sw=StatusWord.SWO_OPCERT_PARSING_FAIL_POOL_KEY_PATH,
+        expected_swo=StatusWord.SWO_OPCERT_PARSING_FAIL_POOL_KEY_PATH,
     ),
     OpCertDenyTestCase(
         name="opcert_deny_wrong_pool_key_path_class",
@@ -76,19 +77,19 @@ opCertDenyTestCases: List[OpCertDenyTestCase] = [
         + _KES_PERIOD
         + _ISSUE_COUNTER
         + _WRONG_CLASS_POOL_KEY_PATH,
-        expected_sw=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     OpCertDenyTestCase(
         name="opcert_deny_trailing_bytes",
         # Fully valid opcert followed by one extra byte
         payload_hex=_VALID_OPCERT + "ff",
-        expected_sw=StatusWord.SWO_INVALID_OPCERT_LENGTH,
+        expected_swo=StatusWord.SWO_INVALID_OPCERT_LENGTH,
     ),
     OpCertDenyTestCase(
         name="opcert_deny_oversized_payload",
         # Payload exceeds MAX_OPCERT_LENGTH (32+8+8+24 = 72 bytes); send 73 bytes.
         payload_hex="aa" * 73,
-        expected_sw=StatusWord.SWO_INVALID_OPCERT_LENGTH,
+        expected_swo=StatusWord.SWO_INVALID_OPCERT_LENGTH,
     ),
 ]
 
@@ -102,6 +103,12 @@ opCertTestCases = [
             42,
             "m/1853'/1815'/0'/0'",
         ),
+        unit_test_expect=OpCertExpectedResult(
+            signatureHex="ce8d7cab55217ed17f1cceb8cb487dcbe6172fdb5794cc26f78c2f1d2495598e72beb6209f113562f9488ef6e81e3e8f758ea072c3cf9c17095868f2e9213f0a",
+        ),
+        ragger_expect=OpCertExpectedResult(
+            signatureHex="8a950f72ab94e3b2ac4df1bbd82709827ec572256fe8257c82b367fade03a225e6698bbe25b38d35f8bfc3bf8f3205f59f3614961b11574e111caa28c976e906",
+        ),
     ),
     OpCertTestCase(
         name="Sign_opcert_should_correctly_sign_operational_certificate_with_warning",  # New test case added for warning path (no ledgerjs equivalent)
@@ -112,5 +119,11 @@ opCertTestCases = [
             "m/1853'/1815'/0'/1000001'",
         ),
         expected_warnings=[WarningBit.WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH],
+        unit_test_expect=OpCertExpectedResult(
+            signatureHex="9f926e85b8f8cd124c0977504fa5c06361beb26774f14628cd2913cf9baf8d9a5c2c55835fa8fab723e1a9d2d7ea23944bb96a811b7bb6cce4bfabb778fc9308",
+        ),
+        ragger_expect=OpCertExpectedResult(
+            signatureHex="774ecc67b60fe90d92528526bafef24d675faac9051d805a182ceea1a5bb988d425665ba6df8cae0e2199470d62b9052ac7d743a04a2b8d2c6c80ca28a2ad900",
+        ),
     ),
 ]

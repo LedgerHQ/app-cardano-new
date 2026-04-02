@@ -24,7 +24,7 @@ from tests.application_client.command_builder import (
 
 
 @dataclass
-class SignMsgExpectedInUnitTest:
+class SignMsgExpectedResult:
     signatureHex: str
     signingPublicKeyHex: str
     addressFieldHex: str
@@ -34,15 +34,16 @@ class SignMsgExpectedInUnitTest:
 class SignMsgTestCase:
     name: str
     msgData: Optional[MessageData] = None
-    expected_in_unit_test: Optional[SignMsgExpectedInUnitTest] = None
+    unit_test_expect: Optional[SignMsgExpectedResult] = None
     expected_warnings: List[WarningBit] = field(default_factory=list)
+    ragger_expect: Optional[SignMsgExpectedResult] = None
 
 
 @dataclass(kw_only=True)
 class SignMsgDenyTestCase:
     name: str
     msgData: MessageData
-    expected_status: StatusWord
+    expected_swo: StatusWord
     # INIT-phase manipulation options
     invalid_address_field_type: Optional[int] = None
     invalid_msg_length: Optional[int] = None  # Override msgLength in INIT (4 bytes BE)
@@ -166,13 +167,15 @@ signMsgTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        expected_in_unit_test=SignMsgExpectedInUnitTest(
-            signatureHex=(
-                "4ac0d7422617cb794c166b7137a4f097d08bb01b58091ca8c6e0b3816288a286"
-                "9c8121daddab958cdc58899cc6e1e564e36d35753f9e032f23df00b249149e06"
-            ),
+        unit_test_expect=SignMsgExpectedResult(
+            signatureHex="4ac0d7422617cb794c166b7137a4f097d08bb01b58091ca8c6e0b3816288a2869c8121daddab958cdc58899cc6e1e564e36d35753f9e032f23df00b249149e06",
             signingPublicKeyHex="b3d5f4158f0c391ee2a28a2e285f218f3e895ff6ff59cb9369c64b03b5bab5eb",
             addressFieldHex="5a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3",
+        ),
+        ragger_expect=SignMsgExpectedResult(
+            signatureHex="bf03293e01d6039e8a9179cab3e76d4f96ac31ccb585767f78cc1a224e9770a2397934deb54446030f40ec788cf1994148028856a5bcea28e6f7c651ceb05007",
+            signingPublicKeyHex="80a3ae98db92602aaee7170bc48b15ef9274d62521d37660561938066d16f658",
+            addressFieldHex="9dbd71e1951a09cede32a2411b34f55a476f85540aecdfba4d9c6563",
         ),
     ),
     SignMsgTestCase(
@@ -184,13 +187,15 @@ signMsgTestCases = [
             isAscii=True,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        expected_in_unit_test=SignMsgExpectedInUnitTest(
-            signatureHex=(
-                "4ac0d7422617cb794c166b7137a4f097d08bb01b58091ca8c6e0b3816288a286"
-                "9c8121daddab958cdc58899cc6e1e564e36d35753f9e032f23df00b249149e06"
-            ),
+        unit_test_expect=SignMsgExpectedResult(
+            signatureHex="4ac0d7422617cb794c166b7137a4f097d08bb01b58091ca8c6e0b3816288a2869c8121daddab958cdc58899cc6e1e564e36d35753f9e032f23df00b249149e06",
             signingPublicKeyHex="b3d5f4158f0c391ee2a28a2e285f218f3e895ff6ff59cb9369c64b03b5bab5eb",
             addressFieldHex="5a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3",
+        ),
+        ragger_expect=SignMsgExpectedResult(
+            signatureHex="bf03293e01d6039e8a9179cab3e76d4f96ac31ccb585767f78cc1a224e9770a2397934deb54446030f40ec788cf1994148028856a5bcea28e6f7c651ceb05007",
+            signingPublicKeyHex="80a3ae98db92602aaee7170bc48b15ef9274d62521d37660561938066d16f658",
+            addressFieldHex="9dbd71e1951a09cede32a2411b34f55a476f85540aecdfba4d9c6563",
         ),
     ),
     SignMsgTestCase(
@@ -202,13 +207,15 @@ signMsgTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        expected_in_unit_test=SignMsgExpectedInUnitTest(
-            signatureHex=(
-                "d1fc9388b6cc0d7e80f4f72267ef53caae6d53420997128004b6e44cc1618b90"
-                "496f1f4bdb63dcf9d1311cf2633cfbb0ec759a715825c6d509154739beecb607"
-            ),
+        unit_test_expect=SignMsgExpectedResult(
+            signatureHex="d1fc9388b6cc0d7e80f4f72267ef53caae6d53420997128004b6e44cc1618b90496f1f4bdb63dcf9d1311cf2633cfbb0ec759a715825c6d509154739beecb607",
             signingPublicKeyHex="b3d5f4158f0c391ee2a28a2e285f218f3e895ff6ff59cb9369c64b03b5bab5eb",
             addressFieldHex="5a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3",
+        ),
+        ragger_expect=SignMsgExpectedResult(
+            signatureHex="fd289169e3f5cecb19351e14ead979327f3cdf68a13bfb626fe75632ce8e9aacf58cc8eeebc17a44517c00e02ed451d8bb3ece43c8f14dbac9551c3a43277408",
+            signingPublicKeyHex="80a3ae98db92602aaee7170bc48b15ef9274d62521d37660561938066d16f658",
+            addressFieldHex="9dbd71e1951a09cede32a2411b34f55a476f85540aecdfba4d9c6563",
         ),
     ),
     SignMsgTestCase(
@@ -220,13 +227,15 @@ signMsgTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        expected_in_unit_test=SignMsgExpectedInUnitTest(
-            signatureHex=(
-                "8a77cbd7000ca92ac902b76822abfc502074151b183857afa179c043dacd1b92"
-                "30c0daa55558e7e2d32e6c2f5a9c4d41ae13da90ce4e70637a5f80b841286a05"
-            ),
+        unit_test_expect=SignMsgExpectedResult(
+            signatureHex="8a77cbd7000ca92ac902b76822abfc502074151b183857afa179c043dacd1b9230c0daa55558e7e2d32e6c2f5a9c4d41ae13da90ce4e70637a5f80b841286a05",
             signingPublicKeyHex="b3d5f4158f0c391ee2a28a2e285f218f3e895ff6ff59cb9369c64b03b5bab5eb",
             addressFieldHex="5a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3",
+        ),
+        ragger_expect=SignMsgExpectedResult(
+            signatureHex="52d37a162674efec4d617cf581e3b65e7c0590dd6389a24fbeb83b7d347eb8d54f32e253ab3ed77368ba9922373869e3bd4d32552ab657dad4b2f41f8b8a2b03",
+            signingPublicKeyHex="80a3ae98db92602aaee7170bc48b15ef9274d62521d37660561938066d16f658",
+            addressFieldHex="9dbd71e1951a09cede32a2411b34f55a476f85540aecdfba4d9c6563",
         ),
     ),
     SignMsgTestCase(
@@ -238,13 +247,15 @@ signMsgTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        expected_in_unit_test=SignMsgExpectedInUnitTest(
-            signatureHex=(
-                "30ac6ab7f4ddc7779701324b163c52c68d4c0fd4af968122f1b43eea49b9586b"
-                "366567395833ffb863ba1054863ab7191d09bdc5781f668db5c30b982fd37e07"
-            ),
+        unit_test_expect=SignMsgExpectedResult(
+            signatureHex="30ac6ab7f4ddc7779701324b163c52c68d4c0fd4af968122f1b43eea49b9586b366567395833ffb863ba1054863ab7191d09bdc5781f668db5c30b982fd37e07",
             signingPublicKeyHex="bc8c8a37d6ab41339bb073e72ce2e776cefed98d1a6d070ea5fada80dc7d6737",
             addressFieldHex="cf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba6",
+        ),
+        ragger_expect=SignMsgExpectedResult(
+            signatureHex="f96ef6b9baa7fb0cca50ad09e409d14aad5a9e57560b4cdf56a9d7aacd5a43a8ee76c4867bf9ab67f804903008f7117047673e0e69552cd1771f94e9faccf20e",
+            signingPublicKeyHex="4d215c6bd6ba313cd42489028e5809cfea3c5c5198a696f5a9d08a23a1536fa3",
+            addressFieldHex="32aad58ff63f0b6d601886d013f05cf80f045001a75f098e8fb3439d",
         ),
     ),
     SignMsgTestCase(
@@ -256,13 +267,15 @@ signMsgTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        expected_in_unit_test=SignMsgExpectedInUnitTest(
-            signatureHex=(
-                "3dcc9abb30584a15fd9ce39f790662a80331243d9f2978eca8549fba99740a89"
-                "80c4bba73e6fc1cc1eee466e303c91542a13b9ee330c1c708cd04f9b093da403"
-            ),
+        unit_test_expect=SignMsgExpectedResult(
+            signatureHex="3dcc9abb30584a15fd9ce39f790662a80331243d9f2978eca8549fba99740a8980c4bba73e6fc1cc1eee466e303c91542a13b9ee330c1c708cd04f9b093da403",
             signingPublicKeyHex="3d7e84dca8b4bc322401a2cc814af7c84d2992a22f99554fe340d7df7910768d",
             addressFieldHex="dbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7",
+        ),
+        ragger_expect=SignMsgExpectedResult(
+            signatureHex="9a1706d14282da1411418f9fcf5f73ae661ec07f9770c4a4c235dc4f8212cec1b676b876ff6c06b518e5023793c668630110eec7f5a144befbca1f743d9c2706",
+            signingPublicKeyHex="09dc9a6c151df265b4dbce84457fea3366aa95edc8a7a23b8da039e2db288d60",
+            addressFieldHex="bc49ef1a996a510c0d794564bfa1ba96f25bb3f099d8aab5c39d91a3",
         ),
     ),
     SignMsgTestCase(
@@ -274,13 +287,15 @@ signMsgTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        expected_in_unit_test=SignMsgExpectedInUnitTest(
-            signatureHex=(
-                "0cd0dea4600a2eda7ab145bf600ca252d4a5911959a56fe0294e48e71a249db6"
-                "e95ded5228e76c97b0add2aa1a8dfc0aed65acd46fc71ac0e99d4b917b1b870d"
-            ),
+        unit_test_expect=SignMsgExpectedResult(
+            signatureHex="0cd0dea4600a2eda7ab145bf600ca252d4a5911959a56fe0294e48e71a249db6e95ded5228e76c97b0add2aa1a8dfc0aed65acd46fc71ac0e99d4b917b1b870d",
             signingPublicKeyHex="3d7e84dca8b4bc322401a2cc814af7c84d2992a22f99554fe340d7df7910768d",
             addressFieldHex="dbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7",
+        ),
+        ragger_expect=SignMsgExpectedResult(
+            signatureHex="1fa3fde745f9b1ee83435f1c7a1e269416c6b6edf798cab801fa4e37283d1bb1f2ef064abb2de3f3488d4a28eadab549da883aae9563f7231ded259405f75701",
+            signingPublicKeyHex="09dc9a6c151df265b4dbce84457fea3366aa95edc8a7a23b8da039e2db288d60",
+            addressFieldHex="bc49ef1a996a510c0d794564bfa1ba96f25bb3f099d8aab5c39d91a3",
         ),
     ),
     SignMsgTestCase(
@@ -292,13 +307,15 @@ signMsgTestCases = [
             isAscii=True,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        expected_in_unit_test=SignMsgExpectedInUnitTest(
-            signatureHex=(
-                "6659bb68075cbb5d5b5ab0c6290f87931f8c0dddd4b6bea2ecbdb9b8519109a3"
-                "89f0408eeb917894c15db16019052f26da540fd29752d0f61285f78299770805"
-            ),
+        unit_test_expect=SignMsgExpectedResult(
+            signatureHex="6659bb68075cbb5d5b5ab0c6290f87931f8c0dddd4b6bea2ecbdb9b8519109a389f0408eeb917894c15db16019052f26da540fd29752d0f61285f78299770805",
             signingPublicKeyHex="7cc18df2fbd3ee1b16b76843b18446679ab95dbcd07b7833b66a9407c0709e37",
             addressFieldHex="ba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1",
+        ),
+        ragger_expect=SignMsgExpectedResult(
+            signatureHex="f9f204bdbf55b4151edcf69ab3da7763b4b3b73f0b6ecc7ec9fc77765f21d22c115750ca3b7e4dcffcd813232ac7db428091ba10253100097f0cb1508e434802",
+            signingPublicKeyHex="450d42914a4b8c738fde9b83d8648c244633b9ee9f9ace3a9809f13f1fc6404d",
+            addressFieldHex="e287fcd9cdeaa13934aeb66515f7933169160ff15f2fcf21c323199d",
         ),
     ),
     SignMsgTestCase(
@@ -310,13 +327,15 @@ signMsgTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        expected_in_unit_test=SignMsgExpectedInUnitTest(
-            signatureHex=(
-                "4fadaf3541df071455d13d99da061b7b5056f19f88051c99ff59e7902ff15389"
-                "eca1614c6e0faf9c29131c086b8fbb16d87e7ec7d19936c898fcbfdfb5d93602"
-            ),
+        unit_test_expect=SignMsgExpectedResult(
+            signatureHex="4fadaf3541df071455d13d99da061b7b5056f19f88051c99ff59e7902ff15389eca1614c6e0faf9c29131c086b8fbb16d87e7ec7d19936c898fcbfdfb5d93602",
             signingPublicKeyHex="7cc18df2fbd3ee1b16b76843b18446679ab95dbcd07b7833b66a9407c0709e37",
             addressFieldHex="ba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1",
+        ),
+        ragger_expect=SignMsgExpectedResult(
+            signatureHex="b2ca42c0a2748acc5197ea1447dba7e249fea8044ac16d55122e911862a4b86a524121cc927f90edcb966db4e8dcdfd4bed2fc4aad5de084f7064b24288d8205",
+            signingPublicKeyHex="450d42914a4b8c738fde9b83d8648c244633b9ee9f9ace3a9809f13f1fc6404d",
+            addressFieldHex="e287fcd9cdeaa13934aeb66515f7933169160ff15f2fcf21c323199d",
         ),
     ),
     SignMsgTestCase(
@@ -328,13 +347,15 @@ signMsgTestCases = [
             isAscii=True,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        expected_in_unit_test=SignMsgExpectedInUnitTest(
-            signatureHex=(
-                "87be8e7be2407ecb8324adb40d63cb4e7126378d0fa87f13e09226da896e1111"
-                "5b15275368ede14cdb42ea13b076dadc7f0eccf49d745312e2366cfb5105b906"
-            ),
+        unit_test_expect=SignMsgExpectedResult(
+            signatureHex="87be8e7be2407ecb8324adb40d63cb4e7126378d0fa87f13e09226da896e11115b15275368ede14cdb42ea13b076dadc7f0eccf49d745312e2366cfb5105b906",
             signingPublicKeyHex="7cc18df2fbd3ee1b16b76843b18446679ab95dbcd07b7833b66a9407c0709e37",
             addressFieldHex="ba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1",
+        ),
+        ragger_expect=SignMsgExpectedResult(
+            signatureHex="db19ffd33511d2ce738cfec1b2b4310dbac3738126b4486929bfe21599a7b7c5ee2665a87dea47c01fd23e4a61749ff4dd56e856cdcfd72f7eeada95f600f405",
+            signingPublicKeyHex="450d42914a4b8c738fde9b83d8648c244633b9ee9f9ace3a9809f13f1fc6404d",
+            addressFieldHex="e287fcd9cdeaa13934aeb66515f7933169160ff15f2fcf21c323199d",
         ),
     ),
     SignMsgTestCase(
@@ -346,13 +367,15 @@ signMsgTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        expected_in_unit_test=SignMsgExpectedInUnitTest(
-            signatureHex=(
-                "6fcc42c954ecaa143c8fab436a5cc1d0beb4f46c29c7e554d3593d5c4343b27e"
-                "83a66b3df011c3197e88032a2e879730c67db71ed0f2d9cd3e9a0978990d3a02"
-            ),
+        unit_test_expect=SignMsgExpectedResult(
+            signatureHex="6fcc42c954ecaa143c8fab436a5cc1d0beb4f46c29c7e554d3593d5c4343b27e83a66b3df011c3197e88032a2e879730c67db71ed0f2d9cd3e9a0978990d3a02",
             signingPublicKeyHex="7cc18df2fbd3ee1b16b76843b18446679ab95dbcd07b7833b66a9407c0709e37",
             addressFieldHex="ba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1",
+        ),
+        ragger_expect=SignMsgExpectedResult(
+            signatureHex="6fc0bd038d914ec575b8be5ca8b3b4af805bd718b776bffcf89d1fec4a0f2cbc0227783945dffcfeecb18807ad5f8d8b36fe7e5d1115700022667a075609060c",
+            signingPublicKeyHex="450d42914a4b8c738fde9b83d8648c244633b9ee9f9ace3a9809f13f1fc6404d",
+            addressFieldHex="e287fcd9cdeaa13934aeb66515f7933169160ff15f2fcf21c323199d",
         ),
     ),
     SignMsgTestCase(
@@ -370,16 +393,15 @@ signMsgTestCases = [
                 stakingValue="m/1852'/1815'/0'/2/0",
             ),
         ),
-        expected_in_unit_test=SignMsgExpectedInUnitTest(
-            signatureHex=(
-                "92586e24a1a43b538720ea3915be0f6536f0894e4ea88713c01f948673865b6d"
-                "2189a0306bbefc124954e578f8aa1d0f131b1d3e7af7827d1b4488d6fa0f6b07"
-            ),
+        unit_test_expect=SignMsgExpectedResult(
+            signatureHex="92586e24a1a43b538720ea3915be0f6536f0894e4ea88713c01f948673865b6d2189a0306bbefc124954e578f8aa1d0f131b1d3e7af7827d1b4488d6fa0f6b07",
             signingPublicKeyHex="650eb87ddfffe7babd505f2d66c2db28b1c05ac54f9121589107acd6eb20cc2c",
-            addressFieldHex=(
-                "015a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b31d227a"
-                "efa4b773149170885aadba30aab3127cc611ddbc4999def61c"
-            ),
+            addressFieldHex="015a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b31d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c",
+        ),
+        ragger_expect=SignMsgExpectedResult(
+            signatureHex="7f707820ce121e0c3f045273f97310f3ea16abc918a7252f70774e93875247539c17ed62f9bdcc8c93887508d9206cd134307a223ed1360ca9bd36347dbeb20e",
+            signingPublicKeyHex="d485fbcd9bb1efe65672d27d3325178b58b155eb7f1e498ab19a0b59f770a53f",
+            addressFieldHex="019dbd71e1951a09cede32a2411b34f55a476f85540aecdfba4d9c6563db219ee5ce9a74f98fdadc2de13efced5a154ef8d4d41929d5bf9ff6",
         ),
     ),
     SignMsgTestCase(
@@ -397,13 +419,15 @@ signMsgTestCases = [
                 stakingValue="m/1852'/1815'/0'/2/0",
             ),
         ),
-        expected_in_unit_test=SignMsgExpectedInUnitTest(
-            signatureHex=(
-                "95044039aafdfedbd7a16b323475076e4960b78eb8e1864671f05e822ec975c2"
-                "19163ae7830103825777abe6e1bf854a302a96538ed129ff6131e29e8562b003"
-            ),
+        unit_test_expect=SignMsgExpectedResult(
+            signatureHex="95044039aafdfedbd7a16b323475076e4960b78eb8e1864671f05e822ec975c219163ae7830103825777abe6e1bf854a302a96538ed129ff6131e29e8562b003",
             signingPublicKeyHex="650eb87ddfffe7babd505f2d66c2db28b1c05ac54f9121589107acd6eb20cc2c",
             addressFieldHex="e11d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c",
+        ),
+        ragger_expect=SignMsgExpectedResult(
+            signatureHex="830f70c62bc643505d477ada996f3ddb37eb9dfcd129888bf3b616f9451c60c123c471c9782906f8dcb0865d58b741f8578a414085a984de556689b977e10f08",
+            signingPublicKeyHex="d485fbcd9bb1efe65672d27d3325178b58b155eb7f1e498ab19a0b59f770a53f",
+            addressFieldHex="e1db219ee5ce9a74f98fdadc2de13efced5a154ef8d4d41929d5bf9ff6",
         ),
     ),
     # --- Long non-hashed messages (multi-chunk, tests dynamic allocation) ---
@@ -416,6 +440,16 @@ signMsgTestCases = [
             isAscii=True,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
+        unit_test_expect=SignMsgExpectedResult(
+            signatureHex="f6e89b2b1b860ccdfd54b544ca25c7b758af40827d58f281e732b65247d067a869a0e07408b064ff90070eefe5b116e8f5aae20f454ddea539e78c762d60a804",
+            signingPublicKeyHex="7cc18df2fbd3ee1b16b76843b18446679ab95dbcd07b7833b66a9407c0709e37",
+            addressFieldHex="ba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1",
+        ),
+        ragger_expect=SignMsgExpectedResult(
+            signatureHex="d345aad1e2b42578627038986cd7fe17ad94b0bdccc15deddcc3335494ca736732ed97db6f8597cc8f7ead7d355eb1462b914114881e04518bdefe8b06285a04",
+            signingPublicKeyHex="450d42914a4b8c738fde9b83d8648c244633b9ee9f9ace3a9809f13f1fc6404d",
+            addressFieldHex="e287fcd9cdeaa13934aeb66515f7933169160ff15f2fcf21c323199d",
+        ),
     ),
     SignMsgTestCase(
         name="Sign_msg_1000_bytes_long_nonhashed_ascii_message_with_keyhash_as_address_field",
@@ -425,6 +459,16 @@ signMsgTestCases = [
             hashPayload=False,
             isAscii=True,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
+        ),
+        unit_test_expect=SignMsgExpectedResult(
+            signatureHex="b04b4f9d13449717d737c9dff7fb99a1dee6564800b3271b9fabc04e38caa16ba2531d091e103ea072c7bb29127e62a390b70dd1515251c121c89be157ffeb02",
+            signingPublicKeyHex="7cc18df2fbd3ee1b16b76843b18446679ab95dbcd07b7833b66a9407c0709e37",
+            addressFieldHex="ba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1",
+        ),
+        ragger_expect=SignMsgExpectedResult(
+            signatureHex="7bf39c3024fb3724d45ab018e166873ad0f79f2aa0522c33d55ef1724af63e016ea7fed113e7f5fcafd81d0278a2a1fff83c683bacc7ebc27256c8e9f48c5e08",
+            signingPublicKeyHex="450d42914a4b8c738fde9b83d8648c244633b9ee9f9ace3a9809f13f1fc6404d",
+            addressFieldHex="e287fcd9cdeaa13934aeb66515f7933169160ff15f2fcf21c323199d",
         ),
     ),
     SignMsgTestCase(
@@ -436,6 +480,16 @@ signMsgTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
+        unit_test_expect=SignMsgExpectedResult(
+            signatureHex="c901e4058077a7453059fc62acda90ca068e9df86b066b57b306382434ea76e26c2e24b80104f5865c7fd058db6c80358ddd6b17588326f495f5d35de76e8a06",
+            signingPublicKeyHex="7cc18df2fbd3ee1b16b76843b18446679ab95dbcd07b7833b66a9407c0709e37",
+            addressFieldHex="ba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1",
+        ),
+        ragger_expect=SignMsgExpectedResult(
+            signatureHex="604349e2b4752890d2544d560b90c70ab585ff09c91af4906c3c8410ffd0764ee2e37fba675df93475df31241aa10589279172cdd1bc466cd02ac31d2a69f20f",
+            signingPublicKeyHex="450d42914a4b8c738fde9b83d8648c244633b9ee9f9ace3a9809f13f1fc6404d",
+            addressFieldHex="e287fcd9cdeaa13934aeb66515f7933169160ff15f2fcf21c323199d",
+        ),
     ),
     SignMsgTestCase(
         name="Sign_msg_1000_bytes_long_nonhashed_hex_message_with_keyhash_as_address_field",
@@ -445,6 +499,16 @@ signMsgTestCases = [
             hashPayload=False,
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
+        ),
+        unit_test_expect=SignMsgExpectedResult(
+            signatureHex="88214f57e37508a608227e7cf83ca81e3b762d9d3bf39c83506f96f7f99622a0ae9920ac10da9ee61d11d40716bb43e4adae1b2558960c86ecfc2e60b32b4f0e",
+            signingPublicKeyHex="7cc18df2fbd3ee1b16b76843b18446679ab95dbcd07b7833b66a9407c0709e37",
+            addressFieldHex="ba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1",
+        ),
+        ragger_expect=SignMsgExpectedResult(
+            signatureHex="244dd90981561af0785d5f69e9484768de91e171104de628c79f03227b897f4623d5cd0793890e2b5f456fdc0a6acd10a758cfdf822c6d9092704520ff764b06",
+            signingPublicKeyHex="450d42914a4b8c738fde9b83d8648c244633b9ee9f9ace3a9809f13f1fc6404d",
+            addressFieldHex="e287fcd9cdeaa13934aeb66515f7933169160ff15f2fcf21c323199d",
         ),
     ),
     # --- Test with unusual BIP44 path (WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH) ---
@@ -458,6 +522,16 @@ signMsgTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         expected_warnings=[WarningBit.WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH],
+        unit_test_expect=SignMsgExpectedResult(
+            signatureHex="bc88d1fedb2d72f011996ba8c1b1e2b7c6e7acf4483290b702fc2b92f9a7e5af6973922323cee9fb5832d2d5454b13e6776b3dcccf257a311e3929f3cdf36205",
+            signingPublicKeyHex="aa86984ca4b78a1d529ad8dc8800912b909197ae0db0563b98a4d0cb08567df7",
+            addressFieldHex="6e699a204426b822f14a38dcee4e991ef2bc6d59b677eecede5e2221",
+        ),
+        ragger_expect=SignMsgExpectedResult(
+            signatureHex="ccdfc21f193246c27b97c180909d8d7e6725a4f121e1165f5e8b1f25c593c4a20bb1ad0b8a3650caf50459b85a979f741aae6147e0ebf81c7393ee894677cf03",
+            signingPublicKeyHex="f06134b1e7116c337143303a37d243b7fd647f485ddf0919db7e4885d4308220",
+            addressFieldHex="e473db41b41b832bdfa106c8c2ee44060d622b7a4511c38928bee8ce",
+        ),
     ),
 ]
 
@@ -473,7 +547,7 @@ signMsgDenyTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         invalid_address_field_type=0x03,
-        expected_status=StatusWord.SWO_SIGN_MSG_INVALID_ADDRESS_FIELD_TYPE,
+        expected_swo=StatusWord.SWO_SIGN_MSG_INVALID_ADDRESS_FIELD_TYPE,
     ),
     SignMsgDenyTestCase(
         name="Sign_msg_deny_invalid_address_field_type_zero",
@@ -485,7 +559,7 @@ signMsgDenyTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         invalid_address_field_type=0x00,
-        expected_status=StatusWord.SWO_SIGN_MSG_INVALID_ADDRESS_FIELD_TYPE,
+        expected_swo=StatusWord.SWO_SIGN_MSG_INVALID_ADDRESS_FIELD_TYPE,
     ),
     # ========== Message Length Boundary Violations ==========
     SignMsgDenyTestCase(
@@ -498,7 +572,7 @@ signMsgDenyTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         invalid_msg_length=0x10000,  # 65536, exceeds UINT16_MAX
-        expected_status=StatusWord.SWO_INSUFFICIENT_MEMORY,
+        expected_swo=StatusWord.SWO_INSUFFICIENT_MEMORY,
     ),
     SignMsgDenyTestCase(
         name="Sign_msg_deny_nonascii_msg_causing_ui_hex_buffer_overflow",
@@ -510,7 +584,7 @@ signMsgDenyTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        expected_status=StatusWord.SWO_INSUFFICIENT_MEMORY,
+        expected_swo=StatusWord.SWO_INSUFFICIENT_MEMORY,
     ),
     SignMsgDenyTestCase(
         name="Sign_msg_deny_nonhashed_msg_causing_sig_structure_overflow",
@@ -522,7 +596,7 @@ signMsgDenyTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        expected_status=StatusWord.SWO_INSUFFICIENT_MEMORY,
+        expected_swo=StatusWord.SWO_INSUFFICIENT_MEMORY,
     ),
     SignMsgDenyTestCase(
         name="Sign_msg_deny_ascii_nonhashed_msg_causing_sig_structure_overflow",
@@ -534,7 +608,7 @@ signMsgDenyTestCases = [
             isAscii=True,  # ASCII flag skips hex-display overflow check; hits sig_structure check
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        expected_status=StatusWord.SWO_INSUFFICIENT_MEMORY,
+        expected_swo=StatusWord.SWO_INSUFFICIENT_MEMORY,
     ),
     # ========== INIT APDU Truncation (Parsing Failures) ==========
     # Note: Truncate only in the payload data, after CLA/INS/P1/P2/Lc header is complete
@@ -548,7 +622,7 @@ signMsgDenyTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         truncate_init_apdu_at=7,  # CLA/INS/P1/P2/Lc(5) + 2 bytes partial msgLength = 7 total
-        expected_status=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_MSG_LENGTH,
+        expected_swo=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_MSG_LENGTH,
     ),
     SignMsgDenyTestCase(
         name="Sign_msg_deny_init_truncated_before_signing_path",
@@ -560,7 +634,7 @@ signMsgDenyTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         truncate_init_apdu_at=9,  # After 4-byte msgLength, before BIP44 path
-        expected_status=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_SIGNING_PATH,
+        expected_swo=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_SIGNING_PATH,
     ),
     SignMsgDenyTestCase(
         name="Sign_msg_deny_init_truncated_before_hash_payload_flag",
@@ -572,7 +646,7 @@ signMsgDenyTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         truncate_init_apdu_at=30,  # After path (5 header + 4 msgLen + 1+5*4 path = 30), before hashPayload
-        expected_status=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_HASH_PAYLOAD,
+        expected_swo=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_HASH_PAYLOAD,
     ),
     SignMsgDenyTestCase(
         name="Sign_msg_deny_init_truncated_before_is_ascii_flag",
@@ -584,7 +658,7 @@ signMsgDenyTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         truncate_init_apdu_at=31,  # After hashPayload, before isAscii
-        expected_status=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_IS_ASCII,
+        expected_swo=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_IS_ASCII,
     ),
     SignMsgDenyTestCase(
         name="Sign_msg_deny_init_truncated_before_address_field_type",
@@ -596,7 +670,7 @@ signMsgDenyTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         truncate_init_apdu_at=32,  # After isAscii, before addressFieldType
-        expected_status=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_FIELD_TYPE,
+        expected_swo=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_FIELD_TYPE,
     ),
     # ========== Chunk Size Validation ==========
     SignMsgDenyTestCase(
@@ -609,7 +683,7 @@ signMsgDenyTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         invalid_chunk_size=11,  # Claim 11 bytes when only 10 remain
-        expected_status=StatusWord.SWO_SIGN_MSG_INVALID_CHUNK_SIZE,
+        expected_swo=StatusWord.SWO_SIGN_MSG_INVALID_CHUNK_SIZE,
     ),
     SignMsgDenyTestCase(
         name="Sign_msg_deny_chunk_size_smaller_than_expected_for_nonfinal_chunk",
@@ -621,7 +695,7 @@ signMsgDenyTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         invalid_chunk_size=249,  # First chunk should be exactly 250, not 249
-        expected_status=StatusWord.SWO_SIGN_MSG_INVALID_CHUNK_SIZE,
+        expected_swo=StatusWord.SWO_SIGN_MSG_INVALID_CHUNK_SIZE,
     ),
     # ========== ASCII Validation ==========
     SignMsgDenyTestCase(
@@ -633,7 +707,7 @@ signMsgDenyTestCases = [
             isAscii=True,  # Marked as ASCII but contains non-ASCII byte
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        expected_status=StatusWord.SWO_SIGN_MSG_INVALID_ASCII,
+        expected_swo=StatusWord.SWO_SIGN_MSG_INVALID_ASCII,
     ),
     # ========== State Sequencing ==========
     SignMsgDenyTestCase(
@@ -646,7 +720,7 @@ signMsgDenyTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         send_chunk_without_init=True,
-        expected_status=StatusWord.SWO_COMMAND_NOT_ALLOWED,
+        expected_swo=StatusWord.SWO_COMMAND_NOT_ALLOWED,
     ),
     SignMsgDenyTestCase(
         name="Sign_msg_deny_confirm_before_all_chunks_received",
@@ -658,7 +732,7 @@ signMsgDenyTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         send_confirm_without_chunks=True,
-        expected_status=StatusWord.SWO_COMMAND_NOT_ALLOWED,
+        expected_swo=StatusWord.SWO_COMMAND_NOT_ALLOWED,
     ),
     # ========== CONFIRM Payload Validation ==========
     SignMsgDenyTestCase(
@@ -671,7 +745,7 @@ signMsgDenyTestCases = [
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
         send_confirm_with_payload=True,
-        expected_status=StatusWord.SWO_SIGN_MSG_CONFIRM_MUST_BE_EMPTY,
+        expected_swo=StatusWord.SWO_SIGN_MSG_CONFIRM_MUST_BE_EMPTY,
     ),
     # ========== Security Policy Validation ==========
     SignMsgDenyTestCase(
@@ -683,7 +757,7 @@ signMsgDenyTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        expected_status=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignMsgDenyTestCase(
         name="Sign_msg_deny_invalid_witness_path_wrong_length",
@@ -694,7 +768,7 @@ signMsgDenyTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        expected_status=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignMsgDenyTestCase(
         name="Sign_msg_deny_invalid_address_type_pointer_in_address_mode",
@@ -711,7 +785,7 @@ signMsgDenyTestCases = [
                 stakingValue="",
             ),
         ),
-        expected_status=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS,  # Fails during parsing, not policy
+        expected_swo=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS,  # Fails during parsing, not policy
     ),
     SignMsgDenyTestCase(
         name="Sign_msg_deny_invalid_address_type_byron_in_address_mode",
@@ -728,7 +802,7 @@ signMsgDenyTestCases = [
                 stakingValue="",
             ),
         ),
-        expected_status=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignMsgDenyTestCase(
         name="Sign_msg_deny_invalid_address_type_payment_script_in_address_mode",
@@ -745,6 +819,6 @@ signMsgDenyTestCases = [
                 stakingValue="m/1852'/1815'/0'/2/0",
             ),
         ),
-        expected_status=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS,  # Fails during parsing, not policy
+        expected_swo=StatusWord.SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS,  # Fails during parsing, not policy
     ),
 ]

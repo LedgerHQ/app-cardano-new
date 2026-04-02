@@ -373,14 +373,28 @@ def _deriveNativeScriptHash_finishWholeNativeScript(
     assert response and response.status == StatusWord.SWO_SUCCESS
     # Check the response
     script_hash = unpack_derive_native_script_hash_response(response.data)
-    if not testCase.skip_expected_in_ragger:
-        assert testCase.expected_in_unit_test is not None
-        assert script_hash.hex() == testCase.expected_in_unit_test.hash
+    if testCase.ragger_expect is not None and testCase.ragger_expect.hash is not None:
+        assert testCase.ragger_expect is not None
+        assert script_hash.hex() == testCase.ragger_expect.hash
     # Independently verify the hash by serializing the script to CBOR and
     # hashing it.  For PUBKEY_DEVICE_OWNED scripts the key hash is derived
     # from the device mnemonic at runtime via get_device_pubkey().
     assert testCase.script is not None
     assert script_hash.hex() == _compute_expected_script_hash(testCase.script)
+    _check_ragger_expect_native_script(testCase, script_hash)
+
+
+def _check_ragger_expect_native_script(
+    testCase: ValidNativeScriptTestCase, script_hash: bytes
+) -> None:
+    if testCase.ragger_expect is None:
+        pytest.fail(
+            f"Missing ragger_expect for native_script fixture {testCase.name!r}"
+        )
+    assert testCase.ragger_expect.hash is not None
+    assert script_hash.hex() == testCase.ragger_expect.hash, (
+        f"Script hash mismatch for {testCase.name!r}"
+    )
 
 
 @pytest.mark.parametrize("testCase", InvalidScriptTestCases, ids=idTestFunc)
@@ -404,5 +418,5 @@ def test_derive_native_script_hash_deny(
             nav_ctx, client, testCase.script, testCase.name, step_counter
         )
 
-    assert testCase.expected_in_unit_test is not None
-    assert err.value.status == testCase.expected_in_unit_test.sw
+    assert testCase.unit_test_expect is not None
+    assert err.value.status == testCase.unit_test_expect.swo

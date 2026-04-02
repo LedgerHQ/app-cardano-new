@@ -60,7 +60,7 @@ def _build_test_file_header() -> str:
 
 #include "blake2b.h"
 
-#include "test_address_derivation_fixtures_deny.h"
+#include "test_derive_address_fixtures_deny.h"
 #include "test_fixture_types.h"
 #include "apdu_finalization_check.h"
 #include "io_capture.h"
@@ -131,7 +131,7 @@ def _build_main_function(test_function_names: list[str]) -> str:
 
 def generate_address_derivation_deny_test_runners() -> int:
     fixture_header_path = (
-        GENERATED_DERIVE_ADDRESS_DIR / "test_address_derivation_fixtures_deny.h"
+        GENERATED_DERIVE_ADDRESS_DIR / "test_derive_address_fixtures_deny.h"
     )
     test_c_file = GENERATED_DERIVE_ADDRESS_DIR / "test_derive_address_deny_tests.c"
 
