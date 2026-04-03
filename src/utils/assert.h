@@ -8,6 +8,7 @@
 #define ASSERT_TYPE(expr, expected_type) \
     STATIC_ASSERT(__builtin_types_compatible_p(__typeof__((expr)), expected_type), "Wrong type")
 
+#include <stdbool.h>
 #include "ledger_assert.h"
 
 // Redeclare assert_exit as noreturn so the static analyzer understands that

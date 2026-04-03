@@ -403,6 +403,10 @@ cardano_unit_test(test_sign_msg
     SOURCES generated/sign_msg/test_sign_msg.c
     LIBS cardano_sign_msg_core mock_printf)
 
+cardano_unit_test(test_sign_msg_deny_tests
+    SOURCES generated/sign_msg/test_sign_msg_deny_tests.c
+    LIBS cardano_sign_msg_core mock_printf)
+
 cardano_unit_test(test_aux_data_hash_builder
     SOURCES
         test_aux_data_hash_builder.c

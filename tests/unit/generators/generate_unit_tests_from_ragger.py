@@ -60,7 +60,9 @@ from tests.unit.generators.fixture_generators.cvote_generators import (
 from tests.unit.generators.deny_fixture_generators.sign_tx_deny_generators import (
     generate_tx_deny_fixtures,
 )
-
+from tests.unit.generators.deny_fixture_generators.sign_msg_deny_generators import (
+    generate_sign_msg_deny_test_runners,
+)
 from tests.unit.generators.deny_fixture_generators.derive_address_deny_generators import (
     generate_address_derivation_deny_fixtures,
 )
@@ -223,7 +225,7 @@ COMMAND_REGISTRY = [
         generated_dir=GENERATED_SIGN_MSG_DIR,
         fixture_generators=[generate_sign_msg_fixtures],
         runner_generators=[generate_sign_msg_test_runners],
-        deny_generators=[],
+        deny_generators=[generate_sign_msg_deny_test_runners],
     ),
     CommandMetadata(
         id="sign_cvote",
@@ -512,8 +514,14 @@ def _verify_ragger_test_coverage() -> None:
         unit_tests_content,
     ) = _count_unit_tests_by_command()
     deny_fixture_count = _count_sign_tx_deny_fixtures()
-    if deny_fixture_count:
-        unit_command_counts["sign_tx"] += deny_fixture_count
+    if deny_fixture_count == 0:
+        print(
+            "ERROR: SIGN_TX_DENY_FIXTURES is empty or missing — "
+            "test_sign_tx_deny is skipped from function-level coverage but requires "
+            "at least one fixture entry to be meaningful"
+        )
+        sys.exit(1)
+    unit_command_counts["sign_tx"] += deny_fixture_count
     expanded_unit_test_count = total_unit_test_funcs + deny_fixture_count
     # For sign_tx, compare against fine-grained expected entries (same granularity
     # as generated unit tests), not raw pytest parameterized-case count.
@@ -594,7 +602,10 @@ def _verify_ragger_test_coverage() -> None:
         unmapped_details = ", ".join(
             f"{name}({count})" for name, count in sorted(unmapped_counts.items())
         )
-        print(f"  Unmapped pytest modules ({unmapped_total} cases): {unmapped_details}")
+        print(
+            f"  Unmapped pytest modules ({unmapped_total} cases): {unmapped_details}"
+            f" — their test functions are still checked for unit-test coverage above"
+        )
 
     insufficient_commands = []
     mismatched_counts = []
@@ -604,7 +615,12 @@ def _verify_ragger_test_coverage() -> None:
         unit_count = unit_command_counts.get(command, 0)
 
         # Validate in-memory generation against parsed cmocka tests.
-        if hasattr(cmd, "generated_entries_count") and cmd.generated_entries_count > 0:
+        # Check whenever generated_entries_count was set (even to 0 is suspicious if
+        # ragger_count > 0), so skip only when the field was never incremented at all
+        # (i.e. when the run mode didn't invoke runner/deny generators).
+        if hasattr(cmd, "generated_entries_count") and (
+            cmd.generated_entries_count > 0 or ragger_count > 0
+        ):
             in_memory_count = cmd.generated_entries_count
             if in_memory_count != unit_count:
                 mismatched_counts.append(
@@ -726,6 +742,8 @@ def run_all() -> None:
 
     _log_stage("Generating deny fixtures")
     for cmd in COMMAND_REGISTRY:
+        deny_count_for_cmd = 0
+        any_counted = False
         for gen in cmd.deny_generators:
             count = gen()
             if count is not None:
@@ -734,6 +752,14 @@ def run_all() -> None:
                 )
                 if not has_deny_runner:
                     cmd.generated_entries_count += count
+                deny_count_for_cmd += count
+                any_counted = True
+        if any_counted and deny_count_for_cmd == 0:
+            print(
+                f"ERROR: deny generators for '{cmd.display_name}' produced 0 test entries — "
+                f"deny test cases may be missing or the generator failed silently"
+            )
+            sys.exit(1)
 
     _log_stage("Regenerating mock data (post-pass)")
     regenerate_mock_data()
