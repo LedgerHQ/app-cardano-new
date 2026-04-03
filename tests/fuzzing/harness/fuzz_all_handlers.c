@@ -80,6 +80,11 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         // - Handler robustness
         apdu_dispatcher(&cmd);
 
+        // Reset APDU response state between commands so the next call to
+        // apdu_response_begin() doesn't assert on leftover state from a
+        // handler that exited early or via a non-standard path.
+        apdu_response_state_force_reset();
+
         // Clean up allocated data
         if (cmd_data != NULL) {
             free(cmd_data);

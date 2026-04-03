@@ -13,6 +13,8 @@
 #include "tx_parse_outputs.h"
 #include "tx_processing.h"
 #include "cardano_parsers.h"
+#include "securityPolicy.h"
+#include "securityWarnings.h"
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     fuzzing_reset_state();
@@ -63,7 +65,20 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
             G_context.tx_info.body.raw_tx = (uint8_t *) (data + 10);
             G_context.tx_info.raw_tx_total_length = (uint16_t) (size - 10);
 
-            (void) tx_validate();
+            // tx_body_ctx() asserts TX_STATE_CHUNKS (or later states); set it
+            // before calling tx_validate() which accesses tx_body_ctx().
+            G_context.state.tx_state = TX_STATE_CHUNKS;
+            // policyForSignTxInit asserts txSigningMode is a valid enum value.
+            tx_params->txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX +
+                (tx_params->txSigningMode % (SIGN_TX_SIGNINGMODE_PLUTUS_TX -
+                                             SIGN_TX_SIGNINGMODE_ORDINARY_TX + 1));
+            // tx_validate() asserts policyForSignTxInit != POLICY_DENY, which can
+            // happen with arbitrary fuzz params that were never validated by the
+            // real init APDU handler. Skip tx_validate() in that case.
+            warning_bits_t policy_warnings = 0;
+            if (policyForSignTxInit(tx_params, &policy_warnings) != POLICY_DENY) {
+                (void) tx_validate();
+            }
             break;
         }
         case 1: {

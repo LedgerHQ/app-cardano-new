@@ -25,6 +25,10 @@ static void apdu_response_state_reset(void) {
     G_apdu_response_state.instruction = INS_NONE;
 }
 
+void apdu_response_state_force_reset(void) {
+    apdu_response_state_reset();
+}
+
 static void free_request_owned_buffers(void) {
     switch (G_context.req_type) {
         case REQUEST_SIGN_TRANSACTION:

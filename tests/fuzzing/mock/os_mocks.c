@@ -234,9 +234,9 @@ void os_perso_derive_node_with_seed_key(unsigned int mode,
     (void) seed_key_length;
 }
 
-void assert_exit(bool confirm) {
-    // For fuzzing, just return without exiting
-    (void)confirm;
+void __attribute__((noreturn)) assert_exit(bool confirm) {
+    (void) confirm;
+    abort();
 }
 
 void __attribute__((noreturn)) app_exit(void) {

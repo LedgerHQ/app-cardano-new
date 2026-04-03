@@ -24,8 +24,12 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
 
     // Path classification and formatting.
-    (void) bip44_classifyPath(&primary_path);
-    (void) bip44_isPathReasonable(&primary_path);
+    // bip44_isPathReasonable asserts the path is not PATH_INVALID, so only
+    // call it when classification succeeds.
+    bip44_path_type_t path_type = bip44_classifyPath(&primary_path);
+    if (path_type != PATH_INVALID) {
+        (void) bip44_isPathReasonable(&primary_path);
+    }
     (void) bip44_hasByronPrefix(&primary_path);
     (void) bip44_hasShelleyPrefix(&primary_path);
     (void) bip44_hasMultisigWalletKeyPrefix(&primary_path);
@@ -43,11 +47,15 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     }
 
     // Security policy entry points tied to path validation.
+    // These assert the path is not PATH_INVALID, so only call them when
+    // classification succeeds.
     warning_bits_t warnings = 0;
-    (void) policyForDerivePrivateKey(&primary_path);
-    (void) policyForGetExtendedPublicKey(&primary_path, &warnings);
-    (void) policyForSignCVoteWitness(&primary_path, &warnings);
-    (void) policyForSignMsg(&primary_path, CIP8_ADDRESS_FIELD_KEYHASH, NULL, &warnings);
+    if (path_type != PATH_INVALID) {
+        (void) policyForDerivePrivateKey(&primary_path);
+        (void) policyForGetExtendedPublicKey(&primary_path, &warnings);
+        (void) policyForSignCVoteWitness(&primary_path, &warnings);
+        (void) policyForSignMsg(&primary_path, CIP8_ADDRESS_FIELD_KEYHASH, NULL, &warnings);
+    }
 
     return 0;
 }

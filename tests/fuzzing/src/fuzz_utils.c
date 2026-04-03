@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "app_context.h"
 #include "globals.h"
 #include "app_mem_utils.h"
 #include "ui_utils.h"
@@ -14,6 +15,10 @@
 fuzz_exit_jump_ctx_t fuzz_exit_jump_ctx;
 
 void fuzzing_reset_state(void) {
+    // Reset APDU response state in case a previous iteration terminated early
+    // via siglongjmp from app_exit(), bypassing apdu_response_assert_sent_or_deferred().
+    apdu_response_state_force_reset();
+
     // Clean up UI allocations left over from the previous iteration
     ui_free_pairs();
 

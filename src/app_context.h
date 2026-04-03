@@ -48,3 +48,11 @@ void apdu_response_assert_sent_or_deferred(void);
  */
 void apdu_response_send_sw(uint16_t swo);
 void apdu_response_send_data(const uint8_t *buffer, size_t bufferLength, uint16_t swo);
+
+/**
+ * Reset APDU response tracking state.
+ * For use by fuzzing harnesses to clean up after a siglongjmp from app_exit()
+ * that bypassed the normal apdu_response_assert_sent_or_deferred() call.
+ * Not for use in production app code.
+ */
+void apdu_response_state_force_reset(void);

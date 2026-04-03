@@ -15,10 +15,12 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     fuzzing_reset_state();
 
     // Parse INIT payload via global raw_cvote_init_data.
+    // tx_aux_data_ctx() asserts TX_STATE_AUX_DATA so set it before calling.
     if (size > 0) {
         uint8_t *init_copy = malloc(size);
         if (init_copy != NULL) {
             memcpy(init_copy, data, size);
+            G_context.state.tx_state = TX_STATE_AUX_DATA;
             G_context.tx_info.aux_data.raw_cvote_init_data = init_copy;
             G_context.tx_info.aux_data.raw_cvote_init_data_len = size;
 
