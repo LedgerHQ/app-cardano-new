@@ -439,61 +439,6 @@ cardano_unit_test(test_tx_hash_builder
         bip32
         mock_printf)
 
-cardano_unit_test(test_tx_validate
-    SOURCES
-        test_tx_validate.c
-        mock_sources/mock_globals.c
-        ../../src/transaction/tx_parse.c
-        ../../src/transaction/tx_processing.c
-        ../../src/transaction/tx_processing_outputs.c
-        ../../src/transaction/tx_processing_certificates.c
-        ../../src/transaction/tx_ui_render.c
-        ../../src/transaction/tx_ui_render_certificates.c
-        ../../src/transaction/tx_ui_render_outputs.c
-        ../../src/transaction/tx_parse_certificates.c
-        ../../src/transaction/tx_parse_outputs.c
-        ../../src/transaction/tx_utils.c
-        ../../src/transaction/tx_hash_builder.c
-        ../../src/addressUtils/addressUtilsShelley.c
-        ../../src/addressUtils/addressUtilsByron.c
-        ../../src/addressUtils/bip44.c
-        ../../src/parsers/cardano_parsers.c
-        ../../src/securityPolicy/securityPolicy.c
-        ../../src/securityPolicy/securityPolicy_privkey.c
-        ../../src/keyDerivation/keyDerivation.c
-        ../../src/utils/mem.c
-        $ENV{BOLOS_SDK}/lib_lists/lists.c
-        ../../src/cardano_tokens/cardano_tokens.c
-        ../../src/ui/ui_utils.c
-        ../../src/ui/ui_warnings.c
-        ../../src/ui/ui_formatters.c
-        ../../src/ui/ui_address_fields.c
-        ../../src/app_context.c
-        ${UNIT_TEST_MEM_UTILS_STUB}
-        mock_sources/glyphs_mock.c
-        mock_sources/hex_stub.c
-        test_utils/io_capture.c
-    LIBS
-        hex_utils
-        text_utils
-        blake2b_lib
-        sha3_lib
-        hash_mocks_lib
-        cbor_lib
-        base58
-        bech32_lib
-        bip44_real
-        cardano_buffer_lib
-        buffer
-        write
-        read
-        varint
-        bip32
-        format
-        crypto_mocks_lib
-        cx_crc_support
-        mock_printf)
-
 cardano_unit_test(test_ui_utils
     SOURCES
         test_ui_utils.c

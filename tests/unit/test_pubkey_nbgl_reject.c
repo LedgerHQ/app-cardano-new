@@ -119,6 +119,7 @@ static void test_nbgl_reject_on_pubkey_export_resets_context(void **state) {
     handler_get_public_key(&pubkey_buffer.sdk_buffer);
     apdu_response_assert_sent_or_deferred();
     assert_read_buffer_unchanged_and_cleanup(&pubkey_buffer, fixture->data);
+    nbgl_mock_assert_all_final_decisions_consumed();
 
     assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(g_last_response_len, 0);
@@ -201,6 +202,7 @@ static void test_pubkey_review_title_matrix(void **state) {
         apdu_response_begin(INS_GET_PUBLIC_KEY);
         ui_display_pubkey(POLICY_SHOW, test_cases[i].warnings);
         apdu_response_assert_sent_or_deferred();
+        nbgl_mock_assert_all_final_decisions_consumed();
 
         assert_string_equal(nbgl_mock_last_choice_message(), test_cases[i].expected_title);
         assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);

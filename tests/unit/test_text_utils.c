@@ -168,6 +168,15 @@ static void test_printable_ascii_space_handling(void **state) {
     assert_true(str_isPrintableAsciiWithSpaces(multi_spaces, 3));
 }
 
+static void test_printable_ascii_empty_buffer_contract(void **state) {
+    (void) state;
+
+    const uint8_t dummy = 'X';
+    assert_true(str_isPrintableAsciiWithoutSpaces(&dummy, 0));
+    assert_true(str_isPrintableAsciiWithSpaces(&dummy, 0));
+    assert_false(str_isUnambiguousAscii(&dummy, 0));
+}
+
 static void test_unambiguous_single_chars(void **state) {
     (void) state;
 
@@ -236,6 +245,7 @@ int main(void) {
         cmocka_unit_test(test_printable_ascii_boundary_upper_without_spaces),
         cmocka_unit_test(test_printable_ascii_invalid_control_chars),
         cmocka_unit_test(test_printable_ascii_space_handling),
+        cmocka_unit_test(test_printable_ascii_empty_buffer_contract),
         cmocka_unit_test(test_unambiguous_single_chars),
         cmocka_unit_test(test_unambiguous_consecutive_spaces),
         cmocka_unit_test(test_unambiguous_special_chars),

@@ -84,6 +84,7 @@ static void test_nbgl_reject_on_witness_review_resets_context(void **state) {
         .size = witness_path_apdu_len,
         .offset = 0,
     });
+    nbgl_mock_assert_all_final_decisions_consumed();
 
     assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(g_last_response_len, 0);

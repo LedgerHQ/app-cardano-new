@@ -59,6 +59,7 @@ static void test_nbgl_reject_on_sign_msg_review_resets_context(void **state) {
     nbgl_mock_set_final_decisions(final_decisions, ARRAY_LEN(final_decisions));
 
     run_sign_msg_apdu(fixture->confirm_data, fixture->confirm_data_len, P1_SIGN_MSG_CONFIRM);
+    nbgl_mock_assert_all_final_decisions_consumed();
     assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(g_last_response_len, 0);
     assert_int_equal(G_context.req_type, REQUEST_NONE);

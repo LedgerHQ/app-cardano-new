@@ -92,6 +92,7 @@ static void test_nbgl_reject_on_cvote_confirm_resets_context(void **state) {
                                                         witness_path,
                                                         ARRAY_LEN(witness_path));
     run_sign_cvote_apdu(confirm_payload, confirm_payload_len, P1_CVOTE_CONFIRM);
+    nbgl_mock_assert_all_final_decisions_consumed();
 
     assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(g_last_response_len, 0);

@@ -13,6 +13,8 @@
 #include "nbgl_use_case.h"
 #include "nbgl_mock.h"
 #include "menu.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define NBGL_MOCK_MAX_FINAL_DECISIONS 16
@@ -21,6 +23,7 @@
 static bool g_final_decisions_storage[NBGL_MOCK_MAX_FINAL_DECISIONS];
 static size_t g_final_decision_count = 0;
 static size_t g_final_decision_index = 0;
+static bool g_final_decisions_strict = false;
 static bool g_reject_next_final_decision_enabled = false;
 static bool g_reject_next_final_decision_consumed = false;
 static nbgl_opType_t g_reject_next_operation_type = TYPE_TRANSACTION;
@@ -45,6 +48,7 @@ static void nbgl_mock_store_text(char *destination, const char *source) {
 void nbgl_mock_reset(void) {
     g_final_decision_count = 0;
     g_final_decision_index = 0;
+    g_final_decisions_strict = false;
     g_reject_next_final_decision_enabled = false;
     g_reject_next_final_decision_consumed = false;
     g_reject_next_operation_type = TYPE_TRANSACTION;
@@ -63,6 +67,7 @@ void nbgl_mock_set_final_decisions(const bool *decisions, size_t decision_count)
     if (decisions == NULL || decision_count == 0) {
         g_final_decision_count = 0;
         g_final_decision_index = 0;
+        g_final_decisions_strict = false;
         return;
     }
 
@@ -76,6 +81,17 @@ void nbgl_mock_set_final_decisions(const bool *decisions, size_t decision_count)
 
     g_final_decision_count = decision_count;
     g_final_decision_index = 0;
+    g_final_decisions_strict = true;
+}
+
+void nbgl_mock_assert_all_final_decisions_consumed(void) {
+    if (g_final_decisions_strict && g_final_decision_index != g_final_decision_count) {
+        fprintf(stderr,
+                "nbgl_mock: only consumed %zu/%zu configured final decisions\n",
+                g_final_decision_index,
+                g_final_decision_count);
+        abort();
+    }
 }
 
 void nbgl_mock_reject_next_final_decision_for_operation(nbgl_opType_t operation_type) {
@@ -102,6 +118,13 @@ static nbgl_opType_t nbgl_mock_operation_base_type(nbgl_operationType_t operatio
 static bool nbgl_mock_next_final_decision(void) {
     if (g_final_decision_index < g_final_decision_count) {
         return g_final_decisions_storage[g_final_decision_index++];
+    }
+    if (g_final_decisions_strict) {
+        fprintf(stderr,
+                "nbgl_mock: missing final decision for prompt %zu (configured %zu)\n",
+                g_final_decision_index,
+                g_final_decision_count);
+        abort();
     }
     return true;
 }

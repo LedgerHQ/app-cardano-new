@@ -66,6 +66,7 @@ static void test_nbgl_reject_on_address_review_resets_context(void **state) {
     handler_derive_address(&derive_address_buffer.sdk_buffer, P1_ADDRESS_DISPLAY);
     apdu_response_assert_sent_or_deferred();
     assert_read_buffer_unchanged_and_cleanup(&derive_address_buffer, SHELLEY_DISPLAY_APDU_PAYLOAD);
+    nbgl_mock_assert_all_final_decisions_consumed();
 
     assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(g_last_response_len, 0);

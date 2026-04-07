@@ -347,6 +347,7 @@ static void test_cvote_user_reject_on_final_review_resets_context(void **state) 
     run_aux_data_apdu_helper(CVOTE_UI_TEST_DELEGATION_KEY_PATH_PAYLOAD,
                              sizeof(CVOTE_UI_TEST_DELEGATION_KEY_PATH_PAYLOAD),
                              P2_AUX_DATA_DELEGATION);
+    nbgl_mock_assert_all_final_decisions_consumed();
 
     assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(G_context.req_type, REQUEST_NONE);

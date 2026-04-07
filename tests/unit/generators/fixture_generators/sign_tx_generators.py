@@ -88,8 +88,10 @@ def _extract_aux_data_hash_from_tx_body(hex_str: str) -> str | None:
 
     try:
         parsed = cbor2.loads(_cbor_hex_to_bytes(hex_str))
-    except Exception:
-        return None
+    except Exception as exc:
+        raise ValueError(
+            "Failed to parse txBodyHex while extracting auxiliary data hash"
+        ) from exc
 
     if not isinstance(parsed, dict):
         return None

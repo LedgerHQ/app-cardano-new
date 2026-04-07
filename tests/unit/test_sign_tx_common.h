@@ -17,6 +17,7 @@
 #include "blake2b.h"
 #include "globals.h"
 #include "sign_tx_ctx.h"
+#include "securityPolicy.h"
 #include "cardano_settings.h"
 #include "cardano_constants.h"
 #include "test_fixture_types.h"
@@ -199,12 +200,48 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
             assert_non_null(witness_payload->payload);
             assert_true(witness_payload->payload_len > 0);
 
+            bip44_path_t witness_path = {0};
+            buffer_t witness_policy_buffer = {
+                .ptr = (uint8_t *) witness_payload->payload,
+                .size = witness_payload->payload_len,
+                .offset = 0,
+            };
+            assert_true(buffer_read_bip44_path(&witness_policy_buffer, &witness_path));
+            assert_int_equal(witness_policy_buffer.offset, witness_policy_buffer.size);
+
+            const bool mint_present = (G_context.tx_info.tx_params.num_mint_asset_groups > 0);
+            const bip44_path_t *pool_owner_path = NULL;
+            if (G_context.tx_info.tx_params.txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER &&
+                G_context.tx_info.pool_owner_path_present) {
+                pool_owner_path = &G_context.tx_info.pool_owner_path;
+            }
+
+            warning_bits_t witness_warnings = 0;
+            const security_policy_t witness_policy = policyForSignTxWitness(
+                G_context.tx_info.tx_params.txSigningMode,
+                false,
+                &witness_path,
+                mint_present,
+                pool_owner_path,
+                &witness_warnings
+            );
+
+            const bool witness_requires_confirmation = (witness_policy == POLICY_SHOW);
+            if (witness_requires_confirmation) {
+                const bool witness_final_decisions[] = {true};
+                nbgl_mock_set_final_decisions(witness_final_decisions,
+                                              ARRAY_LEN(witness_final_decisions));
+            }
+
             test_read_buffer_t witness_buffer = make_test_read_buffer(
                 witness_payload->payload,
                 witness_payload->payload_len
             );
             run_sign_tx_witness_apdu(&witness_buffer.sdk_buffer);
             assert_read_buffer_unchanged_and_cleanup(&witness_buffer, witness_payload->payload);
+            if (witness_requires_confirmation) {
+                nbgl_mock_assert_all_final_decisions_consumed();
+            }
 
             assert_int_equal(*response_sw, SWO_SUCCESS);
             assert_int_equal(*response_len, ED25519_SIGNATURE_LENGTH);
@@ -349,6 +386,7 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
     extern bool unit_test_blind_signing_enabled;
     const bool previous_mode = unit_test_expert_mode_enabled;
     const bool previous_blind_signing_enabled = unit_test_blind_signing_enabled;
+    bool final_decisions_configured = false;
     unit_test_expert_mode_enabled = expert_mode;
     unit_test_blind_signing_enabled = fixture_blind_signing_enabled(fixture);
 
@@ -377,6 +415,7 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
         if (reject_stage == REJECT_STAGE_AUX) {
             const bool final_decisions[] = {false};
             nbgl_mock_set_final_decisions(final_decisions, ARRAY_LEN(final_decisions));
+            final_decisions_configured = true;
         }
 
         assert_non_null(fixture->aux_data_init_payload);
@@ -427,6 +466,7 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
         }
 
         nbgl_mock_set_final_decisions(final_decisions, final_decision_count);
+        final_decisions_configured = true;
     }
 
     // Enable streaming auto-complete for TX body review (after aux data processing).
@@ -435,6 +475,9 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
     run_sign_tx_body_chunked(fixture->raw_tx, fixture->raw_tx_len);
 
 expected_failure_assertions:
+    if (final_decisions_configured) {
+        nbgl_mock_assert_all_final_decisions_consumed();
+    }
     assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
@@ -594,6 +637,7 @@ static inline void run_fixture_blind_signing_hash_only_with_expert_mode(
                       g_last_response,
                       &g_last_response_len,
                       &g_last_response_sw);
+    nbgl_mock_assert_all_final_decisions_consumed();
 
     unit_test_expert_mode_enabled = previous_mode;
     unit_test_blind_signing_enabled = previous_blind_signing_enabled;

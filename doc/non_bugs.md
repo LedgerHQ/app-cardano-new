@@ -54,7 +54,7 @@ Format: -> means explanation why not a bug.
 -> not a bug by itself. Counts are wire-bounded (`uint16_t`) and constrained by the enclosing payload length and full-consumption checks. Processing is finite and fails on malformed/short input. Additional wallet-local maxima would be policy restrictions, not a memory-safety fix.
 
 * URL formatter enforces printable ASCII without spaces for displayed URLs.
--> intentional display-safety policy. Percent-encoded URLs (including `%20`) are ASCII and allowed; non-ASCII/confusable URLs are intentionally rejected as not safely displayable without ambiguity.
+-> intentional display-safety policy. Percent-encoded URLs (including `%20`) are ASCII and allowed; non-ASCII/confusable URLs are intentionally rejected as not safely displayable without ambiguity. The shared helper `str_isPrintableAsciiWithoutSpaces(...)` is also intentionally vacuously true for zero-length buffers; emptiness is a separate policy question handled by the caller/spec, not by the character-class check itself.
 
 * UI formatters reject exact-fit output buffers (`written + 1 < outSize` returns false/asserts when `written == outSize - 1`).
 -> intentional sentinel-byte convention. One spare byte beyond the NUL is required so that a full-capacity snprintf write is detectable as potential truncation. Callers must size buffers with this extra byte in mind. Documented in `src/ui/ui_formatters.h`.
@@ -84,7 +84,7 @@ Format: -> means explanation why not a bug.
 -> not a bug. The CDDL defines `coin = uint` (allowing 0) and `pool_owners : set<addr_keyhash>` where `set<a0> = #6.258([* a0]) / [* a0]` (`*` = zero or more), so zero is wire-format valid. The app enforces upper bounds (`LOVELACE_MAX_SUPPLY`, `uint16_t` counts) but does not duplicate node-level policy restrictions such as minimum UTxO values, minimum deposits, or the requirement that a pool has at least one owner — those are enforced by the Cardano ledger at submission time. Adding wallet-local minimums would risk false rejections as protocol parameters change, with no security benefit for the signing device.
 
 * Empty URL accepted for pool metadata (`tx_parse_certificates.c`) and governance anchors (`cardano_parsers.c`) when the enclosing field is present.
--> not a bug. The CDDL defines `url = text .size (0 .. 128)`, explicitly permitting zero-length URLs. Rejecting length-0 URLs would be a wallet-local restriction beyond the wire format. The hash is still verified to be present and well-formed, so the display is self-consistent.
+-> not a bug. The CDDL defines `url = text .size (0 .. 128)`, explicitly permitting zero-length URLs. Rejecting length-0 URLs would be a wallet-local restriction beyond the wire format. This is why the shared URL validator `str_isPrintableAsciiWithoutSpaces(...)` intentionally accepts `bufferSize == 0` for these call sites. The hash is still verified to be present and well-formed, so the display is self-consistent.
 
 * `ALL []` / `ANY []` complex native scripts with zero sub-scripts accepted (`derive_native_script_hash.c`).
 -> not a bug. The CDDL defines `script_all = (1, [* native_script])` and `script_any = (2, [* native_script])` where `*` explicitly permits zero elements. `ALL []` is vacuously satisfied and `ANY []` is vacuously unsatisfiable, but both are syntactically valid on-chain scripts. The app hashes what it receives; semantic validity is a node concern.

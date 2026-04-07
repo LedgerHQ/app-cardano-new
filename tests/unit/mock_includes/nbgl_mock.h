@@ -10,6 +10,7 @@
 
 void nbgl_mock_reset(void);
 void nbgl_mock_set_final_decisions(const bool *decisions, size_t decision_count);
+void nbgl_mock_assert_all_final_decisions_consumed(void);
 void nbgl_mock_reject_next_final_decision_for_operation(nbgl_opType_t operation_type);
 void nbgl_mock_set_streaming_start_auto_complete(bool enabled, bool confirm);
 void nbgl_mock_set_streaming_continue_reject_at_call(size_t call_index);

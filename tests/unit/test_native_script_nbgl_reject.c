@@ -164,6 +164,7 @@ static void test_streaming_finish_reject_resets_context(void **state) {
     nbgl_mock_set_streaming_continue_reject_at_call(0);
 
     run_apdu(TC3_FINISH_BECH32, sizeof(TC3_FINISH_BECH32), P1_NATIVE_SCRIPT_FINISH);
+    nbgl_mock_assert_all_final_decisions_consumed();
 
     assert_int_equal(get_last_sw(), SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(get_response_buffer_length(), 0);
