@@ -11,6 +11,7 @@
 #include <cmocka.h>
 
 #include "addressUtils/bip44.h"
+#include "buffer.h"
 
 #define HD HARDENED_BIP32  // 0x80000000
 
@@ -186,6 +187,21 @@ static void test_bip44_max_depth_paths(void **state) {
     assert_string_equal(result, "m/44'/1815'/0'/0/0");
 }
 
+static void test_bip44_parser_rejects_empty_wire_path(void **state) {
+    (void) state;
+
+    const uint8_t wire_data[] = {0};
+    buffer_t path_buffer = {
+        .ptr = (uint8_t*) wire_data,
+        .size = sizeof(wire_data),
+        .offset = 0,
+    };
+    bip44_path_t pathSpec = {0};
+
+    assert_false(buffer_read_bip44_path(&path_buffer, &pathSpec));
+    assert_int_equal(path_buffer.offset, 0);
+}
+
 // ======================== bip44_pathsEqual tests ========================
 
 static void test_paths_equal_different_lengths(void **state) {
@@ -277,6 +293,7 @@ int main(void) {
         cmocka_unit_test(test_bip44_cardano_paths),
         cmocka_unit_test(test_bip44_buffer_size),
         cmocka_unit_test(test_bip44_max_depth_paths),
+        cmocka_unit_test(test_bip44_parser_rejects_empty_wire_path),
 
         // bip44_pathsEqual tests
         cmocka_unit_test(test_paths_equal_different_lengths),

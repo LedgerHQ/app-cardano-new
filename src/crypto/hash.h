@@ -62,6 +62,7 @@ enum {
                                   0,                                                            \
                                   outBuffer,                                                    \
                                   CIPHER##_##bits##_SIZE));                                     \
+        ctx->initialized_magic = 0; /* Prevent double-finalize / post-finalize append */        \
     }                                                                                           \
     /* Convenience function to make all in one step */                                          \
     static __attribute__((always_inline, unused)) void cipher##_##bits##_hash(                  \

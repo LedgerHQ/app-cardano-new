@@ -159,7 +159,7 @@ static bool format_cvote_delegation_index(uint16_t delegation_index,
                                           size_t out_size) {
     ASSERT(out != NULL);
     int written = snprintf(out, out_size, "#%u", delegation_index);
-    return (written > 0) && ((size_t) written < out_size);
+    return (written > 0) && ((size_t) written + 1 < out_size);
 }
 
 static bool format_cvote_reward_address(const tx_output_destination_t *destination,

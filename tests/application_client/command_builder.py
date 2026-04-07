@@ -1779,10 +1779,12 @@ class CommandBuilder:
         data.extend(pack_derivation_path(testCase.msgData.signingPath))
 
         # Hash payload flag (1 byte)
-        data.append(1 if testCase.msgData.hashPayload else 0)
+        data.append(
+            FLAG_INCLUDED_YES if testCase.msgData.hashPayload else FLAG_INCLUDED_NO
+        )
 
         # Is ASCII flag (1 byte)
-        data.append(1 if testCase.msgData.isAscii else 0)
+        data.append(FLAG_INCLUDED_YES if testCase.msgData.isAscii else FLAG_INCLUDED_NO)
 
         # Address field type (1 byte)
         data.append(int(testCase.msgData.addressFieldType))

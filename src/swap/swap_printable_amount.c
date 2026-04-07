@@ -8,13 +8,15 @@
 
 #ifdef HAVE_SWAP
 
-// Set empty printable_amount on error, printable amount otherwise
+// On error, leave printable_amount as empty string. This is the SDK-mandated error
+// convention for this callback — the framework has no return value to check.
 void swap_handle_get_printable_amount(get_printable_amount_parameters_t *params) {
     uint64_t amount;
 
     TRACE("Inside swap_handle_get_printable_amount");
     explicit_bzero(params->printable_amount, sizeof(params->printable_amount));
 
+    // swap_str_to_u64 may legitimately fail on malformed input from the swap partner app.
     if (!swap_str_to_u64(params->amount, params->amount_length, &amount)) {
         TRACE("Amount copy error");
         return;

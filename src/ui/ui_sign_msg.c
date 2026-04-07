@@ -24,6 +24,7 @@
 #include "sign_msg.h"
 #include "addressUtilsShelley.h"
 #include "ui_warnings.h"
+#include "textUtils.h"
 
 /* Optional module-specific tracing for debugging.
  * Enabled via -DTRACE_UI_DISPLAY to trace UI flow details.
@@ -38,6 +39,7 @@ static bool format_ascii_chunk(const uint8_t *bytes, size_t size, char *out, siz
     ASSERT(bytes != NULL);
     ASSERT(out != NULL);
     LEDGER_ASSERT(outSize > 0, "Zero output buffer size");
+    LEDGER_ASSERT(str_isUnambiguousAscii(bytes, size), "ASCII message chunk contains invalid characters");
     if (size + 1 > outSize) {
         return false; // LCOV_EXCL_LINE
     }

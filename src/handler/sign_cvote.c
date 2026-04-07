@@ -111,6 +111,9 @@ static void handle_sign_cvote_init_apdu(buffer_t *cdata) {
         send_swo_and_reset(SWO_CVOTE_PARSING_FAIL_PAYLOAD_TYPE_TAG);
         return;
     }
+    // No range restriction on payload_type_tag: the Catalyst/Jormungandr voting
+    // protocol does not publish a fixed enumeration of valid tag values, so we
+    // accept any byte and display it as-is to the user.
     TRACE_MODULE("Payload type tag = %u", ctx->payload_type_tag);
 
     vote_cast_hash_builder_init(&ctx->votecast_hash_builder, ctx->remaining_votecast_bytes);

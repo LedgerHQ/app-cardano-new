@@ -73,3 +73,18 @@ Format: -> means explanation why not a bug.
 
 * Mismatched test counts in generator output (WARNING: Mismatch between in-memory generation and file parsing).
 -> intentional validation redundancy. The unit test generator (`generate_unit_tests_from_ragger.py`) intentionally uses multiple methods to count generated test cases (in-memory tracking vs. regex parsing of generated C files) as a sanity check. Any mismatch is manually investigated during development. The generator does not live on its own and is only used to create testing data, so this warning is safe to ignore in automated runs unless explicitly debugging coverage.
+
+* L13. `format_pool_margin` potential overflow at `10000 * numerator + denominator/2` (`src/ui/ui_formatters.c:239`).
+-> not a bug. The assert at line 236 enforces `numerator <= UINT64_MAX / 10000`, so `10000 * numerator <= UINT64_MAX - 9999`. The parser additionally enforces `numerator <= MARGIN_DENOMINATOR_MAX = 10^15`, giving `10000 * numerator <= 10^19`. Adding `denominator/2 <= MARGIN_DENOMINATOR_MAX/2 = 5*10^14` yields at most `~1.005 * 10^19`, well within `UINT64_MAX (~1.8 * 10^19)`. No overflow is possible with the parse-time bounds in place.
+
+* L2. `num_witnesses == 0` accepted (`src/handler/sign_tx.c:313-316`).
+-> not a bug. The transaction still goes through full parsing, policy checks, and user review, so the app verifies that the transaction is well-formed and acceptable. If the client requests zero witnesses, the app simply signs nothing; we do not require wallets/clients to ask for witnesses.
+
+* No lower-bound (zero) checks for lovelace amounts and counts where the Cardano node enforces a minimum: output ADA amount (`tx_parse_outputs.c`), Conway certificate deposits (`tx_parse_certificates.c`), `numPoolOwners` in pool registration (`tx_parse_certificates.c`).
+-> not a bug. The CDDL defines `coin = uint` (allowing 0) and `pool_owners : set<addr_keyhash>` where `set<a0> = #6.258([* a0]) / [* a0]` (`*` = zero or more), so zero is wire-format valid. The app enforces upper bounds (`LOVELACE_MAX_SUPPLY`, `uint16_t` counts) but does not duplicate node-level policy restrictions such as minimum UTxO values, minimum deposits, or the requirement that a pool has at least one owner — those are enforced by the Cardano ledger at submission time. Adding wallet-local minimums would risk false rejections as protocol parameters change, with no security benefit for the signing device.
+
+* Empty URL accepted for pool metadata (`tx_parse_certificates.c`) and governance anchors (`cardano_parsers.c`) when the enclosing field is present.
+-> not a bug. The CDDL defines `url = text .size (0 .. 128)`, explicitly permitting zero-length URLs. Rejecting length-0 URLs would be a wallet-local restriction beyond the wire format. The hash is still verified to be present and well-formed, so the display is self-consistent.
+
+* `ALL []` / `ANY []` complex native scripts with zero sub-scripts accepted (`derive_native_script_hash.c`).
+-> not a bug. The CDDL defines `script_all = (1, [* native_script])` and `script_any = (2, [* native_script])` where `*` explicitly permits zero elements. `ALL []` is vacuously satisfied and `ANY []` is vacuously unsatisfiable, but both are syntactically valid on-chain scripts. The app hashes what it receives; semantic validity is a node concern.

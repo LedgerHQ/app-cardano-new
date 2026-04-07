@@ -338,9 +338,11 @@ bool format_vote_option(vote_t voteOption, char *out, size_t outSize) {
         case VOTE_ABSTAIN:
             vote_str = "Abstain";
             break;
+        // LCOV_EXCL_START
         default:
-            vote_str = "Unknown";
-            break;
+            LEDGER_ASSERT(false, "Unknown vote option");
+            return false;
+        // LCOV_EXCL_STOP
     }
 
     int written = snprintf(out, outSize, "%s", vote_str);

@@ -393,8 +393,10 @@ static bool tx_process_collateral_return_output(buffer_t *output_buf, tx_process
     }
 
     // Collateral outputs MUST NOT contain datum or ref script
-    LEDGER_ASSERT(!output_desc.includeDatum, "Collateral output with datum");
-    LEDGER_ASSERT(!output_desc.includeRefScript, "Collateral output with ref script");
+    if (output_desc.includeDatum || output_desc.includeRefScript) {
+        tx_handle_parse_error(SWO_TX_PARSING_FAIL_COLLATERAL_OUTPUT);
+        return false;
+    }
 
     if (buffer_can_read(output_buf, 1)) {
         tx_handle_parse_error(SWO_TX_PARSING_FAIL_COLLATERAL_OUTPUT);

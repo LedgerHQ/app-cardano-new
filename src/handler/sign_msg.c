@@ -133,22 +133,18 @@ static void signMsg_handle_init(buffer_t *cdata) {
     TRACE("Signing path:");
     BIP44_PRINTF(&ctx->signingPath);
 
-    uint8_t hashPayload_byte;
-    if (!buffer_read_u8(cdata, &hashPayload_byte)) {
+    if (!buffer_read_flag_included(cdata, &ctx->hashPayload)) {
         TRACE("Failed to read hashPayload");
         send_swo_and_reset(SWO_SIGN_MSG_PARSING_FAIL_HASH_PAYLOAD);
         return;
     }
-    ctx->hashPayload = (hashPayload_byte != 0);
     TRACE("Hash payload = %d", ctx->hashPayload);
 
-    uint8_t isAscii_byte;
-    if (!buffer_read_u8(cdata, &isAscii_byte)) {
+    if (!buffer_read_flag_included(cdata, &ctx->isAscii)) {
         TRACE("Failed to read isAscii");
         send_swo_and_reset(SWO_SIGN_MSG_PARSING_FAIL_IS_ASCII);
         return;
     }
-    ctx->isAscii = (isAscii_byte != 0);
     TRACE("Is ASCII = %d", ctx->isAscii);
 
     uint8_t addressFieldType_byte;
@@ -157,11 +153,11 @@ static void signMsg_handle_init(buffer_t *cdata) {
         send_swo_and_reset(SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_FIELD_TYPE);
         return;
     }
-    ctx->addressFieldType = (cip8_address_field_type_t) addressFieldType_byte;
-    TRACE("Address field type = %d", ctx->addressFieldType);
+    TRACE("Address field type = %d", addressFieldType_byte);
 
-    switch (ctx->addressFieldType) {
+    switch (addressFieldType_byte) {
         case CIP8_ADDRESS_FIELD_ADDRESS:
+            ctx->addressFieldType = CIP8_ADDRESS_FIELD_ADDRESS;
             if (!buffer_read_address_params(cdata, &ctx->address_params)) {
                 TRACE("Failed to parse address params");
                 send_swo_and_reset(SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS);
@@ -173,6 +169,7 @@ static void signMsg_handle_init(buffer_t *cdata) {
                                              &ctx->hashStorage);
             break;
         case CIP8_ADDRESS_FIELD_KEYHASH:
+            ctx->addressFieldType = CIP8_ADDRESS_FIELD_KEYHASH;
             // No additional data to parse
             break;
         default:
@@ -303,6 +300,11 @@ static void signMsg_handle_chunk(buffer_t *cdata) {
 
         // Add chunk to hash
         blake2b_224_append(&ctx->msgHashCtx, ctx->msgBuffer + writeOffset, chunkSize_u32);
+    }
+
+    if (deny_unconsumed_bytes(cdata, SWO_WRONG_DATA_LENGTH)) {
+        TRACE("Unconsumed bytes after chunk data");
+        return;
     }
 
     // Update remaining bytes

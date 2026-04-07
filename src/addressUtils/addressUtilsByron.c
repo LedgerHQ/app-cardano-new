@@ -333,6 +333,8 @@ bool extractProtocolMagic(const uint8_t* addressBuffer, size_t addressSize, uint
     }
 
     // address type (unsigned)
+    // We intentionally do not validate this field (e.g. against CARDANO_ADDRESS_TYPE_PUBKEY)
+    // to avoid compatibility issues with legacy Byron addresses that may carry unexpected type values.
     {
         uint64_t addressType;
         if (!parseToken(&buf, CBOR_TYPE_UNSIGNED, &addressType)) {

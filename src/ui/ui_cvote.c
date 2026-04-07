@@ -28,6 +28,9 @@
 #define TRACE_MODULE(...) (void)0  // Compiled out
 #endif
 
+// CIP-36 vote confirm UI pair counts
+#define UI_PAIRS_CVOTE_CONFIRM 4  // "Witness", "Vote plan id", "Proposal index", "Payload type tag"
+
 /**
  * Cleanup dynamically allocated buffers and UI pairs
  */
@@ -77,13 +80,14 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy, warning_bits_t w
     // Format all fields and check for errors
     ui_render_session_t session = {0};
     ui_render_scope_begin(&session);
-    if (!ui_pairs_init(4)) {
+    if (!ui_pairs_init(UI_PAIRS_CVOTE_CONFIRM)) {
         TRACE_MODULE("Failed to initialize pairs");
         ui_render_scope_end(); // LCOV_EXCL_LINE
         send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
         return; // LCOV_EXCL_LINE
     }
 
+    START_COUNT();
     UI_ADD_FORMAT1(UI_STATIC_LABEL("Witness"),
                    MAX_BIP44_PATH_STRING_LENGTH,
                    format_bip44_path,
@@ -103,6 +107,7 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy, warning_bits_t w
                    format_decimal_amount,
                    ctx->payload_type_tag,
                    0);
+    CHECK_COUNT(UI_PAIRS_CVOTE_CONFIRM);
     ui_status_t render_status = ui_render_scope_end();
     LEDGER_ASSERT(render_status == UI_STATUS_SUCCESS,
                   "Unexpected UI status: %d",

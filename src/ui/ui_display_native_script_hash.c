@@ -104,7 +104,7 @@ bool format_remaining(uint32_t remaining_scripts, char *out, size_t out_size) {
     ASSERT(out != NULL);
     STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(remaining_scripts)), "signed type for %u");
     int chars_written = snprintf(out, out_size, "%u nested scripts", remaining_scripts);
-    return (chars_written > 0 && chars_written < (int)out_size);
+    return (chars_written > 0 && (size_t)chars_written + 1 < out_size);
 }
 
 bool format_required_signatures(uint32_t requiredScripts,
@@ -116,7 +116,7 @@ bool format_required_signatures(uint32_t requiredScripts,
     STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(remainingScripts)), "signed type for %u");
     int chars_written =
         snprintf(out, out_size, "%u out of %u signatures", requiredScripts, remainingScripts);
-    return (chars_written > 0 && chars_written < (int)out_size);
+    return (chars_written > 0 && (size_t)chars_written + 1 < out_size);
 }
 
 static void derive_native_script_hash_buffer_cleanup(void) {

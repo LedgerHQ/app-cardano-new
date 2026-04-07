@@ -136,6 +136,7 @@ void nativeScriptHashBuilder_startComplexScript_n_of_k(native_script_hash_builde
     _TRACE("state = %d", builder->state);
 
     ASSERT(builder->state == NATIVE_SCRIPT_HASH_BUILDER_SCRIPT);
+    ASSERT(requiredScripts <= remainingScripts);
 
     // Array(3)[
     //    Unsigned[native script type = 3],

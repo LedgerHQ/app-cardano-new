@@ -240,10 +240,6 @@ static void test_format_vote_option(void **state) {
     assert_true(success);
     assert_string_equal(tmp, "Abstain");
 
-    memset(tmp, 0, sizeof(tmp));
-    success = format_vote_option((vote_t) 99, tmp, sizeof(tmp));
-    assert_true(success);
-    assert_string_equal(tmp, "Unknown");
 }
 
 static void test_format_constant_drep(void **state) {

@@ -48,13 +48,19 @@ _GENERATED_SIGN_TX_MESSAGE_NAME_PATTERN = re.compile(
 
 # These hashes are exercised by sign-tx deny fixtures that currently do not expose
 # expected_hash_hex in generated metadata, but still reach witness signing.
-_DENY_ONLY_REQUIRED_SIGN_TX_MOCKS: tuple[tuple[bytes, tuple[tuple[int, ...], ...]], ...] = (
+_DENY_ONLY_REQUIRED_SIGN_TX_MOCKS: tuple[
+    tuple[bytes, tuple[tuple[int, ...], ...]], ...
+] = (
     (
-        bytes.fromhex("3E8C777ECFCCB9DB4772E43CE958C6CAB0E131CD957953026A075D16341D0828"),
+        bytes.fromhex(
+            "3E8C777ECFCCB9DB4772E43CE958C6CAB0E131CD957953026A075D16341D0828"
+        ),
         ((0x8000073C, 0x80000717, 0x80000000, 0x00000002, 0x00000000),),
     ),
     (
-        bytes.fromhex("BC678441767B195382F00F9F4C4BDDC046F73E6116FA789035105ECDDFDEE949"),
+        bytes.fromhex(
+            "BC678441767B195382F00F9F4C4BDDC046F73E6116FA789035105ECDDFDEE949"
+        ),
         ((0x8000073C, 0x80000717, 0x80000000, 0x00000002, 0x00000000),),
     ),
 )
@@ -73,7 +79,12 @@ def _load_sign_tx_generator_helpers() -> tuple[object, object, object, object]:
         print("Please activate the venv: source tests/venv/bin/activate")
         sys.exit(1)
 
-    return gather_witness_paths, _cbor_hex_to_bytes, _compute_blake2b_256, _load_sign_tx_tests
+    return (
+        gather_witness_paths,
+        _cbor_hex_to_bytes,
+        _compute_blake2b_256,
+        _load_sign_tx_tests,
+    )
 
 
 def parse_witness_path_to_words(witness_path: str) -> tuple[int, ...]:
@@ -344,9 +355,9 @@ def regenerate_mock_data_with_options(*, verbose: bool, report_summary: bool) ->
             generated_sign_tx_hashes.add(expected_hash_bytes)
             supplemental_message_arrays.append(
                 "\n".join(
-                    format_bytes_as_c_array(
-                        expected_hash_bytes, message_name
-                    ).split("\n")
+                    format_bytes_as_c_array(expected_hash_bytes, message_name).split(
+                        "\n"
+                    )
                 )
             )
 

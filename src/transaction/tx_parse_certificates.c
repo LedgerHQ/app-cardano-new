@@ -30,6 +30,8 @@ bool parse_certificate_stake_registration_deregistration(
     buffer_t *buf,
     certificate_type_t cert_type,
     certificate_data_t *cert_data) {
+    ASSERT(buf != NULL);
+    ASSERT(cert_data != NULL);
     LEDGER_ASSERT(cert_type == CERTIFICATE_STAKE_REGISTRATION ||
                   cert_type == CERTIFICATE_STAKE_DEREGISTRATION,
                   "Invalid certificate type for stake registration/deregistration");
@@ -69,6 +71,8 @@ bool parse_certificate_stake_registration_deregistration_conway(
     buffer_t *buf,
     certificate_type_t cert_type,
     certificate_data_t *cert_data) {
+    ASSERT(buf != NULL);
+    ASSERT(cert_data != NULL);
     LEDGER_ASSERT(cert_type == CERTIFICATE_STAKE_REGISTRATION_CONWAY ||
                   cert_type == CERTIFICATE_STAKE_DEREGISTRATION_CONWAY,
                   "Invalid certificate type for Conway stake registration/deregistration");
@@ -140,6 +144,7 @@ bool parse_certificate_vote_delegation(buffer_t *buf,
 /// Parse CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION
 bool parse_certificate_stake_pool_and_drep_delegation(buffer_t *buf,
                                                                  certificate_data_t *cert_data) {
+    ASSERT(buf != NULL);
     ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION;
 
@@ -167,6 +172,7 @@ bool parse_certificate_stake_pool_and_drep_delegation(buffer_t *buf,
 bool parse_certificate_account_registration_delegation_to_stake_pool(
     buffer_t *buf,
     certificate_data_t *cert_data) {
+    ASSERT(buf != NULL);
     ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL;
 
@@ -199,6 +205,7 @@ bool parse_certificate_account_registration_delegation_to_stake_pool(
 bool parse_certificate_account_registration_delegation_to_drep(
     buffer_t *buf,
     certificate_data_t *cert_data) {
+    ASSERT(buf != NULL);
     ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP;
 
@@ -231,6 +238,7 @@ bool parse_certificate_account_registration_delegation_to_drep(
 bool parse_certificate_account_registration_delegation_to_stake_pool_and_drep(
     buffer_t *buf,
     certificate_data_t *cert_data) {
+    ASSERT(buf != NULL);
     ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP;
 
@@ -388,6 +396,9 @@ bool parse_certificate_drep_update(buffer_t *buf,
 
 /// Helper to parse pool ID (operator key - hash or path)
 static bool _parse_pool_id(buffer_t *buf, pool_id_t *pool_id) {
+    ASSERT(buf != NULL);
+    ASSERT(pool_id != NULL);
+
     uint8_t pool_id_type_wire;
     if (!buffer_read_u8(buf, &pool_id_type_wire)) {
         TRACE("Failed to read pool id type");
@@ -422,6 +433,9 @@ static bool _parse_required_relay_dns_name(buffer_t *buf,
                                            pool_relay_t *relay,
                                            const char *missing_dns_message MARK_UNUSED,
                                            const char *empty_dns_message MARK_UNUSED) {
+    ASSERT(buf != NULL);
+    ASSERT(relay != NULL);
+
     bool dns_included = false;
     if (!buffer_read_flag_included(buf, &dns_included)) {
         TRACE("Failed to read dns inclusion flag");
@@ -638,6 +652,9 @@ bool parse_pool_metadata(buffer_t *buf, pool_metadata_t *out_metadata) {
 /// Parse CERTIFICATE_STAKE_POOL_REGISTRATION
 bool parse_certificate_stake_pool_registration(buffer_t *buf,
                                                          certificate_data_t *cert_data) {
+    ASSERT(buf != NULL);
+    ASSERT(cert_data != NULL);
+
     cert_data->type = CERTIFICATE_STAKE_POOL_REGISTRATION;
     pool_registration_data_t *poolReg = &cert_data->poolRegistration;
     explicit_bzero(poolReg, sizeof(*poolReg));

@@ -37,7 +37,7 @@ static inline void run_sign_msg_apdu(const uint8_t *data, size_t len, uint8_t p1
 // INIT format: [4B msgLength BE] [BIP44 path] [1B hashPayload] [1B isAscii] [1B addrFieldType]
 // Path m/1852'/1815'/0'/0/1 encoded as: count=5 then 5 x 4-byte LE path elements.
 //
-// KEY_HASH (addrFieldType=0x02), msgLength=0, hashPayload=0, isAscii=0:
+// KEY_HASH (addrFieldType=0x02), msgLength=0, hashPayload=FLAG_INCLUDED_NO(0x01), isAscii=FLAG_INCLUDED_NO(0x01):
 // ----------------------------------------------------------------------
 
 // Valid INIT for an empty message (msgLength=0, KEY_HASH address field)
@@ -49,8 +49,8 @@ static const uint8_t SIGN_MSG_INIT_EMPTY_KEYHASH[] = {
     0x80, 0x00, 0x00, 0x00,                          // 0'
     0x00, 0x00, 0x00, 0x00,                          // 0
     0x00, 0x00, 0x00, 0x01,                          // 1
-    0x00,                                            // hashPayload = false
-    0x00,                                            // isAscii = false
+    0x01,                                            // hashPayload = FLAG_INCLUDED_NO
+    0x01,                                            // isAscii = FLAG_INCLUDED_NO
     0x02,                                            // addressFieldType = KEY_HASH
 };
 
@@ -63,8 +63,8 @@ static const uint8_t SIGN_MSG_INIT_4BYTE_KEYHASH[] = {
     0x80, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x01,
-    0x00,                                            // hashPayload = false
-    0x00,                                            // isAscii = false
+    0x01,                                            // hashPayload = FLAG_INCLUDED_NO
+    0x01,                                            // isAscii = FLAG_INCLUDED_NO
     0x02,                                            // addressFieldType = KEY_HASH
 };
 
@@ -77,8 +77,8 @@ static const uint8_t SIGN_MSG_INIT_TRAILING_GARBAGE[] = {
     0x80, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x01,
-    0x00,
-    0x00,
+    0x01,
+    0x01,
     0x02,
     0xFF,                                            // trailing garbage byte
 };

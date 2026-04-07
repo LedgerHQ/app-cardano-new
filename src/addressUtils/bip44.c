@@ -33,6 +33,11 @@ static bool bip44_check_path(bip44_path_t* pathSpec, const uint8_t* dataBuffer, 
 
     size_t length = dataBuffer[0];
 
+    if (length == 0) {
+        TRACE("ERROR: Empty BIP44 path");
+        return false;
+    }
+
     if (length > ARRAY_LEN(pathSpec->path)) {
         TRACE("ERROR: Invalid path too long");
         return false;

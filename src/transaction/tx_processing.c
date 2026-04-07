@@ -4,6 +4,7 @@
 #include "buffer.h"
 #include "mem.h"
 
+#include "cardano_constants.h"
 #include "cardano_swo.h"
 #include "cardano_buffer.h"
 #include "app_context.h"
@@ -339,6 +340,10 @@ static bool tx_process_fee(buffer_t *buf, tx_processing_state_t *state) {
 
     uint64_t parsed_fee = 0;
     if (!buffer_read_u64(buf, &parsed_fee, BE)) {
+        tx_handle_parse_error(SWO_TX_PARSING_FAIL_FEE);
+        return false;
+    }
+    if (parsed_fee >= LOVELACE_MAX_SUPPLY) {
         tx_handle_parse_error(SWO_TX_PARSING_FAIL_FEE);
         return false;
     }
@@ -750,6 +755,10 @@ static bool tx_process_total_collateral(buffer_t *buf, tx_processing_state_t *st
         tx_handle_parse_error(SWO_TX_PARSING_FAIL_TOTAL_COLLATERAL);
         return false;
     }
+    if (total_collateral >= LOVELACE_MAX_SUPPLY) {
+        tx_handle_parse_error(SWO_TX_PARSING_FAIL_TOTAL_COLLATERAL);
+        return false;
+    }
 
     if (mode->run_validation) {
         security_policy_t total_collateral_policy = policyForSignTxTotalCollateral(
@@ -893,6 +902,10 @@ static bool tx_process_treasury(buffer_t *buf, tx_processing_state_t *state) {
         tx_handle_parse_error(SWO_TX_PARSING_FAIL_TREASURY);
         return false;
     }
+    if (treasury >= LOVELACE_MAX_SUPPLY) {
+        tx_handle_parse_error(SWO_TX_PARSING_FAIL_TREASURY);
+        return false;
+    }
 
     if (mode->run_validation) {
         security_policy_t treasury_policy = policyForSignTxTreasury(
@@ -920,6 +933,10 @@ static bool tx_process_donation(buffer_t *buf, tx_processing_state_t *state) {
 
     uint64_t donation = 0;
     if (!buffer_read_u64(buf, &donation, BE)) {
+        tx_handle_parse_error(SWO_TX_PARSING_FAIL_DONATION);
+        return false;
+    }
+    if (donation >= LOVELACE_MAX_SUPPLY) {
         tx_handle_parse_error(SWO_TX_PARSING_FAIL_DONATION);
         return false;
     }
