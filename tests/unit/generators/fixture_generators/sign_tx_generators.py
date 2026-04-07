@@ -7,10 +7,12 @@ from typing import Any, Sequence
 
 from tests.unit.generators.common import (
     _ensure_base58_module,
+    bool_to_c,
     extract_apdu_payload,
     format_bytes_as_c_array,
     resolve_mnemonic,
     sanitize_c_identifier,
+    warning_expr_from_test_case,
     write_generated_c_file,
 )
 from tests.unit.generators.paths import GENERATED_SIGN_TX_DIR
@@ -68,10 +70,6 @@ def _derive_witness_signature(witness_path: str, message: bytes) -> bytes:
     child = Bip32Ed25519Kholaw.FromSeed(seed).DerivePath(witness_path)
     extended_key = child.PrivateKey().Raw().ToBytes()
     return _sign_with_extended_key(extended_key, message)
-
-
-def _bool_to_c(value: bool) -> str:
-    return "true" if value else "false"
 
 
 def _blind_signing_mode_to_c_enum(blind_signing_mode: Any) -> str:
@@ -206,11 +204,6 @@ def _generate_fixtures_for_era(
                 else:
                     include_aux_data_hash = False
 
-        if not hasattr(tx, "scriptDataHash"):
-            print(
-                f"WARNING: tx {test_case.name} missing scriptDataHash; "
-                "defaulting include_script_data_hash=False"
-            )
         include_script_data_hash = getattr(tx, "scriptDataHash", None) is not None
 
         options_value = (
@@ -341,13 +334,13 @@ def _generate_fixtures_for_era(
         header_lines.append(
             f"    .num_mint_asset_groups = {len(tx.mint) if tx.mint else 0},"
         )
-        header_lines.append(f"    .include_ttl = {_bool_to_c(tx.ttl is not None)},")
+        header_lines.append(f"    .include_ttl = {bool_to_c(tx.ttl is not None)},")
         header_lines.append(
             f"    .include_validity_interval_start = "
-            f"{_bool_to_c(tx.validityIntervalStart is not None)},"
+            f"{bool_to_c(tx.validityIntervalStart is not None)},"
         )
         header_lines.append(
-            f"    .include_aux_data_hash = {_bool_to_c(include_aux_data_hash)},"
+            f"    .include_aux_data_hash = {bool_to_c(include_aux_data_hash)},"
         )
         header_lines.append(f"    .aux_data_type = {aux_data_type},")
         if include_aux_data_hash and aux_data_type == int(
@@ -371,7 +364,7 @@ def _generate_fixtures_for_era(
             header_lines.append("    .aux_data_delegations = NULL,")
             header_lines.append("    .aux_data_delegation_count = 0,")
         header_lines.append(
-            f"    .include_script_data_hash = {_bool_to_c(include_script_data_hash)},"
+            f"    .include_script_data_hash = {bool_to_c(include_script_data_hash)},"
         )
         header_lines.append(
             f"    .num_collateral_inputs = "
@@ -383,15 +376,15 @@ def _generate_fixtures_for_era(
         )
         header_lines.append(
             f"    .include_network_id = "
-            f"{_bool_to_c(getattr(tx, 'includeNetworkId', False) if hasattr(tx, 'includeNetworkId') else False)},"
+            f"{bool_to_c(getattr(tx, 'includeNetworkId', False))},"
         )
         header_lines.append(
             f"    .include_collateral_output = "
-            f"{_bool_to_c(getattr(tx, 'collateralOutput', None) is not None)},"
+            f"{bool_to_c(getattr(tx, 'collateralOutput', None) is not None)},"
         )
         header_lines.append(
             f"    .include_total_collateral = "
-            f"{_bool_to_c(getattr(tx, 'totalCollateral', None) is not None)},"
+            f"{bool_to_c(getattr(tx, 'totalCollateral', None) is not None)},"
         )
         header_lines.append(
             f"    .num_reference_inputs = "
@@ -404,13 +397,13 @@ def _generate_fixtures_for_era(
         treasury_value = getattr(tx, "treasury", None)
         donation_value = getattr(tx, "donation", None)
         header_lines.append(
-            f"    .include_treasury = {_bool_to_c(treasury_value is not None)},"
+            f"    .include_treasury = {bool_to_c(treasury_value is not None)},"
         )
         header_lines.append(
             f"    .treasury = {treasury_value if treasury_value is not None else 0},"
         )
         header_lines.append(
-            f"    .include_donation = {_bool_to_c(donation_value is not None)},"
+            f"    .include_donation = {bool_to_c(donation_value is not None)},"
         )
         header_lines.append(
             f"    .donation = {donation_value if donation_value is not None else 0},"
@@ -426,13 +419,7 @@ def _generate_fixtures_for_era(
             f"{_blind_signing_mode_to_c_enum(getattr(test_case, 'blind_signing_mode', None))},"
         )
 
-        expected_warnings = getattr(test_case, "expected_warnings", [])
-        if expected_warnings:
-            warning_expr = " | ".join(
-                f"((warning_bits_t)1 << {bit.name})" for bit in expected_warnings
-            )
-        else:
-            warning_expr = "0"
+        warning_expr = warning_expr_from_test_case(test_case)
         header_lines.append(f"    .expected_warning_bits = {warning_expr},")
 
         header_lines.append("};")

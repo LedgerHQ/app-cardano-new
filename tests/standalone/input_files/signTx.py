@@ -87,19 +87,19 @@ from tests.application_client.status_words import StatusWord
 from tests.standalone.input_files.derive_address import pointer_to_str
 
 
-@dataclass
+@dataclass(frozen=True)
 class Witness:
     path: str
     witnessSignatureHex: Optional[str] = None
 
 
-@dataclass
+@dataclass(kw_only=True, frozen=True)
 class SignTxRaggerExpect:
     txHashHex: Optional[str] = None
-    witnesses: Optional[List[Witness]] = None
+    witnesses: Optional[tuple[Witness, ...]] = None
 
 
-@dataclass
+@dataclass(kw_only=True, frozen=True)
 class SignTxUnitTestExpect:
     txBodyHex: str
 
@@ -111,18 +111,18 @@ class BlindSigningMode(Enum):
     PROMPT_REVIEW_FULL = auto()
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class SignTxTestCase:
     name: str
     tx: Optional[Transaction] = None
     signingMode: Optional[TransactionSigningMode] = None
     unit_test_expect: Optional[SignTxUnitTestExpect] = None
     options: bool = False
-    additionalWitnessPaths: List[str] = field(default_factory=list)
+    additionalWitnessPaths: tuple[str, ...] = field(default_factory=tuple)
     expected_swo: Optional[StatusWord] = StatusWord.SWO_SUCCESS
-    expected_warnings: List[WarningBit] = field(default_factory=list)
-    expected_aux_warnings: List[WarningBit] = field(
-        default_factory=list
+    expected_warnings: tuple[WarningBit, ...] = field(default_factory=tuple)
+    expected_aux_warnings: tuple[WarningBit, ...] = field(
+        default_factory=tuple
     )  # Warnings in auxiliary data (CVote) review
     unsuitable_in_ragger_reason: Optional[str] = (
         None  # If set, explains why this vector is unsuitable for direct ragger execution
@@ -1508,12 +1508,12 @@ testsByron: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="73e09bdebf98a9e0f17f86a2d11e0f14f4f8dae77cdf26ff1678e821f20c8db6",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/44'/1815'/0'/0/0",
                     witnessSignatureHex="3f1eb3ae8e1e1d3d2ed18222d7e2038ffa5ab62358bf9e4e3d2e6ccf6f146d4ab32b39eb98439970de395dc11d1a999d82f0048e0471ac9fac7eb4a76cd4c704",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -1529,12 +1529,12 @@ testsByron: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="3cf35b4d9bfa87b8eab5de659e0520bdac37b0de0b3840c1d8abd683330a9756",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/44'/1815'/0'/0/0",
                     witnessSignatureHex="cfb3bd424b18e47d48d269c15dededfb053ed3fa6d2f685fe77f95fa9532573e245fbef515fdc5d926612b3fcd9f246d5d238a1f03e96c85bd855a8e5fc75405",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -1550,15 +1550,15 @@ testsByron: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018182582f82d818582583581c709bfb5d9733cbdd72f520cd2c8b9f8f942da5e6cd0b6994e1803b0aa10242182a001aef14e76d1a002dd2e802182a030a"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
+        expected_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="e2319ee8317ac537af4c2c3322aaf9fb6c64a95e3921ad75ab91b4f5b5306963",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/44'/1815'/0'/0/0",
                     witnessSignatureHex="3c8f54af8e2e982c955ad2109bdc68a3c1053bcdcf92a1a37c29f3055635e85ec118ec9010e30f9f3b9fd02f8457beb7ba30429497325d566cf9eef2011aa002",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -1574,15 +1574,15 @@ testsByron: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018182582b82d818582183581c43c3a6570ffd317743bf828bc0dd92ebe2b8e8feaecf130e39d6ca84a0001afd2374db1a002dd2e802182a030a"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH],
+        expected_warnings=(WarningBit.WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="cd5a1ee135fb08c7ca6151ea185440e7b7fa35a3a81f4fe70f31fceb2e85233c",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/44'/1815'/0'/0/0",
                     witnessSignatureHex="9c0d7154a0423828ea69efc701221b94c05cff7420b9fe81b8abbb71a5f7a0a2d0e842ebc4030014454d976af6d11a9d5ff512f713532090e4403a9d6e99fd0e",
-                )
-            ],
+                ),
+            ),
         ),
     ),
 ]
@@ -1597,15 +1597,15 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_NOT_VERIFIABLE],
+        expected_warnings=(WarningBit.WARNING_BIT_NETWORK_NOT_VERIFIABLE,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce188",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="513bf587cfee17e9a1c5ae8c198655725d46a5de707f646619b15e5a11fd3512374f3f6029d3af97104ccfbd00a01e481319c3f66a717f4106e13e1dd2729d04",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -1617,15 +1617,15 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400d90102818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_NOT_VERIFIABLE],
+        expected_warnings=(WarningBit.WARNING_BIT_NETWORK_NOT_VERIFIABLE,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce188",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="513bf587cfee17e9a1c5ae8c198655725d46a5de707f646619b15e5a11fd3512374f3f6029d3af97104ccfbd00a01e481319c3f66a717f4106e13e1dd2729d04",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -1641,12 +1641,12 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="5268bdedcdbd3e2bad037cd292b3832ff2c77c8c628c37485da2dd930f5fc32a",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="ec5a1e5a7b4bee652e36828342f4aed26d23972187d2ae2de696bae8ca823cde0f23f85f1e1e44f16cd5ba7fc3094175d5cbda7662908d52b76b26e9c05ac509",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -1665,12 +1665,12 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="e61612698459e0ddf6e9ea0f48e0336719fe1d14e8f3e570b888804d47b85d05",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/44'/1815'/0'/0/0",
                     witnessSignatureHex="bfb74f57bfa891342bb6271310939da5ebc17a54118b79c7adbb4bebdc8f7389c8a3fd4cd62f59ccbb9ae1f98b8200b8adf0b93e63c1c19dd7aaf5152fefda03",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -1689,12 +1689,12 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="06048542c675d4d8a71fa57fdf81d09dea979544ceae3fc41fe280398473dc2e",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="d124d1c0976d1ff01d7d85f1ec65918b46d92b074e52c99ab99a0ad5adca313682d8adc296a1775c70553475db567f35f16fd5fbffaef46dfe8963d43b944d03",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -1710,12 +1710,12 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="6863cbfed70edd6e6a905c3abeef23acd575e2eacdc4e81251e33356214b80a0",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="59b38ea4c13b17100cdbe1035f9b5609e280ce65b1fc45487253ede9110e69e90466dd1365f236091b9ab718fe2442c9c90830bb4e492ef1e74e220bbd6d0c03",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -1731,12 +1731,12 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="68663a00024397eac0fa344891ffa72c590b287f9cb72e93af60aa66cd38ad09",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="f99f975e6a95f9625e3ddddc2c5738c3ea82bfcc76da36f4dd79d5171d9eca60cc467df5fa6c13dcfcec33534263bc6d30f080c1d402261bd3b902ab0fda8c0b",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -1754,15 +1754,15 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182583901f90b0dfcace47bf03e88f7469a2f4fb3a7918461aa4765bfaf55f0dae260546c20562e598fb761f419dad27edcd49f4ee4f0540b8e40d4d51a006ca79302182a030a075820deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH],
+        expected_warnings=(WarningBit.WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="36ef01bb383bba5cb69d1e489b866efa42f951980f9088e391ad5cf152271c79",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/456'/0/0",
                     witnessSignatureHex="a71f296be63bde089f691e5888c2a865dd7b6cd688bb356936afa0129da8021abf5402aaee5eb37f213433bbf99daad50db70df055e32db805645c6604227702",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -1786,7 +1786,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="5b40dae36d44a06e9c84ebafb84b908ebe18b047d59812282616cdf66c60f837",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="df6f97bd76c3ea857770081e53e437736bfa5e30fa0cd761af6d51bf15624af4cc102fcc49f2fa1347459c4c4cbace474701d90b74a44d21131846cd7ba1540b",
@@ -1795,7 +1795,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="bffb31237f4e53ff53a1f9f473ccb92229ab185cb3af98d50827a594a19ebb7c5b22fcc2b058daa4d37d8cd54e8daa198d6ebccd8a57f48d00bef8171874d502",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -1817,10 +1817,10 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a05a1581de1e260546c20562e598fb761f419dad27edcd49f4ee4f0540b8e40d4d5186f"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH],
+        expected_warnings=(WarningBit.WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="9f1f099c514144aa726d1858f69acdf67be3acb1b93e421a6c699fd22305d86e",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/456'/0/0",
                     witnessSignatureHex="79279a03e0176ffa01e3f78003742af3bf9322c744448913203e7aa19368e2936b64b1cc6764c7de1c059a7833bb58e78f25a8fecaf781df1e7e9a1a130b1b07",
@@ -1829,7 +1829,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/456'/2/0",
                     witnessSignatureHex="d303a41fa342dcd1a47d169a1e017f432e9afdf177a58b0f9357af8cedda35eea01607296b3b179469bb8126b3b4032891915fd809c3079bdaa65655fd290601",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -1849,12 +1849,12 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="34c1dd59c14252008b680bf6a727c8f371e2d96e8bca6b783bcf3f8f36407e6f",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="4e039a9b7c947b8fdfced287d7c8e85d7732170e9f1d70cedad8ced44266c18d23dfbf9309c3377bc12bb634bc9c071a5cbda08c4dff3fc506f1e68191eedc02",
-                )
-            ],
+                ),
+            ),
         ),
     ),
 ]
@@ -1883,12 +1883,12 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="60e234c8d7c10303507fe534e96c773611db520bc229f53d58618c190b64c803",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="611d5742a39a488486c258f77a82319bf3eb560a23fb8ae53a03e0e210ac342aee593bc6d7731c3976c5a7e14e7c01f7e24e35de8f30be3b7031180b30bc9e05",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -1914,7 +1914,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="46967add85a1e0fb6e96fc48304048eddd74d8cb5c3a2a21df8d162b502337a8",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="992819983c331bf3a5f4e187062c01a0ef5878491acb377b80a4299f993fe370a8869cc31e74c1d5f9db9c51c0146e7b0dee8221811938e7fb624d3c3fb56601",
@@ -1923,7 +1923,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="db690986753219242fc275343011c6dd02ceb992f8309e947ae483f8988f87d16b9ba4b5ea5d2bc987e2ae4a62c0c28bfead6fd62f6f0bd84c0ff28b470ed205",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -1950,7 +1950,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="4cf7f85378cce231a7c8375f63617b2de701aefed97997f3accdcfe1312258a9",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="75e03d26e722b58b8dc6b022a15174f999aca702eeebb7c8876fd58ed037be934313e8b950f95871c6b2ea17685ddf8c31b3f898fc1d294d85f9923c3aaaa00e",
@@ -1959,7 +1959,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="991542f65f0197c2bb6e21d5792de8d66c6418b027a5b4917562955c983b854e934a8a363657ef532b077dcd75a14dd46cbfa3575cd08c7f388316ccf3f8bc0e",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -1993,7 +1993,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="96bd02150ca8b58971cf3103d69738932bd4b22a3ced8a67f36e0dece63973a0",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="cec69a45abcf4ed64f977c703bfdd3e147090fd8d9e28c95fb0ac45583d3227d818d69d395c9b7e622dc704e6057d5a7e681c0f3045481881973a52d3c0d9504",
@@ -2002,7 +2002,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="c9eaeb55affde9aeb38bb75f2fa519a9021b22d70d67701655eb45952f4b75952d51f8ef379a088808192f2d2320c249e68dcd4def9d101a4e0e8819d042490e",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -2037,7 +2037,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="53b518cce4d9bab251070eca413b3429c58447f151a440e96af6b410b4a15a63",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="290c6f3a4d1f92be16f0998bacb1cca51ab470ac38167f3f2eedaa9b885b93e09c8085c43d7257db9d3956a9022c89be2139d1b20d754fdabe6fd2a2229ecd00",
@@ -2046,7 +2046,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
                     path="m/1853'/1815'/0'/0'",
                     witnessSignatureHex="cad96c990b0717382240101165b882053e03d476d70f3fe13f8cd4913bd346e9368ed16d56513abbd3843b0b577985684c3a84afc62d668a3ff09c38265cbe0c",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -2081,7 +2081,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="163273ec694655ddcbd9e73b7156004691be5b189f549fe93a84053ac8734aa0",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="37d2748a648123eab940437f93d3be633a55a6122217a24ead2779562cb5116e9cbc05961af90fbc24e6a4a27edc2ca3de2815999d45dca405b02585e3db1703",
@@ -2094,7 +2094,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="86f044a319ef7a5073313bf517075ed5c10b3dc46231a2e3fe16fd4fbf3478ed49b3d763a361918d7480b729fcb6ac6f468b40a6390f8ce8704e8da83d67680a",
                 ),
-            ],
+            ),
         ),
     ),
 ]
@@ -2124,7 +2124,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="65d12792fcb32bf3b83db35fbb526f768823477b1e6fed919b239ac89573a723",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="abad4a4e639e1ebbc95ad5922f6c4f19fb5c18fe913cd266517482f903ed9a82f3446899f14b2bce5d79d1e1b8eceee4397c539f04f45ca3c2033fbdf6b90509",
@@ -2133,7 +2133,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="4c196e4e4273f20aed24c6fe06cfd7f5d92e446e1aeb419c8a4ddf6c841aaa9acfdc42d57b083ef75bbd9adebb9738be314a6a3f5aab4ad3c0bbfe25132c6503",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -2160,7 +2160,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="eabbc6f604d61a59a78232a366f3577583aa77b06a6751a1c71d6abe061d2961",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="798ee0b9826012290a83e5fecae35e11893aa8dfa27ba70328ef97e097a1e7c02c486a492968e668aee6ade58084008fab19a058c32748aa174a44351147ea02",
@@ -2169,7 +2169,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="90fdc37f26cd451033eadc59ce747dab869ce237c92d0ab7107c6f4919bd18ffb72fb3ebe281ff22167aeca6b41c71adcb09149e37c65d183a60223033bc8f0d",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -2238,7 +2238,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="561300eb4372a72ae14940c19a66b96163c9e6682545545241a791751825b41d",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="328adf19b6bb2122b602d26fd419cff4d52f0a44df9f4ab1f07bd72e9037e334a0aba78360f51cb457f5ec8a1e4f42060b5fc8bd52db98a239fa2b84c03e8906",
@@ -2247,7 +2247,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="3f814f99c452b09018aee071848f0bf10bf974caf79b84a6ed7f331b3025c57918020330a65d3692be4546a84236b99e3b1682fbb8f13a64f9745d28d3a41507",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -2321,7 +2321,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="09a3ad82a73e1d008e08c3ca2f6cc997cc9b4e25b00fcb76f09d8c9a019632ba",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="5d882c861e1306aec34fa4261584cdfce49c2f7768b6f644df8c205e9cc79b78827f1fc29fc5cd7d107cdf8242cf37911dd089a2f9c1776466121ee820a2d40b",
@@ -2330,7 +2330,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="f28d68cd86fbba12e5fe7e9e22f83082f51cf5b109218bac2f47d815ea2e9d3004431019e143e4d7bc58813edfedc2e001a0a307d0c8259ff088371147ca7d05",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -2358,7 +2358,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="ad8b11ceba0e3ab70673cd595217daffba7ad4d9bb57f57de6c6169bf37faf16",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="b2e78feb1e81de7bec6a8477986b9492c71c980784ab1928732cecadcc5d68cac477f7d786bf0d0530779072c20252c7dbde37bf82fb37e7b4d0743abe63bb02",
@@ -2367,7 +2367,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="0d45d20687137e11e6d1fc1a018536b38fc5312a22b3d4e2435b562c4f80b3bac730df1c587d1fad7d9f4666c40e3468dbad4fe58bde26f9759ae2d880f9520d",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -2395,7 +2395,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="883b00921903f1ec339948b00e3abb2cfee903c2a826a0d2b01e31d1b8b1ec53",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="6a0efdea3072794a29e45d11063f610b5e819a0ef309db7652e5ed1a537a615165068d59e8a9a9eaf3c5c895de2593be1d35fc66790461e0210d26ddf0dd9100",
@@ -2404,7 +2404,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="cc0328d740dacac8a8507c95b0cab98ea15fd2235b515fb35928d3c909e18c3687bffd98b220514c4c3565b4935bf051e15b4fe260c2265181de849bb03f7d00",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -2433,7 +2433,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="ad1c7aee7a39c333c73cfa31cedbc7808c93f03ff24ec14ce269e5b1abde4fcb",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="e0900ea47492a689258793d046d8eeffc343a45b21de12716ad8ec99a3cfca4704a2b0ed4ee815faae536840101512d48f5828343ab3deae379c4bdee2bdcf00",
@@ -2442,7 +2442,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="52b82e50f03128b657176980937bfafd9e2777a6fa73fb8ac36b749456e0ff316de721b4c97ca15009ecc3818cc1faba2bc3bf2608e8c6e55614e7295329ce08",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -2597,7 +2597,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="984cfabff934473fa76c497d45ba5535be41cc4bac49fee9e8de6d4eecf38fc7",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="d578eb762241704f2b47de662aed3cdd6eebb53b80b14fbceb805728dff67a60660ba8863069688c657ff7231384b6a275458e1912d8088d1262399a9560bd0c",
@@ -2618,7 +2618,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/3/0",
                     witnessSignatureHex="c5d2e1b839bc398ea0b9241c787145bf5732b10d377d05096a7460d626588bf935df7d8595aec030c0b8ce518be691e3f6d6bac155545391b0286e8dcdef6f0f",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -2671,7 +2671,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="b196b2df47cadc03dc80958beae5f4a6b20906224597e52c3a293b94f6984d50",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="15d01533df804fec35a314f3ccb6053522d9d8969f10353a0880abb4fdff7c0e70fc470cbb2432eb7b4d66de7fc973dcf3a1808f9d7b77243ee91f0feabed20b",
@@ -2680,7 +2680,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/4/0",
                     witnessSignatureHex="9da777c9d02ac8a5b4a19c0a4c24797964364362528aa3489310f658410f4cf00a9855b81e7e028e7745cf3c86e76dc1f882de705da9c40ca96b4521b8eec507",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -2718,7 +2718,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="15ed71a8275b19ae91d6cea7b6d4f44d06910c0d8b0ad3a943119822eb5ccb49",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="23c63d3c0c9f55419db64b19b2ed44a7e30521a4cb2dcdc619e17837341f2621fba9cf11ab52237a718de4679dc886fc695bd902ebc0831b28e54715a87f570d",
@@ -2727,7 +2727,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/4/0",
                     witnessSignatureHex="8cf69b5290120e1decfd2693cee9142f6bda5f55d64c55cb4219f372b5ec8270fed96a87ba1eecc273c0f2b7cdec23ac92d8d59a945854be3a4975823798eb0b",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -2761,19 +2761,19 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0482830f8200581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8f6830f8201581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba6f6"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="9410208250be5d48ce2547ec2f428dd41ba45f76ebc100ac80f4385cb8eeb67d",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="2ba8271f5657a202c558414ce47c049c24cd97739e5993177fa95a712e9236024fc67e43f38d1c07343fcf3bc2e487950752354fc0756e224aef83b1d333e00e",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -2813,7 +2813,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="272a489d7cc0d35f97ba4bdad6b1ab1f06698202a8a0530ceff4a5776cbcdfbf",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="982790c4450020221dde417721d2e1504c0155b2ff5a6ab307b36fac7bfd68f8026adbcb91af1feb60275857ec77d6764d70430942f7bc09894a283b71f67100",
@@ -2822,7 +2822,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/3/0",
                     witnessSignatureHex="cf358fc3a2ad6c667c3553af389b26d65864bf21226886afaf12083ab7cb48f0ff264e77546e0f60c80579b00ab9fcc3a4b3e1063647f4398f3aaf06c56ceb07",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -2849,7 +2849,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="cf883e63684165dd1c8c9ec03d8ee73db0f609d5576a2b6918a4943726449641",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="0bca3c9aff4cc95a04ca12f94496228672e59e6b8162b47969957ef4e6bb317a717afdc5a0c878dd366f50a8ef88711201e58c34f4886152cfe8a2a1acc61b0a",
@@ -2858,7 +2858,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/3/0",
                     witnessSignatureHex="865a4c62198ee968f048c5bfa3e697829a53cf5fd6f384e18d2393aa88cc6eedd13f924803db8a3f724e302a35d8c93bdc570dd9efe34730f7c5df891f4f1301",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -2896,7 +2896,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="3d02e6a04e51b9109991c7631aafb61e5381c8f2850c8676a09a79ebf6fcb0ce",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="1fccb2f66228fef399bfc2b7749dc3219681ca1910c190df7b1707b5987f2ed5bcd327c9d62d6a97215143375f1fb7b97aacd1a1ccde4c58676189535b36220f",
@@ -2905,7 +2905,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/3/0",
                     witnessSignatureHex="7f53a04b8473c78da1cb40320427e51ff461589ef2d0d0f5e220d63aaf590be64e057ebd143fe56ec0bf18f1a07f37e92668e29d5b88d8210967e9e19cd9a30e",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -2963,19 +2963,19 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048483098201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42778200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1830e8201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c88200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c4883909284108201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c813f683078201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b427711"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="fbeb4f57b15459f1890bfa043dc2bb330b0babc6cf4a7b0203db49ec83fcd8b8",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="71eeeec9308c494f392d5f486825725a91f1b18f0855c4f187280e5e17ff54021a6b095a2a32aa2a442b577f6d6bd0126ef0d0cf0cb4d7df06234e8e5cd51206",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3123,19 +3123,19 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048b83098201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42778200581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c883098201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42778201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c883098201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277810283098201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42778103830e8201581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba68200581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8830e8201581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba68201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8830f8201581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba682782768747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c65416e63686f7258201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef84108201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c81382782768747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c65416e63686f7258201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef83118201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c81383128201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c882782768747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c65416e63686f7258201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef83088201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b427711"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="9c5203dee9f6b6269943af9d36c61d932b018e5c1f35c15a83e0da20ebcda2a0",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="758c747c829f9b106229e9639baec04a831ee1856fbf43a03d6f957a660ee85df9fae4cfded11ba32f68b5e9fd9ce38d151fa96b397d430adb9070b8ac01e607",
-                )
-            ],
+                ),
+            ),
         ),
     ),
 ]
@@ -3152,19 +3152,19 @@ testsMultisig: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e0102182a030a"
         ),
-        additionalWitnessPaths=["m/1854'/1815'/0'/0/0"],
-        expected_warnings=[
+        additionalWitnessPaths=("m/1854'/1815'/0'/0/0",),
+        expected_warnings=(
             WarningBit.WARNING_BIT_NETWORK_UNUSUAL,
             WarningBit.WARNING_BIT_OUTPUT_MISSING_DATUM,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="1e994755bafebf435f91e34655ba6a66ee92de64529dc811dce7001d92b0a44a",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1854'/1815'/0'/0/0",
                     witnessSignatureHex="33a7468fc4a86ee40ebe8a7190ce6031f02bf9196587ae150a33b5ceb17f36800422a903793c49e0986482ad9a60029ebd81e7bb3440e6d07e5b758eee147b09",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3187,15 +3187,15 @@ testsMultisig: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a05a1581df1122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277186f"
         ),
-        additionalWitnessPaths=["m/1854'/1815'/0'/2/0"],
+        additionalWitnessPaths=("m/1854'/1815'/0'/2/0",),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="87de2c36e5a222f796b392a290717316d039dc42dc2150873e86ec9b0c870357",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1854'/1815'/0'/2/0",
                     witnessSignatureHex="c0f5b636b3486f106581ba575cb7847195bef86aa762f44a1fe1eb907f5ab85e13335bbcb660d838dd91284ce13b940a06e36c4b0f3cc86f29fbe5cc2bf1e402",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3220,15 +3220,15 @@ testsMultisig: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048182008201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277"
         ),
-        additionalWitnessPaths=["m/1854'/1815'/0'/2/0"],
+        additionalWitnessPaths=("m/1854'/1815'/0'/2/0",),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="fba0908b41300d1b075ec6a7dafc2dcbe3376df17ef3feb2e4536b309f0034d1",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1854'/1815'/0'/2/0",
                     witnessSignatureHex="a06b97bba847bb3fd4d09f797bfd543d47568e1d50091f095d26da444e73acb111fa551c5083de1f86e0bc42d9127a04cccd44a2b3ca5b638b6fe48a7fdeb900",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3254,15 +3254,15 @@ testsMultisig: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048183028201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb4973"
         ),
-        additionalWitnessPaths=["m/1854'/1815'/0'/2/0"],
+        additionalWitnessPaths=("m/1854'/1815'/0'/2/0",),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="927d8924e77c879bcc2a1e5317d963028737d0764c6532a05474d8eda203911d",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1854'/1815'/0'/2/0",
                     witnessSignatureHex="bc97418eb96b802a7e197f5a3aa6e3d23b4b417d0a39366303f56fb48efd31fae5d34cb96a0c62ae12146fe49be554e8b4ebb13405a376a5d4ace715de181909",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3287,15 +3287,15 @@ testsMultisig: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048182018201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277"
         ),
-        additionalWitnessPaths=["m/1854'/1815'/0'/2/0"],
+        additionalWitnessPaths=("m/1854'/1815'/0'/2/0",),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="c4c8910810de8dc39aa0c33b65ee24f3f95216c7050f9ba85c00302a99f6d596",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1854'/1815'/0'/2/0",
                     witnessSignatureHex="fbcc337b6eef485c7bf56a9c2d6b71a4e01ea333fe8d383c1da1f3982752ed715d43c881989d1f9eb2dff8aef013954a78b10e3f4575a34dd4dd4cc980cb9b07",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3312,19 +3312,19 @@ testsMultisig: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e0102182a030a09a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a3581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff"
         ),
-        additionalWitnessPaths=["m/1855'/1815'/0'"],
-        expected_warnings=[
+        additionalWitnessPaths=("m/1855'/1815'/0'",),
+        expected_warnings=(
             WarningBit.WARNING_BIT_NETWORK_UNUSUAL,
             WarningBit.WARNING_BIT_OUTPUT_MISSING_DATUM,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="9e09d8378d42a238118659b7c51593fe347c2dc0b540b8fe3a7b4158c00903fa",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1855'/1815'/0'",
                     witnessSignatureHex="d124a843af0f90f40cc50ded808571583c0690676784868db8480c326e8f35846fc8ffa6cd448b5889b98bf3a1b8ab2418473c3cd40711862ad2e1fa10159c01",
-                )
-            ],
+                ),
+            ),
         ),
     ),
 ]
@@ -3344,12 +3344,12 @@ testsAllegra: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="cbb6ee600297d0b5067b1e79cf1dc6361de4e5e731eacc57c42765944381ff18",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="15fd2ef4b31274bdecd90419c22144c38735d21e5bcdf679486faafef71baeefa083959d53879921a12b2190a1e3e193cbd60005e7e1c7475678646774028d05",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3367,12 +3367,12 @@ testsAllegra: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="9fbc15167cfdf408998b0348ff6e69e63f404d1f0acf65763a057003f8a3a93b",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="28c26c09c9ebe49bb36b21546c7cc8e163e6c957e26dd5658a5e49ddf8b635afbcc52eb30d686070bd3d4f02ffd31faa1b66d4300bd1bd3f1ef38ed56334f70c",
-                )
-            ],
+                ),
+            ),
         ),
     ),
 ]
@@ -3395,12 +3395,12 @@ testsMary: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="f9d812341c2a6a45bd8aeff62bec0d4f3b523d63229f131f11b55dfd3be2b32b",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="bccfe8e50b7c44ce81acde6f38fd410d89b8a801d4b955253925a31136d4be7ff2a6942f6fc73ab0542447a0cc795374110da11779178e7018c0941c94d91408",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3420,12 +3420,12 @@ testsMary: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="0489b9da262fe4aa4f7460e282f2f9054898024ceb98f20435ce67486135f2dd",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="c4c898fb23748e1751c5cd21245e0939ca8a74f30a36b3c0b16b5193023eca56192eaee980865f45bed33e38a79f080b275a638337fa42793691b62ce6e27808",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3442,15 +3442,15 @@ testsMary: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821b0055a275925d560fa1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1b0055a275925d560f021b0055a275925d560f031b0055a275925d560f081b0055a275925d560f"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_HIGH_FEE],
+        expected_warnings=(WarningBit.WARNING_BIT_HIGH_FEE,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="e60735a3cc71a8a3f89652797c3e650d6ed80059c0b59978c59858dcf6f8ca48",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="d3abbc0a4f0e96aa4697979b162651bce59ef316f748f03440fa29919ffb402cff08c0f1b50b8bc19c67b14a4d01f3d4df90debba894c49fa62a3c82987ec109",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3469,12 +3469,12 @@ testsMary: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="9dec39df6d784c6037b6435023e35d6d263497d28c8cb0ac6066977507477958",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="da15cb54ad72bbfca099f81dca5c8366dbf1195fca9825260a953d47780003aeba4b11fada351294a4744bd70fa3f49f97cdcda673a87653b9707ea6c9e9fe03",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3493,12 +3493,12 @@ testsMary: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="62c42e8202296c806c8ab959b4db3cfadc5f7e064d81d0e421b9701565805254",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="485cd7153342059dcf9ae4c33317996c4ecab85f5043939d05add33ab48e5d22bb0a66dd16244c519070a344f5fe2858ade996975b94443af5d3461e7d3df70c",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3516,12 +3516,12 @@ testsMary: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="a36c270c8ee52c8f5b9cc47ccad0869ad72f00dd1ac1510b682752e09738a27f",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="7d22fc8aa972bd212381171cfc393c72798d23a23e0aceb7cf4d2a1ed4b0aba4b74fe59f7a52997f1a83ae47f734ce4ded2040ceb233dea5a4129c229e410c06",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3536,15 +3536,15 @@ testsMary: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a09a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a3581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_NOT_VERIFIABLE],
+        expected_warnings=(WarningBit.WARNING_BIT_NETWORK_NOT_VERIFIABLE,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="a74eaca4fdcd8a8eea2db47e979aa34f7f5056549076b4f480d7650509418918",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="cfccc8ef58873e677ab1cd7e7c0f1162e6040c8769eb9e7736de3cb057cb7cc0e8f8c130a785b35c4aa7142bba9576773e8b03f7afacb0b96c3499aba05aab0e",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3563,12 +3563,12 @@ testsMary: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="a96b68158758496044fbf91d7abaaa59e1cc426315c4fc2a1c4fa2c5db432807",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="4a03324a8c3134199cc4448b155171d194c96eca983b4cb53fbf2f352882b1bc5a36e1b7c5efb0d2afc76c6f2e8263f0366692588ecd66a10fb98d17c84e9b04",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3591,12 +3591,12 @@ testsMary: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="2e9cc9f58dbf4d22f37f94704458197831f713144886101720852872d7978273",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="2848a53c497b6b5af379bbdb256324483f5e53c6a36d6f3bdf5ab1648aa55f410b0eea884cba7797331b24d6714434c8e02146d7cebaf6a5d9573c65763f4405",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3611,11 +3611,11 @@ testsMary: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a09a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a3581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff"
         ),
-        additionalWitnessPaths=["m/1855'/1815'/0'"],
-        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_NOT_VERIFIABLE],
+        additionalWitnessPaths=("m/1855'/1815'/0'",),
+        expected_warnings=(WarningBit.WARNING_BIT_NETWORK_NOT_VERIFIABLE,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="a74eaca4fdcd8a8eea2db47e979aa34f7f5056549076b4f480d7650509418918",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="cfccc8ef58873e677ab1cd7e7c0f1162e6040c8769eb9e7736de3cb057cb7cc0e8f8c130a785b35c4aa7142bba9576773e8b03f7afacb0b96c3499aba05aab0e",
@@ -3624,7 +3624,7 @@ testsMary: List[SignTxTestCase] = [
                     path="m/1855'/1815'/0'",
                     witnessSignatureHex="431e32216c56576253a1d56cddfe2f45be8574773bc0ba01de66be439a5729454fca6f2ce444078b4c95f74985b44c17103c1a21c08493aeb6475d5eb99ea400",
                 ),
-            ],
+            ),
         ),
     ),
 ]
@@ -3690,10 +3690,10 @@ testsAlonzoTrezorComparison: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="ab00818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821a001e8480a1581c0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425a14874657374436f696e1a0078386283581d71477e52b3116b62fe8cd34a312615f5fcd678c94e1d6cdb86c1a3964c0158203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b702182a030a048382008201581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd82018201581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd83028201581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb497305a1581df129fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd1903e807582058ec01578fcdfdc376f09631a7b2adc608eaf57e3720484c7ff37c13cff90fdf08182f09a1581c0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425a24874657374436f696e1a007838624875657374436f696e3a007838610b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70f01"
         ),
-        additionalWitnessPaths=["m/1854'/1815'/0'/0/0", "m/1854'/1815'/0'/2/0"],
+        additionalWitnessPaths=("m/1854'/1815'/0'/0/0", "m/1854'/1815'/0'/2/0"),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="c3637e34529fae17dbbb90c58307df0cf3b818f4c034860fff362d1ea864cca4",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1854'/1815'/0'/0/0",
                     witnessSignatureHex="c9a52a377ebffe1b0e2d76b28fa11593ae619d68db938094f708580a5d9e67515f2f7dcde4e6819986acb8a0802f36caaeb1a189fd10b513ef843e7b44c6a903",
@@ -3702,7 +3702,7 @@ testsAlonzoTrezorComparison: List[SignTxTestCase] = [
                     path="m/1854'/1815'/0'/2/0",
                     witnessSignatureHex="28b792b6f290169caf8849caa3d683012bcca2e2abe5cb1b31aea494e7049e54d95cbdb26993fd807a75c40dac4515cb6c4e43d34fab265255899129eacfe90e",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3719,12 +3719,12 @@ testsAlonzoTrezorComparison: List[SignTxTestCase] = [
         blind_signing_mode=BlindSigningMode.ENABLED_NO_PROMPT,
         ragger_expect=SignTxRaggerExpect(
             txHashHex="5268bdedcdbd3e2bad037cd292b3832ff2c77c8c628c37485da2dd930f5fc32a",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="ec5a1e5a7b4bee652e36828342f4aed26d23972187d2ae2de696bae8ca823cde0f23f85f1e1e44f16cd5ba7fc3094175d5cbda7662908d52b76b26e9c05ac509",
-                )
-            ],
+                ),
+            ),
         ),
     ),
 ]
@@ -3750,12 +3750,12 @@ testsBabbageTrezorComparison: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="3e0c44577b78d0b9628167ca03bfe56d2730e3291b0992d0316e6eebabf0685e",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="00d6abd52c8656b54f825595907500f4b4fa182a7ba414af4c5b3e50a30053121c475aad1783584a32b00cec523c408d9da462f5d625455e7b675c51bdb47801",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3773,12 +3773,12 @@ testsBabbageTrezorComparison: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="de264f4b285415fd88932156862e775be26aab30a0003767aa8a04881595f77f",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="510a5dc70a5a09cc3cbba9dd78830028ddab4ad673f6dbb9bc82c8328af3a3b4bd462cf78a59095a61dcbc53c0571e3d17732ceff819d62403a891baa954b50d",
-                )
-            ],
+                ),
+            ),
         ),
     ),
 ]
@@ -3836,10 +3836,10 @@ testsMultidelegation: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="aa00818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821a001e8480a1581c0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425a14874657374436f696e1a0078386283581d71477e52b3116b62fe8cd34a312615f5fcd678c94e1d6cdb86c1a3964c0158203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b702182a030a048382008200581cee6d266f2b60add5a249a3754f91cf1f423ac94c6cd964b3814f21a382018200581cee6d266f2b60add5a249a3754f91cf1f423ac94c6cd964b3814f21a383028200581cee6d266f2b60add5a249a3754f91cf1f423ac94c6cd964b3814f21a3581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb497305a1581de198acedf1c6b691f963d928147f66697c7cda3899e30c613037a4e9901903e808182f0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70e81581c86df572e0e28bec8ca8066e9d8c3681b4ac86c43c57cd52eb06ae8640f01"
         ),
-        additionalWitnessPaths=["m/1852'/1815'/0'/0/0", "m/1852'/1815'/0'/2/5"],
+        additionalWitnessPaths=("m/1852'/1815'/0'/0/0", "m/1852'/1815'/0'/2/5"),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="530efa1348dc3c50761f920fc4c5b627e0a0aa263a3c27ff679e6518c8a37c43",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/2/1",
                     witnessSignatureHex="dae5aa9413012ee70c8a34e18a733719f97a35804ae267f122ccbf722a3ca5a0e922d7af4a7a835fc3684b952a3d8b57cb8b7b74a2b0149e7c8a1468d4afd30e",
@@ -3864,7 +3864,7 @@ testsMultidelegation: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/2/5",
                     witnessSignatureHex="70e0e47c6d7d8562ad1e14d55302188d85a8ec56c5f99e779f920c6a75bfe098813635b24d56ecd852fe9792574cf590f7578a65717090aa044e0c2c265b5302",
                 ),
-            ],
+            ),
         ),
     ),
 ]
@@ -3884,12 +3884,12 @@ testsConwayWithoutCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="c3fb3f4330d9f051b567db11d56ab8174cba081373936c9fde80d809b178326f",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="0c2adfaa472c20f861ab41df759b0fddca07033ee31ebdde4a7d93c727b30af6cbe1d2d3727bb4c29f17853595946f59bb0710818d094815e0c8d5ccd73d1103",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3906,12 +3906,12 @@ testsConwayWithoutCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="618718225c0c876fd429ca25957a23ad894eaebc1831365c5b41cba50993a1bf",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="d2f2d2ab62793e512ff5c7058b18b88238f844ca5163c42ac3a8ef70d7cc6e96ad5b342e4848a8eff2618935ecf706f06527197a98d9fc7322726cf9110f8901",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -3929,12 +3929,12 @@ testsConwayWithoutCertificates: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="37e2cf72599186d1ec571af568ea0ab39f7f73ba2e8c5f4725bfd0d4fb8c58e7",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="bbf89e8736d44884c1b05559dcb4831947355ef1740b4a49d10c65942db9d0bce3ce66e89c0dc5bab18414111c1abe9f9da2d703ed34b52db165a7b97f91e60d",
-                )
-            ],
+                ),
+            ),
         ),
     ),
 ]
@@ -4027,7 +4027,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="d800124d3f848414fd3c8a66cad22fa1c9f15ea1ffe74fa4037ba471055aed92",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="4edcc50a262f540953aa57f60f0800e0a4e74dc9ba972e92bd76a5e11301302f718cdfa61fd3071531358b222c20ffcb8f5927d3f8137d3f6ecba05955a12d07",
@@ -4036,7 +4036,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/5/0",
                     witnessSignatureHex="85b8d351e65a16fc129b90b09673b4796bc4136ce9d18a6c55530e01289f894e89812ff191e14dff082a34a83e5cf1c44b610152de9815c9b7f6f5f07b760307",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4057,7 +4057,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="e04c9c02c6089c4d0fcd94a5e910827242881ee36e35c0932727026cf40004e8",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="10e2051952e2c2b4a671b0173d1b704426f901f08facf83698a403a5b08a25d31716ee1bfc12ef01b3532e647fb8fed5dbd63b06ed0ad974d3788bc1cdf43c05",
@@ -4066,7 +4066,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/3/0",
                     witnessSignatureHex="728ec0477e8a25f7bb549e0eafa4455762ab79233392af856857c20118f120797965e325aa36301e7a8e76d89d1b42070fae23d86f306dfa9177d3c599eb8806",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4087,7 +4087,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="626c3047fe740fcbd8326df376678419c1fca029e195c94ee3097d38f28df1ed",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="f6c6754e75fa4af00104a583b0af87424f74f54c4faa590ac946d01c6cafce743f1f06bf759abbd120384c937890e5313f317d6120092f236f9a375487413908",
@@ -4096,7 +4096,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                     path="m/1853'/1815'/0'/0'",
                     witnessSignatureHex="c9fefa1a94a88775c123c23b484bd0de70c6c10c5fe949260d6c8f87cf99ffba101b1455cf2442a8933bd90966aa62cfa9070071e29f67b165d59bda264a6501",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4119,19 +4119,19 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18200581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="e19f0cdcd735f6ea53f5673e593008af68a182f66c1027aa31fd8da449b7cf5b",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="4ecdf394bc6d39c48465cad6235e17a50112c20bad0fbf87c2f5808ae0a22849bd36ccce52ce53d116298a9adc81394d4cb6a85354d607e11cf16b8019f29a0c",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4154,19 +4154,19 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18201581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038200f6"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="05af307259f8f07f34c536ce037b1a443c7a1be8e62f644c37364d3210b744d8",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="52001c7ce7a6ba06d03605effbbf6076eb6b2e9eadb93d3448c93e1ad733f463c00afbed4a2e5fb700f401c067d0d0043bb042d08a3d6ae600aae24cefe1b001",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4189,19 +4189,19 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18202581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038201f6"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="4cc800d11a4464c352841e393543981bfeb35dfef04037519c0170dce87c5198",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="511a4206c55b5676909b407a74b5665fb09403fcde473bbebf78210469b3edc280c46f0859521bbc2c6ebecb4955f1661024b499548abef57be28a2606a3dd02",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4224,19 +4224,19 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18203581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="00881f4f414a32bd7e3e06036935b8a37944dc3d348216df6a1470fb4e2f04ae",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="1d7ccf543fa599d34bc51f58a320ef32666153042bab581427cd01f336ac17d4351398e5e40d8fc7d9d764db819d01f9dc44d99cba233c9c8924f517fcb7f407",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4268,7 +4268,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="57b88f723e086b82f99427156a30fc86637de1dfd6cfdf6c5dbd78c37a9fbfbf",
-            witnesses=[],
+            witnesses=(),
         ),
     ),
     SignTxTestCase(
@@ -4291,19 +4291,19 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18204581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="623dd691a60d25e379424eceae1052acff119013c56bd2b73e8e1e822d3292bd",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="54bc23f6e21647a9a2c88297d4b776725fb540d5c5d27b485e579787bfd67a44bea18ffef8f3e1606d5487115d152a4f161828e9a9bc43fa9975ad73c706410b",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4325,7 +4325,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="a9166057097e1e7d3c9ea64f88cb68473094703d5fd3cd5a4a82abd13d09e81a",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="6900870a778db3b5a0dcd92efb915ccc9c323e5a29bcff0052f2a486381405b64f00032bd7316f8d81d51ac53dccedcbe1d1cb84d91d20b9152a4f6d9228a40a",
@@ -4334,7 +4334,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/3/0",
                     witnessSignatureHex="a9b7f17cafd55d9fab709a2c9ede5bb05524492e4ce9901f04d21c2bdb64fccc8f304eaf8600307f8b116c51682d220d49fa17b1891abd0105d2ba258addcf0f",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4364,7 +4364,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="81b6137143e179ac68bb74ab60dcb4157e8d67eeaa13b6bdc7f109eca45a712c",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="1245e5bcd8114d13b66a2090b99d9c2446c8d2b4ddb4afaad790103516a20c7c08bd1919282d1883ee6a3ea5ad5ccd9eb6c9fa32b8f423b30fa152a1f0a08f07",
@@ -4381,7 +4381,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                     path="m/1853'/1815'/0'/0'",
                     witnessSignatureHex="c925804d8d8d95168c3d191a66104773801b6ec80f385fddf70a768a05384e94b771ef19b24f0a1e8484a56855051f79dd537455cd079380041cd749a657be09",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4408,14 +4408,14 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a28201581c8afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a28258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f68258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7058201f68202581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1a28258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef8258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f6"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="13084e7b64375366d175810325665e5c91137fe477b6732fba53359e99f08f14",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="d5c16ed5c3b33db4b4a79f450ab6840555e3ec67a0d9485441a597809c071f8ad6745765b1b4df82048429cbce74d065740c2a17f3ddf8c0a9084c35dc8e450d",
@@ -4424,7 +4424,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/3/0",
                     witnessSignatureHex="029e5da1f2fe7aa0626994a344ddcba84ee3de4239a8cb2b75b9676f7256189d886d9a104fee65101def95972c67ea0f7c55305277c6d745071946cbbc3e730b",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4444,12 +4444,10 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c48839092a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038202826058201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef"
         ),
-        expected_warnings=[
-            WarningBit.WARNING_BIT_EMPTY_ANCHOR_URL,
-        ],
+        expected_warnings=(WarningBit.WARNING_BIT_EMPTY_ANCHOR_URL,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="38e3f88ccf38201abf11caf5a66e7e73562ec5dfd2baa41f22ddd07c7a3f576f",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="88980ada207c7003a6e5d009f43ce5bfcb8f11bfc0d51305cc8215fa741d14f7def8ce5cfd96b6932357bea07d12c3951171dd39235d9025b61dc0152a94f502",
@@ -4458,7 +4456,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/5/0",
                     witnessSignatureHex="fdfb6e702028f3a1deafff1d556c13b5c43d3d89e6d668d5e4431ee592824c7e31fff74617794444c5d613724d4a6df2dff7d0a840fc1b0d8db9f2f4ee254d08",
                 ),
-            ],
+            ),
         ),
     ),
 ]
@@ -4491,12 +4489,12 @@ testsCatalystRegistration: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="3ed2713ad3b70967a47dfb175f9dd1c2dc93d4c7033a134eb4892bc600a82e4a",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="09d4dcef62fc5244bfb8ecbaf71a23f4f20b1f92f9fcc237434217768c4182ae778d34fb48d6b03c14dd5d0c891a953a6f17e49d70ccaa56bab436b1eea58509",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4520,15 +4518,15 @@ testsCatalystRegistration: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820d19f7cb4d48a6ae8d370c64d2a42fca1f61d6b2cf3d0c0c02801541811338deb"
         ),
-        expected_aux_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
+        expected_aux_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="201304fb12caa81d254a5fd5c76a9c29745487d93b08246756c5cea7729c4ef7",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="e4ec0ba1e5bf7110746e55911846a0285d893cc726a580e06f8b67ab0d7c2dab36e277f9ca2117dd421f00203fb446a9e02eb3102950e3ac702f9d1baf020c01",
-                )
-            ],
+                ),
+            ),
         ),
     ),
 ]
@@ -4555,15 +4553,15 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a0758201999b3bb9102b585c42616e40cf1290518d788f967ab4b3329dcb712ac933da0"
         ),
-        expected_aux_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
+        expected_aux_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="081c1cd4828774e5e8d6b5ef9963863c920ad0fbc54f0056491a98536027f751",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="54d422d8cb4a842ddfb580e51c1d452f9a442c5541555bbbdeeee3bcdcfa40bb8af38d270a3a9699f7e7c0b6cc47e4abd0c74ba817f9f08b463ac5d2ad34200b",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4590,12 +4588,12 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="4df28b4b7e14ce2b1dc2a446bcc71f58dea009d398d8d06b13d85b01916a5048",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="5553e3ebf1734c2ad00ecaf1d3abbab10419111ada658dd3fddcab3d2625bd8191053206722e4ed0993897c78bec16e1b4401e347bb904c9cf0e97709a98ff08",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4622,12 +4620,12 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="29071564780e2a1c63241235b0339744d9baa05ed4083845bae2881aea1e3e89",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="c2283400e5515537b485a5273925b5ba5e8f51be37376e285e29348d91ee135dbaa95fe94219c9dddb54a181822071739baa51ab0fd42b36475b90684f478c06",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4652,15 +4650,15 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582042e408fb03986a958be9e2cca01623a31e23f86f31172a5a9b84acdfce6f0e750807"
         ),
-        expected_aux_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
+        expected_aux_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="9112411b5c8e0832b99cdeac41046a439487f013ad7feb9deb6be3935392c356",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="2995f480fd9bf6c73854228a1a900c6665a6ac208b7ba86744cb4f20eb5d680e489c4a2150c45bc2eddbbcac0f4a3a98627436671459d1bcfdfe04155d30eb06",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4688,12 +4686,12 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="f5b806519e311223fdfad334a75c65cf77c5bd76ee9fae1b6516383db2df962c",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="d6120884e6c0b26ae495cdf777fc01976cf7066b792675e06a35a3df9aa0ce0afdf8b5243bafcf3bc9e1dd6833a5e1f966eb896d7d406f805b276db4a401bf03",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4730,12 +4728,12 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="ed92d59039c1b9693e595ce78a64ab8cb536863dd42a7a5d8dc9228e20ab58ba",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="a1aea2dd8dca232747f05b5d2ff8e9d4c0c874cc6595b30019f1de6e5b62ca92c6acceef4cde95d54ddbca4556d0effb2152a88b7ad4df871cf756f60f754002",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4772,15 +4770,15 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         ),
         # For CIP36 auxiliary-data review, unusual vote-key paths are surfaced as
         # dedicated inline UI pairs, not as a separate warning modal.
-        expected_aux_warnings=[],
+        expected_aux_warnings=(),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="a75e9aa23aa15933b3c0168befa3be080658df9edea389cec4296e4015af73fc",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="a8e6a7602bf79cecfab81183ffa6168340d4f654030574811b0c51a20e96341172390048fcae080ed8d869a21714d09f81e01cb6604a8c6d3ce630e557c9b501",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -4815,12 +4813,12 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="ec13d7d37cbb6747664521c9758e99eeb71e70a0ae42e6573efe16965a0d3e56",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="74ede80e9ad2e76acf1b4b4e226ae60f73564520dfb14c977f06d36e2c67964888a47a26ef7f86c93aafd6c96a3dfb9e815f54618dda7d1c346a21c4653b130c",
-                )
-            ],
+                ),
+            ),
         ),
     ),
 ]
@@ -4883,12 +4881,12 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="7c5aac719dd3e0888deef0c59d6daba9e578d0dc27f82ff4978fc2893cdc2202",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="e98ad0ba1f12b81bc7d2486ae6f3fe4dc2976e528515c8439dfaf52a1c74861a4c1c4d14ff45e532078e8c81e8b2984838c3ba7251d431312c843949bac73b07",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     # tx does not contain any Plutus elements, but should be accepted (differs only in UI)
@@ -4903,19 +4901,19 @@ testsAlonzo: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="19e7d5f91e105771b48ac9b8796826e354cb80d076b423a07ebd761d6ae0a24c",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="d27a7d67c21cbb8e05a94c42d976b365a4b8c29b4232e4840347b76afead7431f82ffc0472b6f72e3deb0d16fcf1ad418db1681b57969d1907df5d9f405eb008",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     # Dedicated dense-warning fixture for warning-details snapshot coverage.
@@ -4974,7 +4972,7 @@ testsAlonzo: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a2005839135e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a00783862021a005b8d81030a048183128200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1826058201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef10a2005839037cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b0901821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a1487564247542686911182f"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_NETWORK_UNUSUAL,
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
@@ -4983,10 +4981,10 @@ testsAlonzo: List[SignTxTestCase] = [
             WarningBit.WARNING_BIT_OUTPUT_MISSING_DATUM,
             WarningBit.WARNING_BIT_EMPTY_ANCHOR_URL,
             WarningBit.WARNING_BIT_HIGH_FEE,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="189ddebf30703a5e6279806200c4b4a0b2a7a8a0aaf99dc2bd0e0eb0af03d3c8",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="dca5ea080f36439ea8d1959ebdf5021f3cc12fc763fe87c887b363f844be2263e7fb0c118559dfb8406f2f22d2182f03a4b716bc590c773b29cceb7741a0a80a",
@@ -4995,7 +4993,7 @@ testsAlonzo: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/3/0",
                     witnessSignatureHex="6d077eaa4fc629360406940a5eaf308f93f72ac2abad679b012b7d40866b8a5a1d7ee74db1c0bc24bd7f0633c3da2099d89db5ae281cd2ec8b97794a451e250f",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5011,15 +5009,15 @@ testsAlonzo: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e1a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
+        expected_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="0ac3011036018a6ff19105464f2b98fd7c13e42eb369f930f23fe24f48fc40f4",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="10a6ed9ed387922776a2bf2ecd0871281fa2288fa8779fb6070395473282702263cd79f5aa25e89a44dd5d608ff88280fe53d14993adc1cab39a74f03dcd9003",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5035,15 +5033,15 @@ testsAlonzo: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839135e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e1a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a031b0055a275925d560f"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
+        expected_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="da3d0bc6af786d5e8217de21c22f99a2f15b782b29870362788298e05b7b2cac",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="ce9d0cdf5acfc4af481c83c09d6ab137c07cdccd649148442da8a9d325633a16a54cb42d690a9fc9e582c5efaba646b9b725f77ed90e083cc7475155c1082901",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5059,15 +5057,15 @@ testsAlonzo: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839235a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42771a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
+        expected_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="86997f7745efeb43e4d0ba67418bb91df68cf3e635edc5c5b255fa675c39e494",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="c390acce19b93e7cf4409a96b8f6e4f40d3cb602b9074c6a8b8f2db4af26863fdb7287388c5beddfa3a417a9bba4556f684e8248e5fcf7f9bc855a13b82d2303",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5083,15 +5081,15 @@ testsAlonzo: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018183583933122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42771a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
+        expected_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="fb7f781a653b4afc16343eac771bff8751753306f81fd109373d6b9e25d49fd6",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="dc1ba41c661c33eddf278f634bcd4b6b1fe7f53b71f71061d78e95ed79b952cdda1a9f46cae6e0ba5e4e69f6eac2e11997be3049f5bd808fa14655f0e7b91d0f",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5109,12 +5107,12 @@ testsAlonzo: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="2fb76bee39f7e5650766cce8b9e7ac2711881c4f19c0b46a80010fcef9999034",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="884fb3d6e6641ea947aa7db1d2f447948d9759d03e670d1595e258206d03bbcdcc1f21253997b63eabf0a87afc48403a8cd59ec23346d7769d1beccbb86b0f0f",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5130,15 +5128,15 @@ testsAlonzo: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a007838625820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
+        expected_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="7ffbaefea15f1c24c069b39b30360f6a36da6e6dae1666108e873156c338e543",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="17f9872649c624c32de2178eb1b5a465b17101c3a3c3b150440ac989504a934dc1b12302fdddd45a6b576d0cc2b071973192d95332603fb1bcdca6e1acf36f01",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     # tests the path where a warning about missing datum hash is shown on Ledger
@@ -5153,18 +5151,18 @@ testsAlonzo: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a0078386202182a030a"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_NETWORK_UNUSUAL,
             WarningBit.WARNING_BIT_OUTPUT_MISSING_DATUM,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="c236cfde289e669a04fca8bd9a2b9b632fe4c08d31627da25ac517a40082df2a",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="c8b4aae5623be3130f4b7a7f456453180e243ffe70e5b5ebf1a767db04758e8123f12cdd0a4c7770bc9c8defa56e6f95299c6dc67a4e99721dd797a4eb91b609",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5180,13 +5178,13 @@ testsAlonzo: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0d818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc000f01"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="f08021608db631b5b5c1553042ac9722efbcdf738e0b256e7300963e66e41638",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="2a72f14fa277d2a0acf5375649fa4299d9dfbb69f11ec13233c7dd948eaef71afdd167b576a4e498bd66c3754f2cd41cab9e239e3f485039ab1aab2715c0c507",
@@ -5195,7 +5193,7 @@ testsAlonzo: List[SignTxTestCase] = [
                     path="m/44'/1815'/0'/0/0",
                     witnessSignatureHex="29889729f80a26de2cfc657e062281a7ec16aaf8591353ea4763d2d6998fb8dfd13790ad5f3cfb127256365992d920cf613d21ce90a390daedf201c670eff206",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5211,18 +5209,18 @@ testsAlonzo: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000f01"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="4e94b319a7e5a28f333932b0e2337b7c16da22f5eacae684edf2b2fbca2bf2f7",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="bcaa0f5f289a5606153abff0d6f4842b1a05fb001d8cc8cb40a7bfb64ec1e422cfa346c240b1c1099164ab44b265b75a350368f51f14e0392c84255bd89afc09",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5249,14 +5247,14 @@ testsAlonzo: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0e87581cfea6646c67fb467f8a5425e9c752e1e262b0420ba4b638f39514049a581c14c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f1124581c9a70dd7c77e9db9442b560a11446962e9d7c595274c587a62f8a0b61581cf699c6400f85bdca54e44d0cad1f6141ce049a411c0d695fc30c3f73581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba6581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c488390920f01"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="2dbc667c31a8f294c21c9290c5635a3eb00cf335bb7b12cfd52f4551f1bff52c",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="f8e42875180e80756d5de1641b26e3fd464dcacc8f4fd1242dda7d92e95bdaf52b27bb02dd9dda1ff05cb01fe7bb46bc88753020aad823ef1bc24916021f0100",
@@ -5281,7 +5279,7 @@ testsAlonzo: List[SignTxTestCase] = [
                     path="m/1852'/1815'/0'/5/0",
                     witnessSignatureHex="0de0dbbff9de4a83c17ebd3e27b3ba664164948de9ee75d594a30760ede690b86c14cb8a546c83388dfc9f954f4dec8fbc987fa694616c22ebaf1ef6cfdafa09",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5298,15 +5296,15 @@ testsAlonzo: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0e81581c43040068ce85252be6164296d6dca9595644bbf424b56b7424458227"
         ),
-        additionalWitnessPaths=["m/1855'/1815'/0'"],
-        expected_warnings=[
+        additionalWitnessPaths=("m/1855'/1815'/0'",),
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="1095bc3a0a5f34e640c65b8be2976a482b5c31babbed4c52d8d09f7667976649",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="ed4008dc7a5d1876882a9037ab2d45c1ee5cd6d0eb92b1b506e1851ca5446d75bfbec3eb81796278ad3e95127a27770347192b9755a336baaa4eb0f453d48e0c",
@@ -5315,7 +5313,7 @@ testsAlonzo: List[SignTxTestCase] = [
                     path="m/1855'/1815'/0'",
                     witnessSignatureHex="b8dfbaddac569e9bcd815f9948e4a4ec89604452240784aa900ca65e90db8e4e5ee3debc7eae421748f9d5a6c19662c90ebaef8bc6fdd7608afa7510ca8fef08",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5351,19 +5349,19 @@ testsAlonzo: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a048183028200581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb497305a1581de129fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd1903e80f01"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="7ae1c854aad0469a08cd678786ed9a70791808afd6dd1a7deaae72df12430baa",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="45187f82b6e273fd5d051cbddb23b52d49129fc37cd37dcddd8a463b9be852dd23ae79b53b133737035cfca04ff76d58fe64dd62d68e365e3f9c5fd045e07e06",
-                )
-            ],
+                ),
+            ),
         ),
     ),
 ]
@@ -5397,12 +5395,12 @@ testsStreaming: List[SignTxTestCase] = [
         unsuitable_in_ragger_reason="nano: Wallet-sized 700-signer review is reserved for large-screen devices",
         ragger_expect=SignTxRaggerExpect(
             txHashHex="66d38ca4540c91f9795e40a3118e8c396bbb7d551ac97967b213c467a90c081a",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="5652803177933a056975ba93bff1c075d8af1abb898f2b54cda062f5c7c234a690545680cb502e478cb3a2547c560b2fb498bd66a578b6ad49e29b123532b803",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     # Nano-focused streaming copy: 256 required signers still exceeds both Nano (127) and wallet (255)
@@ -5424,12 +5422,12 @@ testsStreaming: List[SignTxTestCase] = [
         tx_streaming=True,
         ragger_expect=SignTxRaggerExpect(
             txHashHex="05f92136f6becefd241491b713741523d48537dd3ef5726b22de9242473e6078",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="5a91a030b279e3c1398e1c3e85385c910a58e88f14ac67e5ab339b4cbd5920078301b97a0829cfd8cfbde0e57e684cf349d3c4b5eec2d7d8512b88fe63791b05",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     # Streaming test: 90 third-party outputs to exceed MAX_UI_PAIRS (255).
@@ -5460,12 +5458,12 @@ testsStreaming: List[SignTxTestCase] = [
         tx_streaming=True,
         ragger_expect=SignTxRaggerExpect(
             txHashHex="d87f1936b8fb4c8f74d42442fd42dc514d97d21b9408bd0375f3ce22125d5749",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="f0f50c8a3b170e4f1e4c4fe97ab67981a252f8b74a9e8bafca8b1220c627fea9cc89f6d384432530b4d3a5e23b23ca01b0369dd8c6beaf79c6d549217f34d307",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5486,12 +5484,12 @@ testsStreaming: List[SignTxTestCase] = [
         blind_signing_mode=BlindSigningMode.PROMPT_REVIEW_FULL,
         ragger_expect=SignTxRaggerExpect(
             txHashHex="dc25b9d4fab19a4bf64c990a040e697586ca734087b70257dcaae5b5f7e10cb8",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="f1248dc68a759b06a8f3c82b6c90f9ee9e822960be492ca098ca0168e62b955d39b0d6378dfa4c1bb3d714d952457a0a84ad5bb4abd405561f663f60d5615a07",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5512,12 +5510,12 @@ testsStreaming: List[SignTxTestCase] = [
         blind_signing_mode=BlindSigningMode.PROMPT_REVIEW_HASH,
         ragger_expect=SignTxRaggerExpect(
             txHashHex="dc25b9d4fab19a4bf64c990a040e697586ca734087b70257dcaae5b5f7e10cb8",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="f1248dc68a759b06a8f3c82b6c90f9ee9e822960be492ca098ca0168e62b955d39b0d6378dfa4c1bb3d714d952457a0a84ad5bb4abd405561f663f60d5615a07",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5539,12 +5537,12 @@ testsStreaming: List[SignTxTestCase] = [
         blind_signing_mode=BlindSigningMode.PROMPT_REVIEW_FULL,
         ragger_expect=SignTxRaggerExpect(
             txHashHex="d87f1936b8fb4c8f74d42442fd42dc514d97d21b9408bd0375f3ce22125d5749",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="f0f50c8a3b170e4f1e4c4fe97ab67981a252f8b74a9e8bafca8b1220c627fea9cc89f6d384432530b4d3a5e23b23ca01b0369dd8c6beaf79c6d549217f34d307",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5566,12 +5564,12 @@ testsStreaming: List[SignTxTestCase] = [
         blind_signing_mode=BlindSigningMode.PROMPT_REVIEW_HASH,
         ragger_expect=SignTxRaggerExpect(
             txHashHex="d87f1936b8fb4c8f74d42442fd42dc514d97d21b9408bd0375f3ce22125d5749",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="f0f50c8a3b170e4f1e4c4fe97ab67981a252f8b74a9e8bafca8b1220c627fea9cc89f6d384432530b4d3a5e23b23ca01b0369dd8c6beaf79c6d549217f34d307",
-                )
-            ],
+                ),
+            ),
         ),
     ),
 ]
@@ -5589,18 +5587,18 @@ testsBabbage: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a00783862028201d818565579657420616e6f746865722063686f636f6c61746502182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="5dbfc21ef1c9cfcec97d81dbe5ad732cf8fe2237969321c830a9dd166172b649",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="26facdc3c25e465ae734cd7a3639c11c4950ab32dd2523569369450385bc62ee4908ab22942f69fec8d82d985b8453b3963f181c905999ceaaaad04ddb3bb203",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5615,18 +5613,18 @@ testsBabbage: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca793028201d8185901e012b8240c5470b47c159597b6f71d78c7fc99d1d8d911cb19b8f50211938ef361a22d30cd8f6354ec50e99a7d3cf3e06797ed4af3d358e01b2a957caa4010da328720b9fbe7a3a6d10209a13d2eb11933eb1bf2ab02713117e421b6dcc66297c41b95ad32d3457a0e6b44d8482385f311465964c3daff226acfb7bbda47011f1a6531db30e5b5977143c48f8b8eb739487f87dc13896f58529cfb48e415fc6123e708cdc3cb15cc1900ecf88c5fc9ff66d8ad6dae18c79e4a3c392a0df4d16ffa3e370f4dad8d8e9d171c5656bb317c78a2711057e7ae0beb1dc66ba01aa69d0c0db244e6742d7758ce8da00dfed6225d4aed4b01c42a0352688ed5803f3fd64873f11355305d9db309f4a2a6673cc408a06b8827a5edef7b0fd8742627fb8aa102a084b7db72fcb5c3d1bf437e2a936b738902a9c0258b462b9f2e9befd2c6bcfc036143bb34342b9124888a5b29fa5d60909c81319f034c11542b05ca3ff6c64c7642ff1e2b25fb60dc9bb6f5c914dd4149f31896955d4d204d822deddc46f852115a479edf7521cdf4ce596805875011855158fd303c33a2a7916a9cb7acaaf5aeca7e6efb75960e9597cd845bd9a93610bf1ab47ab0de943e8a96e26a24c4996f7b07fad437829fee5bc3496192608d4c04ac642cdec7bdbb8a948ad1d43402182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="0cccea3eb974bd362720a460d84d4970e89c523b2145cbe29bb56f36cec4b826",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="e70eecaf97bc364d23517cdf19ab223c79d7b4ad761df9933092ba209a2e729ce81d2f75047826f2fe65079463a2a75f123ccab6618314e279cb6d4ea2c4330f",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5641,18 +5639,18 @@ testsBabbage: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a00783862028201d8185901305579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f7468657220637468657202182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="92f83ca3e05fb48ffe0f90e6d7ac653a684039476b4963984b84fdc6fecea67d",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="3a25eb9a3fc9949c640047b2bf094e02400dc57a5f8b513f3a72cd026118d0ec4815cc3931403ce435e18ac7056dea16149f6acfb47b29d36e9be5e7e85f9905",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     # reference script
@@ -5669,12 +5667,12 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="66b8ad26b626f8fc6bd788d75b64f4d8db1c934e0fe30ba7873fa291f38359ef",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="708d348ce4cf8e25cee0bce4505eae201db7cbee856e8cd5a2ce555613bb54876eecf8b3e09c4aa47a70dddd7948cff590808c9938b54756c7f0e5f4f82cf20b",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5690,12 +5688,12 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="88ba739a1ac160afc2cfb75d7132431a534665a928e3ed27c90efdd3c15a6eea",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="adff9f6e22db8f6f85f4c50090f8f5660fb3f74a4c6edffbc2d9e9960375da6aabbd4b26a9883a4ba12956297c5625a131fd5100aacbe18a030671a995438a02",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5711,12 +5709,12 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="eb4c4fde4db6ad34b83087e0d52f48127cd9f0bab5bd6e271cdcc3904ce6556f",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="4c70511f577d57cd05bf0811b157b1728824a83fea910ab2cef9337e9cb1381a2b2fabdd1f2da623ce01b1e21c0b147db1a14b5a0be1059f5a7f7b0df0e82807",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     # various output combinations
@@ -5733,12 +5731,12 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="77c4e9441b6b5bc5a1157b2b54ac6c0165e6959ffbc378f0528fafd4e5d9ba64",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="871231a3b92a9ad9e7517d7b7af93f2c3e84f55d37cfdbf2e5ce3e42a7346ccc4204fc68600a37cb0292a0e99735207461c61a16683ca0583fde7c64af4fd802",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5758,12 +5756,12 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="e865808d2aaa26367cb08033dc2c7f8233bb241f86f4c51d2d7502e8fca4bfd6",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="b9000d61d264cb2a8ed8583324bc833334776139dc3042968276ea982bae9fac244728fad4ee054a35a04c2344f855f87cc0272c80a495d439da45e43ccfe307",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     # reference inputs
@@ -5781,15 +5779,15 @@ testsBabbage: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70012828258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7008258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL],
+        expected_warnings=(WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="21257105cb5cfbf1b40e3b44e650dda4e7114e43dcdd6c336d7cf62c7a0b8d09",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="e60f97e9bb99d4733896fce22dafbc435c87863b1d36026d9dfc006a9a50518d03d22f47f892e2d1b8dac016f38282885559d8604c227da009f58f9f6ba08503",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     # total collateral and collateral return output
@@ -5806,15 +5804,15 @@ testsBabbage: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7110a"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL],
+        expected_warnings=(WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="c856b01628764754251e47ff941edd72ee2da7c73582f2185894b792e0a30b9a",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="8e53095ef3a3e3bbcefdac738076a7c6427b99a1f7c66a51bfde05c2c9682e0676b2b783a5660be537fc7f02194f357b091bb28f666e78fe5585e007c0d75d07",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5834,15 +5832,15 @@ testsBabbage: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b710a20058204114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f1124010203011a006ca793110a"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL],
+        expected_warnings=(WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="6415dceb6319bb7acb96051981d0e305a90090950775cc8c0e0ca488223ddea7",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="5bb416749a439381e8776a3d92922fcc7cde620f175118e4355764a6f4b9769e72eebe6bc2c17215a0d9844c0f78e1f02f82cc7bd25d89b9b7d538a18e24c303",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5864,17 +5862,15 @@ testsBabbage: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b710a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f1124876c29f8c45c3fa7d3af0ea45fb2564ace831f70e7d3d5b8c251739a011a006ca793110a"
         ),
-        expected_warnings=[
-            WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
-        ],
+        expected_warnings=(WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="b03c25102f26db94043860e1e68f7a18e6b192b3670f75453c3f6be185fd2af7",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="e381c869b6d05847953facf0a048984aff78b8a243d587c951434ad044f17fe52e2b770566e06e5e443226c845d23dc73578c10ea67a34747d1bda2e425fda09",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5894,18 +5890,18 @@ testsBabbage: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7108258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca793"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="76de4785c802e38bb651038a658e873ecea4d45995ce04ef05a75fb4a6593b18",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="542ee54400369ed4099aa8e934291f11ad3124586ac8fcdeb0c83facc838500176e8bb71bc09e5b5bf539476eb58d176236bed310f1cf22de75a1013daea7c00",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5922,18 +5918,18 @@ testsBabbage: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a1487564247542686911182f"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
             WarningBit.WARNING_BIT_COLLATERAL_OUTPUT_WARNING,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="f825b196146d0121791956d1aa484561037bb18820890c0274eb6169624f8661",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="0134f104deb461002da5034bb50eb79a83ca466e07f8d6e408265e3ad03364cf706b302c8710d6adfad98c9d922a25600b75a814ee66aa8a3c54238552d9f507",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5953,12 +5949,12 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="ecdec22d107dc3bce8feee81cffc93a96ff7f59942840ca30dde813c5b6c52ca",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="05204d39a21a964465f5e49671a89ade5c96e156234b8503aad31d30f05ba82ea2e99d997cab40d0a86d8993317db6d9e461b7e2a96cdefcbb2af31458bd050d",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -5975,15 +5971,15 @@ testsBabbage: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a200583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff01821904d2a2581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a34003581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209015820000000000000000000000000000000000000000000000000000000000000000002581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a248456c204e69c3b16f1904d24874652474436f696e1a0078386202182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b0901"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL],
+        expected_warnings=(WarningBit.WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="ad44aad52c32b6123220ec15548b3902b091f73c4ccfb229700a32bc6958eb6f",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="c9c6f3dbd33b811733b2e6c278c409eb9b255e0c24cb923e035f4b7af1ee17f5e23a44532dd9fe13f0ef30ceeb90d7ce78d8d526f906a515c58a13a4b3773d0f",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -6003,12 +5999,12 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="ae45aaab5ceb5234a46d1a9173fdcfa965cdd5ebc37054c18a1ac22ad5d4904e",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="4373a1e0e6c92c0469dc4c02c962c0b6433df570e52b120c6c031f1c9c5615458d5ddb6a6d73e7ebed6fd94cecef44144a8019d2aff8a729d8af1715b17e350c",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -6035,12 +6031,12 @@ testsBabbage: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="c264f170e4b930f98fd7ee7476ec7b02b71b8cbf5651f743b984f6e6be61b47f",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="d6972392e2a6db5df44c24f9761ca22a165292fbefcc3f071e42498a38959ef5357a6f050d0fe56f57e1eaa2a8f740db9dec87d4239366c62eba33aa7eaef105",
-                )
-            ],
+                ),
+            ),
         ),
     ),
 ]
@@ -6063,12 +6059,12 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="9983867b7f7d1f42ee5069bf1820c2d4da92330ee6816e12480b993194ecddbf",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="ca201dce56a1014b58a9ce7634de2c2c9cd87660034b0d85e8b891c573c955253a3138035ea91b63890c6910233a506ab2e1883f7551df63553d154bd4feac09",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -6085,12 +6081,12 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="55b823c279ace3de61f2c02943f9f0d55ec68d0b4e87669ce2bb3446ebb5ed08",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="5fd7e67cd3f9c8f040ad8b7d148ffe46811b1c7d72baaa41e4c26cf16952a29565a6b3aa9d41685a0097369d9631a1b23e69812d9062d4e06ea78bc286abf903",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -6107,12 +6103,12 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="00f17e914f635c905d4b80f6d874e1263a0ef5beb2c81d2685529dbfac74ea5c",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="f4380ec622e3963958fcd72bd906924ac5cf70e78e76118a7242f980dfe45dc8320e0e75d7bda5fddc98b65f011f9a5182ed81eebf2ddf1cb8f71ee66250c400",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -6131,12 +6127,12 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="ddcaffcd679033c7e413d9c10500cb5b1cda9a0a7186ebddba60a6ef278e9cfd",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="cacb9c37b7722a7baa443a064169defa20a5b2e09e177fd28908a18f3155117caa57d26fc47379a75a96137319974333be93f76f872fc92f2e141278bcb92d02",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -6153,12 +6149,12 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="033e14801a48be07b9b1e49e6b990e7790455fef4ac45d05140f404f97fd4d38",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="69f99b82af3e46ca71403d30feef66c5d7f4b13e78bda41b03861cbb6380b2520f3202aab7275ab67301b656de44c7e5c3c08249db065f73cc5bebb9878beb04",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -6173,15 +6169,15 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8082782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_POOL_REGISTRATION_NO_RELAYS],
+        expected_warnings=(WarningBit.WARNING_BIT_POOL_REGISTRATION_NO_RELAYS,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="654268f5c1ac9297b0eca585fedde4ac73ac3fe2fc3cd32fc40b01f59c46910e",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="94e44da849a8a9b8c5280d962e7876148bb1f071ee5b117f042876e70e8f121010a223fd449ecc9a48d42e27bd2c5af3dbf118bd7cbfe067f57e0cc1a3caef0b",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -6198,12 +6194,12 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="54bde84ab6d35723bf3e1a9fa6dda8fdb0b10ed8f2fdfc6d076d450c11196271",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="5790f128c4736c68944cb23c6710bf808e465c5d6dff6cdbcb539e4f080f33fe2430e52109218e50d28c0cc786123148b1629a09a146b50e12d7306c1d1e3205",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -6218,15 +6214,17 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c818400190bb84436e44b9af682605820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL],
+        expected_warnings=(
+            WarningBit.WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL,
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="7d7f6b89a241f2b36c549d5f0c354006ea37bbbec8ff52ff4214d195f497bf18",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="91c51f61742fbff613b0c10e5c834c9a4785c43ef3c9869ae087e47be5e059aa706ac0eb6a99648bcac044edc10b736401f61eea00249bbce3f3252e03007e05",
-                )
-            ],
+                ),
+            ),
         ),
     ),
     SignTxTestCase(
@@ -6243,12 +6241,12 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="24baf71e80d54144f09ac67037b4597a3cdaed073f81e53f490ccea2ea3c79ce",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/2/0",
                     witnessSignatureHex="52253e517ca43e2a4a4130ed777764026a7a2e3ea9b745c53c4fbf43a080487181d4bddcb97d79b93698dacbe6bed02c7ddb691bf25a1c7f23f0f9e127d4000a",
-                )
-            ],
+                ),
+            ),
         ),
     ),
 ]
@@ -6266,13 +6264,13 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad808082782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb"
         ),
-        expected_warnings=[
+        expected_warnings=(
             WarningBit.WARNING_BIT_POOL_REGISTRATION_NO_OWNERS,
             WarningBit.WARNING_BIT_POOL_REGISTRATION_NO_RELAYS,
-        ],
+        ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="777034dbbaf195dbe62dd1d8d1bfc19b6390d2b059c61fc305431e27e8e67aff",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="cde04f99c52fb75e207ddb8aab5e8922193339d400565f016a6cb7d9e803e758c38783d84f655a2fe7b0878e87f6b8aa99fa850d3a3fc01483016d64e707b303",
@@ -6281,7 +6279,7 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
                     path="m/1853'/1815'/0'/0'",
                     witnessSignatureHex="10f723c03412f73399b43040de8642c6ab7e86285a777cfec7d884339d046f590e33e89b624604bcf1ac00c9873277a9d94bd69cc904e17d7a1f5e3f30461d01",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -6298,10 +6296,10 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1eef1689a3970b7880dcf3cb4ca9f22453b3833824fea34105117c84081581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad8082782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb"
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_POOL_REGISTRATION_NO_RELAYS],
+        expected_warnings=(WarningBit.WARNING_BIT_POOL_REGISTRATION_NO_RELAYS,),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="a9eff229377523e59ba173314238881ccc9507731c241a07237d5126fab19912",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="7aa469b57f6ce58ab5f1804baeb62bbe51db91703828be25892ce270f5b86899c44a63c5da591aaa9617e5db28b8f0a6a818f3a24cdac46ea582ef25c575f103",
@@ -6310,7 +6308,7 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
                     path="m/1853'/1815'/0'/0'",
                     witnessSignatureHex="e3033da1227fd9d4e97777dcf279d6339619477b5a25ca737d19fc60857dacf2563fd3c0b0f062fd25fb355658e19b52c537c39830d6cf0c865fbb8a1d3d7803",
                 ),
-            ],
+            ),
         ),
     ),
     SignTxTestCase(
@@ -6329,7 +6327,7 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
         ),
         ragger_expect=SignTxRaggerExpect(
             txHashHex="669f12519e0adf5b5c1093ff45fc7790bba36502bc0ee1f04afab8ad4bbc0505",
-            witnesses=[
+            witnesses=(
                 Witness(
                     path="m/1852'/1815'/0'/0/0",
                     witnessSignatureHex="10b77b6959c75cdfed1252ab0f8a12a3c0d501c58062cdad323594a9ad51e03f7e3923e61d3e50dd0400c3853df12ad8eedf433fb34ea14b90f6500919604301",
@@ -6338,7 +6336,7 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
                     path="m/1853'/1815'/0'/0'",
                     witnessSignatureHex="5c002cf4b22272a5e0251423a3c63cb654a8396cac2deafc0dd8cc88adc12192e43aa525b504d5beb2ee40fe00b2c26b411c6a3e9cc7919cfc391ad3c415850c",
                 ),
-            ],
+            ),
         ),
     ),
 ]
@@ -6509,7 +6507,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
+        expected_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
     ),
     SignTxTestCase(
         name="Pool_registration_owner_too_few_certificates",
@@ -6520,7 +6518,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
+        expected_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
     ),
     SignTxTestCase(
         name="Pool_registration_operator_too_many_certificates",
@@ -6810,7 +6808,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
+        expected_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
     ),
     SignTxTestCase(
         name="Multisig_tx_collateral_inputs_included",
@@ -7882,7 +7880,7 @@ certificateStakePoolRetirementDenyTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
+        expected_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
     ),
 ]
 
@@ -8080,7 +8078,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
-        additionalWitnessPaths=["m/1852'/1815'/0'"],
+        additionalWitnessPaths=("m/1852'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8091,7 +8089,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
-        additionalWitnessPaths=["m/1854'/1815'/0'"],
+        additionalWitnessPaths=("m/1854'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8102,7 +8100,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
-        additionalWitnessPaths=["m/1854'/1815'/0'/0/0"],
+        additionalWitnessPaths=("m/1854'/1815'/0'/0/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8113,7 +8111,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
-        additionalWitnessPaths=["m/1854'/1815'/0'/2/0"],
+        additionalWitnessPaths=("m/1854'/1815'/0'/2/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8124,7 +8122,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
-        additionalWitnessPaths=["m/1855'/1815'/0'"],
+        additionalWitnessPaths=("m/1855'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8135,7 +8133,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
-        additionalWitnessPaths=["m/1852'/1815'/0'"],
+        additionalWitnessPaths=("m/1852'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8146,7 +8144,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
-        additionalWitnessPaths=["m/1854'/1815'/0'"],
+        additionalWitnessPaths=("m/1854'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8157,7 +8155,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
-        additionalWitnessPaths=["m/1852'/1815'/0'/0/0"],
+        additionalWitnessPaths=("m/1852'/1815'/0'/0/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8168,7 +8166,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
-        additionalWitnessPaths=["m/1852'/1815'/0'/2/0"],
+        additionalWitnessPaths=("m/1852'/1815'/0'/2/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8179,7 +8177,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
-        additionalWitnessPaths=["m/1855'/1815'/0'"],
+        additionalWitnessPaths=("m/1855'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8190,7 +8188,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
         signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
-        additionalWitnessPaths=["m/1853'/1815'/0'/0'"],
+        additionalWitnessPaths=("m/1853'/1815'/0'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8201,7 +8199,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
-        additionalWitnessPaths=["m/1852'/1815'/0'"],
+        additionalWitnessPaths=("m/1852'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8212,7 +8210,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
         signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
-        additionalWitnessPaths=["m/1854'/1815'/0'"],
+        additionalWitnessPaths=("m/1854'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8250,7 +8248,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             ],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        additionalWitnessPaths=["m/1854'/1815'/0'"],
+        additionalWitnessPaths=("m/1854'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8288,7 +8286,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             ],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        additionalWitnessPaths=["m/1852'/1815'/0'/0/0"],
+        additionalWitnessPaths=("m/1852'/1815'/0'/0/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8326,7 +8324,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             ],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        additionalWitnessPaths=["m/1854'/1815'/0'/0/0"],
+        additionalWitnessPaths=("m/1854'/1815'/0'/0/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8364,7 +8362,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             ],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        additionalWitnessPaths=["m/1854'/1815'/0'/2/0"],
+        additionalWitnessPaths=("m/1854'/1815'/0'/2/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8402,7 +8400,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             ],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        additionalWitnessPaths=["m/1855'/1815'/0'"],
+        additionalWitnessPaths=("m/1855'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8440,7 +8438,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             ],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        additionalWitnessPaths=["m/1853'/1815'/0'/0'"],
+        additionalWitnessPaths=("m/1853'/1815'/0'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8472,7 +8470,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             ],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
-        additionalWitnessPaths=["m/1854'/1815'/0'"],
+        additionalWitnessPaths=("m/1854'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8504,7 +8502,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             ],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
-        additionalWitnessPaths=["m/1854'/1815'/0'/0/0"],
+        additionalWitnessPaths=("m/1854'/1815'/0'/0/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8536,7 +8534,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             ],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
-        additionalWitnessPaths=["m/1852'/1815'/0'/2/0"],
+        additionalWitnessPaths=("m/1852'/1815'/0'/2/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8568,7 +8566,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             ],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
-        additionalWitnessPaths=["m/1854'/1815'/0'/2/0"],
+        additionalWitnessPaths=("m/1854'/1815'/0'/2/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8600,7 +8598,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             ],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
-        additionalWitnessPaths=["m/1855'/1815'/0'"],
+        additionalWitnessPaths=("m/1855'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
 ]
@@ -8846,7 +8844,7 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
-        expected_warnings=[WarningBit.WARNING_BIT_NETWORK_UNUSUAL],
+        expected_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
     ),
     SignTxTestCase(
         name="Byron_to_Shelley_transfer_output_account_mismatch",
@@ -9403,7 +9401,7 @@ poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
             ],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        additionalWitnessPaths=["m/1852'/1815'/0'/2/0", "m/1852'/1815'/0'/2/1"],
+        additionalWitnessPaths=("m/1852'/1815'/0'/2/0", "m/1852'/1815'/0'/2/1"),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -9473,7 +9471,7 @@ poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
             ],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        additionalWitnessPaths=["m/1852'/1815'/0'/2/0", "m/1852'/1815'/0'/2/1"],
+        additionalWitnessPaths=("m/1852'/1815'/0'/2/0", "m/1852'/1815'/0'/2/1"),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -9543,7 +9541,7 @@ poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
             ],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        additionalWitnessPaths=["m/1852'/1815'/0'/2/0", "m/1854'/1815'/0'/2/0"],
+        additionalWitnessPaths=("m/1852'/1815'/0'/2/0", "m/1854'/1815'/0'/2/0"),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -9609,7 +9607,7 @@ poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
             ],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        additionalWitnessPaths=["m/1852'/1815'/0'/2/0", "m/1854'/1815'/0'/2/0"],
+        additionalWitnessPaths=("m/1852'/1815'/0'/2/0", "m/1854'/1815'/0'/2/0"),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -9675,7 +9673,7 @@ poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
             ],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        additionalWitnessPaths=["m/1852'/1815'/0'/2/0"],
+        additionalWitnessPaths=("m/1852'/1815'/0'/2/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -9723,7 +9721,7 @@ poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
             ],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        additionalWitnessPaths=["m/1852'/1815'/0'/2/0", "m/1854'/1815'/0'/2/0"],
+        additionalWitnessPaths=("m/1852'/1815'/0'/2/0", "m/1854'/1815'/0'/2/0"),
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         deny_before_review=True,
     ),
@@ -9772,7 +9770,54 @@ poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
             ],
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        additionalWitnessPaths=["m/1852'/1815'/0'/2/0"],
+        additionalWitnessPaths=("m/1852'/1815'/0'/2/0",),
+        expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    ),
+    SignTxTestCase(
+        name="Non_staking_path_for_Pool_Registration_Owner_Tx",
+        tx=Transaction(
+            network=NetworkDesc(networkId=1, protocol=764824073),
+            inputs=[inputs["utxoMultisig"]],
+            outputs=[outputs["inlineShelleyBase1"]],
+            certificates=[
+                Certificate(
+                    type=CertificateType.STAKE_POOL_REGISTRATION,
+                    params=PoolRegistrationParams(
+                        poolKey=PoolKey(
+                            type=PoolKeyType.THIRD_PARTY,
+                            key="13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad",
+                        ),
+                        vrfKeyHashHex="07821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d084450",
+                        pledge=50000000000,
+                        cost=340000000,
+                        margin=Margin(numerator=3, denominator=100),
+                        rewardAccount=PoolKey(
+                            type=PoolKeyType.THIRD_PARTY,
+                            key="e1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad",
+                        ),
+                        poolOwners=[
+                            PoolKey(
+                                type=PoolKeyType.DEVICE_OWNED,
+                                key="m/1852'/1815'/0'/0/0",
+                            )
+                        ],
+                        relays=[
+                            Relay(
+                                type=RelayType.SINGLE_HOST_IP_ADDR,
+                                params=SingleHostIpAddrRelayParams(
+                                    portNumber=3000, ipv4="54.228.75.154", ipv6=None
+                                ),
+                            )
+                        ],
+                        metadata=PoolMetadataParams(
+                            metadataUrl="https://www.vacuumlabs.com/sampleUrl.json",
+                            metadataHashHex="cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
+                        ),
+                    ),
+                )
+            ],
+        ),
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
 ]
@@ -9872,56 +9917,6 @@ stakePoolRegistrationPoolIdDenyTestCases: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
-    ),
-]
-
-stakePoolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
-    SignTxTestCase(
-        name="Non_staking_path_for_Pool_Registration_Owner_Tx",
-        tx=Transaction(
-            network=NetworkDesc(networkId=1, protocol=764824073),
-            inputs=[inputs["utxoMultisig"]],
-            outputs=[outputs["inlineShelleyBase1"]],
-            certificates=[
-                Certificate(
-                    type=CertificateType.STAKE_POOL_REGISTRATION,
-                    params=PoolRegistrationParams(
-                        poolKey=PoolKey(
-                            type=PoolKeyType.THIRD_PARTY,
-                            key="13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad",
-                        ),
-                        vrfKeyHashHex="07821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d084450",
-                        pledge=50000000000,
-                        cost=340000000,
-                        margin=Margin(numerator=3, denominator=100),
-                        rewardAccount=PoolKey(
-                            type=PoolKeyType.THIRD_PARTY,
-                            key="e1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad",
-                        ),
-                        poolOwners=[
-                            PoolKey(
-                                type=PoolKeyType.DEVICE_OWNED,
-                                key="m/1852'/1815'/0'/0/0",
-                            )
-                        ],
-                        relays=[
-                            Relay(
-                                type=RelayType.SINGLE_HOST_IP_ADDR,
-                                params=SingleHostIpAddrRelayParams(
-                                    portNumber=3000, ipv4="54.228.75.154", ipv6=None
-                                ),
-                            )
-                        ],
-                        metadata=PoolMetadataParams(
-                            metadataUrl="https://www.vacuumlabs.com/sampleUrl.json",
-                            metadataHashHex="cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb",
-                        ),
-                    ),
-                )
-            ],
-        ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-        expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
 ]
 

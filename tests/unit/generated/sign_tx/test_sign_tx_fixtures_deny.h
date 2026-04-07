@@ -3118,7 +3118,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_ID_HASH_SENT_IN_FOR_POOL_
 };
 
 
-// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerDenyTestCases > Device_owned_output_in_Pool_Registration_Owner_Tx
+// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Device_owned_output_in_Pool_Registration_Owner_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DEVICE_OWNED_OUTPUT_IN_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
@@ -3162,7 +3162,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DEVICE_OWNED_OUTPUT
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerDenyTestCases > Different_index
+// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Different_index
 static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DIFFERENT_INDEX[] = {
     {
         .hex_payload =
@@ -3207,7 +3207,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DIFFERENT_INDEX[] =
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerDenyTestCases > Different_prefix
+// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Different_prefix
 static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DIFFERENT_PREFIX[] = {
     {
         .hex_payload =
@@ -3252,7 +3252,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_DIFFERENT_PREFIX[] 
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerDenyTestCases > No_path_given
+// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > No_path_given
 static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_NO_PATH_GIVEN[] = {
     {
         .hex_payload =
@@ -3296,7 +3296,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_NO_PATH_GIVEN[] = {
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerDenyTestCases > Pool_registration_owner_by_hash_staking_key_witness_denied_by_null_owner_path
+// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Pool_registration_owner_by_hash_staking_key_witness_denied_by_null_owner_path
 static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_POOL_REGISTRATION_OWNER_BY_HASH_STAKING_KEY_WITNESS_DENIED_BY_NULL_OWNER_PATH[] = {
     {
         .hex_payload =
@@ -3333,7 +3333,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_POOL_REGISTRATION_O
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerDenyTestCases > Invalid_numerator_denominator_relationship
+// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Invalid_numerator_denominator_relationship
 static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_INVALID_NUMERATOR_DENOMINATOR_RELATIONSHIP[] = {
     {
         .hex_payload =
@@ -3375,7 +3375,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_INVALID_NUMERATOR_D
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerDenyTestCases > Pool_registration_owner_by_hash_staking_key_witness_denied
+// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Pool_registration_owner_by_hash_staking_key_witness_denied
 static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_POOL_REGISTRATION_OWNER_BY_HASH_STAKING_KEY_WITNESS_DENIED[] = {
     {
         .hex_payload =
@@ -3410,7 +3410,7 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_POOL_REGISTRATION_O
     },
 };
 
-// Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerDenyTestCases > Non_staking_path_for_Pool_Registration_Owner_Tx
+// Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Non_staking_path_for_Pool_Registration_Owner_Tx
 static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_POOL_OWNER_NON_STAKING_PATH_FOR_POOL_REGISTRATION_OWNER_TX[] = {
     {
         .hex_payload =
@@ -5551,7 +5551,7 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerDenyTestCases > Device_owned_output_in_Pool_Registration_Owner_Tx
+    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Device_owned_output_in_Pool_Registration_Owner_Tx
     {
         .name = "[DENY_POOL_OWNER] Device_owned_output_in_Pool_Registration_Owner_Tx",
         .init_hex =
@@ -5563,7 +5563,7 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerDenyTestCases > Different_index
+    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Different_index
     {
         .name = "[DENY_POOL_OWNER] Different_index",
         .init_hex =
@@ -5575,7 +5575,7 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerDenyTestCases > Different_prefix
+    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Different_prefix
     {
         .name = "[DENY_POOL_OWNER] Different_prefix",
         .init_hex =
@@ -5587,7 +5587,7 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerDenyTestCases > No_path_given
+    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > No_path_given
     {
         .name = "[DENY_POOL_OWNER] No_path_given",
         .init_hex =
@@ -5599,7 +5599,7 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerDenyTestCases > Pool_registration_owner_by_hash_staking_key_witness_denied_by_null_owner_path
+    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Pool_registration_owner_by_hash_staking_key_witness_denied_by_null_owner_path
     {
         .name = "[DENY_POOL_OWNER] Pool_registration_owner_by_hash_staking_key_witness_denied_by_null_owner_path",
         .init_hex =
@@ -5611,7 +5611,7 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerDenyTestCases > Invalid_numerator_denominator_relationship
+    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Invalid_numerator_denominator_relationship
     {
         .name = "[DENY_POOL_OWNER] Invalid_numerator_denominator_relationship",
         .init_hex =
@@ -5623,7 +5623,7 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerDenyTestCases > Pool_registration_owner_by_hash_staking_key_witness_denied
+    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Pool_registration_owner_by_hash_staking_key_witness_denied
     {
         .name = "[DENY_POOL_OWNER] Pool_registration_owner_by_hash_staking_key_witness_denied",
         .init_hex =
@@ -5635,7 +5635,7 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
-    // Source: tests/standalone/input_files/signTx.py > stakePoolRegistrationOwnerDenyTestCases > Non_staking_path_for_Pool_Registration_Owner_Tx
+    // Source: tests/standalone/input_files/signTx.py > poolRegistrationOwnerDenyTestCases > Non_staking_path_for_Pool_Registration_Owner_Tx
     {
         .name = "[DENY_POOL_OWNER] Non_staking_path_for_Pool_Registration_Owner_Tx",
         .init_hex =

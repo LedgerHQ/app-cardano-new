@@ -46,6 +46,10 @@ _GENERATED_SIGN_TX_MESSAGE_NAME_PATTERN = re.compile(
     r"MOCK_SIGN_TX_TX_HASH_[A-F0-9]{64}"
 )
 
+_BASE_INDENT = "    "
+_FIELD_INDENT = _BASE_INDENT + "      "
+_ARRAY_INDENT = _FIELD_INDENT + "    "
+
 # These hashes are exercised by sign-tx deny fixtures that currently do not expose
 # expected_hash_hex in generated metadata, but still reach witness signing.
 _DENY_ONLY_REQUIRED_SIGN_TX_MOCKS: tuple[
@@ -157,8 +161,6 @@ def regenerate_mock_data() -> None:
 def regenerate_mock_data_with_options(*, verbose: bool, report_summary: bool) -> None:
     try:
         from ragger.bip import calculate_public_key_and_chaincode, CurveChoice  # type: ignore
-        from bip_utils import Bip39SeedGenerator, Bip32Ed25519Kholaw  # type: ignore
-        from nacl import bindings  # type: ignore
         from tests.unit.generators.fixture_generators.sign_tx_generators import (  # type: ignore
             _derive_witness_signature,
         )
@@ -241,9 +243,6 @@ def regenerate_mock_data_with_options(*, verbose: bool, report_summary: bool) ->
         path_array = path_match.group(1)
         path_len = int(path_len_match.group(1))
         path_desc = parse_bip32_path_from_c_array(path_array, path_len)
-        base_indent = "    "
-        field_indent = base_indent + "      "
-        array_indent = field_indent + "    "
 
         try:
             derived_pk_hex, derived_cc_hex = calculate_public_key_and_chaincode(
@@ -257,24 +256,24 @@ def regenerate_mock_data_with_options(*, verbose: bool, report_summary: bool) ->
                 print(f"OK {path_desc}")
 
             lines: list[str] = []
-            lines.append(f'{base_indent}/* Path "{path_desc}" */')
+            lines.append(f'{_BASE_INDENT}/* Path "{path_desc}" */')
             lines.append("")
             lines.extend(
                 [
-                    f"{base_indent}{{ .path = {path_array}, .path_len = {path_len},",
-                    f'{field_indent}/* Public key (hex): "{derived_pk.hex()}" */',
-                    f"{field_indent}.public_key = {{",
-                    *format_c_array_block(derived_pk, inner_indent=array_indent),
-                    f"{field_indent}}},",
-                    f'{field_indent}/* Chain code (hex): "{derived_cc.hex()}" */',
-                    f"{field_indent}.chain_code = {{",
-                    *format_c_array_block(derived_cc, inner_indent=array_indent),
-                    f"{field_indent}}},",
-                    f"{field_indent}/* Blake2b-224 key hash: {derived_kh.hex()} */",
-                    f"{field_indent}.key_hash = {{",
-                    *format_c_array_block(derived_kh, inner_indent=array_indent),
-                    f"{field_indent}}},",
-                    f"{base_indent}}},",
+                    f"{_BASE_INDENT}{{ .path = {path_array}, .path_len = {path_len},",
+                    f'{_FIELD_INDENT}/* Public key (hex): "{derived_pk.hex()}" */',
+                    f"{_FIELD_INDENT}.public_key = {{",
+                    *format_c_array_block(derived_pk, inner_indent=_ARRAY_INDENT),
+                    f"{_FIELD_INDENT}}},",
+                    f'{_FIELD_INDENT}/* Chain code (hex): "{derived_cc.hex()}" */',
+                    f"{_FIELD_INDENT}.chain_code = {{",
+                    *format_c_array_block(derived_cc, inner_indent=_ARRAY_INDENT),
+                    f"{_FIELD_INDENT}}},",
+                    f"{_FIELD_INDENT}/* Blake2b-224 key hash: {derived_kh.hex()} */",
+                    f"{_FIELD_INDENT}.key_hash = {{",
+                    *format_c_array_block(derived_kh, inner_indent=_ARRAY_INDENT),
+                    f"{_FIELD_INDENT}}},",
+                    f"{_BASE_INDENT}}},",
                     "",
                 ]
             )
@@ -306,27 +305,6 @@ def regenerate_mock_data_with_options(*, verbose: bool, report_summary: bool) ->
             continue
         messages[name] = bytes(int(value, 16) for value in hex_values)
 
-    seed = Bip39SeedGenerator(mnemonic).Generate()
-
-    def sign_with_extended_key(extended_key: bytes, message: bytes) -> bytes:
-        if len(extended_key) != 64:
-            raise ValueError(f"Unexpected extended key length {len(extended_key)}")
-        secret_scalar = extended_key[:32]
-        prefix = extended_key[32:64]
-
-        r_hash = hashlib.sha512(prefix + message).digest()
-        r_scalar = bindings.crypto_core_ed25519_scalar_reduce(r_hash)
-        r_point = bindings.crypto_scalarmult_ed25519_base_noclamp(r_scalar)
-
-        public_key = bindings.crypto_scalarmult_ed25519_base_noclamp(secret_scalar)
-        k_hash = hashlib.sha512(r_point + public_key + message).digest()
-        k_scalar = bindings.crypto_core_ed25519_scalar_reduce(k_hash)
-
-        k_times_a = bindings.crypto_core_ed25519_scalar_mul(k_scalar, secret_scalar)
-        s_scalar = bindings.crypto_core_ed25519_scalar_add(r_scalar, k_times_a)
-
-        return r_point + s_scalar
-
     def derive_signature(path_array: str, message_name: str) -> bytes:
         message_bytes = messages.get(message_name)
         if message_bytes is None:
@@ -339,9 +317,7 @@ def regenerate_mock_data_with_options(*, verbose: bool, report_summary: bool) ->
         if message_bytes is None:
             raise ValueError(f"Missing message buffer {message_name}")
         bip32_path = parse_bip32_path_from_c_array(path_array)
-        child = Bip32Ed25519Kholaw.FromSeed(seed).DerivePath(bip32_path)
-        extended_key = child.PrivateKey().Raw().ToBytes()
-        return sign_with_extended_key(extended_key, message_bytes)
+        return _derive_witness_signature(bip32_path, message_bytes)
 
     def format_path_words(path_words: tuple[int, ...]) -> str:
         return "{ " + ", ".join(f"0x{word:08x}" for word in path_words) + " }"
@@ -364,21 +340,18 @@ def regenerate_mock_data_with_options(*, verbose: bool, report_summary: bool) ->
         witness_path = parse_bip32_path_from_c_array(format_path_words(path_words))
         signature = _derive_witness_signature(witness_path, expected_hash_bytes)
         path_array = format_path_words(path_words)
-        base_indent = "    "
-        field_indent = base_indent + "      "
-        array_indent = field_indent + "    "
         supplemental_signature_entries.append(
             "\n".join(
                 [
-                    f'{base_indent}/* Path "{witness_path}" message {message_name} (hex "{expected_hash_bytes.hex()}") */',
+                    f'{_BASE_INDENT}/* Path "{witness_path}" message {message_name} (hex "{expected_hash_bytes.hex()}") */',
                     "",
-                    f"{base_indent}{{ .path = {path_array}, .path_len = {len(path_words)},",
-                    f"{field_indent}.message = {message_name}, .message_len = sizeof({message_name}),",
-                    f'{field_indent}/* Signature (hex): "{signature.hex()}" */',
-                    f"{field_indent}.signature = {{",
-                    *format_c_array_block(signature, inner_indent=array_indent),
-                    f"{field_indent}}},",
-                    f"{base_indent}}},",
+                    f"{_BASE_INDENT}{{ .path = {path_array}, .path_len = {len(path_words)},",
+                    f"{_FIELD_INDENT}.message = {message_name}, .message_len = sizeof({message_name}),",
+                    f'{_FIELD_INDENT}/* Signature (hex): "{signature.hex()}" */',
+                    f"{_FIELD_INDENT}.signature = {{",
+                    *format_c_array_block(signature, inner_indent=_ARRAY_INDENT),
+                    f"{_FIELD_INDENT}}},",
+                    f"{_BASE_INDENT}}},",
                     "",
                 ]
             )
@@ -414,9 +387,6 @@ def regenerate_mock_data_with_options(*, verbose: bool, report_summary: bool) ->
         path_len = int(path_len_match.group(1))
         message_name = message_match.group(1)
         path_desc = parse_bip32_path_from_c_array(path_array, path_len)
-        base_indent = "    "
-        field_indent = base_indent + "      "
-        array_indent = field_indent + "    "
 
         message_bytes = messages.get(message_name)
         if message_bytes is None:
@@ -439,18 +409,18 @@ def regenerate_mock_data_with_options(*, verbose: bool, report_summary: bool) ->
 
         lines: list[str] = []
         lines.append(
-            f'{base_indent}/* Path "{path_desc}" message {message_name} (hex "{message_hex}") */'
+            f'{_BASE_INDENT}/* Path "{path_desc}" message {message_name} (hex "{message_hex}") */'
         )
         lines.append("")
         lines.extend(
             [
-                f"{base_indent}{{ .path = {path_array}, .path_len = {path_len},",
-                f"{field_indent}.message = {message_name}, .message_len = sizeof({message_name}),",
-                f'{field_indent}/* Signature (hex): "{signature_hex}" */',
-                f"{field_indent}.signature = {{",
-                *format_c_array_block(signature, inner_indent=array_indent),
-                f"{field_indent}}},",
-                f"{base_indent}}},",
+                f"{_BASE_INDENT}{{ .path = {path_array}, .path_len = {path_len},",
+                f"{_FIELD_INDENT}.message = {message_name}, .message_len = sizeof({message_name}),",
+                f'{_FIELD_INDENT}/* Signature (hex): "{signature_hex}" */',
+                f"{_FIELD_INDENT}.signature = {{",
+                *format_c_array_block(signature, inner_indent=_ARRAY_INDENT),
+                f"{_FIELD_INDENT}}},",
+                f"{_BASE_INDENT}}},",
                 "",
             ]
         )

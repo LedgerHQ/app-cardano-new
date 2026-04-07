@@ -148,8 +148,7 @@ def sanitize_c_identifier(
     sanitized = "".join(c if c.isalnum() else "_" for c in name)
 
     # Collapse multiple consecutive underscores
-    while "__" in sanitized:
-        sanitized = sanitized.replace("__", "_")
+    sanitized = re.sub(r"_+", "_", sanitized)
 
     # Strip leading/trailing underscores
     sanitized = sanitized.strip("_")
@@ -182,6 +181,28 @@ def warning_expr_from_test_case(test_case: object) -> str:
             f"((warning_bits_t)1 << {bit.name})" for bit in expected_warnings
         )
     return "0"
+
+
+def bool_to_c(value: bool) -> str:
+    """Convert a Python bool to a C bool literal."""
+    return "true" if value else "false"
+
+
+def hex_string_to_c_string_lines(
+    hex_str: str,
+    *,
+    indent: int = 4,
+    chunk_size: int = 64,
+    append_comma: bool = False,
+) -> list[str]:
+    """Split a hex string into indented C string-literal lines."""
+    lines = []
+    for index in range(0, len(hex_str), chunk_size):
+        segment = hex_str[index : index + chunk_size]
+        lines.append(" " * indent + f'"{segment}"')
+    if append_comma and lines:
+        lines[-1] = lines[-1] + ","
+    return lines
 
 
 def extract_apdu_payload(apdu: bytes) -> bytes:

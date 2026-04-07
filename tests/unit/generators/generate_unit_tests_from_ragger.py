@@ -206,7 +206,7 @@ def _count_sign_tx_fine_grained_entries_from_fixtures() -> int:
     return total_entries
 
 
-@dataclass
+@dataclass(frozen=True)
 class CommandMetadata:
     id: str
     display_name: str
@@ -215,7 +215,6 @@ class CommandMetadata:
     fixture_generators: list[Callable]
     runner_generators: list[Callable]
     deny_generators: list[Callable]
-    generated_entries_count: int = 0
 
 
 COMMAND_REGISTRY = [
@@ -390,8 +389,11 @@ def _is_covered_by_registered_names(
 ) -> bool:
     """Option B: check coverage against the authoritative set of cmocka-registered names."""
     return any(
-        candidate_name in registered_names
-        or any(n.startswith(candidate_name + "_") for n in registered_names)
+        any(
+            registered_name == candidate_name
+            or registered_name.startswith(f"{candidate_name}_")
+            for registered_name in registered_names
+        )
         for candidate_name in candidate_names
     )
 
@@ -406,7 +408,9 @@ def _is_covered_by_substring(
     )
 
 
-def _verify_ragger_test_coverage(*, verbose: bool) -> None:
+def _verify_ragger_test_coverage(
+    generated_entries_count_by_command: dict[str, int], *, verbose: bool
+) -> None:
     """Verify that all ragger tests have corresponding unit test coverage."""
     # Collect ragger test names using pytest --collect-only
     ragger_tests_dir = REPO_ROOT / "tests" / "standalone"
@@ -584,14 +588,8 @@ def _verify_ragger_test_coverage(*, verbose: bool) -> None:
         ragger_count = comparable_ragger_command_counts.get(command, 0)
         unit_count = unit_command_counts.get(command, 0)
 
-        # Validate in-memory generation against parsed cmocka tests.
-        # Check whenever generated_entries_count was set (even to 0 is suspicious if
-        # ragger_count > 0), so skip only when the field was never incremented at all
-        # (i.e. when the run mode didn't invoke runner/deny generators).
-        if hasattr(cmd, "generated_entries_count") and (
-            cmd.generated_entries_count > 0 or ragger_count > 0
-        ):
-            in_memory_count = cmd.generated_entries_count
+        in_memory_count = generated_entries_count_by_command.get(command, 0)
+        if in_memory_count > 0 or ragger_count > 0:
             if in_memory_count != unit_count:
                 mismatched_counts.append(
                     f"{cmd.display_name}: Generated {in_memory_count} entries in memory, but parsed {unit_count} cmocka tests from files."
@@ -741,6 +739,8 @@ def _run_generator_step(
     if verbose:
         return func()
 
+    # Quiet mode suppresses generator chatter and only forwards key summary lines
+    # or the full captured output when the step fails.
     captured_stdout = io.StringIO()
     try:
         with redirect_stdout(captured_stdout):
@@ -848,6 +848,71 @@ def _collect_missing_unit_expected_results() -> list[str]:
                     f"Sign CVote: {current_name or '<unknown fixture>'}"
                 )
 
+    sign_tx_header_paths = sorted(
+        path
+        for path in GENERATED_SIGN_TX_DIR.glob("test_sign_tx_fixtures_*.h")
+        if path.name != "test_sign_tx_fixtures_deny.h"
+    )
+    for sign_tx_header_path in sign_tx_header_paths:
+        current_name: str | None = None
+        missing_hash = False
+        missing_witness_signature = False
+        for line in sign_tx_header_path.read_text(encoding="utf-8").splitlines():
+            if line.startswith("// Test ") and ": " in line:
+                if missing_hash or missing_witness_signature:
+                    missing_parts: list[str] = []
+                    if missing_hash:
+                        missing_parts.append("expected_hash_hex")
+                    if missing_witness_signature:
+                        missing_parts.append("expected witness signature")
+                    missing_reports.append(
+                        f"Sign Transaction: {current_name or '<unknown fixture>'} "
+                        f"missing {', '.join(missing_parts)}"
+                    )
+                current_name = line.split(": ", 1)[1].strip()
+                missing_hash = False
+                missing_witness_signature = False
+                continue
+            if (
+                ".expected_hash_hex = NULL," in line
+                or '.expected_hash_hex = "",' in line
+            ):
+                missing_hash = True
+                continue
+            if ".expected_signature = NULL" in line:
+                missing_witness_signature = True
+        if missing_hash or missing_witness_signature:
+            missing_parts = []
+            if missing_hash:
+                missing_parts.append("expected_hash_hex")
+            if missing_witness_signature:
+                missing_parts.append("expected witness signature")
+            missing_reports.append(
+                f"Sign Transaction: {current_name or '<unknown fixture>'} "
+                f"missing {', '.join(missing_parts)}"
+            )
+
+    pubkey_header_path = GENERATED_PUBKEY_DIR / "test_pubkey_fixtures.h"
+    if pubkey_header_path.exists():
+        current_name: str | None = None
+        fixture_expects_success_response = False
+        for line in pubkey_header_path.read_text(encoding="utf-8").splitlines():
+            if line.startswith("// Test ") and ": " in line:
+                current_name = line.split(": ", 1)[1].strip()
+                fixture_expects_success_response = False
+                continue
+            if ".check_expected = SWO_SUCCESS," in line:
+                fixture_expects_success_response = True
+                continue
+            if fixture_expects_success_response and (
+                ".expected_response = NULL," in line
+                or ".expected_response_len = 0," in line
+            ):
+                missing_reports.append(
+                    f"Public Key: {current_name or '<unknown fixture>'}"
+                )
+                fixture_expects_success_response = False
+
     return missing_reports
 
 
@@ -887,6 +952,104 @@ def _collect_python_fixture_cases() -> list[tuple[str, object]]:
     return python_fixture_cases
 
 
+def _collect_missing_object_fields(
+    owner_name: str,
+    obj: object | None,
+    required_fields: tuple[str, ...],
+) -> list[str]:
+    if obj is None:
+        return [f"{owner_name} is missing"]
+
+    missing_fields: list[str] = []
+    for field_name in required_fields:
+        value = getattr(obj, field_name, None)
+        if value is None or value == "":
+            missing_fields.append(field_name)
+    return missing_fields
+
+
+def _validate_sign_tx_expectations(
+    suite_name: str, test_case: object, missing_reports: list[str]
+) -> None:
+    fixture_name = getattr(test_case, "name", "<unknown fixture>")
+    missing_unit_fields = _collect_missing_object_fields(
+        "unit_test_expect",
+        getattr(test_case, "unit_test_expect", None),
+        ("txBodyHex",),
+    )
+    if missing_unit_fields:
+        missing_reports.append(
+            f"{suite_name}: {fixture_name} is missing {', '.join(missing_unit_fields)}"
+        )
+
+    if getattr(test_case, "unsuitable_in_ragger_reason", None) is not None:
+        return
+
+    missing_ragger_fields = _collect_missing_object_fields(
+        "ragger_expect",
+        getattr(test_case, "ragger_expect", None),
+        ("txHashHex",),
+    )
+    if missing_ragger_fields:
+        missing_reports.append(
+            f"{suite_name}: {fixture_name} is missing {', '.join(missing_ragger_fields)}"
+        )
+        return
+
+    ragger_expect = getattr(test_case, "ragger_expect", None)
+    witnesses = getattr(ragger_expect, "witnesses", None)
+    if witnesses is None or len(witnesses) == 0:
+        missing_reports.append(
+            f"{suite_name}: {fixture_name} is missing ragger_expect.witnesses"
+        )
+        return
+
+    for witness_index, witness in enumerate(witnesses):
+        witness_signature_hex = getattr(witness, "witnessSignatureHex", None)
+        if witness_signature_hex is None or witness_signature_hex == "":
+            missing_reports.append(
+                f"{suite_name}: {fixture_name} witness {witness_index} "
+                "is missing witnessSignatureHex"
+            )
+
+
+def _validate_expected_result_fields(
+    suite_name: str,
+    test_case: object,
+    missing_reports: list[str],
+    *,
+    unit_fields: tuple[str, ...],
+    ragger_fields: tuple[str, ...] | None = None,
+) -> None:
+    fixture_name = getattr(test_case, "name", "<unknown fixture>")
+
+    missing_unit_fields = _collect_missing_object_fields(
+        "unit_test_expect",
+        getattr(test_case, "unit_test_expect", None),
+        unit_fields,
+    )
+    if missing_unit_fields:
+        missing_reports.append(
+            f"{suite_name}: {fixture_name} is missing {', '.join(missing_unit_fields)}"
+        )
+
+    if getattr(test_case, "unsuitable_in_ragger_reason", None) is not None:
+        return
+
+    if ragger_fields is None:
+        return
+
+    missing_ragger_fields = _collect_missing_object_fields(
+        "ragger_expect",
+        getattr(test_case, "ragger_expect", None),
+        ragger_fields,
+    )
+    if missing_ragger_fields:
+        missing_reports.append(
+            f"{suite_name}: {fixture_name} is missing {', '.join(missing_ragger_fields)}"
+        )
+
+
 def _collect_missing_python_expected_results() -> list[str]:
     missing_reports: list[str] = []
 
@@ -894,29 +1057,71 @@ def _collect_missing_python_expected_results() -> list[str]:
         if getattr(test_case, "expected_swo", None) is not None:
             continue
 
-        if (
-            hasattr(test_case, "unit_test_expect")
-            and getattr(test_case, "unit_test_expect") is None
-        ):
-            missing_reports.append(
-                f"{suite_name}: {getattr(test_case, 'name', '<unknown fixture>')} "
-                "is missing unit_test_expect"
+        if suite_name.startswith("SignTx/"):
+            _validate_sign_tx_expectations(suite_name, test_case, missing_reports)
+        elif suite_name == "SignMsg":
+            _validate_expected_result_fields(
+                suite_name,
+                test_case,
+                missing_reports,
+                unit_fields=(
+                    "signatureHex",
+                    "signingPublicKeyHex",
+                    "addressFieldHex",
+                ),
+                ragger_fields=(
+                    "signatureHex",
+                    "signingPublicKeyHex",
+                    "addressFieldHex",
+                ),
             )
-
-        if (
-            hasattr(test_case, "ragger_expect")
-            and getattr(test_case, "ragger_expect") is None
-            and getattr(test_case, "unsuitable_in_ragger_reason", None) is None
-        ):
-            missing_reports.append(
-                f"{suite_name}: {getattr(test_case, 'name', '<unknown fixture>')} "
-                "is missing ragger_expect"
+        elif suite_name.startswith("DeriveAddress/"):
+            _validate_expected_result_fields(
+                suite_name,
+                test_case,
+                missing_reports,
+                unit_fields=("addressHex",),
+                ragger_fields=("addressHex",),
+            )
+        elif suite_name == "NativeScript":
+            _validate_expected_result_fields(
+                suite_name,
+                test_case,
+                missing_reports,
+                unit_fields=("hash",),
+                ragger_fields=("hash",),
+            )
+        elif suite_name.startswith("PubKey/"):
+            _validate_expected_result_fields(
+                suite_name,
+                test_case,
+                missing_reports,
+                unit_fields=("publicKeyHex", "chainCodeHex"),
+                ragger_fields=("publicKeyHex", "chainCodeHex"),
+            )
+        elif suite_name == "OpCert":
+            _validate_expected_result_fields(
+                suite_name,
+                test_case,
+                missing_reports,
+                unit_fields=("signatureHex",),
+                ragger_fields=("signatureHex",),
+            )
+        elif suite_name == "CVote":
+            _validate_expected_result_fields(
+                suite_name,
+                test_case,
+                missing_reports,
+                unit_fields=("votecastHashHex", "witnessSignatureHex"),
+                ragger_fields=("votecastHashHex", "witnessSignatureHex"),
             )
 
     return missing_reports
 
 
 def run_all(*, verbose: bool) -> None:
+    generated_entries_count_by_command = {cmd.id: 0 for cmd in COMMAND_REGISTRY}
+
     # Regenerate mock data first so that updated MOCK_TX_HASH_* constants in
     # crypto_mock_data.h produce correct signatures before the fixture headers
     # are written.  A second pass at the end picks up any hash constants that
@@ -969,7 +1174,7 @@ def run_all(*, verbose: bool) -> None:
                     "deny" in r.__name__ for r in cmd.runner_generators
                 )
                 if not has_deny_runner:
-                    cmd.generated_entries_count += count
+                    generated_entries_count_by_command[cmd.id] += count
                 deny_count_for_cmd += count
                 any_counted = True
         if any_counted and deny_count_for_cmd == 0:
@@ -988,7 +1193,7 @@ def run_all(*, verbose: bool) -> None:
                 verbose=verbose,
             )
             if count is not None:
-                cmd.generated_entries_count += count
+                generated_entries_count_by_command[cmd.id] += count
 
     _run_generator_step(
         "Regenerating mock data (post-pass)",
@@ -999,7 +1204,10 @@ def run_all(*, verbose: bool) -> None:
         verbose=verbose,
     )
     _log_stage("Verifying Ragger coverage", verbose=verbose)
-    _verify_ragger_test_coverage(verbose=verbose)
+    _verify_ragger_test_coverage(
+        generated_entries_count_by_command,
+        verbose=verbose,
+    )
     missing_expected_reports = _collect_missing_unit_expected_results()
     if missing_expected_reports:
         print("\n" + "=" * _REPORT_WIDTH)
@@ -1047,8 +1255,6 @@ def main() -> None:
                     gen,
                     verbose=args.verbose,
                 )
-                if count is not None:
-                    cmd.generated_entries_count += count
     elif args.command == "generate-test-runners":
         _log_stage("Generating test runners", verbose=args.verbose)
         for cmd in COMMAND_REGISTRY:
@@ -1058,8 +1264,6 @@ def main() -> None:
                     gen,
                     verbose=args.verbose,
                 )
-                if count is not None:
-                    cmd.generated_entries_count += count
     elif args.command == "deny_tests":
         _log_stage("Generating deny fixtures", verbose=args.verbose)
         for cmd in COMMAND_REGISTRY:
@@ -1069,8 +1273,6 @@ def main() -> None:
                     gen,
                     verbose=args.verbose,
                 )
-                if count is not None:
-                    cmd.generated_entries_count += count
     elif args.command == "mock-data":
         _run_generator_step(
             "Regenerating mock data",

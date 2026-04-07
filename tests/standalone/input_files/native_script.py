@@ -22,7 +22,7 @@ from tests.application_client.command_builder import (
 from tests.application_client.status_words import StatusWord
 
 
-@dataclass
+@dataclass(frozen=True)
 class NativeScriptExpectedResult:
     hash: Optional[str] = None
     swo: Optional[StatusWord] = StatusWord.SWO_SUCCESS
@@ -31,7 +31,7 @@ class NativeScriptExpectedResult:
 SignedData = NativeScriptExpectedResult
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class ValidNativeScriptTestCase:
     name: str
     script: Optional[NativeScript] = None

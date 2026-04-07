@@ -17,7 +17,7 @@ import ipaddress
 
 from dataclasses import dataclass, field
 from enum import IntEnum
-from typing import List, Optional, Union
+from typing import List, Optional, Sequence, Union
 
 from ragger.bip import pack_derivation_path
 
@@ -820,7 +820,7 @@ def _credential_paths_from_certificate(certificate: Certificate) -> List[str]:
 
 
 def gather_witness_paths(
-    tx: Transaction, signing_mode: int, additional_witness_paths: List[str]
+    tx: Transaction, signing_mode: int, additional_witness_paths: Sequence[str]
 ) -> List[str]:
     """Return unique witness paths present in a transaction."""
 

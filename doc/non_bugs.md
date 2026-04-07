@@ -88,3 +88,6 @@ Format: -> means explanation why not a bug.
 
 * `ALL []` / `ANY []` complex native scripts with zero sub-scripts accepted (`derive_native_script_hash.c`).
 -> not a bug. The CDDL defines `script_all = (1, [* native_script])` and `script_any = (2, [* native_script])` where `*` explicitly permits zero elements. `ALL []` is vacuously satisfied and `ANY []` is vacuously unsatisfiable, but both are syntactically valid on-chain scripts. The app hashes what it receives; semantic validity is a node concern.
+
+* CIP-36 CVote auxiliary-data signing no longer shows the auxiliary-data hash during the dedicated CVote review flow.
+-> not a bug. In the current flow, the CVote auxiliary-data hash is finalized only at the end, after all delegations are received and just before the response is produced. Re-introducing a separate hash-review step there would materially complicate the NBGL callback/state-machine flow. The hash remains user-visible as part of the subsequent transaction review, so this is an intentional UX/control-flow tradeoff rather than a security bug.

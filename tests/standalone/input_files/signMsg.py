@@ -7,7 +7,7 @@
 This module provides Ragger tests for Sign Message
 """
 
-from typing import List, Optional
+from typing import Optional
 from dataclasses import dataclass, field
 
 from tests.application_client.command_builder import AddressParams, AddressType, Mainnet
@@ -23,23 +23,23 @@ from tests.application_client.command_builder import (
 )
 
 
-@dataclass
+@dataclass(kw_only=True, frozen=True)
 class SignMsgExpectedResult:
     signatureHex: str
     signingPublicKeyHex: str
     addressFieldHex: str
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class SignMsgTestCase:
     name: str
     msgData: Optional[MessageData] = None
     unit_test_expect: Optional[SignMsgExpectedResult] = None
-    expected_warnings: List[WarningBit] = field(default_factory=list)
+    expected_warnings: tuple[WarningBit, ...] = field(default_factory=tuple)
     ragger_expect: Optional[SignMsgExpectedResult] = None
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class SignMsgDenyTestCase:
     name: str
     msgData: MessageData
@@ -521,7 +521,7 @@ signMsgTestCases = [
             isAscii=False,
             addressFieldType=MessageAddressFieldType.KEY_HASH,
         ),
-        expected_warnings=[WarningBit.WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH],
+        expected_warnings=(WarningBit.WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH,),
         unit_test_expect=SignMsgExpectedResult(
             signatureHex="bc88d1fedb2d72f011996ba8c1b1e2b7c6e7acf4483290b702fc2b92f9a7e5af6973922323cee9fb5832d2d5454b13e6776b3dcccf257a311e3929f3cdf36205",
             signingPublicKeyHex="aa86984ca4b78a1d529ad8dc8800912b909197ae0db0563b98a4d0cb08567df7",

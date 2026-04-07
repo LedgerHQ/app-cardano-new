@@ -19,7 +19,7 @@ from tests.application_client.security_warnings import WarningBit
 from tests.application_client.status_words import StatusWord
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class OpCertDenyTestCase:
     """Raw-payload deny test for parse_opcert() error paths.
 

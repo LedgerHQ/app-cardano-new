@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2025-2026 Vacuumlabs
 # SPDX-License-Identifier: Apache-2.0
 
-from typing import Callable, Generator, List, Optional
+from typing import Callable, Generator, Optional, Sequence
 from contextlib import contextmanager
 
 from ragger.backend.interface import BackendInterface, RAPDU
@@ -129,7 +129,7 @@ class CommandSender:
         self,
         tx: Transaction,
         signing_mode: int,
-        additional_witness_paths: Optional[List[str]] = None,
+        additional_witness_paths: Optional[Sequence[str]] = None,
         options: int = 0,
         on_review: Optional[Callable[[], None]] = None,
         on_cvote_review: Optional[Callable[[], None]] = None,

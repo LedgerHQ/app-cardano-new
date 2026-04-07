@@ -19,7 +19,7 @@ from tests.application_client.security_warnings import WarningBit
 from tests.application_client.status_words import StatusWord
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class CVoteDenyTestCase:
     """Raw-payload deny test for the sign_cvote handler error paths.
 

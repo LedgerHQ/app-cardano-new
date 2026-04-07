@@ -5,9 +5,10 @@ from dataclasses import dataclass
 from typing import Any
 
 from tests.unit.generators.common import (
-    write_generated_c_file,
-    sanitize_c_identifier,
     format_display_name,
+    hex_string_to_c_string_lines,
+    sanitize_c_identifier,
+    write_generated_c_file,
 )
 from tests.unit.generators.paths import GENERATED_SIGN_TX_DIR
 
@@ -25,7 +26,7 @@ SET_ORDER = [
     "votingDenyTestCases",
     "requiredSignerDenyTestCases",
     "stakePoolRegistrationPoolIdDenyTestCases",
-    "stakePoolRegistrationOwnerDenyTestCases",
+    "poolRegistrationOwnerDenyTestCases",
     "outputDenyTestCases",
     "testsCVoteRegistrationDenies",
     "invalidCertificates",
@@ -47,7 +48,7 @@ SET_PREFIX = {
     "votingDenyTestCases": "DENY_VOTING",
     "requiredSignerDenyTestCases": "DENY_REQUIRED_SIGNER",
     "stakePoolRegistrationPoolIdDenyTestCases": "DENY_POOL_ID",
-    "stakePoolRegistrationOwnerDenyTestCases": "DENY_POOL_OWNER",
+    "poolRegistrationOwnerDenyTestCases": "DENY_POOL_OWNER",
     "outputDenyTestCases": "DENY_OUTPUT",
     "testsCVoteRegistrationDenies": "DENY_CVOTE",
     "invalidCertificates": "DENY_CERT_INVALID",
@@ -83,7 +84,6 @@ def _build_deny_fixtures() -> str:
         votingDenyTestCases,
         poolRegistrationOwnerDenyTestCases,
         stakePoolRegistrationPoolIdDenyTestCases,
-        stakePoolRegistrationOwnerDenyTestCases,
         outputDenyTestCases,
         testsCVoteRegistrationDenies,
         invalidCertificates,
@@ -105,26 +105,13 @@ def _build_deny_fixtures() -> str:
         "testsInvalidTokenBundleOrdering": testsInvalidTokenBundleOrdering,
         "votingDenyTestCases": votingDenyTestCases,
         "stakePoolRegistrationPoolIdDenyTestCases": stakePoolRegistrationPoolIdDenyTestCases,
-        "stakePoolRegistrationOwnerDenyTestCases": poolRegistrationOwnerDenyTestCases
-        + stakePoolRegistrationOwnerDenyTestCases,
+        "poolRegistrationOwnerDenyTestCases": poolRegistrationOwnerDenyTestCases,
         "outputDenyTestCases": outputDenyTestCases,
         "testsCVoteRegistrationDenies": testsCVoteRegistrationDenies,
         "invalidCertificates": invalidCertificates,
         "invalidPoolMetadataTestCases": invalidPoolMetadataTestCases,
         "invalidRelayTestCases": invalidRelayTestCases,
     }
-
-    def to_hex_lines(
-        hex_str: str, indent: int = 4, append_comma: bool = False
-    ) -> list[str]:
-        chunk_size = 64
-        lines = []
-        for i in range(0, len(hex_str), chunk_size):
-            segment = hex_str[i : i + chunk_size]
-            lines.append(" " * indent + f'"{segment}"')
-        if append_comma and lines:
-            lines[-1] = lines[-1] + ","
-        return lines
 
     @dataclass(frozen=True)
     class ChunkInfo:
@@ -286,7 +273,12 @@ def _build_deny_fixtures() -> str:
                 for chunk in fixture.chunks:
                     lines.append("    {")
                     lines.append("        .hex_payload =")
-                    lines.extend(to_hex_lines(chunk.hex_payload, append_comma=True))
+                    lines.extend(
+                        hex_string_to_c_string_lines(
+                            chunk.hex_payload,
+                            append_comma=True,
+                        )
+                    )
                     p1_constant = P1_CONSTANTS.get(chunk.p1, f"0x{chunk.p1:02X}")
                     p2_constant = P2_CONSTANTS.get(chunk.p2, f"0x{chunk.p2:02X}")
                     lines.append(f"        .p1 = {p1_constant},")
@@ -311,7 +303,11 @@ def _build_deny_fixtures() -> str:
                 lines.append(f'        .name = "{fixture.display_name}",')
                 lines.append("        .init_hex =")
                 lines.extend(
-                    to_hex_lines(fixture.init_hex, indent=8, append_comma=True)
+                    hex_string_to_c_string_lines(
+                        fixture.init_hex,
+                        indent=8,
+                        append_comma=True,
+                    )
                 )
                 if fixture.chunks:
                     array_name = f"SIGN_TX_SEGMENTS_{prefix}_{fixture.sanitized_name}"

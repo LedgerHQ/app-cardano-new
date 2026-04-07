@@ -110,13 +110,13 @@ def _derive_byron_address_string(path: str, mnemonic: str) -> str:
     return str(bip44_address.PublicKey().ToAddress())
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class DeriveAddressExpectedResult:
     addressHex: str
     human_readable_address: Optional[str] = None
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class DeriveAddressTestCase:
     name: str
     params: AddressParams
@@ -124,76 +124,6 @@ class DeriveAddressTestCase:
     unit_test_expect: Optional[DeriveAddressExpectedResult] = None
     ragger_expect: Optional[DeriveAddressExpectedResult] = None
     expected_swo: Optional[StatusWord] = None
-
-    def __post_init__(self) -> None:
-        if self.expected_swo is not None:
-            return
-
-        if self.params.addrType == AddressType.BYRON:
-            if self.unit_test_expect is None:
-                unit_address_string = _derive_byron_address_string(
-                    self.params.spendingValue,
-                    UNIT_TEST_MNEMONIC,
-                )
-                self.unit_test_expect = DeriveAddressExpectedResult(
-                    human_readable_address=unit_address_string,
-                    addressHex="",
-                )
-            elif self.unit_test_expect.human_readable_address is None:
-                self.unit_test_expect.human_readable_address = (
-                    _derive_byron_address_string(
-                        self.params.spendingValue,
-                        UNIT_TEST_MNEMONIC,
-                    )
-                )
-            if self.unit_test_expect.addressHex == "":
-                import base58
-
-                if self.unit_test_expect.human_readable_address is None:
-                    raise ValueError(
-                        f"derive_address fixture {self.name!r} is missing unit_test_expect.human_readable_address"
-                    )
-                self.unit_test_expect.addressHex = base58.b58decode(
-                    self.unit_test_expect.human_readable_address
-                ).hex()
-
-            if self.ragger_expect is None:
-                ragger_address_string = _derive_byron_address_string(
-                    self.params.spendingValue,
-                    SPECULOS_MNEMONIC,
-                )
-                self.ragger_expect = DeriveAddressExpectedResult(
-                    human_readable_address=ragger_address_string,
-                    addressHex="",
-                )
-            elif self.ragger_expect.human_readable_address is None:
-                self.ragger_expect.human_readable_address = (
-                    _derive_byron_address_string(
-                        self.params.spendingValue,
-                        SPECULOS_MNEMONIC,
-                    )
-                )
-            if self.ragger_expect.addressHex == "":
-                import base58
-
-                if self.ragger_expect.human_readable_address is None:
-                    raise ValueError(
-                        f"derive_address fixture {self.name!r} is missing ragger_expect.human_readable_address"
-                    )
-                self.ragger_expect.addressHex = base58.b58decode(
-                    self.ragger_expect.human_readable_address
-                ).hex()
-            return
-
-        if self.unit_test_expect is None:
-            self.unit_test_expect = DeriveAddressExpectedResult(
-                addressHex=_derive_shelley_address_hex(self.params, UNIT_TEST_MNEMONIC),
-            )
-
-        if self.ragger_expect is None:
-            self.ragger_expect = DeriveAddressExpectedResult(
-                addressHex=_derive_shelley_address_hex(self.params, SPECULOS_MNEMONIC),
-            )
 
 
 def pointer_to_str(blockIndex: int, txIndex: int, certificateIndex: int) -> str:
@@ -569,6 +499,9 @@ shelleyTestCasesNoConfirm = [
             netDesc=Testnet,
             spendingValue="m/1852'/1815'/0'/0/1",
         ),
+        unit_test_expect=DeriveAddressExpectedResult(
+            addressHex="605a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3"
+        ),
         ragger_expect=DeriveAddressExpectedResult(
             addressHex="609dbd71e1951a09cede32a2411b34f55a476f85540aecdfba4d9c6563"
         ),
@@ -579,6 +512,9 @@ shelleyTestCasesNoConfirm = [
             addrType=AddressType.ENTERPRISE_KEY,
             netDesc=FakeNet,
             spendingValue="m/1852'/1815'/0'/0/1",
+        ),
+        unit_test_expect=DeriveAddressExpectedResult(
+            addressHex="635a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3"
         ),
         ragger_expect=DeriveAddressExpectedResult(
             addressHex="639dbd71e1951a09cede32a2411b34f55a476f85540aecdfba4d9c6563"
@@ -591,6 +527,9 @@ shelleyTestCasesNoConfirm = [
             netDesc=Testnet,
             spendingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
         ),
+        unit_test_expect=DeriveAddressExpectedResult(
+            addressHex="70122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277"
+        ),
         ragger_expect=DeriveAddressExpectedResult(
             addressHex="70122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277"
         ),
@@ -601,6 +540,9 @@ shelleyTestCasesNoConfirm = [
             addrType=AddressType.ENTERPRISE_SCRIPT,
             netDesc=FakeNet,
             spendingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
+        ),
+        unit_test_expect=DeriveAddressExpectedResult(
+            addressHex="73122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277"
         ),
         ragger_expect=DeriveAddressExpectedResult(
             addressHex="73122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277"
@@ -614,6 +556,9 @@ shelleyTestCasesNoConfirm = [
             spendingValue="m/1852'/1815'/0'/0/1",
             stakingValue=pointer_to_str(1, 2, 3),
         ),
+        unit_test_expect=DeriveAddressExpectedResult(
+            addressHex="405a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3010203"
+        ),
         ragger_expect=DeriveAddressExpectedResult(
             addressHex="409dbd71e1951a09cede32a2411b34f55a476f85540aecdfba4d9c6563010203"
         ),
@@ -625,6 +570,9 @@ shelleyTestCasesNoConfirm = [
             netDesc=FakeNet,
             spendingValue="m/1852'/1815'/0'/0/1",
             stakingValue=pointer_to_str(24157, 177, 42),
+        ),
+        unit_test_expect=DeriveAddressExpectedResult(
+            addressHex="435a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b381bc5d81312a"
         ),
         ragger_expect=DeriveAddressExpectedResult(
             addressHex="439dbd71e1951a09cede32a2411b34f55a476f85540aecdfba4d9c656381bc5d81312a"
@@ -638,6 +586,9 @@ shelleyTestCasesNoConfirm = [
             spendingValue="m/1852'/1815'/0'/0/1",
             stakingValue=pointer_to_str(0, 0, 0),
         ),
+        unit_test_expect=DeriveAddressExpectedResult(
+            addressHex="435a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3000000"
+        ),
         ragger_expect=DeriveAddressExpectedResult(
             addressHex="439dbd71e1951a09cede32a2411b34f55a476f85540aecdfba4d9c6563000000"
         ),
@@ -649,6 +600,9 @@ shelleyTestCasesNoConfirm = [
             netDesc=Testnet,
             spendingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
             stakingValue=pointer_to_str(1, 2, 3),
+        ),
+        unit_test_expect=DeriveAddressExpectedResult(
+            addressHex="50122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277010203"
         ),
         ragger_expect=DeriveAddressExpectedResult(
             addressHex="50122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277010203"
@@ -662,6 +616,9 @@ shelleyTestCasesNoConfirm = [
             spendingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
             stakingValue=pointer_to_str(24157, 177, 42),
         ),
+        unit_test_expect=DeriveAddressExpectedResult(
+            addressHex="53122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b427781bc5d81312a"
+        ),
         ragger_expect=DeriveAddressExpectedResult(
             addressHex="53122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b427781bc5d81312a"
         ),
@@ -674,6 +631,9 @@ shelleyTestCasesNoConfirm = [
             spendingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
             stakingValue=pointer_to_str(0, 0, 0),
         ),
+        unit_test_expect=DeriveAddressExpectedResult(
+            addressHex="53122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277000000"
+        ),
         ragger_expect=DeriveAddressExpectedResult(
             addressHex="53122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277000000"
         ),
@@ -685,6 +645,9 @@ shelleyTestCasesNoConfirm = [
             netDesc=Testnet,
             stakingValue="m/1852'/1815'/0'/2/0",
         ),
+        unit_test_expect=DeriveAddressExpectedResult(
+            addressHex="e01d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c"
+        ),
         ragger_expect=DeriveAddressExpectedResult(
             addressHex="e0db219ee5ce9a74f98fdadc2de13efced5a154ef8d4d41929d5bf9ff6"
         ),
@@ -695,6 +658,9 @@ shelleyTestCasesNoConfirm = [
             addrType=AddressType.REWARD_KEY,
             netDesc=FakeNet,
             stakingValue="m/1852'/1815'/0'/2/0",
+        ),
+        unit_test_expect=DeriveAddressExpectedResult(
+            addressHex="e31d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c"
         ),
         ragger_expect=DeriveAddressExpectedResult(
             addressHex="e3db219ee5ce9a74f98fdadc2de13efced5a154ef8d4d41929d5bf9ff6"
@@ -723,6 +689,9 @@ shelleyTestCasesNoConfirm = [
             netDesc=Testnet,
             stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
         ),
+        unit_test_expect=DeriveAddressExpectedResult(
+            addressHex="f0122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277"
+        ),
         ragger_expect=DeriveAddressExpectedResult(
             addressHex="f0122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277"
         ),
@@ -733,6 +702,9 @@ shelleyTestCasesNoConfirm = [
             addrType=AddressType.REWARD_SCRIPT,
             netDesc=FakeNet,
             stakingValue="122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
+        ),
+        unit_test_expect=DeriveAddressExpectedResult(
+            addressHex="f3122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277"
         ),
         ragger_expect=DeriveAddressExpectedResult(
             addressHex="f3122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277"
@@ -966,6 +938,9 @@ shelleyTestCasesWithConfirm = [
             addrType=AddressType.REWARD_KEY,
             netDesc=Testnet,
             stakingValue="m/1852'/1815'/0'/2/20000000",
+        ),
+        unit_test_expect=DeriveAddressExpectedResult(
+            addressHex="e0d132d41c7e5cb5e93efd601d4b7464994e45165e5822575050265512"
         ),
         ragger_expect=DeriveAddressExpectedResult(
             addressHex="e08f2df9048352042b2693df894e52311ca0322d78db4493cf446a4045"

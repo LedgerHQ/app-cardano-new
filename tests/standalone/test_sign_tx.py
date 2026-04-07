@@ -62,7 +62,6 @@ from tests.standalone.input_files.signTx import (
     votingDenyTestCases,
     poolRegistrationOwnerDenyTestCases,
     stakePoolRegistrationPoolIdDenyTestCases,
-    stakePoolRegistrationOwnerDenyTestCases,
     invalidCertificates,
     invalidPoolMetadataTestCases,
     invalidRelayTestCases,
@@ -560,7 +559,6 @@ all_deny_test_cases = (
     + votingDenyTestCases
     + poolRegistrationOwnerDenyTestCases
     + stakePoolRegistrationPoolIdDenyTestCases
-    + stakePoolRegistrationOwnerDenyTestCases
     + invalidCertificates
     + invalidPoolMetadataTestCases
     + invalidRelayTestCases
