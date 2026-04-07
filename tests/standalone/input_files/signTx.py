@@ -4768,7 +4768,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
         unit_test_expect=SignTxUnitTestExpect(
-            txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820dbd3dcc45a668526741d94ba977b0055229dcc10171d4d622c3d700c1701a4110807"
+            txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820abcbd886ad300fa98ab591d2bdf90dfff3f4042edec88d92fe48105c00df2ca00807"
         ),
         # For CIP36 auxiliary-data review, unusual vote-key paths are surfaced as
         # dedicated inline UI pairs, not as a separate warning modal.

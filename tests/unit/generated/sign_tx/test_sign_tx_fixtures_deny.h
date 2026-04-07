@@ -2905,6 +2905,32 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_OUTPUT
 };
 
 
+// Source: tests/standalone/input_files/signTx.py > votingDenyTestCases > Ordinary_tx_with_committee_hot_key_hash_voter
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_VOTING_ORDINARY_TX_WITH_COMMITTEE_HOT_KEY_HASH_VOTER[] = {
+    {
+        .hex_payload =
+    "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+    "00000000003B01002B82D818582183581C9E1C71DE652EC8B85FEC296F0685CA"
+    "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
+    "00000000000000002A000000000000000A007AFD028B504C3668102B129B37A8"
+    "6C09A2872F76741DC7A68E2149C800013B40265111D8BB3C3C608D95B3A0BF83"
+    "461ACE32D79336579A1939B3AAD1C0B700000003020200127777772E76616375"
+    "756D6C6162732E636F6D1AFD028B504C3668102B129B37A86C09A2872F76741D"
+    "C7A68E2149C8DEADBEEF",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload =
+    "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+
 // Source: tests/standalone/input_files/signTx.py > requiredSignerDenyTestCases > Required_signer_path_pool_cold_key
 static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_REQUIRED_SIGNER_REQUIRED_SIGNER_PATH_POOL_COLD_KEY[] = {
     {
@@ -5438,6 +5464,18 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .chunks = SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_OUTPUT_TOKEN_GROUP_WITH_ZERO_TOKENS,
         .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_MULTIASSET_DENY_TX_WITH_OUTPUT_TOKEN_GROUP_WITH_ZERO_TOKENS),
         .expected_swo = SWO_TX_PARSING_FAIL_OUTPUTS,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > votingDenyTestCases > Ordinary_tx_with_committee_hot_key_hash_voter
+    {
+        .name = "[DENY_VOTING] Ordinary_tx_with_committee_hot_key_hash_voter",
+        .init_hex =
+        "0000000000000000012D964A0903000100010200000000010100000100000000"
+        "010101000000010101000100EA",
+        .chunks = SIGN_TX_SEGMENTS_DENY_VOTING_ORDINARY_TX_WITH_COMMITTEE_HOT_KEY_HASH_VOTER,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_VOTING_ORDINARY_TX_WITH_COMMITTEE_HOT_KEY_HASH_VOTER),
+        .expected_swo = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },

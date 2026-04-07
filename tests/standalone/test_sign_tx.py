@@ -59,6 +59,7 @@ from tests.standalone.input_files.signTx import (
     singleAccountDenyTestCases,
     collateralOutputDenyTestCases,
     testsInvalidTokenBundleOrdering,
+    votingDenyTestCases,
     poolRegistrationOwnerDenyTestCases,
     stakePoolRegistrationPoolIdDenyTestCases,
     stakePoolRegistrationOwnerDenyTestCases,
@@ -556,6 +557,7 @@ all_deny_test_cases = (
     + singleAccountDenyTestCases
     + collateralOutputDenyTestCases
     + testsInvalidTokenBundleOrdering
+    + votingDenyTestCases
     + poolRegistrationOwnerDenyTestCases
     + stakePoolRegistrationPoolIdDenyTestCases
     + stakePoolRegistrationOwnerDenyTestCases

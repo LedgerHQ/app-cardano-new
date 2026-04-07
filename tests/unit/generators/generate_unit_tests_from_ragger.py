@@ -9,9 +9,11 @@ Unified generator for unit-test fixtures derived from ragger sources.
 from __future__ import annotations
 
 import argparse
+import io
 import re
 import subprocess
 import sys
+from contextlib import redirect_stdout
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -28,7 +30,7 @@ from tests.unit.generators.paths import (
     GENERATED_DERIVE_ADDRESS_DIR,
     GENERATED_NATIVE_SCRIPT_DIR,
 )
-from tests.unit.generators.mock_data_utils import regenerate_mock_data
+from tests.unit.generators.mock_data_utils import regenerate_mock_data_with_options
 
 
 # Import fixture generators
@@ -145,8 +147,9 @@ _TX_FIXTURE_PATTERN = re.compile(
 )
 
 
-def _log_stage(message: str) -> None:
-    print(f"\n--- {message} ---")
+def _log_stage(message: str, *, verbose: bool) -> None:
+    if verbose:
+        print(f"\n--- {message} ---")
 
 
 def _count_sign_tx_deny_fixtures() -> int:
@@ -403,7 +406,7 @@ def _is_covered_by_substring(
     )
 
 
-def _verify_ragger_test_coverage() -> None:
+def _verify_ragger_test_coverage(*, verbose: bool) -> None:
     """Verify that all ragger tests have corresponding unit test coverage."""
     # Collect ragger test names using pytest --collect-only
     ragger_tests_dir = REPO_ROOT / "tests" / "standalone"
@@ -557,11 +560,12 @@ def _verify_ragger_test_coverage() -> None:
             candidate_function_names, unit_tests_content
         )
         if found_by_substring and not found_by_registered:
-            print(
-                f"WARNING: coverage inconsistency for '{func_name}': "
-                f"found as word-boundary match in source text but NOT in cmocka registrations — "
-                f"function may be defined but not registered as a test"
-            )
+            if verbose:
+                print(
+                    f"WARNING: coverage inconsistency for '{func_name}': "
+                    f"found as word-boundary match in source text but NOT in cmocka registrations — "
+                    f"function may be defined but not registered as a test"
+                )
         if found_by_registered:
             covered_coverage.append(func_name)
         else:
@@ -573,47 +577,6 @@ def _verify_ragger_test_coverage() -> None:
             f", includes {deny_fixture_count} fixtures sampled through "
             f"`SIGN_TX_DENY_FIXTURES`"
         )
-    print("\nRagger test coverage check:")
-    print(
-        f"  Ragger: {total_ragger_test_cases} total test cases from {len(ragger_tests)} parameterized variants"
-    )
-    print(
-        f"  Unit tests: {expanded_unit_test_count} total test entries "
-        f"({total_unit_test_funcs} generated functions{deny_note})"
-    )
-    print("  Command breakdown:")
-    for cmd in COMMAND_REGISTRY:
-        command = cmd.id
-        ragger_count = comparable_ragger_command_counts.get(command, 0)
-        unit_count = unit_command_counts.get(command, 0)
-        delta = unit_count - ragger_count
-        delta_note = f" (Δ {delta:+d})" if delta else ""
-        print(
-            f"    - {cmd.display_name}: {ragger_count} Ragger -> {unit_count} unit entries{delta_note}"
-        )
-    if comparable_ragger_command_counts["sign_tx"] != ragger_command_counts["sign_tx"]:
-        print(
-            "  Note: Sign Transaction uses fine-grained fixture-based counting for comparison "
-            f"(raw pytest cases: {ragger_command_counts['sign_tx']})."
-        )
-    if skip_counts:
-        skip_total = sum(skip_counts.values())
-        skip_details = ", ".join(
-            f"{name}({count})" for name, count in sorted(skip_counts.items())
-        )
-        print(
-            f"  Ignored {skip_total} pytest cases from auxiliary modules ({skip_details})"
-        )
-    if unmapped_counts:
-        unmapped_total = sum(unmapped_counts.values())
-        unmapped_details = ", ".join(
-            f"{name}({count})" for name, count in sorted(unmapped_counts.items())
-        )
-        print(
-            f"  Unmapped pytest modules ({unmapped_total} cases): {unmapped_details}"
-            f" — their test functions are still checked for unit-test coverage above"
-        )
-
     insufficient_commands = []
     mismatched_counts = []
     for cmd in COMMAND_REGISTRY:
@@ -639,6 +602,51 @@ def _verify_ragger_test_coverage() -> None:
                 f"{cmd.display_name} (Ragger {ragger_count}, Unit {unit_count})"
             )
 
+    if verbose or mismatched_counts or insufficient_commands or missing_coverage:
+        print("\nRagger test coverage check:")
+        print(
+            f"  Ragger: {total_ragger_test_cases} total test cases from {len(ragger_tests)} parameterized variants"
+        )
+        print(
+            f"  Unit tests: {expanded_unit_test_count} total test entries "
+            f"({total_unit_test_funcs} generated functions{deny_note})"
+        )
+        print("  Command breakdown:")
+        for cmd in COMMAND_REGISTRY:
+            command = cmd.id
+            ragger_count = comparable_ragger_command_counts.get(command, 0)
+            unit_count = unit_command_counts.get(command, 0)
+            delta = unit_count - ragger_count
+            delta_note = f" (Δ {delta:+d})" if delta else ""
+            print(
+                f"    - {cmd.display_name}: {ragger_count} Ragger -> {unit_count} unit entries{delta_note}"
+            )
+        if (
+            comparable_ragger_command_counts["sign_tx"]
+            != ragger_command_counts["sign_tx"]
+        ):
+            print(
+                "  Note: Sign Transaction uses fine-grained fixture-based counting for comparison "
+                f"(raw pytest cases: {ragger_command_counts['sign_tx']})."
+            )
+        if skip_counts:
+            skip_total = sum(skip_counts.values())
+            skip_details = ", ".join(
+                f"{name}({count})" for name, count in sorted(skip_counts.items())
+            )
+            print(
+                f"  Ignored {skip_total} pytest cases from auxiliary modules ({skip_details})"
+            )
+        if unmapped_counts:
+            unmapped_total = sum(unmapped_counts.values())
+            unmapped_details = ", ".join(
+                f"{name}({count})" for name, count in sorted(unmapped_counts.items())
+            )
+            print(
+                f"  Unmapped pytest modules ({unmapped_total} cases): {unmapped_details}"
+                f" — their test functions are still checked for unit-test coverage above"
+            )
+
     if mismatched_counts:
         print("\n" + "!" * _REPORT_WIDTH)
         print(
@@ -658,14 +666,15 @@ def _verify_ragger_test_coverage() -> None:
             print(f"  - {mismatch}")
         print("!" * _REPORT_WIDTH + "\n")
 
-    if insufficient_commands:
+    if insufficient_commands and (verbose or not missing_coverage):
         print(
             f"  ERROR: insufficient per-command coverage detected: {', '.join(insufficient_commands)}"
         )
-    print(f"  Found {len(ragger_test_funcs)} unique ragger test functions to cover")
-    print(
-        f"  Coverage: {len(covered_coverage)} functions covered, {len(missing_coverage)} missing"
-    )
+    if verbose or missing_coverage or mismatched_counts or insufficient_commands:
+        print(f"  Found {len(ragger_test_funcs)} unique ragger test functions to cover")
+        print(
+            f"  Coverage: {len(covered_coverage)} functions covered, {len(missing_coverage)} missing"
+        )
 
     if missing_coverage:
         print("\n" + "=" * _REPORT_WIDTH)
@@ -719,8 +728,39 @@ def _verify_ragger_test_coverage() -> None:
         sys.exit(1)
 
     print(
-        "\n  OK All ragger test functions have unit test coverage and consistent counts"
+        "Coverage OK: "
+        f"{len(covered_coverage)}/{len(ragger_test_funcs)} functions covered, "
+        f"{expanded_unit_test_count} unit entries validated"
     )
+
+
+def _run_generator_step(
+    message: str, func: Callable[[], object], *, verbose: bool
+) -> object:
+    _log_stage(message, verbose=verbose)
+    if verbose:
+        return func()
+
+    captured_stdout = io.StringIO()
+    try:
+        with redirect_stdout(captured_stdout):
+            result = func()
+    except SystemExit:
+        output = captured_stdout.getvalue().strip()
+        if output:
+            print(output)
+        raise
+    except Exception:
+        output = captured_stdout.getvalue().strip()
+        if output:
+            print(output)
+        raise
+    output = captured_stdout.getvalue().strip()
+    if output:
+        for line in output.splitlines():
+            if line.startswith(("Mock data OK:", "Coverage OK:")):
+                print(line)
+    return result
 
 
 def _collect_missing_unit_expected_results() -> list[str]:
@@ -876,15 +916,21 @@ def _collect_missing_python_expected_results() -> list[str]:
     return missing_reports
 
 
-def run_all() -> None:
+def run_all(*, verbose: bool) -> None:
     # Regenerate mock data first so that updated MOCK_TX_HASH_* constants in
     # crypto_mock_data.h produce correct signatures before the fixture headers
     # are written.  A second pass at the end picks up any hash constants that
     # were introduced by this very run.
-    _log_stage("Regenerating mock data (pre-pass)")
-    regenerate_mock_data()
+    _run_generator_step(
+        "Regenerating mock data (pre-pass)",
+        lambda: regenerate_mock_data_with_options(
+            verbose=verbose,
+            report_summary=False,
+        ),
+        verbose=verbose,
+    )
 
-    _log_stage("Validating Python fixture expectations")
+    _log_stage("Validating Python fixture expectations", verbose=verbose)
     python_expected_result_reports = _collect_missing_python_expected_results()
     if python_expected_result_reports:
         print("\n" + "=" * _REPORT_WIDTH)
@@ -895,21 +941,29 @@ def run_all() -> None:
         print("=" * _REPORT_WIDTH)
         sys.exit(1)
 
-    _log_stage("Generating fixtures")
+    _log_stage("Generating fixtures", verbose=verbose)
     for cmd in COMMAND_REGISTRY:
         for gen in cmd.fixture_generators:
-            count = gen()
+            count = _run_generator_step(
+                f"Generating fixtures: {cmd.display_name}/{gen.__name__}",
+                gen,
+                verbose=verbose,
+            )
             if count is not None:
                 # We do not add fixture counts to generated_entries_count because
                 # the test_runner_generators (or deny_generators) will tally the actual test count.
                 pass
 
-    _log_stage("Generating deny fixtures")
+    _log_stage("Generating deny fixtures", verbose=verbose)
     for cmd in COMMAND_REGISTRY:
         deny_count_for_cmd = 0
         any_counted = False
         for gen in cmd.deny_generators:
-            count = gen()
+            count = _run_generator_step(
+                f"Generating deny fixtures: {cmd.display_name}/{gen.__name__}",
+                gen,
+                verbose=verbose,
+            )
             if count is not None:
                 has_deny_runner = any(
                     "deny" in r.__name__ for r in cmd.runner_generators
@@ -925,17 +979,27 @@ def run_all() -> None:
             )
             sys.exit(1)
 
-    _log_stage("Generating test runners")
+    _log_stage("Generating test runners", verbose=verbose)
     for cmd in COMMAND_REGISTRY:
         for gen in cmd.runner_generators:
-            count = gen()
+            count = _run_generator_step(
+                f"Generating test runners: {cmd.display_name}/{gen.__name__}",
+                gen,
+                verbose=verbose,
+            )
             if count is not None:
                 cmd.generated_entries_count += count
 
-    _log_stage("Regenerating mock data (post-pass)")
-    regenerate_mock_data()
-    _log_stage("Verifying Ragger coverage")
-    _verify_ragger_test_coverage()
+    _run_generator_step(
+        "Regenerating mock data (post-pass)",
+        lambda: regenerate_mock_data_with_options(
+            verbose=verbose,
+            report_summary=True,
+        ),
+        verbose=verbose,
+    )
+    _log_stage("Verifying Ragger coverage", verbose=verbose)
+    _verify_ragger_test_coverage(verbose=verbose)
     missing_expected_reports = _collect_missing_unit_expected_results()
     if missing_expected_reports:
         print("\n" + "=" * _REPORT_WIDTH)
@@ -953,6 +1017,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Generate unit-test fixtures from ragger sources."
     )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Show detailed generation output. Default is quiet.",
+    )
     subparsers = parser.add_subparsers(dest="command")
     subparsers.add_parser("all", help="Run all generators (default).")
     subparsers.add_parser("fixtures", help="Generate sign-tx fixture headers.")
@@ -964,34 +1033,53 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    print(f"Unit tests directory: {UNIT_TESTS_DIR}")
+    if args.verbose:
+        print(f"Unit tests directory: {UNIT_TESTS_DIR}")
 
     if args.command in (None, "all"):
-        run_all()
+        run_all(verbose=args.verbose)
     elif args.command == "fixtures":
-        _log_stage("Generating fixtures")
+        _log_stage("Generating fixtures", verbose=args.verbose)
         for cmd in COMMAND_REGISTRY:
             for gen in cmd.fixture_generators:
-                count = gen()
+                count = _run_generator_step(
+                    f"Generating fixtures: {cmd.display_name}/{gen.__name__}",
+                    gen,
+                    verbose=args.verbose,
+                )
                 if count is not None:
                     cmd.generated_entries_count += count
     elif args.command == "generate-test-runners":
-        _log_stage("Generating test runners")
+        _log_stage("Generating test runners", verbose=args.verbose)
         for cmd in COMMAND_REGISTRY:
             for gen in cmd.runner_generators:
-                count = gen()
+                count = _run_generator_step(
+                    f"Generating test runners: {cmd.display_name}/{gen.__name__}",
+                    gen,
+                    verbose=args.verbose,
+                )
                 if count is not None:
                     cmd.generated_entries_count += count
     elif args.command == "deny_tests":
-        _log_stage("Generating deny fixtures")
+        _log_stage("Generating deny fixtures", verbose=args.verbose)
         for cmd in COMMAND_REGISTRY:
             for gen in cmd.deny_generators:
-                count = gen()
+                count = _run_generator_step(
+                    f"Generating deny fixtures: {cmd.display_name}/{gen.__name__}",
+                    gen,
+                    verbose=args.verbose,
+                )
                 if count is not None:
                     cmd.generated_entries_count += count
     elif args.command == "mock-data":
-        _log_stage("Regenerating mock data")
-        regenerate_mock_data()
+        _run_generator_step(
+            "Regenerating mock data",
+            lambda: regenerate_mock_data_with_options(
+                verbose=args.verbose,
+                report_summary=True,
+            ),
+            verbose=args.verbose,
+        )
     else:
         parser.print_help()
         sys.exit(1)

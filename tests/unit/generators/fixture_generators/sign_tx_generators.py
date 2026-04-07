@@ -7,14 +7,13 @@ from typing import Any, Sequence
 
 from tests.unit.generators.common import (
     _ensure_base58_module,
-    read_file_safe,
-    write_generated_c_file,
-    sanitize_c_identifier,
     extract_apdu_payload,
     format_bytes_as_c_array,
-    extract_brace_delimited_entries,
+    resolve_mnemonic,
+    sanitize_c_identifier,
+    write_generated_c_file,
 )
-from tests.unit.generators.paths import GENERATED_SIGN_TX_DIR, UNIT_TESTS_DIR
+from tests.unit.generators.paths import GENERATED_SIGN_TX_DIR
 
 
 # ======================================================================
@@ -33,114 +32,42 @@ def _compute_blake2b_256(data: bytes) -> str:
     return hashlib.blake2b(data, digest_size=32).hexdigest()
 
 
-_MOCK_SIGNATURE_LOOKUP: dict[tuple[tuple[int, ...], bytes], bytes] | None = None
+def _sign_with_extended_key(extended_key: bytes, message: bytes) -> bytes:
+    from nacl import bindings  # type: ignore
 
+    if len(extended_key) != 64:
+        raise ValueError(f"Unexpected extended key length {len(extended_key)}")
 
-def _parse_path_to_words(path: str) -> tuple[int, ...]:
-    path_parts = path.split("/")
-    if path_parts[0] == "m":
-        path_parts = path_parts[1:]
+    secret_scalar = extended_key[:32]
+    prefix = extended_key[32:64]
 
-    path_words: list[int] = []
-    for path_part in path_parts:
-        is_hardened = path_part.endswith("'")
-        path_index = int(path_part[:-1] if is_hardened else path_part)
-        if is_hardened:
-            path_index |= 0x80000000
-        path_words.append(path_index)
-    return tuple(path_words)
+    r_hash = hashlib.sha512(prefix + message).digest()
+    r_scalar = bindings.crypto_core_ed25519_scalar_reduce(r_hash)
+    r_point = bindings.crypto_scalarmult_ed25519_base_noclamp(r_scalar)
 
+    public_key = bindings.crypto_scalarmult_ed25519_base_noclamp(secret_scalar)
+    k_hash = hashlib.sha512(r_point + public_key + message).digest()
+    k_scalar = bindings.crypto_core_ed25519_scalar_reduce(k_hash)
 
-def _load_mock_signature_lookup() -> dict[tuple[tuple[int, ...], bytes], bytes]:
-    global _MOCK_SIGNATURE_LOOKUP
-    if _MOCK_SIGNATURE_LOOKUP is not None:
-        return _MOCK_SIGNATURE_LOOKUP
+    k_times_a = bindings.crypto_core_ed25519_scalar_mul(k_scalar, secret_scalar)
+    s_scalar = bindings.crypto_core_ed25519_scalar_add(r_scalar, k_times_a)
 
-    mock_data_path = UNIT_TESTS_DIR / "mock_crypto" / "crypto_mock_data.h"
-    mock_data_content = read_file_safe(mock_data_path)
-
-    message_lookup: dict[str, bytes] = {}
-    for message_match in re.finditer(
-        r"static const uint8_t (\w+)\[\] = \{([^}]+)\};",
-        mock_data_content,
-        flags=re.DOTALL,
-    ):
-        message_name = message_match.group(1)
-        message_hex_values = re.findall(r"0x[0-9a-fA-F]{2}", message_match.group(2))
-        if not message_hex_values:
-            continue
-        message_lookup[message_name] = bytes(
-            int(value, 16) for value in message_hex_values
-        )
-
-    signatures_match = re.search(
-        r"static const mock_signature_data_t MOCK_SIGNATURES\[\]\s*=\s*\{(.*?)\n\};",
-        mock_data_content,
-        flags=re.DOTALL,
-    )
-    if signatures_match is None:
-        raise ValueError(
-            "MOCK_SIGNATURES array not found in mock_crypto/crypto_mock_data.h"
-        )
-
-    signature_lookup: dict[tuple[tuple[int, ...], bytes], bytes] = {}
-    _PATH_ENTRY_PATTERN = re.compile(r"\{\s*\.path\s*=")
-    for signature_entry in extract_brace_delimited_entries(
-        signatures_match.group(1), _PATH_ENTRY_PATTERN
-    ):
-        path_match = re.search(r"\.path\s*=\s*(\{[^}]+\})", signature_entry)
-        path_len_match = re.search(r"\.path_len\s*=\s*(\d+)", signature_entry)
-        message_name_match = re.search(r"\.message\s*=\s*(\w+)", signature_entry)
-        signature_match = re.search(
-            r"\.signature\s*=\s*\{([^}]*)\}", signature_entry, flags=re.DOTALL
-        )
-        if (
-            path_match is None
-            or path_len_match is None
-            or message_name_match is None
-            or signature_match is None
-        ):
-            continue
-
-        path_hex_values = re.findall(r"0x[0-9a-fA-F]+", path_match.group(1))
-        path_len = int(path_len_match.group(1))
-        path_words = tuple(int(value, 16) for value in path_hex_values[:path_len])
-        message_name = message_name_match.group(1)
-        if message_name not in message_lookup:
-            continue
-        signature_hex_values = re.findall(r"0x[0-9a-fA-F]{2}", signature_match.group(1))
-        signature_bytes = bytes(int(value, 16) for value in signature_hex_values)
-        signature_lookup[(path_words, message_lookup[message_name])] = signature_bytes
-
-    _MOCK_SIGNATURE_LOOKUP = signature_lookup
-    return signature_lookup
-
-
-def _compute_fallback_mock_signature(
-    path_words: tuple[int, ...], message: bytes
-) -> bytes:
-    signature = bytearray(64)
-    for signature_index in range(64):
-        signature_byte = message[signature_index % len(message)]
-        if len(path_words) > 0:
-            path_word = path_words[signature_index % len(path_words)]
-            signature_byte ^= (path_word >> ((signature_index % 4) * 8)) & 0xFF
-        signature[signature_index] = signature_byte ^ ((0xA5 + signature_index) & 0xFF)
-    return bytes(signature)
+    return r_point + s_scalar
 
 
 def _derive_witness_signature(witness_path: str, message: bytes) -> bytes:
-    path_words = _parse_path_to_words(witness_path)
-    signature_lookup = _load_mock_signature_lookup()
-    signature = signature_lookup.get((path_words, message))
-    if signature is None:
-        print(f"WARNING: No mock signature found for path {witness_path!r}.")
-        print("  The generated fixture will contain a fake deterministic signature.")
-        print(
-            "  Run the generator with the 'mock-data' subcommand first to generate it."
+    try:
+        from bip_utils import Bip39SeedGenerator, Bip32Ed25519Kholaw  # type: ignore
+    except ImportError as exc:
+        raise RuntimeError(
+            f"Missing dependency for sign-tx signature derivation: {exc}"
         )
-        return _compute_fallback_mock_signature(path_words, message)
-    return signature
+
+    mnemonic = resolve_mnemonic()
+    seed = Bip39SeedGenerator(mnemonic).Generate()
+    child = Bip32Ed25519Kholaw.FromSeed(seed).DerivePath(witness_path)
+    extended_key = child.PrivateKey().Raw().ToBytes()
+    return _sign_with_extended_key(extended_key, message)
 
 
 def _bool_to_c(value: bool) -> str:

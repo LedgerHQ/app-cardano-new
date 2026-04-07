@@ -80,13 +80,12 @@ end:
     }
 }
 
-void crypto_eddsa_sign(const uint32_t* path,
-                       size_t path_len,
-                       const uint8_t* hash,
-                       size_t hash_len,
-                       uint8_t* sig,
-                       size_t expected_sig_len) {
-
+static void crypto_eddsa_sign_impl(const uint32_t* path,
+                                   size_t path_len,
+                                   const uint8_t* hash,
+                                   size_t hash_len,
+                                   uint8_t* sig,
+                                   size_t expected_sig_len) {
     ASSERT(path != NULL);
     LEDGER_ASSERT(path_len > 0, "path is empty");
     ASSERT(hash != NULL);
@@ -125,4 +124,13 @@ end:
         explicit_bzero(sig, expected_sig_len);
         LEDGER_ASSERT(!error, "crypto_eddsa_sign failed with error 0x%X", error);
     }
+}
+
+void crypto_eddsa_sign(const uint32_t* path,
+                       size_t path_len,
+                       const uint8_t* hash,
+                       size_t hash_len,
+                       uint8_t* sig,
+                       size_t expected_sig_len) {
+    crypto_eddsa_sign_impl(path, path_len, hash, hash_len, sig, expected_sig_len);
 }

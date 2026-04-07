@@ -44,6 +44,7 @@ SET_PREFIX = {
     "singleAccountDenyTestCases": "DENY_SINGLE_ACCOUNT",
     "collateralOutputDenyTestCases": "DENY_COLLATERAL_OUTPUT",
     "testsInvalidTokenBundleOrdering": "DENY_MULTIASSET",
+    "votingDenyTestCases": "DENY_VOTING",
     "requiredSignerDenyTestCases": "DENY_REQUIRED_SIGNER",
     "stakePoolRegistrationPoolIdDenyTestCases": "DENY_POOL_ID",
     "stakePoolRegistrationOwnerDenyTestCases": "DENY_POOL_OWNER",
@@ -79,6 +80,7 @@ def _build_deny_fixtures() -> str:
         collateralOutputDenyTestCases,
         requiredSignerDenyTestCases,
         testsInvalidTokenBundleOrdering,
+        votingDenyTestCases,
         poolRegistrationOwnerDenyTestCases,
         stakePoolRegistrationPoolIdDenyTestCases,
         stakePoolRegistrationOwnerDenyTestCases,
@@ -101,6 +103,7 @@ def _build_deny_fixtures() -> str:
         "collateralOutputDenyTestCases": collateralOutputDenyTestCases,
         "requiredSignerDenyTestCases": requiredSignerDenyTestCases,
         "testsInvalidTokenBundleOrdering": testsInvalidTokenBundleOrdering,
+        "votingDenyTestCases": votingDenyTestCases,
         "stakePoolRegistrationPoolIdDenyTestCases": stakePoolRegistrationPoolIdDenyTestCases,
         "stakePoolRegistrationOwnerDenyTestCases": poolRegistrationOwnerDenyTestCases
         + stakePoolRegistrationOwnerDenyTestCases,

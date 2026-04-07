@@ -2,9 +2,11 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 
 #include <stdbool.h>
+#include <fcntl.h>
 #include <stdint.h>
-#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "cardano_constants.h"
 #include "cx.h"
@@ -66,6 +68,39 @@ static const mock_signature_data_t* find_signature_entry(const uint32_t* path,
         return entry;
     }
     return NULL;
+}
+
+static void maybe_log_signature_entry_usage(const mock_signature_data_t* entry) {
+    const char* log_path = getenv("CARDANO_MOCK_SIGNATURE_USAGE_LOG");
+    if (log_path == NULL || log_path[0] == '\0') {
+        return;
+    }
+
+    const int log_fd = open(log_path, O_WRONLY | O_CREAT | O_APPEND, 0600);
+    if (log_fd < 0) {
+        return;
+    }
+
+    const size_t entry_index = (size_t) (entry - MOCK_SIGNATURES);
+    char line_buffer[32];
+    size_t line_length = 0;
+    size_t remaining_value = entry_index;
+    do {
+        line_buffer[line_length++] = (char) ('0' + (remaining_value % 10));
+        remaining_value /= 10;
+    } while (remaining_value > 0);
+    line_buffer[line_length++] = '\n';
+
+    for (size_t i = 0; i < line_length / 2; i++) {
+        const char tmp = line_buffer[i];
+        line_buffer[i] = line_buffer[line_length - 2 - i];
+        line_buffer[line_length - 2 - i] = tmp;
+    }
+
+    if (write(log_fd, line_buffer, line_length) < 0) {
+        // best-effort logging only
+    }
+    close(log_fd);
 }
 
 static void encode_raw_pubkey(const uint8_t public_key[32], uint8_t raw_pubkey[RAW_PUBKEY_SIZE]) {
@@ -131,21 +166,11 @@ void crypto_eddsa_sign(const uint32_t* path,
             fprintf(stderr, "%02x", hash[j]);
         }
         fprintf(stderr, "\n");
-        // Keep witness/state-machine tests running even when a path+message pair
-        // has no fixture-backed signature entry. Callers can detect this via
-        // g_mock_last_signature_entry == NULL.
-        g_mock_last_signature_entry = NULL;
-        for (size_t i = 0; i < ED25519_SIGNATURE_LENGTH; i++) {
-            uint8_t byte = hash[i % hash_len];
-            if (path_len > 0) {
-                byte ^= (uint8_t) (path[i % path_len] >> ((i % 4) * 8));
-            }
-            sig[i] = (uint8_t) (byte ^ (uint8_t) (0xA5u + i));
-        }
-        return;
+        LEDGER_ASSERT(false, "Missing mock signature entry");
     }
 
     g_mock_last_signature_entry = entry;
+    maybe_log_signature_entry_usage(entry);
     LEDGER_ASSERT(g_mock_last_signed_message_len == entry->message_len,
                   "Signed message length (%zu) does not match entry (%zu)",
                   g_mock_last_signed_message_len, entry->message_len);
