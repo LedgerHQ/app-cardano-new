@@ -82,10 +82,10 @@ Notes:
 
 ## Test Suites
 
-- Unit tests: `../tests/unit/README.md`
-- Standalone functional tests (ragger): `../tests/standalone/README.md`
-- Swap/library-mode tests: `../tests/swap/README.md`
-- Fuzzing: `../tests/fuzzing/FUZZING.md`
+- Unit tests: `tests/unit/README.md`
+- Standalone functional tests (ragger): `tests/standalone/README.md`
+- Swap/library-mode tests: `tests/swap/README.md`
+- Fuzzing: `tests/fuzzing/FUZZING.md`
 
 ## Workflow
 
@@ -98,7 +98,7 @@ Notes:
   expected results are a hard error: generators must report them, and unit tests
   must not silently skip response verification for those fixtures.
 - For the concrete edit/regenerate/build/run sequence, see
-  `../tests/unit/README.md` -> `Fixture Workflow`.
+  `tests/unit/README.md` -> `Fixture Workflow`.
 - Use the shared venv above when running generator scripts or other Python-based
   test tooling.
 - Run ragger and swap tests only when explicitly requested.
@@ -126,10 +126,11 @@ Avoid excluding:
 
 Recommended style:
 
-- Keep the check as `LEDGER_ASSERT(false, "...")` (or `ASSERT(false)` for low-level
-  checks) inside a `// LCOV_EXCL_START` / `// LCOV_EXCL_STOP` block.
-- Use block exclusions for small impossible fallbacks and unreachable default
-  arms on validated enum switches.
+- Prefer `// LCOV_EXCL_LINE` for single-line invariant assertions.
+- For `default:` switch cases, use `// LCOV_EXCL_START` / `// LCOV_EXCL_STOP` around
+  the entire block including the `default:` label, because `lcov` will otherwise flag
+  the `default:` keyword itself as uncovered.
+- Keep the check as `LEDGER_ASSERT(false, "...")` (or `ASSERT(false)` for low-level checks).
 - If a branch is reachable with realistic malformed-but-not-impossible input, add a
   test instead of excluding it.
 
@@ -196,9 +197,10 @@ To use a guard in your module:
 
 ### How to Build & Verify
 
-To enable specific tracing, add the guard(s) to your build command:
+These guards apply to the **device binary** built via the repo-root Makefile (inside the
+Ledger SDK / Docker environment). Pass extra defines via `DEFINES+=`:
 ```bash
-make DEBUG=1 -DTRACE_TX_PARSE -DTRACE_HANDLERS -j8
+make DEBUG=1 DEFINES+=TRACE_TX_PARSE DEFINES+=TRACE_HANDLERS -j8
 ```
 
 To verify that strings are correctly removed from the compiled binary:

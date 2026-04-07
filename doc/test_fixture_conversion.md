@@ -1,5 +1,8 @@
 # Test Fixture Conversion (LedgerJS -> Ragger Static Fixtures)
 
+> **Historical reference only.** This documents a one-time migration that has already been
+> completed. The scripts below are not maintained and may not work without adaptation.
+
 This document captures the one-time conversion flow used to migrate LedgerJS reject fixtures
 into static ragger fixtures inside `tests/standalone/input_files/signTx.py`.
 
@@ -157,8 +160,8 @@ With the scripts in place, run the exporter from the repo root:
 ```bash
 source ~/.nvm/nvm.sh
 nvm use 16.20.2 >/dev/null
-cd ../ledgerjs-cardano-shelley
 REPO_ROOT=$(git rev-parse --show-toplevel)
+cd $REPO_ROOT/../ledgerjs-cardano-shelley
 NODE_OPTIONS=--require=$REPO_ROOT/tests/unit/mock_usb_loader.js \
 NODE_PATH=./node_modules \
 node $REPO_ROOT/tests/unit/export_sign_tx_rejects.js \
@@ -184,6 +187,10 @@ from enum import Enum
 from typing import Any
 
 sign_tx_path = Path("/home/jan/praca/vacuumlabs/cardano/ledger-app-cardano/tests/standalone/input_files/signTx.py")
+
+import subprocess
+repo_root = subprocess.check_output(["git", "rev-parse", "--show-toplevel"]).decode().strip()
+sign_tx_path = Path(repo_root) / "tests/standalone/input_files/signTx.py"
 
 spec = importlib.util.spec_from_file_location("signTx_module", sign_tx_path)
 mod = importlib.util.module_from_spec(spec)
@@ -257,7 +264,7 @@ Run it with the ragger venv and proper `PYTHONPATH`:
 
 ```bash
 source tests/venv/bin/activate
-PYTHONPATH=/home/jan/praca/vacuumlabs/cardano/ledger-app-cardano/tests \
+PYTHONPATH=$(git rev-parse --show-toplevel)/tests \
 python3 /tmp/gen_rejects_section.py
 ```
 
@@ -280,7 +287,9 @@ Example script:
 ```python
 from pathlib import Path
 
-sign_tx_path = Path("/home/jan/praca/vacuumlabs/cardano/ledger-app-cardano/tests/standalone/input_files/signTx.py")
+import subprocess
+repo_root = subprocess.check_output(["git", "rev-parse", "--show-toplevel"]).decode().strip()
+sign_tx_path = Path(repo_root) / "tests/standalone/input_files/signTx.py"
 section_path = Path("/tmp/signTx_rejects_section.py")
 
 content = sign_tx_path.read_text(encoding="utf-8")
@@ -307,8 +316,7 @@ popd
 ## 5) Validate
 
 ```bash
-make -C tests/unit/build test_sign_tx_deny_tests
-tests/unit/build/test_sign_tx_deny_tests
+cd tests/unit
+cmake -Bbuild -H. && cmake --build build -j4
+CTEST_OUTPUT_ON_FAILURE=1 ctest --test-dir build -R test_sign_tx_deny_tests
 ```
-
-Expected: 113 reject tests, all passing.

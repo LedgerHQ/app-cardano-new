@@ -278,11 +278,11 @@ def analyze_outputs():
     print()
 
     # Also check what actually fits in remaining memory
-    size_mem_buffer = 23 * 1024  # worst case (Nano S+)
+    size_mem_buffer = 23 * 1024  # worst case (Nano X, the tightest device)
     heap_overhead = 200  # approximate overhead for heap structures
     available = size_mem_buffer - heap_overhead
 
-    print(f"Memory constraints (Nano S+):")
+    print(f"Memory constraints (Nano X, worst case):")
     print(f"  SIZE_MEM_BUFFER:     {size_mem_buffer:,} bytes")
     print(f"  Heap overhead:       ~{heap_overhead:,} bytes")
     print(f"  Available for TX:    {available:,} bytes")
@@ -335,7 +335,7 @@ Current MAX_TX_BUFFER_SIZE: 21,504 bytes (21 KB)
 Margin above required:  +2,048 bytes
   ✓ Current setting is SAFE
 
-Memory constraints (Nano S+):
+Memory constraints (Nano X, worst case):
   SIZE_MEM_BUFFER:     23,552 bytes
   Heap overhead:       ~200 bytes
   Available for TX:    23,352 bytes
@@ -455,27 +455,14 @@ This catches:
 | Chunk would exceed advertised size | `SWO_INVALID_TX_LENGTH` | CHUNK |
 | Final length ≠ advertised length | `SWO_INVALID_TX_LENGTH` | CONFIRM |
 
-### Backward Compatibility
-
-**Breaking change**: Old clients will not work with new device firmware.
-
-- Old client sends N bytes in INIT
-- New device expects N+2 bytes (with `raw_tx_total_length`)
-- Result: `SWO_WRONG_DATA_LENGTH` during INIT
-
-This is acceptable because:
-1. Client and device are tightly coupled
-2. Client is responsible for correct formatting
-3. Provides better error checking and memory efficiency
-
 ### Memory Layout
 
-Verification against device memory limits:
+Verification against device memory limits (Nano X is the tightest):
 
 | Device | Total RAM | Heap Overhead | Available | MAX (21 KB) | Typical TX | UI Space |
 |--------|-----------|---------------|-----------|-------------|------------|----------|
-| Nano S+ | 23 KB | ~200 B | 22.8 KB | 21 KB | 2-3 KB | ~19-20 KB |
-| Other | 25 KB | ~200 B | 24.8 KB | 21 KB | 2-3 KB | ~21-22 KB |
+| Nano X | 23 KB | ~200 B | 22.8 KB | 21 KB | 2-3 KB | ~19-20 KB |
+| Nano S+, Stax, Flex | 25 KB+ | ~200 B | 24.8 KB+ | 21 KB | 2-3 KB | ~21-22 KB |
 
 The 21 KB maximum fits comfortably with room for UI structures.
 

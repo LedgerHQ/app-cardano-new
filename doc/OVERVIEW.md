@@ -13,7 +13,7 @@ The application is written in C and runs on Ledger devices (Stax, Flex, Nano X, 
 - **`handler/`**: Contains logic for specific commands.
     - `get_public_key.c`: Exports public keys.
     - `sign_tx.c`: Coordinates the multi-stage transaction signing process.
-    - `sign_tx_aux_data.c`: Handles auxiliary data signing (metadata).
+    - `sign_tx_aux_data.c`: Handles CIP-36 Catalyst voting registration data embedded in transaction auxiliary data.
     - `sign_opcert.c`: Handles operational certificate signing.
     - `sign_msg.c`: CIP8 message signing.
     - `sign_cvote.c`: Catalyst voting (ballot signing).
@@ -22,13 +22,12 @@ The application is written in C and runs on Ledger devices (Stax, Flex, Nano X, 
     - Other utility handlers: `get_version.c`, `get_app_name.c`, `get_serial.c`, `debug_settings.c` (debug builds only).
 - **`transaction/`**: Core transaction processing logic using a 2-phase architecture:
     - **Phase 1** (`tx_processing.c`, `tx_processing_outputs.c`, `tx_processing_certificates.c` with `tx_hash_builder.c`): Validates transaction structure, enforces security policies, computes the Blake2b-256 transaction hash, and counts required UI display pairs.
-    - **Phase 2** (`ui/ui_display_tx.c` with `tx_ui_render.c`): Formats validated transaction data into human-readable strings for NBGL UI display.
-    - Also includes parsing (`tx_parse.c`, `tx_parse_outputs.c`, `tx_parse_certificates.c`), UI render modules (`tx_ui_render.c`, `tx_ui_render_outputs.c`, `tx_ui_render_certificates.c`), and utility functions (`tx_utils.c`).
+    - **Phase 2** (`src/ui/ui_display_tx.c` orchestrates; rendering logic in `src/transaction/tx_ui_render.c`, `tx_ui_render_outputs.c`, `tx_ui_render_certificates.c`): Formats validated transaction data into human-readable strings for NBGL UI display.
+    - Also includes parsing (`tx_parse.c`, `tx_parse_outputs.c`, `tx_parse_certificates.c`) and utility functions (`tx_utils.c`).
     - Detailed documentation can be found in [tx.md](tx.md).
 - **`ui/`**: User interface components using NBGL framework.
-    - `ui_display_tx.c`: Formats transaction data into UI key-value pairs (Phase 2 of transaction processing).
     - `ui_formatters.c`: Low-level formatting functions for addresses, amounts, tokens.
-    - Display modules for different operations: `ui_display_tx.c`, `ui_display_pubkey.c`, `ui_display_opcert.c`, `ui_display_cvote_aux_data.c`, `ui_display_native_script_hash.c`, `ui_display_address_derivation.c`, `ui_sign_msg.c`.
+    - Display modules for different operations: `ui_display_tx.c`, `ui_display_pubkey.c`, `ui_display_opcert.c`, `ui_display_cvote_aux_data.c`, `ui_display_native_script_hash.c`, `ui_display_address_derivation.c`, `ui_display_witness.c`, `ui_sign_msg.c`.
     - `ui_warnings.c`: Warning display logic.
     - `menu.c`: Main menu UI.
     - **UI callback convention**: Review callbacks should follow `cleanup -> finalize -> status`.
@@ -84,11 +83,11 @@ Security policies are the gatekeeper that prevents the device from signing trans
 
 Detailed data flow and transaction-specific logic are documented in [tx.md](tx.md).
 
-## APDU Reference
+## 4. APDU Reference
 
 For a compact command/flow reference and links to APDU source-of-truth headers, see [apdu.md](apdu.md).
 
-## 4. Testing Infrastructure
+## 5. Testing Infrastructure
 
 The application uses a multi-layered testing approach to ensure correctness and security. Detailed documentation for the testing setup and workflows can be found in **[testing.md](testing.md)**.
 
@@ -104,7 +103,7 @@ For specific instructions on running tests and managing fixtures, refer to the f
 - [tests/standalone/README.md](../tests/standalone/README.md): Ragger functional test usage.
 - [tests/fuzzing/FUZZING.md](../tests/fuzzing/FUZZING.md): Fuzzing harness details.
 
-## 5. Generic Helpers
+## 6. Generic Helpers
 
 - **`LEDGER_ASSERT`** (`ledger_assert.h` / `utils/assert.h`): Assertion macros for parameter validation and invariant checking. Use liberally for all non-trivial functions that perform actual work on objects (not in simple pass-through helpers). Assertions document preconditions and catch logic errors early.
 
@@ -116,7 +115,7 @@ For specific instructions on running tests and managing fixtures, refer to the f
 
 - **`mem.h`**: Dynamic memory allocator optimized for Ledger device constraints (`app_mem_alloc`).
 
-## 5.1 Debugging and Tracing
+## 6.1. Debugging and Tracing
 
 **TRACE macro** (`utils/utils.h`): Use for debug output during development.
 
@@ -147,7 +146,7 @@ This pattern is already used in hash builders (`TRACE_TX_HASH_BUILDER`, `TRACE_V
 
 See `doc/testing.md` for memory footprint analysis and recommendations.
 
-# Security
+## 7. Security
 
 Apart from avoiding memory leaks and bugs in general, the security of the app has two main pillars:
 
@@ -155,7 +154,7 @@ Apart from avoiding memory leaks and bugs in general, the security of the app ha
 
 2. Data being displayed should not allow "attacks by deception", e.g. including several elements in the transaction that are signed by the same key, and tricking the user into overlooking some of them (most users are not aware of most security implications, so a compromised software wallet has a good chance of deceiving them). This means some combinations of elements are forbidden (e.g. key hash certificates in ordinary transaction signing mode because the user cannot easily determine if the key hash in the certificate comes from some of his keys).
 
-There is an ["expert mode"](expert_mode.xlsx) setting that allows the user to somewhat control the amount of data being displayed. It is mostly relevant for Plutus transactions.
+There is an "expert mode" setting (see `doc/expert_mode.xlsx`) that allows the user to somewhat control the amount of data being displayed. It is mostly relevant for Plutus transactions.
 
 ## Security Policy Documentation (`doc/spec_*.md`)
 

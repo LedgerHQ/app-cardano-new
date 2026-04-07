@@ -14,8 +14,6 @@ For detailed information about the application, please refer to:
 
 ## Quick start guide
 
-TODO: Update quick start guide with Cardano-specific environment details.
-
 ### With VSCode
 
 You can setup a convenient environment to build and test your application using [Ledger's VSCode developer tools extension](https://marketplace.visualstudio.com/items?itemName=LedgerHQ.ledger-dev-tools).
@@ -27,18 +25,23 @@ You can setup a convenient environment to build and test your application using 
 
 ### With a terminal
 
-TODO: Verify and update terminal-based workflow for the current repository structure.
+See **[doc/testing.md](doc/testing.md)** for environment setup (system dependencies, Python venv) and the full testing workflow.
 
-## Compilation and load
-
-TODO: Update compilation instructions to reflect supported devices and Cardano-specific build flags.
+## Compilation
 
 *Note: Nano S is no longer supported.*
 
-### Compilation
+The repo-root `Makefile` is used exclusively for building the device binary inside the
+Ledger SDK / Docker environment. It is not used by unit tests, fuzzing, or Python tooling
+(those are driven by `tests/Makefile` and cmake).
 
 ```shell
 make DEBUG=1  # compile optionally with TRACE enabled
+```
+
+Extra preprocessor defines can be passed via `DEFINES+=`, e.g.:
+```shell
+make DEBUG=1 DEFINES+=TRACE_TX_PARSE
 ```
 
 Supported `BOLOS_SDK` targets:
@@ -56,8 +59,8 @@ For detailed instructions on setting up the test environment and running differe
 ### Quick Commands
 
 ```shell
-# Unit tests
-make -C tests/unit -j8
+# Unit tests (regenerates fixtures, checks drift, builds, and runs)
+make -C tests tests-unit
 
 # Functional tests (requires Speculos/Ragger setup)
 pytest tests/standalone/ --device nanox
@@ -70,11 +73,10 @@ pytest tests/standalone/ --device nanox
 - Testing Overview: [doc/testing.md](doc/testing.md)
 - Transaction Processing: [doc/tx.md](doc/tx.md)
 - APDU Overview: [doc/apdu.md](doc/apdu.md)
+- Known Non-Issues: [doc/non_bugs.md](doc/non_bugs.md)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 - Unit Tests: [tests/unit/README.md](tests/unit/README.md)
 - Fuzzing: [tests/fuzzing/FUZZING.md](tests/fuzzing/FUZZING.md)
-
-TODO: Update Doxygen configuration to include Cardano-specific documentation modules.
 
 ## Continuous Integration
 

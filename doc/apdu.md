@@ -37,7 +37,7 @@ If this document conflicts with code, code wins.
   - `P1_TX_INIT` (`0x10`)
   - `P1_TX_CHUNK` (`0x11`) zero or more times
   - `P1_TX_CONFIRM` (`0x12`) final step
-  - `P1_TX_AUX_DATA` (`0x13`) for aux-data subflow when present
+  - `P1_TX_AUX_DATA` (`0x13`) for CIP-36 Catalyst voting registration aux-data subflow when present
 - `SIGN_CVOTE` uses:
   - `P1_CVOTE_INIT` (`0x50`)
   - `P1_CVOTE_CHUNK` (`0x51`)

@@ -99,7 +99,7 @@ The detailed testing workflow, including environment setup and specific commands
 
 Brief summary:
 - **Python venv**: `tests/venv` — activate with `source tests/venv/bin/activate` before running any Python tooling.
-- **Unit tests**: `make -C tests/unit` (run when C code changes).
+- **Unit tests**: `make -C tests tests-unit` (run when C code changes — regenerates fixtures, checks drift, builds, and runs). Use `make -C tests/unit` to build and run only, without fixture regeneration.
 - **Fuzzing**: Extra compile-health gate after unit tests.
 - **Fixture generation**: `PYTHONPATH=. tests/venv/bin/python -m tests.unit.generators.generate_unit_tests_from_ragger all` (run when ragger inputs change).
 - **Linting**: `source tests/venv/bin/activate && ruff check --fix . --exclude tests/venv` (run when Python code changes).

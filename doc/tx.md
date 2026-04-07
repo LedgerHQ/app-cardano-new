@@ -54,11 +54,13 @@ The parser decodes the custom APDU-based serialization format sent by the client
 
 Transaction processing uses a 2-phase architecture to ensure security and correctness:
 
-### Phase 1: Validation and Hashing (`tx_parse.c`)
+### Phase 1: Validation and Hashing (`tx_processing.c`)
 
 The validation phase enforces security policies, computes the Blake2b-256 transaction hash, and plans the UI display in a single streaming pass via the state machine in `tx_hash_builder.c`.
 
-**Primary Function:** `tx_validate(...)`
+Parsing (`tx_parse.c`, `tx_parse_outputs.c`, `tx_parse_certificates.c`) is a prerequisite layer that decodes the raw APDU buffer into structured data; Phase 1 processing then operates on that structured data.
+
+**Primary Function:** `tx_validate(...)` in `tx_processing.c`
 
 This function:
 1. Iterates through transaction fields in canonical CBOR order (keys 0-22).
