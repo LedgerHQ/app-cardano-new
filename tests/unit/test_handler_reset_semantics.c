@@ -21,7 +21,7 @@
 
 #define TEST_HEAP_SIZE (23 * 1024)
 static uint8_t test_heap[TEST_HEAP_SIZE];
-static uint16_t g_last_sw = 0;
+static uint16_t g_last_swo = 0;
 
 static inline bool test_mem_init(void) {
     return mem_utils_init(test_heap, sizeof(test_heap));
@@ -29,19 +29,19 @@ static inline bool test_mem_init(void) {
 
 static void reset_test_context(void) {
     memset(&G_context, 0, sizeof(G_context));
-    g_last_sw = 0;
+    g_last_swo = 0;
     assert_true(test_mem_init());
 }
 
 int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
     (void) buffer;
     (void) bufferLength;
-    g_last_sw = swo;
+    g_last_swo = swo;
     return 0;
 }
 
 int io_send_sw(uint16_t swo) {
-    g_last_sw = swo;
+    g_last_swo = swo;
     return 0;
 }
 
@@ -82,7 +82,7 @@ static void test_native_script_finish_before_script_completion_resets_context(vo
     apdu_response_begin(INS_DERIVE_NATIVE_SCRIPT_HASH);
     handler_derive_native_script_hash(&init_buf, P1_NATIVE_SCRIPT_INIT);
     apdu_response_assert_sent_or_deferred();
-    assert_int_equal(g_last_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_swo, SWO_SUCCESS);
 
     uint8_t finish_payload[1] = {DISPLAY_NATIVE_SCRIPT_HASH_BECH32};
     buffer_t finish_buf = {
@@ -95,7 +95,7 @@ static void test_native_script_finish_before_script_completion_resets_context(vo
     handler_derive_native_script_hash(&finish_buf, P1_NATIVE_SCRIPT_FINISH);
     apdu_response_assert_sent_or_deferred();
 
-    assert_int_equal(g_last_sw, SWO_NATIVE_SCRIPT_PARSING_FAIL_NESTING);
+    assert_int_equal(g_last_swo, SWO_NATIVE_SCRIPT_PARSING_FAIL_NESTING);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
 

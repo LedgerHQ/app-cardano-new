@@ -18,7 +18,7 @@
 #include "app_context.h"
 #include "ledger_assert.h"
 
-static uint16_t g_last_sw = 0;
+static uint16_t g_last_swo = 0;
 static uint8_t g_last_called_ins = 0;
 static int g_last_handler_variant = 0;
 static uint8_t g_last_handler_p1_or_p2 = 0;
@@ -29,7 +29,7 @@ static bool g_get_serial_should_defer = false;
 
 static void reset_test_context(void) {
     memset(&G_context, 0, sizeof(G_context));
-    g_last_sw = 0;
+    g_last_swo = 0;
     g_last_called_ins = 0;
     g_last_handler_variant = 0;
     g_last_handler_p1_or_p2 = 0;
@@ -49,6 +49,12 @@ enum {
 // -------------------------------------------------------------------------
 // App context / IO hooks
 // -------------------------------------------------------------------------
+//
+// This test intentionally provides its own minimal IO/APDU plumbing instead of
+// using io_capture.c or apdu_finalization_check.h. The dispatcher behavior under
+// test is centered on interleaving / deferred-response state, and these local
+// stubs expose that state directly without pulling in the shared helper
+// implementation or its weak overrides.
 
 void reset_app_context(void) {
     memset(&G_context, 0, sizeof(G_context));
@@ -61,14 +67,14 @@ void send_swo_and_reset(uint16_t swo) {
 }
 
 int io_send_sw(uint16_t swo) {
-    g_last_sw = swo;
+    g_last_swo = swo;
     return 0;
 }
 
 int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
     (void) buffer;
     (void) bufferLength;
-    g_last_sw = swo;
+    g_last_swo = swo;
     return 0;
 }
 
@@ -278,7 +284,7 @@ static void test_interleaving_guard_blocks_other_instructions(void **state) {
         command_t cmd = make_command(attempted_ins, P1_UNUSED, P2_UNUSED);
         apdu_dispatcher(&cmd);
 
-        assert_int_equal(g_last_sw, SWO_COMMAND_NOT_ALLOWED);
+        assert_int_equal(g_last_swo, SWO_COMMAND_NOT_ALLOWED);
         assert_int_equal(G_context.req_type, REQUEST_NONE);
     }
 }
@@ -307,7 +313,7 @@ static void test_interleaving_allows_expected_instruction(void **state) {
         command_t cmd = make_command(cases[i].ins, cases[i].p1, cases[i].p2);
         apdu_dispatcher(&cmd);
 
-        assert_int_equal(g_last_sw, SWO_SUCCESS);
+        assert_int_equal(g_last_swo, SWO_SUCCESS);
         assert_int_equal(g_last_called_ins, cases[i].ins);
     }
 }
@@ -322,12 +328,12 @@ static void test_deferred_response_is_allowed(void **state) {
     apdu_dispatcher(&cmd);
 
     assert_int_equal(g_last_called_ins, INS_GET_SERIAL);
-    assert_int_equal(g_last_sw, 0);
+    assert_int_equal(g_last_swo, 0);
     assert_true(g_apdu_response_active);
     assert_true(g_apdu_response_deferred);
 
     apdu_response_send_sw(SWO_SUCCESS);
-    assert_int_equal(g_last_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_swo, SWO_SUCCESS);
     assert_false(g_apdu_response_active);
 }
 
@@ -339,7 +345,7 @@ static void test_invalid_cla_is_rejected(void **state) {
     command_t cmd = make_command_with_cla(CLA + 1, INS_GET_VERSION, P1_UNUSED, P2_UNUSED);
     apdu_dispatcher(&cmd);
 
-    assert_int_equal(g_last_sw, SWO_INVALID_CLA);
+    assert_int_equal(g_last_swo, SWO_INVALID_CLA);
     assert_int_equal(g_last_called_ins, 0);
 }
 
@@ -366,7 +372,7 @@ static void test_stateless_dispatch_routes_to_basic_handlers(void **state) {
         command_t cmd = make_command(cases[i].ins, P1_UNUSED, P2_UNUSED);
         apdu_dispatcher(&cmd);
 
-        assert_int_equal(g_last_sw, SWO_SUCCESS);
+        assert_int_equal(g_last_swo, SWO_SUCCESS);
         assert_int_equal(g_last_called_ins, cases[i].expected_ins);
     }
 }
@@ -379,7 +385,7 @@ static void test_invalid_instruction_is_rejected(void **state) {
     command_t cmd = make_command(0xEE, P1_UNUSED, P2_UNUSED);
     apdu_dispatcher(&cmd);
 
-    assert_int_equal(g_last_sw, SWO_INVALID_INS);
+    assert_int_equal(g_last_swo, SWO_INVALID_INS);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
 
@@ -413,7 +419,7 @@ static void test_dispatcher_rejects_invalid_p1_p2_combinations(void **state) {
         command_t cmd = make_command(cases[i].ins, cases[i].p1, cases[i].p2);
         apdu_dispatcher(&cmd);
 
-        assert_int_equal(g_last_sw, SWO_INCORRECT_P1_P2);
+        assert_int_equal(g_last_swo, SWO_INCORRECT_P1_P2);
         assert_int_equal(g_last_called_ins, 0);
         assert_int_equal(G_context.req_type, REQUEST_NONE);
     }
@@ -440,7 +446,7 @@ static void test_sign_tx_special_branches_are_dispatched(void **state) {
         command_t cmd = make_command(INS_SIGN_TX, cases[i].p1, cases[i].p2);
         apdu_dispatcher(&cmd);
 
-        assert_int_equal(g_last_sw, SWO_SUCCESS);
+        assert_int_equal(g_last_swo, SWO_SUCCESS);
         assert_int_equal(g_last_called_ins, INS_SIGN_TX);
         assert_int_equal(g_last_handler_variant, cases[i].expected_variant);
         assert_int_equal(g_last_handler_p1_or_p2, cases[i].expected_p1_or_p2);
@@ -473,7 +479,7 @@ static void test_multi_phase_handlers_accept_all_supported_p1_values(void **stat
             command_t cmd = make_command(cases[i].ins, cases[i].valid_p1_values[j], P2_UNUSED);
             apdu_dispatcher(&cmd);
 
-            assert_int_equal(g_last_sw, SWO_SUCCESS);
+            assert_int_equal(g_last_swo, SWO_SUCCESS);
             assert_int_equal(g_last_called_ins, cases[i].ins);
             assert_int_equal(g_last_handler_p1_or_p2, cases[i].valid_p1_values[j]);
         }
@@ -482,6 +488,8 @@ static void test_multi_phase_handlers_accept_all_supported_p1_values(void **stat
 
 static int assert_no_pending_deferred_response(void **state) {
     (void) state;
+    // This test cannot use the shared assert_no_pending_apdu_response() helper
+    // because it replaces the APDU response functions with file-local stubs.
     assert_false(g_apdu_response_active && g_apdu_response_deferred && !g_apdu_response_sent);
     return 0;
 }

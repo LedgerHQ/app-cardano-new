@@ -72,7 +72,7 @@ static inline void run_fixture(const derive_address_fixture_t *fixture) {
     handler_derive_address(&derive_address_buffer.sdk_buffer, fixture->p1);
     apdu_response_assert_sent_or_deferred();
     assert_read_buffer_unchanged_and_cleanup(&derive_address_buffer, fixture->data);
-    assert_int_equal(g_last_response_sw, fixture->check_expected);
+    assert_int_equal(g_last_response_swo, fixture->check_expected);
 
     if (fixture->check_expected == SWO_SUCCESS && fixture->p1 == P1_ADDRESS_RETURN) {
         if (fixture->expected_address == NULL || fixture->expected_address_len == 0) {

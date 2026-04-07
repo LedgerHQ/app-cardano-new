@@ -36,17 +36,17 @@
 // the cardano_sign_tx_core library which includes nbgl_mock.c
 // ----------------------------------------------------------------------
 
-static uint16_t g_last_sw = 0;
+static uint16_t g_last_swo = 0;
 
 int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
     (void) buffer;
     (void) bufferLength;
-    g_last_sw = swo;
+    g_last_swo = swo;
     return 0;
 }
 
 int io_send_sw(uint16_t swo) {
-    g_last_sw = swo;
+    g_last_swo = swo;
     return 0;
 }
 
@@ -56,7 +56,7 @@ int io_send_sw(uint16_t swo) {
 
 static void reset_context(void) {
     memset(&G_context, 0, sizeof(G_context));
-    g_last_sw = 0;
+    g_last_swo = 0;
 }
 
 static inline void run_sign_tx_apdu(buffer_t *buffer, uint8_t p1) {
@@ -123,17 +123,17 @@ static void run_sign_tx_deny_fixture(const sign_tx_deny_fixture_t *fixture) {
         .offset = 0,
     };
 
-    g_last_sw = 0;
+    g_last_swo = 0;
     run_sign_tx_apdu(&init_buf, P1_TX_INIT);
 
     if (fixture->expect_init_failure) {
-        assert_int_equal(g_last_sw, fixture->expected_swo);
+        assert_int_equal(g_last_swo, fixture->expected_swo);
         assert_int_equal(G_context.req_type, REQUEST_NONE);
         tx_context_cleanup();
         return;
     }
 
-    assert_int_equal(g_last_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_swo, SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
     if (fixture->chunk_count > 0 && fixture->chunks[0].p1 == P1_TX_AUX_DATA) {
         assert_int_equal(G_context.state.tx_state, TX_STATE_AUX_DATA);
@@ -151,7 +151,7 @@ static void run_sign_tx_deny_fixture(const sign_tx_deny_fixture_t *fixture) {
             .size = chunk_len,
             .offset = 0,
         };
-        g_last_sw = 0;
+        g_last_swo = 0;
         if (segment->p1 == P1_TX_SIGN_WITNESS) {
             run_sign_tx_witness_apdu(&chunk_buf);
         } else if (segment->p1 == P1_TX_AUX_DATA) {
@@ -159,11 +159,11 @@ static void run_sign_tx_deny_fixture(const sign_tx_deny_fixture_t *fixture) {
         } else {
             run_sign_tx_apdu(&chunk_buf, segment->p1);
         }
-        if (g_last_sw != 0) {
-            if (g_last_sw == SWO_SUCCESS) {
+        if (g_last_swo != 0) {
+            if (g_last_swo == SWO_SUCCESS) {
                 continue;
             }
-            assert_int_equal(g_last_sw, fixture->expected_swo);
+            assert_int_equal(g_last_swo, fixture->expected_swo);
             failure_seen = true;
             break;
         }

@@ -5,6 +5,7 @@ import hashlib
 import re
 from typing import Any, Sequence
 
+from tests.application_client.security_warnings import WarningBit
 from tests.unit.generators.common import (
     _ensure_base58_module,
     bool_to_c,
@@ -102,6 +103,144 @@ def _extract_aux_data_hash_from_tx_body(hex_str: str) -> str | None:
 
 def _count_fixture_structs(header_text: str) -> int:
     return len(_TX_FIXTURE_PATTERN.findall(header_text))
+
+
+_HARDENED_BIP32 = 0x80000000
+_PURPOSE_BYRON = 44
+_PURPOSE_SHELLEY = 1852
+_PURPOSE_POOL_COLD_KEY = 1853
+_PURPOSE_MULTISIG = 1854
+_PURPOSE_MINT = 1855
+_PURPOSE_CVOTE_KEY = 1694
+_ADA_COIN_TYPE = 1815
+_MAX_REASONABLE_ACCOUNT = 100
+_MAX_REASONABLE_ADDRESS = 1_000_000
+_MAX_REASONABLE_COLD_KEY_INDEX = 1_000_000
+_MAX_REASONABLE_MINT_POLICY_INDEX = 1_000_000
+_CARDANO_CHAIN_EXTERNAL = 0
+_CARDANO_CHAIN_INTERNAL = 1
+_CARDANO_CHAIN_STAKING_KEY = 2
+_CARDANO_CHAIN_DREP_KEY = 3
+_CARDANO_CHAIN_COMMITTEE_COLD_KEY = 4
+_CARDANO_CHAIN_COMMITTEE_HOT_KEY = 5
+
+
+def _parse_bip32_path(path: str) -> list[int]:
+    if not path.startswith("m"):
+        raise ValueError(f"Unexpected BIP32 path prefix: {path}")
+
+    if path == "m":
+        return []
+
+    path_parts = path.split("/")[1:]
+    parsed_path: list[int] = []
+    for path_part in path_parts:
+        is_hardened = path_part.endswith("'")
+        path_index = int(path_part[:-1] if is_hardened else path_part)
+        parsed_path.append(path_index | _HARDENED_BIP32 if is_hardened else path_index)
+    return parsed_path
+
+
+def _is_hardened(path_word: int) -> bool:
+    return (path_word & _HARDENED_BIP32) != 0
+
+
+def _unharden(path_word: int) -> int:
+    return path_word & ~_HARDENED_BIP32
+
+
+def _has_reasonable_account(path_words: list[int]) -> bool:
+    if len(path_words) <= 2:
+        return False
+    account = path_words[2]
+    return _is_hardened(account) and _unharden(account) <= _MAX_REASONABLE_ACCOUNT
+
+
+def _has_reasonable_address(path_words: list[int]) -> bool:
+    return len(path_words) > 4 and path_words[4] <= _MAX_REASONABLE_ADDRESS
+
+
+def _is_reasonable_witness_path(path: str) -> bool:
+    path_words = _parse_bip32_path(path)
+    if len(path_words) < 2:
+        return False
+
+    purpose = path_words[0]
+    coin_type = path_words[1]
+    if coin_type != (_ADA_COIN_TYPE | _HARDENED_BIP32):
+        return False
+
+    if purpose in (
+        _PURPOSE_BYRON | _HARDENED_BIP32,
+        _PURPOSE_SHELLEY | _HARDENED_BIP32,
+    ):
+        if len(path_words) == 3:
+            return _has_reasonable_account(path_words)
+        if len(path_words) == 5 and path_words[3] in (
+            _CARDANO_CHAIN_EXTERNAL,
+            _CARDANO_CHAIN_INTERNAL,
+            _CARDANO_CHAIN_STAKING_KEY,
+        ):
+            return _has_reasonable_account(path_words) and _has_reasonable_address(
+                path_words
+            )
+        if len(path_words) == 5 and path_words[3] in (
+            _CARDANO_CHAIN_DREP_KEY,
+            _CARDANO_CHAIN_COMMITTEE_COLD_KEY,
+            _CARDANO_CHAIN_COMMITTEE_HOT_KEY,
+        ):
+            return (
+                _has_reasonable_account(path_words)
+                and _has_reasonable_address(path_words)
+                and path_words[4] == 0
+            )
+        return False
+
+    if purpose == (_PURPOSE_MULTISIG | _HARDENED_BIP32):
+        if len(path_words) == 3:
+            return _has_reasonable_account(path_words)
+        if len(path_words) == 5 and path_words[3] in (
+            _CARDANO_CHAIN_EXTERNAL,
+            _CARDANO_CHAIN_INTERNAL,
+            _CARDANO_CHAIN_STAKING_KEY,
+        ):
+            return _has_reasonable_account(path_words) and _has_reasonable_address(
+                path_words
+            )
+        return False
+
+    if purpose == (_PURPOSE_MINT | _HARDENED_BIP32):
+        return (
+            len(path_words) == 3
+            and _is_hardened(path_words[2])
+            and _unharden(path_words[2]) <= _MAX_REASONABLE_MINT_POLICY_INDEX
+        )
+
+    if purpose == (_PURPOSE_POOL_COLD_KEY | _HARDENED_BIP32):
+        return (
+            len(path_words) == 4
+            and path_words[2] == _HARDENED_BIP32
+            and _is_hardened(path_words[3])
+            and _unharden(path_words[3]) <= _MAX_REASONABLE_COLD_KEY_INDEX
+        )
+
+    if purpose == (_PURPOSE_CVOTE_KEY | _HARDENED_BIP32):
+        if len(path_words) == 3:
+            return _has_reasonable_account(path_words)
+        return (
+            len(path_words) == 5
+            and path_words[3] == 0
+            and _has_reasonable_account(path_words)
+            and _has_reasonable_address(path_words)
+        )
+
+    return False
+
+
+def _warning_expr_from_witness_path(witness_path: str) -> str:
+    if _is_reasonable_witness_path(witness_path):
+        return "0"
+    return f"((warning_bits_t)1 << {WarningBit.WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH.name})"
 
 
 def _generate_fixtures_for_era(
@@ -287,6 +426,7 @@ def _generate_fixtures_for_era(
             witness_payload_entries.append(
                 "    { .payload = "
                 f"{witness_payload_name}, .payload_len = sizeof({witness_payload_name}), "
+                f".expected_warning_bits = {_warning_expr_from_witness_path(witness_path)}, "
                 f".expected_signature = {witness_signature_name} }},"
             )
         if witness_payload_entries:

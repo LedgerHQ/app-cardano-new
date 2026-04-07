@@ -60,7 +60,7 @@ static void reset_all(void) {
 // Returns the final SW captured from the mock IO.
 static uint16_t run_simple_pubkey_hash_script(void) {
     run_derive_native_script_init_apdu();
-    if (get_last_sw() != SWO_SUCCESS) return get_last_sw();
+    if (get_last_swo() != SWO_SUCCESS) return get_last_swo();
 
     uint8_t simple_payload[1 + 1 + ADDRESS_KEY_HASH_LENGTH] = {0};
     simple_payload[0] = NATIVE_SCRIPT_PUBKEY;
@@ -70,12 +70,12 @@ static uint16_t run_simple_pubkey_hash_script(void) {
     }
     buffer_t buf = {.ptr = simple_payload, .size = sizeof(simple_payload), .offset = 0};
     run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
-    if (get_last_sw() != SWO_SUCCESS) return get_last_sw();
+    if (get_last_swo() != SWO_SUCCESS) return get_last_swo();
 
     uint8_t finish_payload[1] = {DISPLAY_NATIVE_SCRIPT_HASH_BECH32};
     buffer_t finish_buf = {.ptr = finish_payload, .size = sizeof(finish_payload), .offset = 0};
     run_derive_native_script_apdu(&finish_buf, P1_NATIVE_SCRIPT_FINISH);
-    return get_last_sw();
+    return get_last_swo();
 }
 
 // ======================================================================
@@ -95,7 +95,7 @@ static void test_render_pubkey_path_script(void **state) {
     (void) state;
     reset_all();
     run_derive_native_script_init_apdu();
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     // m / 1852' / 1815' / 0' / 2 / 0  (valid shelley spending path, hardened account)
     uint8_t simple_payload[1 + 1 + 1 + 5 * 4] = {0};
@@ -110,12 +110,12 @@ static void test_render_pubkey_path_script(void **state) {
 
     buffer_t buf = {.ptr = simple_payload, .size = sizeof(simple_payload), .offset = 0};
     run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     uint8_t finish_payload[1] = {DISPLAY_NATIVE_SCRIPT_HASH_BECH32};
     buffer_t finish_buf = {.ptr = finish_payload, .size = sizeof(finish_payload), .offset = 0};
     run_derive_native_script_apdu(&finish_buf, P1_NATIVE_SCRIPT_FINISH);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
 
@@ -124,7 +124,7 @@ static void test_render_invalid_before_script(void **state) {
     (void) state;
     reset_all();
     run_derive_native_script_init_apdu();
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     uint8_t payload[1 + 8] = {0};
     payload[0] = NATIVE_SCRIPT_INVALID_BEFORE;
@@ -136,12 +136,12 @@ static void test_render_invalid_before_script(void **state) {
     }
     buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
     run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     uint8_t finish_payload[1] = {DISPLAY_NATIVE_SCRIPT_HASH_BECH32};
     buffer_t finish_buf = {.ptr = finish_payload, .size = sizeof(finish_payload), .offset = 0};
     run_derive_native_script_apdu(&finish_buf, P1_NATIVE_SCRIPT_FINISH);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
 
@@ -150,7 +150,7 @@ static void test_render_invalid_hereafter_script(void **state) {
     (void) state;
     reset_all();
     run_derive_native_script_init_apdu();
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     uint8_t payload[1 + 8] = {0};
     payload[0] = NATIVE_SCRIPT_INVALID_HEREAFTER;
@@ -161,12 +161,12 @@ static void test_render_invalid_hereafter_script(void **state) {
     }
     buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
     run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     uint8_t finish_payload[1] = {DISPLAY_NATIVE_SCRIPT_HASH_BECH32};
     buffer_t finish_buf = {.ptr = finish_payload, .size = sizeof(finish_payload), .offset = 0};
     run_derive_native_script_apdu(&finish_buf, P1_NATIVE_SCRIPT_FINISH);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
 
@@ -179,26 +179,26 @@ static void test_render_all_script(void **state) {
     (void) state;
     reset_all();
     run_derive_native_script_init_apdu();
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     uint8_t complex_payload[5] = {0};
     complex_payload[0] = NATIVE_SCRIPT_ALL;
     write_u32_be(&complex_payload[1], 1);
     buffer_t complex_buf = {.ptr = complex_payload, .size = sizeof(complex_payload), .offset = 0};
     run_derive_native_script_apdu(&complex_buf, P1_NATIVE_SCRIPT_START_COMPLEX);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     uint8_t child_payload[1 + 1 + ADDRESS_KEY_HASH_LENGTH] = {0};
     child_payload[0] = NATIVE_SCRIPT_PUBKEY;
     child_payload[1] = EXT_CREDENTIAL_KEY_HASH;
     buffer_t child_buf = {.ptr = child_payload, .size = sizeof(child_payload), .offset = 0};
     run_derive_native_script_apdu(&child_buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     uint8_t finish_payload[1] = {DISPLAY_NATIVE_SCRIPT_HASH_BECH32};
     buffer_t finish_buf = {.ptr = finish_payload, .size = sizeof(finish_payload), .offset = 0};
     run_derive_native_script_apdu(&finish_buf, P1_NATIVE_SCRIPT_FINISH);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
 
@@ -207,26 +207,26 @@ static void test_render_any_script(void **state) {
     (void) state;
     reset_all();
     run_derive_native_script_init_apdu();
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     uint8_t complex_payload[5] = {0};
     complex_payload[0] = NATIVE_SCRIPT_ANY;
     write_u32_be(&complex_payload[1], 1);
     buffer_t complex_buf = {.ptr = complex_payload, .size = sizeof(complex_payload), .offset = 0};
     run_derive_native_script_apdu(&complex_buf, P1_NATIVE_SCRIPT_START_COMPLEX);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     uint8_t child_payload[1 + 1 + ADDRESS_KEY_HASH_LENGTH] = {0};
     child_payload[0] = NATIVE_SCRIPT_PUBKEY;
     child_payload[1] = EXT_CREDENTIAL_KEY_HASH;
     buffer_t child_buf = {.ptr = child_payload, .size = sizeof(child_payload), .offset = 0};
     run_derive_native_script_apdu(&child_buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     uint8_t finish_payload[1] = {DISPLAY_NATIVE_SCRIPT_HASH_BECH32};
     buffer_t finish_buf = {.ptr = finish_payload, .size = sizeof(finish_payload), .offset = 0};
     run_derive_native_script_apdu(&finish_buf, P1_NATIVE_SCRIPT_FINISH);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
 
@@ -235,7 +235,7 @@ static void test_render_n_of_k_script(void **state) {
     (void) state;
     reset_all();
     run_derive_native_script_init_apdu();
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     uint8_t complex_payload[9] = {0};
     complex_payload[0] = NATIVE_SCRIPT_N_OF_K;
@@ -243,7 +243,7 @@ static void test_render_n_of_k_script(void **state) {
     write_u32_be(&complex_payload[5], 1);  // require 1-of-2
     buffer_t complex_buf = {.ptr = complex_payload, .size = sizeof(complex_payload), .offset = 0};
     run_derive_native_script_apdu(&complex_buf, P1_NATIVE_SCRIPT_START_COMPLEX);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     for (int i = 0; i < 2; i++) {
         uint8_t child_payload[1 + 1 + ADDRESS_KEY_HASH_LENGTH] = {0};
@@ -252,13 +252,13 @@ static void test_render_n_of_k_script(void **state) {
         child_payload[2] = (uint8_t)(i + 1);  // distinct hash bytes
         buffer_t child_buf = {.ptr = child_payload, .size = sizeof(child_payload), .offset = 0};
         run_derive_native_script_apdu(&child_buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
-        assert_int_equal(get_last_sw(), SWO_SUCCESS);
+        assert_int_equal(get_last_swo(), SWO_SUCCESS);
     }
 
     uint8_t finish_payload[1] = {DISPLAY_NATIVE_SCRIPT_HASH_BECH32};
     buffer_t finish_buf = {.ptr = finish_payload, .size = sizeof(finish_payload), .offset = 0};
     run_derive_native_script_apdu(&finish_buf, P1_NATIVE_SCRIPT_FINISH);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
 
@@ -274,7 +274,7 @@ static void test_render_policy_id_display_format(void **state) {
     // run_simple_pubkey_hash_script already uses bech32; run a fresh flow with policy-id
     reset_all();
     run_derive_native_script_init_apdu();
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     uint8_t simple_payload[1 + 1 + ADDRESS_KEY_HASH_LENGTH] = {0};
     simple_payload[0] = NATIVE_SCRIPT_PUBKEY;
@@ -284,12 +284,12 @@ static void test_render_policy_id_display_format(void **state) {
     }
     buffer_t buf = {.ptr = simple_payload, .size = sizeof(simple_payload), .offset = 0};
     run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     uint8_t finish_payload[1] = {DISPLAY_NATIVE_SCRIPT_HASH_POLICY_ID};
     buffer_t finish_buf = {.ptr = finish_payload, .size = sizeof(finish_payload), .offset = 0};
     run_derive_native_script_apdu(&finish_buf, P1_NATIVE_SCRIPT_FINISH);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
 
@@ -303,7 +303,7 @@ static void test_render_nested_all_exercises_position_formatting(void **state) {
     (void) state;
     reset_all();
     run_derive_native_script_init_apdu();
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     // Outer ALL (2 children)
     uint8_t outer_payload[5] = {0};
@@ -311,7 +311,7 @@ static void test_render_nested_all_exercises_position_formatting(void **state) {
     write_u32_be(&outer_payload[1], 2);
     buffer_t outer_buf = {.ptr = outer_payload, .size = sizeof(outer_payload), .offset = 0};
     run_derive_native_script_apdu(&outer_buf, P1_NATIVE_SCRIPT_START_COMPLEX);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     // Inner ALL (1 child) — triggers level=2, exercises position display
     uint8_t inner_payload[5] = {0};
@@ -319,7 +319,7 @@ static void test_render_nested_all_exercises_position_formatting(void **state) {
     write_u32_be(&inner_payload[1], 1);
     buffer_t inner_buf = {.ptr = inner_payload, .size = sizeof(inner_payload), .offset = 0};
     run_derive_native_script_apdu(&inner_buf, P1_NATIVE_SCRIPT_START_COMPLEX);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     // Child of inner ALL
     uint8_t child_payload[1 + 1 + ADDRESS_KEY_HASH_LENGTH] = {0};
@@ -327,7 +327,7 @@ static void test_render_nested_all_exercises_position_formatting(void **state) {
     child_payload[1] = EXT_CREDENTIAL_KEY_HASH;
     buffer_t child_buf = {.ptr = child_payload, .size = sizeof(child_payload), .offset = 0};
     run_derive_native_script_apdu(&child_buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     // Second child of outer ALL
     uint8_t child2_payload[1 + 1 + ADDRESS_KEY_HASH_LENGTH] = {0};
@@ -338,12 +338,12 @@ static void test_render_nested_all_exercises_position_formatting(void **state) {
     }
     buffer_t child2_buf = {.ptr = child2_payload, .size = sizeof(child2_payload), .offset = 0};
     run_derive_native_script_apdu(&child2_buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     uint8_t finish_payload[1] = {DISPLAY_NATIVE_SCRIPT_HASH_BECH32};
     buffer_t finish_buf = {.ptr = finish_payload, .size = sizeof(finish_payload), .offset = 0};
     run_derive_native_script_apdu(&finish_buf, P1_NATIVE_SCRIPT_FINISH);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
 

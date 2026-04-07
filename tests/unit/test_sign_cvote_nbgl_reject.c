@@ -73,7 +73,7 @@ static void test_nbgl_reject_on_cvote_confirm_resets_context(void **state) {
     init_payload[4 + 32] = 7;  // proposal index
     init_payload[4 + 33] = 1;  // payload type tag
     run_sign_cvote_apdu(init_payload, sizeof(init_payload), P1_CVOTE_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.state.cvote_state, VOTECAST_STATE_CONFIRM);
 
     const bool final_decisions[] = {false};
@@ -94,7 +94,7 @@ static void test_nbgl_reject_on_cvote_confirm_resets_context(void **state) {
     run_sign_cvote_apdu(confirm_payload, confirm_payload_len, P1_CVOTE_CONFIRM);
     nbgl_mock_assert_all_final_decisions_consumed();
 
-    assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(g_last_response_swo, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(g_last_response_len, 0);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_int_equal(G_context.state.cvote_state, VOTECAST_STATE_NONE);

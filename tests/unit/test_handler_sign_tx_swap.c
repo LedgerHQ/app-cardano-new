@@ -38,13 +38,13 @@ static void test_sign_tx_swap_mode_skips_ui_and_validates_exchange_parameters(vo
     assert_true(init_len > 0);
 
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
     assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
 
     run_sign_tx_body_chunked(fixture->raw_tx, fixture->raw_tx_len);
 
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(g_last_response_len, TX_HASH_LENGTH);
     assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
     assert_int_equal(G_context.state.tx_state, TX_STATE_APPROVED);

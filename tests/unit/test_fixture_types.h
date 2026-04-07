@@ -23,6 +23,7 @@ typedef enum {
 typedef struct {
     const uint8_t *payload;
     size_t payload_len;
+    warning_bits_t expected_warning_bits;
     const uint8_t *expected_signature;
 } witness_payload_t;
 
@@ -57,6 +58,8 @@ typedef struct {
     uint16_t num_reference_inputs;
     uint16_t num_voters;
     bool include_treasury;
+    // Treasury and donation values are encoded inside raw_tx / tx_body_cbor_hex.
+    // These fixture fields are metadata for readability and source parity only.
     uint64_t treasury;
     bool include_donation;
     uint64_t donation;

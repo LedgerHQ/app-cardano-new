@@ -122,7 +122,7 @@ static void test_cvote_init_rejects_truncated_length_field(void **state) {
     // Only 2 bytes — can't read the 4-byte total_len field.
     static const uint8_t buf[] = {0x00, 0x00};
     run_cvote_apdu(buf, sizeof(buf), P1_CVOTE_INIT);
-    assert_int_equal(g_last_response_sw, SWO_CVOTE_PARSING_FAIL_REMAINING_VOTECAST_BYTES);
+    assert_int_equal(g_last_response_swo, SWO_CVOTE_PARSING_FAIL_REMAINING_VOTECAST_BYTES);
 }
 
 static void test_cvote_init_rejects_missing_vote_plan_id(void **state) {
@@ -131,7 +131,7 @@ static void test_cvote_init_rejects_missing_vote_plan_id(void **state) {
     run_cvote_apdu(CVOTE_INIT_NO_VOTE_PLAN_ID,
                    sizeof(CVOTE_INIT_NO_VOTE_PLAN_ID),
                    P1_CVOTE_INIT);
-    assert_int_equal(g_last_response_sw, SWO_CVOTE_PARSING_FAIL_VOTE_PLAN_ID);
+    assert_int_equal(g_last_response_swo, SWO_CVOTE_PARSING_FAIL_VOTE_PLAN_ID);
 }
 
 static void test_cvote_init_rejects_missing_proposal_index(void **state) {
@@ -140,7 +140,7 @@ static void test_cvote_init_rejects_missing_proposal_index(void **state) {
     run_cvote_apdu(CVOTE_INIT_NO_PROPOSAL_INDEX,
                    sizeof(CVOTE_INIT_NO_PROPOSAL_INDEX),
                    P1_CVOTE_INIT);
-    assert_int_equal(g_last_response_sw, SWO_CVOTE_PARSING_FAIL_PROPOSAL_INDEX);
+    assert_int_equal(g_last_response_swo, SWO_CVOTE_PARSING_FAIL_PROPOSAL_INDEX);
 }
 
 static void test_cvote_init_rejects_missing_payload_type_tag(void **state) {
@@ -149,7 +149,7 @@ static void test_cvote_init_rejects_missing_payload_type_tag(void **state) {
     run_cvote_apdu(CVOTE_INIT_NO_PAYLOAD_TYPE_TAG,
                    sizeof(CVOTE_INIT_NO_PAYLOAD_TYPE_TAG),
                    P1_CVOTE_INIT);
-    assert_int_equal(g_last_response_sw, SWO_CVOTE_PARSING_FAIL_PAYLOAD_TYPE_TAG);
+    assert_int_equal(g_last_response_swo, SWO_CVOTE_PARSING_FAIL_PAYLOAD_TYPE_TAG);
 }
 
 // ----------------------------------------------------------------------
@@ -177,7 +177,7 @@ static void test_cvote_chunk_rejects_wrong_size(void **state) {
     };
     run_cvote_apdu(init_expecting_chunks, sizeof(init_expecting_chunks), P1_CVOTE_INIT);
     // This should fail because chunk_size (34) != expected (250)
-    assert_int_equal(g_last_response_sw, SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
 }
 
 static void test_cvote_chunk_rejects_wrong_size_in_chunk_phase(void **state) {
@@ -199,13 +199,13 @@ static void test_cvote_chunk_rejects_wrong_size_in_chunk_phase(void **state) {
         // remaining 216 bytes padding
     };
     run_cvote_apdu(long_init, sizeof(long_init), P1_CVOTE_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
     // remaining_votecast_bytes = 300 - 250 = 50, so expected_chunk_size = 50.
     // Send only 10 bytes — wrong size.
     static const uint8_t bad_chunk[10] = {0};
     run_cvote_apdu(bad_chunk, sizeof(bad_chunk), P1_CVOTE_CHUNK);
-    assert_int_equal(g_last_response_sw, SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
 }
 
 // ----------------------------------------------------------------------
@@ -217,12 +217,12 @@ static void test_cvote_confirm_rejects_truncated_path(void **state) {
     reset_cvote_test_state();
 
     run_cvote_apdu(CVOTE_INIT_VALID_SHORT, sizeof(CVOTE_INIT_VALID_SHORT), P1_CVOTE_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
     run_cvote_apdu(CVOTE_CONFIRM_TRUNCATED_PATH,
                    sizeof(CVOTE_CONFIRM_TRUNCATED_PATH),
                    P1_CVOTE_CONFIRM);
-    assert_int_equal(g_last_response_sw, SWO_BIP44_PATH_PARSING_FAIL);
+    assert_int_equal(g_last_response_swo, SWO_BIP44_PATH_PARSING_FAIL);
 }
 
 static void test_cvote_confirm_rejects_trailing_bytes(void **state) {
@@ -230,12 +230,12 @@ static void test_cvote_confirm_rejects_trailing_bytes(void **state) {
     reset_cvote_test_state();
 
     run_cvote_apdu(CVOTE_INIT_VALID_SHORT, sizeof(CVOTE_INIT_VALID_SHORT), P1_CVOTE_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
     run_cvote_apdu(CVOTE_CONFIRM_TRAILING_BYTE,
                    sizeof(CVOTE_CONFIRM_TRAILING_BYTE),
                    P1_CVOTE_CONFIRM);
-    assert_int_equal(g_last_response_sw, SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
 }
 
 // ----------------------------------------------------------------------
@@ -249,7 +249,7 @@ static void test_cvote_init_rejects_when_session_active(void **state) {
     G_context.req_type = REQUEST_CVOTE;
     G_context.state.cvote_state = VOTECAST_STATE_CHUNK;
     run_cvote_apdu(CVOTE_INIT_VALID_SHORT, sizeof(CVOTE_INIT_VALID_SHORT), P1_CVOTE_INIT);
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_cvote_chunk_rejects_wrong_state(void **state) {
@@ -258,10 +258,10 @@ static void test_cvote_chunk_rejects_wrong_state(void **state) {
 
     // Send a valid INIT (total_len == chunk_size, so transitions to CONFIRM state)
     run_cvote_apdu(CVOTE_INIT_VALID_SHORT, sizeof(CVOTE_INIT_VALID_SHORT), P1_CVOTE_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     // State is now CONFIRM — send CHUNK when in CONFIRM state.
     run_cvote_apdu(CVOTE_INIT_VALID_SHORT, sizeof(CVOTE_INIT_VALID_SHORT), P1_CVOTE_CHUNK);
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_cvote_confirm_rejects_wrong_request_type(void **state) {
@@ -271,7 +271,7 @@ static void test_cvote_confirm_rejects_wrong_request_type(void **state) {
     run_cvote_apdu(CVOTE_CONFIRM_VALID_PATH,
                    sizeof(CVOTE_CONFIRM_VALID_PATH),
                    P1_CVOTE_CONFIRM);
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_cvote_confirm_rejects_wrong_state(void **state) {
@@ -288,12 +288,12 @@ static void test_cvote_confirm_rejects_wrong_state(void **state) {
         0x00, 0x00,
     };
     run_cvote_apdu(long_init, sizeof(long_init), P1_CVOTE_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     // State is CHUNK — send CONFIRM when state is CHUNK.
     run_cvote_apdu(CVOTE_CONFIRM_VALID_PATH,
                    sizeof(CVOTE_CONFIRM_VALID_PATH),
                    P1_CVOTE_CONFIRM);
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 // ----------------------------------------------------------------------

@@ -51,10 +51,24 @@ static void test_streaming_reject_at_continue(void **state) {
         &FIXTURE_STREAMING_SIGN_TX_STREAMING_MANY_REQUIRED_SIGNERS, true);
 }
 
+static void test_streaming_reject_at_later_continue(void **state) {
+    (void) state;
+    run_fixture_reject_streaming_continue_at_call_with_expert_mode(
+        &FIXTURE_STREAMING_SIGN_TX_STREAMING_MANY_REQUIRED_SIGNERS, true, 1);
+}
+
+static void test_streaming_reject_at_finish(void **state) {
+    (void) state;
+    run_fixture_reject_streaming_finish_with_expert_mode(
+        &FIXTURE_STREAMING_SIGN_TX_STREAMING_MANY_REQUIRED_SIGNERS, true);
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_streaming_reject_at_start),
         cmocka_unit_test(test_streaming_reject_at_continue),
+        cmocka_unit_test(test_streaming_reject_at_later_continue),
+        cmocka_unit_test(test_streaming_reject_at_finish),
     };
     return _cmocka_run_group_tests("test_sign_tx_streaming_nbgl_reject",
                                    tests,

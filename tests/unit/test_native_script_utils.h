@@ -41,7 +41,7 @@ void reset_response_buffer(void);
 /**
  * Get last status word from mock IO
  */
-uint16_t get_last_sw(void);
+uint16_t get_last_swo(void);
 
 /**
  * Get response buffer from mock IO

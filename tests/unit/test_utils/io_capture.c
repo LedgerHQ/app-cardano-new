@@ -13,11 +13,11 @@
 
 uint8_t g_last_response[IO_CAPTURE_MAX_RESPONSE_SIZE];
 size_t g_last_response_len = 0;
-uint16_t g_last_response_sw = 0;
+uint16_t g_last_response_swo = 0;
 
 void io_capture_reset(void) {
     g_last_response_len = 0;
-    g_last_response_sw = 0;
+    g_last_response_swo = 0;
 }
 
 __attribute__((weak)) int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
@@ -28,7 +28,7 @@ __attribute__((weak)) int io_send_response_pointer(const uint8_t *buffer, size_t
     }
 
     g_last_response_len = bufferLength;
-    g_last_response_sw = swo;
+    g_last_response_swo = swo;
 
 #ifdef HAVE_SWAP
     // Match SDK behavior in swap mode: once Exchange response is marked ready,
@@ -43,6 +43,6 @@ __attribute__((weak)) int io_send_response_pointer(const uint8_t *buffer, size_t
 
 __attribute__((weak)) int io_send_sw(uint16_t swo) {
     g_last_response_len = 0;
-    g_last_response_sw = swo;
+    g_last_response_swo = swo;
     return 0;
 }

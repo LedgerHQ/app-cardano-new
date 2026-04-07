@@ -58,8 +58,8 @@ void run_recursive_fixture_deny(const native_script_t *script, uint16_t expected
                     &native_script_simple_buffer,
                     script->impl.simple.apdu_payload
                 );
-                if (get_last_sw() != SWO_SUCCESS) {
-                    assert_int_equal(get_last_sw(), expected_response);
+                if (get_last_swo() != SWO_SUCCESS) {
+                    assert_int_equal(get_last_swo(), expected_response);
                 }
             } break;
             case NATIVE_SCRIPT_TYPE_ALL: {
@@ -82,8 +82,8 @@ void run_recursive_fixture_deny(const native_script_t *script, uint16_t expected
                 };
 
                 run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
-                if (get_last_sw() != SWO_SUCCESS) {
-                    assert_int_equal(get_last_sw(), expected_response);
+                if (get_last_swo() != SWO_SUCCESS) {
+                    assert_int_equal(get_last_swo(), expected_response);
                 }
 
                 for (size_t i = 0; i < script->impl.complex.params.all.scripts_count; i++) {
@@ -113,8 +113,8 @@ void run_recursive_fixture_deny(const native_script_t *script, uint16_t expected
 
                 TRACE_BUFFER(buf.ptr, buf.size);
                 run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
-                if (get_last_sw() != SWO_SUCCESS) {
-                    assert_int_equal(get_last_sw(), expected_response);
+                if (get_last_swo() != SWO_SUCCESS) {
+                    assert_int_equal(get_last_swo(), expected_response);
                 }
 
                 for (size_t i = 0; i < script->impl.complex.params.any.scripts_count; i++) {
@@ -145,8 +145,8 @@ void run_recursive_fixture_deny(const native_script_t *script, uint16_t expected
                 };
 
                 run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
-                if (get_last_sw() != SWO_SUCCESS) {
-                    assert_int_equal(get_last_sw(), expected_response);
+                if (get_last_swo() != SWO_SUCCESS) {
+                    assert_int_equal(get_last_swo(), expected_response);
                 }
 
                 for (size_t i = 0; i < script->impl.complex.params.n_of_k.scripts_count; i++) {
@@ -174,14 +174,14 @@ static inline void run_fixture(const native_script_test_case_t *fixture) {
     assert_true(fixture->root_script != NULL);
 
     run_derive_native_script_init_apdu();
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     TRACE("Expected response: 0x%04X", fixture->expected_response);
     // Send all scripts recursively
     run_recursive_fixture_deny(fixture->root_script, fixture->expected_response);
 
     // Send finish APDU if last operation succeeded
-    if (get_last_sw() == SWO_SUCCESS){
+    if (get_last_swo() == SWO_SUCCESS){
         test_read_buffer_t native_script_finish_buffer = make_test_read_buffer(
             fixture->finish_apdu_payload,
             fixture->finish_apdu_payload_length
@@ -191,7 +191,7 @@ static inline void run_fixture(const native_script_test_case_t *fixture) {
             &native_script_finish_buffer,
             fixture->finish_apdu_payload
         );
-        assert_int_equal(get_last_sw(), fixture->expected_response);
+        assert_int_equal(get_last_swo(), fixture->expected_response);
     }
 }
 

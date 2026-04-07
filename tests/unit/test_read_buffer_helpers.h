@@ -21,6 +21,8 @@ typedef struct {
 static inline test_read_buffer_t make_test_read_buffer(const uint8_t* source_data, size_t source_length) {
     test_read_buffer_t test_buffer = {0};
 
+    // Keep zero-length buffers representable because several deny-path tests
+    // intentionally send empty APDU payloads through the same helper.
     const size_t allocated_length = (source_length > 0) ? source_length : 1;
     test_buffer.mutable_copy = (uint8_t*) malloc(allocated_length);
     assert_non_null(test_buffer.mutable_copy);

@@ -55,7 +55,7 @@ def _build_file_header() -> str:
 
 
 def _build_helpers() -> str:
-    return """static uint16_t g_last_sw = 0;
+    return """static uint16_t g_last_swo = 0;
 static uint8_t g_last_response[ED25519_SIGNATURE_LENGTH];
 static size_t g_last_response_len = 0;
 
@@ -66,18 +66,18 @@ int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_
     assert_true(bufferLength <= sizeof(g_last_response));
     memcpy(g_last_response, buffer, bufferLength);
     g_last_response_len = bufferLength;
-    g_last_sw = swo;
+    g_last_swo = swo;
     return 0;
 }
 
 int io_send_sw(uint16_t swo) {
-    g_last_sw = swo;
+    g_last_swo = swo;
     return 0;
 }
 
 void reset_opcert_context(void) {
     memset(&G_context, 0, sizeof(G_context));
-    g_last_sw = 0;
+    g_last_swo = 0;
     g_last_response_len = 0;
     mem_utils_init(test_heap, sizeof(test_heap));
 }
@@ -104,7 +104,7 @@ static void run_opcert_fixture(const opcert_fixture_t *fixture) {
     handler_sign_opcert(&opcert_buffer.sdk_buffer);
     apdu_response_assert_sent_or_deferred();
     assert_read_buffer_unchanged_and_cleanup(&opcert_buffer, fixture->payload);
-    assert_int_equal(g_last_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_swo, SWO_SUCCESS);
     assert_int_equal(g_last_response_len, ED25519_SIGNATURE_LENGTH);
     if (fixture->expected_signature == NULL || fixture->expected_signature_len == 0) {
         fprintf(stderr, "UNIT_CAPTURE [%s] signatureHex=", fixture->name);

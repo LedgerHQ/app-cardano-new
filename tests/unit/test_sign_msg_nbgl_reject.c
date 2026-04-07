@@ -48,11 +48,11 @@ static void test_nbgl_reject_on_sign_msg_review_resets_context(void **state) {
     const sign_msg_fixture_t *fixture = &SIGN_MSG_FIXTURES[0];
 
     run_sign_msg_apdu(fixture->init_data, fixture->init_data_len, P1_SIGN_MSG_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
     for (size_t i = 0; i < fixture->chunk_count; i++) {
         run_sign_msg_apdu(fixture->chunks[i].data, fixture->chunks[i].data_len, P1_SIGN_MSG_CHUNK);
-        assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+        assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     }
 
     const bool final_decisions[] = {false};
@@ -60,7 +60,7 @@ static void test_nbgl_reject_on_sign_msg_review_resets_context(void **state) {
 
     run_sign_msg_apdu(fixture->confirm_data, fixture->confirm_data_len, P1_SIGN_MSG_CONFIRM);
     nbgl_mock_assert_all_final_decisions_consumed();
-    assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(g_last_response_swo, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(g_last_response_len, 0);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_int_equal(G_context.state.sign_msg_state, SIGN_MSG_STATE_NONE);

@@ -28,7 +28,7 @@ static void test_native_script_finish_confirm_shows_expected_status_text(void **
     nbgl_mock_set_streaming_start_auto_complete(true, true);
 
     run_derive_native_script_init_apdu();
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_DERIVE_NATIVE_SCRIPT_HASH);
 
     uint8_t simple_payload[1 + 1 + ADDRESS_KEY_HASH_LENGTH] = {0};
@@ -43,7 +43,7 @@ static void test_native_script_finish_confirm_shows_expected_status_text(void **
         .offset = 0,
     };
     run_derive_native_script_apdu(&simple_buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     uint8_t finish_payload[1] = {DISPLAY_NATIVE_SCRIPT_HASH_BECH32};
     buffer_t finish_buf = {
@@ -53,7 +53,7 @@ static void test_native_script_finish_confirm_shows_expected_status_text(void **
     };
     run_derive_native_script_apdu(&finish_buf, P1_NATIVE_SCRIPT_FINISH);
 
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_true(nbgl_mock_last_status_success());
     assert_string_equal(nbgl_mock_last_status_message(), "Script hash exported");

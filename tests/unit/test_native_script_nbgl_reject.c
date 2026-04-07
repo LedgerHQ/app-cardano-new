@@ -107,16 +107,16 @@ static void send_init_and_all_scripts(void) {
     nbgl_mock_set_streaming_start_auto_complete(true, true);
 
     run_derive_native_script_init_apdu();
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     run_apdu(TC3_START_ALL_2, sizeof(TC3_START_ALL_2), P1_NATIVE_SCRIPT_START_COMPLEX);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     run_apdu(TC3_PUBKEY0, sizeof(TC3_PUBKEY0), P1_NATIVE_SCRIPT_ADD_SIMPLE);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     run_apdu(TC3_PUBKEY1, sizeof(TC3_PUBKEY1), P1_NATIVE_SCRIPT_ADD_SIMPLE);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 }
 
 // ======================================================================
@@ -134,13 +134,13 @@ static void test_streaming_continue_reject_resets_context(void **state) {
     nbgl_mock_set_streaming_continue_reject_at_call(0);
 
     run_derive_native_script_init_apdu();
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_DERIVE_NATIVE_SCRIPT_HASH);
 
     // START_COMPLEX triggers display_complex_script_content → streaming-continue → reject
     run_apdu(TC3_START_ALL_2, sizeof(TC3_START_ALL_2), P1_NATIVE_SCRIPT_START_COMPLEX);
 
-    assert_int_equal(get_last_sw(), SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(get_last_swo(), SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(get_response_buffer_length(), 0);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
@@ -166,7 +166,7 @@ static void test_streaming_finish_reject_resets_context(void **state) {
     run_apdu(TC3_FINISH_BECH32, sizeof(TC3_FINISH_BECH32), P1_NATIVE_SCRIPT_FINISH);
     nbgl_mock_assert_all_final_decisions_consumed();
 
-    assert_int_equal(get_last_sw(), SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(get_last_swo(), SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(get_response_buffer_length(), 0);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
@@ -190,7 +190,7 @@ static void test_final_review_reject_resets_context(void **state) {
 
     run_apdu(TC3_FINISH_BECH32, sizeof(TC3_FINISH_BECH32), P1_NATIVE_SCRIPT_FINISH);
 
-    assert_int_equal(get_last_sw(), SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(get_last_swo(), SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(get_response_buffer_length(), 0);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }

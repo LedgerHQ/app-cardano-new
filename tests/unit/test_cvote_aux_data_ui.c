@@ -155,7 +155,7 @@ static void send_tx_init_for_cvote_delegations(void) {
     assert_true(init_len > 0);
 
     run_sign_tx_apdu_helper(init_raw, init_len, P1_TX_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.state.tx_state, TX_STATE_AUX_DATA);
 }
 
@@ -176,7 +176,7 @@ static void test_cvote_delegation_ui_status_remains_success_after_each_delegatio
     run_aux_data_apdu_helper(CVOTE_UI_TEST_AUX_DATA_INIT_PAYLOAD,
                              sizeof(CVOTE_UI_TEST_AUX_DATA_INIT_PAYLOAD),
                              P2_AUX_DATA_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
     // After init the streaming review start callback fires synchronously in the mock.
     // The state machine transitions to RECEIVING_DELEGATIONS.
@@ -186,7 +186,7 @@ static void test_cvote_delegation_ui_status_remains_success_after_each_delegatio
     run_aux_data_apdu_helper(CVOTE_UI_TEST_DELEGATION_KEY_PAYLOAD,
                              sizeof(CVOTE_UI_TEST_DELEGATION_KEY_PAYLOAD),
                              P2_AUX_DATA_DELEGATION);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     // After a successful delegation page the streaming continue callback fires and calls
     // ui_free_pairs(), then returns SWO_SUCCESS via apdu_response_send_sw.
     // The UI session must have ended cleanly: g_ui_error_status should not be
@@ -199,7 +199,7 @@ static void test_cvote_delegation_ui_status_remains_success_after_each_delegatio
                              sizeof(CVOTE_UI_TEST_DELEGATION_KEY_PATH_PAYLOAD),
                              P2_AUX_DATA_DELEGATION);
     // Last delegation: streaming finish callback fires -> user confirm -> SWO_SUCCESS
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_not_equal(g_ui_error_status, UI_STATUS_OUT_OF_MEMORY);
 }
 
@@ -225,7 +225,7 @@ static void test_cvote_delegation_page_starts_on_new_page_with_correct_pair_coun
     run_aux_data_apdu_helper(CVOTE_UI_TEST_AUX_DATA_INIT_PAYLOAD,
                              sizeof(CVOTE_UI_TEST_AUX_DATA_INIT_PAYLOAD),
                              P2_AUX_DATA_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
     // Before sending the delegation APDU, capture the pair list pointer; after the
     // APDU, the mock's nbgl_useCaseReviewStreamingContinue has already been called with
@@ -235,7 +235,7 @@ static void test_cvote_delegation_page_starts_on_new_page_with_correct_pair_coun
     //
     // The streaming continue mock immediately calls the choice callback (confirm=true)
     // which calls ui_free_pairs(). So by the time run_aux_data_apdu_helper returns the
-    // slab is gone.  We therefore check g_last_response_sw and the absence of OOM,
+    // slab is gone.  We therefore check g_last_response_swo and the absence of OOM,
     // which together prove the finalize step completed without error.
     //
     // Additionally: if force_new_page left a phantom first entry, the CHECK_COUNT
@@ -244,7 +244,7 @@ static void test_cvote_delegation_page_starts_on_new_page_with_correct_pair_coun
     run_aux_data_apdu_helper(CVOTE_UI_TEST_DELEGATION_KEY_PAYLOAD,
                              sizeof(CVOTE_UI_TEST_DELEGATION_KEY_PAYLOAD),
                              P2_AUX_DATA_DELEGATION);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     // No OOM: force_new_page was correctly consumed, not counted as a real pair.
     assert_int_not_equal(g_ui_error_status, UI_STATUS_OUT_OF_MEMORY);
 
@@ -253,7 +253,7 @@ static void test_cvote_delegation_page_starts_on_new_page_with_correct_pair_coun
     run_aux_data_apdu_helper(CVOTE_UI_TEST_DELEGATION_KEY_PATH_PAYLOAD,
                              sizeof(CVOTE_UI_TEST_DELEGATION_KEY_PATH_PAYLOAD),
                              P2_AUX_DATA_DELEGATION);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_not_equal(g_ui_error_status, UI_STATUS_OUT_OF_MEMORY);
 }
 
@@ -294,7 +294,7 @@ static void test_cvote_delegation_policy_deny_sends_one_sw_and_resets_context(vo
     run_aux_data_apdu_helper(CVOTE_UI_TEST_AUX_DATA_INIT_PAYLOAD,
                              sizeof(CVOTE_UI_TEST_AUX_DATA_INIT_PAYLOAD),
                              P2_AUX_DATA_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
     // First delegation APDU uses an invalid KEY_PATH (chain=1).
     // policyForCVoteRegistrationVoteKey: format=CIP36, type=KEY_PATH, chain!=0
@@ -305,7 +305,7 @@ static void test_cvote_delegation_policy_deny_sends_one_sw_and_resets_context(vo
                              P2_AUX_DATA_DELEGATION);
 
     // Invariant: exactly one error SW, context fully reset.
-    assert_int_equal(g_last_response_sw, SWO_SECURITY_CONDITION_NOT_SATISFIED);
+    assert_int_equal(g_last_response_swo, SWO_SECURITY_CONDITION_NOT_SATISFIED);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
     // UI error status must not be OOM — the render session must have ended cleanly.
@@ -332,13 +332,13 @@ static void test_cvote_user_reject_on_final_review_resets_context(void **state) 
     run_aux_data_apdu_helper(CVOTE_UI_TEST_AUX_DATA_INIT_PAYLOAD,
                              sizeof(CVOTE_UI_TEST_AUX_DATA_INIT_PAYLOAD),
                              P2_AUX_DATA_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
     // First delegation (confirm)
     run_aux_data_apdu_helper(CVOTE_UI_TEST_DELEGATION_KEY_PAYLOAD,
                              sizeof(CVOTE_UI_TEST_DELEGATION_KEY_PAYLOAD),
                              P2_AUX_DATA_DELEGATION);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
     // Second (last) delegation: streaming-finish mock fires. Inject rejection.
     const bool final_decisions[] = {false};
@@ -349,7 +349,7 @@ static void test_cvote_user_reject_on_final_review_resets_context(void **state) 
                              P2_AUX_DATA_DELEGATION);
     nbgl_mock_assert_all_final_decisions_consumed();
 
-    assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(g_last_response_swo, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
     assert_int_not_equal(g_ui_error_status, UI_STATUS_OUT_OF_MEMORY);
@@ -406,7 +406,7 @@ static void test_cvote_user_reject_on_streaming_start_screen_resets_context(void
                              sizeof(CVOTE_UI_TEST_AUX_DATA_INIT_42_DELEGATIONS),
                              P2_AUX_DATA_INIT);
 
-    assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(g_last_response_swo, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
     assert_int_not_equal(g_ui_error_status, UI_STATUS_OUT_OF_MEMORY);

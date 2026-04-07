@@ -57,9 +57,9 @@ static void test_nbgl_reject_on_witness_review_resets_context(void **state) {
     assert_true(init_len > 0);
 
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     run_sign_tx_body_chunked(fixture->raw_tx, fixture->raw_tx_len);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.state.tx_state, TX_STATE_APPROVED);
     assert_int_equal(tx_witness_ctx()->current_witness, 0);
     assert_int_equal(G_context.tx_info.num_witnesses, 1);
@@ -86,7 +86,7 @@ static void test_nbgl_reject_on_witness_review_resets_context(void **state) {
     });
     nbgl_mock_assert_all_final_decisions_consumed();
 
-    assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(g_last_response_swo, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(g_last_response_len, 0);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);

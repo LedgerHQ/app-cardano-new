@@ -45,7 +45,7 @@ void run_recursive_fixture(const native_script_t *script) {
                     &native_script_simple_buffer,
                     script->impl.simple.apdu_payload
                 );
-                assert_int_equal(get_last_sw(), SWO_SUCCESS);
+                assert_int_equal(get_last_swo(), SWO_SUCCESS);
             } break;
             case NATIVE_SCRIPT_TYPE_ALL: {
                 TRACE("  ALL\n");
@@ -66,7 +66,7 @@ void run_recursive_fixture(const native_script_t *script) {
                     .offset = 0,
                 };
                 run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
-                assert_int_equal(get_last_sw(), SWO_SUCCESS);
+                assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
                 for (size_t i = 0; i < script->impl.complex.params.all.scripts_count; i++) {
                     run_recursive_fixture(script->impl.complex.params.all.scripts[i]);
@@ -94,7 +94,7 @@ void run_recursive_fixture(const native_script_t *script) {
 
                 TRACE_BUFFER(buf.ptr, buf.size);
                 run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
-                assert_int_equal(get_last_sw(), SWO_SUCCESS);
+                assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
                 for (size_t i = 0; i < script->impl.complex.params.any.scripts_count; i++) {
                     run_recursive_fixture(script->impl.complex.params.any.scripts[i]);
@@ -119,7 +119,7 @@ void run_recursive_fixture(const native_script_t *script) {
                     .offset = 0,
                 };
                 run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
-                assert_int_equal(get_last_sw(), SWO_SUCCESS);
+                assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
                 for (size_t i = 0; i < script->impl.complex.params.n_of_k.scripts_count; i++) {
                     run_recursive_fixture(script->impl.complex.params.n_of_k.scripts[i]);
@@ -144,7 +144,7 @@ static inline void run_fixture(const native_script_test_case_t *fixture) {
     assert_true(fixture->root_script != NULL);
 
     run_derive_native_script_init_apdu();
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     // Send all scripts recursively
     run_recursive_fixture(fixture->root_script);
@@ -162,5 +162,5 @@ static inline void run_fixture(const native_script_test_case_t *fixture) {
 
     // Compare derived hash with expected hash
     assert_memory_equal(get_response_buffer(), fixture->expected_hash, SCRIPT_HASH_LENGTH);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 }

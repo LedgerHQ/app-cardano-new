@@ -74,7 +74,7 @@ static void test_get_public_key_when_request_already_active(void **state) {
     apdu_response_begin(INS_GET_PUBLIC_KEY);
     handler_get_public_key(&pubkey_buffer.sdk_buffer);
     apdu_response_assert_sent_or_deferred();
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_get_public_key_truncated_path(void **state) {
@@ -87,7 +87,7 @@ static void test_get_public_key_truncated_path(void **state) {
     apdu_response_begin(INS_GET_PUBLIC_KEY);
     handler_get_public_key(&pubkey_buffer.sdk_buffer);
     apdu_response_assert_sent_or_deferred();
-    assert_int_equal(g_last_response_sw, SWO_BIP44_PATH_PARSING_FAIL);
+    assert_int_equal(g_last_response_swo, SWO_BIP44_PATH_PARSING_FAIL);
 }
 
 static void test_get_public_key_trailing_bytes(void **state) {
@@ -102,7 +102,7 @@ static void test_get_public_key_trailing_bytes(void **state) {
     apdu_response_begin(INS_GET_PUBLIC_KEY);
     handler_get_public_key(&pubkey_buffer.sdk_buffer);
     apdu_response_assert_sent_or_deferred();
-    assert_int_equal(g_last_response_sw, SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
 }
 
 static void test_nbgl_reject_on_pubkey_export_resets_context(void **state) {
@@ -121,7 +121,7 @@ static void test_nbgl_reject_on_pubkey_export_resets_context(void **state) {
     assert_read_buffer_unchanged_and_cleanup(&pubkey_buffer, fixture->data);
     nbgl_mock_assert_all_final_decisions_consumed();
 
-    assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(g_last_response_swo, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(g_last_response_len, 0);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
@@ -205,7 +205,7 @@ static void test_pubkey_review_title_matrix(void **state) {
         nbgl_mock_assert_all_final_decisions_consumed();
 
         assert_string_equal(nbgl_mock_last_choice_message(), test_cases[i].expected_title);
-        assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
+        assert_int_equal(g_last_response_swo, SWO_CONDITIONS_NOT_SATISFIED);
         assert_int_equal(G_context.req_type, REQUEST_NONE);
     }
 }

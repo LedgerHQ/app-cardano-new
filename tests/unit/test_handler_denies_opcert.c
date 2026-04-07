@@ -53,7 +53,7 @@ static void test_opcert_signing_during_tx_signing(void **state) {
     apdu_response_begin(INS_SIGN_OPCERT);
     handler_sign_opcert(&buf);
     apdu_response_assert_sent_or_deferred();
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_opcert_rejects_when_session_active(void **state) {
@@ -70,7 +70,7 @@ static void test_opcert_rejects_when_session_active(void **state) {
     apdu_response_begin(INS_SIGN_OPCERT);
     handler_sign_opcert(&buf);
     apdu_response_assert_sent_or_deferred();
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 int main(void) {

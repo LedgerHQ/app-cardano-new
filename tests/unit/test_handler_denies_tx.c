@@ -104,7 +104,7 @@ static void run_sign_tx_init_case(const init_apdu_params_t *params,
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = expected_apdu_size, .offset = 0},
                      P1_TX_INIT);
 
-    assert_int_equal(g_last_response_sw, expected_swo);
+    assert_int_equal(g_last_response_swo, expected_swo);
 }
 
 static void run_sign_tx_init_case_full(const init_apdu_params_t *params, uint16_t expected_swo) {
@@ -119,7 +119,7 @@ static void run_sign_tx_init_case_full(const init_apdu_params_t *params, uint16_
 
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
 
-    assert_int_equal(g_last_response_sw, expected_swo);
+    assert_int_equal(g_last_response_swo, expected_swo);
 }
 
 static void test_tx_init_invalid_signing_mode(void **state) {
@@ -143,7 +143,7 @@ static void test_tx_init_trailing_bytes(void **state) {
     init_raw[init_len] = 0x00;
 
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len + 1, .offset = 0}, P1_TX_INIT);
-    assert_int_equal(g_last_response_sw, SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
 }
 
 static void test_tx_init_zero_inputs_denied_for_pool_registration_owner(void **state) {
@@ -165,7 +165,7 @@ static void test_tx_init_denied_when_active(void **state) {
     G_context.state.tx_state = TX_STATE_NONE;
 
     run_sign_tx_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0}, P1_TX_INIT);
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_tx_init_missing_inputs_outputs_counts(void **state) {
@@ -327,7 +327,7 @@ static void test_tx_init_missing_raw_tx_total_length(void **state) {
 
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len - 2, .offset = 0},
                      P1_TX_INIT);
-    assert_int_equal(g_last_response_sw, SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
 }
 
 static void test_tx_init_zero_raw_tx_total_length(void **state) {
@@ -363,7 +363,7 @@ static void test_tx_init_missing_options(void **state) {
     assert_true(test_mem_init());
 
     run_sign_tx_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0}, P1_TX_INIT);
-    assert_int_equal(g_last_response_sw, SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
 }
 
 static void test_tx_init_unsupported_aux_data_type(void **state) {
@@ -418,7 +418,7 @@ static void test_tx_init_rejects_trailing_bytes_after_valid_fields(void **state)
 
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len + 1, .offset = 0},
                      P1_TX_INIT);
-    assert_int_equal(g_last_response_sw, SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
 }
 
 static void test_tx_confirm_rejects_empty_final_chunk(void **state) {
@@ -435,11 +435,11 @@ static void test_tx_confirm_rejects_empty_final_chunk(void **state) {
     assert_true(init_len > 0);
 
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
 
     run_sign_tx_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0}, P1_TX_CONFIRM);
-    assert_int_equal(g_last_response_sw, SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
 }
 
 static void test_tx_confirm_rejects_oversized_final_chunk(void **state) {
@@ -456,7 +456,7 @@ static void test_tx_confirm_rejects_oversized_final_chunk(void **state) {
     assert_true(init_len > 0);
 
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
 
     uint8_t oversized_final_chunk[MAX_SIGN_TX_CHUNK_SIZE + 1] = {0};
@@ -466,7 +466,7 @@ static void test_tx_confirm_rejects_oversized_final_chunk(void **state) {
                          .offset = 0,
                      },
                      P1_TX_CONFIRM);
-    assert_int_equal(g_last_response_sw, SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
 }
 
 static void test_tx_rejects_invalid_p1(void **state) {
@@ -475,7 +475,7 @@ static void test_tx_rejects_invalid_p1(void **state) {
     assert_true(test_mem_init());
 
     run_sign_tx_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0}, 0xFF);
-    assert_int_equal(g_last_response_sw, SWO_INCORRECT_P1_P2);
+    assert_int_equal(g_last_response_swo, SWO_INCORRECT_P1_P2);
 }
 
 static void test_tx_aux_data_rejects_invalid_p2(void **state) {
@@ -487,7 +487,7 @@ static void test_tx_aux_data_rejects_invalid_p2(void **state) {
     G_context.state.tx_state = TX_STATE_AUX_DATA;
 
     run_sign_tx_aux_data_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0}, 0xFF);
-    assert_int_equal(g_last_response_sw, SWO_INCORRECT_P1_P2);
+    assert_int_equal(g_last_response_swo, SWO_INCORRECT_P1_P2);
 }
 
 static void test_tx_aux_data_rejects_wrong_request_type(void **state) {
@@ -499,7 +499,7 @@ static void test_tx_aux_data_rejects_wrong_request_type(void **state) {
     G_context.state.tx_state = TX_STATE_AUX_DATA;
 
     run_sign_tx_aux_data_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0}, P2_AUX_DATA_INIT);
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_tx_aux_data_rejects_wrong_tx_state(void **state) {
@@ -511,7 +511,7 @@ static void test_tx_aux_data_rejects_wrong_tx_state(void **state) {
     G_context.state.tx_state = TX_STATE_CHUNKS;  // not TX_STATE_AUX_DATA
 
     run_sign_tx_aux_data_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0}, P2_AUX_DATA_INIT);
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_tx_aux_data_init_rejects_wrong_aux_state(void **state) {
@@ -525,7 +525,7 @@ static void test_tx_aux_data_init_rejects_wrong_aux_state(void **state) {
     tx_aux_data_ctx()->cvote_aux_data.state = CVOTE_AUX_DATA_STATE_RECEIVING_DELEGATIONS;
 
     run_sign_tx_aux_data_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0}, P2_AUX_DATA_INIT);
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_tx_aux_data_delegation_rejects_wrong_aux_state(void **state) {
@@ -540,7 +540,7 @@ static void test_tx_aux_data_delegation_rejects_wrong_aux_state(void **state) {
 
     run_sign_tx_aux_data_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0},
                               P2_AUX_DATA_DELEGATION);
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 // Delegation APDU with truncated credential (no bytes at all)
@@ -556,7 +556,7 @@ static void test_tx_aux_data_delegation_rejects_truncated_credential(void **stat
 
     run_sign_tx_aux_data_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0},
                               P2_AUX_DATA_DELEGATION);
-    assert_int_equal(g_last_response_sw, SWO_CVOTE_AUX_DATA_PARSING_FAIL);
+    assert_int_equal(g_last_response_swo, SWO_CVOTE_AUX_DATA_PARSING_FAIL);
 }
 
 // Delegation APDU with valid credential but no weight bytes
@@ -584,7 +584,7 @@ static void test_tx_aux_data_delegation_rejects_missing_weight(void **state) {
                     .size = sizeof(delegation_no_weight),
                     .offset = 0},
         P2_AUX_DATA_DELEGATION);
-    assert_int_equal(g_last_response_sw, SWO_CVOTE_AUX_DATA_PARSING_FAIL);
+    assert_int_equal(g_last_response_swo, SWO_CVOTE_AUX_DATA_PARSING_FAIL);
 }
 
 // Delegation APDU with valid credential + weight but trailing garbage byte
@@ -614,7 +614,7 @@ static void test_tx_aux_data_delegation_rejects_trailing_bytes(void **state) {
                     .size = sizeof(delegation_trailing),
                     .offset = 0},
         P2_AUX_DATA_DELEGATION);
-    assert_int_equal(g_last_response_sw, SWO_CVOTE_AUX_DATA_PARSING_FAIL);
+    assert_int_equal(g_last_response_swo, SWO_CVOTE_AUX_DATA_PARSING_FAIL);
 }
 
 static void test_tx_rejects_empty_non_final_chunk(void **state) {
@@ -631,11 +631,11 @@ static void test_tx_rejects_empty_non_final_chunk(void **state) {
     assert_true(init_len > 0);
 
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
 
     run_sign_tx_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0}, P1_TX_CHUNK);
-    assert_int_equal(g_last_response_sw, SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
 }
 
 static void test_tx_witness_rejects_too_many_witnesses(void **state) {
@@ -650,7 +650,7 @@ static void test_tx_witness_rejects_too_many_witnesses(void **state) {
     tx_witness_ctx()->current_witness = 1;
 
     run_sign_tx_witness_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0});
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_tx_witness_rejects_truncated_bip44_path(void **state) {
@@ -665,7 +665,7 @@ static void test_tx_witness_rejects_truncated_bip44_path(void **state) {
     tx_witness_ctx()->current_witness = 0;
 
     run_sign_tx_witness_apdu(&(buffer_t){.ptr = NULL, .size = 0, .offset = 0});
-    assert_int_equal(g_last_response_sw, SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
 }
 
 static void test_tx_witness_trailing_bytes(void **state) {
@@ -685,7 +685,7 @@ static void test_tx_witness_trailing_bytes(void **state) {
     path_raw[path_len] = 0x00;
 
     run_sign_tx_witness_apdu(&(buffer_t){.ptr = path_raw, .size = path_len + 1, .offset = 0});
-    assert_int_equal(g_last_response_sw, SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
 }
 
 static void test_handler_state_during_active_request(void **state) {
@@ -701,7 +701,7 @@ static void test_handler_state_during_active_request(void **state) {
 
     G_context.tx_info.num_witnesses = 1;
     run_sign_tx_witness_apdu(&(buffer_t){.ptr = path_raw, .size = path_len, .offset = 0});
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_witness_extraction_with_wrong_state(void **state) {
@@ -719,7 +719,7 @@ static void test_witness_extraction_with_wrong_state(void **state) {
     size_t path_len = write_standard_payment_path(path_raw, sizeof(path_raw));
 
     run_sign_tx_witness_apdu(&(buffer_t){.ptr = path_raw, .size = path_len, .offset = 0});
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_tx_init_missing_protocol_magic(void **state) {
@@ -746,14 +746,14 @@ static void test_tx_chunk_rejects_exceeding_advertised_size(void **state) {
     assert_true(init_len > 0);
 
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
 
     // Send a chunk larger than advertised total
     uint8_t chunk[MAX_SIGN_TX_CHUNK_SIZE];
     memset(chunk, 0, sizeof(chunk));
     run_sign_tx_apdu(&(buffer_t){.ptr = chunk, .size = sizeof(chunk), .offset = 0}, P1_TX_CHUNK);
-    assert_int_equal(g_last_response_sw, SWO_INVALID_TX_LENGTH);
+    assert_int_equal(g_last_response_swo, SWO_INVALID_TX_LENGTH);
 }
 
 static void test_tx_confirm_rejects_length_mismatch(void **state) {
@@ -771,14 +771,14 @@ static void test_tx_confirm_rejects_length_mismatch(void **state) {
     assert_true(init_len > 0);
 
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
 
     // Send a short final chunk — total received (10) != advertised (200)
     uint8_t chunk[10];
     memset(chunk, 0, sizeof(chunk));
     run_sign_tx_apdu(&(buffer_t){.ptr = chunk, .size = sizeof(chunk), .offset = 0}, P1_TX_CONFIRM);
-    assert_int_equal(g_last_response_sw, SWO_INVALID_TX_LENGTH);
+    assert_int_equal(g_last_response_swo, SWO_INVALID_TX_LENGTH);
 }
 
 static void test_tx_chunk_rejects_wrong_tx_state(void **state) {
@@ -792,7 +792,7 @@ static void test_tx_chunk_rejects_wrong_tx_state(void **state) {
 
     uint8_t chunk[2] = {0x00, 0x00};
     run_sign_tx_apdu(&(buffer_t){.ptr = chunk, .size = sizeof(chunk), .offset = 0}, P1_TX_CHUNK);
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_tx_confirm_rejects_wrong_request_type(void **state) {
@@ -805,7 +805,7 @@ static void test_tx_confirm_rejects_wrong_request_type(void **state) {
 
     uint8_t chunk[1] = {0x00};
     run_sign_tx_apdu(&(buffer_t){.ptr = chunk, .size = sizeof(chunk), .offset = 0}, P1_TX_CONFIRM);
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_tx_witness_rejects_wrong_request_type(void **state) {
@@ -819,7 +819,7 @@ static void test_tx_witness_rejects_wrong_request_type(void **state) {
     uint8_t path_raw[32];
     size_t path_len = write_standard_payment_path(path_raw, sizeof(path_raw));
     run_sign_tx_witness_apdu(&(buffer_t){.ptr = path_raw, .size = path_len, .offset = 0});
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_multiple_reinit_attempts(void **state) {
@@ -834,14 +834,14 @@ static void test_multiple_reinit_attempts(void **state) {
     assert_true(init_len > 0);
 
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
     reset_context();
     G_context.req_type = REQUEST_SIGN_TRANSACTION;
     G_context.state.tx_state = TX_STATE_NONE;
 
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 int main(void) {

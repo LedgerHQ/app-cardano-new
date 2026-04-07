@@ -48,7 +48,7 @@ static void test_init_confirm_completes_apdu_and_keeps_request_active(void **sta
     nbgl_mock_set_streaming_start_auto_complete(true, true);
 
     run_derive_native_script_init_apdu();
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_DERIVE_NATIVE_SCRIPT_HASH);
 
     uint8_t simple_payload[1 + 1 + ADDRESS_KEY_HASH_LENGTH] = {0};
@@ -60,7 +60,7 @@ static void test_init_confirm_completes_apdu_and_keeps_request_active(void **sta
         .offset = 0,
     };
     run_derive_native_script_apdu(&simple_buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
-    assert_int_equal(get_last_sw(), SWO_SUCCESS);
+    assert_int_equal(get_last_swo(), SWO_SUCCESS);
 }
 
 static void test_init_reject_completes_apdu_and_resets_request(void **state) {
@@ -72,7 +72,7 @@ static void test_init_reject_completes_apdu_and_resets_request(void **state) {
     nbgl_mock_set_streaming_start_auto_complete(true, false);
 
     run_derive_native_script_init_apdu();
-    assert_int_equal(get_last_sw(), SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(get_last_swo(), SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 
     uint8_t simple_payload[1 + 1 + ADDRESS_KEY_HASH_LENGTH] = {0};
@@ -84,7 +84,7 @@ static void test_init_reject_completes_apdu_and_resets_request(void **state) {
         .offset = 0,
     };
     run_derive_native_script_apdu(&simple_buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
-    assert_int_equal(get_last_sw(), SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(get_last_swo(), SWO_COMMAND_NOT_ALLOWED);
 }
 
 int main(void) {

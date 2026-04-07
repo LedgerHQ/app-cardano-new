@@ -10,6 +10,6 @@
 
 extern uint8_t g_last_response[IO_CAPTURE_MAX_RESPONSE_SIZE];
 extern size_t g_last_response_len;
-extern uint16_t g_last_response_sw;
+extern uint16_t g_last_response_swo;
 
 void io_capture_reset(void);

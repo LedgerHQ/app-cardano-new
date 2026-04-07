@@ -68,7 +68,7 @@ static void test_nbgl_reject_on_address_review_resets_context(void **state) {
     assert_read_buffer_unchanged_and_cleanup(&derive_address_buffer, SHELLEY_DISPLAY_APDU_PAYLOAD);
     nbgl_mock_assert_all_final_decisions_consumed();
 
-    assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(g_last_response_swo, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(g_last_response_len, 0);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_int_equal(G_context.state.derive_address_state, DERIVE_ADDRESS_STATE_NONE);
@@ -90,7 +90,7 @@ static void test_derive_address_rejects_when_request_already_active(void **state
     apdu_response_assert_sent_or_deferred();
     assert_read_buffer_unchanged_and_cleanup(&derive_address_buffer, SHELLEY_DISPLAY_APDU_PAYLOAD);
 
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
     assert_int_equal(g_last_response_len, 0);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_int_equal(G_context.state.derive_address_state, DERIVE_ADDRESS_STATE_NONE);
@@ -107,7 +107,7 @@ static void test_derive_address_parse_failure(void **state) {
     handler_derive_address(&buf.sdk_buffer, P1_ADDRESS_DISPLAY);
     apdu_response_assert_sent_or_deferred();
 
-    assert_int_equal(g_last_response_sw, SWO_DERIVE_ADDRESS_PARSING_FAIL_ADDRESS_PARAMS);
+    assert_int_equal(g_last_response_swo, SWO_DERIVE_ADDRESS_PARSING_FAIL_ADDRESS_PARAMS);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
 
@@ -125,7 +125,7 @@ static void test_derive_address_trailing_bytes(void **state) {
     handler_derive_address(&buf.sdk_buffer, P1_ADDRESS_DISPLAY);
     apdu_response_assert_sent_or_deferred();
 
-    assert_int_equal(g_last_response_sw, SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
 
@@ -140,7 +140,7 @@ static void test_derive_address_display_policy_deny(void **state) {
     handler_derive_address(&buf.sdk_buffer, P1_ADDRESS_DISPLAY);
     apdu_response_assert_sent_or_deferred();
 
-    assert_int_equal(g_last_response_sw, SWO_SECURITY_CONDITION_NOT_SATISFIED);
+    assert_int_equal(g_last_response_swo, SWO_SECURITY_CONDITION_NOT_SATISFIED);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 }
 

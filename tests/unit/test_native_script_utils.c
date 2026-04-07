@@ -30,7 +30,7 @@
 // IO Mock Implementation
 // ----------------------------------------------------------------------
 
-static uint16_t g_last_sw = 0;
+static uint16_t g_last_swo = 0;
 
 #define MAX_RESPONSE_BUFFER_SIZE 28
 static uint8_t g_response_buffer[MAX_RESPONSE_BUFFER_SIZE];
@@ -47,12 +47,12 @@ int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_
         g_response_buffer_length = 0;
     }
 
-    g_last_sw = swo;
+    g_last_swo = swo;
     return 0;
 }
 
 int io_send_sw(uint16_t swo) {
-    g_last_sw = swo;
+    g_last_swo = swo;
     return 0;
 }
 
@@ -74,11 +74,11 @@ void reset_context(void) {
 void reset_response_buffer(void) {
     memset(g_response_buffer, 0, sizeof(g_response_buffer));
     g_response_buffer_length = 0;
-    g_last_sw = 0;
+    g_last_swo = 0;
 }
 
-uint16_t get_last_sw(void) {
-    return g_last_sw;
+uint16_t get_last_swo(void) {
+    return g_last_swo;
 }
 
 const uint8_t *get_response_buffer(void) {

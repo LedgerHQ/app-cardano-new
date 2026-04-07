@@ -109,7 +109,7 @@ static void test_sign_msg_init_rejects_trailing_bytes(void **state) {
     run_sign_msg_apdu(SIGN_MSG_INIT_TRAILING_GARBAGE,
                       sizeof(SIGN_MSG_INIT_TRAILING_GARBAGE),
                       P1_SIGN_MSG_INIT);
-    assert_int_equal(g_last_response_sw, SWO_WRONG_DATA_LENGTH);
+    assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
 }
 
 // ----------------------------------------------------------------------
@@ -123,12 +123,12 @@ static void test_sign_msg_init_rejects_when_already_active(void **state) {
     run_sign_msg_apdu(SIGN_MSG_INIT_EMPTY_KEYHASH,
                       sizeof(SIGN_MSG_INIT_EMPTY_KEYHASH),
                       P1_SIGN_MSG_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     // Send INIT again while session is active — must be rejected
     run_sign_msg_apdu(SIGN_MSG_INIT_EMPTY_KEYHASH,
                       sizeof(SIGN_MSG_INIT_EMPTY_KEYHASH),
                       P1_SIGN_MSG_INIT);
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_sign_msg_confirm_rejects_without_init(void **state) {
@@ -138,7 +138,7 @@ static void test_sign_msg_confirm_rejects_without_init(void **state) {
     // Use a single-byte buf but pass size=0 — CONFIRM payload must be empty anyway.
     static const uint8_t placeholder[] = {0x00};
     run_sign_msg_apdu(placeholder, 0, P1_SIGN_MSG_CONFIRM);
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 static void test_sign_msg_chunk_rejects_when_in_confirm_state(void **state) {
@@ -148,14 +148,14 @@ static void test_sign_msg_chunk_rejects_when_in_confirm_state(void **state) {
     run_sign_msg_apdu(SIGN_MSG_INIT_4BYTE_KEYHASH,
                       sizeof(SIGN_MSG_INIT_4BYTE_KEYHASH),
                       P1_SIGN_MSG_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     // Send the single CHUNK — this exhausts remainingBytes, transitioning to CONFIRM state
     run_sign_msg_apdu(SIGN_MSG_CHUNK_4BYTE, sizeof(SIGN_MSG_CHUNK_4BYTE), P1_SIGN_MSG_CHUNK);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.state.sign_msg_state, SIGN_MSG_STATE_CONFIRM);
     // Send another CHUNK when already in CONFIRM state — must be rejected
     run_sign_msg_apdu(SIGN_MSG_CHUNK_4BYTE, sizeof(SIGN_MSG_CHUNK_4BYTE), P1_SIGN_MSG_CHUNK);
-    assert_int_equal(g_last_response_sw, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
 // ----------------------------------------------------------------------
@@ -168,12 +168,12 @@ static void test_sign_msg_chunk_rejects_truncated_after_size_header(void **state
     run_sign_msg_apdu(SIGN_MSG_INIT_4BYTE_KEYHASH,
                       sizeof(SIGN_MSG_INIT_4BYTE_KEYHASH),
                       P1_SIGN_MSG_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     // CHUNK has size header claiming 4 bytes but no data — buffer_can_read fails
     run_sign_msg_apdu(SIGN_MSG_CHUNK_SIZE_HEADER_ONLY,
                       sizeof(SIGN_MSG_CHUNK_SIZE_HEADER_ONLY),
                       P1_SIGN_MSG_CHUNK);
-    assert_int_equal(g_last_response_sw, SWO_SIGN_MSG_PARSING_FAIL_CHUNK_DATA);
+    assert_int_equal(g_last_response_swo, SWO_SIGN_MSG_PARSING_FAIL_CHUNK_DATA);
 }
 
 static void test_sign_msg_chunk_rejects_missing_size_header(void **state) {
@@ -182,10 +182,10 @@ static void test_sign_msg_chunk_rejects_missing_size_header(void **state) {
     run_sign_msg_apdu(SIGN_MSG_INIT_4BYTE_KEYHASH,
                       sizeof(SIGN_MSG_INIT_4BYTE_KEYHASH),
                       P1_SIGN_MSG_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     // CHUNK with zero bytes — buffer_read_u32 for chunk size fails
     run_sign_msg_apdu(SIGN_MSG_CHUNK_EMPTY_BUF, SIGN_MSG_CHUNK_EMPTY_LEN, P1_SIGN_MSG_CHUNK);
-    assert_int_equal(g_last_response_sw, SWO_SIGN_MSG_PARSING_FAIL_CHUNK_SIZE);
+    assert_int_equal(g_last_response_swo, SWO_SIGN_MSG_PARSING_FAIL_CHUNK_SIZE);
 }
 
 // ----------------------------------------------------------------------

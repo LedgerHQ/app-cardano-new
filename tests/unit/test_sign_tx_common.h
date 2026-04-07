@@ -28,6 +28,7 @@
 #include "mock_crypto/crypto_mock_data.h"
 #include "nbgl_mock.h"
 #include "io_capture.h"
+#include "init_apdu.h"
 #include "test_read_buffer_helpers.h"
 
 #define TEST_HEAP_SIZE (23 * 1024)
@@ -227,6 +228,20 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
             );
 
             const bool witness_requires_confirmation = (witness_policy == POLICY_SHOW);
+            const warning_bits_t expected_witness_warning_bits =
+                witness_payload->expected_warning_bits;
+
+            if (witness_warnings != expected_witness_warning_bits) {
+                print_message("WITNESS WARNING BITS MISMATCH for fixture \"%s\" witness %zu:\n"
+                              "  expected: 0x%016llx\n"
+                              "  actual:   0x%016llx\n",
+                              fixture_name,
+                              witness_index,
+                              (unsigned long long) expected_witness_warning_bits,
+                              (unsigned long long) witness_warnings);
+            }
+            assert_int_equal(witness_warnings, expected_witness_warning_bits);
+
             if (witness_requires_confirmation) {
                 const bool witness_final_decisions[] = {true};
                 nbgl_mock_set_final_decisions(witness_final_decisions,
@@ -347,7 +362,7 @@ static inline void run_fixture(const tx_fixture_t *fixture) {
                       fixture->name,
                       g_last_response,
                       &g_last_response_len,
-                      &g_last_response_sw);
+                      &g_last_response_swo);
 }
 
 static inline void run_fixture_with_expert_mode(const tx_fixture_t *fixture, bool expert_mode) {
@@ -372,6 +387,12 @@ typedef enum {
     REJECT_STAGE_AUX = 1,
 } reject_stage_t;
 
+typedef enum {
+    ACTUAL_REJECT_STAGE_NONE = 0,
+    ACTUAL_REJECT_STAGE_TX = 1,
+    ACTUAL_REJECT_STAGE_AUX = 2,
+} actual_reject_stage_t;
+
 static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixture,
                                                        bool expert_mode,
                                                        reject_stage_t reject_stage) {
@@ -387,6 +408,7 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
     const bool previous_mode = unit_test_expert_mode_enabled;
     const bool previous_blind_signing_enabled = unit_test_blind_signing_enabled;
     bool final_decisions_configured = false;
+    actual_reject_stage_t actual_reject_stage = ACTUAL_REJECT_STAGE_NONE;
     unit_test_expert_mode_enabled = expert_mode;
     unit_test_blind_signing_enabled = fixture_blind_signing_enabled(fixture);
 
@@ -407,7 +429,7 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
     assert_true(init_len > 0);
 
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
 
     if (fixture_has_cvote_aux_data(fixture)) {
@@ -427,10 +449,11 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
         run_sign_tx_aux_data_apdu(&aux_init_buffer.sdk_buffer, P2_AUX_DATA_INIT);
         assert_read_buffer_unchanged_and_cleanup(&aux_init_buffer, fixture->aux_data_init_payload);
 
-        if (g_last_response_sw == SWO_CONDITIONS_NOT_SATISFIED) {
+        if (g_last_response_swo == SWO_CONDITIONS_NOT_SATISFIED) {
+            actual_reject_stage = ACTUAL_REJECT_STAGE_AUX;
             goto expected_failure_assertions;
         }
-        assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+        assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
         for (size_t i = 0; i < fixture->aux_data_delegation_count; i++) {
             const aux_data_payload_t *delegation = &fixture->aux_data_delegations[i];
@@ -442,10 +465,11 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
             );
             run_sign_tx_aux_data_apdu(&aux_delegation_buffer.sdk_buffer, P2_AUX_DATA_DELEGATION);
             assert_read_buffer_unchanged_and_cleanup(&aux_delegation_buffer, delegation->payload);
-            if (g_last_response_sw == SWO_CONDITIONS_NOT_SATISFIED) {
+            if (g_last_response_swo == SWO_CONDITIONS_NOT_SATISFIED) {
+                actual_reject_stage = ACTUAL_REJECT_STAGE_AUX;
                 goto expected_failure_assertions;
             }
-            assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+            assert_int_equal(g_last_response_swo, SWO_SUCCESS);
         }
 
         assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
@@ -473,12 +497,18 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
     nbgl_mock_set_streaming_start_auto_complete(true, true);
 
     run_sign_tx_body_chunked(fixture->raw_tx, fixture->raw_tx_len);
+    if (g_last_response_swo == SWO_CONDITIONS_NOT_SATISFIED) {
+        actual_reject_stage = ACTUAL_REJECT_STAGE_TX;
+    }
 
 expected_failure_assertions:
     if (final_decisions_configured) {
         nbgl_mock_assert_all_final_decisions_consumed();
     }
-    assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(g_last_response_swo, SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(actual_reject_stage,
+                     reject_stage == REJECT_STAGE_AUX ? ACTUAL_REJECT_STAGE_AUX
+                                                      : ACTUAL_REJECT_STAGE_TX);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
 
@@ -523,7 +553,7 @@ static inline void run_fixture_reject_streaming_start_with_expert_mode(const tx_
     assert_true(init_len > 0);
 
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
 
     // Reject at the streaming start screen.
@@ -531,7 +561,7 @@ static inline void run_fixture_reject_streaming_start_with_expert_mode(const tx_
 
     run_sign_tx_body_chunked(fixture->raw_tx, fixture->raw_tx_len);
 
-    assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(g_last_response_swo, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
 
@@ -544,7 +574,52 @@ static inline void run_fixture_reject_streaming_start_with_expert_mode(const tx_
  * (tx_streaming_continue_choice called with false after the first chunk). Only valid for
  * streaming fixtures with at least two chunks.
  */
+static inline void run_fixture_reject_streaming_continue_at_call_with_expert_mode(
+    const tx_fixture_t *fixture,
+    bool expert_mode,
+    size_t continue_call_index) {
+    LEDGER_ASSERT(fixture != NULL, "NULL fixture");
+
+    extern bool unit_test_expert_mode_enabled;
+    extern bool unit_test_blind_signing_enabled;
+    const bool previous_mode = unit_test_expert_mode_enabled;
+    const bool previous_blind_signing_enabled = unit_test_blind_signing_enabled;
+    unit_test_expert_mode_enabled = expert_mode;
+    unit_test_blind_signing_enabled = fixture_blind_signing_enabled(fixture);
+
+    reset_context();
+    assert_true(test_mem_init());
+
+    uint8_t init_raw[512];
+    init_apdu_params_t params = build_init_params_from_fixture(fixture, NULL, 0);
+    size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
+    assert_true(init_len > 0);
+
+    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
+    assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
+
+    // Confirm the streaming start, then reject on a chosen streaming continue call.
+    nbgl_mock_set_streaming_start_auto_complete(true, true);
+    nbgl_mock_set_streaming_continue_reject_at_call(continue_call_index);
+
+    run_sign_tx_body_chunked(fixture->raw_tx, fixture->raw_tx_len);
+
+    assert_int_equal(g_last_response_swo, SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+    assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
+
+    unit_test_expert_mode_enabled = previous_mode;
+    unit_test_blind_signing_enabled = previous_blind_signing_enabled;
+}
+
 static inline void run_fixture_reject_streaming_continue_with_expert_mode(
+    const tx_fixture_t *fixture,
+    bool expert_mode) {
+    run_fixture_reject_streaming_continue_at_call_with_expert_mode(fixture, expert_mode, 0);
+}
+
+static inline void run_fixture_reject_streaming_finish_with_expert_mode(
     const tx_fixture_t *fixture,
     bool expert_mode) {
     LEDGER_ASSERT(fixture != NULL, "NULL fixture");
@@ -565,16 +640,19 @@ static inline void run_fixture_reject_streaming_continue_with_expert_mode(
     assert_true(init_len > 0);
 
     run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
 
-    // Confirm the streaming start, then reject on the first streaming continue call.
+    const bool final_decisions[] = {false};
+    nbgl_mock_set_final_decisions(final_decisions, ARRAY_LEN(final_decisions));
+
+    // Confirm the streaming start and all intermediate chunks, then reject on the finish screen.
     nbgl_mock_set_streaming_start_auto_complete(true, true);
-    nbgl_mock_set_streaming_continue_reject_at_call(0);
 
     run_sign_tx_body_chunked(fixture->raw_tx, fixture->raw_tx_len);
+    nbgl_mock_assert_all_final_decisions_consumed();
 
-    assert_int_equal(g_last_response_sw, SWO_CONDITIONS_NOT_SATISFIED);
+    assert_int_equal(g_last_response_swo, SWO_CONDITIONS_NOT_SATISFIED);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
 
@@ -636,7 +714,7 @@ static inline void run_fixture_blind_signing_hash_only_with_expert_mode(
                       fixture->name,
                       g_last_response,
                       &g_last_response_len,
-                      &g_last_response_sw);
+                      &g_last_response_swo);
     nbgl_mock_assert_all_final_decisions_consumed();
 
     unit_test_expert_mode_enabled = previous_mode;

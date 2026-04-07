@@ -62,7 +62,7 @@ static inline void run_cvote_fixture(const cvote_fixture_t *fixture) {
     handler_sign_cvote(&init_buffer.sdk_buffer, P1_CVOTE_INIT);
     apdu_response_assert_sent_or_deferred();
     assert_read_buffer_unchanged_and_cleanup(&init_buffer, fixture->init_data);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
     // Send CHUNK APDUs
     for (size_t chunk_idx = 0; chunk_idx < fixture->chunk_count; chunk_idx++) {
@@ -72,7 +72,7 @@ static inline void run_cvote_fixture(const cvote_fixture_t *fixture) {
         handler_sign_cvote(&chunk_buffer.sdk_buffer, P1_CVOTE_CHUNK);
         apdu_response_assert_sent_or_deferred();
         assert_read_buffer_unchanged_and_cleanup(&chunk_buffer, chunk->data);
-        assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+        assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     }
 
     // Send CONFIRM APDU (contains witness path; UI auto-confirms and calls finalize_sign_cvote)
@@ -81,7 +81,7 @@ static inline void run_cvote_fixture(const cvote_fixture_t *fixture) {
     handler_sign_cvote(&confirm_buffer.sdk_buffer, P1_CVOTE_CONFIRM);
     apdu_response_assert_sent_or_deferred();
     assert_read_buffer_unchanged_and_cleanup(&confirm_buffer, fixture->confirm_data);
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
     // Response: 32-byte votecast hash + 64-byte witness signature
     assert_int_equal(g_last_response_len, VOTECAST_HASH_LENGTH + ED25519_SIGNATURE_LENGTH);
@@ -136,7 +136,7 @@ static inline void run_cvote_deny_fixture(const cvote_deny_fixture_t *fixture) {
         apdu_response_begin(INS_SIGN_CVOTE);
         handler_sign_cvote(&buf, P1_CVOTE_CHUNK);
         apdu_response_assert_sent_or_deferred();
-        assert_int_equal(g_last_response_sw, fixture->expected_swo);
+        assert_int_equal(g_last_response_swo, fixture->expected_swo);
         return;
     }
 
@@ -150,7 +150,7 @@ static inline void run_cvote_deny_fixture(const cvote_deny_fixture_t *fixture) {
         apdu_response_begin(INS_SIGN_CVOTE);
         handler_sign_cvote(&buf, P1_CVOTE_INIT);
         apdu_response_assert_sent_or_deferred();
-        assert_int_equal(g_last_response_sw, fixture->expected_swo);
+        assert_int_equal(g_last_response_swo, fixture->expected_swo);
         return;
     }
 
@@ -165,7 +165,7 @@ static inline void run_cvote_deny_fixture(const cvote_deny_fixture_t *fixture) {
     apdu_response_begin(INS_SIGN_CVOTE);
     handler_sign_cvote(&init_buf, P1_CVOTE_INIT);
     apdu_response_assert_sent_or_deferred();
-    assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+    assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
     for (size_t chunk_idx = 0; chunk_idx < fixture->chunk_count; chunk_idx++) {
         const cvote_chunk_t *chunk = &fixture->chunks[chunk_idx];
@@ -177,7 +177,7 @@ static inline void run_cvote_deny_fixture(const cvote_deny_fixture_t *fixture) {
         apdu_response_begin(INS_SIGN_CVOTE);
         handler_sign_cvote(&chunk_buf, P1_CVOTE_CHUNK);
         apdu_response_assert_sent_or_deferred();
-        assert_int_equal(g_last_response_sw, SWO_SUCCESS);
+        assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     }
 
     assert_non_null(fixture->confirm_data);
@@ -190,5 +190,5 @@ static inline void run_cvote_deny_fixture(const cvote_deny_fixture_t *fixture) {
     apdu_response_begin(INS_SIGN_CVOTE);
     handler_sign_cvote(&confirm_buf, P1_CVOTE_CONFIRM);
     apdu_response_assert_sent_or_deferred();
-    assert_int_equal(g_last_response_sw, fixture->expected_swo);
+    assert_int_equal(g_last_response_swo, fixture->expected_swo);
 }

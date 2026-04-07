@@ -12,6 +12,7 @@
 
 #include "nbgl_use_case.h"
 #include "nbgl_mock.h"
+#include "ledger_assert.h"
 #include "menu.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -71,9 +72,8 @@ void nbgl_mock_set_final_decisions(const bool *decisions, size_t decision_count)
         return;
     }
 
-    if (decision_count > NBGL_MOCK_MAX_FINAL_DECISIONS) {
-        decision_count = NBGL_MOCK_MAX_FINAL_DECISIONS;
-    }
+    LEDGER_ASSERT(decision_count <= NBGL_MOCK_MAX_FINAL_DECISIONS,
+                  "Too many final decisions");
 
     for (size_t i = 0; i < decision_count; i++) {
         g_final_decisions_storage[i] = decisions[i];
