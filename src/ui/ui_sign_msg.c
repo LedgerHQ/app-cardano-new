@@ -203,14 +203,8 @@ void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnin
         return; // LCOV_EXCL_LINE
     }
 
-    nbgl_operationType_t reviewOperationType = TYPE_OPERATION;
-#ifdef SCREEN_SIZE_WALLET
-    // Keep skip only on large wallet screens.
-    reviewOperationType |= SKIPPABLE_OPERATION;
-#endif
-
     // Display review screen
-    nbgl_useCaseAdvancedReview(reviewOperationType,
+    nbgl_useCaseAdvancedReview(TYPE_OPERATION,
                                g_pairsList,
                                &ICON_APP_CARDANO,
                                "Review message",
