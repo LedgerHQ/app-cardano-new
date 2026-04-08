@@ -138,9 +138,7 @@ add_library(mock_printf STATIC
 )
 target_link_libraries(mock_printf PUBLIC c)
 add_library(cx_crc_support SHARED
-    $ENV{BOLOS_SDK}/lib_cxng/src/cx_crc16.c
-    $ENV{BOLOS_SDK}/lib_cxng/src/cx_crc32.c
-    $ENV{BOLOS_SDK}/unit-tests/mock/src/cx_crc.c
+    libs/crc32_mock.c
 )
 target_link_libraries(cx_crc_support PUBLIC c)
 
