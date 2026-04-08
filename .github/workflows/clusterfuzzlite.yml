@@ -5,15 +5,15 @@ on:
   pull_request:
   push:
     branches:
-      - master
-      - develop
+      - main
   schedule:
-    - cron: '0 13 * * 6'
+    - cron: '0 13 * * 6'  # At 01:00 PM, only on Saturday
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
-  fuzzing:
+  Fuzzing:
     uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_clusterfuzz_tests.yml@v1
     with:
       exec_mode: ${{ github.event_name }}
