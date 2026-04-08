@@ -62,6 +62,9 @@ Format: -> means explanation why not a bug.
 * Non-mainnet network IDs 2–15 are rendered with mainnet-looking `addr`/`stake` bech32 prefixes.
 -> not a bug. These IDs don't exist on any real network, and `isNetworkUsual()` returns false for them, triggering an unusual-network warning to the user. Behavior matches the old app.
 
+* Tx body field 15 (`network_id`) is hashed without a dedicated per-field review screen.
+-> not a bug. The app intentionally treats `includeNetworkId` itself as making network identity verifiable and only shows network details when the network parameters are unusual. This matches the local specs and the old app behavior; a separate “field 15 present” screen is not required.
+
 * `extractProtocolMagic` parses the tag-24 inner Byron payload on the outer buffer without a dedicated sub-buffer.
 -> not a bug. The outer buffer bounds, whole-buffer exhaustion check, and CRC32 checksum verification together ensure correctness; a sub-buffer would add no security value.
 

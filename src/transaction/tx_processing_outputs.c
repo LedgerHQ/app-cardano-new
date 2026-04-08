@@ -42,8 +42,6 @@
 #include "swap_error_code_helpers.h"
 #endif
 
-void tx_handle_parse_error(uint16_t swo);
-
 // ---------------------------------------------------------------------------
 // Hash builder helpers (address bytes conversion for hashing)
 // ---------------------------------------------------------------------------

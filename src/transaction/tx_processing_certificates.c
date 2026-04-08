@@ -35,7 +35,6 @@
 #include <stdio.h>
 #include <string.h>
 
-void tx_handle_parse_error(uint16_t swo);
 credential_t credential_for_tx_hash_from_ext_credential(const ext_credential_t *credential);
 drep_t drep_for_tx_hash_from_ext_drep(const ext_drep_t *ext_drep);
 

@@ -236,6 +236,11 @@ static void handler_tx_aux_data_init(buffer_t *cdata) {
 
     // Allocate persistent buffer for CVote init data
     const size_t init_payload_len = buffer_data_size(cdata);
+    if (init_payload_len == 0) {
+        TRACE("CVote AUX_DATA init: empty payload");
+        send_swo_and_reset(SWO_CVOTE_AUX_DATA_PARSING_FAIL);
+        return;
+    }
     LEDGER_ASSERT(init_payload_len <= UINT16_MAX, "init_payload_len > UINT16_MAX");
     if (!APP_MEM_CALLOC((void **) &tx_aux_data_ctx()->raw_cvote_init_data, (uint16_t) init_payload_len)) {
         // LCOV_EXCL_START

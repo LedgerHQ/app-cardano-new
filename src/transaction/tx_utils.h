@@ -35,6 +35,10 @@ bool violatesSingleAccountOrStoreIt(const bip44_path_t* path);
  *
  * Intended for short-lived transaction/UI helpers that move work off the stack on Ledger
  * devices with tighter stack budgets.
+ *
+ * This helper intentionally treats allocation failure as unrecoverable. The requested buffers
+ * are tiny and statically bounded, so failure here indicates allocator corruption, heap misuse,
+ * or another deeper invariant violation rather than an expected runtime condition.
  */
 uint8_t *tx_alloc_temp_buffer_or_fail(size_t size);
 

@@ -105,3 +105,4 @@ typedef struct {
 bool tx_validate(void);
 bool tx_render_ui_chunk(uint16_t from);
 bool tx_render_ui(tx_ui_review_mode_e review_mode);
+void tx_handle_parse_error(uint16_t swo);

@@ -1624,8 +1624,6 @@ security_policy_t policyForSignTxStakePoolRegistrationNoMetadata(warning_bits_t 
 
 security_policy_t policyForSignTxAnchor(const anchor_t* anchor, warning_bits_t *w) {
     POLICY_INIT();
-    ASSERT(anchor != NULL);
-    // Repeat NULL check to satisfy static analysis on LEDGER_ASSERT macro expansion.
     ASSERT(anchor != NULL && anchor->isIncluded);
 
     if (anchor->urlLength == 0) {

@@ -14,7 +14,7 @@
 
 uint8_t *tx_alloc_temp_buffer_or_fail(size_t size) {
     uint8_t *buffer = NULL;
-    bool allocated = APP_MEM_CALLOC((void **) &buffer, (uint16_t) size);
+    bool allocated = allocate_zeroed((void **) &buffer, size);
     ASSERT(allocated && buffer != NULL);
     return buffer;
 }
