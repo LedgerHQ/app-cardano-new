@@ -7,11 +7,13 @@
 #include "bip44.h"
 #include "keyDerivation.h"
 
+// clang-format off
 typedef enum {
-    EXT_CREDENTIAL_KEY_HASH = 0,      // Wire: 0, CBOR: 0
-    EXT_CREDENTIAL_SCRIPT_HASH = 1,   // Wire: 1, CBOR: 1
-    EXT_CREDENTIAL_KEY_PATH = 2,      // Wire: 2, not in CBOR (converted to KEY_HASH via keyPathToKeyHash)
+    EXT_CREDENTIAL_KEY_HASH = 0,     // Wire: 0, CBOR: 0
+    EXT_CREDENTIAL_SCRIPT_HASH = 1,  // Wire: 1, CBOR: 1
+    EXT_CREDENTIAL_KEY_PATH = 2,     // Wire: 2, not in CBOR (converted to KEY_HASH via keyPathToKeyHash)
 } ext_credential_type_t;
+// clang-format on
 
 // Extended credential structure
 typedef struct {

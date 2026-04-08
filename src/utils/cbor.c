@@ -122,7 +122,7 @@ bool cbor_parseToken(const uint8_t* buf, size_t size, cbor_token_t* out_token) {
         }
         int64_t negativeValue;
         if (result.value < INT64_MAX) {
-            negativeValue = -((int64_t)(result.value + 1));
+            negativeValue = -((int64_t) (result.value + 1));
         } else {
             negativeValue = INT64_MIN;
         }
@@ -143,7 +143,11 @@ uint64_t cbor_token_value_from_negative_i64(int64_t negativeValue) {
     return encodedValue;
 }
 
-bool cbor_writeToken(uint8_t type, uint64_t value, uint8_t* buffer, size_t bufferSize, size_t* out_size) {
+bool cbor_writeToken(uint8_t type,
+                     uint64_t value,
+                     uint8_t* buffer,
+                     size_t bufferSize,
+                     size_t* out_size) {
     ASSERT(bufferSize < BUFFER_SIZE_PARANOIA);
     ASSERT(out_size != NULL);
     ASSERT(buffer != NULL);
@@ -174,7 +178,7 @@ bool cbor_writeToken(uint8_t type, uint64_t value, uint8_t* buffer, size_t buffe
             if (negativeValue == INT64_MIN) {
                 value = (uint64_t) INT64_MAX;
             } else {
-                value = (uint64_t)(-negativeValue) - 1;
+                value = (uint64_t) (-negativeValue) - 1;
             }
         }
             __attribute__((fallthrough));
@@ -190,13 +194,13 @@ bool cbor_writeToken(uint8_t type, uint64_t value, uint8_t* buffer, size_t buffe
             return false;
     }
 
-    // Warning(ppershing): It might be tempting but we don't want to call stream_appendData() twice
-    // Instead we have to construct the whole buffer at once to make append operation atomic.
-    #define u1be_write(buffer, value) (buffer)[0] = (value)
+// Warning(ppershing): It might be tempting but we don't want to call stream_appendData() twice
+// Instead we have to construct the whole buffer at once to make append operation atomic.
+#define u1be_write(buffer, value) (buffer)[0] = (value)
 
     if (value < VALUE_W1_UPPER_THRESHOLD) {
         CHECK_BUF_LEN(1);
-        u1be_write(buffer, (uint8_t)(type | value));
+        u1be_write(buffer, (uint8_t) (type | value));
         *out_size = 1;
         return true;
     } else if (value < VALUE_W2_UPPER_THRESHOLD) {
@@ -224,6 +228,6 @@ bool cbor_writeToken(uint8_t type, uint64_t value, uint8_t* buffer, size_t buffe
         *out_size = 1 + 8;
         return true;
     }
-    #undef u1be_write
+#undef u1be_write
 #undef CHECK_BUF_LEN
 }

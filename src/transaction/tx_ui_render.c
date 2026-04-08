@@ -9,7 +9,7 @@
 #ifdef TRACE_UI_DISPLAY
 #define TRACE_MODULE(...) TRACE("[tx_ui_render] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 #include "assert.h"
@@ -59,7 +59,10 @@ void tx_ui_plan_or_render_input(const tx_processing_mode_t *mode,
                                 uint16_t input_index) {
     ASSERT(mode != NULL);
     ASSERT(parsed_input != NULL);
-    TRACE_MODULE("input index=%u count=%d render=%d", (unsigned) input_index, (int) mode->ui_count_pairs, (int) mode->ui_render);
+    TRACE_MODULE("input index=%u count=%d render=%d",
+                 (unsigned) input_index,
+                 (int) mode->ui_count_pairs,
+                 (int) mode->ui_render);
 
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_INPUT;
@@ -150,7 +153,7 @@ void tx_ui_plan_or_render_required_signer(const tx_processing_mode_t *mode,
             default:
                 LEDGER_ASSERT(false, "Unknown required signer type");
                 break;
-            // LCOV_EXCL_STOP
+                // LCOV_EXCL_STOP
         }
         CHECK_COUNT(UI_PAIRS_REQUIRED_SIGNER);
     }
@@ -284,7 +287,7 @@ void tx_ui_plan_or_render_withdrawal(const tx_processing_mode_t *mode,
                        network_id,
                        credential);
         CHECK_COUNT(credential->type == EXT_CREDENTIAL_KEY_PATH ? UI_PAIRS_WITHDRAWAL_KEY_PATH
-                                                                 : UI_PAIRS_WITHDRAWAL_OTHER);
+                                                                : UI_PAIRS_WITHDRAWAL_OTHER);
     }
 }
 
@@ -429,7 +432,7 @@ void tx_ui_plan_or_render_voter(const tx_processing_mode_t *mode,
             default:
                 LEDGER_ASSERT(false, "Unknown voter type");
                 break;
-            // LCOV_EXCL_STOP
+                // LCOV_EXCL_STOP
         }
         CHECK_COUNT(UI_PAIRS_VOTER);
     }

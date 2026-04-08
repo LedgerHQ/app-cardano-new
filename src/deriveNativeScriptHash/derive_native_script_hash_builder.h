@@ -4,7 +4,6 @@
 #ifndef H_CARDANO_APP_NATIVE_SCRIPT_HASH_BUILDER
 #define H_CARDANO_APP_NATIVE_SCRIPT_HASH_BUILDER
 
-
 #include "cardano_constants.h"
 #include "hash.h"
 #include "deriveNativeScriptHash_types.h"

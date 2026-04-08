@@ -34,7 +34,8 @@ static void free_request_owned_buffers(void) {
         case REQUEST_SIGN_TRANSACTION:
             switch (G_context.state.tx_state) {
                 case TX_STATE_AUX_DATA:
-                    APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.aux_data.raw_cvote_init_data);
+                    APP_MEM_FREE_AND_NULL(
+                        (void **) &G_context.tx_info.aux_data.raw_cvote_init_data);
                     break;
                 case TX_STATE_CHUNKS:
                 case TX_STATE_RECEIVED:
@@ -49,7 +50,7 @@ static void free_request_owned_buffers(void) {
                 default:
                     LEDGER_ASSERT(false, "bad state");
                     break;
-                // LCOV_EXCL_STOP
+                    // LCOV_EXCL_STOP
             }
             break;
 
@@ -70,7 +71,7 @@ static void free_request_owned_buffers(void) {
         default:
             ASSERT(false);
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
@@ -80,14 +81,13 @@ void apdu_response_begin(command_e instruction) {
     // 2) UX callback later sends the response ("sent").
     // If that prior async APDU already reached this completed state, clear it now
     // before tracking a new APDU.
-    if (G_apdu_response_state.response_sent &&
-        G_apdu_response_state.response_deferred_to_ux) {
+    if (G_apdu_response_state.response_sent && G_apdu_response_state.response_deferred_to_ux) {
         apdu_response_state_reset();
     }
 
-    LEDGER_ASSERT(!G_apdu_response_state.response_sent &&
-                      !G_apdu_response_state.response_deferred_to_ux,
-                  "Previous APDU response state not finalized");
+    LEDGER_ASSERT(
+        !G_apdu_response_state.response_sent && !G_apdu_response_state.response_deferred_to_ux,
+        "Previous APDU response state not finalized");
 
     G_apdu_response_state.response_sent = false;
     G_apdu_response_state.response_deferred_to_ux = false;
@@ -103,10 +103,10 @@ void apdu_response_deferred(void) {
 }
 
 void apdu_response_assert_sent_or_deferred(void) {
-    LEDGER_ASSERT(G_apdu_response_state.response_sent ||
-                      G_apdu_response_state.response_deferred_to_ux,
-                  "No APDU response or UX defer marker for INS=0x%02x",
-                  G_apdu_response_state.instruction);
+    LEDGER_ASSERT(
+        G_apdu_response_state.response_sent || G_apdu_response_state.response_deferred_to_ux,
+        "No APDU response or UX defer marker for INS=0x%02x",
+        G_apdu_response_state.instruction);
 
     if (G_apdu_response_state.response_sent) {
         apdu_response_state_reset();
@@ -159,13 +159,11 @@ void reset_app_context(void) {
     //                               calling reset_app_context() was the proper way to do.
     //                               Force sent=true so apdu_response_begin() treats
     //                               it as a completed deferred response and clears it.
-    if (!G_apdu_response_state.response_sent &&
-        G_apdu_response_state.response_deferred_to_ux) {
+    if (!G_apdu_response_state.response_sent && G_apdu_response_state.response_deferred_to_ux) {
         G_apdu_response_state.response_sent = true;
     }
 
-    if (!G_apdu_response_state.response_sent &&
-        !G_apdu_response_state.response_deferred_to_ux) {
+    if (!G_apdu_response_state.response_sent && !G_apdu_response_state.response_deferred_to_ux) {
         G_apdu_response_state.instruction = INS_NONE;
     }
 }

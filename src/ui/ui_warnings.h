@@ -42,7 +42,7 @@ ui_status_t ui_build_warnings(warning_bits_t warnings);
  *
  * @return Pointer to warning structure, or NULL if no warnings
  */
-const nbgl_warning_t* ui_get_warnings(void);
+const nbgl_warning_t *ui_get_warnings(void);
 
 /**
  * Free warning structure.

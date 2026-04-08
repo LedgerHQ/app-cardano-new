@@ -50,7 +50,9 @@ static void reset_crypto_test_state(void) {
     g_expect_abort = false;
 }
 
-static void assert_all_bytes_equal(const uint8_t* buffer, size_t buffer_size, uint8_t expected_value) {
+static void assert_all_bytes_equal(const uint8_t* buffer,
+                                   size_t buffer_size,
+                                   uint8_t expected_value) {
     for (size_t i = 0; i < buffer_size; i++) {
         assert_int_equal(buffer[i], expected_value);
     }
@@ -269,24 +271,44 @@ static void test_crypto_sign_success(void** state) {
     (void) state;
     reset_crypto_test_state();
 
-    const uint32_t path[] = {HARDENED_BIP32 + 1852, HARDENED_BIP32 + 1815, HARDENED_BIP32 + 0, 0, 1};
+    const uint32_t path[] = {HARDENED_BIP32 + 1852,
+                             HARDENED_BIP32 + 1815,
+                             HARDENED_BIP32 + 0,
+                             0,
+                             1};
     const uint8_t hash[] = {
-        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+        0x00,
+        0x01,
+        0x02,
+        0x03,
+        0x04,
+        0x05,
+        0x06,
+        0x07,
+        0x08,
+        0x09,
+        0x0a,
+        0x0b,
+        0x0c,
+        0x0d,
+        0x0e,
+        0x0f,
     };
     const uint8_t expected_signature[ED25519_SIGNATURE_LENGTH] = {
-        0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5,
-        0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5,
-        0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5,
-        0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5,
-        0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5,
-        0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5,
-        0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5,
-        0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5,
+        0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5,
+        0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5,
+        0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5,
+        0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5,
+        0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5, 0xA5,
     };
     uint8_t signature[ED25519_SIGNATURE_LENGTH] = {0};
 
-    crypto_eddsa_sign(path, sizeof(path) / sizeof(path[0]), hash, sizeof(hash), signature, sizeof(signature));
+    crypto_eddsa_sign(path,
+                      sizeof(path) / sizeof(path[0]),
+                      hash,
+                      sizeof(hash),
+                      signature,
+                      sizeof(signature));
 
     assert_memory_equal(signature, expected_signature, sizeof(expected_signature));
 }
@@ -305,7 +327,12 @@ static void test_crypto_sign_failure_scrubs_private_key_and_signature_before_ass
 
     if (setjmp(g_abort_jmp_buf) == 0) {
         g_expect_abort = true;
-        crypto_eddsa_sign(path, sizeof(path) / sizeof(path[0]), hash, sizeof(hash), signature, sizeof(signature));
+        crypto_eddsa_sign(path,
+                          sizeof(path) / sizeof(path[0]),
+                          hash,
+                          sizeof(hash),
+                          signature,
+                          sizeof(signature));
         fail();
     }
 
@@ -330,7 +357,12 @@ static void test_crypto_sign_derivation_failure_scrubs_signature_before_assert(v
 
     if (setjmp(g_abort_jmp_buf) == 0) {
         g_expect_abort = true;
-        crypto_eddsa_sign(path, sizeof(path) / sizeof(path[0]), hash, sizeof(hash), signature, sizeof(signature));
+        crypto_eddsa_sign(path,
+                          sizeof(path) / sizeof(path[0]),
+                          hash,
+                          sizeof(hash),
+                          signature,
+                          sizeof(signature));
         fail();
     }
 

@@ -42,9 +42,9 @@ static void test_asset_fingerprint(void **state) {
     (void) state;
 
     struct {
-        const char* policyIdHex;
-        const char* assetNameHex;
-        const char* expectedBech32;
+        const char *policyIdHex;
+        const char *assetNameHex;
+        const char *expectedBech32;
     } testVectors[] = {
         // Test vectors from CIP 14 proposal
         {"7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373",
@@ -67,12 +67,14 @@ static void test_asset_fingerprint(void **state) {
     for (size_t i = 0; i < sizeof(testVectors) / sizeof(testVectors[0]); i++) {
         uint8_t policyId[28] = {0};
         size_t policyIdSize;
-        bool success_policy = decode_hex(testVectors[i].policyIdHex, policyId, sizeof(policyId), &policyIdSize);
+        bool success_policy =
+            decode_hex(testVectors[i].policyIdHex, policyId, sizeof(policyId), &policyIdSize);
         assert_true(success_policy);
 
         uint8_t assetName[32] = {0};
         size_t assetNameSize;
-        bool success = decode_hex(testVectors[i].assetNameHex, assetName, sizeof(assetName), &assetNameSize);
+        bool success =
+            decode_hex(testVectors[i].assetNameHex, assetName, sizeof(assetName), &assetNameSize);
         assert_true(success);
 
         uint8_t fingerprintBytes[20] = {0};
@@ -100,29 +102,33 @@ static void test_format_token_amount_output(void **state) {
     (void) state;
 
     // Test case 1: Known token with decimal places
-    static const uint8_t policyId1[] = {
-        0x94, 0xcb, 0xb4, 0xfc, 0xbc, 0xaa, 0x29, 0x75,
-        0x77, 0x9f, 0x27, 0x3b, 0x26, 0x3e, 0xb3, 0xb5,
-        0xf2, 0x4a, 0x99, 0x51, 0xe4, 0x46, 0xd6, 0xdc,
-        0x4c, 0x13, 0x58, 0x64
-    };
+    static const uint8_t policyId1[] = {0x94, 0xcb, 0xb4, 0xfc, 0xbc, 0xaa, 0x29, 0x75, 0x77, 0x9f,
+                                        0x27, 0x3b, 0x26, 0x3e, 0xb3, 0xb5, 0xf2, 0x4a, 0x99, 0x51,
+                                        0xe4, 0x46, 0xd6, 0xdc, 0x4c, 0x13, 0x58, 0x64};
     uint8_t assetName1[] = {0x52, 0x45, 0x56, 0x55};  // "REVU"
 
     char output1[60] = {0};
-    bool success = format_token_amount_output(policyId1, assetName1, sizeof(assetName1), 234, output1, sizeof(output1));
+    bool success = format_token_amount_output(policyId1,
+                                              assetName1,
+                                              sizeof(assetName1),
+                                              234,
+                                              output1,
+                                              sizeof(output1));
     assert_true(success);
     assert_string_equal(output1, "0.00000234 REVU");
 
     // Test case 2: Unknown token (no decimal places)
-    static const uint8_t policyId2[] = {
-        0xaa, 0xcb, 0xb4, 0xfc, 0xbc, 0xaa, 0x29, 0x75,
-        0x77, 0x9f, 0x27, 0x3b, 0x26, 0x3e, 0xb3, 0xb5,
-        0xf2, 0x4a, 0x99, 0x51, 0xe4, 0x46, 0xd6, 0xdc,
-        0x4c, 0x13, 0x58, 0x64
-    };
+    static const uint8_t policyId2[] = {0xaa, 0xcb, 0xb4, 0xfc, 0xbc, 0xaa, 0x29, 0x75, 0x77, 0x9f,
+                                        0x27, 0x3b, 0x26, 0x3e, 0xb3, 0xb5, 0xf2, 0x4a, 0x99, 0x51,
+                                        0xe4, 0x46, 0xd6, 0xdc, 0x4c, 0x13, 0x58, 0x64};
 
     char output2[60] = {0};
-    success = format_token_amount_output(policyId2, assetName1, sizeof(assetName1), 2345, output2, sizeof(output2));
+    success = format_token_amount_output(policyId2,
+                                         assetName1,
+                                         sizeof(assetName1),
+                                         2345,
+                                         output2,
+                                         sizeof(output2));
     assert_true(success);
     assert_string_equal(output2, "2,345 (unknown decimals)");
 }
@@ -132,36 +138,45 @@ static void test_format_token_amount_mint(void **state) {
     (void) state;
 
     // Test case 1: Known token with decimal places
-    static const uint8_t policyId1[] = {
-        0x94, 0xcb, 0xb4, 0xfc, 0xbc, 0xaa, 0x29, 0x75,
-        0x77, 0x9f, 0x27, 0x3b, 0x26, 0x3e, 0xb3, 0xb5,
-        0xf2, 0x4a, 0x99, 0x51, 0xe4, 0x46, 0xd6, 0xdc,
-        0x4c, 0x13, 0x58, 0x64
-    };
+    static const uint8_t policyId1[] = {0x94, 0xcb, 0xb4, 0xfc, 0xbc, 0xaa, 0x29, 0x75, 0x77, 0x9f,
+                                        0x27, 0x3b, 0x26, 0x3e, 0xb3, 0xb5, 0xf2, 0x4a, 0x99, 0x51,
+                                        0xe4, 0x46, 0xd6, 0xdc, 0x4c, 0x13, 0x58, 0x64};
     uint8_t assetName1[] = {0x52, 0x45, 0x56, 0x55};  // "REVU"
 
     // Test negative amount (burning)
     char mint1[60] = {0};
-    bool success = format_token_amount_mint(policyId1, assetName1, sizeof(assetName1), -234, mint1, sizeof(mint1));
+    bool success = format_token_amount_mint(policyId1,
+                                            assetName1,
+                                            sizeof(assetName1),
+                                            -234,
+                                            mint1,
+                                            sizeof(mint1));
     assert_true(success);
     assert_string_equal(mint1, "-0.00000234 REVU");
 
     // Test positive amount (minting)
     char mint2[60] = {0};
-    success = format_token_amount_mint(policyId1, assetName1, sizeof(assetName1), 234, mint2, sizeof(mint2));
+    success = format_token_amount_mint(policyId1,
+                                       assetName1,
+                                       sizeof(assetName1),
+                                       234,
+                                       mint2,
+                                       sizeof(mint2));
     assert_true(success);
     assert_string_equal(mint2, " 0.00000234 REVU");
 
     // Test case 2: Unknown token
-    static const uint8_t policyId2[] = {
-        0xaa, 0xcb, 0xb4, 0xfc, 0xbc, 0xaa, 0x29, 0x75,
-        0x77, 0x9f, 0x27, 0x3b, 0x26, 0x3e, 0xb3, 0xb5,
-        0xf2, 0x4a, 0x99, 0x51, 0xe4, 0x46, 0xd6, 0xdc,
-        0x4c, 0x13, 0x58, 0x64
-    };
+    static const uint8_t policyId2[] = {0xaa, 0xcb, 0xb4, 0xfc, 0xbc, 0xaa, 0x29, 0x75, 0x77, 0x9f,
+                                        0x27, 0x3b, 0x26, 0x3e, 0xb3, 0xb5, 0xf2, 0x4a, 0x99, 0x51,
+                                        0xe4, 0x46, 0xd6, 0xdc, 0x4c, 0x13, 0x58, 0x64};
 
     char mint3[60] = {0};
-    success = format_token_amount_mint(policyId2, assetName1, sizeof(assetName1), 2345, mint3, sizeof(mint3));
+    success = format_token_amount_mint(policyId2,
+                                       assetName1,
+                                       sizeof(assetName1),
+                                       2345,
+                                       mint3,
+                                       sizeof(mint3));
     assert_true(success);
     assert_string_equal(mint3, " 2,345 (unknown decimals)");
 }

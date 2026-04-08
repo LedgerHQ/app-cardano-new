@@ -20,10 +20,10 @@
 #include "cbor_canonical.h"
 
 typedef struct {
-    bool run_validation;              // validation run: true, UI render run: true
-    bool run_hash_builder;            // validation run: true, UI render run: false
-    bool ui_count_pairs;              // validation run: true, UI render run: false
-    bool ui_render;                   // validation run: false, UI render run: true
+    bool run_validation;    // validation run: true, UI render run: true
+    bool run_hash_builder;  // validation run: true, UI render run: false
+    bool ui_count_pairs;    // validation run: true, UI render run: false
+    bool ui_render;         // validation run: false, UI render run: true
 } tx_processing_mode_t;
 
 typedef enum {
@@ -40,23 +40,23 @@ typedef enum {
 // WARNING: POLICY_DENY causes an immediate `return false` in the *calling function*.
 // This is intentional — denial must abort transaction processing unconditionally.
 // Callers do not need to check a return value; the function terminates on DENY.
-#define APPLY_POLICY(policy, render_fn, mode, ...) \
-    do { \
-        switch (policy) { \
-            case POLICY_DENY: \
+#define APPLY_POLICY(policy, render_fn, mode, ...)                        \
+    do {                                                                  \
+        switch (policy) {                                                 \
+            case POLICY_DENY:                                             \
                 send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED); \
-                return false; \
-            case POLICY_SHOW: \
-                render_fn(mode, ##__VA_ARGS__); \
-                break; \
-            case POLICY_HIDE: \
-                break; \
-            /* LCOV_EXCL_START */ \
-            default: \
-                LEDGER_ASSERT(false, "Unknown policy"); \
-                break; \
-            /* LCOV_EXCL_STOP */ \
-        } \
+                return false;                                             \
+            case POLICY_SHOW:                                             \
+                render_fn(mode, ##__VA_ARGS__);                           \
+                break;                                                    \
+            case POLICY_HIDE:                                             \
+                break;                                                    \
+            /* LCOV_EXCL_START */                                         \
+            default:                                                      \
+                LEDGER_ASSERT(false, "Unknown policy");                   \
+                break;                                                    \
+                /* LCOV_EXCL_STOP */                                      \
+        }                                                                 \
     } while (0)
 
 /**
@@ -66,7 +66,7 @@ typedef enum {
  */
 typedef struct {
     const tx_params_t *tx_params;  // points to global tx params
-    tx_processing_mode_t mode;  // per-run processing mode
+    tx_processing_mode_t mode;     // per-run processing mode
     warning_bits_t *warning_bits;  // points to global warnings or local dummy
 
     tx_hash_builder_t hash_builder;
@@ -82,8 +82,7 @@ typedef struct {
  * Declare a canonical ordering tracker in the current scope.
  * Must appear before any ENFORCE_CANONICAL_ORDERING_CHECK using the same name.
  */
-#define ENFORCE_CANONICAL_ORDERING_START(tracker_name) \
-    CBOR_CANONICAL_START(tracker_name)
+#define ENFORCE_CANONICAL_ORDERING_START(tracker_name) CBOR_CANONICAL_START(tracker_name)
 
 /**
  * Check that next_key maintains canonical ordering relative to the previous key
@@ -91,11 +90,11 @@ typedef struct {
  * returns false from the enclosing function.
  */
 #define ENFORCE_CANONICAL_ORDERING_CHECK(tracker_name, next_key, next_key_length, error_swo) \
-    do { \
-        if (!CBOR_CANONICAL_CHECK(tracker_name, next_key, next_key_length)) { \
-            tx_handle_parse_error(error_swo); \
-            return false; \
-        } \
+    do {                                                                                     \
+        if (!CBOR_CANONICAL_CHECK(tracker_name, next_key, next_key_length)) {                \
+            tx_handle_parse_error(error_swo);                                                \
+            return false;                                                                    \
+        }                                                                                    \
     } while (0)
 
 // ---------------------------------------------------------------------------

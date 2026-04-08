@@ -15,11 +15,11 @@
 #ifdef TRACE_TX_PARSE
 #define TRACE_MODULE(...) TRACE("[tx_parse_outputs] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
-__noinline_due_to_stack__
-uint16_t parse_output_destination(buffer_t* buf, tx_output_destination_t* destination) {
+__noinline_due_to_stack__ uint16_t parse_output_destination(buffer_t* buf,
+                                                            tx_output_destination_t* destination) {
     ASSERT(buf != NULL);
     ASSERT(destination != NULL);
 
@@ -29,7 +29,8 @@ uint16_t parse_output_destination(buffer_t* buf, tx_output_destination_t* destin
         TRACE("Failed to read destination type");
         return SWO_TX_PARSING_FAIL_OUTPUTS;
     }
-    TRACE_MODULE("Deserialize: Output destination type=0x%02x (1=THIRD_PARTY, 2=DEVICE_OWNED)", dest_type);
+    TRACE_MODULE("Deserialize: Output destination type=0x%02x (1=THIRD_PARTY, 2=DEVICE_OWNED)",
+                 dest_type);
 
     switch (dest_type) {
         case DESTINATION_THIRD_PARTY: {
@@ -73,7 +74,6 @@ uint16_t parse_output_destination(buffer_t* buf, tx_output_destination_t* destin
 
     return SWO_OK;
 }
-
 
 uint16_t parse_output_format(buffer_t* buf,
                              tx_output_serialization_format_t* format,
@@ -184,7 +184,8 @@ bool parse_output_token(buffer_t* buf, output_token_t* out_token) {
 
     if (!buffer_read_u8(buf, &out_token->assetNameLen) ||
         out_token->assetNameLen > MAX_ASSET_NAME_LENGTH) {
-        TRACE("Failed to read asset name length or too long: %u", (unsigned) out_token->assetNameLen);
+        TRACE("Failed to read asset name length or too long: %u",
+              (unsigned) out_token->assetNameLen);
         return false;
     }
     if (!buffer_read_bytes_ptr(buf, &out_token->assetName, out_token->assetNameLen)) {

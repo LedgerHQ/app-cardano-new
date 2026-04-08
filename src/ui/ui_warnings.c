@@ -28,10 +28,10 @@ static void free_warning_dynamic_strings(void) {
 }
 
 bool build_warning_summary_text(const warning_definition_t *const *warning_defs,
-                                       size_t start_index,
-                                       size_t warning_count,
-                                       bool include_descriptions,
-                                       char **out) {
+                                size_t start_index,
+                                size_t warning_count,
+                                bool include_descriptions,
+                                char **out) {
     ASSERT(warning_defs != NULL);
     LEDGER_ASSERT(start_index < warning_count, "Invalid warning summary range");
     ASSERT(out != NULL);
@@ -55,7 +55,7 @@ bool build_warning_summary_text(const warning_definition_t *const *warning_defs,
 
     char *buffer = NULL;
     if (!allocate_zeroed((void **) &buffer, total_length) || buffer == NULL) {
-        return false; // LCOV_EXCL_LINE
+        return false;  // LCOV_EXCL_LINE
     }
 
     char *write_ptr = buffer;
@@ -108,8 +108,8 @@ static bool build_wallet_warning_details_page(const warning_definition_t *const 
     const nbgl_icon_details_t **icons = NULL;
     const char **titles = NULL;
     const char **subtexts = NULL;
-    size_t warnings_on_page = (warning_count < MAX_WARNING_BARS_PER_PAGE) ? warning_count
-                                                                          : MAX_WARNING_BARS_PER_PAGE;
+    size_t warnings_on_page =
+        (warning_count < MAX_WARNING_BARS_PER_PAGE) ? warning_count : MAX_WARNING_BARS_PER_PAGE;
     bool has_more_warnings = warning_count > warnings_on_page;
     size_t row_count = warnings_on_page + (has_more_warnings ? 1 : 0);
 
@@ -117,8 +117,7 @@ static bool build_wallet_warning_details_page(const warning_definition_t *const 
         icons == NULL) {
         return false;
     }
-    if (!allocate_zeroed((void **) &titles, sizeof(const char *) * row_count) ||
-        titles == NULL) {
+    if (!allocate_zeroed((void **) &titles, sizeof(const char *) * row_count) || titles == NULL) {
         APP_MEM_FREE((void *) icons);
         return false;
     }
@@ -158,12 +157,11 @@ static bool build_wallet_warning_details_page(const warning_definition_t *const 
         subtexts[more_index] = NULL;
         icons[more_index] = &WARNING_ICON;
 
-        if (!build_warning_summary_text(
-                warning_defs,
-                warnings_on_page,
-                warning_count,
-                false,
-                &g_warning_overflow_text)) {
+        if (!build_warning_summary_text(warning_defs,
+                                        warnings_on_page,
+                                        warning_count,
+                                        false,
+                                        &g_warning_overflow_text)) {
             if (icons != NULL) APP_MEM_FREE((void *) icons);
             if (titles != NULL) APP_MEM_FREE((void *) titles);
             if (subtexts != NULL) APP_MEM_FREE((void *) subtexts);
@@ -214,8 +212,7 @@ static void free_wallet_warning_details_page(const nbgl_warningDetails_t *page) 
 ui_status_t ui_build_warnings(warning_bits_t warnings) {
     LEDGER_ASSERT(g_warning == NULL, "Warnings already built");
     const warning_definition_t *warning_defs[WARNING_BIT_COUNT];
-    size_t warning_count =
-        warning_bits_to_definitions(warnings, warning_defs, WARNING_BIT_COUNT);
+    size_t warning_count = warning_bits_to_definitions(warnings, warning_defs, WARNING_BIT_COUNT);
 
     if (warning_count == 0) {
         g_warning = NULL;
@@ -227,15 +224,15 @@ ui_status_t ui_build_warnings(warning_bits_t warnings) {
 
     if (!allocate_zeroed((void **) &info, sizeof(nbgl_contentCenter_t)) ||
         !allocate_zeroed((void **) &g_warning, sizeof(nbgl_warning_t))) {
-        if (info != NULL) { // LCOV_EXCL_LINE
-            APP_MEM_FREE(info); // LCOV_EXCL_LINE
+        if (info != NULL) {      // LCOV_EXCL_LINE
+            APP_MEM_FREE(info);  // LCOV_EXCL_LINE
         }
-        if (g_warning != NULL) { // LCOV_EXCL_LINE
-            APP_MEM_FREE(g_warning); // LCOV_EXCL_LINE
-            g_warning = NULL; // LCOV_EXCL_LINE
+        if (g_warning != NULL) {      // LCOV_EXCL_LINE
+            APP_MEM_FREE(g_warning);  // LCOV_EXCL_LINE
+            g_warning = NULL;         // LCOV_EXCL_LINE
         }
-        free_warning_dynamic_strings(); // LCOV_EXCL_LINE
-        return UI_STATUS_OUT_OF_MEMORY; // LCOV_EXCL_LINE
+        free_warning_dynamic_strings();  // LCOV_EXCL_LINE
+        return UI_STATUS_OUT_OF_MEMORY;  // LCOV_EXCL_LINE
     }
 
 #ifdef SCREEN_SIZE_WALLET
@@ -261,9 +258,13 @@ ui_status_t ui_build_warnings(warning_bits_t warnings) {
     nbgl_warningDetails_t *intro = NULL;
 
     if (!allocate_zeroed((void **) &intro, sizeof(nbgl_warningDetails_t)) ||
-        !build_warning_summary_text(warning_defs, 0, warning_count, false, &g_warning_summary_text)) {
-        ui_free_warnings(); // LCOV_EXCL_LINE
-        return UI_STATUS_OUT_OF_MEMORY; // LCOV_EXCL_LINE
+        !build_warning_summary_text(warning_defs,
+                                    0,
+                                    warning_count,
+                                    false,
+                                    &g_warning_summary_text)) {
+        ui_free_warnings();              // LCOV_EXCL_LINE
+        return UI_STATUS_OUT_OF_MEMORY;  // LCOV_EXCL_LINE
     }
 
     info->icon = &WARNING_ICON;
@@ -283,7 +284,7 @@ ui_status_t ui_build_warnings(warning_bits_t warnings) {
     return UI_STATUS_SUCCESS;
 }
 
-const nbgl_warning_t* ui_get_warnings(void) {
+const nbgl_warning_t *ui_get_warnings(void) {
     // Returns NULL if no warnings were built (warning count was 0)
     return g_warning;
 }
@@ -300,10 +301,10 @@ void ui_free_warnings(void) {
             free_wallet_warning_details_page(g_warning->introDetails);
         } else
 #endif
-        APP_MEM_FREE((void *) g_warning->introDetails);
+            APP_MEM_FREE((void *) g_warning->introDetails);
     }
     if (g_warning->reviewDetails != NULL) {
-        APP_MEM_FREE((void *) g_warning->reviewDetails); // LCOV_EXCL_LINE
+        APP_MEM_FREE((void *) g_warning->reviewDetails);  // LCOV_EXCL_LINE
     }
     if (g_warning->info != NULL) {
         APP_MEM_FREE((void *) g_warning->info);

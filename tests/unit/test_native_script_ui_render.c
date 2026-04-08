@@ -66,7 +66,7 @@ static uint16_t run_simple_pubkey_hash_script(void) {
     simple_payload[0] = NATIVE_SCRIPT_PUBKEY;
     simple_payload[1] = EXT_CREDENTIAL_KEY_HASH;
     for (size_t i = 0; i < ADDRESS_KEY_HASH_LENGTH; i++) {
-        simple_payload[2 + i] = (uint8_t)(i + 1);
+        simple_payload[2 + i] = (uint8_t) (i + 1);
     }
     buffer_t buf = {.ptr = simple_payload, .size = sizeof(simple_payload), .offset = 0};
     run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
@@ -102,8 +102,8 @@ static void test_render_pubkey_path_script(void **state) {
     simple_payload[0] = NATIVE_SCRIPT_PUBKEY;
     simple_payload[1] = EXT_CREDENTIAL_KEY_PATH;
     simple_payload[2] = 5;
-    write_u32_be(&simple_payload[3],  bip44_harden(PURPOSE_SHELLEY));
-    write_u32_be(&simple_payload[7],  bip44_harden(ADA_COIN_TYPE));
+    write_u32_be(&simple_payload[3], bip44_harden(PURPOSE_SHELLEY));
+    write_u32_be(&simple_payload[7], bip44_harden(ADA_COIN_TYPE));
     write_u32_be(&simple_payload[11], bip44_harden(0));
     write_u32_be(&simple_payload[15], 2);
     write_u32_be(&simple_payload[19], 0);
@@ -131,7 +131,7 @@ static void test_render_invalid_before_script(void **state) {
     // timelock = 1000000 (slot number)
     uint64_t timelock = 1000000ULL;
     for (int i = 7; i >= 0; i--) {
-        payload[1 + i] = (uint8_t)(timelock & 0xFF);
+        payload[1 + i] = (uint8_t) (timelock & 0xFF);
         timelock >>= 8;
     }
     buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
@@ -156,7 +156,7 @@ static void test_render_invalid_hereafter_script(void **state) {
     payload[0] = NATIVE_SCRIPT_INVALID_HEREAFTER;
     uint64_t timelock = 2000000ULL;
     for (int i = 7; i >= 0; i--) {
-        payload[1 + i] = (uint8_t)(timelock & 0xFF);
+        payload[1 + i] = (uint8_t) (timelock & 0xFF);
         timelock >>= 8;
     }
     buffer_t buf = {.ptr = payload, .size = sizeof(payload), .offset = 0};
@@ -249,7 +249,7 @@ static void test_render_n_of_k_script(void **state) {
         uint8_t child_payload[1 + 1 + ADDRESS_KEY_HASH_LENGTH] = {0};
         child_payload[0] = NATIVE_SCRIPT_PUBKEY;
         child_payload[1] = EXT_CREDENTIAL_KEY_HASH;
-        child_payload[2] = (uint8_t)(i + 1);  // distinct hash bytes
+        child_payload[2] = (uint8_t) (i + 1);  // distinct hash bytes
         buffer_t child_buf = {.ptr = child_payload, .size = sizeof(child_payload), .offset = 0};
         run_derive_native_script_apdu(&child_buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
         assert_int_equal(get_last_swo(), SWO_SUCCESS);
@@ -280,7 +280,7 @@ static void test_render_policy_id_display_format(void **state) {
     simple_payload[0] = NATIVE_SCRIPT_PUBKEY;
     simple_payload[1] = EXT_CREDENTIAL_KEY_HASH;
     for (size_t i = 0; i < ADDRESS_KEY_HASH_LENGTH; i++) {
-        simple_payload[2 + i] = (uint8_t)(i + 2);
+        simple_payload[2 + i] = (uint8_t) (i + 2);
     }
     buffer_t buf = {.ptr = simple_payload, .size = sizeof(simple_payload), .offset = 0};
     run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);
@@ -334,7 +334,7 @@ static void test_render_nested_all_exercises_position_formatting(void **state) {
     child2_payload[0] = NATIVE_SCRIPT_PUBKEY;
     child2_payload[1] = EXT_CREDENTIAL_KEY_HASH;
     for (size_t i = 0; i < ADDRESS_KEY_HASH_LENGTH; i++) {
-        child2_payload[2 + i] = (uint8_t)(i + 5);
+        child2_payload[2 + i] = (uint8_t) (i + 5);
     }
     buffer_t child2_buf = {.ptr = child2_payload, .size = sizeof(child2_payload), .offset = 0};
     run_derive_native_script_apdu(&child2_buf, P1_NATIVE_SCRIPT_ADD_SIMPLE);

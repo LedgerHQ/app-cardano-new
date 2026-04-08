@@ -26,14 +26,14 @@
 #ifdef TRACE_HANDLERS
 #define TRACE_MODULE(...) TRACE("[native_script] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 static bool ensure_derive_native_script_hash_request_type(request_type_e required_request_type) {
     if (G_context.req_type != required_request_type) {
         TRACE_MODULE("NATIVE_SCRIPT rejected: request type %d (expected %d)",
-              G_context.req_type,
-              required_request_type);
+                     G_context.req_type,
+                     required_request_type);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return false;
     }
@@ -186,14 +186,15 @@ static bool deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
                     return false;
                 case POLICY_SHOW:
                     // Derive hash only after policy check to avoid asserts on denied paths.
-                    keyPathToKeyHash(
-                        &ctx->scriptContent.pubkeyPath, pubkeyHash, ADDRESS_KEY_HASH_LENGTH);
+                    keyPathToKeyHash(&ctx->scriptContent.pubkeyPath,
+                                     pubkeyHash,
+                                     ADDRESS_KEY_HASH_LENGTH);
                     break;
                 // LCOV_EXCL_START
                 default:
                     LEDGER_ASSERT(false, "Invalid policy value: %d", policy);
             }
-                // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
             break;
         }
         case EXT_CREDENTIAL_KEY_HASH:
@@ -211,12 +212,11 @@ static bool deriveNativeScriptHash_handlePubkey(buffer_t *cdata) {
         default:
             ASSERT(false);
             return false;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
-    
+
     // Add pubkey hash to script hash builder (single call for both paths)
     nativeScriptHashBuilder_addScript_pubkey(&ctx->hashBuilder, pubkeyHash, SIZEOF(pubkeyHash));
-    
 
     // Display to user
     apdu_response_deferred();
@@ -450,7 +450,8 @@ static void deriveNativeScriptHash_handleInit(buffer_t *cdata) {
 
     // Set up request state
     G_context.req_type = REQUEST_DERIVE_NATIVE_SCRIPT_HASH;
-    explicit_bzero(&G_context.derive_native_script_hash_info, sizeof(G_context.derive_native_script_hash_info));
+    explicit_bzero(&G_context.derive_native_script_hash_info,
+                   sizeof(G_context.derive_native_script_hash_info));
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
     ctx->level = 0;
     ctx->complexScripts[0].remainingScripts = 1;
@@ -494,14 +495,14 @@ void handler_derive_native_script_hash(buffer_t *cdata, uint8_t script_type) {
                 default:
                     ASSERT(false);
                     break;
-                // LCOV_EXCL_STOP
+                    // LCOV_EXCL_STOP
             }
             break;
         // LCOV_EXCL_START
         default:
             ASSERT(false);
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
     return;
 }

@@ -11,6 +11,7 @@ import base58
 from ecdsa.curves import Ed25519
 from ecdsa.keys import VerifyingKey
 
+from ledgered.devices import Device
 from bip_utils import Bip44, Bip44Coins, Bip44Changes, Bip39SeedGenerator
 from bip_utils.bip.bip32.bip32_path import Bip32Path, Bip32PathParser
 
@@ -21,7 +22,6 @@ from ragger.navigator.navigation_scenario import (
     NavigationScenarioData,
     UseCase,
 )
-from ledgered.devices import Device
 
 from ragger.bip.seed import SPECULOS_MNEMONIC
 from ragger.backend import BackendInterface

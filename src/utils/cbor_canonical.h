@@ -36,15 +36,17 @@ typedef struct {
 } cbor_canonical_tracker_t;
 
 bool cbor_canonical_tracker_check_and_advance(cbor_canonical_tracker_t *tracker,
-                                               const uint8_t *next_key,
-                                               size_t next_key_length);
+                                              const uint8_t *next_key,
+                                              size_t next_key_length);
 
 /**
  * Declare a canonical ordering tracker in the current scope.
  * Must appear before any CBOR_CANONICAL_CHECK using the same name.
  */
-#define CBOR_CANONICAL_START(tracker_name) \
-    cbor_canonical_tracker_t tracker_name = {.previous_key = {0}, .previous_key_length = 0, .has_previous = false}
+#define CBOR_CANONICAL_START(tracker_name)                             \
+    cbor_canonical_tracker_t tracker_name = {.previous_key = {0},      \
+                                             .previous_key_length = 0, \
+                                             .has_previous = false}
 
 /**
  * Evaluate to true if next_key maintains canonical ordering relative to the

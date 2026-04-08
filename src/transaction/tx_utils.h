@@ -40,7 +40,7 @@ bool violatesSingleAccountOrStoreIt(const bip44_path_t* path);
  * are tiny and statically bounded, so failure here indicates allocator corruption, heap misuse,
  * or another deeper invariant violation rather than an expected runtime condition.
  */
-uint8_t *tx_alloc_temp_buffer_or_fail(size_t size);
+uint8_t* tx_alloc_temp_buffer_or_fail(size_t size);
 
 /**
  * Resolve a transaction output destination into raw address bytes.

@@ -40,10 +40,9 @@ static void test_hex_nibble_invalid(void **state) {
     (void) state;
 
     // Invalid nibble characters that should return false
-    char invalidNibbles[] = {
-        '\x00', '\x01', '.', '/', ':', ';', '?', '@', 'G', 'H', 'Z',
-        '[', '\\', '_', '`', 'g', 'h', 'z', '{', 127, (char)128, (char)255
-    };
+    char invalidNibbles[] = {'\x00', '\x01', '.', '/', ':',        ';',       '?', '@',
+                             'G',    'H',    'Z', '[', '\\',       '_',       '`', 'g',
+                             'h',    'z',    '{', 127, (char) 128, (char) 255};
 
     for (size_t i = 0; i < sizeof(invalidNibbles) / sizeof(invalidNibbles[0]); i++) {
         uint8_t nibble;
@@ -56,7 +55,7 @@ static void test_hex_parsing(void **state) {
     (void) state;
 
     struct {
-        const char* hex;
+        const char *hex;
         uint8_t raw;
     } testVectors[] = {
         {"ff", 0xff},
@@ -81,7 +80,7 @@ static void test_decode_hex(void **state) {
     (void) state;
 
     // Test basic hex decoding
-    const char* hexStr = "48656c6c6f";  // "Hello" in hex
+    const char *hexStr = "48656c6c6f";  // "Hello" in hex
     uint8_t buffer[10];
     size_t len;
     bool success = decode_hex(hexStr, buffer, sizeof(buffer), &len);
@@ -126,7 +125,7 @@ static void test_decode_hex_invalid(void **state) {
     (void) state;
 
     // Test decode with invalid hex characters
-    const char* invalidHexStr = "4865xxc6";
+    const char *invalidHexStr = "4865xxc6";
     uint8_t buffer[10];
     size_t len;
     bool success = decode_hex(invalidHexStr, buffer, sizeof(buffer), &len);
@@ -138,7 +137,7 @@ static void test_decode_hex_odd_length(void **state) {
     (void) state;
 
     // Test decode with odd length string
-    const char* oddHexStr = "48656c6c6f0";
+    const char *oddHexStr = "48656c6c6f0";
     uint8_t buffer[10];
     size_t len;
     bool success = decode_hex(oddHexStr, buffer, sizeof(buffer), &len);
@@ -150,7 +149,7 @@ static void test_decode_hex_buffer_too_small(void **state) {
     (void) state;
 
     // Test decode with buffer too small
-    const char* hexStr = "48656c6c6f";  // 5 bytes
+    const char *hexStr = "48656c6c6f";  // 5 bytes
     uint8_t buffer[3];
     size_t len;
     bool success = decode_hex(hexStr, buffer, sizeof(buffer), &len);

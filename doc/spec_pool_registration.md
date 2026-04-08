@@ -12,7 +12,8 @@ Ledger and Trezor hardware wallets already support signing transactions for Card
 4. stake delegation ("binding" the staking key to a stake pool)
 5. rewards withdrawal
 
-The purpose of this document is to specify the expected behavior of HW wallets for an additional use case - stakepool registration from the perspective of stakepool owner(s) in terms of prompts displayed to the user of the HW wallet when confirming such a transaction. There are two aspects to this feature:
+The purpose of this document is to specify the expected behavior of HW wallets for an additional use case - stakepool
+registration from the perspective of stakepool owner(s) in terms of prompts displayed to the user of the HW wallet when confirming such a transaction. There are two aspects to this feature:
 
 1. Signing transactions by multiple parties
 2. Ability to build stakepool registration certificates and include them into transactions on a HW wallet
@@ -696,7 +697,7 @@ Given the proposals 4.3 and 4.4 related to stake pool registration, we will be e
 
 #### Stake pool metadata UI
 
-Regarding stake pool metatada, we propose to show just the hash and URL where it would be hosted, as we already do for owners. Displaying/handling the metadata JSON explicitly in Ledger requires additional serialization logic which is not trivial to introduce given that Ledger Cardano app supports only CBOR serialization right now and we see no added security value as even if the metadata hash happens to be wrong, the operator can re-register the pool with the right metadata with minimal cost. If this turns out to be an issue, we can always revisit this decision in later iterations of the stake pool registration functionality, but now we don't see an inherent security risk in having the operator verify on Ledger just the metadata hash.
+Regarding stake pool metadata, we propose to show just the hash and URL where it would be hosted, as we already do for owners. Displaying/handling the metadata JSON explicitly in Ledger requires additional serialization logic which is not trivial to introduce given that Ledger Cardano app supports only CBOR serialization right now and we see no added security value as even if the metadata hash happens to be wrong, the operator can re-register the pool with the right metadata with minimal cost. If this turns out to be an issue, we can always revisit this decision in later iterations of the stake pool registration functionality, but now we don't see an inherent security risk in having the operator verify on Ledger just the metadata hash.
 
 ### 5.3.4 Introduce stake pool retirement certificate type
 

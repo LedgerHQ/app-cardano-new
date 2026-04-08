@@ -37,7 +37,7 @@
 #ifdef TRACE_HANDLERS
 #define TRACE_MODULE(...) TRACE("[sign_tx] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 #ifdef HAVE_SWAP
@@ -62,8 +62,8 @@ static bool is_valid_tx_signing_mode(uint8_t tx_signing_mode) {
 static bool ensure_sign_tx_state(tx_state_e required_state) {
     if (G_context.state.tx_state != required_state) {
         TRACE_MODULE("Rejecting sign_tx command in state %d (expected %d)",
-              G_context.state.tx_state,
-              required_state);
+                     G_context.state.tx_state,
+                     required_state);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return false;
     }
@@ -73,8 +73,8 @@ static bool ensure_sign_tx_state(tx_state_e required_state) {
 static bool ensure_sign_tx_request_type(request_type_e required_request_type) {
     if (G_context.req_type != required_request_type) {
         TRACE_MODULE("Rejecting sign_tx command for req_type %d (expected %d)",
-              G_context.req_type,
-              required_request_type);
+                     G_context.req_type,
+                     required_request_type);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return false;
     }
@@ -107,8 +107,7 @@ static bool read_tx_options(buffer_t *cdata, tx_params_t *tx_params) {
  * Returns false and sends SW on failure.
  */
 static bool read_tx_network_params(buffer_t *cdata, tx_params_t *tx_params) {
-    if (!buffer_read_u8(cdata, &tx_params->networkId) ||
-        !isValidNetworkId(tx_params->networkId)) {
+    if (!buffer_read_u8(cdata, &tx_params->networkId) || !isValidNetworkId(tx_params->networkId)) {
         TRACE("TX init: invalid network id %u", tx_params->networkId);
         send_swo_and_reset(SWO_INVALID_NETWORK_ID);
         return false;
@@ -343,7 +342,9 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         return;
     }
 
-    TRACE("TX Mode=%d, Network: ID=%d, Magic=%u, Inputs=%u, Outputs=%u, Certificates=%u, Withdrawals=%u, Mint=%u, includeTTL=%d, includeVIS=%d, Witnesses=%u, RawTotalLength=%u",
+    TRACE(
+        "TX Mode=%d, Network: ID=%d, Magic=%u, Inputs=%u, Outputs=%u, Certificates=%u, "
+        "Withdrawals=%u, Mint=%u, includeTTL=%d, includeVIS=%d, Witnesses=%u, RawTotalLength=%u",
         tx_params->txSigningMode,
         tx_params->networkId,
         tx_params->protocolMagic,
@@ -355,8 +356,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         tx_params->includeTtl,
         tx_params->includeValidityIntervalStart,
         G_context.tx_info.num_witnesses,
-        G_context.tx_info.raw_tx_total_length
-    );
+        G_context.tx_info.raw_tx_total_length);
 
     // Check security policy for DENY at init time (before buffering the tx body).
     // Warning bits are intentionally discarded here; they will be re-set in tx_validate
@@ -452,11 +452,13 @@ static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
 
     // Copy chunk data
     bool chunk_copied = buffer_move(cdata,
-                     tx_body_ctx()->raw_tx + tx_body_ctx()->raw_tx_current_length,
-                     chunk_size);
+                                    tx_body_ctx()->raw_tx + tx_body_ctx()->raw_tx_current_length,
+                                    chunk_size);
     LEDGER_ASSERT(chunk_copied, "buffer_move failed unexpectedly");
     tx_body_ctx()->raw_tx_current_length += chunk_size;
-    TRACE("Copied %u bytes, total: %u", (unsigned) chunk_size, (unsigned) tx_body_ctx()->raw_tx_current_length);
+    TRACE("Copied %u bytes, total: %u",
+          (unsigned) chunk_size,
+          (unsigned) tx_body_ctx()->raw_tx_current_length);
     return true;
 }
 
@@ -543,10 +545,9 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
                 APP_MEM_FREE_AND_NULL((void **) &tx_body_ctx()->raw_tx);
                 G_context.state.tx_state = TX_STATE_APPROVED;
                 tx_witness_ctx()->current_witness = 0;
-                apdu_response_send_data(
-                    G_context.tx_info.tx_hash,
-                    sizeof(G_context.tx_info.tx_hash),
-                    SWO_SUCCESS);
+                apdu_response_send_data(G_context.tx_info.tx_hash,
+                                        sizeof(G_context.tx_info.tx_hash),
+                                        SWO_SUCCESS);
                 return;
             }
 #endif
@@ -590,14 +591,15 @@ void finalize_sign_tx(void) {
     APP_MEM_FREE_AND_NULL((void **) &tx_body_ctx()->raw_tx);
     G_context.state.tx_state = TX_STATE_APPROVED;
     tx_witness_ctx()->current_witness = 0;
-    apdu_response_send_data(G_context.tx_info.tx_hash, SIZEOF(G_context.tx_info.tx_hash), SWO_SUCCESS);
+    apdu_response_send_data(G_context.tx_info.tx_hash,
+                            SIZEOF(G_context.tx_info.tx_hash),
+                            SWO_SUCCESS);
 
     if (G_context.tx_info.num_witnesses == 0) {
         // there are no witnesses, we are done with this tx
         reset_app_context();
     }
 }
-
 
 bool is_last_witness_to_process(void) {
     ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION);
@@ -610,8 +612,7 @@ bool is_last_witness_to_process(void) {
     return (remaining_witnesses == 1);
 }
 
-void finalize_witness(void)
-{
+void finalize_witness(void) {
     ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION);
     ASSERT(G_context.state.tx_state == TX_STATE_APPROVED);
     LEDGER_ASSERT(G_context.tx_info.num_witnesses > 0, "No witnesses expected");
@@ -631,8 +632,7 @@ void finalize_witness(void)
 
     // Witness confirmed - send signature back
 #ifdef HAVE_SWAP
-    if (G_called_from_swap &&
-        is_last_witness) {
+    if (G_called_from_swap && is_last_witness) {
         // Must be set before apdu_response_send_data(): the SDK IO send path checks
         // G_swap_response_ready while transmitting the response and calls os_lib_end()
         // immediately to return control to Exchange.
@@ -640,11 +640,9 @@ void finalize_witness(void)
         G_swap_response_ready = true;
     }
 #endif
-    apdu_response_send_data(
-        tx_witness_ctx()->witness_signature,
-        ED25519_SIGNATURE_LENGTH,
-        SWO_SUCCESS
-    );
+    apdu_response_send_data(tx_witness_ctx()->witness_signature,
+                            ED25519_SIGNATURE_LENGTH,
+                            SWO_SUCCESS);
 
     if (is_last_witness) {
         // All witnesses processed - reset context to prevent further APDUs for this tx
@@ -666,7 +664,8 @@ void handler_sign_tx_witness(buffer_t *cdata) {
     }
 
     if (G_context.state.tx_state != TX_STATE_APPROVED) {
-        TRACE("Bad state for witness signing: expected TX_STATE_APPROVED, got %d", G_context.state.tx_state);
+        TRACE("Bad state for witness signing: expected TX_STATE_APPROVED, got %d",
+              G_context.state.tx_state);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return;
     }
@@ -675,8 +674,7 @@ void handler_sign_tx_witness(buffer_t *cdata) {
     if (tx_witness_ctx()->current_witness >= G_context.tx_info.num_witnesses) {
         TRACE("Witness count exceeded: current=%d, expected=%d",
               tx_witness_ctx()->current_witness,
-              G_context.tx_info.num_witnesses
-        );
+              G_context.tx_info.num_witnesses);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return;
     }
@@ -694,19 +692,20 @@ void handler_sign_tx_witness(buffer_t *cdata) {
     }
 
     TRACE("Witness %d: path length=%d",
-           tx_witness_ctx()->current_witness,
-           tx_witness_ctx()->witness_path.length);
+          tx_witness_ctx()->current_witness,
+          tx_witness_ctx()->witness_path.length);
 
     // Check security policy for witness signing
     // Determine if mint is present in the transaction
     bool mintPresent = (G_context.tx_info.tx_params.num_mint_asset_groups > 0);
 
     // Get pool owner path if this is a pool registration
-    const bip44_path_t* poolOwnerPath = NULL;
+    const bip44_path_t *poolOwnerPath = NULL;
     switch (G_context.tx_info.tx_params.txSigningMode) {
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
             if (G_context.tx_info.pool_owner_path_present) {
-                poolOwnerPath = &G_context.tx_info.pool_owner_path;  // cross-stage field, direct access ok
+                poolOwnerPath =
+                    &G_context.tx_info.pool_owner_path;  // cross-stage field, direct access ok
             }
             break;
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
@@ -721,14 +720,12 @@ void handler_sign_tx_witness(buffer_t *cdata) {
 #else
     const bool isSwap = false;
 #endif
-    security_policy_t policy = policyForSignTxWitness(
-        G_context.tx_info.tx_params.txSigningMode,
-        isSwap,
-        &tx_witness_ctx()->witness_path,
-        mintPresent,
-        poolOwnerPath,
-        &witness_warnings
-    );
+    security_policy_t policy = policyForSignTxWitness(G_context.tx_info.tx_params.txSigningMode,
+                                                      isSwap,
+                                                      &tx_witness_ctx()->witness_path,
+                                                      mintPresent,
+                                                      poolOwnerPath,
+                                                      &witness_warnings);
 
     TRACE("Witness security policy: %d", (int) policy);
 
@@ -780,6 +777,6 @@ void handler_sign_tx_witness(buffer_t *cdata) {
         default:
             ASSERT(false);
             return;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }

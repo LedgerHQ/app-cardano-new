@@ -10,25 +10,26 @@
 #include "tx_output_types.h"
 #include "assert.h"
 
-static inline tx_output_destination_t tx_output_destination_make_third_party(const uint8_t* addressBuffer,
-                                                                              size_t addressLength)
-{
+static inline tx_output_destination_t tx_output_destination_make_third_party(
+    const uint8_t* addressBuffer,
+    size_t addressLength) {
     ASSERT(addressBuffer != NULL);
     ASSERT(addressLength > 0);
     ASSERT(addressLength <= MAX_ADDRESS_LENGTH);
 
     tx_output_destination_t destination = {
         .type = DESTINATION_THIRD_PARTY,
-        .address = {
-            .buffer = addressBuffer,
-            .length = addressLength,
-        },
+        .address =
+            {
+                .buffer = addressBuffer,
+                .length = addressLength,
+            },
     };
     return destination;
 }
 
-static inline tx_output_destination_t tx_output_destination_make_device_owned(const address_params_t* params)
-{
+static inline tx_output_destination_t tx_output_destination_make_device_owned(
+    const address_params_t* params) {
     ASSERT(params != NULL);
 
     tx_output_destination_t destination = {
@@ -98,7 +99,7 @@ uint16_t parse_output_top_level(buffer_t* buf,
                                 uint16_t parseFailureSwo);
 
 typedef struct {
-    const uint8_t* policyId;   // points into raw tx buffer
+    const uint8_t* policyId;  // points into raw tx buffer
     uint16_t numTokens;
 } output_asset_group_t;
 

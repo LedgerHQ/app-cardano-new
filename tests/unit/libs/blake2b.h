@@ -14,10 +14,10 @@ typedef struct {
     uint64_t h[8];
     uint64_t t[2];
     uint64_t f[2];
-    uint8_t  buf[128];
-    size_t   buflen;
-    uint8_t  outlen;
-    uint8_t  last_node;
+    uint8_t buf[128];
+    size_t buflen;
+    uint8_t outlen;
+    uint8_t last_node;
 } blake2b_state;
 
 typedef blake2b_state blake2b_t;

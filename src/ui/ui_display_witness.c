@@ -30,7 +30,7 @@
 #ifdef TRACE_UI_DISPLAY
 #define TRACE_MODULE(...) TRACE("[ui_witness] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 static void witness_review_choice(bool confirm) {
@@ -58,8 +58,8 @@ static void witness_review_choice(bool confirm) {
 }
 
 void ui_display_witness(const bip44_path_t* witnessPath,
-                       security_policy_t securityPolicy,
-                       warning_bits_t warnings) {
+                        security_policy_t securityPolicy,
+                        warning_bits_t warnings) {
     TRACE_MODULE("=== ui_display_witness START ===");
     TRACE_MODULE("securityPolicy: %d", securityPolicy);
 
@@ -69,11 +69,11 @@ void ui_display_witness(const bip44_path_t* witnessPath,
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_APPROVED,
                   "ui_display_witness called in wrong tx state: %d",
                   G_context.state.tx_state);
-    LEDGER_ASSERT(
-        warning_bits_except_mask(warnings,
-                                 warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)) == 0,
-        "Unexpected warning bits: 0x%08x",
-        (unsigned int) warnings);
+    LEDGER_ASSERT(warning_bits_except_mask(
+                      warnings,
+                      warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)) == 0,
+                  "Unexpected warning bits: 0x%08x",
+                  (unsigned int) warnings);
 
     bool isUnusual = warning_bits_has(warnings, WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH);
 
@@ -86,29 +86,26 @@ void ui_display_witness(const bip44_path_t* witnessPath,
                                        tx_witness_ctx()->witness_path_str,
                                        sizeof(tx_witness_ctx()->witness_path_str));
     LEDGER_ASSERT(formatted, "Unable to format witness path");
-    LEDGER_ASSERT(strlen(tx_witness_ctx()->witness_path_str) <= MAX_BIP44_PATH_STRING_LENGTH, "Witness path ui string buffer too short");
+    LEDGER_ASSERT(strlen(tx_witness_ctx()->witness_path_str) <= MAX_BIP44_PATH_STRING_LENGTH,
+                  "Witness path ui string buffer too short");
 
     if (isUnusual) {
         // A mild warning about unusual path
         // No immediate threat, just to be aware that the witness key is unusual
-        nbgl_useCaseChoice(
-            &WARNING_ICON,
-            "Sign with UNUSUAL key",
-            tx_witness_ctx()->witness_path_str,
-            "Confirm",
-            "Reject",
-            witness_review_choice
-        );
+        nbgl_useCaseChoice(&WARNING_ICON,
+                           "Sign with UNUSUAL key",
+                           tx_witness_ctx()->witness_path_str,
+                           "Confirm",
+                           "Reject",
+                           witness_review_choice);
     } else {
         // Normal path display
-        nbgl_useCaseChoice(
-            &ICON_APP_CARDANO,
-            "Witness",
-            tx_witness_ctx()->witness_path_str,
-            "Confirm",
-            "Reject",
-            witness_review_choice
-        );
+        nbgl_useCaseChoice(&ICON_APP_CARDANO,
+                           "Witness",
+                           tx_witness_ctx()->witness_path_str,
+                           "Confirm",
+                           "Reject",
+                           witness_review_choice);
     }
 
     return;

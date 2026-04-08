@@ -31,7 +31,7 @@ typedef struct {
 } tx_input_t;
 
 typedef struct {
-    const uint8_t* policyId;   // set by caller from outer asset group context, not parsed here
+    const uint8_t* policyId;  // set by caller from outer asset group context, not parsed here
     const uint8_t* assetName;
     uint8_t assetNameLen;
     int64_t amount;
@@ -128,5 +128,6 @@ typedef struct {
     uint64_t deposit;
     uint64_t retirementEpoch;
     anchor_t anchor;  // For committee resign, DRep registration/update
-    pool_registration_data_t poolRegistration;  // valid only when type == CERTIFICATE_STAKE_POOL_REGISTRATION
+    pool_registration_data_t
+        poolRegistration;  // valid only when type == CERTIFICATE_STAKE_POOL_REGISTRATION
 } certificate_data_t;

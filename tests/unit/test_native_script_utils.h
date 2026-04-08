@@ -77,12 +77,11 @@ void write_u32_be(uint8_t *buffer, uint32_t value);
  * Format: [script_type: 1 byte][children_count: 4 bytes BE]
  * For N_OF_K, add: [required_count: 4 bytes BE]
  */
-void build_complex_script_start_buffer(
-    uint8_t *buffer,
-    size_t *buffer_length,
-    uint8_t script_type,
-    uint32_t children_count,
-    uint32_t required_count  // Only used for N_OF_K
+void build_complex_script_start_buffer(uint8_t *buffer,
+                                       size_t *buffer_length,
+                                       uint8_t script_type,
+                                       uint32_t children_count,
+                                       uint32_t required_count  // Only used for N_OF_K
 );
 
 #endif  // H_TEST_NATIVE_SCRIPT_UTILS

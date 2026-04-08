@@ -30,6 +30,6 @@ security_policy_t policyForDerivePrivateKey(const bip44_path_t* path) {
         default:
             ASSERT(false);
             return POLICY_DENY;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }

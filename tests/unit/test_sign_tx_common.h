@@ -56,21 +56,19 @@ static inline void run_sign_tx_witness_apdu(buffer_t *buffer) {
     apdu_response_assert_sent_or_deferred();
 }
 
-static inline void run_sign_tx_body_chunked(const uint8_t* raw_tx, size_t raw_tx_len) {
+static inline void run_sign_tx_body_chunked(const uint8_t *raw_tx, size_t raw_tx_len) {
     assert_non_null(raw_tx);
     assert_true(raw_tx_len > 0);
 
     size_t tx_offset = 0;
     while (tx_offset < raw_tx_len) {
         size_t remaining_bytes = raw_tx_len - tx_offset;
-        size_t current_chunk_size = (remaining_bytes > MAX_SIGN_TX_CHUNK_SIZE)
-            ? MAX_SIGN_TX_CHUNK_SIZE
-            : remaining_bytes;
-        uint8_t p1 = (tx_offset + current_chunk_size < raw_tx_len)
-            ? P1_TX_CHUNK
-            : P1_TX_CONFIRM;
+        size_t current_chunk_size =
+            (remaining_bytes > MAX_SIGN_TX_CHUNK_SIZE) ? MAX_SIGN_TX_CHUNK_SIZE : remaining_bytes;
+        uint8_t p1 = (tx_offset + current_chunk_size < raw_tx_len) ? P1_TX_CHUNK : P1_TX_CONFIRM;
 
-        test_read_buffer_t tx_chunk_buffer = make_test_read_buffer(raw_tx + tx_offset, current_chunk_size);
+        test_read_buffer_t tx_chunk_buffer =
+            make_test_read_buffer(raw_tx + tx_offset, current_chunk_size);
         run_sign_tx_apdu(&tx_chunk_buffer.sdk_buffer, p1);
         assert_read_buffer_unchanged_and_cleanup(&tx_chunk_buffer, raw_tx + tx_offset);
         tx_offset += current_chunk_size;
@@ -90,30 +88,31 @@ static inline void reset_context(void) {
     nbgl_mock_reset();
 }
 
-static inline void run_tx_and_verify(const uint8_t* init_raw,
+static inline void run_tx_and_verify(const uint8_t *init_raw,
                                      size_t init_len,
-                                     const uint8_t* raw_tx,
+                                     const uint8_t *raw_tx,
                                      size_t raw_tx_len,
                                      bool include_aux_data_hash,
                                      uint8_t aux_data_type,
-                                     const uint8_t* aux_data_init_payload,
+                                     const uint8_t *aux_data_init_payload,
                                      size_t aux_data_init_payload_len,
-                                     const aux_data_payload_t* aux_data_delegations,
+                                     const aux_data_payload_t *aux_data_delegations,
                                      size_t aux_data_delegation_count,
-                                     const char* cbor_hex,
-                                     const char* expected_hash_hex,
+                                     const char *cbor_hex,
+                                     const char *expected_hash_hex,
                                      uint16_t num_witnesses,
                                      const witness_payload_t *witness_payloads,
                                      size_t witness_payload_count,
                                      bool include_ttl,
                                      bool include_validity_interval_start,
                                      warning_bits_t expected_warning_bits,
-                                     const char* fixture_name,
-                                     const uint8_t* response_buf,
-                                     size_t* response_len,
-                                     uint16_t* response_sw) {
+                                     const char *fixture_name,
+                                     const uint8_t *response_buf,
+                                     size_t *response_len,
+                                     uint16_t *response_sw) {
     assert_true(init_len > 0);
-    run_sign_tx_apdu(&(buffer_t){.ptr = (uint8_t*)init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t){.ptr = (uint8_t *) init_raw, .size = init_len, .offset = 0},
+                     P1_TX_INIT);
     assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
     if (include_aux_data_hash && aux_data_type == AUX_DATA_TYPE_CVOTE_REGISTRATION) {
         assert_int_equal(G_context.state.tx_state, TX_STATE_AUX_DATA);
@@ -122,23 +121,23 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
     }
     assert_int_equal(G_context.tx_info.num_witnesses, num_witnesses);
     assert_int_equal(G_context.tx_info.tx_params.includeTtl, include_ttl);
-    assert_int_equal(G_context.tx_info.tx_params.includeValidityIntervalStart, include_validity_interval_start);
+    assert_int_equal(G_context.tx_info.tx_params.includeValidityIntervalStart,
+                     include_validity_interval_start);
 
     if (include_aux_data_hash && aux_data_type == AUX_DATA_TYPE_CVOTE_REGISTRATION) {
         assert_non_null(aux_data_init_payload);
         assert_true(aux_data_init_payload_len > 0);
-        test_read_buffer_t aux_init_buffer = make_test_read_buffer(aux_data_init_payload, aux_data_init_payload_len);
+        test_read_buffer_t aux_init_buffer =
+            make_test_read_buffer(aux_data_init_payload, aux_data_init_payload_len);
         run_sign_tx_aux_data_apdu(&aux_init_buffer.sdk_buffer, P2_AUX_DATA_INIT);
         assert_read_buffer_unchanged_and_cleanup(&aux_init_buffer, aux_data_init_payload);
 
         for (size_t i = 0; i < aux_data_delegation_count; i++) {
-            const aux_data_payload_t* delegation = &aux_data_delegations[i];
+            const aux_data_payload_t *delegation = &aux_data_delegations[i];
             assert_non_null(delegation->payload);
             assert_true(delegation->payload_len > 0);
-            test_read_buffer_t aux_delegation_buffer = make_test_read_buffer(
-                delegation->payload,
-                delegation->payload_len
-            );
+            test_read_buffer_t aux_delegation_buffer =
+                make_test_read_buffer(delegation->payload, delegation->payload_len);
             run_sign_tx_aux_data_apdu(&aux_delegation_buffer.sdk_buffer, P2_AUX_DATA_DELEGATION);
             assert_read_buffer_unchanged_and_cleanup(&aux_delegation_buffer, delegation->payload);
         }
@@ -156,12 +155,13 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
     // already transitioned to TX_STATE_APPROVED (via finalize_sign_tx UI callback mock).
     const warning_bits_t actual_warning_bits = G_context.tx_info.body.warning_bits;
     if (actual_warning_bits != expected_warning_bits) {
-        print_message("WARNING BITS MISMATCH for fixture \"%s\":\n"
-                      "  expected: 0x%016llx\n"
-                      "  actual:   0x%016llx\n",
-                      fixture_name,
-                      (unsigned long long) expected_warning_bits,
-                      (unsigned long long) actual_warning_bits);
+        print_message(
+            "WARNING BITS MISMATCH for fixture \"%s\":\n"
+            "  expected: 0x%016llx\n"
+            "  actual:   0x%016llx\n",
+            fixture_name,
+            (unsigned long long) expected_warning_bits,
+            (unsigned long long) actual_warning_bits);
     }
     assert_int_equal(actual_warning_bits, expected_warning_bits);
 
@@ -169,7 +169,8 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
     assert_true(strlen(cbor_hex) > 0);
 
     uint8_t expected_hash[TX_HASH_LENGTH];
-    size_t expected_hash_len = hex_to_bytes(expected_hash_hex, expected_hash, sizeof(expected_hash));
+    size_t expected_hash_len =
+        hex_to_bytes(expected_hash_hex, expected_hash, sizeof(expected_hash));
     assert_int_equal(expected_hash_len, TX_HASH_LENGTH);
 
     uint8_t tx_body_cbor[100 * 1024];
@@ -177,10 +178,8 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
     assert_true(tx_body_cbor_len > 0);
 
     uint8_t computed_hash[TX_HASH_LENGTH];
-    assert_int_equal(
-        blake2b(computed_hash, sizeof(computed_hash), tx_body_cbor, tx_body_cbor_len),
-        0
-    );
+    assert_int_equal(blake2b(computed_hash, sizeof(computed_hash), tx_body_cbor, tx_body_cbor_len),
+                     0);
     assert_memory_equal(computed_hash, expected_hash, TX_HASH_LENGTH);
 
     assert_int_equal(*response_len, TX_HASH_LENGTH);
@@ -212,33 +211,34 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
 
             const bool mint_present = (G_context.tx_info.tx_params.num_mint_asset_groups > 0);
             const bip44_path_t *pool_owner_path = NULL;
-            if (G_context.tx_info.tx_params.txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER &&
+            if (G_context.tx_info.tx_params.txSigningMode ==
+                    SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER &&
                 G_context.tx_info.pool_owner_path_present) {
                 pool_owner_path = &G_context.tx_info.pool_owner_path;
             }
 
             warning_bits_t witness_warnings = 0;
-            const security_policy_t witness_policy = policyForSignTxWitness(
-                G_context.tx_info.tx_params.txSigningMode,
-                false,
-                &witness_path,
-                mint_present,
-                pool_owner_path,
-                &witness_warnings
-            );
+            const security_policy_t witness_policy =
+                policyForSignTxWitness(G_context.tx_info.tx_params.txSigningMode,
+                                       false,
+                                       &witness_path,
+                                       mint_present,
+                                       pool_owner_path,
+                                       &witness_warnings);
 
             const bool witness_requires_confirmation = (witness_policy == POLICY_SHOW);
             const warning_bits_t expected_witness_warning_bits =
                 witness_payload->expected_warning_bits;
 
             if (witness_warnings != expected_witness_warning_bits) {
-                print_message("WITNESS WARNING BITS MISMATCH for fixture \"%s\" witness %zu:\n"
-                              "  expected: 0x%016llx\n"
-                              "  actual:   0x%016llx\n",
-                              fixture_name,
-                              witness_index,
-                              (unsigned long long) expected_witness_warning_bits,
-                              (unsigned long long) witness_warnings);
+                print_message(
+                    "WITNESS WARNING BITS MISMATCH for fixture \"%s\" witness %zu:\n"
+                    "  expected: 0x%016llx\n"
+                    "  actual:   0x%016llx\n",
+                    fixture_name,
+                    witness_index,
+                    (unsigned long long) expected_witness_warning_bits,
+                    (unsigned long long) witness_warnings);
             }
             assert_int_equal(witness_warnings, expected_witness_warning_bits);
 
@@ -248,10 +248,8 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
                                               ARRAY_LEN(witness_final_decisions));
             }
 
-            test_read_buffer_t witness_buffer = make_test_read_buffer(
-                witness_payload->payload,
-                witness_payload->payload_len
-            );
+            test_read_buffer_t witness_buffer =
+                make_test_read_buffer(witness_payload->payload, witness_payload->payload_len);
             run_sign_tx_witness_apdu(&witness_buffer.sdk_buffer);
             assert_read_buffer_unchanged_and_cleanup(&witness_buffer, witness_payload->payload);
             if (witness_requires_confirmation) {
@@ -286,14 +284,12 @@ static inline void run_tx_and_verify(const uint8_t* init_raw,
  * Build init_apdu_params_t from a test fixture and optional pre-decoded aux data hash.
  * Caller is responsible for decoding aux_data_hash_hex and passing the result.
  */
-static inline init_apdu_params_t build_init_params_from_fixture(
-    const tx_fixture_t *fixture,
-    const uint8_t *aux_data_hash,
-    size_t aux_hash_len
-) {
-    bool has_arbitrary_aux = fixture->include_aux_data_hash &&
-                             fixture->aux_data_type == AUX_DATA_TYPE_ARBITRARY_HASH;
-    return (init_apdu_params_t) {
+static inline init_apdu_params_t build_init_params_from_fixture(const tx_fixture_t *fixture,
+                                                                const uint8_t *aux_data_hash,
+                                                                size_t aux_hash_len) {
+    bool has_arbitrary_aux =
+        fixture->include_aux_data_hash && fixture->aux_data_type == AUX_DATA_TYPE_ARBITRARY_HASH;
+    return (init_apdu_params_t){
         .options = fixture->options,
         .networkId = fixture->network_id,
         .protocolMagic = fixture->protocol_magic,
@@ -320,7 +316,7 @@ static inline init_apdu_params_t build_init_params_from_fixture(
         .includeTreasury = fixture->include_treasury,
         .includeDonation = fixture->include_donation,
         .numWitnesses = fixture->num_witnesses,
-        .rawTxTotalLength = (uint16_t)fixture->raw_tx_len,
+        .rawTxTotalLength = (uint16_t) fixture->raw_tx_len,
     };
 }
 
@@ -333,11 +329,13 @@ static inline void run_fixture(const tx_fixture_t *fixture) {
     size_t aux_hash_len = 0;
     if (fixture->include_aux_data_hash && fixture->aux_data_type == AUX_DATA_TYPE_ARBITRARY_HASH) {
         assert_non_null(fixture->aux_data_hash_hex);
-        aux_hash_len = hex_to_bytes(fixture->aux_data_hash_hex, aux_data_hash, sizeof(aux_data_hash));
+        aux_hash_len =
+            hex_to_bytes(fixture->aux_data_hash_hex, aux_data_hash, sizeof(aux_data_hash));
         assert_int_equal(aux_hash_len, AUX_DATA_HASH_LENGTH);
     }
 
-    init_apdu_params_t params = build_init_params_from_fixture(fixture, aux_data_hash, aux_hash_len);
+    init_apdu_params_t params =
+        build_init_params_from_fixture(fixture, aux_data_hash, aux_hash_len);
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 
@@ -400,7 +398,8 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
     LEDGER_ASSERT(reject_stage == REJECT_STAGE_TX || reject_stage == REJECT_STAGE_AUX,
                   "Unknown reject stage");
     if (reject_stage == REJECT_STAGE_AUX) {
-        LEDGER_ASSERT(fixture_has_cvote_aux_data(fixture), "AUX reject requested for non-CVote fixture");
+        LEDGER_ASSERT(fixture_has_cvote_aux_data(fixture),
+                      "AUX reject requested for non-CVote fixture");
     }
 
     extern bool unit_test_expert_mode_enabled;
@@ -420,11 +419,13 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
     size_t aux_hash_len = 0;
     if (fixture->include_aux_data_hash && fixture->aux_data_type == AUX_DATA_TYPE_ARBITRARY_HASH) {
         assert_non_null(fixture->aux_data_hash_hex);
-        aux_hash_len = hex_to_bytes(fixture->aux_data_hash_hex, aux_data_hash, sizeof(aux_data_hash));
+        aux_hash_len =
+            hex_to_bytes(fixture->aux_data_hash_hex, aux_data_hash, sizeof(aux_data_hash));
         assert_int_equal(aux_hash_len, AUX_DATA_HASH_LENGTH);
     }
 
-    init_apdu_params_t params = build_init_params_from_fixture(fixture, aux_data_hash, aux_hash_len);
+    init_apdu_params_t params =
+        build_init_params_from_fixture(fixture, aux_data_hash, aux_hash_len);
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 
@@ -442,10 +443,9 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
 
         assert_non_null(fixture->aux_data_init_payload);
         assert_true(fixture->aux_data_init_payload_len > 0);
-        test_read_buffer_t aux_init_buffer = make_test_read_buffer(
-            fixture->aux_data_init_payload,
-            fixture->aux_data_init_payload_len
-        );
+        test_read_buffer_t aux_init_buffer =
+            make_test_read_buffer(fixture->aux_data_init_payload,
+                                  fixture->aux_data_init_payload_len);
         run_sign_tx_aux_data_apdu(&aux_init_buffer.sdk_buffer, P2_AUX_DATA_INIT);
         assert_read_buffer_unchanged_and_cleanup(&aux_init_buffer, fixture->aux_data_init_payload);
 
@@ -459,10 +459,8 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
             const aux_data_payload_t *delegation = &fixture->aux_data_delegations[i];
             assert_non_null(delegation->payload);
             assert_true(delegation->payload_len > 0);
-            test_read_buffer_t aux_delegation_buffer = make_test_read_buffer(
-                delegation->payload,
-                delegation->payload_len
-            );
+            test_read_buffer_t aux_delegation_buffer =
+                make_test_read_buffer(delegation->payload, delegation->payload_len);
             run_sign_tx_aux_data_apdu(&aux_delegation_buffer.sdk_buffer, P2_AUX_DATA_DELEGATION);
             assert_read_buffer_unchanged_and_cleanup(&aux_delegation_buffer, delegation->payload);
             if (g_last_response_swo == SWO_CONDITIONS_NOT_SATISFIED) {
@@ -506,9 +504,9 @@ expected_failure_assertions:
         nbgl_mock_assert_all_final_decisions_consumed();
     }
     assert_int_equal(g_last_response_swo, SWO_CONDITIONS_NOT_SATISFIED);
-    assert_int_equal(actual_reject_stage,
-                     reject_stage == REJECT_STAGE_AUX ? ACTUAL_REJECT_STAGE_AUX
-                                                      : ACTUAL_REJECT_STAGE_TX);
+    assert_int_equal(
+        actual_reject_stage,
+        reject_stage == REJECT_STAGE_AUX ? ACTUAL_REJECT_STAGE_AUX : ACTUAL_REJECT_STAGE_TX);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
     assert_int_equal(G_context.state.tx_state, TX_STATE_NONE);
 
@@ -518,10 +516,7 @@ expected_failure_assertions:
 
 static inline void run_fixture_reject_tx_with_expert_mode(const tx_fixture_t *fixture,
                                                           bool expert_mode) {
-    run_fixture_reject_with_expert_mode(
-        fixture,
-        expert_mode,
-        REJECT_STAGE_TX);
+    run_fixture_reject_with_expert_mode(fixture, expert_mode, REJECT_STAGE_TX);
 }
 
 static inline void run_fixture_reject_aux_with_expert_mode(const tx_fixture_t *fixture,
@@ -534,7 +529,7 @@ static inline void run_fixture_reject_aux_with_expert_mode(const tx_fixture_t *f
  * (tx_streaming_start_choice called with false). Only valid for streaming fixtures.
  */
 static inline void run_fixture_reject_streaming_start_with_expert_mode(const tx_fixture_t *fixture,
-                                                                        bool expert_mode) {
+                                                                       bool expert_mode) {
     LEDGER_ASSERT(fixture != NULL, "NULL fixture");
 
     extern bool unit_test_expert_mode_enabled;
@@ -619,9 +614,8 @@ static inline void run_fixture_reject_streaming_continue_with_expert_mode(
     run_fixture_reject_streaming_continue_at_call_with_expert_mode(fixture, expert_mode, 0);
 }
 
-static inline void run_fixture_reject_streaming_finish_with_expert_mode(
-    const tx_fixture_t *fixture,
-    bool expert_mode) {
+static inline void run_fixture_reject_streaming_finish_with_expert_mode(const tx_fixture_t *fixture,
+                                                                        bool expert_mode) {
     LEDGER_ASSERT(fixture != NULL, "NULL fixture");
 
     extern bool unit_test_expert_mode_enabled;
@@ -660,9 +654,8 @@ static inline void run_fixture_reject_streaming_finish_with_expert_mode(
     unit_test_blind_signing_enabled = previous_blind_signing_enabled;
 }
 
-static inline void run_fixture_blind_signing_hash_only_with_expert_mode(
-    const tx_fixture_t *fixture,
-    bool expert_mode) {
+static inline void run_fixture_blind_signing_hash_only_with_expert_mode(const tx_fixture_t *fixture,
+                                                                        bool expert_mode) {
     LEDGER_ASSERT(fixture != NULL, "NULL fixture");
     LEDGER_ASSERT(fixture->blind_signing_mode == BLIND_SIGNING_MODE_PROMPT_REVIEW_HASH,
                   "Blind-signing hash-only path requires hash-only prompt fixture");
@@ -685,11 +678,13 @@ static inline void run_fixture_blind_signing_hash_only_with_expert_mode(
     size_t aux_hash_len = 0;
     if (fixture->include_aux_data_hash && fixture->aux_data_type == AUX_DATA_TYPE_ARBITRARY_HASH) {
         assert_non_null(fixture->aux_data_hash_hex);
-        aux_hash_len = hex_to_bytes(fixture->aux_data_hash_hex, aux_data_hash, sizeof(aux_data_hash));
+        aux_hash_len =
+            hex_to_bytes(fixture->aux_data_hash_hex, aux_data_hash, sizeof(aux_data_hash));
         assert_int_equal(aux_hash_len, AUX_DATA_HASH_LENGTH);
     }
 
-    init_apdu_params_t params = build_init_params_from_fixture(fixture, aux_data_hash, aux_hash_len);
+    init_apdu_params_t params =
+        build_init_params_from_fixture(fixture, aux_data_hash, aux_hash_len);
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 

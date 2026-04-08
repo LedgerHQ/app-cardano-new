@@ -9,7 +9,7 @@ from tests.unit.generators.common import (
     sanitize_c_identifier,
     format_bytes_as_c_array,
 )
-from tests.unit.generators.paths import GENERATED_PUBKEY_DIR, UNIT_TESTS_DIR
+from tests.unit.generators.paths import GENERATED_PUBKEY_DIR
 
 FIXTURES_FILE = GENERATED_PUBKEY_DIR / "test_pubkey_fixtures.h"
 

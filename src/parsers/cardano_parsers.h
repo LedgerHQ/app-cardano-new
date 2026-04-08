@@ -34,7 +34,7 @@ typedef enum {
  * @param[out] result true if the field is included, false otherwise
  * @return true if a valid flag was read, false otherwise
  */
-bool buffer_read_flag_included(buffer_t *buf, bool* result);
+bool buffer_read_flag_included(buffer_t *buf, bool *result);
 
 /**
  * Read bytes from buffer and copy to destination.

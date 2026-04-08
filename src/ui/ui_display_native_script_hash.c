@@ -26,7 +26,7 @@
 #ifdef TRACE_UI_DISPLAY
 #define TRACE_MODULE(...) TRACE("[ui_native_script] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 void build_position_description(const derive_native_script_hash_ctx_t *ctx,
@@ -104,7 +104,7 @@ bool format_remaining(uint32_t remaining_scripts, char *out, size_t out_size) {
     ASSERT(out != NULL);
     STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(remaining_scripts)), "signed type for %u");
     int chars_written = snprintf(out, out_size, "%u nested scripts", remaining_scripts);
-    return (chars_written > 0 && (size_t)chars_written + 1 < out_size);
+    return (chars_written > 0 && (size_t) chars_written + 1 < out_size);
 }
 
 bool format_required_signatures(uint32_t requiredScripts,
@@ -116,7 +116,7 @@ bool format_required_signatures(uint32_t requiredScripts,
     STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(remainingScripts)), "signed type for %u");
     int chars_written =
         snprintf(out, out_size, "%u out of %u signatures", requiredScripts, remainingScripts);
-    return (chars_written > 0 && (size_t)chars_written + 1 < out_size);
+    return (chars_written > 0 && (size_t) chars_written + 1 < out_size);
 }
 
 static void derive_native_script_hash_buffer_cleanup(void) {
@@ -143,8 +143,7 @@ static void derive_native_script_hash_streaming_continue_choice(bool confirm) {
     }
 }
 
-__attribute__((weak))
-void ui_start_native_script_streaming(void) {
+__attribute__((weak)) void ui_start_native_script_streaming(void) {
     // Start NBGL streaming with title screen
     nbgl_useCaseReviewStreamingStart(TYPE_OPERATION,
                                      &ICON_APP_CARDANO,
@@ -188,8 +187,7 @@ static void derive_native_script_hash_streaming_finish_continue(bool confirm) {
 
     // SHOW STATUS
     if (confirm) {
-        nbgl_useCaseReviewStreamingFinish("Confirm hash",
-                                          derive_native_script_hash_review_choice);
+        nbgl_useCaseReviewStreamingFinish("Confirm hash", derive_native_script_hash_review_choice);
     } else {
         nbgl_useCaseReviewStatus(STATUS_TYPE_OPERATION_REJECTED, ui_menu_main);
     }
@@ -202,15 +200,15 @@ static void derive_native_script_hash_streaming_finish_continue(bool confirm) {
 #define MAX_POLICY_ID_STRING_LENGTH           (2 * SCRIPT_HASH_LENGTH)
 
 // Native script UI pair counts
-#define UI_PAIRS_POSITION     1
-#define UI_PAIRS_SCRIPT_TYPE  1
-#define UI_PAIRS_REQUIREMENT  1
-#define UI_PAIRS_CONTENT      1
-#define UI_PAIRS_PUBKEY_PATH  1
-#define UI_PAIRS_PUBKEY_HASH  1
-#define UI_PAIRS_TIMELOCK     1
-#define UI_PAIRS_SCRIPT_HASH  1
-#define UI_PAIRS_POLICY_ID    1
+#define UI_PAIRS_POSITION    1
+#define UI_PAIRS_SCRIPT_TYPE 1
+#define UI_PAIRS_REQUIREMENT 1
+#define UI_PAIRS_CONTENT     1
+#define UI_PAIRS_PUBKEY_PATH 1
+#define UI_PAIRS_PUBKEY_HASH 1
+#define UI_PAIRS_TIMELOCK    1
+#define UI_PAIRS_SCRIPT_HASH 1
+#define UI_PAIRS_POLICY_ID   1
 
 void display_complex_script_content(ui_native_script_type scriptType) {
     TRACE_MODULE("display_complex_script_content");
@@ -234,7 +232,7 @@ void display_complex_script_content(ui_native_script_type scriptType) {
         default:
             LEDGER_ASSERT(false, "Invalid script type for complex script display");
             return;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     derive_native_script_hash_ctx_t *ctx = &G_context.derive_native_script_hash_info;
@@ -246,9 +244,9 @@ void display_complex_script_content(ui_native_script_type scriptType) {
     ui_render_scope_begin(&session);
     if (!ui_pairs_init(expectedPairs)) {
         TRACE_MODULE("Failed to initialize pairs");
-        ui_render_scope_end(); // LCOV_EXCL_LINE
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
-        return; // LCOV_EXCL_LINE
+        ui_render_scope_end();                        // LCOV_EXCL_LINE
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);  // LCOV_EXCL_LINE
+        return;                                       // LCOV_EXCL_LINE
     }
     START_COUNT();
     if (required_position) {
@@ -275,10 +273,10 @@ void display_complex_script_content(ui_native_script_type scriptType) {
                    ctx->complexScripts[ctx->level].remainingScripts);
     CHECK_COUNT(expectedPairs);
     ui_status_t render_status = ui_render_scope_end();
-    LEDGER_ASSERT(render_status == UI_STATUS_SUCCESS,
-                  "Unexpected UI status: %d", render_status);
+    LEDGER_ASSERT(render_status == UI_STATUS_SUCCESS, "Unexpected UI status: %d", render_status);
 
-    nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
+    nbgl_useCaseReviewStreamingContinue(g_pairsList,
+                                        derive_native_script_hash_streaming_continue_choice);
 }
 
 void ui_display_native_script_hash(void) {
@@ -308,12 +306,12 @@ void ui_display_native_script_hash(void) {
                 expectedPairs += UI_PAIRS_POSITION;
             }
             ui_render_session_t session = {0};
-    ui_render_scope_begin(&session);
+            ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE_MODULE("Failed to initialize pairs");
-                ui_render_scope_end(); // LCOV_EXCL_LINE
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
-                return; // LCOV_EXCL_LINE
+                ui_render_scope_end();                        // LCOV_EXCL_LINE
+                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);  // LCOV_EXCL_LINE
+                return;                                       // LCOV_EXCL_LINE
             }
             START_COUNT();
             if (required_position) {
@@ -330,9 +328,12 @@ void ui_display_native_script_hash(void) {
             CHECK_COUNT(expectedPairs);
             ui_status_t render_status_pubkey_path = ui_render_scope_end();
             LEDGER_ASSERT(render_status_pubkey_path == UI_STATUS_SUCCESS,
-                          "Unexpected UI status: %d", render_status_pubkey_path);
+                          "Unexpected UI status: %d",
+                          render_status_pubkey_path);
 
-            nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
+            nbgl_useCaseReviewStreamingContinue(
+                g_pairsList,
+                derive_native_script_hash_streaming_continue_choice);
             break;
         }
         case UI_SCRIPT_PUBKEY_HASH: {
@@ -343,12 +344,12 @@ void ui_display_native_script_hash(void) {
                 expectedPairs += UI_PAIRS_POSITION;
             }
             ui_render_session_t session = {0};
-    ui_render_scope_begin(&session);
+            ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE_MODULE("Failed to initialize pairs");
-                ui_render_scope_end(); // LCOV_EXCL_LINE
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
-                return; // LCOV_EXCL_LINE
+                ui_render_scope_end();                        // LCOV_EXCL_LINE
+                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);  // LCOV_EXCL_LINE
+                return;                                       // LCOV_EXCL_LINE
             }
             START_COUNT();
             if (required_position) {
@@ -367,9 +368,12 @@ void ui_display_native_script_hash(void) {
             CHECK_COUNT(expectedPairs);
             ui_status_t render_status_pubkey_hash = ui_render_scope_end();
             LEDGER_ASSERT(render_status_pubkey_hash == UI_STATUS_SUCCESS,
-                          "Unexpected UI status: %d", render_status_pubkey_hash);
+                          "Unexpected UI status: %d",
+                          render_status_pubkey_hash);
 
-            nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
+            nbgl_useCaseReviewStreamingContinue(
+                g_pairsList,
+                derive_native_script_hash_streaming_continue_choice);
             break;
         }
         case UI_SCRIPT_INVALID_BEFORE: {
@@ -380,12 +384,12 @@ void ui_display_native_script_hash(void) {
                 expectedPairs += UI_PAIRS_POSITION;
             }
             ui_render_session_t session = {0};
-    ui_render_scope_begin(&session);
+            ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE_MODULE("Failed to initialize pairs");
-                ui_render_scope_end(); // LCOV_EXCL_LINE
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
-                return; // LCOV_EXCL_LINE
+                ui_render_scope_end();                        // LCOV_EXCL_LINE
+                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);  // LCOV_EXCL_LINE
+                return;                                       // LCOV_EXCL_LINE
             }
             START_COUNT();
             if (required_position) {
@@ -403,9 +407,12 @@ void ui_display_native_script_hash(void) {
             CHECK_COUNT(expectedPairs);
             ui_status_t render_status_invalid_before = ui_render_scope_end();
             LEDGER_ASSERT(render_status_invalid_before == UI_STATUS_SUCCESS,
-                          "Unexpected UI status: %d", render_status_invalid_before);
+                          "Unexpected UI status: %d",
+                          render_status_invalid_before);
 
-            nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
+            nbgl_useCaseReviewStreamingContinue(
+                g_pairsList,
+                derive_native_script_hash_streaming_continue_choice);
             break;
         }
         case UI_SCRIPT_INVALID_HEREAFTER: {
@@ -416,12 +423,12 @@ void ui_display_native_script_hash(void) {
                 expectedPairs += UI_PAIRS_POSITION;
             }
             ui_render_session_t session = {0};
-    ui_render_scope_begin(&session);
+            ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE_MODULE("Failed to initialize pairs");
-                ui_render_scope_end(); // LCOV_EXCL_LINE
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
-                return; // LCOV_EXCL_LINE
+                ui_render_scope_end();                        // LCOV_EXCL_LINE
+                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);  // LCOV_EXCL_LINE
+                return;                                       // LCOV_EXCL_LINE
             }
             START_COUNT();
             if (required_position) {
@@ -439,20 +446,23 @@ void ui_display_native_script_hash(void) {
             CHECK_COUNT(expectedPairs);
             ui_status_t render_status_invalid_hereafter = ui_render_scope_end();
             LEDGER_ASSERT(render_status_invalid_hereafter == UI_STATUS_SUCCESS,
-                          "Unexpected UI status: %d", render_status_invalid_hereafter);
+                          "Unexpected UI status: %d",
+                          render_status_invalid_hereafter);
 
-            nbgl_useCaseReviewStreamingContinue(g_pairsList, derive_native_script_hash_streaming_continue_choice);
+            nbgl_useCaseReviewStreamingContinue(
+                g_pairsList,
+                derive_native_script_hash_streaming_continue_choice);
             break;
         }
         case UI_SCRIPT_DISPLAY_BECH32: {
             const int expectedPairs = UI_PAIRS_SCRIPT_HASH;
             ui_render_session_t session = {0};
-    ui_render_scope_begin(&session);
+            ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE_MODULE("Failed to initialize pairs");
-                ui_render_scope_end(); // LCOV_EXCL_LINE
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
-                return; // LCOV_EXCL_LINE
+                ui_render_scope_end();                        // LCOV_EXCL_LINE
+                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);  // LCOV_EXCL_LINE
+                return;                                       // LCOV_EXCL_LINE
             }
             START_COUNT();
             UI_ADD_FORMAT3(UI_STATIC_LABEL("Script hash"),
@@ -464,21 +474,23 @@ void ui_display_native_script_hash(void) {
             CHECK_COUNT(expectedPairs);
             ui_status_t render_status_bech32 = ui_render_scope_end();
             LEDGER_ASSERT(render_status_bech32 == UI_STATUS_SUCCESS,
-                          "Unexpected UI status: %d", render_status_bech32);
+                          "Unexpected UI status: %d",
+                          render_status_bech32);
 
-            nbgl_useCaseReviewStreamingContinue(g_pairsList,
-                                                derive_native_script_hash_streaming_finish_continue);
+            nbgl_useCaseReviewStreamingContinue(
+                g_pairsList,
+                derive_native_script_hash_streaming_finish_continue);
             break;
         }
         case UI_SCRIPT_DISPLAY_POLICY_ID: {
             const int expectedPairs = UI_PAIRS_POLICY_ID;
             ui_render_session_t session = {0};
-    ui_render_scope_begin(&session);
+            ui_render_scope_begin(&session);
             if (!ui_pairs_init(expectedPairs)) {
                 TRACE_MODULE("Failed to initialize pairs");
-                ui_render_scope_end(); // LCOV_EXCL_LINE
-                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
-                return; // LCOV_EXCL_LINE
+                ui_render_scope_end();                        // LCOV_EXCL_LINE
+                send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);  // LCOV_EXCL_LINE
+                return;                                       // LCOV_EXCL_LINE
             }
             START_COUNT();
             UI_ADD_FORMAT2(UI_STATIC_LABEL("Policy ID"),
@@ -489,10 +501,12 @@ void ui_display_native_script_hash(void) {
             CHECK_COUNT(expectedPairs);
             ui_status_t render_status_policy_id = ui_render_scope_end();
             LEDGER_ASSERT(render_status_policy_id == UI_STATUS_SUCCESS,
-                          "Unexpected UI status: %d", render_status_policy_id);
+                          "Unexpected UI status: %d",
+                          render_status_policy_id);
 
-            nbgl_useCaseReviewStreamingContinue(g_pairsList,
-                                                derive_native_script_hash_streaming_finish_continue);
+            nbgl_useCaseReviewStreamingContinue(
+                g_pairsList,
+                derive_native_script_hash_streaming_finish_continue);
             break;
         }
         // LCOV_EXCL_START
@@ -500,7 +514,7 @@ void ui_display_native_script_hash(void) {
             LEDGER_ASSERT(false, "Invalid UI step");
             return;
         }
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
     return;
 }

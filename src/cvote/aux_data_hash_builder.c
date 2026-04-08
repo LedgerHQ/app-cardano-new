@@ -30,8 +30,7 @@ static size_t cvote_payload_trace_size = 0;
 
 static void auxDataHashBuilder_trace_record(uint8_t hashContexts,
                                             const uint8_t* buffer,
-                                            size_t size)
-{
+                                            size_t size) {
     ASSERT(buffer != NULL);
     if (hashContexts & HC_AUX_DATA) {
         ASSERT(aux_data_hash_trace_size + size <= AUX_DATA_TRACE_BUFFER_SIZE);
@@ -46,7 +45,7 @@ static void auxDataHashBuilder_trace_record(uint8_t hashContexts,
 }
 #define _TRACE(...) TRACE(__VA_ARGS__)
 #else
-#define auxDataHashBuilder_trace_record(hashContexts, buffer, size) ((void)0)
+#define auxDataHashBuilder_trace_record(hashContexts, buffer, size) ((void) 0)
 #define _TRACE(...)
 #endif
 
@@ -213,7 +212,7 @@ void auxDataHashBuilder_cVoteRegistration_addStakingKey(aux_data_hash_builder_t*
         default:
             ASSERT(false);
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     {

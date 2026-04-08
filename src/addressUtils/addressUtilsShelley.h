@@ -12,25 +12,25 @@
 typedef enum {
     // base address contains explicit payment info (key hash / script hash)
     // and explicit staking info
-    BASE_PAYMENT_KEY_STAKE_KEY = 0x0,         // 0b0000
-    BASE_PAYMENT_SCRIPT_STAKE_KEY = 0x1,      // 0b0001
-    BASE_PAYMENT_KEY_STAKE_SCRIPT = 0x2,      // 0b0010
-    BASE_PAYMENT_SCRIPT_STAKE_SCRIPT = 0x3,   // 0b0011
+    BASE_PAYMENT_KEY_STAKE_KEY = 0x0,        // 0b0000
+    BASE_PAYMENT_SCRIPT_STAKE_KEY = 0x1,     // 0b0001
+    BASE_PAYMENT_KEY_STAKE_SCRIPT = 0x2,     // 0b0010
+    BASE_PAYMENT_SCRIPT_STAKE_SCRIPT = 0x3,  // 0b0011
 
     // pointer address contains explicit payment info and a pointer to blockchain for staking info
-    POINTER_KEY = 0x4,                        // 0b0100
-    POINTER_SCRIPT = 0x5,                     // 0b0101
+    POINTER_KEY = 0x4,     // 0b0100
+    POINTER_SCRIPT = 0x5,  // 0b0101
 
     // enterprise address contains explicit payment info and no staking info
-    ENTERPRISE_KEY = 0x6,                     // 0b0110
-    ENTERPRISE_SCRIPT = 0x7,                  // 0b0111
+    ENTERPRISE_KEY = 0x6,     // 0b0110
+    ENTERPRISE_SCRIPT = 0x7,  // 0b0111
 
     // legacy addresses, aka bootstrap addresses
-    BYRON = 0x8,                              // 0b1000
+    BYRON = 0x8,  // 0b1000
 
     // reward address (aka reward account) contains only staking info
-    REWARD_KEY = 0xE,                         // 0b1110
-    REWARD_SCRIPT = 0xF,                      // 0b1111
+    REWARD_KEY = 0xE,     // 0b1110
+    REWARD_SCRIPT = 0xF,  // 0b1111
 } address_type_t;
 
 // For Shelley, address is at most 1 + 28 + 28 = 57 bytes,
@@ -41,8 +41,8 @@ typedef enum {
 // plus 46B with empty data; 100B in base58 has length at most 139.
 // (Previously, we used 128 bytes.)
 // https://stackoverflow.com/questions/48333136/size-of-buffer-to-hold-base58-encoded-data
-#define MAX_ADDRESS_LENGTH              128
-#define MAX_HUMAN_ADDRESS_LENGTH        150
+#define MAX_ADDRESS_LENGTH       128
+#define MAX_HUMAN_ADDRESS_LENGTH 150
 
 uint8_t getAddressHeader(const uint8_t* addressBuffer, size_t addressSize);
 
@@ -119,11 +119,11 @@ typedef struct {
     uint8_t stakingHash[ADDRESS_KEY_HASH_LENGTH];
 } address_params_hashes_storage_t;
 
-__noinline_due_to_stack__
-size_t deriveAddress(const address_params_t* address_params, uint8_t* outBuffer, size_t outSize);
+__noinline_due_to_stack__ size_t deriveAddress(const address_params_t* address_params,
+                                               uint8_t* outBuffer,
+                                               size_t outSize);
 
-__noinline_due_to_stack__
-size_t constructRewardAddressFromKeyPath(const bip44_path_t* path,
+__noinline_due_to_stack__ size_t constructRewardAddressFromKeyPath(const bip44_path_t* path,
                                                                    uint8_t networkId,
                                                                    uint8_t* outBuffer,
                                                                    size_t outSize);
@@ -133,8 +133,7 @@ typedef enum {
     REWARD_HASH_SOURCE_SCRIPT,
 } reward_address_hash_source_t;
 
-__noinline_due_to_stack__
-size_t constructRewardAddressFromHash(uint8_t networkId,
+__noinline_due_to_stack__ size_t constructRewardAddressFromHash(uint8_t networkId,
                                                                 reward_address_hash_source_t source,
                                                                 const uint8_t* hashBuffer,
                                                                 size_t hashSize,
@@ -143,18 +142,21 @@ size_t constructRewardAddressFromHash(uint8_t networkId,
 
 bool format_blockchain_pointer(blockchainPointer_t blockchainPointer, char* out, size_t outSize);
 
-bool format_address_human_readable(const uint8_t* address, size_t addressSize, char* out, size_t outSize);
-__noinline_due_to_stack__
-bool format_reward_account_from_credential(uint8_t networkId,
-                                           const ext_credential_t* credential,
-                                           char* out,
-                                           size_t outSize);
+bool format_address_human_readable(const uint8_t* address,
+                                   size_t addressSize,
+                                   char* out,
+                                   size_t outSize);
+__noinline_due_to_stack__ bool format_reward_account_from_credential(
+    uint8_t networkId,
+    const ext_credential_t* credential,
+    char* out,
+    size_t outSize);
 
-__noinline_due_to_stack__
-bool format_pool_reward_account(uint8_t networkId,
-                                const pool_reward_account_t* rewardAccount,
-                                char* out,
-                                size_t outSize);
+__noinline_due_to_stack__ bool format_pool_reward_account(
+    uint8_t networkId,
+    const pool_reward_account_t* rewardAccount,
+    char* out,
+    size_t outSize);
 
 bool buffer_read_address_params(buffer_t* buffer, address_params_t* params);
 
@@ -164,7 +166,7 @@ bool buffer_read_address_params(buffer_t* buffer, address_params_t* params);
  * will be overwritten before params are consumed.
  */
 void address_params_copyHashesToStorage(address_params_t* params,
-                                       address_params_hashes_storage_t* storage);
+                                        address_params_hashes_storage_t* storage);
 
 bool isValidAddressParams(const address_params_t* address_params);
 payment_choice_t determinePaymentChoice(address_type_t addressType);
@@ -177,7 +179,8 @@ staking_part_type_t addressParams_getStakingPartType(const address_params_t* add
  *
  * @param rewardAccount The reward account structure containing either a key path or hash
  * @param networkId The network ID to use for the reward account
- * @param rewardAccountBuffer Output buffer to store the serialized reward account (REWARD_ACCOUNT_LENGTH bytes)
+ * @param rewardAccountBuffer Output buffer to store the serialized reward account
+ * (REWARD_ACCOUNT_LENGTH bytes)
  */
 void poolRewardAccountToBuffer(const pool_reward_account_t* rewardAccount,
                                uint8_t networkId,

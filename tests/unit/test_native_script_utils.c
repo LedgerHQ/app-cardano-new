@@ -115,12 +115,11 @@ void write_u32_be(uint8_t *buffer, uint32_t value) {
     buffer[3] = value & 0xFF;
 }
 
-void build_complex_script_start_buffer(
-    uint8_t *buffer,
-    size_t *buffer_length,
-    uint8_t script_type,
-    uint32_t children_count,
-    uint32_t required_count  // Only used for N_OF_K
+void build_complex_script_start_buffer(uint8_t *buffer,
+                                       size_t *buffer_length,
+                                       uint8_t script_type,
+                                       uint32_t children_count,
+                                       uint32_t required_count  // Only used for N_OF_K
 ) {
     LEDGER_ASSERT(script_type == NATIVE_SCRIPT_ALL || script_type == NATIVE_SCRIPT_ANY ||
                       script_type == NATIVE_SCRIPT_N_OF_K,

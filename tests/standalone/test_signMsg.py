@@ -11,9 +11,9 @@ from hashlib import blake2b
 import pytest
 import cbor2
 
+from ledgered.devices import Device
 from ragger.backend import BackendInterface
 from ragger.error import ExceptionRAPDU
-from ledgered.devices import Device
 from ragger.navigator import Navigator, NavInsID
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
@@ -35,6 +35,11 @@ from tests.standalone.input_files.signMsg import (
 
 from tests.application_client.command_builder import AddressParams, CommandBuilder
 from tests.standalone.input_files.derive_address import DeriveAddressTestCase
+
+from tests.standalone.input_files.signMsg import (
+    build_sign_msg_chunk_apdu_for_deny,
+    build_sign_msg_confirm_apdu_for_deny,
+)
 
 from tests.standalone.utils import (
     idTestFunc,
@@ -87,10 +92,6 @@ def test_sign_message(
 def test_sign_message_deny(
     backend: BackendInterface, testCase: SignMsgDenyTestCase
 ) -> None:
-    from tests.standalone.input_files.signMsg import (
-        build_sign_msg_chunk_apdu_for_deny,
-        build_sign_msg_confirm_apdu_for_deny,
-    )
 
     # Handle multi-phase deny scenarios
     if testCase.send_chunk_without_init:

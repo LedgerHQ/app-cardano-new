@@ -32,100 +32,98 @@ void run_recursive_fixture(const native_script_t *script) {
     assert_non_null(script);
     TRACE("Running script type: %d\n", script->type);
     switch (script->type) {
-            case NATIVE_SCRIPT_TYPE_INVALID_HEREAFTER:
-            case NATIVE_SCRIPT_TYPE_INVALID_BEFORE:
-            case NATIVE_SCRIPT_TYPE_PUBKEY_DEVICE_OWNED:
-            case NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY: {
-                test_read_buffer_t native_script_simple_buffer = make_test_read_buffer(
-                    script->impl.simple.apdu_payload,
-                    script->impl.simple.apdu_payload_length
-                );
-                run_derive_native_script_apdu(&native_script_simple_buffer.sdk_buffer, P1_NATIVE_SCRIPT_ADD_SIMPLE);
-                assert_read_buffer_unchanged_and_cleanup(
-                    &native_script_simple_buffer,
-                    script->impl.simple.apdu_payload
-                );
-                assert_int_equal(get_last_swo(), SWO_SUCCESS);
-            } break;
-            case NATIVE_SCRIPT_TYPE_ALL: {
-                TRACE("  ALL\n");
+        case NATIVE_SCRIPT_TYPE_INVALID_HEREAFTER:
+        case NATIVE_SCRIPT_TYPE_INVALID_BEFORE:
+        case NATIVE_SCRIPT_TYPE_PUBKEY_DEVICE_OWNED:
+        case NATIVE_SCRIPT_TYPE_PUBKEY_THIRD_PARTY: {
+            test_read_buffer_t native_script_simple_buffer =
+                make_test_read_buffer(script->impl.simple.apdu_payload,
+                                      script->impl.simple.apdu_payload_length);
+            run_derive_native_script_apdu(&native_script_simple_buffer.sdk_buffer,
+                                          P1_NATIVE_SCRIPT_ADD_SIMPLE);
+            assert_read_buffer_unchanged_and_cleanup(&native_script_simple_buffer,
+                                                     script->impl.simple.apdu_payload);
+            assert_int_equal(get_last_swo(), SWO_SUCCESS);
+        } break;
+        case NATIVE_SCRIPT_TYPE_ALL: {
+            TRACE("  ALL\n");
 
-                uint8_t apdu_buffer[64] = {0};
-                size_t apdu_length = 0;
-                build_complex_script_start_buffer(
-                    apdu_buffer,
-                    &apdu_length,
-                    NATIVE_SCRIPT_ALL,
-                    (uint32_t) script->impl.complex.params.all.scripts_count,
-                    0  // required_count unused for ALL
-                );
+            uint8_t apdu_buffer[64] = {0};
+            size_t apdu_length = 0;
+            build_complex_script_start_buffer(
+                apdu_buffer,
+                &apdu_length,
+                NATIVE_SCRIPT_ALL,
+                (uint32_t) script->impl.complex.params.all.scripts_count,
+                0  // required_count unused for ALL
+            );
 
-                buffer_t buf = {
-                    .ptr = apdu_buffer,
-                    .size = apdu_length,
-                    .offset = 0,
-                };
-                run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
-                assert_int_equal(get_last_swo(), SWO_SUCCESS);
+            buffer_t buf = {
+                .ptr = apdu_buffer,
+                .size = apdu_length,
+                .offset = 0,
+            };
+            run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+            assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
-                for (size_t i = 0; i < script->impl.complex.params.all.scripts_count; i++) {
-                    run_recursive_fixture(script->impl.complex.params.all.scripts[i]);
-                }
-                break;
+            for (size_t i = 0; i < script->impl.complex.params.all.scripts_count; i++) {
+                run_recursive_fixture(script->impl.complex.params.all.scripts[i]);
             }
-            case NATIVE_SCRIPT_TYPE_ANY: {
-                TRACE("  ANY\n");
+            break;
+        }
+        case NATIVE_SCRIPT_TYPE_ANY: {
+            TRACE("  ANY\n");
 
-                uint8_t apdu_buffer[64] = {0};
-                size_t apdu_length = 0;
-                build_complex_script_start_buffer(
-                    apdu_buffer,
-                    &apdu_length,
-                    NATIVE_SCRIPT_ANY,
-                    (uint32_t) script->impl.complex.params.any.scripts_count,
-                    0  // required_count unused for ANY
-                );
+            uint8_t apdu_buffer[64] = {0};
+            size_t apdu_length = 0;
+            build_complex_script_start_buffer(
+                apdu_buffer,
+                &apdu_length,
+                NATIVE_SCRIPT_ANY,
+                (uint32_t) script->impl.complex.params.any.scripts_count,
+                0  // required_count unused for ANY
+            );
 
-                buffer_t buf = {
-                    .ptr = apdu_buffer,
-                    .size = apdu_length,
-                    .offset = 0,
-                };
+            buffer_t buf = {
+                .ptr = apdu_buffer,
+                .size = apdu_length,
+                .offset = 0,
+            };
 
-                TRACE_BUFFER(buf.ptr, buf.size);
-                run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
-                assert_int_equal(get_last_swo(), SWO_SUCCESS);
+            TRACE_BUFFER(buf.ptr, buf.size);
+            run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+            assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
-                for (size_t i = 0; i < script->impl.complex.params.any.scripts_count; i++) {
-                    run_recursive_fixture(script->impl.complex.params.any.scripts[i]);
-                }
-                break;
+            for (size_t i = 0; i < script->impl.complex.params.any.scripts_count; i++) {
+                run_recursive_fixture(script->impl.complex.params.any.scripts[i]);
             }
-            case NATIVE_SCRIPT_TYPE_N_OF_K: {
-                TRACE("  N_OF_K\n");
+            break;
+        }
+        case NATIVE_SCRIPT_TYPE_N_OF_K: {
+            TRACE("  N_OF_K\n");
 
-                uint8_t apdu_buffer[64] = {0};
-                size_t apdu_length = 0;
-                build_complex_script_start_buffer(
-                    apdu_buffer,
-                    &apdu_length,
-                    NATIVE_SCRIPT_N_OF_K,
-                    (uint32_t) script->impl.complex.params.n_of_k.scripts_count,
-                    (uint32_t) script->impl.complex.params.n_of_k.required_count);
+            uint8_t apdu_buffer[64] = {0};
+            size_t apdu_length = 0;
+            build_complex_script_start_buffer(
+                apdu_buffer,
+                &apdu_length,
+                NATIVE_SCRIPT_N_OF_K,
+                (uint32_t) script->impl.complex.params.n_of_k.scripts_count,
+                (uint32_t) script->impl.complex.params.n_of_k.required_count);
 
-                buffer_t buf = {
-                    .ptr = apdu_buffer,
-                    .size = apdu_length,
-                    .offset = 0,
-                };
-                run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
-                assert_int_equal(get_last_swo(), SWO_SUCCESS);
+            buffer_t buf = {
+                .ptr = apdu_buffer,
+                .size = apdu_length,
+                .offset = 0,
+            };
+            run_derive_native_script_apdu(&buf, P1_NATIVE_SCRIPT_START_COMPLEX);
+            assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
-                for (size_t i = 0; i < script->impl.complex.params.n_of_k.scripts_count; i++) {
-                    run_recursive_fixture(script->impl.complex.params.n_of_k.scripts[i]);
-                }
-                break;
+            for (size_t i = 0; i < script->impl.complex.params.n_of_k.scripts_count; i++) {
+                run_recursive_fixture(script->impl.complex.params.n_of_k.scripts[i]);
             }
+            break;
+        }
         default:
             TRACE("  Unknown script type!\n");
             assert_true(false);
@@ -150,15 +148,11 @@ static inline void run_fixture(const native_script_test_case_t *fixture) {
     run_recursive_fixture(fixture->root_script);
 
     // Send finish APDU
-    test_read_buffer_t native_script_finish_buffer = make_test_read_buffer(
-        fixture->finish_apdu_payload,
-        fixture->finish_apdu_payload_length
-    );
+    test_read_buffer_t native_script_finish_buffer =
+        make_test_read_buffer(fixture->finish_apdu_payload, fixture->finish_apdu_payload_length);
     run_derive_native_script_apdu(&native_script_finish_buffer.sdk_buffer, P1_NATIVE_SCRIPT_FINISH);
-    assert_read_buffer_unchanged_and_cleanup(
-        &native_script_finish_buffer,
-        fixture->finish_apdu_payload
-    );
+    assert_read_buffer_unchanged_and_cleanup(&native_script_finish_buffer,
+                                             fixture->finish_apdu_payload);
 
     // Compare derived hash with expected hash
     assert_memory_equal(get_response_buffer(), fixture->expected_hash, SCRIPT_HASH_LENGTH);

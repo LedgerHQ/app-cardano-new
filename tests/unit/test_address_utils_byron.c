@@ -15,7 +15,8 @@
 #include "hexUtils.h"
 
 // Test case for successful protocol magic extraction
-static void testcase_extractProtocolMagicSucceeds(const char* addressHex, uint32_t expectedProtocolMagic) {
+static void testcase_extractProtocolMagicSucceeds(const char *addressHex,
+                                                  uint32_t expectedProtocolMagic) {
     uint8_t address[100] = {0};
     size_t addressSize;
     bool success = decode_hex(addressHex, address, sizeof(address), &addressSize);
@@ -29,7 +30,7 @@ static void testcase_extractProtocolMagicSucceeds(const char* addressHex, uint32
 }
 
 // Test case for failed protocol magic extraction
-static void testcase_extractProtocolMagicFails(const char* addressHex) {
+static void testcase_extractProtocolMagicFails(const char *addressHex) {
     uint8_t address[100] = {0};
     size_t addressSize;
     bool success = decode_hex(addressHex, address, sizeof(address), &addressSize);
@@ -131,7 +132,8 @@ static void test_extract_protocol_magic_invalid_crc32(void **state) {
         "82d818582183581cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e0136881a0001ad7ed912e");
 }
 
-// ======================== Additional Protocol Magic Extraction Failure Tests ========================
+// ======================== Additional Protocol Magic Extraction Failure Tests
+// ========================
 
 static void test_extract_protocol_magic_outer_array_wrong_count(void **state) {
     (void) state;
@@ -187,7 +189,8 @@ static void test_extract_protocol_magic_protocol_magic_not_unsigned(void **state
     // The attribute value bytes (0242182a) = bytes(2) containing 0x182a (uint 42).
     // Replace the inner value with 0x62 (text "ab" = 0x6261) to trigger type mismatch.
     testcase_extractProtocolMagicFails(
-        "82d818582583581cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e0136881a102426162001a2b7c56f6");
+        "82d818582583581cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e0136881a102426162001a2b7c"
+        "56f6");
 }
 
 static void test_extract_protocol_magic_protocol_magic_extra_bytes_in_value(void **state) {
@@ -195,7 +198,8 @@ static void test_extract_protocol_magic_protocol_magic_extra_bytes_in_value(void
     // Protocol magic attribute value bytes(3) contains uint(42) + extra 0x00 byte;
     // sub-buffer not fully consumed → return false
     testcase_extractProtocolMagicFails(
-        "82d818582683581c1cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e01368a10243182a00001ab5228dc5");
+        "82d818582683581c1cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e01368a10243182a00001ab5"
+        "228dc5");
 }
 
 static void test_extract_protocol_magic_protocol_magic_too_large(void **state) {
@@ -203,12 +207,12 @@ static void test_extract_protocol_magic_protocol_magic_too_large(void **state) {
     // Protocol magic > UINT32_MAX: encode 0x1_0000_0000 as CBOR uint = 1b 0000000100000000
     // Attribute value bytes: 09 1b0000000100000000
     testcase_extractProtocolMagicFails(
-        "82d8185830" // array(2), tag(24), bytes(0x30 = 48)
+        "82d8185830"  // array(2), tag(24), bytes(0x30 = 48)
         "83581cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e013"
-        "6881a1" // map(1)
-        "02"    // key: 2
-        "49"    // bytes(9)
-        "1b000000010000000000" // uint64 = 0x1_0000_0000_0000 — way above UINT32_MAX
+        "6881a1"                // map(1)
+        "02"                    // key: 2
+        "49"                    // bytes(9)
+        "1b000000010000000000"  // uint64 = 0x1_0000_0000_0000 — way above UINT32_MAX
         "001a2b7c56f6");
 }
 
@@ -236,9 +240,10 @@ static void test_extract_protocol_magic_address_type_parse_fails(void **state) {
     // value are available in the buffer. When cbor_parseToken tries to read the full 5-byte token
     // (1 byte tag + 4 bytes value), it only finds 4 bytes, so it returns false.
     testcase_extractProtocolMagicFails(
-        "82d8185821" // outer array(2), tag(24), bytes(0x21)
-        "83581cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e0136881a000" // embedded CBOR (33 bytes)
-        "1aef29"); // incomplete CRC (needs 5 bytes: 1a + 4 bytes value, but only 4 available)
+        "82d8185821"  // outer array(2), tag(24), bytes(0x21)
+        "83581cb1999ee43d0c3a9fe4a1a5d959ae87069781fbb7f60ff7e8e0136881a000"  // embedded CBOR (33
+                                                                              // bytes)
+        "1aef29");  // incomplete CRC (needs 5 bytes: 1a + 4 bytes value, but only 4 available)
 }
 
 static void test_extract_protocol_magic_trailing_bytes(void **state) {

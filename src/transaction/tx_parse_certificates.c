@@ -21,19 +21,17 @@
 #ifdef TRACE_TX_PARSE
 #define TRACE_MODULE(...) TRACE("[tx_parse_certs] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
-
 /// Parse CERTIFICATE_STAKE_REGISTRATION or CERTIFICATE_STAKE_DEREGISTRATION
-bool parse_certificate_stake_registration_deregistration(
-    buffer_t *buf,
-    certificate_type_t cert_type,
-    certificate_data_t *cert_data) {
+bool parse_certificate_stake_registration_deregistration(buffer_t *buf,
+                                                         certificate_type_t cert_type,
+                                                         certificate_data_t *cert_data) {
     ASSERT(buf != NULL);
     ASSERT(cert_data != NULL);
     LEDGER_ASSERT(cert_type == CERTIFICATE_STAKE_REGISTRATION ||
-                  cert_type == CERTIFICATE_STAKE_DEREGISTRATION,
+                      cert_type == CERTIFICATE_STAKE_DEREGISTRATION,
                   "Invalid certificate type for stake registration/deregistration");
 
     cert_data->type = cert_type;
@@ -46,8 +44,7 @@ bool parse_certificate_stake_registration_deregistration(
 }
 
 /// Parse CERTIFICATE_STAKE_DELEGATION
-bool parse_certificate_stake_delegation(buffer_t *buf,
-                                                  certificate_data_t *cert_data) {
+bool parse_certificate_stake_delegation(buffer_t *buf, certificate_data_t *cert_data) {
     ASSERT(buf != NULL);
     ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_STAKE_DELEGATION;
@@ -67,14 +64,13 @@ bool parse_certificate_stake_delegation(buffer_t *buf,
 }
 
 /// Parse CERTIFICATE_STAKE_REGISTRATION_CONWAY or CERTIFICATE_STAKE_DEREGISTRATION_CONWAY
-bool parse_certificate_stake_registration_deregistration_conway(
-    buffer_t *buf,
-    certificate_type_t cert_type,
-    certificate_data_t *cert_data) {
+bool parse_certificate_stake_registration_deregistration_conway(buffer_t *buf,
+                                                                certificate_type_t cert_type,
+                                                                certificate_data_t *cert_data) {
     ASSERT(buf != NULL);
     ASSERT(cert_data != NULL);
     LEDGER_ASSERT(cert_type == CERTIFICATE_STAKE_REGISTRATION_CONWAY ||
-                  cert_type == CERTIFICATE_STAKE_DEREGISTRATION_CONWAY,
+                      cert_type == CERTIFICATE_STAKE_DEREGISTRATION_CONWAY,
                   "Invalid certificate type for Conway stake registration/deregistration");
 
     cert_data->type = cert_type;
@@ -99,8 +95,7 @@ bool parse_certificate_stake_registration_deregistration_conway(
 }
 
 /// Parse CERTIFICATE_STAKE_POOL_RETIREMENT
-bool parse_certificate_stake_pool_retirement(buffer_t *buf,
-                                                       certificate_data_t *cert_data) {
+bool parse_certificate_stake_pool_retirement(buffer_t *buf, certificate_data_t *cert_data) {
     ASSERT(buf != NULL);
     ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_STAKE_POOL_RETIREMENT;
@@ -121,8 +116,7 @@ bool parse_certificate_stake_pool_retirement(buffer_t *buf,
 }
 
 /// Parse CERTIFICATE_VOTE_DELEGATION
-bool parse_certificate_vote_delegation(buffer_t *buf,
-                                                 certificate_data_t *cert_data) {
+bool parse_certificate_vote_delegation(buffer_t *buf, certificate_data_t *cert_data) {
     ASSERT(buf != NULL);
     ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_VOTE_DELEGATION;
@@ -143,7 +137,7 @@ bool parse_certificate_vote_delegation(buffer_t *buf,
 
 /// Parse CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION
 bool parse_certificate_stake_pool_and_drep_delegation(buffer_t *buf,
-                                                                 certificate_data_t *cert_data) {
+                                                      certificate_data_t *cert_data) {
     ASSERT(buf != NULL);
     ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION;
@@ -202,9 +196,8 @@ bool parse_certificate_account_registration_delegation_to_stake_pool(
 }
 
 /// Parse CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP
-bool parse_certificate_account_registration_delegation_to_drep(
-    buffer_t *buf,
-    certificate_data_t *cert_data) {
+bool parse_certificate_account_registration_delegation_to_drep(buffer_t *buf,
+                                                               certificate_data_t *cert_data) {
     ASSERT(buf != NULL);
     ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP;
@@ -274,8 +267,7 @@ bool parse_certificate_account_registration_delegation_to_stake_pool_and_drep(
 }
 
 /// Parse CERTIFICATE_AUTHORIZE_COMMITTEE_HOT
-bool parse_certificate_authorize_committee_hot(buffer_t *buf,
-                                                         certificate_data_t *cert_data) {
+bool parse_certificate_authorize_committee_hot(buffer_t *buf, certificate_data_t *cert_data) {
     ASSERT(buf != NULL);
     ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_AUTHORIZE_COMMITTEE_HOT;
@@ -295,8 +287,7 @@ bool parse_certificate_authorize_committee_hot(buffer_t *buf,
 }
 
 /// Parse CERTIFICATE_RESIGN_COMMITTEE_COLD
-bool parse_certificate_resign_committee_cold(buffer_t *buf,
-                                                       certificate_data_t *cert_data) {
+bool parse_certificate_resign_committee_cold(buffer_t *buf, certificate_data_t *cert_data) {
     ASSERT(buf != NULL);
     ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_RESIGN_COMMITTEE_COLD;
@@ -316,8 +307,7 @@ bool parse_certificate_resign_committee_cold(buffer_t *buf,
 }
 
 /// Parse CERTIFICATE_DREP_REGISTRATION
-bool parse_certificate_drep_registration(buffer_t *buf,
-                                                   certificate_data_t *cert_data) {
+bool parse_certificate_drep_registration(buffer_t *buf, certificate_data_t *cert_data) {
     ASSERT(buf != NULL);
     ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_DREP_REGISTRATION;
@@ -348,8 +338,7 @@ bool parse_certificate_drep_registration(buffer_t *buf,
 }
 
 /// Parse CERTIFICATE_DREP_DEREGISTRATION
-bool parse_certificate_drep_deregistration(buffer_t *buf,
-                                                     certificate_data_t *cert_data) {
+bool parse_certificate_drep_deregistration(buffer_t *buf, certificate_data_t *cert_data) {
     ASSERT(buf != NULL);
     ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_DREP_DEREGISTRATION;
@@ -374,8 +363,7 @@ bool parse_certificate_drep_deregistration(buffer_t *buf,
 }
 
 /// Parse CERTIFICATE_DREP_UPDATE
-bool parse_certificate_drep_update(buffer_t *buf,
-                                             certificate_data_t *cert_data) {
+bool parse_certificate_drep_update(buffer_t *buf, certificate_data_t *cert_data) {
     ASSERT(buf != NULL);
     ASSERT(cert_data != NULL);
     cert_data->type = CERTIFICATE_DREP_UPDATE;
@@ -650,8 +638,7 @@ bool parse_pool_metadata(buffer_t *buf, pool_metadata_t *out_metadata) {
 }
 
 /// Parse CERTIFICATE_STAKE_POOL_REGISTRATION
-bool parse_certificate_stake_pool_registration(buffer_t *buf,
-                                                         certificate_data_t *cert_data) {
+bool parse_certificate_stake_pool_registration(buffer_t *buf, certificate_data_t *cert_data) {
     ASSERT(buf != NULL);
     ASSERT(cert_data != NULL);
 
@@ -718,8 +705,7 @@ bool parse_certificate_stake_pool_registration(buffer_t *buf,
         TRACE("Failed to read margin denominator");
         return false;
     }
-    if (poolReg->marginDenominator == 0 ||
-        poolReg->marginDenominator > MARGIN_DENOMINATOR_MAX ||
+    if (poolReg->marginDenominator == 0 || poolReg->marginDenominator > MARGIN_DENOMINATOR_MAX ||
         poolReg->marginNumerator > MARGIN_DENOMINATOR_MAX ||
         poolReg->marginNumerator > poolReg->marginDenominator) {
         TRACE("Invalid margin: %llu / %llu",
@@ -739,7 +725,8 @@ bool parse_certificate_stake_pool_registration(buffer_t *buf,
     switch (reward_account_type) {
         case EXT_CREDENTIAL_KEY_HASH:
             poolReg->rewardAccount.keyReferenceType = KEY_REFERENCE_HASH;
-            if (!buffer_read_bytes_ptr(pool_reg_buf, &poolReg->rewardAccount.hashBuffer,
+            if (!buffer_read_bytes_ptr(pool_reg_buf,
+                                       &poolReg->rewardAccount.hashBuffer,
                                        REWARD_ACCOUNT_LENGTH)) {
                 TRACE("Failed to read reward account hash");
                 return false;
@@ -805,18 +792,16 @@ bool parse_certificate(buffer_t *buf, certificate_data_t *out_certificate_data) 
     switch (certificate_type) {
         case CERTIFICATE_STAKE_REGISTRATION:
         case CERTIFICATE_STAKE_DEREGISTRATION:
-            return parse_certificate_stake_registration_deregistration(
-                buf,
-                certificate_type,
-                out_certificate_data);
+            return parse_certificate_stake_registration_deregistration(buf,
+                                                                       certificate_type,
+                                                                       out_certificate_data);
         case CERTIFICATE_STAKE_DELEGATION:
             return parse_certificate_stake_delegation(buf, out_certificate_data);
         case CERTIFICATE_STAKE_REGISTRATION_CONWAY:
         case CERTIFICATE_STAKE_DEREGISTRATION_CONWAY:
-            return parse_certificate_stake_registration_deregistration_conway(
-                buf,
-                certificate_type,
-                out_certificate_data);
+            return parse_certificate_stake_registration_deregistration_conway(buf,
+                                                                              certificate_type,
+                                                                              out_certificate_data);
         case CERTIFICATE_STAKE_POOL_RETIREMENT:
             return parse_certificate_stake_pool_retirement(buf, out_certificate_data);
         case CERTIFICATE_STAKE_POOL_REGISTRATION:
@@ -826,10 +811,12 @@ bool parse_certificate(buffer_t *buf, certificate_data_t *out_certificate_data) 
         case CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION:
             return parse_certificate_stake_pool_and_drep_delegation(buf, out_certificate_data);
         case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL:
-            return parse_certificate_account_registration_delegation_to_stake_pool(buf,
-                                                                                   out_certificate_data);
+            return parse_certificate_account_registration_delegation_to_stake_pool(
+                buf,
+                out_certificate_data);
         case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP:
-            return parse_certificate_account_registration_delegation_to_drep(buf, out_certificate_data);
+            return parse_certificate_account_registration_delegation_to_drep(buf,
+                                                                             out_certificate_data);
         case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP:
             return parse_certificate_account_registration_delegation_to_stake_pool_and_drep(
                 buf,

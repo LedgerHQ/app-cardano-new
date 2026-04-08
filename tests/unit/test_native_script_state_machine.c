@@ -108,10 +108,9 @@ static void test_simple_parse_failure_must_not_reach_postparse_state_mutation(vo
     assert_int_equal(get_last_swo(), SWO_SUCCESS);
 
     // Invalid device-owned key path fixture from reject vectors.
-    uint8_t invalid_payload[27] = {
-        0x00, 0x02, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    uint8_t invalid_payload[27] = {0x00, 0x02, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
     buffer_t invalid_buf = {
         .ptr = invalid_payload,
@@ -306,7 +305,8 @@ static void test_non_init_apdu_before_init_rejected(void **state) {
     reset_test_context();
     reset_response_buffer();
 
-    // Send complex-start without init: req_type is REQUEST_NONE, not REQUEST_DERIVE_NATIVE_SCRIPT_HASH
+    // Send complex-start without init: req_type is REQUEST_NONE, not
+    // REQUEST_DERIVE_NATIVE_SCRIPT_HASH
     uint8_t payload[5] = {0};
     payload[0] = NATIVE_SCRIPT_ALL;
     write_u32_be(&payload[1], 1);

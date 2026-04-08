@@ -414,13 +414,13 @@ static void test_validate_fails_on_truncated_fee(void **state) {
     (void) state;
     reset_test_context();
 
-    uint8_t raw_tx[TX_HASH_LENGTH + 4 + 2 + 45 + 4] = {0}; // inputs + outputs + 4 bytes of fee
+    uint8_t raw_tx[TX_HASH_LENGTH + 4 + 2 + 45 + 4] = {0};  // inputs + outputs + 4 bytes of fee
     size_t offset = 0;
     // one input
     offset += TX_HASH_LENGTH + 4;
     // one output (45 bytes)
     raw_tx[offset++] = 0x00;
-    raw_tx[offset++] = 0x2D; // output total length
+    raw_tx[offset++] = 0x2D;  // output total length
     // destination type: third-party
     raw_tx[offset++] = DESTINATION_THIRD_PARTY;
     // address length: 29 bytes
@@ -462,12 +462,13 @@ static void test_validate_fails_on_truncated_ttl(void **state) {
     (void) state;
     reset_test_context();
 
-    uint8_t raw_tx[TX_HASH_LENGTH + 4 + 2 + 45 + 8 + 4] = {0}; // inputs + outputs + fee + 4 bytes of ttl
+    uint8_t raw_tx[TX_HASH_LENGTH + 4 + 2 + 45 + 8 + 4] = {
+        0};  // inputs + outputs + fee + 4 bytes of ttl
     size_t offset = 0;
-    offset += TX_HASH_LENGTH + 4; // input
+    offset += TX_HASH_LENGTH + 4;  // input
     // one output (45 bytes)
     raw_tx[offset++] = 0x00;
-    raw_tx[offset++] = 0x2D; // output total length
+    raw_tx[offset++] = 0x2D;  // output total length
     // destination type: third-party
     raw_tx[offset++] = DESTINATION_THIRD_PARTY;
     // address length: 29 bytes
@@ -488,7 +489,7 @@ static void test_validate_fails_on_truncated_ttl(void **state) {
     // num asset groups
     raw_tx[offset++] = 0x00;
     raw_tx[offset++] = 0x00;
-    offset += 8; // fee
+    offset += 8;  // fee
     // ttl (truncated: only 4 bytes instead of 8)
     offset += 4;
 
@@ -513,10 +514,10 @@ static void test_validate_fails_on_truncated_withdrawals(void **state) {
 
     uint8_t raw_tx[TX_HASH_LENGTH + 4 + 2 + 45 + 8 + 4] = {0};
     size_t offset = 0;
-    offset += TX_HASH_LENGTH + 4; // input
+    offset += TX_HASH_LENGTH + 4;  // input
     // one output (45 bytes)
     raw_tx[offset++] = 0x00;
-    raw_tx[offset++] = 0x2D; // output total length
+    raw_tx[offset++] = 0x2D;  // output total length
     // destination type: third-party
     raw_tx[offset++] = DESTINATION_THIRD_PARTY;
     // address length: 29 bytes
@@ -537,7 +538,7 @@ static void test_validate_fails_on_truncated_withdrawals(void **state) {
     // num asset groups
     raw_tx[offset++] = 0x00;
     raw_tx[offset++] = 0x00;
-    offset += 8; // fee
+    offset += 8;  // fee
     // withdrawal: only 4 bytes of amount, credential missing
     offset += 4;
 
@@ -592,8 +593,8 @@ static void test_validate_from_raw_with_tokens_and_mint_success(void **state) {
     raw_tx[offset++] = 0x84;
     raw_tx[offset++] = 0x80;  // 2_000_000
     raw_tx[offset++] = ARRAY_LEGACY;
-    raw_tx[offset++] = 1;     // datum absent
-    raw_tx[offset++] = 1;     // ref script absent
+    raw_tx[offset++] = 1;  // datum absent
+    raw_tx[offset++] = 1;  // ref script absent
     // one asset group
     raw_tx[offset++] = 0x00;
     raw_tx[offset++] = 0x01;
@@ -656,7 +657,8 @@ static void test_validate_from_raw_with_tokens_and_mint_success(void **state) {
     bool ok = tx_validate();
 
     assert_true(ok);
-    assert_int_equal(tx_body_ctx()->total_ui_pairs, 9);  // output base + output token + fee + mint summary + mint token
+    assert_int_equal(tx_body_ctx()->total_ui_pairs,
+                     9);  // output base + output token + fee + mint summary + mint token
 }
 
 // ---------------------------------------------------------------------------
@@ -882,8 +884,8 @@ static void test_parse_mint_token_zero_amount(void **state) {
     (void) state;
     // asset_name_length = 1, name byte, amount = 0 (must be rejected).
     uint8_t buf_data[1 + 1 + 8] = {0};
-    buf_data[0] = 1;    // name length
-    buf_data[1] = 0xAA; // name byte
+    buf_data[0] = 1;     // name length
+    buf_data[1] = 0xAA;  // name byte
     // amount bytes [2..9] remain 0 -> int64 = 0
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     mint_token_t out;

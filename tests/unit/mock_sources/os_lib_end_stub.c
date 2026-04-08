@@ -7,5 +7,6 @@
 
 __attribute__((noreturn)) void os_lib_end(void) {
     LEDGER_ASSERT(false, "Unexpected os_lib_end in unit test");
-    for (;;) {}
+    for (;;) {
+    }
 }

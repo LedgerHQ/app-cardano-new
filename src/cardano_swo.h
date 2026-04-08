@@ -33,56 +33,57 @@ typedef enum {
     SWO_NATIVE_SCRIPT_PARSING_FAIL_DISPLAY_FORMAT = 0x6B47,     // invalid display format value
     // Transaction body field parsing errors
     // Organized by CBOR key as per Cardano CDDL: error = 0x6B20 + CBOR_KEY
-    SWO_TX_PARSING_FAIL_INPUTS = 0x6B20,              // key 0
-    SWO_TX_PARSING_FAIL_OUTPUTS = 0x6B21,             // key 1
-    SWO_TX_PARSING_FAIL_FEE = 0x6B22,                 // key 2
-    SWO_TX_PARSING_FAIL_TTL = 0x6B23,                 // key 3
-    SWO_TX_PARSING_FAIL_CERTIFICATES = 0x6B24,        // key 4
-    SWO_TX_PARSING_FAIL_WITHDRAWALS = 0x6B25,         // key 5
+    SWO_TX_PARSING_FAIL_INPUTS = 0x6B20,                   // key 0
+    SWO_TX_PARSING_FAIL_OUTPUTS = 0x6B21,                  // key 1
+    SWO_TX_PARSING_FAIL_FEE = 0x6B22,                      // key 2
+    SWO_TX_PARSING_FAIL_TTL = 0x6B23,                      // key 3
+    SWO_TX_PARSING_FAIL_CERTIFICATES = 0x6B24,             // key 4
+    SWO_TX_PARSING_FAIL_WITHDRAWALS = 0x6B25,              // key 5
     SWO_TX_PARSING_FAIL_VALIDITY_INTERVAL_START = 0x6B28,  // key 8
-    SWO_TX_PARSING_FAIL_MINT = 0x6B29,                // key 9
-    SWO_TX_PARSING_FAIL_SCRIPT_DATA_HASH = 0x6B2B,    // key 11
-    SWO_TX_PARSING_FAIL_COLLATERAL_INPUTS = 0x6B2D,   // key 13
-    SWO_TX_PARSING_FAIL_REQUIRED_SIGNERS = 0x6B2E,    // key 14
-    SWO_TX_PARSING_FAIL_COLLATERAL_OUTPUT = 0x6B30,   // key 16
-    SWO_TX_PARSING_FAIL_TOTAL_COLLATERAL = 0x6B31,    // key 17
-    SWO_TX_PARSING_FAIL_REFERENCE_INPUTS = 0x6B32,    // key 18
-    SWO_TX_PARSING_FAIL_VOTING_PROCEDURES = 0x6B33,   // key 19
-    SWO_TX_PARSING_FAIL_TREASURY = 0x6B35,            // key 21
-    SWO_TX_PARSING_FAIL_DONATION = 0x6B36,            // key 22
+    SWO_TX_PARSING_FAIL_MINT = 0x6B29,                     // key 9
+    SWO_TX_PARSING_FAIL_SCRIPT_DATA_HASH = 0x6B2B,         // key 11
+    SWO_TX_PARSING_FAIL_COLLATERAL_INPUTS = 0x6B2D,        // key 13
+    SWO_TX_PARSING_FAIL_REQUIRED_SIGNERS = 0x6B2E,         // key 14
+    SWO_TX_PARSING_FAIL_COLLATERAL_OUTPUT = 0x6B30,        // key 16
+    SWO_TX_PARSING_FAIL_TOTAL_COLLATERAL = 0x6B31,         // key 17
+    SWO_TX_PARSING_FAIL_REFERENCE_INPUTS = 0x6B32,         // key 18
+    SWO_TX_PARSING_FAIL_VOTING_PROCEDURES = 0x6B33,        // key 19
+    SWO_TX_PARSING_FAIL_TREASURY = 0x6B35,                 // key 21
+    SWO_TX_PARSING_FAIL_DONATION = 0x6B36,                 // key 22
 
     // CVote auxiliary data parsing errors
-    SWO_CVOTE_AUX_DATA_PARSING_FAIL = 0x6B50,        // CVote aux data (init or delegation) parsing error
+    SWO_CVOTE_AUX_DATA_PARSING_FAIL = 0x6B50,  // CVote aux data (init or delegation) parsing error
 
     // Network/Protocol validation errors
-    SWO_INVALID_NETWORK_ID = 0x6B37,                  // network ID mismatch
-    SWO_INVALID_PROTOCOL_MAGIC = 0x6B38,              // protocol magic mismatch
+    SWO_INVALID_NETWORK_ID = 0x6B37,      // network ID mismatch
+    SWO_INVALID_PROTOCOL_MAGIC = 0x6B38,  // protocol magic mismatch
 
     // Transaction structure errors
-    SWO_TX_PARSING_FAIL_INCLUSION_FLAG = 0x6B39,      // optional field flag error
+    SWO_TX_PARSING_FAIL_INCLUSION_FLAG = 0x6B39,             // optional field flag error
     SWO_TX_PARSING_FAIL_BUFFER_NOT_FULLY_CONSUMED = 0x6B3A,  // extra data in buffer
-    SWO_TX_PARSING_FAIL_CANONICAL_ORDER = 0x6B3B,     // CBOR canonical ordering
-    SWO_INVALID_TX_SIGNING_MODE = 0x6B3C,             // unknown or unsupported tx signing mode
+    SWO_TX_PARSING_FAIL_CANONICAL_ORDER = 0x6B3B,            // CBOR canonical ordering
+    SWO_INVALID_TX_SIGNING_MODE = 0x6B3C,  // unknown or unsupported tx signing mode
 
-    SWO_CVOTE_PARSING_FAIL_REMAINING_VOTECAST_BYTES = 0x6B54, // failed to read remaining votecast bytes
-    SWO_CVOTE_PARSING_FAIL_VOTE_PLAN_ID = 0x6B51, // failed to read vote plan id
-    SWO_CVOTE_PARSING_FAIL_PROPOSAL_INDEX = 0x6B52, // failed to read proposal index
-    SWO_CVOTE_PARSING_FAIL_PAYLOAD_TYPE_TAG = 0x6B53, // failed to read payload type tag
+    SWO_CVOTE_PARSING_FAIL_REMAINING_VOTECAST_BYTES =
+        0x6B54,                                        // failed to read remaining votecast bytes
+    SWO_CVOTE_PARSING_FAIL_VOTE_PLAN_ID = 0x6B51,      // failed to read vote plan id
+    SWO_CVOTE_PARSING_FAIL_PROPOSAL_INDEX = 0x6B52,    // failed to read proposal index
+    SWO_CVOTE_PARSING_FAIL_PAYLOAD_TYPE_TAG = 0x6B53,  // failed to read payload type tag
 
     // Message signing (CIP-8) parsing/validation errors (0x6B60-0x6B6F range)
-    SWO_SIGN_MSG_PARSING_FAIL_MSG_LENGTH = 0x6B60,        // failed to parse message length
-    SWO_SIGN_MSG_PARSING_FAIL_SIGNING_PATH = 0x6B61,      // failed to parse signing path
-    SWO_SIGN_MSG_PARSING_FAIL_HASH_PAYLOAD = 0x6B62,      // failed to parse hash payload flag
-    SWO_SIGN_MSG_PARSING_FAIL_IS_ASCII = 0x6B63,          // failed to parse isAscii flag
-    SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_FIELD_TYPE = 0x6B64, // failed to parse address field type
-    SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS = 0x6B65,    // failed to parse address params
-    SWO_SIGN_MSG_PARSING_FAIL_CHUNK_SIZE = 0x6B66,        // failed to parse chunk size
-    SWO_SIGN_MSG_PARSING_FAIL_CHUNK_DATA = 0x6B67,        // failed to parse chunk data
-    SWO_SIGN_MSG_INVALID_CHUNK_SIZE = 0x6B68,             // chunk size validation failed
-    SWO_SIGN_MSG_INVALID_ASCII = 0x6B69,                  // ASCII validation failed
-    SWO_SIGN_MSG_INVALID_ADDRESS_FIELD_TYPE = 0x6B6A,     // invalid address field type
-    SWO_SIGN_MSG_CONFIRM_MUST_BE_EMPTY = 0x6B6B,          // confirm APDU must be empty
+    SWO_SIGN_MSG_PARSING_FAIL_MSG_LENGTH = 0x6B60,          // failed to parse message length
+    SWO_SIGN_MSG_PARSING_FAIL_SIGNING_PATH = 0x6B61,        // failed to parse signing path
+    SWO_SIGN_MSG_PARSING_FAIL_HASH_PAYLOAD = 0x6B62,        // failed to parse hash payload flag
+    SWO_SIGN_MSG_PARSING_FAIL_IS_ASCII = 0x6B63,            // failed to parse isAscii flag
+    SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_FIELD_TYPE = 0x6B64,  // failed to parse address field type
+    SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS = 0x6B65,      // failed to parse address params
+    SWO_SIGN_MSG_PARSING_FAIL_CHUNK_SIZE = 0x6B66,          // failed to parse chunk size
+    SWO_SIGN_MSG_PARSING_FAIL_CHUNK_DATA = 0x6B67,          // failed to parse chunk data
+    SWO_SIGN_MSG_INVALID_CHUNK_SIZE = 0x6B68,               // chunk size validation failed
+    SWO_SIGN_MSG_INVALID_ASCII = 0x6B69,                    // ASCII validation failed
+    SWO_SIGN_MSG_INVALID_ADDRESS_FIELD_TYPE = 0x6B6A,       // invalid address field type
+    SWO_SIGN_MSG_CONFIRM_MUST_BE_EMPTY = 0x6B6B,            // confirm APDU must be empty
 
     // Swap validation errors
-    SWO_SWAP_CHECKING_FAIL = 0x6001,   // swap parameter validation failed
+    SWO_SWAP_CHECKING_FAIL = 0x6001,  // swap parameter validation failed
 } cardano_status_word_t;

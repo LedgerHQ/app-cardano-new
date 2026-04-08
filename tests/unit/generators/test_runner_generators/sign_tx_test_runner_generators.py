@@ -139,41 +139,29 @@ def _build_test_functions(
         for suffix, expert_flag in [("expert_off", "false"), ("expert_on", "true")]:
             function_name = f"{test_name}_{suffix}"
             functions.append(
-                "static void {function_name}(void **state) {{\n"
-                "    (void) state;\n"
-                "    run_fixture_with_expert_mode(&{fixture_name}, {expert_flag});\n"
-                "}}".format(
-                    function_name=function_name,
-                    fixture_name=fixture_name,
-                    expert_flag=expert_flag,
-                )
+                f"static void {function_name}(void **state) {{\n"
+                f"    (void) state;\n"
+                f"    run_fixture_with_expert_mode(&{fixture_name}, {expert_flag});\n"
+                f"}}"
             )
             names.append(function_name)
 
             reject_tx_function_name = f"{test_name}_reject_tx_{suffix}"
             functions.append(
-                "static void {function_name}(void **state) {{\n"
-                "    (void) state;\n"
-                "    run_fixture_reject_tx_with_expert_mode(&{fixture_name}, {expert_flag});\n"
-                "}}".format(
-                    function_name=reject_tx_function_name,
-                    fixture_name=fixture_name,
-                    expert_flag=expert_flag,
-                )
+                f"static void {reject_tx_function_name}(void **state) {{\n"
+                f"    (void) state;\n"
+                f"    run_fixture_reject_tx_with_expert_mode(&{fixture_name}, {expert_flag});\n"
+                f"}}"
             )
             names.append(reject_tx_function_name)
 
             if has_cvote_aux_data:
                 reject_aux_function_name = f"{test_name}_reject_aux_{suffix}"
                 functions.append(
-                    "static void {function_name}(void **state) {{\n"
-                    "    (void) state;\n"
-                    "    run_fixture_reject_aux_with_expert_mode(&{fixture_name}, {expert_flag});\n"
-                    "}}".format(
-                        function_name=reject_aux_function_name,
-                        fixture_name=fixture_name,
-                        expert_flag=expert_flag,
-                    )
+                    f"static void {reject_aux_function_name}(void **state) {{\n"
+                    f"    (void) state;\n"
+                    f"    run_fixture_reject_aux_with_expert_mode(&{fixture_name}, {expert_flag});\n"
+                    f"}}"
                 )
                 names.append(reject_aux_function_name)
 
@@ -182,15 +170,11 @@ def _build_test_functions(
                     f"{test_name}_blind_signing_hash_only_{suffix}"
                 )
                 functions.append(
-                    "static void {function_name}(void **state) {{\n"
-                    "    (void) state;\n"
-                    "    run_fixture_blind_signing_hash_only_with_expert_mode("
-                    "&{fixture_name}, {expert_flag});\n"
-                    "}}".format(
-                        function_name=blind_signing_hash_only_function_name,
-                        fixture_name=fixture_name,
-                        expert_flag=expert_flag,
-                    )
+                    f"static void {blind_signing_hash_only_function_name}(void **state) {{\n"
+                    f"    (void) state;\n"
+                    f"    run_fixture_blind_signing_hash_only_with_expert_mode("
+                    f"&{fixture_name}, {expert_flag});\n"
+                    f"}}"
                 )
                 names.append(blind_signing_hash_only_function_name)
     return functions, names

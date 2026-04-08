@@ -12,30 +12,30 @@
 
 /** Message Digest algorithm identifiers. */
 enum cx_md_e {
-  /** NONE Digest */
-  CX_NONE,
-  /** RIPEMD160 Digest */
-  CX_RIPEMD160, // 20 bytes
-  /** SHA224 Digest */
-  CX_SHA224, // 28 bytes
-  /** SHA256 Digest */
-  CX_SHA256, // 32 bytes
-  /** SHA384 Digest */
-  CX_SHA384, // 48 bytes
-  /** SHA512 Digest */
-  CX_SHA512, // 64 bytes
-  /** Keccak (pre-SHA3) Digest */
-  CX_KECCAK, // 28,32,48,64 bytes
-  /** SHA3 Digest */
-  CX_SHA3, // 28,32,48,64 bytes
-  /** Groestl Digest */
-  CX_GROESTL,
-  /** Blake Digest */
-  CX_BLAKE2B,
-  /** SHAKE-128 Digest */
-  CX_SHAKE128, // any bytes
-  /** SHAKE-128 Digest */
-  CX_SHAKE256, // any bytes
+    /** NONE Digest */
+    CX_NONE,
+    /** RIPEMD160 Digest */
+    CX_RIPEMD160,  // 20 bytes
+    /** SHA224 Digest */
+    CX_SHA224,  // 28 bytes
+    /** SHA256 Digest */
+    CX_SHA256,  // 32 bytes
+    /** SHA384 Digest */
+    CX_SHA384,  // 48 bytes
+    /** SHA512 Digest */
+    CX_SHA512,  // 64 bytes
+    /** Keccak (pre-SHA3) Digest */
+    CX_KECCAK,  // 28,32,48,64 bytes
+    /** SHA3 Digest */
+    CX_SHA3,  // 28,32,48,64 bytes
+    /** Groestl Digest */
+    CX_GROESTL,
+    /** Blake Digest */
+    CX_BLAKE2B,
+    /** SHAKE-128 Digest */
+    CX_SHAKE128,  // any bytes
+    /** SHAKE-128 Digest */
+    CX_SHAKE256,  // any bytes
 };
 /** Convenience type. See #cx_md_e. */
 typedef enum cx_md_e cx_md_t;
@@ -50,10 +50,10 @@ typedef enum cx_md_e cx_md_t;
  * Common Message Digest context, used as abstract type.
  */
 struct cx_hash_header_s {
-  /** Message digest identifier, See cx_md_e. */
-  cx_md_t algo;
-  /** Number of block already processed */
-  unsigned int counter;
+    /** Message digest identifier, See cx_md_e. */
+    cx_md_t algo;
+    /** Number of block already processed */
+    unsigned int counter;
 };
 /** Convenience type. See #cx_hash_header_s. */
 typedef struct cx_hash_header_s cx_hash_t;
@@ -84,9 +84,12 @@ cx_err_t cx_blake2b_init_no_throw(cx_blake2b_t *ctx, uint8_t output_len);
  * Add more data to hash.
  * Mode flags: CX_LAST to finalize
  */
-cx_err_t cx_hash_no_throw(cx_hash_t *hash, int mode,
-                          const uint8_t *in, size_t in_len,
-                          uint8_t *out, size_t out_len);
+cx_err_t cx_hash_no_throw(cx_hash_t *hash,
+                          int mode,
+                          const uint8_t *in,
+                          size_t in_len,
+                          uint8_t *out,
+                          size_t out_len);
 
 #include "os.h"
 
@@ -126,8 +129,10 @@ cx_err_t cx_hash_no_throw(cx_hash_t *hash, int mode,
  *
  */
 CXCALL int cx_hash(cx_hash_t *hash PLENGTH(scc__cx_scc_struct_size_hash__hash),
-                   int mode, const unsigned char WIDE *in PLENGTH(len),
-                   unsigned int len, unsigned char *out PLENGTH(out_len),
+                   int mode,
+                   const unsigned char WIDE *in PLENGTH(len),
+                   unsigned int len,
+                   unsigned char *out PLENGTH(out_len),
                    unsigned int out_len);
 
 #endif

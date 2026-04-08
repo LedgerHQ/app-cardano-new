@@ -31,16 +31,17 @@
 #ifdef TRACE_UI_DISPLAY
 #define TRACE_MODULE(...) TRACE("[ui_pubkey] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 #define PUBKEY_EXPORT_TITLE_BUFFER_SIZE 64
-#define PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE (PUBKEY_EXPORT_TITLE_BUFFER_SIZE + UI_BUFFER_SAFETY_MARGIN)
+#define PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE \
+    (PUBKEY_EXPORT_TITLE_BUFFER_SIZE + UI_BUFFER_SAFETY_MARGIN)
 
-static char *g_pubkey_export_choice_title = NULL;
+static char* g_pubkey_export_choice_title = NULL;
 
 static void pubkey_review_cleanup(void) {
-    APP_MEM_FREE_AND_NULL((void **) &g_pubkey_export_choice_title);
+    APP_MEM_FREE_AND_NULL((void**) &g_pubkey_export_choice_title);
 }
 
 static void pubkey_review_choice(bool confirm) {
@@ -74,18 +75,19 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
                   G_context.req_type);
 
     pubkey_ctx_t* pk = &G_context.pk_info;
-    LEDGER_ASSERT(
-        warning_bits_except_mask(warnings,
-                                 warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)) == 0,
-        "Unexpected warning bits: 0x%08x",
-        (unsigned int) warnings);
+    LEDGER_ASSERT(warning_bits_except_mask(
+                      warnings,
+                      warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)) == 0,
+                  "Unexpected warning bits: 0x%08x",
+                  (unsigned int) warnings);
 
     // Format path into static buffer
     bool pathFormatted = format_bip44_path(&pk->path,
                                            G_context.pk_info.path_str,
                                            sizeof(G_context.pk_info.path_str));
     LEDGER_ASSERT(pathFormatted, "Unable to format public key path");
-    LEDGER_ASSERT(strlen(G_context.pk_info.path_str) <= MAX_BIP44_PATH_STRING_LENGTH, "Public key path ui string buffer too short");
+    LEDGER_ASSERT(strlen(G_context.pk_info.path_str) <= MAX_BIP44_PATH_STRING_LENGTH,
+                  "Public key path ui string buffer too short");
 
     switch (securityPolicy) {
         case POLICY_SHOW:
@@ -102,7 +104,7 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
         default:
             LEDGER_ASSERT(false, "Unexpected security policy");
             return;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     bool isColdKey = (bip44_classifyPath(&pk->path) == PATH_POOL_COLD_KEY);
@@ -114,7 +116,9 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
     const char* exportPrefix = isUnusual ? "Export UNUSUAL" : "Export";
 
     pubkey_review_cleanup();
-    LEDGER_ASSERT(allocate_zeroed((void **) &g_pubkey_export_choice_title, PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE), "Failed to allocate public key export title");
+    LEDGER_ASSERT(allocate_zeroed((void**) &g_pubkey_export_choice_title,
+                                  PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE),
+                  "Failed to allocate public key export title");
 
     int written = snprintf(g_pubkey_export_choice_title,
                            PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE,
@@ -125,14 +129,12 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
     LEDGER_ASSERT(written > 0, "snprintf UI title formatting failed");
     LEDGER_ASSERT((size_t) written + 1 < PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE, "UI title truncated");
     ASSERT(icon != NULL);
-    nbgl_useCaseChoice(
-                        icon,
-                        g_pubkey_export_choice_title,
-                        G_context.pk_info.path_str,
-                        "Export",
-                        "Reject",
-                        pubkey_review_choice
-    );
+    nbgl_useCaseChoice(icon,
+                       g_pubkey_export_choice_title,
+                       G_context.pk_info.path_str,
+                       "Export",
+                       "Reject",
+                       pubkey_review_choice);
 
     return;
 }

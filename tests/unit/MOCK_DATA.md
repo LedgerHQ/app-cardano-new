@@ -4,7 +4,8 @@ This document describes the verification system for mock cryptographic data used
 
 ## Overview
 
-The mock data in `tests/unit/mock_crypto/crypto_mock_data.h` contains hardcoded key material (public keys, chain codes) and test signatures. These tests ensure that:
+The mock data in `tests/unit/mock_crypto/crypto_mock_data.h` contains hardcoded key material (public keys, chain codes)
+and test signatures. These tests ensure that:
 
 1. **All key material is correctly derived** from the standard test mnemonic
 2. **Key hashes are correctly computed** as Blake2b-224 hashes of public keys
@@ -14,7 +15,7 @@ The mock data in `tests/unit/mock_crypto/crypto_mock_data.h` contains hardcoded 
 
 All mock data is derived from this standard mnemonic:
 
-```
+```text
 "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
 ```
 
@@ -87,9 +88,11 @@ pytest -xvs --device stax test_opcert.py::test_opCert
 
 ## Mock Signature Data
 
-The `MOCK_SIGNATURES` array in `mock_crypto/crypto_mock_data.h` contains pre-computed Ed25519 signatures for testing. These signatures are used by unit tests that call the mock `crypto_eddsa_sign` function.
+The `MOCK_SIGNATURES` array in `mock_crypto/crypto_mock_data.h` contains pre-computed Ed25519 signatures for testing.
+These signatures are used by unit tests that call the mock `crypto_eddsa_sign` function.
 
-**Note**: These signatures are derived from the standard test mnemonic and the message buffers stored in `mock_crypto/crypto_mock_data.h`. If you update a message buffer (for example, CVote payload hashes), rerun the regeneration script to keep signatures consistent.
+**Note**: These signatures are derived from the standard test mnemonic and the message buffers stored in `mock_crypto/crypto_mock_data.h`.
+If you update a message buffer (for example, CVote payload hashes), rerun the regeneration script to keep signatures consistent.
 
 ## Regenerating Mock Data
 
@@ -107,7 +110,8 @@ This script:
 - Regenerates Ed25519 signatures using the standard mnemonic and the message buffers
 - Updates `mock_crypto/crypto_mock_data.h` with correct key material
 
-If you need a new mock entry, add the path or signature to `mock_crypto/crypto_mock_data.h` first, then rerun the generator so the derived values stay in sync.
+If you need a new mock entry, add the path or signature to `mock_crypto/crypto_mock_data.h` first,
+then rerun the generator so the derived values stay in sync.
 
 ## Key Governance Paths
 

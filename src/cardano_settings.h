@@ -6,41 +6,32 @@
 #include "globals.h"
 #include "assert.h"
 
-enum {
-    STORAGE_INITIALIZED = 0x01
-};
+enum { STORAGE_INITIALIZED = 0x01 };
 
-enum {
-    SETTINGS_NO = 0,
-    SETTINGS_YES = 1
-};
+enum { SETTINGS_NO = 0, SETTINGS_YES = 1 };
 
-static inline uint8_t flip_bool_setting(uint8_t value)
-{
+static inline uint8_t flip_bool_setting(uint8_t value) {
     switch (value) {
-    case SETTINGS_NO:
-        return SETTINGS_YES;
-    case SETTINGS_YES:
-        return SETTINGS_NO;
-    // LCOV_EXCL_START
-    default:
-        ASSERT(false);
-        return 0;  // Unreachable, but satisfies compiler
-    // LCOV_EXCL_STOP
+        case SETTINGS_NO:
+            return SETTINGS_YES;
+        case SETTINGS_YES:
+            return SETTINGS_NO;
+        // LCOV_EXCL_START
+        default:
+            ASSERT(false);
+            return 0;  // Unreachable, but satisfies compiler
+                       // LCOV_EXCL_STOP
     }
 }
 
-static inline bool is_expert_mode()
-{
+static inline bool is_expert_mode() {
     return N_storage.expert_mode_enabled;
 }
 
-static inline bool is_silent_pubkey_export_allowed()
-{
+static inline bool is_silent_pubkey_export_allowed() {
     return N_storage.silent_pubkey_export_enabled;
 }
 
-static inline bool is_blind_signing_enabled()
-{
+static inline bool is_blind_signing_enabled() {
     return N_storage.blind_signing_enabled;
 }

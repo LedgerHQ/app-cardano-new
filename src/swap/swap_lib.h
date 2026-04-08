@@ -13,9 +13,9 @@
 #include "tx_output_types.h"
 
 // App-specific error codes for swap detail byte
-#define SWAP_APP_CODE_DEFAULT    0x00
-#define SWAP_APP_CODE_BAD_INS    0x01
-#define SWAP_APP_CODE_MULTI_SIGN 0x02
+#define SWAP_APP_CODE_DEFAULT               0x00
+#define SWAP_APP_CODE_BAD_INS               0x01
+#define SWAP_APP_CODE_MULTI_SIGN            0x02
 #define SWAP_APP_CODE_DENIED_WITNESS_POLICY 0x03
 
 // Status word returned for swap validation failures

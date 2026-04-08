@@ -51,242 +51,390 @@
 
 static void test_sign_tx_with_cip36_registration_with_vote_key_hex_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_HEX, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_HEX,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_vote_key_hex_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_cip36_registration_with_vote_key_hex_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_HEX, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_HEX,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_vote_key_hex_reject_aux_expert_off(void **state) {
+static void test_sign_tx_with_cip36_registration_with_vote_key_hex_reject_aux_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_HEX, false);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_HEX,
+        false);
 }
 
 static void test_sign_tx_with_cip36_registration_with_vote_key_hex_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_HEX, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_HEX,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_vote_key_hex_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_cip36_registration_with_vote_key_hex_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_HEX, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_HEX,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_vote_key_hex_reject_aux_expert_on(void **state) {
+static void test_sign_tx_with_cip36_registration_with_vote_key_hex_reject_aux_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_HEX, true);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_HEX,
+        true);
 }
 
 static void test_sign_tx_with_cip36_registration_with_vote_key_path_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_PATH, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_PATH,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_vote_key_path_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_cip36_registration_with_vote_key_path_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_PATH, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_PATH,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_vote_key_path_reject_aux_expert_off(void **state) {
+static void test_sign_tx_with_cip36_registration_with_vote_key_path_reject_aux_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_PATH, false);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_PATH,
+        false);
 }
 
 static void test_sign_tx_with_cip36_registration_with_vote_key_path_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_PATH, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_PATH,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_vote_key_path_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_cip36_registration_with_vote_key_path_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_PATH, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_PATH,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_vote_key_path_reject_aux_expert_on(void **state) {
+static void test_sign_tx_with_cip36_registration_with_vote_key_path_reject_aux_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_PATH, true);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTE_KEY_PATH,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_expert_off(void **state) {
+static void test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_UNUSUAL_VOTE_KEY_PATH, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_UNUSUAL_VOTE_KEY_PATH,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_UNUSUAL_VOTE_KEY_PATH, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_UNUSUAL_VOTE_KEY_PATH,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_reject_aux_expert_off(void **state) {
+static void test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_reject_aux_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_UNUSUAL_VOTE_KEY_PATH, false);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_UNUSUAL_VOTE_KEY_PATH,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_expert_on(void **state) {
+static void test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_UNUSUAL_VOTE_KEY_PATH, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_UNUSUAL_VOTE_KEY_PATH,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_UNUSUAL_VOTE_KEY_PATH, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_UNUSUAL_VOTE_KEY_PATH,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_reject_aux_expert_on(void **state) {
+static void test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_reject_aux_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_UNUSUAL_VOTE_KEY_PATH, true);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_UNUSUAL_VOTE_KEY_PATH,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_expert_off(void **state) {
+static void test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_THIRDPARTY_PAYMENT_ADDRESS, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_THIRDPARTY_PAYMENT_ADDRESS,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_THIRDPARTY_PAYMENT_ADDRESS, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_THIRDPARTY_PAYMENT_ADDRESS,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_reject_aux_expert_off(void **state) {
+static void
+test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_reject_aux_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_THIRDPARTY_PAYMENT_ADDRESS, false);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_THIRDPARTY_PAYMENT_ADDRESS,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_expert_on(void **state) {
+static void test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_THIRDPARTY_PAYMENT_ADDRESS, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_THIRDPARTY_PAYMENT_ADDRESS,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_THIRDPARTY_PAYMENT_ADDRESS, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_THIRDPARTY_PAYMENT_ADDRESS,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_reject_aux_expert_on(void **state) {
+static void
+test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_reject_aux_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_THIRDPARTY_PAYMENT_ADDRESS, true);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_THIRDPARTY_PAYMENT_ADDRESS,
+        true);
 }
 
 static void test_sign_tx_with_cip36_registration_with_voting_purpose_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTING_PURPOSE, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTING_PURPOSE,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_voting_purpose_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_cip36_registration_with_voting_purpose_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTING_PURPOSE, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTING_PURPOSE,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_voting_purpose_reject_aux_expert_off(void **state) {
+static void test_sign_tx_with_cip36_registration_with_voting_purpose_reject_aux_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTING_PURPOSE, false);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTING_PURPOSE,
+        false);
 }
 
 static void test_sign_tx_with_cip36_registration_with_voting_purpose_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTING_PURPOSE, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTING_PURPOSE,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_voting_purpose_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_cip36_registration_with_voting_purpose_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTING_PURPOSE, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTING_PURPOSE,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_voting_purpose_reject_aux_expert_on(void **state) {
+static void test_sign_tx_with_cip36_registration_with_voting_purpose_reject_aux_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTING_PURPOSE, true);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_VOTING_PURPOSE,
+        true);
 }
 
 static void test_sign_tx_with_cip36_registration_with_delegations_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATIONS, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATIONS,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_delegations_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_cip36_registration_with_delegations_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATIONS, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATIONS,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_delegations_reject_aux_expert_off(void **state) {
+static void test_sign_tx_with_cip36_registration_with_delegations_reject_aux_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATIONS, false);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATIONS,
+        false);
 }
 
 static void test_sign_tx_with_cip36_registration_with_delegations_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATIONS, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATIONS,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_delegations_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_cip36_registration_with_delegations_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATIONS, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATIONS,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_delegations_reject_aux_expert_on(void **state) {
+static void test_sign_tx_with_cip36_registration_with_delegations_reject_aux_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATIONS, true);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATIONS,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_expert_off(void **state) {
+static void test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_aux_expert_off(void **state) {
+static void
+test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_aux_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING, false);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_expert_on(void **state) {
+static void test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_aux_expert_on(void **state) {
+static void
+test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_aux_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING, true);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_DELEGATION_UNUSUAL_PATH_WARNING,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_many_delegations_streaming_expert_off(void **state) {
+static void test_sign_tx_with_cip36_registration_with_many_delegations_streaming_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_MANY_DELEGATIONS_STREAMING, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_MANY_DELEGATIONS_STREAMING,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_many_delegations_streaming_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_cip36_registration_with_many_delegations_streaming_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_MANY_DELEGATIONS_STREAMING, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_MANY_DELEGATIONS_STREAMING,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_many_delegations_streaming_reject_aux_expert_off(void **state) {
+static void
+test_sign_tx_with_cip36_registration_with_many_delegations_streaming_reject_aux_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_MANY_DELEGATIONS_STREAMING, false);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_MANY_DELEGATIONS_STREAMING,
+        false);
 }
 
-static void test_sign_tx_with_cip36_registration_with_many_delegations_streaming_expert_on(void **state) {
+static void test_sign_tx_with_cip36_registration_with_many_delegations_streaming_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_MANY_DELEGATIONS_STREAMING, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_MANY_DELEGATIONS_STREAMING,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_many_delegations_streaming_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_cip36_registration_with_many_delegations_streaming_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_MANY_DELEGATIONS_STREAMING, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_MANY_DELEGATIONS_STREAMING,
+        true);
 }
 
-static void test_sign_tx_with_cip36_registration_with_many_delegations_streaming_reject_aux_expert_on(void **state) {
+static void
+test_sign_tx_with_cip36_registration_with_many_delegations_streaming_reject_aux_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_MANY_DELEGATIONS_STREAMING, true);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CIP36_SIGN_TX_WITH_CIP36_REGISTRATION_WITH_MANY_DELEGATIONS_STREAMING,
+        true);
 }
 
 // ======================================================================
@@ -296,53 +444,95 @@ static void test_sign_tx_with_cip36_registration_with_many_delegations_streaming
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_vote_key_hex_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_vote_key_hex_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_vote_key_hex_reject_aux_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_vote_key_hex_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_vote_key_hex_reject_aux_expert_off),
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_vote_key_hex_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_vote_key_hex_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_vote_key_hex_reject_aux_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_vote_key_hex_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_vote_key_hex_reject_aux_expert_on),
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_vote_key_path_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_vote_key_path_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_vote_key_path_reject_aux_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_vote_key_path_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_vote_key_path_reject_aux_expert_off),
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_vote_key_path_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_vote_key_path_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_vote_key_path_reject_aux_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_reject_aux_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_vote_key_path_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_vote_key_path_reject_aux_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_reject_aux_expert_off),
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_reject_aux_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_reject_aux_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_reject_aux_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_unusual_vote_key_path_reject_aux_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_reject_aux_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_thirdparty_payment_address_reject_aux_expert_on),
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_voting_purpose_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_voting_purpose_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_voting_purpose_reject_aux_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_voting_purpose_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_voting_purpose_reject_aux_expert_off),
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_voting_purpose_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_voting_purpose_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_voting_purpose_reject_aux_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_voting_purpose_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_voting_purpose_reject_aux_expert_on),
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegations_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegations_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegations_reject_aux_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_delegations_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_delegations_reject_aux_expert_off),
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegations_expert_on),
         cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegations_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegations_reject_aux_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_aux_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_aux_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_many_delegations_streaming_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_many_delegations_streaming_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_many_delegations_streaming_reject_aux_expert_off),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_many_delegations_streaming_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_many_delegations_streaming_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_cip36_registration_with_many_delegations_streaming_reject_aux_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_delegations_reject_aux_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_aux_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_delegation_unusual_path_warning_reject_aux_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_many_delegations_streaming_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_many_delegations_streaming_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_many_delegations_streaming_reject_aux_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_many_delegations_streaming_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_many_delegations_streaming_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_cip36_registration_with_many_delegations_streaming_reject_aux_expert_on),
     };
-    return _cmocka_run_group_tests("test_sign_tx_alonzo_cip36", tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);
+    return _cmocka_run_group_tests("test_sign_tx_alonzo_cip36",
+                                   tests,
+                                   ARRAY_LEN(tests),
+                                   NULL,
+                                   assert_no_pending_apdu_response);
 }

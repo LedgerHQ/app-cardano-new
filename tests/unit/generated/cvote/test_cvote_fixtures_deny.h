@@ -62,44 +62,65 @@ static const uint8_t CVOTE_DENY_CONFIRM_SHARED_CHUNK_001[] = {
 };
 
 static const uint8_t CVOTE_DENY_CONFIRM_SHARED_CHUNK_002[] = {
-    0x80, 0x9E, 0x49, 0x7E, 0x80, 0xE9, 0xFA, 0xD7, 0x89, 0x5B, 0x84, 0x4B, 0xA6, 0xDA, 0x6A, 0xC6,
-    0x90, 0xC7, 0xCE, 0x49, 0xC1, 0x0E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00,
-    0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x6D, 0x2A, 0xC8, 0xDD, 0xBF, 0x6E, 0xAA,
-    0xC9, 0x54, 0x01, 0xF9, 0x1B, 0xAC, 0xA7, 0xF0, 0x68, 0xE3, 0xC2, 0x37, 0x38, 0x6D, 0x7C, 0x9A,
-    0x27, 0x1F, 0x51, 0x87, 0xED, 0x90, 0x91, 0x55, 0x87,
+    0x80, 0x9E, 0x49, 0x7E, 0x80, 0xE9, 0xFA, 0xD7, 0x89, 0x5B, 0x84, 0x4B, 0xA6, 0xDA, 0x6A,
+    0xC6, 0x90, 0xC7, 0xCE, 0x49, 0xC1, 0x0E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x01, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x6D, 0x2A, 0xC8, 0xDD,
+    0xBF, 0x6E, 0xAA, 0xC9, 0x54, 0x01, 0xF9, 0x1B, 0xAC, 0xA7, 0xF0, 0x68, 0xE3, 0xC2, 0x37,
+    0x38, 0x6D, 0x7C, 0x9A, 0x27, 0x1F, 0x51, 0x87, 0xED, 0x90, 0x91, 0x55, 0x87,
 };
 
-static const cvote_chunk_t CVOTE_DENY_CONFIRM_SHARED_CHUNKS[] = { { .data = CVOTE_DENY_CONFIRM_SHARED_CHUNK_000, .data_len = sizeof(CVOTE_DENY_CONFIRM_SHARED_CHUNK_000) }, { .data = CVOTE_DENY_CONFIRM_SHARED_CHUNK_001, .data_len = sizeof(CVOTE_DENY_CONFIRM_SHARED_CHUNK_001) }, { .data = CVOTE_DENY_CONFIRM_SHARED_CHUNK_002, .data_len = sizeof(CVOTE_DENY_CONFIRM_SHARED_CHUNK_002) } };
+static const cvote_chunk_t CVOTE_DENY_CONFIRM_SHARED_CHUNKS[] = {
+    {.data = CVOTE_DENY_CONFIRM_SHARED_CHUNK_000,
+     .data_len = sizeof(CVOTE_DENY_CONFIRM_SHARED_CHUNK_000)},
+    {.data = CVOTE_DENY_CONFIRM_SHARED_CHUNK_001,
+     .data_len = sizeof(CVOTE_DENY_CONFIRM_SHARED_CHUNK_001)},
+    {.data = CVOTE_DENY_CONFIRM_SHARED_CHUNK_002,
+     .data_len = sizeof(CVOTE_DENY_CONFIRM_SHARED_CHUNK_002)}};
 #define CVOTE_DENY_CONFIRM_SHARED_CHUNK_COUNT 3
 
 // ----------------------------------------------------------------------
 // Deny Test 0: cvote_deny_zero_remaining_bytes
 // Phase: CVOTE_DENY_PHASE_INIT  Expected SW: SWO_WRONG_DATA_LENGTH
-// Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases > cvote_deny_zero_remaining_bytes
+// Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases >
+// cvote_deny_zero_remaining_bytes
 // ----------------------------------------------------------------------
 
 static const uint8_t CVOTE_DENY_000_CVOTE_DENY_ZERO_REMAINING_BYTES_APDU[] = {
-    0x00, 0x00, 0x00, 0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
 };
 
 // ----------------------------------------------------------------------
 // Deny Test 1: cvote_deny_init_no_chunk_data
 // Phase: CVOTE_DENY_PHASE_INIT  Expected SW: SWO_WRONG_DATA_LENGTH
-// Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases > cvote_deny_init_no_chunk_data
+// Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases >
+// cvote_deny_init_no_chunk_data
 // ----------------------------------------------------------------------
 
 static const uint8_t CVOTE_DENY_001_CVOTE_DENY_INIT_NO_CHUNK_DATA_APDU[] = {
-    0x00, 0x00, 0x00, 0x64,
+    0x00,
+    0x00,
+    0x00,
+    0x64,
 };
 
 // ----------------------------------------------------------------------
 // Deny Test 2: cvote_deny_init_chunk_exceeds_declared_length
 // Phase: CVOTE_DENY_PHASE_INIT  Expected SW: SWO_WRONG_DATA_LENGTH
-// Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases > cvote_deny_init_chunk_exceeds_declared_length
+// Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases >
+// cvote_deny_init_chunk_exceeds_declared_length
 // ----------------------------------------------------------------------
 
 static const uint8_t CVOTE_DENY_002_CVOTE_DENY_INIT_CHUNK_EXCEEDS_DECLARED_LENGTH_APDU[] = {
-    0x00, 0x00, 0x00, 0x02, 0xAA, 0xBB, 0xCC,
+    0x00,
+    0x00,
+    0x00,
+    0x02,
+    0xAA,
+    0xBB,
+    0xCC,
 };
 
 // ----------------------------------------------------------------------
@@ -108,12 +129,14 @@ static const uint8_t CVOTE_DENY_002_CVOTE_DENY_INIT_CHUNK_EXCEEDS_DECLARED_LENGT
 // Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases > cvote_deny_chunk_before_init
 // ----------------------------------------------------------------------
 
-static const uint8_t CVOTE_DENY_003_CVOTE_DENY_CHUNK_BEFORE_INIT_APDU[] = {0};  // placeholder (empty body)
+static const uint8_t CVOTE_DENY_003_CVOTE_DENY_CHUNK_BEFORE_INIT_APDU[] = {
+    0};  // placeholder (empty body)
 
 // ----------------------------------------------------------------------
 // Deny Test 4: cvote_deny_invalid_witness_path
 // Phase: CVOTE_DENY_PHASE_CONFIRM  Expected SW: SWO_SECURITY_CONDITION_NOT_SATISFIED
-// Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases > cvote_deny_invalid_witness_path
+// Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases >
+// cvote_deny_invalid_witness_path
 // ----------------------------------------------------------------------
 
 static const uint8_t CVOTE_DENY_004_CVOTE_DENY_INVALID_WITNESS_PATH_APDU[] = {
@@ -136,71 +159,76 @@ static const uint8_t CVOTE_DENY_004_CVOTE_DENY_INVALID_WITNESS_PATH_APDU[] = {
 };
 
 static const uint8_t CVOTE_DENY_004_CVOTE_DENY_INVALID_WITNESS_PATH_CONFIRM[] = {
-    0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
+    0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
 static const cvote_deny_fixture_t CVOTE_DENY_FIXTURES[] = {
-// Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases > cvote_deny_zero_remaining_bytes
-{
-    .name = "cvote_deny_zero_remaining_bytes",
-    .phase = CVOTE_DENY_PHASE_INIT,
-    .apdu_data = CVOTE_DENY_000_CVOTE_DENY_ZERO_REMAINING_BYTES_APDU,
-    .apdu_data_len = sizeof(CVOTE_DENY_000_CVOTE_DENY_ZERO_REMAINING_BYTES_APDU),
-    .chunks = NULL,
-    .chunk_count = 0,
-    .confirm_data = NULL,
-    .confirm_data_len = 0,
-    .expected_swo = SWO_WRONG_DATA_LENGTH,
-},
-// Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases > cvote_deny_init_no_chunk_data
-{
-    .name = "cvote_deny_init_no_chunk_data",
-    .phase = CVOTE_DENY_PHASE_INIT,
-    .apdu_data = CVOTE_DENY_001_CVOTE_DENY_INIT_NO_CHUNK_DATA_APDU,
-    .apdu_data_len = sizeof(CVOTE_DENY_001_CVOTE_DENY_INIT_NO_CHUNK_DATA_APDU),
-    .chunks = NULL,
-    .chunk_count = 0,
-    .confirm_data = NULL,
-    .confirm_data_len = 0,
-    .expected_swo = SWO_WRONG_DATA_LENGTH,
-},
-// Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases > cvote_deny_init_chunk_exceeds_declared_length
-{
-    .name = "cvote_deny_init_chunk_exceeds_declared_length",
-    .phase = CVOTE_DENY_PHASE_INIT,
-    .apdu_data = CVOTE_DENY_002_CVOTE_DENY_INIT_CHUNK_EXCEEDS_DECLARED_LENGTH_APDU,
-    .apdu_data_len = sizeof(CVOTE_DENY_002_CVOTE_DENY_INIT_CHUNK_EXCEEDS_DECLARED_LENGTH_APDU),
-    .chunks = NULL,
-    .chunk_count = 0,
-    .confirm_data = NULL,
-    .confirm_data_len = 0,
-    .expected_swo = SWO_WRONG_DATA_LENGTH,
-},
-// Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases > cvote_deny_chunk_before_init
-{
-    .name = "cvote_deny_chunk_before_init",
-    .phase = CVOTE_DENY_PHASE_CHUNK,
-    .apdu_data = CVOTE_DENY_003_CVOTE_DENY_CHUNK_BEFORE_INIT_APDU,
-    .apdu_data_len = 0,
-    .chunks = NULL,
-    .chunk_count = 0,
-    .confirm_data = NULL,
-    .confirm_data_len = 0,
-    .expected_swo = SWO_COMMAND_NOT_ALLOWED,
-},
-// Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases > cvote_deny_invalid_witness_path
-{
-    .name = "cvote_deny_invalid_witness_path",
-    .phase = CVOTE_DENY_PHASE_CONFIRM,
-    .apdu_data = CVOTE_DENY_004_CVOTE_DENY_INVALID_WITNESS_PATH_APDU,
-    .apdu_data_len = sizeof(CVOTE_DENY_004_CVOTE_DENY_INVALID_WITNESS_PATH_APDU),
-    .chunks = CVOTE_DENY_CONFIRM_SHARED_CHUNKS,
-    .chunk_count = CVOTE_DENY_CONFIRM_SHARED_CHUNK_COUNT,
-    .confirm_data = CVOTE_DENY_004_CVOTE_DENY_INVALID_WITNESS_PATH_CONFIRM,
-    .confirm_data_len = sizeof(CVOTE_DENY_004_CVOTE_DENY_INVALID_WITNESS_PATH_CONFIRM),
-    .expected_swo = SWO_SECURITY_CONDITION_NOT_SATISFIED,
-},
+    // Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases >
+    // cvote_deny_zero_remaining_bytes
+    {
+        .name = "cvote_deny_zero_remaining_bytes",
+        .phase = CVOTE_DENY_PHASE_INIT,
+        .apdu_data = CVOTE_DENY_000_CVOTE_DENY_ZERO_REMAINING_BYTES_APDU,
+        .apdu_data_len = sizeof(CVOTE_DENY_000_CVOTE_DENY_ZERO_REMAINING_BYTES_APDU),
+        .chunks = NULL,
+        .chunk_count = 0,
+        .confirm_data = NULL,
+        .confirm_data_len = 0,
+        .expected_swo = SWO_WRONG_DATA_LENGTH,
+    },
+    // Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases >
+    // cvote_deny_init_no_chunk_data
+    {
+        .name = "cvote_deny_init_no_chunk_data",
+        .phase = CVOTE_DENY_PHASE_INIT,
+        .apdu_data = CVOTE_DENY_001_CVOTE_DENY_INIT_NO_CHUNK_DATA_APDU,
+        .apdu_data_len = sizeof(CVOTE_DENY_001_CVOTE_DENY_INIT_NO_CHUNK_DATA_APDU),
+        .chunks = NULL,
+        .chunk_count = 0,
+        .confirm_data = NULL,
+        .confirm_data_len = 0,
+        .expected_swo = SWO_WRONG_DATA_LENGTH,
+    },
+    // Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases >
+    // cvote_deny_init_chunk_exceeds_declared_length
+    {
+        .name = "cvote_deny_init_chunk_exceeds_declared_length",
+        .phase = CVOTE_DENY_PHASE_INIT,
+        .apdu_data = CVOTE_DENY_002_CVOTE_DENY_INIT_CHUNK_EXCEEDS_DECLARED_LENGTH_APDU,
+        .apdu_data_len = sizeof(CVOTE_DENY_002_CVOTE_DENY_INIT_CHUNK_EXCEEDS_DECLARED_LENGTH_APDU),
+        .chunks = NULL,
+        .chunk_count = 0,
+        .confirm_data = NULL,
+        .confirm_data_len = 0,
+        .expected_swo = SWO_WRONG_DATA_LENGTH,
+    },
+    // Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases >
+    // cvote_deny_chunk_before_init
+    {
+        .name = "cvote_deny_chunk_before_init",
+        .phase = CVOTE_DENY_PHASE_CHUNK,
+        .apdu_data = CVOTE_DENY_003_CVOTE_DENY_CHUNK_BEFORE_INIT_APDU,
+        .apdu_data_len = 0,
+        .chunks = NULL,
+        .chunk_count = 0,
+        .confirm_data = NULL,
+        .confirm_data_len = 0,
+        .expected_swo = SWO_COMMAND_NOT_ALLOWED,
+    },
+    // Source: tests/standalone/input_files/cvote.py > cvoteDenyTestCases >
+    // cvote_deny_invalid_witness_path
+    {
+        .name = "cvote_deny_invalid_witness_path",
+        .phase = CVOTE_DENY_PHASE_CONFIRM,
+        .apdu_data = CVOTE_DENY_004_CVOTE_DENY_INVALID_WITNESS_PATH_APDU,
+        .apdu_data_len = sizeof(CVOTE_DENY_004_CVOTE_DENY_INVALID_WITNESS_PATH_APDU),
+        .chunks = CVOTE_DENY_CONFIRM_SHARED_CHUNKS,
+        .chunk_count = CVOTE_DENY_CONFIRM_SHARED_CHUNK_COUNT,
+        .confirm_data = CVOTE_DENY_004_CVOTE_DENY_INVALID_WITNESS_PATH_CONFIRM,
+        .confirm_data_len = sizeof(CVOTE_DENY_004_CVOTE_DENY_INVALID_WITNESS_PATH_CONFIRM),
+        .expected_swo = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    },
 };
 
 #define CVOTE_DENY_FIXTURES_COUNT 5

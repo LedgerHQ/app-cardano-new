@@ -57,7 +57,7 @@ static size_t write_standard_payment_path(uint8_t *out, size_t out_size) {
 }
 
 static init_apdu_params_t make_default_init_apdu_params(void) {
-    return (init_apdu_params_t) {
+    return (init_apdu_params_t){
         .options = 0,
         .networkId = MAINNET_NETWORK_ID,
         .protocolMagic = MAINNET_PROTOCOL_MAGIC,
@@ -325,8 +325,7 @@ static void test_tx_init_missing_raw_tx_total_length(void **state) {
     const size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 2);
 
-    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len - 2, .offset = 0},
-                     P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len - 2, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
 }
 
@@ -381,7 +380,8 @@ static void test_tx_init_missing_aux_data_type(void **state) {
     const tx_fixture_t *fixture =
         &FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_ALL_RELAYS_POOL_REGISTRATION;
     uint8_t dummy_aux_data_hash[AUX_DATA_HASH_LENGTH] = {0};
-    init_apdu_params_t params = build_init_params_from_fixture(fixture, dummy_aux_data_hash, sizeof(dummy_aux_data_hash));
+    init_apdu_params_t params =
+        build_init_params_from_fixture(fixture, dummy_aux_data_hash, sizeof(dummy_aux_data_hash));
     params.includeAuxData = true;
     params.auxDataType = AUX_DATA_TYPE_ARBITRARY_HASH;
     params.auxDataHash = dummy_aux_data_hash;
@@ -394,7 +394,8 @@ static void test_tx_init_missing_aux_data_hash_bytes(void **state) {
     const tx_fixture_t *fixture =
         &FIXTURE_POOL_REGISTRATION_SIGN_TX_WITNESS_VALID_MULTIPLE_MIXED_OWNERS_ALL_RELAYS_POOL_REGISTRATION;
     uint8_t dummy_aux_data_hash[AUX_DATA_HASH_LENGTH] = {0};
-    init_apdu_params_t params = build_init_params_from_fixture(fixture, dummy_aux_data_hash, sizeof(dummy_aux_data_hash));
+    init_apdu_params_t params =
+        build_init_params_from_fixture(fixture, dummy_aux_data_hash, sizeof(dummy_aux_data_hash));
     params.includeAuxData = true;
     params.auxDataType = AUX_DATA_TYPE_ARBITRARY_HASH;
     params.auxDataHash = dummy_aux_data_hash;
@@ -416,8 +417,7 @@ static void test_tx_init_rejects_trailing_bytes_after_valid_fields(void **state)
     assert_true(init_len > 0);
     init_raw[init_len] = 0x00;
 
-    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len + 1, .offset = 0},
-                     P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len + 1, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
 }
 
@@ -460,12 +460,13 @@ static void test_tx_confirm_rejects_oversized_final_chunk(void **state) {
     assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
 
     uint8_t oversized_final_chunk[MAX_SIGN_TX_CHUNK_SIZE + 1] = {0};
-    run_sign_tx_apdu(&(buffer_t){
-                         .ptr = oversized_final_chunk,
-                         .size = sizeof(oversized_final_chunk),
-                         .offset = 0,
-                     },
-                     P1_TX_CONFIRM);
+    run_sign_tx_apdu(
+        &(buffer_t){
+            .ptr = oversized_final_chunk,
+            .size = sizeof(oversized_final_chunk),
+            .offset = 0,
+        },
+        P1_TX_CONFIRM);
     assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
 }
 
@@ -574,16 +575,14 @@ static void test_tx_aux_data_delegation_rejects_missing_weight(void **state) {
     // type=KEY (0x00) + 32-byte pubkey, no weight field
     static const uint8_t delegation_no_weight[33] = {
         0x00,  // CVOTE_CREDENTIAL_KEY
-        0x4B, 0x19, 0xE2, 0x7F, 0xFC, 0x00, 0x6A, 0xCE,
-        0x16, 0x59, 0x23, 0x11, 0xC4, 0xD2, 0xF0, 0xCA,
-        0xFC, 0x25, 0x5E, 0xAA, 0x47, 0xA6, 0x17, 0x8F,
-        0xF5, 0x40, 0xC0, 0xA4, 0x6D, 0x07, 0x02, 0x7C,
+        0x4B, 0x19, 0xE2, 0x7F, 0xFC, 0x00, 0x6A, 0xCE, 0x16, 0x59, 0x23,
+        0x11, 0xC4, 0xD2, 0xF0, 0xCA, 0xFC, 0x25, 0x5E, 0xAA, 0x47, 0xA6,
+        0x17, 0x8F, 0xF5, 0x40, 0xC0, 0xA4, 0x6D, 0x07, 0x02, 0x7C,
     };
-    run_sign_tx_aux_data_apdu(
-        &(buffer_t){.ptr = (uint8_t *) delegation_no_weight,
-                    .size = sizeof(delegation_no_weight),
-                    .offset = 0},
-        P2_AUX_DATA_DELEGATION);
+    run_sign_tx_aux_data_apdu(&(buffer_t){.ptr = (uint8_t *) delegation_no_weight,
+                                          .size = sizeof(delegation_no_weight),
+                                          .offset = 0},
+                              P2_AUX_DATA_DELEGATION);
     assert_int_equal(g_last_response_swo, SWO_CVOTE_AUX_DATA_PARSING_FAIL);
 }
 
@@ -602,18 +601,15 @@ static void test_tx_aux_data_delegation_rejects_trailing_bytes(void **state) {
     // type=KEY (0x00) + 32-byte pubkey + weight (4 bytes BE) + 1 trailing garbage byte
     static const uint8_t delegation_trailing[38] = {
         0x00,  // CVOTE_CREDENTIAL_KEY
-        0x4B, 0x19, 0xE2, 0x7F, 0xFC, 0x00, 0x6A, 0xCE,
-        0x16, 0x59, 0x23, 0x11, 0xC4, 0xD2, 0xF0, 0xCA,
-        0xFC, 0x25, 0x5E, 0xAA, 0x47, 0xA6, 0x17, 0x8F,
-        0xF5, 0x40, 0xC0, 0xA4, 0x6D, 0x07, 0x02, 0x7C,
-        0x00, 0x00, 0x00, 0x09,  // weight = 9
-        0xFF,                    // trailing garbage
+        0x4B, 0x19, 0xE2, 0x7F, 0xFC, 0x00, 0x6A, 0xCE, 0x16, 0x59, 0x23, 0x11,
+        0xC4, 0xD2, 0xF0, 0xCA, 0xFC, 0x25, 0x5E, 0xAA, 0x47, 0xA6, 0x17, 0x8F,
+        0xF5, 0x40, 0xC0, 0xA4, 0x6D, 0x07, 0x02, 0x7C, 0x00, 0x00, 0x00, 0x09,  // weight = 9
+        0xFF,                                                                    // trailing garbage
     };
-    run_sign_tx_aux_data_apdu(
-        &(buffer_t){.ptr = (uint8_t *) delegation_trailing,
-                    .size = sizeof(delegation_trailing),
-                    .offset = 0},
-        P2_AUX_DATA_DELEGATION);
+    run_sign_tx_aux_data_apdu(&(buffer_t){.ptr = (uint8_t *) delegation_trailing,
+                                          .size = sizeof(delegation_trailing),
+                                          .offset = 0},
+                              P2_AUX_DATA_DELEGATION);
     assert_int_equal(g_last_response_swo, SWO_CVOTE_AUX_DATA_PARSING_FAIL);
 }
 

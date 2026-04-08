@@ -54,7 +54,7 @@ void inet_ntop4(const uint8_t* src, char* dst, size_t dstSize) {
 
     int written = snprintf(dst, dstSize, fmt, src[0], src[1], src[2], src[3]);
     LEDGER_ASSERT(written > 0, "snprintf IPv4 formatting failed");
-    LEDGER_ASSERT((size_t)written + 1 <= dstSize, "IPv4 string does not fit");
+    LEDGER_ASSERT((size_t) written + 1 <= dstSize, "IPv4 string does not fit");
 }
 
 /*
@@ -137,9 +137,10 @@ void inet_ntop6(const uint8_t* src, char* dst, size_t dstSize) {
             break;
         }
         STATIC_ASSERT(sizeof(words[i]) <= sizeof(unsigned), "oversized type for %u");
-        size_t remaining = sizeof tmp - (size_t)(tp - tmp);
+        size_t remaining = sizeof tmp - (size_t) (tp - tmp);
         int written = snprintf(tp, remaining, "%x", words[i]);
-        LEDGER_ASSERT(written > 0 && (size_t) written < remaining, "snprintf IPv6 hex formatting failed or truncated");
+        LEDGER_ASSERT(written > 0 && (size_t) written < remaining,
+                      "snprintf IPv6 hex formatting failed or truncated");
         tp += written;
     }
     /* Was it a trailing run of 0x00's? */

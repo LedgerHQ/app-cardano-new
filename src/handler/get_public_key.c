@@ -30,7 +30,7 @@
 #ifdef TRACE_HANDLERS
 #define TRACE_MODULE(...) TRACE("[get_public_key] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 static bool ensure_get_public_key_init_request_state(void) {
@@ -94,8 +94,8 @@ void finalize_pubkey_export(void) {
     G_context.state.pubkey_state = PUBKEY_STATE_APPROVED;
 
     // Send the extended public key back to the client
-    apdu_response_send_data((uint8_t*) &G_context.pk_info.extPubKey,
-                                     SIZEOF(G_context.pk_info.extPubKey),
-                                     SWO_SUCCESS);
+    apdu_response_send_data((uint8_t *) &G_context.pk_info.extPubKey,
+                            SIZEOF(G_context.pk_info.extPubKey),
+                            SWO_SUCCESS);
     reset_app_context();
 }

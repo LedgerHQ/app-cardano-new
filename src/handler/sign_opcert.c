@@ -32,7 +32,7 @@
 #ifdef TRACE_HANDLERS
 #define TRACE_MODULE(...) TRACE("[sign_opcert] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 static bool ensure_sign_opcert_init_request_state(void) {
@@ -45,7 +45,7 @@ static bool ensure_sign_opcert_init_request_state(void) {
     return true;
 }
 
-void handler_sign_opcert(buffer_t *cdata) {
+void handler_sign_opcert(buffer_t* cdata) {
     ASSERT(cdata != NULL);
     TRACE_BUFFER_T(cdata);
 
@@ -62,9 +62,8 @@ void handler_sign_opcert(buffer_t *cdata) {
         send_swo_and_reset(SWO_INVALID_OPCERT_LENGTH);
         return;
     }
-    bool moved_opcert = buffer_move(cdata,
-                                    G_context.opcert_info.raw_opcert,
-                                    G_context.opcert_info.raw_opcert_len);
+    bool moved_opcert =
+        buffer_move(cdata, G_context.opcert_info.raw_opcert, G_context.opcert_info.raw_opcert_len);
     LEDGER_ASSERT(moved_opcert, "buffer_move failed unexpectedly");
 
     buffer_t buf = {.ptr = G_context.opcert_info.raw_opcert,
@@ -113,8 +112,11 @@ void finalize_sign_opcert(void) {
         buffer_t buf = buffer_create(opCertBodyBuffer, SIZEOF(opCertBodyBuffer));
 
         // Buffer is exactly sized - failure is programming error
-        LEDGER_ASSERT(buffer_write_bytes(&buf, (const uint8_t*) opcert->kesPublicKey, KES_PUBLIC_KEY_LENGTH), "Write KES pubkey failed");
-        LEDGER_ASSERT(buffer_write_u64(&buf, opcert->issueCounter, BE), "Write issueCounter failed");
+        LEDGER_ASSERT(
+            buffer_write_bytes(&buf, (const uint8_t*) opcert->kesPublicKey, KES_PUBLIC_KEY_LENGTH),
+            "Write KES pubkey failed");
+        LEDGER_ASSERT(buffer_write_u64(&buf, opcert->issueCounter, BE),
+                      "Write issueCounter failed");
         LEDGER_ASSERT(buffer_write_u64(&buf, opcert->kesPeriod, BE), "Write kesPeriod failed");
 
         LEDGER_ASSERT(buf.offset == OP_CERT_BODY_LENGTH, "Bad body length");
@@ -122,16 +124,14 @@ void finalize_sign_opcert(void) {
     }
 
     LEDGER_ASSERT(bip44_isPoolColdKeyPath(&opcert->poolColdKeyPath), "Bad pool cold path");
-    signRawMessageWithPath(
-        &opcert->poolColdKeyPath,
-        opCertBodyBuffer, SIZEOF(opCertBodyBuffer),
-        G_context.opcert_info.signature, SIZEOF(G_context.opcert_info.signature)
-    );
+    signRawMessageWithPath(&opcert->poolColdKeyPath,
+                           opCertBodyBuffer,
+                           SIZEOF(opCertBodyBuffer),
+                           G_context.opcert_info.signature,
+                           SIZEOF(G_context.opcert_info.signature));
 
-    apdu_response_send_data(
-        G_context.opcert_info.signature,
-        SIZEOF(G_context.opcert_info.signature),
-        SWO_SUCCESS
-    );
+    apdu_response_send_data(G_context.opcert_info.signature,
+                            SIZEOF(G_context.opcert_info.signature),
+                            SWO_SUCCESS);
     reset_app_context();
 }

@@ -12,7 +12,9 @@
 #include "securityPolicy.h"
 #include "crypto.h"
 
-static void extractRawPublicKey(uint8_t rawPubkey[static ED25519_PUBKEY_UNCOMPRESSED_LENGTH], uint8_t* outBuffer, size_t outSize) {
+static void extractRawPublicKey(uint8_t rawPubkey[static ED25519_PUBKEY_UNCOMPRESSED_LENGTH],
+                                uint8_t* outBuffer,
+                                size_t outSize) {
     // copy public key little endian to big endian
     ASSERT(outSize == PUBLIC_KEY_LENGTH);
     STATIC_ASSERT(PUBLIC_KEY_LENGTH < ED25519_PUBKEY_UNCOMPRESSED_LENGTH,
@@ -74,6 +76,6 @@ void keyPathToKeyHash(const bip44_path_t* pathSpec, uint8_t* hash, size_t hashSi
         default:
             explicit_bzero(&extPubKey, SIZEOF(extPubKey));
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }

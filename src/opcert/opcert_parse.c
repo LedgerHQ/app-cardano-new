@@ -15,8 +15,7 @@
 #include "opcert_types.h"
 #include "utils.h"
 
-bool parse_opcert(buffer_t *buf, parsed_opcert_t *opcert)
-{
+bool parse_opcert(buffer_t *buf, parsed_opcert_t *opcert) {
     ASSERT(buf != NULL);
     ASSERT(opcert != NULL);
 

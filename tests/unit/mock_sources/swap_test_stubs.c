@@ -81,5 +81,6 @@ __attribute__((noreturn)) void swap_reject_and_exit(uint8_t common_error_code,
                   "Unexpected swap_reject_and_exit in unit test: common=%u app=%u",
                   (unsigned int) common_error_code,
                   (unsigned int) application_specific_error_code);
-    for (;;) {}
+    for (;;) {
+    }
 }

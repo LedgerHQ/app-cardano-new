@@ -51,402 +51,655 @@
 
 static void test_sign_tx_with_short_inline_datum_in_output_with_tokens_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_SHORT_INLINE_DATUM_IN_OUTPUT_WITH_TOKENS, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_SHORT_INLINE_DATUM_IN_OUTPUT_WITH_TOKENS,
+        false);
 }
 
-static void test_sign_tx_with_short_inline_datum_in_output_with_tokens_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_short_inline_datum_in_output_with_tokens_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_SHORT_INLINE_DATUM_IN_OUTPUT_WITH_TOKENS, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_SHORT_INLINE_DATUM_IN_OUTPUT_WITH_TOKENS,
+        false);
 }
 
 static void test_sign_tx_with_short_inline_datum_in_output_with_tokens_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_SHORT_INLINE_DATUM_IN_OUTPUT_WITH_TOKENS, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_SHORT_INLINE_DATUM_IN_OUTPUT_WITH_TOKENS,
+        true);
 }
 
-static void test_sign_tx_with_short_inline_datum_in_output_with_tokens_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_short_inline_datum_in_output_with_tokens_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_SHORT_INLINE_DATUM_IN_OUTPUT_WITH_TOKENS, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_SHORT_INLINE_DATUM_IN_OUTPUT_WITH_TOKENS,
+        true);
 }
 
 static void test_sign_tx_with_long_inline_datum_480_b_in_output_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_480_B_IN_OUTPUT, false);
+    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_480_B_IN_OUTPUT,
+                                 false);
 }
 
 static void test_sign_tx_with_long_inline_datum_480_b_in_output_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_480_B_IN_OUTPUT, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_480_B_IN_OUTPUT,
+        false);
 }
 
 static void test_sign_tx_with_long_inline_datum_480_b_in_output_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_480_B_IN_OUTPUT, true);
+    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_480_B_IN_OUTPUT,
+                                 true);
 }
 
 static void test_sign_tx_with_long_inline_datum_480_b_in_output_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_480_B_IN_OUTPUT, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_480_B_IN_OUTPUT,
+        true);
 }
 
-static void test_sign_tx_with_long_inline_datum_304_b_in_output_with_tokens_expert_off(void **state) {
+static void test_sign_tx_with_long_inline_datum_304_b_in_output_with_tokens_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_304_B_IN_OUTPUT_WITH_TOKENS, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_304_B_IN_OUTPUT_WITH_TOKENS,
+        false);
 }
 
-static void test_sign_tx_with_long_inline_datum_304_b_in_output_with_tokens_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_long_inline_datum_304_b_in_output_with_tokens_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_304_B_IN_OUTPUT_WITH_TOKENS, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_304_B_IN_OUTPUT_WITH_TOKENS,
+        false);
 }
 
-static void test_sign_tx_with_long_inline_datum_304_b_in_output_with_tokens_expert_on(void **state) {
+static void test_sign_tx_with_long_inline_datum_304_b_in_output_with_tokens_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_304_B_IN_OUTPUT_WITH_TOKENS, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_304_B_IN_OUTPUT_WITH_TOKENS,
+        true);
 }
 
-static void test_sign_tx_with_long_inline_datum_304_b_in_output_with_tokens_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_long_inline_datum_304_b_in_output_with_tokens_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_304_B_IN_OUTPUT_WITH_TOKENS, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_LONG_INLINE_DATUM_304_B_IN_OUTPUT_WITH_TOKENS,
+        true);
 }
 
 static void test_sign_tx_with_datum_hash_and_short_ref_script_in_output_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SHORT_REF_SCRIPT_IN_OUTPUT, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SHORT_REF_SCRIPT_IN_OUTPUT,
+        false);
 }
 
-static void test_sign_tx_with_datum_hash_and_short_ref_script_in_output_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_datum_hash_and_short_ref_script_in_output_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SHORT_REF_SCRIPT_IN_OUTPUT, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SHORT_REF_SCRIPT_IN_OUTPUT,
+        false);
 }
 
 static void test_sign_tx_with_datum_hash_and_short_ref_script_in_output_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SHORT_REF_SCRIPT_IN_OUTPUT, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SHORT_REF_SCRIPT_IN_OUTPUT,
+        true);
 }
 
-static void test_sign_tx_with_datum_hash_and_short_ref_script_in_output_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_datum_hash_and_short_ref_script_in_output_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SHORT_REF_SCRIPT_IN_OUTPUT, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SHORT_REF_SCRIPT_IN_OUTPUT,
+        true);
 }
 
-static void test_sign_tx_with_datum_hash_and_ref_script_240_b_in_output_in_babbage_format_expert_off(void **state) {
+static void
+test_sign_tx_with_datum_hash_and_ref_script_240_b_in_output_in_babbage_format_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_REF_SCRIPT_240_B_IN_OUTPUT_IN_BABBAGE_FORMAT, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_REF_SCRIPT_240_B_IN_OUTPUT_IN_BABBAGE_FORMAT,
+        false);
 }
 
-static void test_sign_tx_with_datum_hash_and_ref_script_240_b_in_output_in_babbage_format_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_datum_hash_and_ref_script_240_b_in_output_in_babbage_format_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_REF_SCRIPT_240_B_IN_OUTPUT_IN_BABBAGE_FORMAT, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_REF_SCRIPT_240_B_IN_OUTPUT_IN_BABBAGE_FORMAT,
+        false);
 }
 
-static void test_sign_tx_with_datum_hash_and_ref_script_240_b_in_output_in_babbage_format_expert_on(void **state) {
+static void test_sign_tx_with_datum_hash_and_ref_script_240_b_in_output_in_babbage_format_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_REF_SCRIPT_240_B_IN_OUTPUT_IN_BABBAGE_FORMAT, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_REF_SCRIPT_240_B_IN_OUTPUT_IN_BABBAGE_FORMAT,
+        true);
 }
 
-static void test_sign_tx_with_datum_hash_and_ref_script_240_b_in_output_in_babbage_format_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_datum_hash_and_ref_script_240_b_in_output_in_babbage_format_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_REF_SCRIPT_240_B_IN_OUTPUT_IN_BABBAGE_FORMAT, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_REF_SCRIPT_240_B_IN_OUTPUT_IN_BABBAGE_FORMAT,
+        true);
 }
 
-static void test_sign_tx_with_datum_hash_and_script_reference_304_b_in_output_as_map_expert_off(void **state) {
+static void test_sign_tx_with_datum_hash_and_script_reference_304_b_in_output_as_map_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SCRIPT_REFERENCE_304_B_IN_OUTPUT_AS_MAP, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SCRIPT_REFERENCE_304_B_IN_OUTPUT_AS_MAP,
+        false);
 }
 
-static void test_sign_tx_with_datum_hash_and_script_reference_304_b_in_output_as_map_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_datum_hash_and_script_reference_304_b_in_output_as_map_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SCRIPT_REFERENCE_304_B_IN_OUTPUT_AS_MAP, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SCRIPT_REFERENCE_304_B_IN_OUTPUT_AS_MAP,
+        false);
 }
 
-static void test_sign_tx_with_datum_hash_and_script_reference_304_b_in_output_as_map_expert_on(void **state) {
+static void test_sign_tx_with_datum_hash_and_script_reference_304_b_in_output_as_map_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SCRIPT_REFERENCE_304_B_IN_OUTPUT_AS_MAP, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SCRIPT_REFERENCE_304_B_IN_OUTPUT_AS_MAP,
+        true);
 }
 
-static void test_sign_tx_with_datum_hash_and_script_reference_304_b_in_output_as_map_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_datum_hash_and_script_reference_304_b_in_output_as_map_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SCRIPT_REFERENCE_304_B_IN_OUTPUT_AS_MAP, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_AND_SCRIPT_REFERENCE_304_B_IN_OUTPUT_AS_MAP,
+        true);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_with_tokens_in_babbage_format_expert_off(void **state) {
+static void test_sign_tx_with_datum_hash_in_output_with_tokens_in_babbage_format_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_WITH_TOKENS_IN_BABBAGE_FORMAT, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_WITH_TOKENS_IN_BABBAGE_FORMAT,
+        false);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_with_tokens_in_babbage_format_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_datum_hash_in_output_with_tokens_in_babbage_format_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_WITH_TOKENS_IN_BABBAGE_FORMAT, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_WITH_TOKENS_IN_BABBAGE_FORMAT,
+        false);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_with_tokens_in_babbage_format_expert_on(void **state) {
+static void test_sign_tx_with_datum_hash_in_output_with_tokens_in_babbage_format_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_WITH_TOKENS_IN_BABBAGE_FORMAT, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_WITH_TOKENS_IN_BABBAGE_FORMAT,
+        true);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_with_tokens_in_babbage_format_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_datum_hash_in_output_with_tokens_in_babbage_format_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_WITH_TOKENS_IN_BABBAGE_FORMAT, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_WITH_TOKENS_IN_BABBAGE_FORMAT,
+        true);
 }
 
 static void test_sign_tx_with_a_complex_multiasset_output_babbage_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT_BABBAGE, false);
+    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT_BABBAGE,
+                                 false);
 }
 
-static void test_sign_tx_with_a_complex_multiasset_output_babbage_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_a_complex_multiasset_output_babbage_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT_BABBAGE, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT_BABBAGE,
+        false);
 }
 
 static void test_sign_tx_with_a_complex_multiasset_output_babbage_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT_BABBAGE, true);
+    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT_BABBAGE,
+                                 true);
 }
 
-static void test_sign_tx_with_a_complex_multiasset_output_babbage_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_a_complex_multiasset_output_babbage_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT_BABBAGE, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT_BABBAGE,
+        true);
 }
 
-static void test_sign_tx_with_change_output_as_map_and_multiple_reference_inputs_expert_off(void **state) {
+static void test_sign_tx_with_change_output_as_map_and_multiple_reference_inputs_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_MULTIPLE_REFERENCE_INPUTS, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_MULTIPLE_REFERENCE_INPUTS,
+        false);
 }
 
-static void test_sign_tx_with_change_output_as_map_and_multiple_reference_inputs_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_change_output_as_map_and_multiple_reference_inputs_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_MULTIPLE_REFERENCE_INPUTS, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_MULTIPLE_REFERENCE_INPUTS,
+        false);
 }
 
-static void test_sign_tx_with_change_output_as_map_and_multiple_reference_inputs_expert_on(void **state) {
+static void test_sign_tx_with_change_output_as_map_and_multiple_reference_inputs_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_MULTIPLE_REFERENCE_INPUTS, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_MULTIPLE_REFERENCE_INPUTS,
+        true);
 }
 
-static void test_sign_tx_with_change_output_as_map_and_multiple_reference_inputs_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_change_output_as_map_and_multiple_reference_inputs_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_MULTIPLE_REFERENCE_INPUTS, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_MULTIPLE_REFERENCE_INPUTS,
+        true);
 }
 
 static void test_sign_tx_with_change_output_as_map_and_total_collateral_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_TOTAL_COLLATERAL, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_TOTAL_COLLATERAL,
+        false);
 }
 
-static void test_sign_tx_with_change_output_as_map_and_total_collateral_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_change_output_as_map_and_total_collateral_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_TOTAL_COLLATERAL, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_TOTAL_COLLATERAL,
+        false);
 }
 
 static void test_sign_tx_with_change_output_as_map_and_total_collateral_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_TOTAL_COLLATERAL, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_TOTAL_COLLATERAL,
+        true);
 }
 
-static void test_sign_tx_with_change_output_as_map_and_total_collateral_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_change_output_as_map_and_total_collateral_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_TOTAL_COLLATERAL, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_TOTAL_COLLATERAL,
+        true);
 }
 
-static void test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_expert_off(void **state) {
+static void
+test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL,
+        false);
 }
 
-static void test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL,
+        false);
 }
 
-static void test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_expert_on(void **state) {
+static void
+test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL,
+        true);
 }
 
-static void test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_DEVICE_OWNED_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL,
+        true);
 }
 
-static void test_sign_tx_with_nonstandard_staking_path_collateral_output_and_total_collateral_expert_off(void **state) {
+static void
+test_sign_tx_with_nonstandard_staking_path_collateral_output_and_total_collateral_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_STAKING_PATH_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_STAKING_PATH_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL,
+        false);
 }
 
-static void test_sign_tx_with_nonstandard_staking_path_collateral_output_and_total_collateral_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_nonstandard_staking_path_collateral_output_and_total_collateral_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_STAKING_PATH_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_STAKING_PATH_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL,
+        false);
 }
 
-static void test_sign_tx_with_nonstandard_staking_path_collateral_output_and_total_collateral_expert_on(void **state) {
+static void
+test_sign_tx_with_nonstandard_staking_path_collateral_output_and_total_collateral_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_STAKING_PATH_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_STAKING_PATH_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL,
+        true);
 }
 
-static void test_sign_tx_with_nonstandard_staking_path_collateral_output_and_total_collateral_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_nonstandard_staking_path_collateral_output_and_total_collateral_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_STAKING_PATH_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_NONSTANDARD_STAKING_PATH_COLLATERAL_OUTPUT_AND_TOTAL_COLLATERAL,
+        true);
 }
 
-static void test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_expert_off(void **state) {
+static void test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_COLLATERAL_OUTPUT_AS_ARRAY, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_COLLATERAL_OUTPUT_AS_ARRAY,
+        false);
 }
 
-static void test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_COLLATERAL_OUTPUT_AS_ARRAY, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_COLLATERAL_OUTPUT_AS_ARRAY,
+        false);
 }
 
-static void test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_expert_on(void **state) {
+static void test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_COLLATERAL_OUTPUT_AS_ARRAY, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_COLLATERAL_OUTPUT_AS_ARRAY,
+        true);
 }
 
-static void test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_COLLATERAL_OUTPUT_AS_ARRAY, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_OUTPUT_AS_MAP_AND_COLLATERAL_OUTPUT_AS_ARRAY,
+        true);
 }
 
-static void test_sign_tx_with_change_collateral_output_as_map_without_total_collateral_expert_off(void **state) {
+static void test_sign_tx_with_change_collateral_output_as_map_without_total_collateral_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_AS_MAP_WITHOUT_TOTAL_COLLATERAL, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_AS_MAP_WITHOUT_TOTAL_COLLATERAL,
+        false);
 }
 
-static void test_sign_tx_with_change_collateral_output_as_map_without_total_collateral_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_change_collateral_output_as_map_without_total_collateral_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_AS_MAP_WITHOUT_TOTAL_COLLATERAL, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_AS_MAP_WITHOUT_TOTAL_COLLATERAL,
+        false);
 }
 
-static void test_sign_tx_with_change_collateral_output_as_map_without_total_collateral_expert_on(void **state) {
+static void test_sign_tx_with_change_collateral_output_as_map_without_total_collateral_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_AS_MAP_WITHOUT_TOTAL_COLLATERAL, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_AS_MAP_WITHOUT_TOTAL_COLLATERAL,
+        true);
 }
 
-static void test_sign_tx_with_change_collateral_output_as_map_without_total_collateral_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_change_collateral_output_as_map_without_total_collateral_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_AS_MAP_WITHOUT_TOTAL_COLLATERAL, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_AS_MAP_WITHOUT_TOTAL_COLLATERAL,
+        true);
 }
 
-static void test_sign_tx_with_change_collateral_output_as_map_with_total_collateral_expert_off(void **state) {
+static void test_sign_tx_with_change_collateral_output_as_map_with_total_collateral_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL,
+        false);
 }
 
-static void test_sign_tx_with_change_collateral_output_as_map_with_total_collateral_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_change_collateral_output_as_map_with_total_collateral_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL,
+        false);
 }
 
-static void test_sign_tx_with_change_collateral_output_as_map_with_total_collateral_expert_on(void **state) {
+static void test_sign_tx_with_change_collateral_output_as_map_with_total_collateral_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL,
+        true);
 }
 
-static void test_sign_tx_with_change_collateral_output_as_map_with_total_collateral_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_change_collateral_output_as_map_with_total_collateral_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_CHANGE_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL,
+        true);
 }
 
-static void test_sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral_expert_off(void **state) {
+static void
+test_sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITHOUT_TOTAL_COLLATERAL, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITHOUT_TOTAL_COLLATERAL,
+        false);
 }
 
-static void test_sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITHOUT_TOTAL_COLLATERAL, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITHOUT_TOTAL_COLLATERAL,
+        false);
 }
 
-static void test_sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral_expert_on(void **state) {
+static void
+test_sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITHOUT_TOTAL_COLLATERAL, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITHOUT_TOTAL_COLLATERAL,
+        true);
 }
 
-static void test_sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITHOUT_TOTAL_COLLATERAL, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITHOUT_TOTAL_COLLATERAL,
+        true);
 }
 
-static void test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral_expert_off(void **state) {
+static void test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL,
+        false);
 }
 
-static void test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL,
+        false);
 }
 
-static void test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral_expert_on(void **state) {
+static void test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL,
+        true);
 }
 
-static void test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_THIRDPARTY_COLLATERAL_OUTPUT_AS_MAP_WITH_TOTAL_COLLATERAL,
+        true);
 }
 
 static void test_sign_tx_with_device_owned_output_with_datum_hash_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DEVICE_OWNED_OUTPUT_WITH_DATUM_HASH, false);
+    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DEVICE_OWNED_OUTPUT_WITH_DATUM_HASH,
+                                 false);
 }
 
-static void test_sign_tx_with_device_owned_output_with_datum_hash_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_device_owned_output_with_datum_hash_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DEVICE_OWNED_OUTPUT_WITH_DATUM_HASH, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_DEVICE_OWNED_OUTPUT_WITH_DATUM_HASH,
+        false);
 }
 
 static void test_sign_tx_with_device_owned_output_with_datum_hash_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DEVICE_OWNED_OUTPUT_WITH_DATUM_HASH, true);
+    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DEVICE_OWNED_OUTPUT_WITH_DATUM_HASH,
+                                 true);
 }
 
-static void test_sign_tx_with_device_owned_output_with_datum_hash_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_device_owned_output_with_datum_hash_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_WITH_DEVICE_OWNED_OUTPUT_WITH_DATUM_HASH, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_WITH_DEVICE_OWNED_OUTPUT_WITH_DATUM_HASH,
+        true);
 }
 
-static void test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_expert_off(void **state) {
+static void test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_PLUTUS, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_PLUTUS,
+        false);
 }
 
-static void test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_PLUTUS, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_PLUTUS,
+        false);
 }
 
-static void test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_expert_on(void **state) {
+static void test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_PLUTUS, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_PLUTUS,
+        true);
 }
 
-static void test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_PLUTUS, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_PLUTUS,
+        true);
 }
 
-static void test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_expert_off(void **state) {
+static void test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_ORDINARY, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_ORDINARY,
+        false);
 }
 
-static void test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_ORDINARY, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_ORDINARY,
+        false);
 }
 
-static void test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_expert_on(void **state) {
+static void test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_ORDINARY, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_ORDINARY,
+        true);
 }
 
-static void test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_ORDINARY, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_BABBAGE_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY_BABBAGE_ELEMENTS_ORDINARY,
+        true);
 }
 
 // ======================================================================
@@ -456,85 +709,152 @@ static void test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_or
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_sign_tx_with_short_inline_datum_in_output_with_tokens_expert_off),
-        cmocka_unit_test(test_sign_tx_with_short_inline_datum_in_output_with_tokens_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_short_inline_datum_in_output_with_tokens_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_short_inline_datum_in_output_with_tokens_expert_on),
-        cmocka_unit_test(test_sign_tx_with_short_inline_datum_in_output_with_tokens_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_short_inline_datum_in_output_with_tokens_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_long_inline_datum_480_b_in_output_expert_off),
         cmocka_unit_test(test_sign_tx_with_long_inline_datum_480_b_in_output_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_long_inline_datum_480_b_in_output_expert_on),
         cmocka_unit_test(test_sign_tx_with_long_inline_datum_480_b_in_output_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_long_inline_datum_304_b_in_output_with_tokens_expert_off),
-        cmocka_unit_test(test_sign_tx_with_long_inline_datum_304_b_in_output_with_tokens_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_long_inline_datum_304_b_in_output_with_tokens_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_long_inline_datum_304_b_in_output_with_tokens_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_long_inline_datum_304_b_in_output_with_tokens_expert_on),
-        cmocka_unit_test(test_sign_tx_with_long_inline_datum_304_b_in_output_with_tokens_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_long_inline_datum_304_b_in_output_with_tokens_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_datum_hash_and_short_ref_script_in_output_expert_off),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_and_short_ref_script_in_output_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_and_short_ref_script_in_output_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_datum_hash_and_short_ref_script_in_output_expert_on),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_and_short_ref_script_in_output_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_and_ref_script_240_b_in_output_in_babbage_format_expert_off),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_and_ref_script_240_b_in_output_in_babbage_format_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_and_ref_script_240_b_in_output_in_babbage_format_expert_on),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_and_ref_script_240_b_in_output_in_babbage_format_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_and_script_reference_304_b_in_output_as_map_expert_off),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_and_script_reference_304_b_in_output_as_map_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_and_script_reference_304_b_in_output_as_map_expert_on),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_and_script_reference_304_b_in_output_as_map_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_with_tokens_in_babbage_format_expert_off),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_with_tokens_in_babbage_format_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_with_tokens_in_babbage_format_expert_on),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_with_tokens_in_babbage_format_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_and_short_ref_script_in_output_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_and_ref_script_240_b_in_output_in_babbage_format_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_and_ref_script_240_b_in_output_in_babbage_format_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_and_ref_script_240_b_in_output_in_babbage_format_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_and_ref_script_240_b_in_output_in_babbage_format_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_and_script_reference_304_b_in_output_as_map_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_and_script_reference_304_b_in_output_as_map_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_and_script_reference_304_b_in_output_as_map_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_and_script_reference_304_b_in_output_as_map_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_with_tokens_in_babbage_format_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_with_tokens_in_babbage_format_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_with_tokens_in_babbage_format_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_with_tokens_in_babbage_format_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_a_complex_multiasset_output_babbage_expert_off),
-        cmocka_unit_test(test_sign_tx_with_a_complex_multiasset_output_babbage_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_a_complex_multiasset_output_babbage_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_a_complex_multiasset_output_babbage_expert_on),
         cmocka_unit_test(test_sign_tx_with_a_complex_multiasset_output_babbage_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_change_output_as_map_and_multiple_reference_inputs_expert_off),
-        cmocka_unit_test(test_sign_tx_with_change_output_as_map_and_multiple_reference_inputs_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_change_output_as_map_and_multiple_reference_inputs_expert_on),
-        cmocka_unit_test(test_sign_tx_with_change_output_as_map_and_multiple_reference_inputs_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_change_output_as_map_and_multiple_reference_inputs_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_change_output_as_map_and_multiple_reference_inputs_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_change_output_as_map_and_multiple_reference_inputs_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_change_output_as_map_and_multiple_reference_inputs_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_change_output_as_map_and_total_collateral_expert_off),
-        cmocka_unit_test(test_sign_tx_with_change_output_as_map_and_total_collateral_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_change_output_as_map_and_total_collateral_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_change_output_as_map_and_total_collateral_expert_on),
-        cmocka_unit_test(test_sign_tx_with_change_output_as_map_and_total_collateral_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_expert_off),
-        cmocka_unit_test(test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_expert_on),
-        cmocka_unit_test(test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_nonstandard_staking_path_collateral_output_and_total_collateral_expert_off),
-        cmocka_unit_test(test_sign_tx_with_nonstandard_staking_path_collateral_output_and_total_collateral_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_nonstandard_staking_path_collateral_output_and_total_collateral_expert_on),
-        cmocka_unit_test(test_sign_tx_with_nonstandard_staking_path_collateral_output_and_total_collateral_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_expert_off),
-        cmocka_unit_test(test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_expert_on),
-        cmocka_unit_test(test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_change_collateral_output_as_map_without_total_collateral_expert_off),
-        cmocka_unit_test(test_sign_tx_with_change_collateral_output_as_map_without_total_collateral_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_change_collateral_output_as_map_without_total_collateral_expert_on),
-        cmocka_unit_test(test_sign_tx_with_change_collateral_output_as_map_without_total_collateral_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_change_collateral_output_as_map_with_total_collateral_expert_off),
-        cmocka_unit_test(test_sign_tx_with_change_collateral_output_as_map_with_total_collateral_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_change_collateral_output_as_map_with_total_collateral_expert_on),
-        cmocka_unit_test(test_sign_tx_with_change_collateral_output_as_map_with_total_collateral_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral_expert_off),
-        cmocka_unit_test(test_sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral_expert_on),
-        cmocka_unit_test(test_sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral_expert_off),
-        cmocka_unit_test(test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral_expert_on),
-        cmocka_unit_test(test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_change_output_as_map_and_total_collateral_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_nonstandard_device_owned_collateral_output_and_total_collateral_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_nonstandard_staking_path_collateral_output_and_total_collateral_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_nonstandard_staking_path_collateral_output_and_total_collateral_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_nonstandard_staking_path_collateral_output_and_total_collateral_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_nonstandard_staking_path_collateral_output_and_total_collateral_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_change_output_as_map_and_collateral_output_as_array_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_change_collateral_output_as_map_without_total_collateral_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_change_collateral_output_as_map_without_total_collateral_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_change_collateral_output_as_map_without_total_collateral_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_change_collateral_output_as_map_without_total_collateral_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_change_collateral_output_as_map_with_total_collateral_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_change_collateral_output_as_map_with_total_collateral_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_change_collateral_output_as_map_with_total_collateral_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_change_collateral_output_as_map_with_total_collateral_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_thirdparty_collateral_output_as_map_without_total_collateral_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_thirdparty_collateral_output_as_map_with_total_collateral_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_device_owned_output_with_datum_hash_expert_off),
-        cmocka_unit_test(test_sign_tx_with_device_owned_output_with_datum_hash_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_device_owned_output_with_datum_hash_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_device_owned_output_with_datum_hash_expert_on),
         cmocka_unit_test(test_sign_tx_with_device_owned_output_with_datum_hash_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_expert_off),
-        cmocka_unit_test(test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_expert_on),
-        cmocka_unit_test(test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_expert_off),
-        cmocka_unit_test(test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_expert_on),
-        cmocka_unit_test(test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_plutus_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_full_test_for_trezor_feature_parity_babbage_elements_ordinary_reject_tx_expert_on),
     };
-    return _cmocka_run_group_tests("test_sign_tx_babbage", tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);
+    return _cmocka_run_group_tests("test_sign_tx_babbage",
+                                   tests,
+                                   ARRAY_LEN(tests),
+                                   NULL,
+                                   assert_no_pending_apdu_response);
 }

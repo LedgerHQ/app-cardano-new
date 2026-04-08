@@ -76,7 +76,8 @@ static void test_sign_tx_with_a_complex_multiasset_output_expert_off(void **stat
 
 static void test_sign_tx_with_a_complex_multiasset_output_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT, false);
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT,
+                                           false);
 }
 
 static void test_sign_tx_with_a_complex_multiasset_output_expert_on(void **state) {
@@ -86,7 +87,8 @@ static void test_sign_tx_with_a_complex_multiasset_output_expert_on(void **state
 
 static void test_sign_tx_with_a_complex_multiasset_output_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT, true);
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_COMPLEX_MULTIASSET_OUTPUT,
+                                           true);
 }
 
 static void test_sign_tx_with_big_numbers_expert_off(void **state) {
@@ -116,7 +118,8 @@ static void test_sign_tx_with_a_multiasset_change_output_expert_off(void **state
 
 static void test_sign_tx_with_a_multiasset_change_output_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT, false);
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT,
+                                           false);
 }
 
 static void test_sign_tx_with_a_multiasset_change_output_expert_on(void **state) {
@@ -126,27 +129,38 @@ static void test_sign_tx_with_a_multiasset_change_output_expert_on(void **state)
 
 static void test_sign_tx_with_a_multiasset_change_output_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT, true);
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_A_MULTIASSET_CHANGE_OUTPUT,
+                                           true);
 }
 
 static void test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START,
+        false);
 }
 
-static void test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START,
+        false);
 }
 
 static void test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START,
+        true);
 }
 
-static void test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_MARY_SIGN_TX_WITH_ZERO_FEE_TTL_AND_VALIDITY_INTERVAL_START,
+        true);
 }
 
 static void test_sign_tx_with_output_with_decimal_places_expert_off(void **state) {
@@ -156,7 +170,8 @@ static void test_sign_tx_with_output_with_decimal_places_expert_off(void **state
 
 static void test_sign_tx_with_output_with_decimal_places_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES, false);
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES,
+                                           false);
 }
 
 static void test_sign_tx_with_output_with_decimal_places_expert_on(void **state) {
@@ -166,17 +181,21 @@ static void test_sign_tx_with_output_with_decimal_places_expert_on(void **state)
 
 static void test_sign_tx_with_output_with_decimal_places_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES, true);
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_OUTPUT_WITH_DECIMAL_PLACES,
+                                           true);
 }
 
 static void test_sign_tx_with_mint_fields_with_various_amounts_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS, false);
+    run_fixture_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS,
+                                 false);
 }
 
 static void test_sign_tx_with_mint_fields_with_various_amounts_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS,
+        false);
 }
 
 static void test_sign_tx_with_mint_fields_with_various_amounts_expert_on(void **state) {
@@ -186,7 +205,9 @@ static void test_sign_tx_with_mint_fields_with_various_amounts_expert_on(void **
 
 static void test_sign_tx_with_mint_fields_with_various_amounts_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_WITH_VARIOUS_AMOUNTS,
+        true);
 }
 
 static void test_sign_tx_with_mint_with_decimal_places_expert_off(void **state) {
@@ -196,7 +217,8 @@ static void test_sign_tx_with_mint_with_decimal_places_expert_off(void **state) 
 
 static void test_sign_tx_with_mint_with_decimal_places_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES, false);
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES,
+                                           false);
 }
 
 static void test_sign_tx_with_mint_with_decimal_places_expert_on(void **state) {
@@ -206,7 +228,8 @@ static void test_sign_tx_with_mint_with_decimal_places_expert_on(void **state) {
 
 static void test_sign_tx_with_mint_with_decimal_places_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES, true);
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_WITH_DECIMAL_PLACES,
+                                           true);
 }
 
 static void test_sign_tx_with_mint_fields_among_other_fields_expert_off(void **state) {
@@ -216,7 +239,9 @@ static void test_sign_tx_with_mint_fields_among_other_fields_expert_off(void **s
 
 static void test_sign_tx_with_mint_fields_among_other_fields_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS,
+        false);
 }
 
 static void test_sign_tx_with_mint_fields_among_other_fields_expert_on(void **state) {
@@ -226,7 +251,9 @@ static void test_sign_tx_with_mint_fields_among_other_fields_expert_on(void **st
 
 static void test_sign_tx_with_mint_fields_among_other_fields_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_MARY_SIGN_TX_WITH_MINT_FIELDS_AMONG_OTHER_FIELDS,
+        true);
 }
 
 static void test_sign_tx_with_mint_key_witness_in_ordinary_tx_expert_off(void **state) {
@@ -236,7 +263,9 @@ static void test_sign_tx_with_mint_key_witness_in_ordinary_tx_expert_off(void **
 
 static void test_sign_tx_with_mint_key_witness_in_ordinary_tx_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_KEY_WITNESS_IN_ORDINARY_TX, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_MARY_SIGN_TX_WITH_MINT_KEY_WITNESS_IN_ORDINARY_TX,
+        false);
 }
 
 static void test_sign_tx_with_mint_key_witness_in_ordinary_tx_expert_on(void **state) {
@@ -246,7 +275,9 @@ static void test_sign_tx_with_mint_key_witness_in_ordinary_tx_expert_on(void **s
 
 static void test_sign_tx_with_mint_key_witness_in_ordinary_tx_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_MARY_SIGN_TX_WITH_MINT_KEY_WITNESS_IN_ORDINARY_TX, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_MARY_SIGN_TX_WITH_MINT_KEY_WITNESS_IN_ORDINARY_TX,
+        true);
 }
 
 // ======================================================================
@@ -272,9 +303,11 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_a_multiasset_change_output_expert_on),
         cmocka_unit_test(test_sign_tx_with_a_multiasset_change_output_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_expert_off),
-        cmocka_unit_test(test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_expert_on),
-        cmocka_unit_test(test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_zero_fee_ttl_and_validity_interval_start_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_output_with_decimal_places_expert_off),
         cmocka_unit_test(test_sign_tx_with_output_with_decimal_places_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_output_with_decimal_places_expert_on),
@@ -296,5 +329,9 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_mint_key_witness_in_ordinary_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_mint_key_witness_in_ordinary_tx_reject_tx_expert_on),
     };
-    return _cmocka_run_group_tests("test_sign_tx_mary", tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);
+    return _cmocka_run_group_tests("test_sign_tx_mary",
+                                   tests,
+                                   ARRAY_LEN(tests),
+                                   NULL,
+                                   assert_no_pending_apdu_response);
 }

@@ -50,20 +50,20 @@ static inline void _append_u8(uint8_t* buffer, size_t* pos, uint8_t value) {
 }
 
 static inline void _append_u16_be(uint8_t* buffer, size_t* pos, uint16_t value) {
-    buffer[(*pos)++] = (uint8_t)((value >> 8) & 0xFF);
-    buffer[(*pos)++] = (uint8_t)(value & 0xFF);
+    buffer[(*pos)++] = (uint8_t) ((value >> 8) & 0xFF);
+    buffer[(*pos)++] = (uint8_t) (value & 0xFF);
 }
 
 static inline void _append_u32_be(uint8_t* buffer, size_t* pos, uint32_t value) {
-    buffer[(*pos)++] = (uint8_t)((value >> 24) & 0xFF);
-    buffer[(*pos)++] = (uint8_t)((value >> 16) & 0xFF);
-    buffer[(*pos)++] = (uint8_t)((value >> 8) & 0xFF);
-    buffer[(*pos)++] = (uint8_t)(value & 0xFF);
+    buffer[(*pos)++] = (uint8_t) ((value >> 24) & 0xFF);
+    buffer[(*pos)++] = (uint8_t) ((value >> 16) & 0xFF);
+    buffer[(*pos)++] = (uint8_t) ((value >> 8) & 0xFF);
+    buffer[(*pos)++] = (uint8_t) (value & 0xFF);
 }
 
 static inline void _append_u64_be(uint8_t* buffer, size_t* pos, uint64_t value) {
     for (int i = 7; i >= 0; i--) {
-        buffer[(*pos)++] = (uint8_t)((value >> (i * 8)) & 0xFF);
+        buffer[(*pos)++] = (uint8_t) ((value >> (i * 8)) & 0xFF);
     }
 }
 
@@ -88,8 +88,7 @@ static inline size_t build_init_apdu(const init_apdu_params_t* params,
     if (params->includeAuxData) {
         _append_u8(out, &pos, params->auxDataType);
         if (params->auxDataType == AUX_DATA_TYPE_ARBITRARY_HASH) {
-            if (params->auxDataHash == NULL ||
-                params->auxDataHashLen != AUX_DATA_HASH_LENGTH) {
+            if (params->auxDataHash == NULL || params->auxDataHashLen != AUX_DATA_HASH_LENGTH) {
                 return 0;
             }
             memcpy(out + pos, params->auxDataHash, params->auxDataHashLen);

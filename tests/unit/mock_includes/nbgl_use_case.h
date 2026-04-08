@@ -20,11 +20,7 @@ typedef void (*nbgl_choiceCallback_t)(bool confirm);
 // Operation types
 // ======================================================================
 
-typedef enum {
-    TYPE_TRANSACTION = 0,
-    TYPE_MESSAGE,
-    TYPE_OPERATION
-} nbgl_opType_t;
+typedef enum { TYPE_TRANSACTION = 0, TYPE_MESSAGE, TYPE_OPERATION } nbgl_opType_t;
 
 #define SKIPPABLE_OPERATION (1 << 4)
 #define BLIND_OPERATION     (1 << 5)
@@ -143,56 +139,56 @@ void nbgl_useCaseSpinner(const char *text);
 void nbgl_useCaseStatus(const char *message, bool isSuccess, nbgl_callback_t quitCallback);
 
 void nbgl_useCaseReviewStatus(nbgl_reviewStatusType_t reviewStatusType,
-                              nbgl_callback_t         quitCallback);
+                              nbgl_callback_t quitCallback);
 
-void nbgl_useCaseAdvancedReview(nbgl_operationType_t              operationType,
+void nbgl_useCaseAdvancedReview(nbgl_operationType_t operationType,
                                 const nbgl_contentTagValueList_t *tagValueList,
-                                const nbgl_icon_details_t        *icon,
-                                const char                       *reviewTitle,
-                                const char                       *reviewSubTitle,
-                                const char                       *finishTitle,
-                                const nbgl_tipBox_t              *tipBox,
-                                const nbgl_warning_t             *warning,
-                                nbgl_choiceCallback_t             choiceCallback);
+                                const nbgl_icon_details_t *icon,
+                                const char *reviewTitle,
+                                const char *reviewSubTitle,
+                                const char *finishTitle,
+                                const nbgl_tipBox_t *tipBox,
+                                const nbgl_warning_t *warning,
+                                nbgl_choiceCallback_t choiceCallback);
 
 void nbgl_useCaseChoice(const nbgl_icon_details_t *icon,
-                        const char                *message,
-                        const char                *subMessage,
-                        const char                *confirmText,
-                        const char                *rejectString,
-                        nbgl_choiceCallback_t      callback);
+                        const char *message,
+                        const char *subMessage,
+                        const char *confirmText,
+                        const char *rejectString,
+                        nbgl_choiceCallback_t callback);
 
-void nbgl_useCaseAddressReview(const char                       *address,
+void nbgl_useCaseAddressReview(const char *address,
                                const nbgl_contentTagValueList_t *additionalTagValueList,
-                               const nbgl_icon_details_t        *icon,
-                               const char                       *reviewTitle,
-                               const char                       *reviewSubTitle,
-                               nbgl_choiceCallback_t             choiceCallback);
+                               const nbgl_icon_details_t *icon,
+                               const char *reviewTitle,
+                               const char *reviewSubTitle,
+                               nbgl_choiceCallback_t choiceCallback);
 
-void nbgl_useCaseReviewStreamingStart(nbgl_operationType_t       operationType,
+void nbgl_useCaseReviewStreamingStart(nbgl_operationType_t operationType,
                                       const nbgl_icon_details_t *icon,
-                                      const char                *reviewTitle,
-                                      const char                *reviewSubTitle,
-                                      nbgl_choiceCallback_t      choiceCallback);
+                                      const char *reviewTitle,
+                                      const char *reviewSubTitle,
+                                      nbgl_choiceCallback_t choiceCallback);
 
-void nbgl_useCaseAdvancedReviewStreamingStart(nbgl_operationType_t       operationType,
+void nbgl_useCaseAdvancedReviewStreamingStart(nbgl_operationType_t operationType,
                                               const nbgl_icon_details_t *icon,
-                                              const char                *reviewTitle,
-                                              const char                *reviewSubTitle,
-                                              const nbgl_warning_t      *warning,
-                                              nbgl_choiceCallback_t      choiceCallback);
+                                              const char *reviewTitle,
+                                              const char *reviewSubTitle,
+                                              const nbgl_warning_t *warning,
+                                              nbgl_choiceCallback_t choiceCallback);
 
 void nbgl_useCaseReviewStreamingContinue(const nbgl_contentTagValueList_t *tagValueList,
-                                         nbgl_choiceCallback_t             choiceCallback);
+                                         nbgl_choiceCallback_t choiceCallback);
 
-void nbgl_useCaseReviewStreamingFinish(const char           *finishTitle,
+void nbgl_useCaseReviewStreamingFinish(const char *finishTitle,
                                        nbgl_choiceCallback_t choiceCallback);
 
-void nbgl_useCaseHomeAndSettings(const char                   *appName,
-                                 const nbgl_icon_details_t    *appIcon,
-                                 const char                   *tagline,
-                                 const uint8_t                 initSettingPage,
+void nbgl_useCaseHomeAndSettings(const char *appName,
+                                 const nbgl_icon_details_t *appIcon,
+                                 const char *tagline,
+                                 const uint8_t initSettingPage,
                                  const nbgl_genericContents_t *settingContents,
                                  const nbgl_contentInfoList_t *infosList,
-                                 const nbgl_homeAction_t      *action,
-                                 nbgl_callback_t               quitCallback);
+                                 const nbgl_homeAction_t *action,
+                                 nbgl_callback_t quitCallback);

@@ -32,16 +32,17 @@
 #ifdef TRACE_UI_DISPLAY
 #define TRACE_MODULE(...) TRACE("[ui_sign_msg] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 static bool format_ascii_chunk(const uint8_t *bytes, size_t size, char *out, size_t outSize) {
     ASSERT(bytes != NULL);
     ASSERT(out != NULL);
     LEDGER_ASSERT(outSize > 0, "Zero output buffer size");
-    LEDGER_ASSERT(str_isUnambiguousAscii(bytes, size), "ASCII message chunk contains invalid characters");
+    LEDGER_ASSERT(str_isUnambiguousAscii(bytes, size),
+                  "ASCII message chunk contains invalid characters");
     if (size + 1 > outSize) {
-        return false; // LCOV_EXCL_LINE
+        return false;  // LCOV_EXCL_LINE
     }
     memcpy(out, bytes, size);
     out[size] = '\0';
@@ -81,22 +82,28 @@ void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnin
     TRACE_MODULE("=== ui_display_sign_msg START ===");
 
     // Check state
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_MSG, "ui_display_sign_msg called with wrong request type: %d", G_context.req_type);
-    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CONFIRM, "ui_display_sign_msg called in wrong state: %d", G_context.state.sign_msg_state);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_MSG,
+                  "ui_display_sign_msg called with wrong request type: %d",
+                  G_context.req_type);
+    LEDGER_ASSERT(G_context.state.sign_msg_state == SIGN_MSG_STATE_CONFIRM,
+                  "ui_display_sign_msg called in wrong state: %d",
+                  G_context.state.sign_msg_state);
 
     // Check policy
     TRACE_MODULE("securityPolicy: %d", securityPolicy);
-    LEDGER_ASSERT(securityPolicy == POLICY_SHOW, "ui_display_sign_msg called with wrong security policy: %d", securityPolicy);
+    LEDGER_ASSERT(securityPolicy == POLICY_SHOW,
+                  "ui_display_sign_msg called with wrong security policy: %d",
+                  securityPolicy);
 
     ui_render_session_t session = {0};
     ui_render_scope_begin(&session);
 
     // Initialize pairs for display (6 fields)
     if (!ui_pairs_init(6)) {
-        TRACE_MODULE("Failed to initialize pairs"); // LCOV_EXCL_LINE
-        ui_render_scope_end(); // LCOV_EXCL_LINE
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
-        return; // LCOV_EXCL_LINE
+        TRACE_MODULE("Failed to initialize pairs");   // LCOV_EXCL_LINE
+        ui_render_scope_end();                        // LCOV_EXCL_LINE
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);  // LCOV_EXCL_LINE
+        return;                                       // LCOV_EXCL_LINE
     }
 
     // Field 1: Payload type (hashed or non-hashed)
@@ -137,7 +144,7 @@ void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnin
             ui_render_scope_end();
             LEDGER_ASSERT(false, "Invalid address field type");
             return;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     // Field 4: Message length in bytes
@@ -149,15 +156,17 @@ void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnin
     // Field 5: Full message content (ASCII or hex)
     if (ctx->msgLength == 0) {
         if (ctx->isAscii) {
-            UI_ADD_STATIC(UI_LABEL_BY_SCREEN("Message (ASCII)", "Msg (ASCII)"), UI_STATIC_LABEL("(empty)"));
+            UI_ADD_STATIC(UI_LABEL_BY_SCREEN("Message (ASCII)", "Msg (ASCII)"),
+                          UI_STATIC_LABEL("(empty)"));
         } else {
-            UI_ADD_STATIC(UI_LABEL_BY_SCREEN("Message (hex)", "Msg (hex)"), UI_STATIC_LABEL("(empty)"));
+            UI_ADD_STATIC(UI_LABEL_BY_SCREEN("Message (hex)", "Msg (hex)"),
+                          UI_STATIC_LABEL("(empty)"));
         }
     } else {
         if (ctx->msgBuffer == NULL) {
-            ui_render_scope_end(); // LCOV_EXCL_LINE
-            LEDGER_ASSERT(false, "Message buffer not allocated"); // LCOV_EXCL_LINE
-            return; // LCOV_EXCL_LINE
+            ui_render_scope_end();                                 // LCOV_EXCL_LINE
+            LEDGER_ASSERT(false, "Message buffer not allocated");  // LCOV_EXCL_LINE
+            return;                                                // LCOV_EXCL_LINE
         }
         if (ctx->isAscii) {
             UI_ADD_FORMAT2(UI_LABEL_BY_SCREEN("Message (ASCII)", "Msg (ASCII)"),
@@ -193,14 +202,14 @@ void ui_display_sign_msg(security_policy_t securityPolicy, warning_bits_t warnin
         default:
             LEDGER_ASSERT(false, "Unexpected UI status");
             return;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     // Build warnings if any
     ui_status_t warning_status = ui_build_warnings(warnings);
     if (warning_status != UI_STATUS_SUCCESS) {
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
-        return; // LCOV_EXCL_LINE
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);  // LCOV_EXCL_LINE
+        return;                                       // LCOV_EXCL_LINE
     }
 
     // Display review screen

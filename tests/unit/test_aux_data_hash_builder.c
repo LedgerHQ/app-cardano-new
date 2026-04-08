@@ -20,19 +20,20 @@ static void decode_hex_bytes(const char* hex, uint8_t* outBuffer, size_t outSize
 }
 
 static void test_aux_data_hash_builder_cip15(void** state) {
-    (void)state;
+    (void) state;
 
-    static const char* voteKey =
-        "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7";
+    static const char* voteKey = "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7";
     static const char* stakingKey =
         "BC65BE1B0B9D7531778A1317C2AA6DE936963C3F9AC7D5EE9E9EDA25E0C97C5E";
     static const char* paymentAddress =
-        "0180F9E2C88E6C817008F3A812ED889B4A4DA8E0BD103F86E7335422AA122A946B9AD3D2DDF029D3A828F0468AE"
+        "0180F9E2C88E6C817008F3A812ED889B4A4DA8E0BD103F86E7335422AA122A946B9AD3D2DDF029D3A828F0468A"
+        "E"
         "CE76895F15C9EFBD69B4277";
     static uint64_t nonce = 22634813;
 
     static const char* cVoteRegistrationSignature =
-        "0EA4A424522DD485F16466CD5A754F3C8DBD4D1976C912624E3465C540B1D0776C92633FC64BE057F947AAC5610"
+        "0EA4A424522DD485F16466CD5A754F3C8DBD4D1976C912624E3465C540B1D0776C92633FC64BE057F947AAC561"
+        "0"
         "12FE55ACD3C54EF7BECE0DA0B90CF02DC760D";
 
     static const char* expectedCVoteRegistrationPayloadHashHex =
@@ -97,7 +98,7 @@ static void test_aux_data_hash_builder_cip15(void** state) {
 }
 
 static void test_aux_data_hash_builder_cip36(void** state) {
-    (void)state;
+    (void) state;
 
     static const char* delegationKey1 =
         "a6a3c0447aeb9cc54cf6422ba32b294e5e1c3ef6d782f2acff4a70694c4d1663";

@@ -435,6 +435,7 @@ def _verify_ragger_test_coverage(
             capture_output=True,
             text=True,
             timeout=180,
+            check=False,
         )
         # Check for collection errors (non-zero return code indicates failure)
         if result.returncode != 0:
@@ -592,9 +593,9 @@ def _verify_ragger_test_coverage(
         if in_memory_count > 0 or ragger_count > 0:
             if in_memory_count != unit_count:
                 mismatched_counts.append(
-                    f"{cmd.display_name}: Generated {in_memory_count} entries in memory, but parsed {unit_count} cmocka tests from files."
+                    f"{cmd.display_name}: Generated {in_memory_count} entries in memory, "
+                    f"but parsed {unit_count} cmocka tests from files."
                 )
-
         if unit_count < ragger_count:
             insufficient_commands.append(
                 f"{cmd.display_name} (Ragger {ragger_count}, Unit {unit_count})"
@@ -1250,7 +1251,7 @@ def main() -> None:
         _log_stage("Generating fixtures", verbose=args.verbose)
         for cmd in COMMAND_REGISTRY:
             for gen in cmd.fixture_generators:
-                count = _run_generator_step(
+                _ = _run_generator_step(
                     f"Generating fixtures: {cmd.display_name}/{gen.__name__}",
                     gen,
                     verbose=args.verbose,
@@ -1259,7 +1260,7 @@ def main() -> None:
         _log_stage("Generating test runners", verbose=args.verbose)
         for cmd in COMMAND_REGISTRY:
             for gen in cmd.runner_generators:
-                count = _run_generator_step(
+                _ = _run_generator_step(
                     f"Generating test runners: {cmd.display_name}/{gen.__name__}",
                     gen,
                     verbose=args.verbose,
@@ -1268,7 +1269,7 @@ def main() -> None:
         _log_stage("Generating deny fixtures", verbose=args.verbose)
         for cmd in COMMAND_REGISTRY:
             for gen in cmd.deny_generators:
-                count = _run_generator_step(
+                _ = _run_generator_step(
                     f"Generating deny fixtures: {cmd.display_name}/{gen.__name__}",
                     gen,
                     verbose=args.verbose,

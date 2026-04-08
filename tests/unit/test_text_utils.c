@@ -18,14 +18,17 @@ static void test_is_printable_ascii(void **state) {
 
     // Valid printable ASCII without spaces
     const uint8_t *valid_no_spaces = (const uint8_t *) "HelloWorld123";
-    assert_true(str_isPrintableAsciiWithoutSpaces(valid_no_spaces, strlen((const char *) valid_no_spaces)));
+    assert_true(
+        str_isPrintableAsciiWithoutSpaces(valid_no_spaces, strlen((const char *) valid_no_spaces)));
 
     // Valid printable ASCII with spaces
     const uint8_t *valid_with_spaces = (const uint8_t *) "Hello World 123";
-    assert_true(str_isPrintableAsciiWithSpaces(valid_with_spaces, strlen((const char *) valid_with_spaces)));
+    assert_true(str_isPrintableAsciiWithSpaces(valid_with_spaces,
+                                               strlen((const char *) valid_with_spaces)));
 
     // Invalid - has space but checking without spaces allowed
-    assert_false(str_isPrintableAsciiWithoutSpaces(valid_with_spaces, strlen((const char *) valid_with_spaces)));
+    assert_false(str_isPrintableAsciiWithoutSpaces(valid_with_spaces,
+                                                   strlen((const char *) valid_with_spaces)));
 
     // Invalid - non-ASCII character
     const uint8_t invalid_ascii[] = {0x48, 0x65, 0xff, 0x00};  // "He" + invalid byte
@@ -99,7 +102,8 @@ static void test_is_unambiguous_ascii(void **state) {
 
     // Invalid - double space at beginning
     const uint8_t *double_space_start = (const uint8_t *) "  World";
-    assert_false(str_isUnambiguousAscii(double_space_start, strlen((const char *) double_space_start)));
+    assert_false(
+        str_isUnambiguousAscii(double_space_start, strlen((const char *) double_space_start)));
 }
 
 // Additional tests for better mutation coverage - specific boundary values

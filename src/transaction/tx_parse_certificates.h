@@ -20,10 +20,9 @@
  *
  * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-bool parse_certificate_stake_registration_deregistration(
-    buffer_t *buf,
-    certificate_type_t cert_type,
-    certificate_data_t *cert_data);
+bool parse_certificate_stake_registration_deregistration(buffer_t *buf,
+                                                         certificate_type_t cert_type,
+                                                         certificate_data_t *cert_data);
 
 /**
  * Parse CERTIFICATE_STAKE_DELEGATION
@@ -38,8 +37,7 @@ bool parse_certificate_stake_registration_deregistration(
  *
  * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-bool parse_certificate_stake_delegation(buffer_t *buf,
-                                                  certificate_data_t *cert_data);
+bool parse_certificate_stake_delegation(buffer_t *buf, certificate_data_t *cert_data);
 
 /**
  * Parse CERTIFICATE_STAKE_REGISTRATION_CONWAY or CERTIFICATE_STAKE_DEREGISTRATION_CONWAY
@@ -50,15 +48,15 @@ bool parse_certificate_stake_delegation(buffer_t *buf,
  * - deposit (8 bytes): deposit amount in lovelace
  *
  * @param[in]  buf       Buffer with serialized certificate
- * @param[in]  cert_type Either CERTIFICATE_STAKE_REGISTRATION_CONWAY or CERTIFICATE_STAKE_DEREGISTRATION_CONWAY
+ * @param[in]  cert_type Either CERTIFICATE_STAKE_REGISTRATION_CONWAY or
+ * CERTIFICATE_STAKE_DEREGISTRATION_CONWAY
  * @param[out] cert_data  Parsed certificate data
  *
  * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-bool parse_certificate_stake_registration_deregistration_conway(
-    buffer_t *buf,
-    certificate_type_t cert_type,
-    certificate_data_t *cert_data);
+bool parse_certificate_stake_registration_deregistration_conway(buffer_t *buf,
+                                                                certificate_type_t cert_type,
+                                                                certificate_data_t *cert_data);
 
 /**
  * Parse CERTIFICATE_STAKE_POOL_RETIREMENT
@@ -73,8 +71,7 @@ bool parse_certificate_stake_registration_deregistration_conway(
  *
  * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-bool parse_certificate_stake_pool_retirement(buffer_t *buf,
-                                                       certificate_data_t *cert_data);
+bool parse_certificate_stake_pool_retirement(buffer_t *buf, certificate_data_t *cert_data);
 
 /**
  * Parse CERTIFICATE_VOTE_DELEGATION
@@ -82,15 +79,15 @@ bool parse_certificate_stake_pool_retirement(buffer_t *buf,
  * Format:
  * - certificate_type (1 byte): 9
  * - stake_credential (variable): type + data
- * - drep (variable): DRep specification (key hash, key path, script hash, abstain, or no confidence)
+ * - drep (variable): DRep specification (key hash, key path, script hash, abstain, or no
+ * confidence)
  *
  * @param[in]  buf      Buffer with serialized certificate
  * @param[out] cert_data Parsed certificate data
  *
  * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-bool parse_certificate_vote_delegation(buffer_t *buf,
-                                                 certificate_data_t *cert_data);
+bool parse_certificate_vote_delegation(buffer_t *buf, certificate_data_t *cert_data);
 
 /**
  * Parse CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION
@@ -101,16 +98,13 @@ bool parse_certificate_vote_delegation(buffer_t *buf,
  * - pool_key_hash (28 bytes)
  * - drep (variable): DRep specification
  */
-bool parse_certificate_stake_pool_and_drep_delegation(buffer_t *buf,
-                                                                 certificate_data_t *cert_data);
+bool parse_certificate_stake_pool_and_drep_delegation(buffer_t *buf, certificate_data_t *cert_data);
 
-bool parse_certificate_account_registration_delegation_to_stake_pool(
-    buffer_t *buf,
-    certificate_data_t *cert_data);
+bool parse_certificate_account_registration_delegation_to_stake_pool(buffer_t *buf,
+                                                                     certificate_data_t *cert_data);
 
-bool parse_certificate_account_registration_delegation_to_drep(
-    buffer_t *buf,
-    certificate_data_t *cert_data);
+bool parse_certificate_account_registration_delegation_to_drep(buffer_t *buf,
+                                                               certificate_data_t *cert_data);
 
 bool parse_certificate_account_registration_delegation_to_stake_pool_and_drep(
     buffer_t *buf,
@@ -129,8 +123,7 @@ bool parse_certificate_account_registration_delegation_to_stake_pool_and_drep(
  *
  * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-bool parse_certificate_authorize_committee_hot(buffer_t *buf,
-                                                         certificate_data_t *cert_data);
+bool parse_certificate_authorize_committee_hot(buffer_t *buf, certificate_data_t *cert_data);
 
 /**
  * Parse CERTIFICATE_RESIGN_COMMITTEE_COLD
@@ -145,8 +138,7 @@ bool parse_certificate_authorize_committee_hot(buffer_t *buf,
  *
  * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-bool parse_certificate_resign_committee_cold(buffer_t *buf,
-                                                       certificate_data_t *cert_data);
+bool parse_certificate_resign_committee_cold(buffer_t *buf, certificate_data_t *cert_data);
 
 /**
  * Parse CERTIFICATE_DREP_REGISTRATION
@@ -162,8 +154,7 @@ bool parse_certificate_resign_committee_cold(buffer_t *buf,
  *
  * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-bool parse_certificate_drep_registration(buffer_t *buf,
-                                                   certificate_data_t *cert_data);
+bool parse_certificate_drep_registration(buffer_t *buf, certificate_data_t *cert_data);
 
 /**
  * Parse CERTIFICATE_DREP_DEREGISTRATION
@@ -178,8 +169,7 @@ bool parse_certificate_drep_registration(buffer_t *buf,
  *
  * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-bool parse_certificate_drep_deregistration(buffer_t *buf,
-                                                     certificate_data_t *cert_data);
+bool parse_certificate_drep_deregistration(buffer_t *buf, certificate_data_t *cert_data);
 
 /**
  * Parse CERTIFICATE_DREP_UPDATE
@@ -194,8 +184,7 @@ bool parse_certificate_drep_deregistration(buffer_t *buf,
  *
  * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-bool parse_certificate_drep_update(buffer_t *buf,
-                                             certificate_data_t *cert_data);
+bool parse_certificate_drep_update(buffer_t *buf, certificate_data_t *cert_data);
 
 /**
  * Parse CERTIFICATE_STAKE_POOL_REGISTRATION
@@ -218,8 +207,7 @@ bool parse_certificate_drep_update(buffer_t *buf,
  *
  * @return 0 on success, SWO_TX_PARSING_FAIL_CERTIFICATES on failure
  */
-bool parse_certificate_stake_pool_registration(buffer_t *buf,
-                                                         certificate_data_t *cert_data);
+bool parse_certificate_stake_pool_registration(buffer_t *buf, certificate_data_t *cert_data);
 
 bool parse_pool_relay(buffer_t *buf, pool_relay_t *relay);
 bool parse_pool_metadata(buffer_t *buf, pool_metadata_t *out_metadata);

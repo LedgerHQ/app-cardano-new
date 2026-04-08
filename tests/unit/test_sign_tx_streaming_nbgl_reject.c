@@ -38,7 +38,8 @@
 static void test_streaming_reject_at_start(void **state) {
     (void) state;
     run_fixture_reject_streaming_start_with_expert_mode(
-        &FIXTURE_STREAMING_SIGN_TX_STREAMING_MANY_REQUIRED_SIGNERS, true);
+        &FIXTURE_STREAMING_SIGN_TX_STREAMING_MANY_REQUIRED_SIGNERS,
+        true);
 }
 
 // ======================================================================
@@ -48,19 +49,23 @@ static void test_streaming_reject_at_start(void **state) {
 static void test_streaming_reject_at_continue(void **state) {
     (void) state;
     run_fixture_reject_streaming_continue_with_expert_mode(
-        &FIXTURE_STREAMING_SIGN_TX_STREAMING_MANY_REQUIRED_SIGNERS, true);
+        &FIXTURE_STREAMING_SIGN_TX_STREAMING_MANY_REQUIRED_SIGNERS,
+        true);
 }
 
 static void test_streaming_reject_at_later_continue(void **state) {
     (void) state;
     run_fixture_reject_streaming_continue_at_call_with_expert_mode(
-        &FIXTURE_STREAMING_SIGN_TX_STREAMING_MANY_REQUIRED_SIGNERS, true, 1);
+        &FIXTURE_STREAMING_SIGN_TX_STREAMING_MANY_REQUIRED_SIGNERS,
+        true,
+        1);
 }
 
 static void test_streaming_reject_at_finish(void **state) {
     (void) state;
     run_fixture_reject_streaming_finish_with_expert_mode(
-        &FIXTURE_STREAMING_SIGN_TX_STREAMING_MANY_REQUIRED_SIGNERS, true);
+        &FIXTURE_STREAMING_SIGN_TX_STREAMING_MANY_REQUIRED_SIGNERS,
+        true);
 }
 
 int main(void) {

@@ -11,10 +11,10 @@ stays synchronized with actual key derivation from the standard test mnemonic:
 The test dynamically parses the C header file and verifies all mock entries.
 """
 
-import pytest
 import hashlib
 import re
 from pathlib import Path
+import pytest
 
 from ragger.bip import calculate_public_key_and_chaincode, CurveChoice
 

@@ -27,19 +27,21 @@ bool cbor_mapKeyFulfillsCanonicalOrdering(const uint8_t *previous_key,
 }
 
 bool cbor_canonical_tracker_check_and_advance(cbor_canonical_tracker_t *tracker,
-                                               const uint8_t *next_key,
-                                               size_t next_key_length) {
+                                              const uint8_t *next_key,
+                                              size_t next_key_length) {
     ASSERT(tracker != NULL);
     ASSERT(next_key != NULL);
     ASSERT(next_key_length <= CBOR_CANONICAL_MAX_KEY_SIZE);
-    if (tracker->has_previous &&
-        !cbor_mapKeyFulfillsCanonicalOrdering(tracker->previous_key,
-                                              tracker->previous_key_length,
-                                              next_key,
-                                              next_key_length)) {
+    if (tracker->has_previous && !cbor_mapKeyFulfillsCanonicalOrdering(tracker->previous_key,
+                                                                       tracker->previous_key_length,
+                                                                       next_key,
+                                                                       next_key_length)) {
         return false;
     }
-    if (tracker->previous_key_length > next_key_length) memset(tracker->previous_key + next_key_length, 0, tracker->previous_key_length - next_key_length);
+    if (tracker->previous_key_length > next_key_length)
+        memset(tracker->previous_key + next_key_length,
+               0,
+               tracker->previous_key_length - next_key_length);
     memcpy(tracker->previous_key, next_key, next_key_length);
     tracker->previous_key_length = next_key_length;
     tracker->has_previous = true;

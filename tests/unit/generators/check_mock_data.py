@@ -122,6 +122,7 @@ def _collect_runtime_used_signature_indices(ctest_regex: str) -> set[int]:
             text=True,
             capture_output=True,
             timeout=1800,
+            check=False,
         )
         if result.returncode != 0:
             if result.stdout:

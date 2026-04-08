@@ -185,12 +185,10 @@ void txHashBuilder_addOutput_token(tx_hash_builder_t* builder,
                                    size_t assetNameSize,
                                    uint64_t amount);
 
-#define MAX_CBOR_VOTER_MAP_KEY_SIZE 64
+#define MAX_CBOR_VOTER_MAP_KEY_SIZE      64
 #define MAX_CBOR_GOV_ACTION_MAP_KEY_SIZE 72
 
-size_t txHashBuilder_serializeVoterKey(const voter_t* voter,
-                                       uint8_t* buffer,
-                                       size_t bufferLen);
+size_t txHashBuilder_serializeVoterKey(const voter_t* voter, uint8_t* buffer, size_t bufferLen);
 
 size_t txHashBuilder_serializeGovActionKey(const gov_action_id_t* govActionId,
                                            uint8_t* buffer,
@@ -247,10 +245,11 @@ void txHashBuilder_addCertificate_accountRegistrationDelegationToStakePool(
     size_t poolKeyHashSize,
     uint64_t deposit);
 
-void txHashBuilder_addCertificate_accountRegistrationDelegationToDRep(tx_hash_builder_t* builder,
-                                                                     const credential_t* stakeCredential,
-                                                                     const drep_t* drep,
-                                                                     uint64_t deposit);
+void txHashBuilder_addCertificate_accountRegistrationDelegationToDRep(
+    tx_hash_builder_t* builder,
+    const credential_t* stakeCredential,
+    const drep_t* drep,
+    uint64_t deposit);
 
 void txHashBuilder_addCertificate_accountRegistrationDelegationToStakePoolAndDRep(
     tx_hash_builder_t* builder,
@@ -392,9 +391,7 @@ void txHashBuilder_addReferenceInput(tx_hash_builder_t* builder, const tx_input_
 
 void txHashBuilder_enterVotingProcedures(tx_hash_builder_t* builder);
 
-void txHashBuilder_addVoter(tx_hash_builder_t* builder,
-                            const voter_t* voter,
-                            uint16_t numVotes);
+void txHashBuilder_addVoter(tx_hash_builder_t* builder, const voter_t* voter, uint16_t numVotes);
 
 void txHashBuilder_addVote(tx_hash_builder_t* builder,
                            gov_action_id_t* govActionId,

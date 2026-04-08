@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include <stddef.h>   // size_t
-#include <stdint.h>   // uint*_t
+#include <stddef.h>  // size_t
+#include <stdint.h>  // uint*_t
 
 #include "buffer.h"
 

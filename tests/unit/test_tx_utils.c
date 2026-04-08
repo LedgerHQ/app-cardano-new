@@ -18,7 +18,10 @@ static void reset_test_context(void) {
     memset(&G_context, 0, sizeof(G_context));
 }
 
-static bip44_path_t make_wallet_path(uint32_t purpose, uint32_t account, uint32_t chain, uint32_t address) {
+static bip44_path_t make_wallet_path(uint32_t purpose,
+                                     uint32_t account,
+                                     uint32_t chain,
+                                     uint32_t address) {
     bip44_path_t path = {0};
     path.length = 5;
     path.path[0] = bip44_harden(purpose);

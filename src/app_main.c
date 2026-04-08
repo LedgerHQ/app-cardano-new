@@ -37,8 +37,7 @@ void app_main(void) {
     command_t cmd = {0};
 
     // Initialize SDK memory allocator
-    LEDGER_ASSERT(mem_utils_reset_app_heap(),
-                  "Failed to initialize memory allocator");
+    LEDGER_ASSERT(mem_utils_reset_app_heap(), "Failed to initialize memory allocator");
 
     io_init();
 
@@ -101,8 +100,8 @@ void app_main(void) {
             CATCH_OTHER(exception) {
                 TRACE("Unhandled exception in app_main loop: 0x%04X", exception);
                 CLOSE_TRY;
-                uint16_t swo = ((exception & 0xF000) == 0x6000) ? (uint16_t) exception
-                                                                 : SWO_UNKNOWN;
+                uint16_t swo =
+                    ((exception & 0xF000) == 0x6000) ? (uint16_t) exception : SWO_UNKNOWN;
                 send_swo_and_reset(swo);
             }
             FINALLY {

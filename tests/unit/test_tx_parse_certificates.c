@@ -28,7 +28,7 @@ static size_t _write_key_hash_credential(uint8_t *dst) {
 // Write a 64-bit big-endian value into dst; return bytes written.
 static size_t _write_u64_be(uint8_t *dst, uint64_t value) {
     for (int i = 7; i >= 0; i--) {
-        dst[i] = (uint8_t)(value & 0xFF);
+        dst[i] = (uint8_t) (value & 0xFF);
         value >>= 8;
     }
     return 8;
@@ -44,8 +44,9 @@ static void test_cert_stake_reg_truncated_credential(void **state) {
     uint8_t buf_data[1] = {0};
     buffer_t buf = {.ptr = buf_data, .size = 0, .offset = 0};
     certificate_data_t cert;
-    assert_false(parse_certificate_stake_registration_deregistration(
-        &buf, CERTIFICATE_STAKE_REGISTRATION, &cert));
+    assert_false(parse_certificate_stake_registration_deregistration(&buf,
+                                                                     CERTIFICATE_STAKE_REGISTRATION,
+                                                                     &cert));
 }
 
 // ---------------------------------------------------------------------------
@@ -80,7 +81,9 @@ static void test_cert_conway_reg_truncated_credential(void **state) {
     buffer_t buf = {.ptr = buf_data, .size = 0, .offset = 0};
     certificate_data_t cert;
     assert_false(parse_certificate_stake_registration_deregistration_conway(
-        &buf, CERTIFICATE_STAKE_REGISTRATION_CONWAY, &cert));
+        &buf,
+        CERTIFICATE_STAKE_REGISTRATION_CONWAY,
+        &cert));
 }
 
 static void test_cert_conway_reg_truncated_deposit(void **state) {
@@ -90,7 +93,9 @@ static void test_cert_conway_reg_truncated_deposit(void **state) {
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     certificate_data_t cert;
     assert_false(parse_certificate_stake_registration_deregistration_conway(
-        &buf, CERTIFICATE_STAKE_REGISTRATION_CONWAY, &cert));
+        &buf,
+        CERTIFICATE_STAKE_REGISTRATION_CONWAY,
+        &cert));
 }
 
 static void test_cert_conway_reg_deposit_too_large(void **state) {
@@ -101,7 +106,9 @@ static void test_cert_conway_reg_deposit_too_large(void **state) {
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     certificate_data_t cert;
     assert_false(parse_certificate_stake_registration_deregistration_conway(
-        &buf, CERTIFICATE_STAKE_REGISTRATION_CONWAY, &cert));
+        &buf,
+        CERTIFICATE_STAKE_REGISTRATION_CONWAY,
+        &cert));
 }
 
 static void test_cert_conway_dereg_deposit_too_large(void **state) {
@@ -112,7 +119,9 @@ static void test_cert_conway_dereg_deposit_too_large(void **state) {
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     certificate_data_t cert;
     assert_false(parse_certificate_stake_registration_deregistration_conway(
-        &buf, CERTIFICATE_STAKE_DEREGISTRATION_CONWAY, &cert));
+        &buf,
+        CERTIFICATE_STAKE_DEREGISTRATION_CONWAY,
+        &cert));
 }
 
 // ---------------------------------------------------------------------------
@@ -196,8 +205,7 @@ static void test_cert_acct_reg_to_pool_truncated_credential(void **state) {
     uint8_t buf_data[1] = {0};
     buffer_t buf = {.ptr = buf_data, .size = 0, .offset = 0};
     certificate_data_t cert;
-    assert_false(
-        parse_certificate_account_registration_delegation_to_stake_pool(&buf, &cert));
+    assert_false(parse_certificate_account_registration_delegation_to_stake_pool(&buf, &cert));
 }
 
 static void test_cert_acct_reg_to_pool_truncated_pool_hash(void **state) {
@@ -206,8 +214,7 @@ static void test_cert_acct_reg_to_pool_truncated_pool_hash(void **state) {
     _write_key_hash_credential(buf_data);
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     certificate_data_t cert;
-    assert_false(
-        parse_certificate_account_registration_delegation_to_stake_pool(&buf, &cert));
+    assert_false(parse_certificate_account_registration_delegation_to_stake_pool(&buf, &cert));
 }
 
 static void test_cert_acct_reg_to_pool_truncated_deposit(void **state) {
@@ -216,8 +223,7 @@ static void test_cert_acct_reg_to_pool_truncated_deposit(void **state) {
     _write_key_hash_credential(buf_data);
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     certificate_data_t cert;
-    assert_false(
-        parse_certificate_account_registration_delegation_to_stake_pool(&buf, &cert));
+    assert_false(parse_certificate_account_registration_delegation_to_stake_pool(&buf, &cert));
 }
 
 static void test_cert_acct_reg_to_pool_deposit_too_large(void **state) {
@@ -228,8 +234,7 @@ static void test_cert_acct_reg_to_pool_deposit_too_large(void **state) {
     _write_u64_be(buf_data + off, LOVELACE_MAX_SUPPLY);
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     certificate_data_t cert;
-    assert_false(
-        parse_certificate_account_registration_delegation_to_stake_pool(&buf, &cert));
+    assert_false(parse_certificate_account_registration_delegation_to_stake_pool(&buf, &cert));
 }
 
 // ---------------------------------------------------------------------------
@@ -241,8 +246,7 @@ static void test_cert_acct_reg_to_drep_truncated_credential(void **state) {
     uint8_t buf_data[1] = {0};
     buffer_t buf = {.ptr = buf_data, .size = 0, .offset = 0};
     certificate_data_t cert;
-    assert_false(
-        parse_certificate_account_registration_delegation_to_drep(&buf, &cert));
+    assert_false(parse_certificate_account_registration_delegation_to_drep(&buf, &cert));
 }
 
 static void test_cert_acct_reg_to_drep_truncated_drep(void **state) {
@@ -251,8 +255,7 @@ static void test_cert_acct_reg_to_drep_truncated_drep(void **state) {
     _write_key_hash_credential(buf_data);
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     certificate_data_t cert;
-    assert_false(
-        parse_certificate_account_registration_delegation_to_drep(&buf, &cert));
+    assert_false(parse_certificate_account_registration_delegation_to_drep(&buf, &cert));
 }
 
 static void test_cert_acct_reg_to_drep_deposit_too_large(void **state) {
@@ -264,8 +267,7 @@ static void test_cert_acct_reg_to_drep_deposit_too_large(void **state) {
     _write_u64_be(buf_data + off, LOVELACE_MAX_SUPPLY);
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     certificate_data_t cert;
-    assert_false(
-        parse_certificate_account_registration_delegation_to_drep(&buf, &cert));
+    assert_false(parse_certificate_account_registration_delegation_to_drep(&buf, &cert));
 }
 
 // ---------------------------------------------------------------------------
@@ -455,10 +457,11 @@ static void test_parse_pool_relay_single_host_ip_no_ip(void **state) {
     // RELAY_SINGLE_HOST_IP, port present, both IPv4 and IPv6 absent — rejected.
     uint8_t buf_data[] = {
         RELAY_SINGLE_HOST_IP,
-        2,         // FLAG_INCLUDED_YES -> port present
-        0x00, 0x50, // port = 80
-        1,         // IPv4 absent
-        1,         // IPv6 absent
+        2,  // FLAG_INCLUDED_YES -> port present
+        0x00,
+        0x50,  // port = 80
+        1,     // IPv4 absent
+        1,     // IPv6 absent
     };
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     pool_relay_t relay;
@@ -479,12 +482,12 @@ static void test_parse_pool_relay_single_host_name_missing_port(void **state) {
 
 static void test_relay_multiple_host_name_success(void **state) {
     (void) state;
-    uint8_t buf_data[] = {
-        RELAY_MULTIPLE_HOST_NAME,
-        2,          // FLAG_INCLUDED_YES
-        3,          // length
-        'a', 'b', 'c'
-    };
+    uint8_t buf_data[] = {RELAY_MULTIPLE_HOST_NAME,
+                          2,  // FLAG_INCLUDED_YES
+                          3,  // length
+                          'a',
+                          'b',
+                          'c'};
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     pool_relay_t relay;
     assert_true(parse_pool_relay(&buf, &relay));
@@ -497,9 +500,10 @@ static void test_relay_multiple_host_name_truncated_dns(void **state) {
     (void) state;
     uint8_t buf_data[] = {
         RELAY_MULTIPLE_HOST_NAME,
-        2,          // FLAG_INCLUDED_YES
-        3,          // length
-        'a', 'b'    // truncated
+        2,  // FLAG_INCLUDED_YES
+        3,  // length
+        'a',
+        'b'  // truncated
     };
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     pool_relay_t relay;
@@ -535,23 +539,21 @@ static void test_cert_pool_reg_invalid_margin(void **state) {
     // parse_certificate_stake_pool_registration reads a 2-byte payloadLength first,
     // then creates a sub-buffer of that size.  We put all payload bytes after the 2-byte
     // length prefix.
-    const size_t POOL_ID_SIZE   = 1 + POOL_KEY_HASH_LENGTH;   // type + 28 bytes
-    const size_t VRF_SIZE       = VRF_KEY_HASH_LENGTH;          // 32 bytes
-    const size_t U64_SIZE       = 8;
-    const size_t REWARD_ACCOUNT_SIZE = 1 + REWARD_ACCOUNT_LENGTH; // type + 29 bytes
-    const size_t TAIL_SIZE      = 2 + 2 + 1;                   // owners, relays, metadata flag
-    const size_t PAYLOAD_SIZE   = POOL_ID_SIZE + VRF_SIZE
-                                + U64_SIZE  // pledge
-                                + U64_SIZE  // cost
-                                + U64_SIZE  // marginNumerator
-                                + U64_SIZE  // marginDenominator
-                                + REWARD_ACCOUNT_SIZE
-                                + TAIL_SIZE;
+    const size_t POOL_ID_SIZE = 1 + POOL_KEY_HASH_LENGTH;  // type + 28 bytes
+    const size_t VRF_SIZE = VRF_KEY_HASH_LENGTH;           // 32 bytes
+    const size_t U64_SIZE = 8;
+    const size_t REWARD_ACCOUNT_SIZE = 1 + REWARD_ACCOUNT_LENGTH;   // type + 29 bytes
+    const size_t TAIL_SIZE = 2 + 2 + 1;                             // owners, relays, metadata flag
+    const size_t PAYLOAD_SIZE = POOL_ID_SIZE + VRF_SIZE + U64_SIZE  // pledge
+                                + U64_SIZE                          // cost
+                                + U64_SIZE                          // marginNumerator
+                                + U64_SIZE                          // marginDenominator
+                                + REWARD_ACCOUNT_SIZE + TAIL_SIZE;
 
     uint8_t buf_data[2 + PAYLOAD_SIZE];
     memset(buf_data, 0, sizeof(buf_data));
-    buf_data[0] = (uint8_t)(PAYLOAD_SIZE >> 8);
-    buf_data[1] = (uint8_t)(PAYLOAD_SIZE & 0xFF);
+    buf_data[0] = (uint8_t) (PAYLOAD_SIZE >> 8);
+    buf_data[1] = (uint8_t) (PAYLOAD_SIZE & 0xFF);
 
     size_t off = 2;
     // pool_id: EXT_CREDENTIAL_KEY_HASH + 28 zero bytes
@@ -560,20 +562,26 @@ static void test_cert_pool_reg_invalid_margin(void **state) {
     // vrf_key_hash: 32 zero bytes
     off += VRF_SIZE;
     // pledge = 1
-    _write_u64_be(buf_data + off, 1); off += 8;
+    _write_u64_be(buf_data + off, 1);
+    off += 8;
     // cost = 1
-    _write_u64_be(buf_data + off, 1); off += 8;
+    _write_u64_be(buf_data + off, 1);
+    off += 8;
     // marginNumerator = 5
-    _write_u64_be(buf_data + off, 5); off += 8;
+    _write_u64_be(buf_data + off, 5);
+    off += 8;
     // marginDenominator = 3  (5 > 3 -> invalid)
-    _write_u64_be(buf_data + off, 3); off += 8;
+    _write_u64_be(buf_data + off, 3);
+    off += 8;
     // reward account: EXT_CREDENTIAL_KEY_HASH + 29 zero bytes
     buf_data[off++] = EXT_CREDENTIAL_KEY_HASH;
     off += REWARD_ACCOUNT_LENGTH;
     // num_owners = 0, num_relays = 0, metadata absent
-    buf_data[off++] = 0x00; buf_data[off++] = 0x00;  // num_owners
-    buf_data[off++] = 0x00; buf_data[off++] = 0x00;  // num_relays
-    buf_data[off++] = 1;                              // FLAG_INCLUDED_NO (no metadata)
+    buf_data[off++] = 0x00;
+    buf_data[off++] = 0x00;  // num_owners
+    buf_data[off++] = 0x00;
+    buf_data[off++] = 0x00;  // num_relays
+    buf_data[off++] = 1;     // FLAG_INCLUDED_NO (no metadata)
 
     buffer_t buf = {.ptr = buf_data, .size = off, .offset = 0};
     certificate_data_t cert;
@@ -582,29 +590,32 @@ static void test_cert_pool_reg_invalid_margin(void **state) {
 
 static void test_cert_pool_reg_unknown_reward_account_type(void **state) {
     (void) state;
-    const size_t POOL_ID_SIZE   = 1 + POOL_KEY_HASH_LENGTH;
-    const size_t VRF_SIZE       = VRF_KEY_HASH_LENGTH;
-    const size_t U64_SIZE       = 8;
-    const size_t PAYLOAD_SIZE   = POOL_ID_SIZE + VRF_SIZE
-                                + U64_SIZE  // pledge
-                                + U64_SIZE  // cost
-                                + U64_SIZE  // marginNumerator
-                                + U64_SIZE  // marginDenominator
-                                + 1;        // unknown reward account type byte (then truncated)
+    const size_t POOL_ID_SIZE = 1 + POOL_KEY_HASH_LENGTH;
+    const size_t VRF_SIZE = VRF_KEY_HASH_LENGTH;
+    const size_t U64_SIZE = 8;
+    const size_t PAYLOAD_SIZE = POOL_ID_SIZE + VRF_SIZE + U64_SIZE  // pledge
+                                + U64_SIZE                          // cost
+                                + U64_SIZE                          // marginNumerator
+                                + U64_SIZE                          // marginDenominator
+                                + 1;  // unknown reward account type byte (then truncated)
 
     uint8_t buf_data[2 + PAYLOAD_SIZE];
     memset(buf_data, 0, sizeof(buf_data));
-    buf_data[0] = (uint8_t)(PAYLOAD_SIZE >> 8);
-    buf_data[1] = (uint8_t)(PAYLOAD_SIZE & 0xFF);
+    buf_data[0] = (uint8_t) (PAYLOAD_SIZE >> 8);
+    buf_data[1] = (uint8_t) (PAYLOAD_SIZE & 0xFF);
 
     size_t off = 2;
     buf_data[off++] = EXT_CREDENTIAL_KEY_HASH;
     off += POOL_KEY_HASH_LENGTH;
     off += VRF_SIZE;
-    _write_u64_be(buf_data + off, 1); off += 8;  // pledge
-    _write_u64_be(buf_data + off, 1); off += 8;  // cost
-    _write_u64_be(buf_data + off, 1); off += 8;  // numerator
-    _write_u64_be(buf_data + off, 2); off += 8;  // denominator (valid: 1/2)
+    _write_u64_be(buf_data + off, 1);
+    off += 8;  // pledge
+    _write_u64_be(buf_data + off, 1);
+    off += 8;  // cost
+    _write_u64_be(buf_data + off, 1);
+    off += 8;  // numerator
+    _write_u64_be(buf_data + off, 2);
+    off += 8;                // denominator (valid: 1/2)
     buf_data[off++] = 0xFF;  // unknown reward account type
 
     buffer_t buf = {.ptr = buf_data, .size = off, .offset = 0};
@@ -655,14 +666,18 @@ static void test_pool_id_hash_truncated(void **state) {
 static size_t _write_pool_reg_header_up_to_reward_account(uint8_t *buf_data) {
     size_t off = 2;  // skip payloadLength placeholder
     buf_data[off++] = EXT_CREDENTIAL_KEY_HASH;
-    off += POOL_KEY_HASH_LENGTH;      // vrf id hash zeros
-    off += VRF_KEY_HASH_LENGTH;       // vrf key hash zeros
-    _write_u64_be(buf_data + off, 1); off += 8;  // pledge = 1
-    _write_u64_be(buf_data + off, 1); off += 8;  // cost = 1
-    _write_u64_be(buf_data + off, 1); off += 8;  // numerator = 1
-    _write_u64_be(buf_data + off, 2); off += 8;  // denominator = 2 (valid)
+    off += POOL_KEY_HASH_LENGTH;  // vrf id hash zeros
+    off += VRF_KEY_HASH_LENGTH;   // vrf key hash zeros
+    _write_u64_be(buf_data + off, 1);
+    off += 8;  // pledge = 1
+    _write_u64_be(buf_data + off, 1);
+    off += 8;  // cost = 1
+    _write_u64_be(buf_data + off, 1);
+    off += 8;  // numerator = 1
+    _write_u64_be(buf_data + off, 2);
+    off += 8;  // denominator = 2 (valid)
     buf_data[off++] = EXT_CREDENTIAL_KEY_HASH;
-    off += REWARD_ACCOUNT_LENGTH;     // reward account hash zeros
+    off += REWARD_ACCOUNT_LENGTH;  // reward account hash zeros
     return off;
 }
 
@@ -672,8 +687,8 @@ static void test_pool_reg_truncated_vrf_hash(void **state) {
     uint8_t buf_data[2 + 1 + POOL_KEY_HASH_LENGTH + 5];
     memset(buf_data, 0, sizeof(buf_data));
     size_t payload_size = 1 + POOL_KEY_HASH_LENGTH + 5;
-    buf_data[0] = (uint8_t)(payload_size >> 8);
-    buf_data[1] = (uint8_t)(payload_size & 0xFF);
+    buf_data[0] = (uint8_t) (payload_size >> 8);
+    buf_data[1] = (uint8_t) (payload_size & 0xFF);
     buf_data[2] = EXT_CREDENTIAL_KEY_HASH;
     // rest zeros
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
@@ -686,8 +701,8 @@ static void test_pool_reg_pledge_too_large(void **state) {
     const size_t PAYLOAD_SIZE = 1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH + 8;
     uint8_t buf_data[2 + PAYLOAD_SIZE];
     memset(buf_data, 0, sizeof(buf_data));
-    buf_data[0] = (uint8_t)(PAYLOAD_SIZE >> 8);
-    buf_data[1] = (uint8_t)(PAYLOAD_SIZE & 0xFF);
+    buf_data[0] = (uint8_t) (PAYLOAD_SIZE >> 8);
+    buf_data[1] = (uint8_t) (PAYLOAD_SIZE & 0xFF);
     size_t off = 2;
     buf_data[off++] = EXT_CREDENTIAL_KEY_HASH;
     off += POOL_KEY_HASH_LENGTH;
@@ -703,13 +718,14 @@ static void test_pool_reg_cost_too_large(void **state) {
     const size_t PAYLOAD_SIZE = 1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH + 8 + 8;
     uint8_t buf_data[2 + PAYLOAD_SIZE];
     memset(buf_data, 0, sizeof(buf_data));
-    buf_data[0] = (uint8_t)(PAYLOAD_SIZE >> 8);
-    buf_data[1] = (uint8_t)(PAYLOAD_SIZE & 0xFF);
+    buf_data[0] = (uint8_t) (PAYLOAD_SIZE >> 8);
+    buf_data[1] = (uint8_t) (PAYLOAD_SIZE & 0xFF);
     size_t off = 2;
     buf_data[off++] = EXT_CREDENTIAL_KEY_HASH;
     off += POOL_KEY_HASH_LENGTH;
     off += VRF_KEY_HASH_LENGTH;
-    _write_u64_be(buf_data + off, 1); off += 8;  // pledge valid
+    _write_u64_be(buf_data + off, 1);
+    off += 8;                                            // pledge valid
     _write_u64_be(buf_data + off, LOVELACE_MAX_SUPPLY);  // cost = max (invalid)
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     certificate_data_t cert;
@@ -719,14 +735,14 @@ static void test_pool_reg_cost_too_large(void **state) {
 static void test_pool_reg_truncated_num_owners(void **state) {
     (void) state;
     // Full header through reward account, then num_owners truncated (only 1 byte).
-    const size_t HDR_SIZE = 1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH
-                          + 8 + 8 + 8 + 8       // pledge, cost, num, denom
-                          + 1 + REWARD_ACCOUNT_LENGTH  // reward account
-                          + 1;                   // only 1 byte instead of 2 for num_owners
+    const size_t HDR_SIZE = 1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH + 8 + 8 + 8 +
+                            8                            // pledge, cost, num, denom
+                            + 1 + REWARD_ACCOUNT_LENGTH  // reward account
+                            + 1;                         // only 1 byte instead of 2 for num_owners
     uint8_t buf_data[2 + HDR_SIZE];
     memset(buf_data, 0, sizeof(buf_data));
-    buf_data[0] = (uint8_t)(HDR_SIZE >> 8);
-    buf_data[1] = (uint8_t)(HDR_SIZE & 0xFF);
+    buf_data[0] = (uint8_t) (HDR_SIZE >> 8);
+    buf_data[1] = (uint8_t) (HDR_SIZE & 0xFF);
     size_t off = _write_pool_reg_header_up_to_reward_account(buf_data);
     buf_data[off++] = 0x00;  // only 1 byte for num_owners
     buffer_t buf = {.ptr = buf_data, .size = 2 + HDR_SIZE, .offset = 0};
@@ -736,17 +752,16 @@ static void test_pool_reg_truncated_num_owners(void **state) {
 
 static void test_pool_reg_truncated_num_relays(void **state) {
     (void) state;
-    const size_t HDR_SIZE = 1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH
-                          + 8 + 8 + 8 + 8
-                          + 1 + REWARD_ACCOUNT_LENGTH
-                          + 2    // num_owners OK
-                          + 1;   // only 1 byte for num_relays
+    const size_t HDR_SIZE = 1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH + 8 + 8 + 8 + 8 + 1 +
+                            REWARD_ACCOUNT_LENGTH + 2  // num_owners OK
+                            + 1;                       // only 1 byte for num_relays
     uint8_t buf_data[2 + HDR_SIZE];
     memset(buf_data, 0, sizeof(buf_data));
-    buf_data[0] = (uint8_t)(HDR_SIZE >> 8);
-    buf_data[1] = (uint8_t)(HDR_SIZE & 0xFF);
+    buf_data[0] = (uint8_t) (HDR_SIZE >> 8);
+    buf_data[1] = (uint8_t) (HDR_SIZE & 0xFF);
     size_t off = _write_pool_reg_header_up_to_reward_account(buf_data);
-    buf_data[off++] = 0x00; buf_data[off++] = 0x00;  // num_owners = 0
+    buf_data[off++] = 0x00;
+    buf_data[off++] = 0x00;  // num_owners = 0
     buf_data[off++] = 0x00;  // only 1 byte for num_relays
     buffer_t buf = {.ptr = buf_data, .size = 2 + HDR_SIZE, .offset = 0};
     certificate_data_t cert;
@@ -755,17 +770,18 @@ static void test_pool_reg_truncated_num_relays(void **state) {
 
 static void test_pool_reg_truncated_metadata_flag(void **state) {
     (void) state;
-    const size_t HDR_SIZE = 1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH
-                          + 8 + 8 + 8 + 8
-                          + 1 + REWARD_ACCOUNT_LENGTH
-                          + 2 + 2;  // num_owners + num_relays, metadata flag missing
+    const size_t HDR_SIZE = 1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH + 8 + 8 + 8 + 8 + 1 +
+                            REWARD_ACCOUNT_LENGTH + 2 +
+                            2;  // num_owners + num_relays, metadata flag missing
     uint8_t buf_data[2 + HDR_SIZE];
     memset(buf_data, 0, sizeof(buf_data));
-    buf_data[0] = (uint8_t)(HDR_SIZE >> 8);
-    buf_data[1] = (uint8_t)(HDR_SIZE & 0xFF);
+    buf_data[0] = (uint8_t) (HDR_SIZE >> 8);
+    buf_data[1] = (uint8_t) (HDR_SIZE & 0xFF);
     size_t off = _write_pool_reg_header_up_to_reward_account(buf_data);
-    buf_data[off++] = 0x00; buf_data[off++] = 0x00;  // num_owners = 0
-    buf_data[off++] = 0x00; buf_data[off++] = 0x00;  // num_relays = 0
+    buf_data[off++] = 0x00;
+    buf_data[off++] = 0x00;  // num_owners = 0
+    buf_data[off++] = 0x00;
+    buf_data[off++] = 0x00;  // num_relays = 0
     // no metadata flag
     buffer_t buf = {.ptr = buf_data, .size = 2 + HDR_SIZE, .offset = 0};
     certificate_data_t cert;
@@ -781,8 +797,9 @@ static void test_relay_dns_truncated_inclusion_flag(void **state) {
     // RELAY_SINGLE_HOST_NAME + port present + port value, then no dns inclusion flag.
     uint8_t buf_data[] = {
         RELAY_SINGLE_HOST_NAME,
-        2,          // FLAG_INCLUDED_YES -> port present
-        0x00, 0x50, // port = 80
+        2,  // FLAG_INCLUDED_YES -> port present
+        0x00,
+        0x50,  // port = 80
         // no dns inclusion flag byte
     };
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
@@ -795,9 +812,10 @@ static void test_relay_dns_missing(void **state) {
     // RELAY_SINGLE_HOST_NAME, port present, dns inclusion flag = NO.
     uint8_t buf_data[] = {
         RELAY_SINGLE_HOST_NAME,
-        2,          // FLAG_INCLUDED_YES -> port present
-        0x00, 0x50, // port = 80
-        1,          // FLAG_INCLUDED_NO -> dns not included -> rejected
+        2,  // FLAG_INCLUDED_YES -> port present
+        0x00,
+        0x50,  // port = 80
+        1,     // FLAG_INCLUDED_NO -> dns not included -> rejected
     };
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     pool_relay_t relay;
@@ -809,9 +827,10 @@ static void test_relay_dns_length_truncated(void **state) {
     // dns inclusion flag = YES, but no dns length byte follows.
     uint8_t buf_data[] = {
         RELAY_SINGLE_HOST_NAME,
-        2,          // port present
-        0x00, 0x50,
-        2,          // FLAG_INCLUDED_YES
+        2,  // port present
+        0x00,
+        0x50,
+        2,  // FLAG_INCLUDED_YES
         // no dns length byte
     };
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
@@ -824,10 +843,11 @@ static void test_relay_dns_length_zero(void **state) {
     // dns inclusion flag = YES, but dns length = 0 -> rejected.
     uint8_t buf_data[] = {
         RELAY_SINGLE_HOST_NAME,
-        2,          // port present
-        0x00, 0x50,
-        2,          // FLAG_INCLUDED_YES
-        0,          // dns_length = 0 -> rejected
+        2,  // port present
+        0x00,
+        0x50,
+        2,  // FLAG_INCLUDED_YES
+        0,  // dns_length = 0 -> rejected
     };
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     pool_relay_t relay;
@@ -835,14 +855,14 @@ static void test_relay_dns_length_zero(void **state) {
 }
 
 static void test_relay_dns_too_long(void **state) {
-
     (void) state;
     // dns length = MAX_DNS_NAME_LENGTH + 1 = 129 (now checked before the > 0 guard).
     uint8_t buf_data[] = {
         RELAY_SINGLE_HOST_NAME,
-        2,          // port present
-        0x00, 0x50,
-        2,          // FLAG_INCLUDED_YES
+        2,  // port present
+        0x00,
+        0x50,
+        2,                        // FLAG_INCLUDED_YES
         MAX_DNS_NAME_LENGTH + 1,  // dns_length too large
     };
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
@@ -855,11 +875,13 @@ static void test_relay_dns_name_truncated(void **state) {
     // dns length = 5, but only 2 name bytes follow.
     uint8_t buf_data[] = {
         RELAY_SINGLE_HOST_NAME,
-        2,          // port present
-        0x00, 0x50,
-        2,          // FLAG_INCLUDED_YES
-        5,          // dns_length = 5
-        'a', 'b',   // only 2 bytes
+        2,  // port present
+        0x00,
+        0x50,
+        2,  // FLAG_INCLUDED_YES
+        5,  // dns_length = 5
+        'a',
+        'b',  // only 2 bytes
     };
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     pool_relay_t relay;
@@ -871,11 +893,14 @@ static void test_relay_dns_non_ascii(void **state) {
     // dns length = 3, name contains a non-ASCII byte (0x80).
     uint8_t buf_data[] = {
         RELAY_SINGLE_HOST_NAME,
-        2,          // port present
-        0x00, 0x50,
-        2,          // FLAG_INCLUDED_YES
-        3,          // dns_length = 3
-        'a', 0x80, 'b',  // 0x80 is not unambiguous ASCII
+        2,  // port present
+        0x00,
+        0x50,
+        2,  // FLAG_INCLUDED_YES
+        3,  // dns_length = 3
+        'a',
+        0x80,
+        'b',  // 0x80 is not unambiguous ASCII
     };
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     pool_relay_t relay;
@@ -926,8 +951,14 @@ static void test_relay_ip_truncated_ipv6_flag(void **state) {
     // port + ipv4 present, no ipv6 flag byte.
     uint8_t buf_data[] = {
         RELAY_SINGLE_HOST_IP,
-        2, 0x00, 0x50,       // port
-        2, 0x01, 0x02, 0x03, 0x04,  // ipv4 present + 4 bytes
+        2,
+        0x00,
+        0x50,  // port
+        2,
+        0x01,
+        0x02,
+        0x03,
+        0x04,  // ipv4 present + 4 bytes
         // no ipv6 flag
     };
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
@@ -940,9 +971,16 @@ static void test_relay_ip_truncated_ipv6_bytes(void **state) {
     // ipv6 flag = YES, but only 5 ipv6 bytes (need 16).
     uint8_t buf_data[] = {
         RELAY_SINGLE_HOST_IP,
-        2, 0x00, 0x50,
+        2,
+        0x00,
+        0x50,
         1,  // ipv4 absent
-        2, 0x20, 0x01, 0x0D, 0xB8, 0x00,  // ipv6 present + 5 bytes only
+        2,
+        0x20,
+        0x01,
+        0x0D,
+        0xB8,
+        0x00,  // ipv6 present + 5 bytes only
     };
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     pool_relay_t relay;
@@ -986,7 +1024,7 @@ static void test_pool_metadata_url_too_long(void **state) {
     (void) state;
     // url_length = MAX_POOL_METADATA_URL_LENGTH + 1
     uint16_t bad_len = MAX_POOL_METADATA_URL_LENGTH + 1;
-    uint8_t buf_data[2] = {(uint8_t)(bad_len >> 8), (uint8_t)(bad_len & 0xFF)};
+    uint8_t buf_data[2] = {(uint8_t) (bad_len >> 8), (uint8_t) (bad_len & 0xFF)};
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     pool_metadata_t meta;
     assert_false(parse_pool_metadata(&buf, &meta));
@@ -1033,8 +1071,7 @@ static void test_cert_acct_reg_to_drep_truncated_deposit(void **state) {
     // 4 deposit bytes (truncated)
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     certificate_data_t cert;
-    assert_false(
-        parse_certificate_account_registration_delegation_to_drep(&buf, &cert));
+    assert_false(parse_certificate_account_registration_delegation_to_drep(&buf, &cert));
 }
 
 // ---------------------------------------------------------------------------

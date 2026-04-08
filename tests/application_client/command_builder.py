@@ -1230,7 +1230,7 @@ class CommandBuilder:
                 aux_data_type = TxAuxiliaryDataType.CIP36_REGISTRATION
 
         # Calculate raw transaction buffer size
-        raw_tx_data = self._serialize_transaction_unpacked_raw(tx)
+        raw_tx_data = self.serialize_transaction_unpacked_raw(tx)
         raw_tx_total_length = len(raw_tx_data)
 
         return TxInitParams(
@@ -1337,7 +1337,7 @@ class CommandBuilder:
     def serialize_transaction_chunks(self, tx: Transaction) -> list[bytes]:
         if MAX_SIGN_TX_CHUNK_SIZE <= 0:
             raise ValueError("MAX_SIGN_TX_CHUNK_SIZE must be positive")
-        tx_data = self._serialize_transaction_unpacked_raw(tx)
+        tx_data = self.serialize_transaction_unpacked_raw(tx)
         if not tx_data:
             raise ValueError("Serialized transaction must not be empty")
         chunks: List[bytes] = []
@@ -1354,7 +1354,7 @@ class CommandBuilder:
             chunks.append(chunk_apdu)
         return chunks
 
-    def _serialize_transaction_unpacked_raw(self, tx: Transaction) -> bytes:
+    def serialize_transaction_unpacked_raw(self, tx: Transaction) -> bytes:
         data = bytearray()
         for tx_input in tx.inputs:
             data.extend(bytes.fromhex(tx_input.txHashHex))

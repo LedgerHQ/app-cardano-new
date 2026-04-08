@@ -39,11 +39,10 @@ void handler_get_version(const buffer_t *data_buffer) {
     response_flags |= GET_VERSION_FLAG_DEBUG;
 #endif  // DEBUG
 
-    apdu_response_send_data(
-        (const uint8_t *) &(uint8_t[APPVERSION_LEN]){(uint8_t) MAJOR_VERSION,
-                                                     (uint8_t) MINOR_VERSION,
-                                                     (uint8_t) PATCH_VERSION,
-                                                     response_flags},
-        APPVERSION_LEN,
-        SWO_SUCCESS);
+    apdu_response_send_data((const uint8_t *) &(uint8_t[APPVERSION_LEN]){(uint8_t) MAJOR_VERSION,
+                                                                         (uint8_t) MINOR_VERSION,
+                                                                         (uint8_t) PATCH_VERSION,
+                                                                         response_flags},
+                            APPVERSION_LEN,
+                            SWO_SUCCESS);
 }

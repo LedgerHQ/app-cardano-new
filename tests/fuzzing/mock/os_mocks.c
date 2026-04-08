@@ -31,12 +31,10 @@ global_ctx_t G_context;
 uint16_t G_apdu_error = 0;
 
 // Mock storage for fuzzing
-const internal_storage_t N_storage_real = {
-    .expert_mode_enabled = 1,
-    .silent_pubkey_export_enabled = 0,
-    .blind_signing_enabled = 0,
-    .initialized = 1
-};
+const internal_storage_t N_storage_real = {.expert_mode_enabled = 1,
+                                           .silent_pubkey_export_enabled = 0,
+                                           .blind_signing_enabled = 0,
+                                           .initialized = 1};
 
 int io_send_response_buffers(const buffer_t *buffer_list, size_t buffer_count, uint16_t swo) {
     (void) buffer_list;

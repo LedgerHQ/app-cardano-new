@@ -22,7 +22,7 @@
 #ifdef TRACE_HANDLERS
 #define TRACE_MODULE(...) TRACE("[derive_address] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 static bool ensure_derive_address_init_request_state(void) {
@@ -73,8 +73,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
         return;
     }
     // Copy any hash pointers into context-owned storage so they survive beyond this APDU
-    address_params_copyHashesToStorage(&ctx->address_params,
-                                     &ctx->hashStorage);
+    address_params_copyHashesToStorage(&ctx->address_params, &ctx->hashStorage);
 
     // Parameters successfully parsed
     G_context.state.derive_address_state = DERIVE_ADDRESS_STATE_PARSED;
@@ -86,7 +85,8 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
             ctx->should_export_address = true;
             ASSERT(G_context.state.derive_address_state == DERIVE_ADDRESS_STATE_PARSED);
             warning_bits_t warnings = 0;
-            security_policy_t policy = policyForReturnDeriveAddress(&ctx->address_params, &warnings);
+            security_policy_t policy =
+                policyForReturnDeriveAddress(&ctx->address_params, &warnings);
             TRACE_MODULE("Policy: %d", (int) policy);
             if (policy == POLICY_DENY) {
                 TRACE("Policy denied");
@@ -122,7 +122,7 @@ void handler_derive_address(buffer_t *cdata, uint8_t p1) {
             TRACE("Bad display type");
             ASSERT(false);
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
     return;
 }
@@ -133,7 +133,8 @@ void finalize_derive_address(void) {
 
     derive_address_ctx_t *ctx = &G_context.derive_address_info;
     if (ctx->should_export_address) {
-        LEDGER_ASSERT(ctx->address.length <= sizeof(ctx->address.buffer), "Address length too large");
+        LEDGER_ASSERT(ctx->address.length <= sizeof(ctx->address.buffer),
+                      "Address length too large");
         apdu_response_send_data(ctx->address.buffer, ctx->address.length, SWO_SUCCESS);
     } else {
         apdu_response_send_data(NULL, 0, SWO_SUCCESS);

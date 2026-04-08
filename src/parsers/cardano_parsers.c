@@ -18,10 +18,10 @@
 #ifdef TRACE_TX_PARSE
 #define TRACE_MODULE(...) TRACE("[cardano_parsers] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
-bool buffer_read_flag_included(buffer_t *buf, bool* result) {
+bool buffer_read_flag_included(buffer_t *buf, bool *result) {
     ASSERT(buf != NULL);
     ASSERT(result != NULL);
 
@@ -75,8 +75,7 @@ bool buffer_read_anchor(buffer_t *buf, anchor_t *anchor) {
     // used also for pool medatadata which is essentially the same thing
     STATIC_ASSERT(MAX_ANCHOR_URL_LENGTH == MAX_POOL_METADATA_URL_LENGTH,
                   "URL length limits must match");
-    STATIC_ASSERT(ANCHOR_HASH_LENGTH == POOL_METADATA_HASH_LENGTH,
-                  "Hash lengths must match");
+    STATIC_ASSERT(ANCHOR_HASH_LENGTH == POOL_METADATA_HASH_LENGTH, "Hash lengths must match");
 
     anchor->isIncluded = false;
     anchor->url = NULL;
@@ -99,7 +98,8 @@ bool buffer_read_anchor(buffer_t *buf, anchor_t *anchor) {
     }
     TRACE_MODULE("Anchor URL length: %u", anchor->urlLength);
     if (anchor->urlLength > MAX_ANCHOR_URL_LENGTH) {
-        TRACE("Anchor URL length exceeds maximum: %u > %u", anchor->urlLength,
+        TRACE("Anchor URL length exceeds maximum: %u > %u",
+              anchor->urlLength,
               MAX_ANCHOR_URL_LENGTH);
         return false;
     }
@@ -191,7 +191,7 @@ bool buffer_read_drep(buffer_t *buf, ext_drep_t *drep) {
         default:
             ASSERT(false);
             return false;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
     TRACE("Successfully parsed DRep");
     return true;
@@ -278,7 +278,7 @@ static bool _parse_credential_data(buffer_t *buf,
         default:
             LEDGER_ASSERT(false, "Invalid internal credential type: %u", cred_type);
             return false;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
     return true;
 }
