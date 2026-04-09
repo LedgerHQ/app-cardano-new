@@ -157,8 +157,8 @@ typedef struct {
 } cvote_fixture_t;
 
 typedef enum {
-    CVOTE_DENY_PHASE_INIT    = 0,  // malformed INIT payload → error at INIT
-    CVOTE_DENY_PHASE_CHUNK   = 1,  // CHUNK before INIT → SWO_COMMAND_NOT_ALLOWED
+    CVOTE_DENY_PHASE_INIT = 0,     // malformed INIT payload → error at INIT
+    CVOTE_DENY_PHASE_CHUNK = 1,    // CHUNK before INIT → SWO_COMMAND_NOT_ALLOWED
     CVOTE_DENY_PHASE_CONFIRM = 2,  // valid INIT, then malformed CONFIRM → error at CONFIRM
 } cvote_deny_phase_e;
 
@@ -178,7 +178,6 @@ typedef struct {
     uint16_t expected_swo;
 } cvote_deny_fixture_t;
 
-
 // Native script types (matching CBOR encoding)
 typedef enum {
     NATIVE_SCRIPT_TYPE_PUBKEY_DEVICE_OWNED = 0x00,
@@ -193,24 +192,24 @@ typedef enum {
 typedef struct native_script_s native_script_t;
 // SIMPLE script structure (leaf node)
 typedef struct {
-   const uint8_t* apdu_payload;         // Raw APDU data from command_builder.derive_script_add_complex:
-   size_t apdu_payload_length;          // Length of APDU payload
+    const uint8_t *apdu_payload;  // Raw APDU data from command_builder.derive_script_add_complex:
+    size_t apdu_payload_length;   // Length of APDU payload
 } native_script_simple_t;
 
 // COMPLEX script structure (internal node with children)
 typedef struct {
     union {
         struct {
-            const native_script_t** scripts;
+            const native_script_t **scripts;
             uint32_t scripts_count;
         } all;
         struct {
-            const native_script_t** scripts;
+            const native_script_t **scripts;
             uint32_t scripts_count;
         } any;
         struct {
             uint32_t required_count;
-            const native_script_t** scripts;
+            const native_script_t **scripts;
             uint32_t scripts_count;
         } n_of_k;
     } params;
@@ -227,10 +226,10 @@ struct native_script_s {
 
 // Test case structure
 typedef struct {
-    const char* name;
-    const native_script_t* root_script;  // Root of script tree
+    const char *name;
+    const native_script_t *root_script;  // Root of script tree
     const uint16_t expected_response;
-    const uint8_t* expected_hash;
-    const uint8_t* finish_apdu_payload;     // Raw APDU data from command_builder.derive_script_finish
-    size_t finish_apdu_payload_length;      // Length of finish APDU payload
+    const uint8_t *expected_hash;
+    const uint8_t *finish_apdu_payload;  // Raw APDU data from command_builder.derive_script_finish
+    size_t finish_apdu_payload_length;   // Length of finish APDU payload
 } native_script_test_case_t;

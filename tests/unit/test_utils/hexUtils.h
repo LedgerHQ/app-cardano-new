@@ -20,10 +20,9 @@ bool hex_parseNibblePair(const char* buffer, uint8_t* out_byte);
 // Returns false on any error (invalid hex characters, odd length, buffer too small)
 bool decode_hex(const char* inStr, uint8_t* outBuffer, size_t outMaxSize, size_t* out_length);
 
-// Decode a hex string with optional separators (spaces, underscores, newlines, tabs) into binary buffer
-// Useful for readable test fixtures where hex strings may contain formatting
-// Returns the number of bytes decoded, or 0 on error
-// Note: Uses assertions on error (for test code)
+// Decode a hex string with optional separators (spaces, underscores, newlines, tabs) into binary
+// buffer Useful for readable test fixtures where hex strings may contain formatting Returns the
+// number of bytes decoded, or 0 on error Note: Uses assertions on error (for test code)
 size_t hex_to_bytes(const char* hex, uint8_t* out, size_t max_size);
 
 // Test utility: encode bytes to lowercase hex (for testing purposes)

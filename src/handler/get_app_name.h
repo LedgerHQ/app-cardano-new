@@ -6,7 +6,7 @@
 #include "os.h"
 #include "buffer.h"
 
-#define APPNAME_LEN (sizeof(APPNAME) - 1)
+#define APPNAME_LEN         (sizeof(APPNAME) - 1)
 #define MAX_APP_NAME_LENGTH 64
 
 /**

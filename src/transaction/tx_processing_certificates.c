@@ -39,23 +39,23 @@ credential_t credential_for_tx_hash_from_ext_credential(const ext_credential_t *
 drep_t drep_for_tx_hash_from_ext_drep(const ext_drep_t *ext_drep);
 
 static void hash_certificate(tx_hash_builder_t *hash_builder,
-                              const certificate_data_t *parsed_certificate_data) {
+                             const certificate_data_t *parsed_certificate_data) {
     ASSERT(hash_builder != NULL);
     ASSERT(parsed_certificate_data != NULL);
 
     switch (parsed_certificate_data->type) {
         case CERTIFICATE_STAKE_REGISTRATION:
         case CERTIFICATE_STAKE_DEREGISTRATION: {
-            credential_t stake_credential_for_hash =
-                credential_for_tx_hash_from_ext_credential(&parsed_certificate_data->stakeCredential);
+            credential_t stake_credential_for_hash = credential_for_tx_hash_from_ext_credential(
+                &parsed_certificate_data->stakeCredential);
             txHashBuilder_addCertificate_stakingOld(hash_builder,
                                                     parsed_certificate_data->type,
                                                     &stake_credential_for_hash);
             break;
         }
         case CERTIFICATE_STAKE_DELEGATION: {
-            credential_t stake_credential_for_hash =
-                credential_for_tx_hash_from_ext_credential(&parsed_certificate_data->stakeCredential);
+            credential_t stake_credential_for_hash = credential_for_tx_hash_from_ext_credential(
+                &parsed_certificate_data->stakeCredential);
             txHashBuilder_addCertificate_stakeDelegation(hash_builder,
                                                          &stake_credential_for_hash,
                                                          parsed_certificate_data->poolKeyHash,
@@ -64,8 +64,8 @@ static void hash_certificate(tx_hash_builder_t *hash_builder,
         }
         case CERTIFICATE_STAKE_REGISTRATION_CONWAY:
         case CERTIFICATE_STAKE_DEREGISTRATION_CONWAY: {
-            credential_t stake_credential_for_hash =
-                credential_for_tx_hash_from_ext_credential(&parsed_certificate_data->stakeCredential);
+            credential_t stake_credential_for_hash = credential_for_tx_hash_from_ext_credential(
+                &parsed_certificate_data->stakeCredential);
             txHashBuilder_addCertificate_staking(hash_builder,
                                                  parsed_certificate_data->type,
                                                  &stake_credential_for_hash,
@@ -73,8 +73,8 @@ static void hash_certificate(tx_hash_builder_t *hash_builder,
             break;
         }
         case CERTIFICATE_VOTE_DELEGATION: {
-            credential_t stake_credential_for_hash =
-                credential_for_tx_hash_from_ext_credential(&parsed_certificate_data->stakeCredential);
+            credential_t stake_credential_for_hash = credential_for_tx_hash_from_ext_credential(
+                &parsed_certificate_data->stakeCredential);
             drep_t drep_for_hash = drep_for_tx_hash_from_ext_drep(&parsed_certificate_data->drep);
             txHashBuilder_addCertificate_voteDelegation(hash_builder,
                                                         &stake_credential_for_hash,
@@ -82,8 +82,8 @@ static void hash_certificate(tx_hash_builder_t *hash_builder,
             break;
         }
         case CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION: {
-            credential_t stake_credential_for_hash =
-                credential_for_tx_hash_from_ext_credential(&parsed_certificate_data->stakeCredential);
+            credential_t stake_credential_for_hash = credential_for_tx_hash_from_ext_credential(
+                &parsed_certificate_data->stakeCredential);
             drep_t drep_for_hash = drep_for_tx_hash_from_ext_drep(&parsed_certificate_data->drep);
             txHashBuilder_addCertificate_stakePoolAndDRepDelegation(
                 hash_builder,
@@ -94,8 +94,8 @@ static void hash_certificate(tx_hash_builder_t *hash_builder,
             break;
         }
         case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL: {
-            credential_t stake_credential_for_hash =
-                credential_for_tx_hash_from_ext_credential(&parsed_certificate_data->stakeCredential);
+            credential_t stake_credential_for_hash = credential_for_tx_hash_from_ext_credential(
+                &parsed_certificate_data->stakeCredential);
             txHashBuilder_addCertificate_accountRegistrationDelegationToStakePool(
                 hash_builder,
                 &stake_credential_for_hash,
@@ -105,8 +105,8 @@ static void hash_certificate(tx_hash_builder_t *hash_builder,
             break;
         }
         case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP: {
-            credential_t stake_credential_for_hash =
-                credential_for_tx_hash_from_ext_credential(&parsed_certificate_data->stakeCredential);
+            credential_t stake_credential_for_hash = credential_for_tx_hash_from_ext_credential(
+                &parsed_certificate_data->stakeCredential);
             drep_t drep_for_hash = drep_for_tx_hash_from_ext_drep(&parsed_certificate_data->drep);
             txHashBuilder_addCertificate_accountRegistrationDelegationToDRep(
                 hash_builder,
@@ -116,8 +116,8 @@ static void hash_certificate(tx_hash_builder_t *hash_builder,
             break;
         }
         case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP: {
-            credential_t stake_credential_for_hash =
-                credential_for_tx_hash_from_ext_credential(&parsed_certificate_data->stakeCredential);
+            credential_t stake_credential_for_hash = credential_for_tx_hash_from_ext_credential(
+                &parsed_certificate_data->stakeCredential);
             drep_t drep_for_hash = drep_for_tx_hash_from_ext_drep(&parsed_certificate_data->drep);
             txHashBuilder_addCertificate_accountRegistrationDelegationToStakePoolAndDRep(
                 hash_builder,
@@ -129,26 +129,26 @@ static void hash_certificate(tx_hash_builder_t *hash_builder,
             break;
         }
         case CERTIFICATE_AUTHORIZE_COMMITTEE_HOT: {
-            credential_t cold_credential_for_hash =
-                credential_for_tx_hash_from_ext_credential(&parsed_certificate_data->coldCredential);
+            credential_t cold_credential_for_hash = credential_for_tx_hash_from_ext_credential(
+                &parsed_certificate_data->coldCredential);
             credential_t hot_credential_for_hash =
                 credential_for_tx_hash_from_ext_credential(&parsed_certificate_data->hotCredential);
             txHashBuilder_addCertificate_committeeAuthHot(hash_builder,
-                                                           &cold_credential_for_hash,
-                                                           &hot_credential_for_hash);
+                                                          &cold_credential_for_hash,
+                                                          &hot_credential_for_hash);
             break;
         }
         case CERTIFICATE_RESIGN_COMMITTEE_COLD: {
-            credential_t cold_credential_for_hash =
-                credential_for_tx_hash_from_ext_credential(&parsed_certificate_data->coldCredential);
+            credential_t cold_credential_for_hash = credential_for_tx_hash_from_ext_credential(
+                &parsed_certificate_data->coldCredential);
             txHashBuilder_addCertificate_committeeResign(hash_builder,
                                                          &cold_credential_for_hash,
                                                          &parsed_certificate_data->anchor);
             break;
         }
         case CERTIFICATE_DREP_REGISTRATION: {
-            credential_t drep_credential_for_hash =
-                credential_for_tx_hash_from_ext_credential(&parsed_certificate_data->dRepCredential);
+            credential_t drep_credential_for_hash = credential_for_tx_hash_from_ext_credential(
+                &parsed_certificate_data->dRepCredential);
             txHashBuilder_addCertificate_dRepRegistration(hash_builder,
                                                           &drep_credential_for_hash,
                                                           parsed_certificate_data->deposit,
@@ -156,16 +156,16 @@ static void hash_certificate(tx_hash_builder_t *hash_builder,
             break;
         }
         case CERTIFICATE_DREP_DEREGISTRATION: {
-            credential_t drep_credential_for_hash =
-                credential_for_tx_hash_from_ext_credential(&parsed_certificate_data->dRepCredential);
+            credential_t drep_credential_for_hash = credential_for_tx_hash_from_ext_credential(
+                &parsed_certificate_data->dRepCredential);
             txHashBuilder_addCertificate_dRepDeregistration(hash_builder,
                                                             &drep_credential_for_hash,
                                                             parsed_certificate_data->deposit);
             break;
         }
         case CERTIFICATE_DREP_UPDATE: {
-            credential_t drep_credential_for_hash =
-                credential_for_tx_hash_from_ext_credential(&parsed_certificate_data->dRepCredential);
+            credential_t drep_credential_for_hash = credential_for_tx_hash_from_ext_credential(
+                &parsed_certificate_data->dRepCredential);
             txHashBuilder_addCertificate_dRepUpdate(hash_builder,
                                                     &drep_credential_for_hash,
                                                     &parsed_certificate_data->anchor);
@@ -190,7 +190,7 @@ static void hash_certificate(tx_hash_builder_t *hash_builder,
                 default:
                     LEDGER_ASSERT(false, "Unknown ext_credential_type_t for pool retirement");
                     break;
-                // LCOV_EXCL_STOP
+                    // LCOV_EXCL_STOP
             }
             txHashBuilder_addCertificate_poolRetirement(hash_builder,
                                                         pool_key_hash,
@@ -202,14 +202,15 @@ static void hash_certificate(tx_hash_builder_t *hash_builder,
         default:
             LEDGER_ASSERT(false, "Unknown certificate_type_t");
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
-static security_policy_t determine_certificate_policy(certificate_type_t type,
-                                                      const certificate_data_t *parsed_certificate_data,
-                                                      const tx_params_t *tx_params,
-                                                      warning_bits_t *warning_bits) {
+static security_policy_t determine_certificate_policy(
+    certificate_type_t type,
+    const certificate_data_t *parsed_certificate_data,
+    const tx_params_t *tx_params,
+    warning_bits_t *warning_bits) {
     switch (type) {
         case CERTIFICATE_STAKE_REGISTRATION:
         case CERTIFICATE_STAKE_DEREGISTRATION:
@@ -222,16 +223,18 @@ static security_policy_t determine_certificate_policy(certificate_type_t type,
                                                      warning_bits);
 
         case CERTIFICATE_STAKE_POOL_RETIREMENT:
-            return policyForSignTxCertificateStakePoolRetirement(tx_params->txSigningMode,
-                                                                 &parsed_certificate_data->poolCredential,
-                                                                 parsed_certificate_data->retirementEpoch,
-                                                                 warning_bits);
+            return policyForSignTxCertificateStakePoolRetirement(
+                tx_params->txSigningMode,
+                &parsed_certificate_data->poolCredential,
+                parsed_certificate_data->retirementEpoch,
+                warning_bits);
 
         case CERTIFICATE_VOTE_DELEGATION:
-            return policyForSignTxCertificateVoteDelegation(tx_params->txSigningMode,
-                                                            &parsed_certificate_data->stakeCredential,
-                                                            &parsed_certificate_data->drep,
-                                                            warning_bits);
+            return policyForSignTxCertificateVoteDelegation(
+                tx_params->txSigningMode,
+                &parsed_certificate_data->stakeCredential,
+                &parsed_certificate_data->drep,
+                warning_bits);
 
         case CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION:
             return policyForSignTxCertificateStakePoolAndDRepDelegation(
@@ -268,11 +271,10 @@ static security_policy_t determine_certificate_policy(certificate_type_t type,
                                                   warning_bits);
 
         case CERTIFICATE_AUTHORIZE_COMMITTEE_HOT:
-            return policyForSignTxCertificateCommitteeAuth(
-                tx_params->txSigningMode,
-                &parsed_certificate_data->coldCredential,
-                &parsed_certificate_data->hotCredential,
-                warning_bits);
+            return policyForSignTxCertificateCommitteeAuth(tx_params->txSigningMode,
+                                                           &parsed_certificate_data->coldCredential,
+                                                           &parsed_certificate_data->hotCredential,
+                                                           warning_bits);
 
         case CERTIFICATE_RESIGN_COMMITTEE_COLD:
             return policyForSignTxCertificateCommitteeResign(
@@ -288,7 +290,7 @@ static security_policy_t determine_certificate_policy(certificate_type_t type,
         default:
             LEDGER_ASSERT(false, "Unknown certificate_type_t");
             return POLICY_DENY;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
@@ -377,13 +379,15 @@ bool process_pool_registration_certificate(buffer_t *buf,
     }
 
     if (mode->run_validation) {
-        security_policy_t certificate_policy = policyForSignTxStakePoolRegistrationInit(
-            tx_params->txSigningMode,
-            pool_registration->numPoolOwners,
-            pool_registration->numRelays,
-            path_owner_count,
-            state->warning_bits);
-        APPLY_POLICY(certificate_policy, plan_or_render_pool_registration_header, mode,
+        security_policy_t certificate_policy =
+            policyForSignTxStakePoolRegistrationInit(tx_params->txSigningMode,
+                                                     pool_registration->numPoolOwners,
+                                                     pool_registration->numRelays,
+                                                     path_owner_count,
+                                                     state->warning_bits);
+        APPLY_POLICY(certificate_policy,
+                     plan_or_render_pool_registration_header,
+                     mode,
                      parsed_cert->type);
 
         security_policy_t pool_id_policy =
@@ -395,18 +399,23 @@ bool process_pool_registration_certificate(buffer_t *buf,
         security_policy_t vrf_policy =
             policyForSignTxStakePoolRegistrationVrfKey(tx_params->txSigningMode,
                                                        state->warning_bits);
-        APPLY_POLICY(vrf_policy, plan_or_render_pool_vrf_key_hash, mode,
+        APPLY_POLICY(vrf_policy,
+                     plan_or_render_pool_vrf_key_hash,
+                     mode,
                      pool_registration->vrfKeyHash);
 
         plan_or_render_pool_financials(mode, pool_registration);
 
         security_policy_t reward_policy =
             policyForSignTxStakePoolRegistrationRewardAccount(tx_params->txSigningMode,
-                                                               tx_params->networkId,
-                                                               &pool_registration->rewardAccount,
-                                                               state->warning_bits);
-        APPLY_POLICY(reward_policy, plan_or_render_pool_reward_account, mode,
-                     tx_params->networkId, &pool_registration->rewardAccount);
+                                                              tx_params->networkId,
+                                                              &pool_registration->rewardAccount,
+                                                              state->warning_bits);
+        APPLY_POLICY(reward_policy,
+                     plan_or_render_pool_reward_account,
+                     mode,
+                     tx_params->networkId,
+                     &pool_registration->rewardAccount);
     }
 
     // In OWNER signing mode, record the unique path owner as the witness key.
@@ -438,7 +447,7 @@ bool process_pool_registration_certificate(buffer_t *buf,
             // LCOV_EXCL_START
             default:
                 LEDGER_ASSERT(false, "Unknown pool ID key reference type");
-            // LCOV_EXCL_STOP
+                // LCOV_EXCL_STOP
         }
         txHashBuilder_poolRegistrationCertificate_poolKeyHash(hash_builder,
                                                               pool_key_hash,
@@ -465,8 +474,7 @@ bool process_pool_registration_certificate(buffer_t *buf,
     // Owners
     TRACE("Processing %u owners", (unsigned) pool_registration->numPoolOwners);
     if (pool_registration->numPoolOwners > 0) {
-        for (uint16_t owner_index = 0;
-             owner_index < pool_registration->numPoolOwners;
+        for (uint16_t owner_index = 0; owner_index < pool_registration->numPoolOwners;
              owner_index++) {
             ext_credential_t owner_credential = {0};
             if (!buffer_read_credential(&pool_payload_buf, &owner_credential)) {
@@ -479,8 +487,11 @@ bool process_pool_registration_certificate(buffer_t *buf,
                     policyForSignTxStakePoolRegistrationOwner(tx_params->txSigningMode,
                                                               &owner_credential,
                                                               state->warning_bits);
-                APPLY_POLICY(owner_policy, plan_or_render_pool_owner, mode,
-                             tx_params->networkId, &owner_credential);
+                APPLY_POLICY(owner_policy,
+                             plan_or_render_pool_owner,
+                             mode,
+                             tx_params->networkId,
+                             &owner_credential);
             }
 
             if (mode->run_hash_builder) {
@@ -503,9 +514,7 @@ bool process_pool_registration_certificate(buffer_t *buf,
     }
     TRACE("Processing %u relays", (unsigned) pool_registration->numRelays);
     if (pool_registration->numRelays > 0) {
-        for (uint16_t relay_index = 0;
-             relay_index < pool_registration->numRelays;
-             relay_index++) {
+        for (uint16_t relay_index = 0; relay_index < pool_registration->numRelays; relay_index++) {
             pool_relay_t relay = {0};
             if (!parse_pool_relay(&pool_payload_buf, &relay)) {
                 tx_handle_parse_error(SWO_TX_PARSING_FAIL_CERTIFICATES);
@@ -554,12 +563,11 @@ bool process_pool_registration_certificate(buffer_t *buf,
         }
 
         if (mode->run_hash_builder) {
-            txHashBuilder_addPoolRegistrationCertificate_addPoolMetadata(
-                hash_builder,
-                pool_metadata.url,
-                pool_metadata.urlSize,
-                pool_metadata.hash,
-                POOL_METADATA_HASH_LENGTH);
+            txHashBuilder_addPoolRegistrationCertificate_addPoolMetadata(hash_builder,
+                                                                         pool_metadata.url,
+                                                                         pool_metadata.urlSize,
+                                                                         pool_metadata.hash,
+                                                                         POOL_METADATA_HASH_LENGTH);
         }
     }
 

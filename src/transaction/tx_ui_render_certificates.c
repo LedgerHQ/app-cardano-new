@@ -10,7 +10,7 @@
 #ifdef TRACE_UI_DISPLAY
 #define TRACE_MODULE(...) TRACE("[tx_ui_render_certificates] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 #include "assert.h"
@@ -34,11 +34,11 @@
 // ---------------------------------------------------------------------------
 
 static void render_credential(const ext_credential_t *credential,
-                               const char *key_path_label,
-                               const char *key_hash_label,
-                               const char *key_hash_prefix,
-                               const char *script_hash_label,
-                               const char *script_hash_prefix) {
+                              const char *key_path_label,
+                              const char *key_hash_label,
+                              const char *key_hash_prefix,
+                              const char *script_hash_label,
+                              const char *script_hash_prefix) {
     ASSERT(credential != NULL);
 
     switch (credential->type) {
@@ -69,7 +69,7 @@ static void render_credential(const ext_credential_t *credential,
         // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown credential type");
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
@@ -152,7 +152,7 @@ static void render_drep(const ext_drep_t *drep, const char *label) {
         default:
             LEDGER_ASSERT(false, "Unknown DRep type");
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
@@ -209,7 +209,8 @@ static void render_certificate_header(certificate_type_t type) {
 }
 
 static void plan_or_render_certificate_stake_registration(
-    const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
+    const tx_processing_mode_t *mode,
+    const certificate_data_t *certificate_data) {
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_REGISTRATION;
     } else if (mode->ui_render) {
@@ -221,7 +222,8 @@ static void plan_or_render_certificate_stake_registration(
 }
 
 static void plan_or_render_certificate_stake_deregistration(
-    const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
+    const tx_processing_mode_t *mode,
+    const certificate_data_t *certificate_data) {
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_DEREGISTRATION;
     } else if (mode->ui_render) {
@@ -233,7 +235,8 @@ static void plan_or_render_certificate_stake_deregistration(
 }
 
 static void plan_or_render_certificate_stake_registration_conway(
-    const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
+    const tx_processing_mode_t *mode,
+    const certificate_data_t *certificate_data) {
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_REGISTRATION_CONWAY;
     } else if (mode->ui_render) {
@@ -246,7 +249,8 @@ static void plan_or_render_certificate_stake_registration_conway(
 }
 
 static void plan_or_render_certificate_stake_deregistration_conway(
-    const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
+    const tx_processing_mode_t *mode,
+    const certificate_data_t *certificate_data) {
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_DEREGISTRATION_CONWAY;
     } else if (mode->ui_render) {
@@ -259,7 +263,8 @@ static void plan_or_render_certificate_stake_deregistration_conway(
 }
 
 static void plan_or_render_certificate_stake_delegation(
-    const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
+    const tx_processing_mode_t *mode,
+    const certificate_data_t *certificate_data) {
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_DELEGATION;
     } else if (mode->ui_render) {
@@ -276,8 +281,8 @@ static void plan_or_render_certificate_stake_delegation(
     }
 }
 
-static void plan_or_render_certificate_vote_delegation(
-    const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
+static void plan_or_render_certificate_vote_delegation(const tx_processing_mode_t *mode,
+                                                       const certificate_data_t *certificate_data) {
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_VOTE_DELEGATION;
     } else if (mode->ui_render) {
@@ -290,7 +295,8 @@ static void plan_or_render_certificate_vote_delegation(
 }
 
 static void plan_or_render_certificate_stake_pool_and_drep_delegation(
-    const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
+    const tx_processing_mode_t *mode,
+    const certificate_data_t *certificate_data) {
     ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL);
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION;
@@ -310,7 +316,8 @@ static void plan_or_render_certificate_stake_pool_and_drep_delegation(
 }
 
 static void plan_or_render_certificate_account_registration_delegation_to_stake_pool(
-    const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
+    const tx_processing_mode_t *mode,
+    const certificate_data_t *certificate_data) {
     ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL);
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs +=
@@ -331,7 +338,8 @@ static void plan_or_render_certificate_account_registration_delegation_to_stake_
 }
 
 static void plan_or_render_certificate_account_registration_delegation_to_drep(
-    const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
+    const tx_processing_mode_t *mode,
+    const certificate_data_t *certificate_data) {
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs +=
             UI_PAIRS_CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP;
@@ -346,7 +354,8 @@ static void plan_or_render_certificate_account_registration_delegation_to_drep(
 }
 
 static void plan_or_render_certificate_account_registration_delegation_to_stake_pool_and_drep(
-    const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
+    const tx_processing_mode_t *mode,
+    const certificate_data_t *certificate_data) {
     ASSERT(certificate_data->combinedDelegPoolKeyHash != NULL);
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs +=
@@ -368,7 +377,8 @@ static void plan_or_render_certificate_account_registration_delegation_to_stake_
 }
 
 static void plan_or_render_certificate_authorize_committee_hot(
-    const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
+    const tx_processing_mode_t *mode,
+    const certificate_data_t *certificate_data) {
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_AUTHORIZE_COMMITTEE_HOT;
     } else if (mode->ui_render) {
@@ -381,7 +391,8 @@ static void plan_or_render_certificate_authorize_committee_hot(
 }
 
 static void plan_or_render_certificate_resign_committee_cold(
-    const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
+    const tx_processing_mode_t *mode,
+    const certificate_data_t *certificate_data) {
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_RESIGN_COMMITTEE_COLD;
     } else if (mode->ui_render) {
@@ -393,7 +404,8 @@ static void plan_or_render_certificate_resign_committee_cold(
 }
 
 static void plan_or_render_certificate_drep_registration(
-    const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
+    const tx_processing_mode_t *mode,
+    const certificate_data_t *certificate_data) {
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_DREP_REGISTRATION;
     } else if (mode->ui_render) {
@@ -406,7 +418,8 @@ static void plan_or_render_certificate_drep_registration(
 }
 
 static void plan_or_render_certificate_drep_deregistration(
-    const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
+    const tx_processing_mode_t *mode,
+    const certificate_data_t *certificate_data) {
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_DREP_DEREGISTRATION;
     } else if (mode->ui_render) {
@@ -418,8 +431,8 @@ static void plan_or_render_certificate_drep_deregistration(
     }
 }
 
-static void plan_or_render_certificate_drep_update(
-    const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
+static void plan_or_render_certificate_drep_update(const tx_processing_mode_t *mode,
+                                                   const certificate_data_t *certificate_data) {
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_DREP_UPDATE;
     } else if (mode->ui_render) {
@@ -430,8 +443,8 @@ static void plan_or_render_certificate_drep_update(
     }
 }
 
-static void plan_or_render_certificate_pool_retirement(
-    const tx_processing_mode_t *mode, const certificate_data_t *certificate_data) {
+static void plan_or_render_certificate_pool_retirement(const tx_processing_mode_t *mode,
+                                                       const certificate_data_t *certificate_data) {
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_CERTIFICATE_POOL_RETIREMENT;
     } else if (mode->ui_render) {
@@ -452,7 +465,7 @@ static void plan_or_render_certificate_pool_retirement(
             default:
                 LEDGER_ASSERT(false, "Unsupported pool credential type for retirement");
                 break;
-            // LCOV_EXCL_STOP
+                // LCOV_EXCL_STOP
         }
 
         START_COUNT();
@@ -505,7 +518,7 @@ void plan_or_render_pool_id(const tx_processing_mode_t *mode, const pool_id_t *p
             default:
                 LEDGER_ASSERT(false, "Unknown pool ID key reference type");
                 break;
-            // LCOV_EXCL_STOP
+                // LCOV_EXCL_STOP
         }
         UI_ADD_FORMAT3(UI_STATIC_LABEL("Pool ID"),
                        MAX_BECH32_STRING_LENGTH,
@@ -517,7 +530,8 @@ void plan_or_render_pool_id(const tx_processing_mode_t *mode, const pool_id_t *p
     }
 }
 
-void plan_or_render_pool_vrf_key_hash(const tx_processing_mode_t *mode, const uint8_t *vrf_key_hash) {
+void plan_or_render_pool_vrf_key_hash(const tx_processing_mode_t *mode,
+                                      const uint8_t *vrf_key_hash) {
     ASSERT(vrf_key_hash != NULL);
     if (mode->ui_count_pairs) {
         tx_body_ctx()->total_ui_pairs += UI_PAIRS_POOL_VRF_KEY;
@@ -620,7 +634,7 @@ static uint16_t count_pool_relay_ui_pairs(const pool_relay_t *relay) {
         default:
             LEDGER_ASSERT(false, "Unknown relay format type");
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
     return pairs;
 }
@@ -680,7 +694,7 @@ void plan_or_render_pool_relay(const tx_processing_mode_t *mode,
             default:
                 LEDGER_ASSERT(false, "Unknown relay format type");
                 break;
-            // LCOV_EXCL_STOP
+                // LCOV_EXCL_STOP
         }
         CHECK_COUNT(expected_pairs);
     }
@@ -775,15 +789,20 @@ void tx_ui_plan_or_render_certificate(const tx_processing_mode_t *mode,
             break;
 
         case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL:
-            plan_or_render_certificate_account_registration_delegation_to_stake_pool(mode, certificate_data);
+            plan_or_render_certificate_account_registration_delegation_to_stake_pool(
+                mode,
+                certificate_data);
             break;
 
         case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP:
-            plan_or_render_certificate_account_registration_delegation_to_drep(mode, certificate_data);
+            plan_or_render_certificate_account_registration_delegation_to_drep(mode,
+                                                                               certificate_data);
             break;
 
         case CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP:
-            plan_or_render_certificate_account_registration_delegation_to_stake_pool_and_drep(mode, certificate_data);
+            plan_or_render_certificate_account_registration_delegation_to_stake_pool_and_drep(
+                mode,
+                certificate_data);
             break;
 
         case CERTIFICATE_AUTHORIZE_COMMITTEE_HOT:
@@ -827,6 +846,6 @@ void tx_ui_plan_or_render_certificate(const tx_processing_mode_t *mode,
         default:
             LEDGER_ASSERT(false, "Unknown certificate type");
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }

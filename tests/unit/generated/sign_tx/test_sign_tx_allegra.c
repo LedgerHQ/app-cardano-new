@@ -51,42 +51,62 @@
 
 static void test_sign_tx_with_no_ttl_and_no_validity_interval_start_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_INTERVAL_START, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_INTERVAL_START,
+        false);
 }
 
-static void test_sign_tx_with_no_ttl_and_no_validity_interval_start_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_no_ttl_and_no_validity_interval_start_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_INTERVAL_START, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_INTERVAL_START,
+        false);
 }
 
 static void test_sign_tx_with_no_ttl_and_no_validity_interval_start_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_INTERVAL_START, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_INTERVAL_START,
+        true);
 }
 
-static void test_sign_tx_with_no_ttl_and_no_validity_interval_start_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_no_ttl_and_no_validity_interval_start_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_INTERVAL_START, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_AND_NO_VALIDITY_INTERVAL_START,
+        true);
 }
 
 static void test_sign_tx_with_no_ttl_but_with_validity_interval_start_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_INTERVAL_START, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_INTERVAL_START,
+        false);
 }
 
-static void test_sign_tx_with_no_ttl_but_with_validity_interval_start_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_no_ttl_but_with_validity_interval_start_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_INTERVAL_START, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_INTERVAL_START,
+        false);
 }
 
 static void test_sign_tx_with_no_ttl_but_with_validity_interval_start_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_INTERVAL_START, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_INTERVAL_START,
+        true);
 }
 
-static void test_sign_tx_with_no_ttl_but_with_validity_interval_start_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_no_ttl_but_with_validity_interval_start_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_INTERVAL_START, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALLEGRA_SIGN_TX_WITH_NO_TTL_BUT_WITH_VALIDITY_INTERVAL_START,
+        true);
 }
 
 // ======================================================================
@@ -96,13 +116,21 @@ static void test_sign_tx_with_no_ttl_but_with_validity_interval_start_reject_tx_
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_sign_tx_with_no_ttl_and_no_validity_interval_start_expert_off),
-        cmocka_unit_test(test_sign_tx_with_no_ttl_and_no_validity_interval_start_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_no_ttl_and_no_validity_interval_start_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_no_ttl_and_no_validity_interval_start_expert_on),
-        cmocka_unit_test(test_sign_tx_with_no_ttl_and_no_validity_interval_start_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_no_ttl_and_no_validity_interval_start_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_no_ttl_but_with_validity_interval_start_expert_off),
-        cmocka_unit_test(test_sign_tx_with_no_ttl_but_with_validity_interval_start_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_no_ttl_but_with_validity_interval_start_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_no_ttl_but_with_validity_interval_start_expert_on),
-        cmocka_unit_test(test_sign_tx_with_no_ttl_but_with_validity_interval_start_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_no_ttl_but_with_validity_interval_start_reject_tx_expert_on),
     };
-    return _cmocka_run_group_tests("test_sign_tx_allegra", tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);
+    return _cmocka_run_group_tests("test_sign_tx_allegra",
+                                   tests,
+                                   ARRAY_LEN(tests),
+                                   NULL,
+                                   assert_no_pending_apdu_response);
 }

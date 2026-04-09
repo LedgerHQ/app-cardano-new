@@ -34,7 +34,6 @@ typedef struct {
     };
 } tx_output_destination_t;
 
-
 typedef struct {
     const uint8_t* assetName;
     uint8_t assetNameLen;
@@ -62,7 +61,4 @@ typedef struct {
     const uint8_t* data;  // Points to data in raw_tx buffer
 } ref_script_t;
 
-typedef enum {
-    ARRAY_LEGACY = 0,
-    MAP_BABBAGE = 1
-} tx_output_serialization_format_t;
+typedef enum { ARRAY_LEGACY = 0, MAP_BABBAGE = 1 } tx_output_serialization_format_t;

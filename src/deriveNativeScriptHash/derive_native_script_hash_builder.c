@@ -28,8 +28,8 @@ static void blake2b_224_append_buffer_data(blake2b_224_context_t* hashCtx,
 }
 
 static void blake2b_224_append_cbor_data(blake2b_224_context_t* hashCtx,
-                                                                   uint8_t type,
-                                                                   uint64_t value) {
+                                         uint8_t type,
+                                         uint64_t value) {
     uint8_t buffer[10] = {0};
     size_t size = 0;
     LEDGER_ASSERT(cbor_writeToken(type, value, buffer, SIZEOF(buffer), &size),
@@ -114,10 +114,10 @@ void nativeScriptHashBuilder_init(native_script_hash_builder_t* builder) {
         APPEND_CBOR(CBOR_TYPE_UNSIGNED, type);                                                    \
         APPEND_CBOR(CBOR_TYPE_ARRAY, remainingScripts);                                           \
                                                                                                   \
-        LEDGER_ASSERT(builder->level + 1 < MAX_SCRIPT_DEPTH, "Native script nesting too deep");  \
+        LEDGER_ASSERT(builder->level + 1 < MAX_SCRIPT_DEPTH, "Native script nesting too deep");   \
         builder->level++;                                                                         \
         builder->remainingScripts[builder->level] = remainingScripts;                             \
-        _TRACE("appended CBOR");                                                     \
+        _TRACE("appended CBOR");                                                                  \
                                                                                                   \
         if (isComplexScriptFinished(builder)) {                                                   \
             complexScriptFinished(builder);                                                       \

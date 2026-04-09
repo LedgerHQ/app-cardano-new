@@ -106,7 +106,6 @@ static inline void tx_context_cleanup(void) {
 #define TEST_HEAP_SIZE (23 * 1024)
 static uint8_t test_heap[TEST_HEAP_SIZE];
 
-
 // ----------------------------------------------------------------------
 // Fixture runner
 // ----------------------------------------------------------------------
@@ -191,7 +190,7 @@ int main(void) {
     size_t skipped_count = 0;
 
     for (size_t i = 0; i < test_count; i++) {
-        tests[i] = (struct CMUnitTest) {
+        tests[i] = (struct CMUnitTest){
             .name = SIGN_TX_DENY_FIXTURES[i].name,
             .test_func = test_sign_tx_deny_fixture,
             .initial_state = (void *) &SIGN_TX_DENY_FIXTURES[i],
@@ -205,12 +204,15 @@ int main(void) {
 
     if (skipped_count > 0) {
         print_message("\n");
-        print_message("================================================================================\n");
+        print_message(
+            "================================================================================\n");
         print_message("WARNING: %zu/%zu TESTS WERE SKIPPED!\n", skipped_count, test_count);
-        print_message("================================================================================\n");
+        print_message(
+            "================================================================================\n");
         print_message("\nThese tests are not yet implemented. See skip_reason in test fixtures.\n");
         print_message("Test coverage is incomplete until all skipped tests are enabled.\n");
-        print_message("================================================================================\n");
+        print_message(
+            "================================================================================\n");
         print_message("\n");
         // Return non-zero to make test harness visible of skipped tests
         return 1;

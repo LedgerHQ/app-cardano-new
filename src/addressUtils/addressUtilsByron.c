@@ -16,7 +16,7 @@
 #include "assert.h"
 
 #define BYRON_ADDRESS_CBOR_HASH_SIZE 32
-#define ADDRESS_ROOT_SIZE 28
+#define ADDRESS_ROOT_SIZE            28
 
 static const size_t PROTOCOL_MAGIC_ADDRESS_ATTRIBUTE_KEY = 2;
 
@@ -44,7 +44,11 @@ void addressRootFromExtPubKey(const extendedPublicKey_t* extPubKey,
         { ASSERT(buffer_write_cbor_token(&cbor, CBOR_TYPE_UNSIGNED, CARDANO_ADDRESS_TYPE_PUBKEY)); }
         {
             ASSERT(buffer_write_cbor_token(&cbor, CBOR_TYPE_ARRAY, 2));
-            { ASSERT(buffer_write_cbor_token(&cbor, CBOR_TYPE_UNSIGNED, 0 /* this seems to be hardcoded to 0*/)); }
+            {
+                ASSERT(buffer_write_cbor_token(&cbor,
+                                               CBOR_TYPE_UNSIGNED,
+                                               0 /* this seems to be hardcoded to 0*/));
+            }
             {
                 ASSERT(buffer_write_cbor_token(&cbor, CBOR_TYPE_BYTES, EXTENDED_PUBKEY_SIZE));
                 ASSERT(buffer_write_bytes(&cbor, (const uint8_t*) extPubKey, EXTENDED_PUBKEY_SIZE));
@@ -81,7 +85,8 @@ size_t cborEncodePubkeyAddressInner(const uint8_t* addressRoot,
         {
             // 2
             if (protocolMagic == MAINNET_PROTOCOL_MAGIC) {
-                ASSERT(buffer_write_cbor_token(&out, CBOR_TYPE_MAP, 0 /* addrAttributes is empty */));
+                ASSERT(
+                    buffer_write_cbor_token(&out, CBOR_TYPE_MAP, 0 /* addrAttributes is empty */));
             } else {
                 /* addrAttributes contains protocol magic for non-mainnet Byron addresses */
                 ASSERT(buffer_write_cbor_token(&out, CBOR_TYPE_MAP, 1));
@@ -95,10 +100,10 @@ size_t cborEncodePubkeyAddressInner(const uint8_t* addressRoot,
                     uint8_t scratch[10] = {0};
                     size_t scratchSize = 0;
                     ASSERT(cbor_writeToken(CBOR_TYPE_UNSIGNED,
-                                          protocolMagic,
-                                          scratch,
-                                          SIZEOF(scratch),
-                                          &scratchSize));
+                                           protocolMagic,
+                                           scratch,
+                                           SIZEOF(scratch),
+                                           &scratchSize));
                     ASSERT(buffer_write_cbor_token(&out, CBOR_TYPE_BYTES, scratchSize));
                     ASSERT(buffer_write_bytes(&out, scratch, scratchSize));
                 }
@@ -128,7 +133,9 @@ size_t cborPackRawAddressWithChecksum(const uint8_t* rawAddressBuffer,
         // ]
         ASSERT(buffer_write_cbor_token(&output, CBOR_TYPE_ARRAY, 2));
         {
-            ASSERT(buffer_write_cbor_token(&output, CBOR_TYPE_TAG, CBOR_TAG_EMBEDDED_CBOR_BYTE_STRING));
+            ASSERT(buffer_write_cbor_token(&output,
+                                           CBOR_TYPE_TAG,
+                                           CBOR_TAG_EMBEDDED_CBOR_BYTE_STRING));
             ASSERT(buffer_write_cbor_token(&output, CBOR_TYPE_BYTES, rawAddressSize));
             ASSERT(buffer_write_bytes(&output, rawAddressBuffer, rawAddressSize));
         }
@@ -216,7 +223,7 @@ static bool parseBytesSizeToken(buffer_t* buf, size_t* out_size) {
     // Validate that we can down-cast
     STATIC_ASSERT(sizeof(parsedSize) >= sizeof(SIZE_MAX), "bad int size");
     if (parsedSize >= (uint64_t) SIZE_MAX) {
-        return false; // LCOV_EXCL_LINE
+        return false;  // LCOV_EXCL_LINE
     }
 
     size_t parsedSizeDowncasted = (size_t) parsedSize;
@@ -231,14 +238,17 @@ static bool parseBytesSizeToken(buffer_t* buf, size_t* out_size) {
     return true;
 }
 
-bool extractProtocolMagic(const uint8_t* addressBuffer, size_t addressSize, uint32_t* out_protocol_magic) {
+bool extractProtocolMagic(const uint8_t* addressBuffer,
+                          size_t addressSize,
+                          uint32_t* out_protocol_magic) {
     ASSERT(addressBuffer != NULL);
     ASSERT(out_protocol_magic != NULL);
     ASSERT(addressSize < BUFFER_SIZE_PARANOIA);
 
-    buffer_t buf = {.ptr = (uint8_t *)addressBuffer, .size = addressSize, .offset = 0};
+    buffer_t buf = {.ptr = (uint8_t*) addressBuffer, .size = addressSize, .offset = 0};
 
-    uint32_t protocolMagic = MAINNET_PROTOCOL_MAGIC;  // mainnet addresses do not contain protocol magic
+    uint32_t protocolMagic =
+        MAINNET_PROTOCOL_MAGIC;  // mainnet addresses do not contain protocol magic
     bool protocolMagicFound = false;
 
     if (!parseTokenWithValue(&buf, CBOR_TYPE_ARRAY, 2)) {
@@ -268,7 +278,8 @@ bool extractProtocolMagic(const uint8_t* addressBuffer, size_t addressSize, uint
         if (parsedAddressRootSize != ADDRESS_ROOT_SIZE) {
             return false;
         }
-        LEDGER_ASSERT(buffer_seek_cur(&buf, ADDRESS_ROOT_SIZE), "buffer seek failed past address root");
+        LEDGER_ASSERT(buffer_seek_cur(&buf, ADDRESS_ROOT_SIZE),
+                      "buffer seek failed past address root");
     }
 
     // address attributes map { key (unsigned): value(bytes) }
@@ -300,11 +311,9 @@ bool extractProtocolMagic(const uint8_t* addressBuffer, size_t addressSize, uint
 
                 // Protocol magic attribute value is CBOR bytes containing exactly one
                 // CBOR-encoded unsigned integer; parse it in an isolated sub-buffer.
-                buffer_t valueBuf = {
-                    .ptr = buf.ptr + buf.offset,
-                    .size = currentValueSize,
-                    .offset = 0
-                };
+                buffer_t valueBuf = {.ptr = buf.ptr + buf.offset,
+                                     .size = currentValueSize,
+                                     .offset = 0};
                 uint64_t parsedProtocolMagic;
                 if (!parseToken(&valueBuf, CBOR_TYPE_UNSIGNED, &parsedProtocolMagic)) {
                     return false;
@@ -328,13 +337,15 @@ bool extractProtocolMagic(const uint8_t* addressBuffer, size_t addressSize, uint
             }
 
             // Skip this attribute value in the outer buffer.
-            LEDGER_ASSERT(buffer_seek_cur(&buf, currentValueSize), "buffer seek failed skipping attribute value");
+            LEDGER_ASSERT(buffer_seek_cur(&buf, currentValueSize),
+                          "buffer seek failed skipping attribute value");
         }
     }
 
     // address type (unsigned)
     // We intentionally do not validate this field (e.g. against CARDANO_ADDRESS_TYPE_PUBKEY)
-    // to avoid compatibility issues with legacy Byron addresses that may carry unexpected type values.
+    // to avoid compatibility issues with legacy Byron addresses that may carry unexpected type
+    // values.
     {
         uint64_t addressType;
         if (!parseToken(&buf, CBOR_TYPE_UNSIGNED, &addressType)) {
@@ -345,7 +356,7 @@ bool extractProtocolMagic(const uint8_t* addressBuffer, size_t addressSize, uint
     // verify checksum
     {
         uint32_t checksum = cx_crc32(unboxedAddressPayload, unboxedAddressPayloadSize);
-        if (!parseTokenWithValue(&buf, CBOR_TYPE_UNSIGNED, (uint64_t)checksum)) {
+        if (!parseTokenWithValue(&buf, CBOR_TYPE_UNSIGNED, (uint64_t) checksum)) {
             return false;
         }
     }

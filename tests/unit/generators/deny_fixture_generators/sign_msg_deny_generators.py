@@ -404,7 +404,8 @@ def _build_deny_test_functions() -> tuple[List[str], List[str]]:
                 )
             body_lines.append("    // Try to send CONFIRM with non-empty payload")
             body_lines.append(
-                f"    run_deny_confirm_fixture({confirm_array_name}, sizeof({confirm_array_name}), {test_case.expected_swo.name});"
+                f"    run_deny_confirm_fixture({confirm_array_name}, "
+                f"sizeof({confirm_array_name}), {test_case.expected_swo.name});"
             )
             body_lines.append("}")
             body_lines.append("")

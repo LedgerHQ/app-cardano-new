@@ -67,22 +67,24 @@ static void expect_extended_pubkey(const uint32_t* path,
 static void test_byron_accounts(void** state) {
     (void) state;
 
-    expect_extended_pubkey((uint32_t[]){HD + 44, HD + 1815, HD + 1}, 3,
+    expect_extended_pubkey((uint32_t[]){HD + 44, HD + 1815, HD + 1},
+                           3,
                            "eb6e933ce45516ac7b0e023de700efae5e212ccc6bf0fcb33ba9243b9d832827");
-
 }
 
 static void test_shelley_accounts(void** state) {
     (void) state;
 
-    expect_extended_pubkey((uint32_t[]){HD + 1852, HD + 1815, HD + 1}, 3,
+    expect_extended_pubkey((uint32_t[]){HD + 1852, HD + 1815, HD + 1},
+                           3,
                            "c9d624c493e269271980bc5e89bcd913719137f3b20c11339f28875951124c82");
 }
 
 static void test_pool_cold_key(void** state) {
     (void) state;
 
-    expect_extended_pubkey((uint32_t[]){HD + 1853, HD + 1815, HD + 0, HD + 2}, 4,
+    expect_extended_pubkey((uint32_t[]){HD + 1853, HD + 1815, HD + 0, HD + 2},
+                           4,
                            "0f38ab7679e756ca11924f12e745d154ffbac01bc0f7bf05ba7f658c3a28b0cb");
 }
 
@@ -98,12 +100,7 @@ static void test_key_hash_invalid_size_scrubs_extended_pubkey_before_abort(void*
     (void) state;
 
     key_derivation_scrub_observation_t* observation =
-        mmap(NULL,
-             sizeof(*observation),
-             PROT_READ | PROT_WRITE,
-             MAP_SHARED | MAP_ANONYMOUS,
-             -1,
-             0);
+        mmap(NULL, sizeof(*observation), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     assert_true(observation != MAP_FAILED);
     memset(observation, 0, sizeof(*observation));
 

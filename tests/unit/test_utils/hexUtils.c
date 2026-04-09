@@ -29,7 +29,7 @@ bool hex_parseNibblePair(const char* buffer, uint8_t* out_byte) {
     if (!hex_parseNibble(buffer[1], &second)) {
         return false;
     }
-    *out_byte = (uint8_t)((first << 4) + second);
+    *out_byte = (uint8_t) ((first << 4) + second);
     return true;
 }
 
@@ -68,7 +68,7 @@ static bool is_hex_separator(char c) {
 size_t hex_to_bytes(const char* hex, uint8_t* out, size_t max_size) {
     // Count non-separator hex digits
     size_t digits = 0;
-    for (const char *p = hex; *p != '\0'; p++) {
+    for (const char* p = hex; *p != '\0'; p++) {
         if (!is_hex_separator(*p)) {
             digits++;
         }
@@ -85,7 +85,7 @@ size_t hex_to_bytes(const char* hex, uint8_t* out, size_t max_size) {
     LEDGER_ASSERT(normalized != NULL, "hex_to_bytes: malloc failed");
 
     size_t idx = 0;
-    for (const char *p = hex; *p != '\0'; p++) {
+    for (const char* p = hex; *p != '\0'; p++) {
         if (!is_hex_separator(*p)) {
             normalized[idx++] = *p;
         }
@@ -119,4 +119,3 @@ int test_bytes_to_lowercase_hex(char* out, size_t outl, const uint8_t* bytes, si
     *out = 0;
     return 0;
 }
-

@@ -57,7 +57,8 @@ static inline void run_cvote_fixture(const cvote_fixture_t *fixture) {
     reset_mock_signature_state();
 
     // Send INIT APDU
-    test_read_buffer_t init_buffer = make_test_read_buffer(fixture->init_data, fixture->init_data_len);
+    test_read_buffer_t init_buffer =
+        make_test_read_buffer(fixture->init_data, fixture->init_data_len);
     apdu_response_begin(INS_SIGN_CVOTE);
     handler_sign_cvote(&init_buffer.sdk_buffer, P1_CVOTE_INIT);
     apdu_response_assert_sent_or_deferred();
@@ -76,7 +77,8 @@ static inline void run_cvote_fixture(const cvote_fixture_t *fixture) {
     }
 
     // Send CONFIRM APDU (contains witness path; UI auto-confirms and calls finalize_sign_cvote)
-    test_read_buffer_t confirm_buffer = make_test_read_buffer(fixture->confirm_data, fixture->confirm_data_len);
+    test_read_buffer_t confirm_buffer =
+        make_test_read_buffer(fixture->confirm_data, fixture->confirm_data_len);
     apdu_response_begin(INS_SIGN_CVOTE);
     handler_sign_cvote(&confirm_buffer.sdk_buffer, P1_CVOTE_CONFIRM);
     apdu_response_assert_sent_or_deferred();
@@ -94,15 +96,16 @@ static inline void run_cvote_fixture(const cvote_fixture_t *fixture) {
                         g_mock_last_signature_entry->message,
                         g_mock_last_signature_entry->message_len);
 
-    if (fixture->expected_votecast_hash == NULL
-        || fixture->expected_votecast_hash_len == 0
-        || fixture->expected_witness_signature == NULL
-        || fixture->expected_witness_signature_len == 0) {
+    if (fixture->expected_votecast_hash == NULL || fixture->expected_votecast_hash_len == 0 ||
+        fixture->expected_witness_signature == NULL ||
+        fixture->expected_witness_signature_len == 0) {
         fprintf(stderr, "UNIT_CAPTURE [%s] votecastHashHex=", fixture->name);
-        for (size_t i = 0; i < VOTECAST_HASH_LENGTH; i++) fprintf(stderr, "%02x", g_last_response[i]);
+        for (size_t i = 0; i < VOTECAST_HASH_LENGTH; i++)
+            fprintf(stderr, "%02x", g_last_response[i]);
         fprintf(stderr, "\n");
         fprintf(stderr, "UNIT_CAPTURE [%s] witnessSignatureHex=", fixture->name);
-        for (size_t i = 0; i < ED25519_SIGNATURE_LENGTH; i++) fprintf(stderr, "%02x", g_last_response[VOTECAST_HASH_LENGTH + i]);
+        for (size_t i = 0; i < ED25519_SIGNATURE_LENGTH; i++)
+            fprintf(stderr, "%02x", g_last_response[VOTECAST_HASH_LENGTH + i]);
         fprintf(stderr, "\n");
         fail_msg("Missing unit expected result for cvote fixture '%s'", fixture->name);
     }

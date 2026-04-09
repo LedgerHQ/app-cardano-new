@@ -64,6 +64,8 @@ static inline void run_fixture(const pubkey_fixture_t *fixture) {
         assert_non_null(fixture->expected_response);
         assert_true(fixture->expected_response_len > 0);
         assert_int_equal(g_last_response_len, fixture->expected_response_len);
-        assert_memory_equal(g_last_response, fixture->expected_response, fixture->expected_response_len);
+        assert_memory_equal(g_last_response,
+                            fixture->expected_response,
+                            fixture->expected_response_len);
     }
 }

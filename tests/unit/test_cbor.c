@@ -19,7 +19,7 @@ static void test_cbor_parse_token(void **state) {
     (void) state;
 
     struct {
-        const char* hex;
+        const char *hex;
         uint8_t type;
         uint8_t width;
         uint64_t value;
@@ -92,7 +92,7 @@ static void test_cbor_parse_noncanonical(void **state) {
     (void) state;
 
     struct {
-        const char* hex;
+        const char *hex;
     } testVectors[] = {
         {"1800"},
         {"1817"},
@@ -127,7 +127,7 @@ static void test_cbor_write_token(void **state) {
     (void) state;
 
     struct {
-        const char* hex;
+        const char *hex;
         uint8_t type;
         uint64_t value;
     } testVectors[] = {
@@ -192,7 +192,11 @@ static void test_cbor_write_token(void **state) {
 
         uint8_t buffer[50] = {0};
         size_t bufferSize = 0;
-        bool writeSuccess = cbor_writeToken(testVectors[i].type, testVectors[i].value, buffer, sizeof(buffer), &bufferSize);
+        bool writeSuccess = cbor_writeToken(testVectors[i].type,
+                                            testVectors[i].value,
+                                            buffer,
+                                            sizeof(buffer),
+                                            &bufferSize);
 
         assert_true(writeSuccess);
         assert_int_equal(bufferSize, expectedSize);
@@ -205,8 +209,8 @@ static void test_cbor_parse_truncated(void **state) {
     (void) state;
 
     struct {
-        const char* hex;    // valid full encoding
-        size_t truncate_to; // feed only this many bytes
+        const char *hex;     // valid full encoding
+        size_t truncate_to;  // feed only this many bytes
     } testVectors[] = {
         // empty buffer
         {"00", 0},

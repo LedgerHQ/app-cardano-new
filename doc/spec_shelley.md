@@ -29,7 +29,7 @@ Protocol magic is used to identify the network on the protocol level. Each netwo
 
 ## Keys
 
-In Shelley two types of keys are used. Payment key and staking key. Payment keys are derived from *m/1852'/1815'/x/[0,1]/y* paths and are used for holding/transfering funds. Staking keys are derived from *m/1852'/1815'/x/2/0* paths, thus there is only one staking key per account. They are used for staking operations - certificates, withdrawals. Shelley addresses are built from the combination of hashes of these keys.
+In Shelley two types of keys are used. Payment key and staking key. Payment keys are derived from *m/1852'/1815'/x/[0,1]/y* paths and are used for holding/transferring funds. Staking keys are derived from *m/1852'/1815'/x/2/0* paths, thus there is only one staking key per account. They are used for staking operations - certificates, withdrawals. Shelley addresses are built from the combination of hashes of these keys.
 
 Payment Key - kp = (skp, vkp)
 Staking Key - ks = (sks, vks)
@@ -259,7 +259,7 @@ Txs related to stake pools are left out.
 [
     {
         0: 258([[h'B45C4891', 0]]),
-        1: [[0, h'CFB2C414', h'76394F7A', 10]],      <-------- 0 (addres type), hash(vkp), hash(vks), amount ; why are there 9 address types?
+        1: [[0, h'CFB2C414', h'76394F7A', 10]],      <-------- 0 (address type), hash(vkp), hash(vks), amount ; why are there 9 address types?
         2: 94,
         3: 10
     },
@@ -673,7 +673,7 @@ Adding a new command requires adding it to *python/src/trezorlib/cardano.py* and
 
 Although unit tests are part of the *core* module, I’ll mention them here. All the cardano unit tests are in *core/tests/test\_apps.cardano.\*.py*. In order to run only cardano tests I’ve modified the *run\_tests.sh* script \-\> [result](https://gist.github.com/gabrielKerekes/f9f15ee8fe87366959122131ac4ab319) (note that the original *run\_tests.sh* file can change and the cardano file then needs to be also updated).
 
-Individual tests can also be run from the *core/tests* directory by running (the project needs to be built first \- not rebuilt everytime, just built at some point):
+Individual tests can also be run from the *core/tests* directory by running (the project needs to be built first \- not rebuilt every time, just built at some point):
 ../build/unix/trezor-emu-core test\_apps.common.cbor.py
 
 #### Integration tests

@@ -12,9 +12,9 @@
 #include "assert.h"
 #include "utils.h"
 
-uint8_t *tx_alloc_temp_buffer_or_fail(size_t size) {
-    uint8_t *buffer = NULL;
-    bool allocated = allocate_zeroed((void **) &buffer, size);
+uint8_t* tx_alloc_temp_buffer_or_fail(size_t size) {
+    uint8_t* buffer = NULL;
+    bool allocated = allocate_zeroed((void**) &buffer, size);
     ASSERT(allocated && buffer != NULL);
     return buffer;
 }
@@ -80,9 +80,8 @@ bool tx_output_destination_to_address_bytes(const tx_output_destination_t* desti
         case DESTINATION_DEVICE_OWNED: {
             size_t derivedAddressLength =
                 deriveAddress(&destination->params, addressBuffer, addressBufferSize);
-            LEDGER_ASSERT(derivedAddressLength > 0 &&
-                          derivedAddressLength <= MAX_ADDRESS_LENGTH &&
-                          derivedAddressLength <= addressBufferSize,
+            LEDGER_ASSERT(derivedAddressLength > 0 && derivedAddressLength <= MAX_ADDRESS_LENGTH &&
+                              derivedAddressLength <= addressBufferSize,
                           "Invalid derived destination address length: %u",
                           (unsigned) derivedAddressLength);
             *outAddressLength = derivedAddressLength;
@@ -93,25 +92,24 @@ bool tx_output_destination_to_address_bytes(const tx_output_destination_t* desti
         default:
             ASSERT(false);
             return false;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
-__noinline_due_to_stack__
-bool format_tx_output_destination_human_readable(const tx_output_destination_t* destination,
-                                                 char* out,
-                                                 size_t outSize) {
-    uint8_t *address_bytes = tx_alloc_temp_buffer_or_fail(MAX_ADDRESS_LENGTH);
+__noinline_due_to_stack__ bool format_tx_output_destination_human_readable(
+    const tx_output_destination_t* destination,
+    char* out,
+    size_t outSize) {
+    uint8_t* address_bytes = tx_alloc_temp_buffer_or_fail(MAX_ADDRESS_LENGTH);
 
     size_t address_size = 0;
-    bool destination_parsed = tx_output_destination_to_address_bytes(
-        destination,
-        address_bytes,
-        MAX_ADDRESS_LENGTH,
-        &address_size);
+    bool destination_parsed = tx_output_destination_to_address_bytes(destination,
+                                                                     address_bytes,
+                                                                     MAX_ADDRESS_LENGTH,
+                                                                     &address_size);
     LEDGER_ASSERT(destination_parsed, "Failed to build output address bytes for UI");
 
     bool formatted = format_address_human_readable(address_bytes, address_size, out, outSize);
-    APP_MEM_FREE_AND_NULL((void **) &address_bytes);
+    APP_MEM_FREE_AND_NULL((void**) &address_bytes);
     return formatted;
 }

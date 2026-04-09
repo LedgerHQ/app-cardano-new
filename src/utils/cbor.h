@@ -57,7 +57,11 @@ typedef cbor_token_t token_t;  // legacy
 
 // Serializes token into buffer, returning true on success, false on error
 // On success, the buffer is written with the serialized token
-bool cbor_writeToken(uint8_t type, uint64_t value, uint8_t* buffer, size_t bufferSize, size_t* out_size);
+bool cbor_writeToken(uint8_t type,
+                     uint64_t value,
+                     uint8_t* buffer,
+                     size_t bufferSize,
+                     size_t* out_size);
 
 // Convert a negative int64_t to the token value representation expected by cbor_writeToken
 // for CBOR_TYPE_NEGATIVE.

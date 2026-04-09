@@ -13,9 +13,9 @@ import re
 import cbor2
 import pytest
 
+from ledgered.devices import Device
 from ragger.backend import BackendInterface
 from ragger.error import ExceptionRAPDU
-from ledgered.devices import Device
 from ragger.navigator import Navigator, NavInsID
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 

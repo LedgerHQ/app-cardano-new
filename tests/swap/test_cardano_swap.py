@@ -1,14 +1,16 @@
 # SPDX-FileCopyrightText: 2025-2026 Vacuumlabs
 # SPDX-License-Identifier: Apache-2.0
 
-import pytest
 import time
+import pytest
 from ledger_app_clients.exchange.test_runner import (
     ExchangeTestRunner,
     ALL_TESTS_EXCEPT_MEMO_THORSWAP_AND_FEES,
 )
 from ledger_app_clients.exchange.utils import handle_lib_call_start_or_stop
 from ragger.error import ExceptionRAPDU
+
+import bech32
 
 from tests.application_client.command_sender import CommandSender
 from tests.application_client.command_builder import gather_witness_paths
@@ -76,8 +78,6 @@ class CardanoShelleySwapTests(ExchangeTestRunner):
         self.assert_exchange_is_started()
 
     def _destination_to_hex(self, destination: str) -> str:
-        import bech32
-
         _, data_part = bech32.bech32_decode(destination)
         if data_part is None:
             # Not a valid bech32 address - pass as-is for denial testing
@@ -145,7 +145,7 @@ class CardanoShelleySwapTests(ExchangeTestRunner):
             ttl=100000000,
         )
 
-    def perform_final_tx(self, destination, send_amount, fees, memo):
+    def perform_final_tx(self, destination, send_amount, fees, memo):  # pylint: disable=unused-argument
         """Build and sign a standard Cardano transaction for swap finalization."""
         tx = self._build_swap_tx(
             destination, send_amount, fees, third_party_output_count=1
@@ -168,7 +168,7 @@ class CardanoShelleySwapTests(ExchangeTestRunner):
 
 
 class CardanoShelleySwapDenyMultipleThirdPartyOutputs(CardanoShelleySwapTests):
-    def perform_final_tx(self, destination, send_amount, fees, memo):
+    def perform_final_tx(self, destination, send_amount, fees, memo):  # pylint: disable=unused-argument
         tx = self._build_swap_tx(
             destination, send_amount, fees, third_party_output_count=2
         )
@@ -201,7 +201,7 @@ class CardanoShelleySwapDenyMultipleThirdPartyOutputs(CardanoShelleySwapTests):
 
 
 class CardanoShelleySwapDenyWitnessPoolColdPath(CardanoShelleySwapTests):
-    def perform_final_tx(self, destination, send_amount, fees, memo):
+    def perform_final_tx(self, destination, send_amount, fees, memo):  # pylint: disable=unused-argument
         tx = self._build_swap_tx(
             destination, send_amount, fees, third_party_output_count=1
         )

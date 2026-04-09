@@ -18,7 +18,8 @@ typedef struct {
     size_t data_length;
 } test_read_buffer_t;
 
-static inline test_read_buffer_t make_test_read_buffer(const uint8_t* source_data, size_t source_length) {
+static inline test_read_buffer_t make_test_read_buffer(const uint8_t* source_data,
+                                                       size_t source_length) {
     test_read_buffer_t test_buffer = {0};
 
     // Keep zero-length buffers representable because several deny-path tests
@@ -33,7 +34,7 @@ static inline test_read_buffer_t make_test_read_buffer(const uint8_t* source_dat
     }
 
     test_buffer.data_length = source_length;
-    test_buffer.sdk_buffer = (buffer_t) {
+    test_buffer.sdk_buffer = (buffer_t){
         .ptr = test_buffer.mutable_copy,
         .size = source_length,
         .offset = 0,
@@ -41,7 +42,8 @@ static inline test_read_buffer_t make_test_read_buffer(const uint8_t* source_dat
     return test_buffer;
 }
 
-static inline void assert_read_buffer_unchanged_and_cleanup(test_read_buffer_t* test_buffer, const uint8_t* source_data) {
+static inline void assert_read_buffer_unchanged_and_cleanup(test_read_buffer_t* test_buffer,
+                                                            const uint8_t* source_data) {
     assert_non_null(test_buffer);
     assert_non_null(test_buffer->mutable_copy);
 

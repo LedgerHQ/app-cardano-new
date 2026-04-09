@@ -54,7 +54,7 @@ static address_type_t getDestinationAddressType(const tx_output_destination_t *d
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
@@ -87,16 +87,13 @@ static address_type_t getDestinationAddressType(const tx_output_destination_t *d
  * - WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH must be set only via
  *   mark_unusual_key_derivation(w, ...), never directly.
  */
-static warning_bits_t __attribute__((noinline))
-policy_warnings_snapshot(const warning_bits_t *w) {
+static warning_bits_t __attribute__((noinline)) policy_warnings_snapshot(const warning_bits_t *w) {
     ASSERT(w != NULL);
     return *w;
 }
 
 static security_policy_t __attribute__((noinline))
-policy_checked_return(const warning_bits_t *w,
-                      warning_bits_t w_start,
-                      security_policy_t policy) {
+policy_checked_return(const warning_bits_t *w, warning_bits_t w_start, security_policy_t policy) {
     ASSERT(w != NULL);
     LEDGER_ASSERT(policy != POLICY_HIDE || warning_bits_except_mask(*w, w_start) == 0,
                   "HIDE with newly added w");
@@ -174,15 +171,14 @@ static security_policy_t _policyForGetExtendedPublicKey_silent(const bip44_path_
         default:
             ASSERT(false);
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
 }
 
 // Get extended public key and return it to the host
-security_policy_t policyForGetExtendedPublicKey(const bip44_path_t *path,
-                                                warning_bits_t *w) {
+security_policy_t policyForGetExtendedPublicKey(const bip44_path_t *path, warning_bits_t *w) {
     POLICY_INIT();
     ASSERT(path != NULL);
 
@@ -217,7 +213,7 @@ security_policy_t policyForGetExtendedPublicKey(const bip44_path_t *path,
         default:
             ASSERT(false);
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -265,7 +261,7 @@ static security_policy_t _policyForDeriveAddress(const address_params_t *address
         default:
             LEDGER_ASSERT(false, "Unexpected address type in derive-address policy");
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     RETURN(successPolicy);
@@ -347,16 +343,14 @@ static bool isTxNetworkIdVerifiable(bool includeNetworkId,
     }
 }
 
-bool shouldShowNetworkDetails(const tx_params_t* txParams) {
+bool shouldShowNetworkDetails(const tx_params_t *txParams) {
     ASSERT(txParams != NULL);
 
-    const bool is_network_id_verifiable = isTxNetworkIdVerifiable(
-        txParams->includeNetworkId,
-        txParams->num_outputs,
-        txParams->includeCollateralOutput,
-        txParams->num_withdrawals,
-        txParams->txSigningMode
-    );
+    const bool is_network_id_verifiable = isTxNetworkIdVerifiable(txParams->includeNetworkId,
+                                                                  txParams->num_outputs,
+                                                                  txParams->includeCollateralOutput,
+                                                                  txParams->num_withdrawals,
+                                                                  txParams->txSigningMode);
     if (!is_network_id_verifiable) {
         // no point in showing the given network id because tx body
         // does not have any elements containing it
@@ -370,7 +364,6 @@ bool shouldShowNetworkDetails(const tx_params_t* txParams) {
 static inline void set_missing_collateral_warning(warning_bits_t *w,
                                                   sign_tx_signingmode_t signingMode,
                                                   uint32_t numCollateralInputs) {
-
     const bool collateralExpected = (signingMode == SIGN_TX_SIGNINGMODE_PLUTUS_TX);
     if (collateralExpected && (numCollateralInputs == 0)) {
         warning_bits_set(w, WARNING_BIT_PLUTUS_MISSING_COLLATERAL);
@@ -380,7 +373,6 @@ static inline void set_missing_collateral_warning(warning_bits_t *w,
 static inline void set_unknown_collateral_warning(warning_bits_t *w,
                                                   sign_tx_signingmode_t signingMode,
                                                   bool includesTotalCollateral) {
-
     const bool collateralExpected = (signingMode == SIGN_TX_SIGNINGMODE_PLUTUS_TX);
     if (collateralExpected && (!includesTotalCollateral)) {
         warning_bits_set(w, WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL);
@@ -390,7 +382,6 @@ static inline void set_unknown_collateral_warning(warning_bits_t *w,
 static inline void set_missing_script_data_hash_warning(warning_bits_t *w,
                                                         sign_tx_signingmode_t signingMode,
                                                         bool includesScriptDataHash) {
-
     const bool scriptDataHashExpected = (signingMode == SIGN_TX_SIGNINGMODE_PLUTUS_TX);
     if (scriptDataHashExpected && !includesScriptDataHash) {
         warning_bits_set(w, WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH);
@@ -403,8 +394,11 @@ static inline void set_network_not_verifiable_warning(warning_bits_t *w,
                                                       bool includeCollateralOutput,
                                                       uint32_t numWithdrawals,
                                                       sign_tx_signingmode_t txSigningMode) {
-
-    if (!isTxNetworkIdVerifiable(includeNetworkId, numOutputs, includeCollateralOutput, numWithdrawals, txSigningMode)) {
+    if (!isTxNetworkIdVerifiable(includeNetworkId,
+                                 numOutputs,
+                                 includeCollateralOutput,
+                                 numWithdrawals,
+                                 txSigningMode)) {
         warning_bits_set(w, WARNING_BIT_NETWORK_NOT_VERIFIABLE);
     }
 }
@@ -412,15 +406,13 @@ static inline void set_network_not_verifiable_warning(warning_bits_t *w,
 static inline void set_network_unusual_warning(warning_bits_t *w,
                                                uint32_t networkId,
                                                uint32_t protocolMagic) {
-
     if (!isNetworkUsual(networkId, protocolMagic)) {
         warning_bits_set(w, WARNING_BIT_NETWORK_UNUSUAL);
     }
 }
 
 // Initiate transaction signing
-security_policy_t policyForSignTxInit(const tx_params_t *txParams,
-                                      warning_bits_t *w) {
+security_policy_t policyForSignTxInit(const tx_params_t *txParams, warning_bits_t *w) {
     POLICY_INIT();
     ASSERT(txParams != NULL);
     DENY_UNLESS(isValidNetworkId(txParams->networkId));
@@ -480,33 +472,22 @@ security_policy_t policyForSignTxInit(const tx_params_t *txParams,
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     // w are collected here; UI machine decides which screens to show
-    set_network_not_verifiable_warning(
-        w,
-        txParams->includeNetworkId,
-        txParams->num_outputs,
-        txParams->includeCollateralOutput,
-        txParams->num_withdrawals,
-        txParams->txSigningMode);
-    set_network_unusual_warning(
-        w,
-        txParams->networkId,
-        txParams->protocolMagic);
-    set_missing_collateral_warning(
-        w,
-        txParams->txSigningMode,
-        txParams->num_collateral_inputs);
-    set_unknown_collateral_warning(
-        w,
-        txParams->txSigningMode,
-        txParams->includeTotalCollateral);
-    set_missing_script_data_hash_warning(
-        w,
-        txParams->txSigningMode,
-        txParams->includeScriptDataHash);
+    set_network_not_verifiable_warning(w,
+                                       txParams->includeNetworkId,
+                                       txParams->num_outputs,
+                                       txParams->includeCollateralOutput,
+                                       txParams->num_withdrawals,
+                                       txParams->txSigningMode);
+    set_network_unusual_warning(w, txParams->networkId, txParams->protocolMagic);
+    set_missing_collateral_warning(w, txParams->txSigningMode, txParams->num_collateral_inputs);
+    set_unknown_collateral_warning(w, txParams->txSigningMode, txParams->includeTotalCollateral);
+    set_missing_script_data_hash_warning(w,
+                                         txParams->txSigningMode,
+                                         txParams->includeScriptDataHash);
 
     SHOW();
 }
@@ -536,7 +517,7 @@ security_policy_t policyForSignTxInput(sign_tx_signingmode_t txSigningMode,
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -630,7 +611,8 @@ static bool contains_forbidden_plutus_elements(const tx_output_description_t *ou
     return false;
 }
 
-static bool needsMissingDatumWarning(const tx_output_destination_t *destination, bool includeDatum) {
+static bool needsMissingDatumWarning(const tx_output_destination_t *destination,
+                                     bool includeDatum) {
     const bool mightRequireDatum =
         determinePaymentChoice(getDestinationAddressType(destination)) == PAYMENT_SCRIPT_HASH;
     return mightRequireDatum && !includeDatum;
@@ -678,15 +660,15 @@ static security_policy_t policyForSignTxOutputAddressBytes(const tx_output_descr
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
 }
 
 static bool is_address_params_suitable_for_tx_output(const address_params_t *params,
-                                                    const uint8_t networkId,
-                                                    const uint32_t protocolMagic) {
+                                                     const uint8_t networkId,
+                                                     const uint32_t protocolMagic) {
 #define CHECK(cond) \
     if (!(cond)) return false
     CHECK(isValidAddressParams(params));
@@ -790,17 +772,17 @@ static security_policy_t policyForSignTxOutputAddressParams(const tx_output_desc
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
 }
 
 security_policy_t policyForSignTxOutput(const tx_output_description_t *output,
-                                               sign_tx_signingmode_t txSigningMode,
-                                               const uint8_t networkId,
-                                               const uint32_t protocolMagic,
-                                               warning_bits_t *w) {
+                                        sign_tx_signingmode_t txSigningMode,
+                                        const uint8_t networkId,
+                                        const uint32_t protocolMagic,
+                                        warning_bits_t *w) {
     POLICY_INIT();
     ASSERT(output != NULL);
 
@@ -821,13 +803,14 @@ security_policy_t policyForSignTxOutput(const tx_output_description_t *output,
         default:
             ASSERT(false);
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
 }
 
-security_policy_t policyForSignTxOutputDatumHash(security_policy_t outputPolicy, warning_bits_t *w) {
+security_policy_t policyForSignTxOutputDatumHash(security_policy_t outputPolicy,
+                                                 warning_bits_t *w) {
     POLICY_INIT();
     switch (outputPolicy) {
         // LCOV_EXCL_START
@@ -846,13 +829,14 @@ security_policy_t policyForSignTxOutputDatumHash(security_policy_t outputPolicy,
         default:
             ASSERT(false);
             DENY();
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
 }
 
-security_policy_t policyForSignTxOutputRefScript(security_policy_t outputPolicy, warning_bits_t *w) {
+security_policy_t policyForSignTxOutputRefScript(security_policy_t outputPolicy,
+                                                 warning_bits_t *w) {
     POLICY_INIT();
     switch (outputPolicy) {
         // LCOV_EXCL_START
@@ -871,7 +855,7 @@ security_policy_t policyForSignTxOutputRefScript(security_policy_t outputPolicy,
         default:
             ASSERT(false);
             DENY();
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -965,7 +949,7 @@ static security_policy_t policyForSignTxCollateralOutputAddressParams(
             // should be used only in Plutus transactions
             ASSERT(false);
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -998,7 +982,7 @@ security_policy_t policyForSignTxCollateralOutputAddress(const tx_output_descrip
         default:
             ASSERT(false);
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1074,7 +1058,7 @@ security_policy_t policyForSignTxFee(sign_tx_signingmode_t txSigningMode,
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1108,7 +1092,7 @@ static bool _forbiddenCredential(sign_tx_signingmode_t txSigningMode,
                 // LCOV_EXCL_START
                 default:
                     ASSERT(false);
-                // LCOV_EXCL_STOP
+                    // LCOV_EXCL_STOP
             }
             break;
 
@@ -1130,7 +1114,7 @@ static bool _forbiddenCredential(sign_tx_signingmode_t txSigningMode,
                 // LCOV_EXCL_START
                 default:
                     ASSERT(false);
-                // LCOV_EXCL_STOP
+                    // LCOV_EXCL_STOP
             }
             break;
 
@@ -1138,7 +1122,7 @@ static bool _forbiddenCredential(sign_tx_signingmode_t txSigningMode,
         default:
             // this should not be called in POOL_REGISTRATION signing modes
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     return false;
@@ -1146,7 +1130,7 @@ static bool _forbiddenCredential(sign_tx_signingmode_t txSigningMode,
 
 static security_policy_t _policyForSignTxCertificateStakeCredential(
     sign_tx_signingmode_t txSigningMode,
-    const ext_credential_t* stakeCredential,
+    const ext_credential_t *stakeCredential,
     warning_bits_t *w) {
     POLICY_INIT();
     DENY_IF(txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER ||
@@ -1165,16 +1149,15 @@ static security_policy_t _policyForSignTxCertificateStakeCredential(
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     SHOW();
 }
 
-static inline security_policy_t _policyForSignTxCertificateDRep(
-    sign_tx_signingmode_t txSigningMode,
-    const ext_drep_t* drep,
-    warning_bits_t *w) {
+static inline security_policy_t _policyForSignTxCertificateDRep(sign_tx_signingmode_t txSigningMode,
+                                                                const ext_drep_t *drep,
+                                                                warning_bits_t *w) {
     POLICY_INIT();
     DENY_IF(txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER ||
             txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR);
@@ -1192,7 +1175,7 @@ static inline security_policy_t _policyForSignTxCertificateDRep(
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     SHOW();
@@ -1200,7 +1183,7 @@ static inline security_policy_t _policyForSignTxCertificateDRep(
 
 security_policy_t policyForSignTxCertificateStaking(sign_tx_signingmode_t txSigningMode,
                                                     const certificate_type_t certificateType,
-                                                    const ext_credential_t* stakeCredential,
+                                                    const ext_credential_t *stakeCredential,
                                                     warning_bits_t *w) {
     POLICY_INIT();
     DENY_IF(txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER ||
@@ -1216,34 +1199,36 @@ security_policy_t policyForSignTxCertificateStaking(sign_tx_signingmode_t txSign
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     RETURN(_policyForSignTxCertificateStakeCredential(txSigningMode, stakeCredential, w));
 }
 
 security_policy_t policyForSignTxCertificateVoteDelegation(sign_tx_signingmode_t txSigningMode,
-                                                          const ext_credential_t* stakeCredential,
-                                                          const ext_drep_t* drep,
-                                                          warning_bits_t *w) {
+                                                           const ext_credential_t *stakeCredential,
+                                                           const ext_drep_t *drep,
+                                                           warning_bits_t *w) {
     POLICY_INIT();
-    RETURN(combine_security_policies(_policyForSignTxCertificateDRep(txSigningMode, drep, w),
-                             _policyForSignTxCertificateStakeCredential(txSigningMode, stakeCredential, w)));
+    RETURN(combine_security_policies(
+        _policyForSignTxCertificateDRep(txSigningMode, drep, w),
+        _policyForSignTxCertificateStakeCredential(txSigningMode, stakeCredential, w)));
 }
 
 security_policy_t policyForSignTxCertificateStakePoolAndDRepDelegation(
     sign_tx_signingmode_t txSigningMode,
-    const ext_credential_t* stakeCredential,
-    const ext_drep_t* drep,
+    const ext_credential_t *stakeCredential,
+    const ext_drep_t *drep,
     warning_bits_t *w) {
     POLICY_INIT();
-    RETURN(combine_security_policies(_policyForSignTxCertificateDRep(txSigningMode, drep, w),
-                             _policyForSignTxCertificateStakeCredential(txSigningMode, stakeCredential, w)));
+    RETURN(combine_security_policies(
+        _policyForSignTxCertificateDRep(txSigningMode, drep, w),
+        _policyForSignTxCertificateStakeCredential(txSigningMode, stakeCredential, w)));
 }
 
 security_policy_t policyForSignTxCertificateAccountRegistrationDelegationToStakePool(
     sign_tx_signingmode_t txSigningMode,
-    const ext_credential_t* stakeCredential,
+    const ext_credential_t *stakeCredential,
     warning_bits_t *w) {
     POLICY_INIT();
     DENY_IF(txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER ||
@@ -1253,27 +1238,29 @@ security_policy_t policyForSignTxCertificateAccountRegistrationDelegationToStake
 
 security_policy_t policyForSignTxCertificateAccountRegistrationDelegationToDRep(
     sign_tx_signingmode_t txSigningMode,
-    const ext_credential_t* stakeCredential,
-    const ext_drep_t* drep,
+    const ext_credential_t *stakeCredential,
+    const ext_drep_t *drep,
     warning_bits_t *w) {
     POLICY_INIT();
-    RETURN(combine_security_policies(_policyForSignTxCertificateDRep(txSigningMode, drep, w),
-                             _policyForSignTxCertificateStakeCredential(txSigningMode, stakeCredential, w)));
+    RETURN(combine_security_policies(
+        _policyForSignTxCertificateDRep(txSigningMode, drep, w),
+        _policyForSignTxCertificateStakeCredential(txSigningMode, stakeCredential, w)));
 }
 
 security_policy_t policyForSignTxCertificateAccountRegistrationDelegationToStakePoolAndDRep(
     sign_tx_signingmode_t txSigningMode,
-    const ext_credential_t* stakeCredential,
-    const ext_drep_t* drep,
+    const ext_credential_t *stakeCredential,
+    const ext_drep_t *drep,
     warning_bits_t *w) {
     POLICY_INIT();
-    RETURN(combine_security_policies(_policyForSignTxCertificateDRep(txSigningMode, drep, w),
-                             _policyForSignTxCertificateStakeCredential(txSigningMode, stakeCredential, w)));
+    RETURN(combine_security_policies(
+        _policyForSignTxCertificateDRep(txSigningMode, drep, w),
+        _policyForSignTxCertificateStakeCredential(txSigningMode, stakeCredential, w)));
 }
 
 security_policy_t policyForSignTxCertificateCommitteeAuth(sign_tx_signingmode_t txSigningMode,
-                                                          const ext_credential_t* coldCredential,
-                                                          const ext_credential_t* hotCredential,
+                                                          const ext_credential_t *coldCredential,
+                                                          const ext_credential_t *hotCredential,
                                                           warning_bits_t *w) {
     POLICY_INIT();
     DENY_IF(txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER ||
@@ -1293,7 +1280,7 @@ security_policy_t policyForSignTxCertificateCommitteeAuth(sign_tx_signingmode_t 
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     switch (hotCredential->type) {
@@ -1308,16 +1295,15 @@ security_policy_t policyForSignTxCertificateCommitteeAuth(sign_tx_signingmode_t 
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     SHOW();
 }
 
-security_policy_t policyForSignTxCertificateCommitteeResign(
-    sign_tx_signingmode_t txSigningMode,
-    const ext_credential_t* coldCredential,
-    warning_bits_t *w) {
+security_policy_t policyForSignTxCertificateCommitteeResign(sign_tx_signingmode_t txSigningMode,
+                                                            const ext_credential_t *coldCredential,
+                                                            warning_bits_t *w) {
     POLICY_INIT();
     DENY_IF(txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER ||
             txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR);
@@ -1336,14 +1322,14 @@ security_policy_t policyForSignTxCertificateCommitteeResign(
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     SHOW();
 }
 
 security_policy_t policyForSignTxCertificateDRep(sign_tx_signingmode_t txSigningMode,
-                                                 const ext_credential_t* dRepCredential,
+                                                 const ext_credential_t *dRepCredential,
                                                  warning_bits_t *w) {
     POLICY_INIT();
     DENY_IF(txSigningMode == SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER ||
@@ -1363,7 +1349,7 @@ security_policy_t policyForSignTxCertificateDRep(sign_tx_signingmode_t txSigning
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     SHOW();
@@ -1371,7 +1357,7 @@ security_policy_t policyForSignTxCertificateDRep(sign_tx_signingmode_t txSigning
 
 security_policy_t policyForSignTxCertificateStakePoolRetirement(
     sign_tx_signingmode_t txSigningMode,
-    const ext_credential_t* poolCredential,
+    const ext_credential_t *poolCredential,
     uint64_t epoch MARK_UNUSED,
     warning_bits_t *w) {
     POLICY_INIT();
@@ -1393,7 +1379,7 @@ security_policy_t policyForSignTxCertificateStakePoolRetirement(
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1439,7 +1425,7 @@ security_policy_t policyForSignTxStakePoolRegistrationInit(sign_tx_signingmode_t
         // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unexpected signing mode");
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1465,13 +1451,14 @@ security_policy_t policyForSignTxStakePoolRegistrationPoolId(sign_tx_signingmode
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
 }
 
-security_policy_t policyForSignTxStakePoolRegistrationVrfKey(sign_tx_signingmode_t txSigningMode, warning_bits_t *w) {
+security_policy_t policyForSignTxStakePoolRegistrationVrfKey(sign_tx_signingmode_t txSigningMode,
+                                                             warning_bits_t *w) {
     POLICY_INIT();
     switch (txSigningMode) {
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
@@ -1487,7 +1474,7 @@ security_policy_t policyForSignTxStakePoolRegistrationVrfKey(sign_tx_signingmode
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1518,7 +1505,7 @@ security_policy_t policyForSignTxStakePoolRegistrationRewardAccount(
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     switch (txSigningMode) {
@@ -1530,7 +1517,7 @@ security_policy_t policyForSignTxStakePoolRegistrationRewardAccount(
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1556,7 +1543,7 @@ security_policy_t policyForSignTxStakePoolRegistrationOwner(
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     switch (txSigningMode) {
@@ -1573,7 +1560,7 @@ security_policy_t policyForSignTxStakePoolRegistrationOwner(
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
     DENY();  // should not be reached
 }
@@ -1598,15 +1585,14 @@ security_policy_t policyForSignTxStakePoolRegistrationRelay(
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
 }
 
-security_policy_t policyForSignTxStakePoolRegistrationMetadata(
-    const pool_metadata_t* metadata,
-    warning_bits_t *w) {
+security_policy_t policyForSignTxStakePoolRegistrationMetadata(const pool_metadata_t *metadata,
+                                                               warning_bits_t *w) {
     POLICY_INIT();
     ASSERT(metadata != NULL);
     if (metadata->urlSize == 0) {
@@ -1622,7 +1608,7 @@ security_policy_t policyForSignTxStakePoolRegistrationNoMetadata(warning_bits_t 
     SHOW();
 }
 
-security_policy_t policyForSignTxAnchor(const anchor_t* anchor, warning_bits_t *w) {
+security_policy_t policyForSignTxAnchor(const anchor_t *anchor, warning_bits_t *w) {
     POLICY_INIT();
     ASSERT(anchor != NULL && anchor->isIncluded);
 
@@ -1667,7 +1653,7 @@ security_policy_t policyForSignTxWithdrawal(sign_tx_signingmode_t txSigningMode,
                     // in POOL_REGISTRATION signing modes, this certificate should have already been
                     // reported as invalid (only pool registration certificate is allowed)
                     ASSERT(false);
-                // LCOV_EXCL_STOP
+                    // LCOV_EXCL_STOP
             }
             break;
 
@@ -1696,7 +1682,7 @@ security_policy_t policyForSignTxWithdrawal(sign_tx_signingmode_t txSigningMode,
                     // in POOL_REGISTRATION signing modes, this certificate should have already been
                     // reported as invalid (only pool registration certificate is allowed)
                     ASSERT(false);
-                // LCOV_EXCL_STOP
+                    // LCOV_EXCL_STOP
             }
             break;
 
@@ -1718,7 +1704,7 @@ security_policy_t policyForSignTxWithdrawal(sign_tx_signingmode_t txSigningMode,
                     // in POOL_REGISTRATION signing modes, this certificate should have already been
                     // reported as invalid (only pool registration certificate is allowed)
                     ASSERT(false);
-                // LCOV_EXCL_STOP
+                    // LCOV_EXCL_STOP
             }
             break;
 
@@ -1727,7 +1713,7 @@ security_policy_t policyForSignTxWithdrawal(sign_tx_signingmode_t txSigningMode,
             // in POOL_REGISTRATION signing modes, non-zero number of withdrawals
             // should have already been reported as invalid
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1753,7 +1739,7 @@ security_policy_t policyForSignTxAuxData(aux_data_type_t auxDataType, warning_bi
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1769,7 +1755,8 @@ security_policy_t policyForSignTxValidityIntervalStart(warning_bits_t *w) {
 
 // ======================================= Mint =======================================
 
-security_policy_t policyForSignTxMintInit(const sign_tx_signingmode_t txSigningMode, warning_bits_t *w) {
+security_policy_t policyForSignTxMintInit(const sign_tx_signingmode_t txSigningMode,
+                                          warning_bits_t *w) {
     POLICY_INIT();
     switch (txSigningMode) {
         case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
@@ -1783,14 +1770,15 @@ security_policy_t policyForSignTxMintInit(const sign_tx_signingmode_t txSigningM
             // in POOL_REGISTRATION signing modes, non-empty mint field
             // should have already been reported as invalid
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
 }
 
 // ======================================= Script Data Hash ======================================
-security_policy_t policyForSignTxScriptDataHash(const sign_tx_signingmode_t txSigningMode, warning_bits_t *w) {
+security_policy_t policyForSignTxScriptDataHash(const sign_tx_signingmode_t txSigningMode,
+                                                warning_bits_t *w) {
     POLICY_INIT();
     switch (txSigningMode) {
         case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
@@ -1803,12 +1791,13 @@ security_policy_t policyForSignTxScriptDataHash(const sign_tx_signingmode_t txSi
         // LCOV_EXCL_START
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
-            // unreachable: pool registration modes are rejected at tx init before script data hash processing
+            // unreachable: pool registration modes are rejected at tx init before script data hash
+            // processing
             DENY();
             break;
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1821,9 +1810,9 @@ security_policy_t policyForSignTxCollateralInput(const sign_tx_signingmode_t txS
                                                  const tx_input_t *collateralInput MARK_UNUSED,
                                                  warning_bits_t *w) {
     POLICY_INIT();
-    // Individual collateral input data is intentionally ignored; only aggregate collateral safety is enforced.
-    // WARNING: policies for collateral inputs, collateral return output and total collateral are
-    // interdependent
+    // Individual collateral input data is intentionally ignored; only aggregate collateral safety
+    // is enforced. WARNING: policies for collateral inputs, collateral return output and total
+    // collateral are interdependent
 
     // we do not impose restrictions on individual collateral inputs
     // because a HW wallet cannot verify anything about the input
@@ -1850,7 +1839,7 @@ security_policy_t policyForSignTxCollateralInput(const sign_tx_signingmode_t txS
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1889,7 +1878,7 @@ static bool is_required_signer_allowed(bip44_path_t *path) {
         default:
             ASSERT(false);
             return false;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
@@ -1908,7 +1897,7 @@ security_policy_t policyForSignTxRequiredSigner(const sign_tx_signingmode_t txSi
         default:
             ASSERT(false);
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     switch (requiredSigner->type) {
@@ -1926,7 +1915,7 @@ security_policy_t policyForSignTxRequiredSigner(const sign_tx_signingmode_t txSi
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -1968,7 +1957,7 @@ security_policy_t policyForSignTxReferenceInput(const sign_tx_signingmode_t txSi
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
     DENY();  // should not be reached
 }
@@ -2017,7 +2006,7 @@ security_policy_t policyForSignTxVotingProcedure(sign_tx_signingmode_t txSigning
                 // LCOV_EXCL_START
                 default:
                     ASSERT(false);
-                // LCOV_EXCL_STOP
+                    // LCOV_EXCL_STOP
             }
             break;
 
@@ -2041,7 +2030,7 @@ security_policy_t policyForSignTxVotingProcedure(sign_tx_signingmode_t txSigning
                 // LCOV_EXCL_START
                 default:
                     ASSERT(false);
-                // LCOV_EXCL_STOP
+                    // LCOV_EXCL_STOP
             }
             break;
 
@@ -2054,7 +2043,7 @@ security_policy_t policyForSignTxVotingProcedure(sign_tx_signingmode_t txSigning
         default:
             // this should not be called in POOL_REGISTRATION signing modes
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     SHOW();
@@ -2066,7 +2055,8 @@ security_policy_t policyForSignTxTreasury(sign_tx_signingmode_t txSigningMode MA
                                           uint64_t treasury MARK_UNUSED,
                                           warning_bits_t *w) {
     POLICY_INIT();
-    // Treasury amount/mode are intentionally not validated here; field presence is always user-visible.
+    // Treasury amount/mode are intentionally not validated here; field presence is always
+    // user-visible.
     SHOW();
 }
 
@@ -2076,13 +2066,15 @@ security_policy_t policyForSignTxDonation(sign_tx_signingmode_t txSigningMode MA
                                           uint64_t donation MARK_UNUSED,
                                           warning_bits_t *w) {
     POLICY_INIT();
-    // Donation amount/mode are intentionally not validated here; field presence is always user-visible.
+    // Donation amount/mode are intentionally not validated here; field presence is always
+    // user-visible.
     SHOW();
 }
 
 // ======================================= Tx hash =======================================
 
-security_policy_t policyForSignTxDisplayTxHash(sign_tx_signingmode_t signingMode, warning_bits_t *w) {
+security_policy_t policyForSignTxDisplayTxHash(sign_tx_signingmode_t signingMode,
+                                               warning_bits_t *w) {
     POLICY_INIT();
     switch (signingMode) {
         case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
@@ -2100,7 +2092,7 @@ security_policy_t policyForSignTxDisplayTxHash(sign_tx_signingmode_t signingMode
             LEDGER_ASSERT(false, "Unknown tx signing mode for tx hash display policy");
             DENY();
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -2330,7 +2322,7 @@ security_policy_t policyForSignTxWitness(sign_tx_signingmode_t txSigningMode,
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -2338,13 +2330,13 @@ security_policy_t policyForSignTxWitness(sign_tx_signingmode_t txSigningMode,
 
 // ======================================= CVote aux data =======================================
 
-security_policy_t policyForCVoteRegistrationVoteKey(const cvote_credential_t* credential,
+security_policy_t policyForCVoteRegistrationVoteKey(const cvote_credential_t *credential,
                                                     cvote_registration_format_t format,
                                                     warning_bits_t *w) {
     POLICY_INIT();
     ASSERT(credential != NULL);
 
-    switch(credential->type) {
+    switch (credential->type) {
         case CVOTE_CREDENTIAL_KEY: {
             SHOW();
             break;
@@ -2363,7 +2355,7 @@ security_policy_t policyForCVoteRegistrationVoteKey(const cvote_credential_t* cr
             ASSERT(false);
             DENY();
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -2423,7 +2415,7 @@ security_policy_t policyForCVoteRegistrationPaymentDestination(
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     DENY();  // should not be reached
@@ -2440,10 +2432,10 @@ security_policy_t policyForCVoteRegistrationVotingPurpose(warning_bits_t *w) {
     HIDE();
 }
 
-// ======================================= Operational certificate =======================================
+// ======================================= Operational certificate
+// =======================================
 
-security_policy_t policyForSignOpCert(const bip44_path_t *poolColdKeyPath,
-                                      warning_bits_t *w) {
+security_policy_t policyForSignOpCert(const bip44_path_t *poolColdKeyPath, warning_bits_t *w) {
     POLICY_INIT();
     ASSERT(poolColdKeyPath != NULL);
     switch (bip44_classifyPath(poolColdKeyPath)) {
@@ -2463,86 +2455,103 @@ security_policy_t policyForSignOpCert(const bip44_path_t *poolColdKeyPath,
 // ======================================= Warnings =======================================
 
 static const warning_definition_t WARNING_DEFINITIONS[WARNING_BIT_COUNT] = {
-    [WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH] = {
-        .bit = WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH,
-        .title = "Unusual derivation path",
-        .description = "Key path outside of standard range",
-    },
-    [WARNING_BIT_NETWORK_UNUSUAL] = {
-        .bit = WARNING_BIT_NETWORK_UNUSUAL,
-        .title = "Unusual network",
-        .description = "Network id or protocol magic deviates from expected nets",
-    },
-    [WARNING_BIT_NETWORK_NOT_VERIFIABLE] = {
-        .bit = WARNING_BIT_NETWORK_NOT_VERIFIABLE,
-        .title = "Network not verifiable",
-        .description = "Transaction body lacks data to verify destination network",
-    },
-    [WARNING_BIT_PLUTUS_MISSING_COLLATERAL] = {
-        .bit = WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
-        .title = "Missing collateral inputs",
-        .description = "Plutus transaction without collateral inputs",
-    },
-    [WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL] = {
-        .bit = WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
-        .title = "Collateral not specified",
-        .description = "Plutus transaction without total collateral",
-    },
-    [WARNING_BIT_COLLATERAL_OUTPUT_WARNING] = {
-        .bit = WARNING_BIT_COLLATERAL_OUTPUT_WARNING,
-        .title = "Tokens in third-party collateral output",
-        .description = "Collateral return output to third-party address includes tokens",
-    },
-    [WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH] = {
-        .bit = WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
-        .title = "Missing script data hash",
-        .description = "Plutus transaction lacks script data hash",
-    },
-    [WARNING_BIT_OUTPUT_MISSING_DATUM] = {
-        .bit = WARNING_BIT_OUTPUT_MISSING_DATUM,
-        .title = "Datum missing",
-        .description = "Script output lacks datum; funds might be unspendable",
-    },
-    [WARNING_BIT_CVOTE_PAYMENT_THIRD_PARTY] = {
-        .bit = WARNING_BIT_CVOTE_PAYMENT_THIRD_PARTY,
-        .title = "Voting rewards to third party",
-        .description = "Catalyst voting rewards go to an external address",
-    },
-    [WARNING_BIT_CVOTE_PAYMENT_NONSTANDARD_OWNED] = {
-        .bit = WARNING_BIT_CVOTE_PAYMENT_NONSTANDARD_OWNED,
-        .title = "Non-standard voting reward address",
-        .description = "Device-owned voting reward address uses an unusual derivation",
-    },
-    [WARNING_BIT_CVOTE_WITNESS_NOT_FULLY_VERIFIABLE] = {
-        .bit = WARNING_BIT_CVOTE_WITNESS_NOT_FULLY_VERIFIABLE,
-        .title = "Limited vote verification",
-        .description = "Device cannot analyze vote consequences and does not display all details",
-    },
-    [WARNING_BIT_POOL_REGISTRATION_NO_OWNERS] = {
-        .bit = WARNING_BIT_POOL_REGISTRATION_NO_OWNERS,
-        .title = "No pool owners",
-        .description = "Stake pool registration does not specify any pool owners",
-    },
-    [WARNING_BIT_POOL_REGISTRATION_NO_RELAYS] = {
-        .bit = WARNING_BIT_POOL_REGISTRATION_NO_RELAYS,
-        .title = "No pool relays",
-        .description = "Stake pool registration does not specify any pool relays",
-    },
-    [WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL] = {
-        .bit = WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL,
-        .title = "Empty metadata URL",
-        .description = "Stake pool registration metadata URL is empty",
-    },
-    [WARNING_BIT_EMPTY_ANCHOR_URL] = {
-        .bit = WARNING_BIT_EMPTY_ANCHOR_URL,
-        .title = "Empty anchor URL",
-        .description = "Anchor URL is empty",
-    },
-    [WARNING_BIT_HIGH_FEE] = {
-        .bit = WARNING_BIT_HIGH_FEE,
-        .title = "High fee",
-        .description = "Transaction fee exceeds typical threshold",
-    },
+    [WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH] =
+        {
+            .bit = WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH,
+            .title = "Unusual derivation path",
+            .description = "Key path outside of standard range",
+        },
+    [WARNING_BIT_NETWORK_UNUSUAL] =
+        {
+            .bit = WARNING_BIT_NETWORK_UNUSUAL,
+            .title = "Unusual network",
+            .description = "Network id or protocol magic deviates from expected nets",
+        },
+    [WARNING_BIT_NETWORK_NOT_VERIFIABLE] =
+        {
+            .bit = WARNING_BIT_NETWORK_NOT_VERIFIABLE,
+            .title = "Network not verifiable",
+            .description = "Transaction body lacks data to verify destination network",
+        },
+    [WARNING_BIT_PLUTUS_MISSING_COLLATERAL] =
+        {
+            .bit = WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
+            .title = "Missing collateral inputs",
+            .description = "Plutus transaction without collateral inputs",
+        },
+    [WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL] =
+        {
+            .bit = WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
+            .title = "Collateral not specified",
+            .description = "Plutus transaction without total collateral",
+        },
+    [WARNING_BIT_COLLATERAL_OUTPUT_WARNING] =
+        {
+            .bit = WARNING_BIT_COLLATERAL_OUTPUT_WARNING,
+            .title = "Tokens in third-party collateral output",
+            .description = "Collateral return output to third-party address includes tokens",
+        },
+    [WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH] =
+        {
+            .bit = WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH,
+            .title = "Missing script data hash",
+            .description = "Plutus transaction lacks script data hash",
+        },
+    [WARNING_BIT_OUTPUT_MISSING_DATUM] =
+        {
+            .bit = WARNING_BIT_OUTPUT_MISSING_DATUM,
+            .title = "Datum missing",
+            .description = "Script output lacks datum; funds might be unspendable",
+        },
+    [WARNING_BIT_CVOTE_PAYMENT_THIRD_PARTY] =
+        {
+            .bit = WARNING_BIT_CVOTE_PAYMENT_THIRD_PARTY,
+            .title = "Voting rewards to third party",
+            .description = "Catalyst voting rewards go to an external address",
+        },
+    [WARNING_BIT_CVOTE_PAYMENT_NONSTANDARD_OWNED] =
+        {
+            .bit = WARNING_BIT_CVOTE_PAYMENT_NONSTANDARD_OWNED,
+            .title = "Non-standard voting reward address",
+            .description = "Device-owned voting reward address uses an unusual derivation",
+        },
+    [WARNING_BIT_CVOTE_WITNESS_NOT_FULLY_VERIFIABLE] =
+        {
+            .bit = WARNING_BIT_CVOTE_WITNESS_NOT_FULLY_VERIFIABLE,
+            .title = "Limited vote verification",
+            .description =
+                "Device cannot analyze vote consequences and does not display all details",
+        },
+    [WARNING_BIT_POOL_REGISTRATION_NO_OWNERS] =
+        {
+            .bit = WARNING_BIT_POOL_REGISTRATION_NO_OWNERS,
+            .title = "No pool owners",
+            .description = "Stake pool registration does not specify any pool owners",
+        },
+    [WARNING_BIT_POOL_REGISTRATION_NO_RELAYS] =
+        {
+            .bit = WARNING_BIT_POOL_REGISTRATION_NO_RELAYS,
+            .title = "No pool relays",
+            .description = "Stake pool registration does not specify any pool relays",
+        },
+    [WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL] =
+        {
+            .bit = WARNING_BIT_POOL_REGISTRATION_EMPTY_METADATA_URL,
+            .title = "Empty metadata URL",
+            .description = "Stake pool registration metadata URL is empty",
+        },
+    [WARNING_BIT_EMPTY_ANCHOR_URL] =
+        {
+            .bit = WARNING_BIT_EMPTY_ANCHOR_URL,
+            .title = "Empty anchor URL",
+            .description = "Anchor URL is empty",
+        },
+    [WARNING_BIT_HIGH_FEE] =
+        {
+            .bit = WARNING_BIT_HIGH_FEE,
+            .title = "High fee",
+            .description = "Transaction fee exceeds typical threshold",
+        },
 };
 
 size_t warning_bits_to_definitions(warning_bits_t w,
@@ -2567,7 +2576,8 @@ size_t warning_bits_to_definitions(warning_bits_t w,
     return count;
 }
 
-// ======================================= CVote witness (votecast) =======================================
+// ======================================= CVote witness (votecast)
+// =======================================
 
 security_policy_t policyForSignCVoteWitness(const bip44_path_t *path, warning_bits_t *w) {
     POLICY_INIT();

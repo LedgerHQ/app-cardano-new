@@ -7,13 +7,15 @@
 This module provides Ragger tests for CIP36 check
 """
 
+import hashlib
 import pytest
 
+from ledgered.devices import Device
 from ragger.backend import BackendInterface
 from ragger.error import ExceptionRAPDU
-from ledgered.devices import Device
 from ragger.navigator import Navigator
 from ragger.navigator.navigation_scenario import NavigateWithScenario
+from ragger.bip import pack_derivation_path
 
 
 from tests.application_client.command_builder import CLA, InsType, P1Type, P2Type
@@ -61,8 +63,6 @@ def test_cvote(
     votecast_hash, signature = _cvote_confirm(nav_ctx, client, testCase)
 
     # Verify the hash matches the expected Blake2b-256 hash of the votecast data
-    import hashlib
-
     expected_hash = hashlib.blake2b(original_votecast_data, digest_size=32).digest()
     assert votecast_hash == expected_hash, (
         f"Hash mismatch: {votecast_hash.hex()} != {expected_hash.hex()}"
@@ -141,7 +141,6 @@ def _cvote_confirm(
 @pytest.mark.parametrize("testCase", cvoteDenyTestCases, ids=idTestFunc)
 def test_cvote_deny(backend: BackendInterface, testCase: CVoteDenyTestCase) -> None:
     """Check that invalid cvote inputs are denied with the expected status word."""
-    from ragger.bip import pack_derivation_path
 
     if testCase.send_chunk_before_init:
         chunk_apdu = bytes(

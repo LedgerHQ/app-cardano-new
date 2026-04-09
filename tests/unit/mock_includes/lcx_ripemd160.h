@@ -11,21 +11,21 @@
  * RIPEMD-160 context
  */
 struct cx_ripemd160_s {
-  /** See #cx_hash_header_s */
-  struct cx_hash_header_s header;
-  /** @internal
-   * pending partial block length
-   */
-  unsigned int blen;
-  /** @internal
-   * pending partial block
-   */
-  unsigned char block[64];
-  /** Current digest state.
-   * After finishing the digest, contains the digest if correct parameters are
-   * passed.
-   */
-  unsigned char acc[5 * 4];
+    /** See #cx_hash_header_s */
+    struct cx_hash_header_s header;
+    /** @internal
+     * pending partial block length
+     */
+    unsigned int blen;
+    /** @internal
+     * pending partial block
+     */
+    unsigned char block[64];
+    /** Current digest state.
+     * After finishing the digest, contains the digest if correct parameters are
+     * passed.
+     */
+    unsigned char acc[5 * 4];
 };
 /** Convenience type. See #cx_ripemd160_s. */
 typedef struct cx_ripemd160_s cx_ripemd160_t;
@@ -38,7 +38,6 @@ typedef struct cx_ripemd160_s cx_ripemd160_t;
  *
  * @return algorithm identifier
  */
-CXCALL int
-cx_ripemd160_init(cx_ripemd160_t *hash PLENGTH(sizeof(cx_ripemd160_t)));
+CXCALL int cx_ripemd160_init(cx_ripemd160_t *hash PLENGTH(sizeof(cx_ripemd160_t)));
 
 #endif

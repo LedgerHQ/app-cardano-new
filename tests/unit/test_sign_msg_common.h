@@ -72,7 +72,8 @@ static inline void run_fixture(const sign_msg_fixture_t *fixture) {
     reset_sign_msg_test_state();
     reset_mock_signature_state();
 
-    test_read_buffer_t init_buffer = make_test_read_buffer(fixture->init_data, fixture->init_data_len);
+    test_read_buffer_t init_buffer =
+        make_test_read_buffer(fixture->init_data, fixture->init_data_len);
     apdu_response_begin(INS_SIGN_MSG);
     handler_sign_msg(&init_buffer.sdk_buffer, P1_SIGN_MSG_INIT);
     apdu_response_assert_sent_or_deferred();
@@ -90,7 +91,8 @@ static inline void run_fixture(const sign_msg_fixture_t *fixture) {
         assert_int_equal(g_last_response_swo, fixture->check_expected);
     }
 
-    test_read_buffer_t confirm_buffer = make_test_read_buffer(fixture->confirm_data, fixture->confirm_data_len);
+    test_read_buffer_t confirm_buffer =
+        make_test_read_buffer(fixture->confirm_data, fixture->confirm_data_len);
     apdu_response_begin(INS_SIGN_MSG);
     handler_sign_msg(&confirm_buffer.sdk_buffer, P1_SIGN_MSG_CONFIRM);
     apdu_response_assert_sent_or_deferred();
@@ -113,16 +115,13 @@ static inline void run_fixture(const sign_msg_fixture_t *fixture) {
     const uint8_t *signed_message_public_key = signed_message_signature + ED25519_SIGNATURE_LENGTH;
     const uint8_t *address_length_ptr = signed_message_public_key + PUBLIC_KEY_LENGTH;
 
-    const size_t address_field_len = ((size_t)address_length_ptr[0] << 24)
-        | ((size_t)address_length_ptr[1] << 16)
-        | ((size_t)address_length_ptr[2] << 8)
-        | (size_t)address_length_ptr[3];
+    const size_t address_field_len =
+        ((size_t) address_length_ptr[0] << 24) | ((size_t) address_length_ptr[1] << 16) |
+        ((size_t) address_length_ptr[2] << 8) | (size_t) address_length_ptr[3];
 
     const uint8_t *address_field = address_length_ptr + 4;
-    assert_true(
-        g_last_response_len
-        >= ED25519_SIGNATURE_LENGTH + PUBLIC_KEY_LENGTH + 4 + address_field_len
-    );
+    assert_true(g_last_response_len >=
+                ED25519_SIGNATURE_LENGTH + PUBLIC_KEY_LENGTH + 4 + address_field_len);
 
     if (fixture->expected == NULL) {
         print_sign_msg_expected_capture(fixture,
@@ -134,21 +133,15 @@ static inline void run_fixture(const sign_msg_fixture_t *fixture) {
     }
 
     assert_int_equal(fixture->expected->signature_len, ED25519_SIGNATURE_LENGTH);
-    assert_memory_equal(
-        signed_message_signature,
-        fixture->expected->signature,
-        fixture->expected->signature_len
-    );
+    assert_memory_equal(signed_message_signature,
+                        fixture->expected->signature,
+                        fixture->expected->signature_len);
     assert_int_equal(fixture->expected->public_key_len, PUBLIC_KEY_LENGTH);
-    assert_memory_equal(
-        signed_message_public_key,
-        fixture->expected->public_key,
-        fixture->expected->public_key_len
-    );
+    assert_memory_equal(signed_message_public_key,
+                        fixture->expected->public_key,
+                        fixture->expected->public_key_len);
     assert_int_equal(fixture->expected->address_field_len, address_field_len);
-    assert_memory_equal(
-        address_field,
-        fixture->expected->address_field,
-        fixture->expected->address_field_len
-    );
+    assert_memory_equal(address_field,
+                        fixture->expected->address_field,
+                        fixture->expected->address_field_len);
 }

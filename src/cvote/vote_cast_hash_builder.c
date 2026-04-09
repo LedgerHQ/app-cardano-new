@@ -10,11 +10,11 @@
 //#define TRACE_VOTECAST_HASH_BUILDER
 
 #ifdef TRACE_VOTECAST_HASH_BUILDER
-#define _TRACE(...) TRACE(__VA_ARGS__)
+#define _TRACE(...)        TRACE(__VA_ARGS__)
 #define _TRACE_BUFFER(...) TRACE_BUFFER(__VA_ARGS__)
 #else
 #define _TRACE(...)
-#define _TRACE_BUFFER(...) (void)0
+#define _TRACE_BUFFER(...) (void) 0
 #endif  // TRACE_VOTECAST_HASH_BUILDER
 
 /*
@@ -58,8 +58,8 @@ void vote_cast_hash_builder_init(votecast_hash_builder_t* builder, size_t voteca
 // ============================== CHUNK ==============================
 
 void vote_cast_hash_builder_chunk(votecast_hash_builder_t* builder,
-                               const uint8_t* chunk,
-                               size_t chunkSize) {
+                                  const uint8_t* chunk,
+                                  size_t chunkSize) {
     TRACE("vote_cast_hash_builder_chunk");
     _TRACE("state = %d", builder->state);
 
@@ -79,8 +79,8 @@ void vote_cast_hash_builder_chunk(votecast_hash_builder_t* builder,
 // ========================= FINALIZE ==========================
 
 void vote_cast_hash_builder_finalize(votecast_hash_builder_t* builder,
-                                  uint8_t* outBuffer,
-                                  size_t outSize) {
+                                     uint8_t* outBuffer,
+                                     size_t outSize) {
     _TRACE("state = %d", builder->state);
 
     ASSERT(builder->state == VOTECAST_HASH_BUILDER_CHUNK);

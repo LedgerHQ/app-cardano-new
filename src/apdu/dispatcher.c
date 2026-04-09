@@ -65,11 +65,10 @@ static command_e req_type_to_instruction(request_type_e req_type) {
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-            return INS_GET_VERSION; // Unreachable
-        // LCOV_EXCL_STOP
+            return INS_GET_VERSION;  // Unreachable
+                                     // LCOV_EXCL_STOP
     }
 }
-
 
 void apdu_dispatcher(const command_t *cmd) {
     ASSERT(cmd != NULL);
@@ -121,10 +120,8 @@ void apdu_dispatcher(const command_t *cmd) {
 #ifdef HAVE_SWAP
     // In swap mode, only allow a restricted set of instructions
     if (G_called_from_swap) {
-        if (cmd->ins != INS_GET_VERSION &&
-            cmd->ins != INS_GET_PUBLIC_KEY &&
-            cmd->ins != INS_DERIVE_ADDRESS &&
-            cmd->ins != INS_SIGN_TX) {
+        if (cmd->ins != INS_GET_VERSION && cmd->ins != INS_GET_PUBLIC_KEY &&
+            cmd->ins != INS_DERIVE_ADDRESS && cmd->ins != INS_SIGN_TX) {
             TRACE("Instruction %d not allowed in swap mode", cmd->ins);
             swap_reject_and_exit(SWAP_EC_ERROR_WRONG_METHOD, SWAP_APP_CODE_BAD_INS);
         }
@@ -134,13 +131,13 @@ void apdu_dispatcher(const command_t *cmd) {
     // Create data buffer upfront from APDU data
     buffer_t data_buffer = {.ptr = cmd->data, .size = cmd->lc, .offset = 0};
 
-#define REJECT_INCORRECT_P1_P2_IF(condition)             \
-    do {                                                 \
-        if (condition) {                                 \
-            send_swo_and_reset(SWO_INCORRECT_P1_P2);     \
-            apdu_response_assert_sent_or_deferred();     \
-            return;                                      \
-        }                                                \
+#define REJECT_INCORRECT_P1_P2_IF(condition)         \
+    do {                                             \
+        if (condition) {                             \
+            send_swo_and_reset(SWO_INCORRECT_P1_P2); \
+            apdu_response_assert_sent_or_deferred(); \
+            return;                                  \
+        }                                            \
     } while (0)
 #define REJECT_USED_P1(p1) REJECT_INCORRECT_P1_P2_IF((p1) != P1_UNUSED)
 #define REJECT_USED_P2(p2) REJECT_INCORRECT_P1_P2_IF((p2) != P2_UNUSED)

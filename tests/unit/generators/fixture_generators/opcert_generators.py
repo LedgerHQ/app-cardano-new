@@ -47,7 +47,7 @@ def generate_opcert_fixtures() -> None:
     ]
 
     fixture_entries: list[str] = []
-    for test_index, test_case in enumerate(test_cases):
+    for _, test_case in enumerate(test_cases):
         safe_name = sanitize_c_identifier(test_case.name, uppercase=True)
         array_name = f"OPCERT_FIXTURE_{safe_name}_PAYLOAD"
         apdu = builder.sign_opcert(test_case)

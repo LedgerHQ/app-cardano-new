@@ -5,7 +5,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <stddef.h> // Required for size_t
+#include <stddef.h>  // Required for size_t
 #include "assert.h"
 #include "cardano_buffer.h"
 
@@ -33,18 +33,17 @@
  */
 #define _SAFE_DUMMY_ARR ((int[1]){0})
 
-#define _IS_UNSAFE_PTR(x)                                                                          \
-    __builtin_types_compatible_p(                                                                  \
-        __typeof__(__builtin_choose_expr(__builtin_classify_type(x) == 5, x, _SAFE_DUMMY_ARR)),    \
-        __typeof__(&(__builtin_choose_expr(__builtin_classify_type(x) == 5, x, _SAFE_DUMMY_ARR))[0]) \
-    )
+#define _IS_UNSAFE_PTR(x)                                                                       \
+    __builtin_types_compatible_p(                                                               \
+        __typeof__(__builtin_choose_expr(__builtin_classify_type(x) == 5, x, _SAFE_DUMMY_ARR)), \
+        __typeof__(&(                                                                           \
+            __builtin_choose_expr(__builtin_classify_type(x) == 5, x, _SAFE_DUMMY_ARR))[0]))
 
 /*
  * Helper that generates a compile-time error (negative array size) if
  * the condition is true (1). Returns 0 if safe.
  */
-#define _COMPILE_TIME_ASSERT_NOT_PTR(condition) \
-    (sizeof(char[1 - 2 * !!(condition)]) * 0)
+#define _COMPILE_TIME_ASSERT_NOT_PTR(condition) (sizeof(char[1 - 2 * !!(condition)]) * 0)
 
 /*
  * SIZEOF(var)
@@ -52,8 +51,7 @@
  * Returns sizeof(var), but fails to compile if 'var' is a pointer.
  * Works for Scalars, Arrays, and Structs.
  */
-#define SIZEOF(var) \
-    (sizeof(var) + _COMPILE_TIME_ASSERT_NOT_PTR(_IS_UNSAFE_PTR(var)))
+#define SIZEOF(var) (sizeof(var) + _COMPILE_TIME_ASSERT_NOT_PTR(_IS_UNSAFE_PTR(var)))
 
 /*
  * ARRAY_LEN(arr)
@@ -63,10 +61,10 @@
  * Note: We rely on the fact that &x[0] is invalid syntax for structs/scalars,
  * and the compatibility check fails for pointers.
  */
-#define ARRAY_LEN(arr)                                                          \
-    (sizeof(arr) / sizeof((arr)[0]) +                                           \
-     _COMPILE_TIME_ASSERT_NOT_PTR(__builtin_types_compatible_p(__typeof__(arr), __typeof__(&(arr)[0]))))
-
+#define ARRAY_LEN(arr)                \
+    (sizeof(arr) / sizeof((arr)[0]) + \
+     _COMPILE_TIME_ASSERT_NOT_PTR(    \
+         __builtin_types_compatible_p(__typeof__(arr), __typeof__(&(arr)[0]))))
 
 // -----------------------------------------------------------------------------
 // Iteration & Logic
@@ -86,8 +84,7 @@
 // Keep selected functions out of line when stack usage matters on constrained targets.
 #define __noinline_due_to_stack__ __attribute__((noinline))
 
-#define IS_SIGNED_TYPE(type) (((type)(-1)) < 0)
-
+#define IS_SIGNED_TYPE(type) (((type) (-1)) < 0)
 
 // -----------------------------------------------------------------------------
 // Tracing / Logging
@@ -107,20 +104,26 @@ static inline void trace_buffer_t_impl(const buffer_t *buffer) {
 
     size_t remaining = buffer_data_size(buffer);
     if (remaining == 0) {
-        TRACE("empty buffer (total_size=%u)", (unsigned)buffer->size);
+        TRACE("empty buffer (total_size=%u)", (unsigned) buffer->size);
         return;
     }
 
-    TRACE("%.*h", (int)remaining, buffer_get_cur(buffer));
+    TRACE("%.*h", (int) remaining, buffer_get_cur(buffer));
 }
 
-#define TRACE_BUFFER(BUF, SIZE) TRACE("%.*h", (int)(SIZE), BUF)
+#define TRACE_BUFFER(BUF, SIZE) TRACE("%.*h", (int) (SIZE), BUF)
 #define TRACE_BUFFER_T(BUF)     trace_buffer_t_impl(BUF)
 
-#else // !HAVE_PRINTF
+#else  // !HAVE_PRINTF
 
-#define TRACE(...)              do {} while(0)
-#define TRACE_BUFFER(BUF, SIZE) do {} while(0)
-#define TRACE_BUFFER_T(BUF)     do {} while(0)
+#define TRACE(...) \
+    do {           \
+    } while (0)
+#define TRACE_BUFFER(BUF, SIZE) \
+    do {                        \
+    } while (0)
+#define TRACE_BUFFER_T(BUF) \
+    do {                    \
+    } while (0)
 
 #endif

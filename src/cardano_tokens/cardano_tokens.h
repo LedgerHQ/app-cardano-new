@@ -18,12 +18,12 @@ uint64_t abs_int64(int64_t number);
  * @param fingerprintBuffer Output buffer for fingerprint bytes
  * @param fingerprintBufferSize Size of output buffer (should be ASSET_FINGERPRINT_SIZE)
  */
-void deriveAssetFingerprintBytes(const uint8_t* policyId,
-                                                           size_t policyIdSize,
-                                                           const uint8_t* assetName,
-                                                           size_t assetNameSize,
-                                                           uint8_t* fingerprintBuffer,
-                                                           size_t fingerprintBufferSize);
+void deriveAssetFingerprintBytes(const uint8_t *policyId,
+                                 size_t policyIdSize,
+                                 const uint8_t *assetName,
+                                 size_t assetNameSize,
+                                 uint8_t *fingerprintBuffer,
+                                 size_t fingerprintBufferSize);
 
 /**
  * Format token amount for output tokens
@@ -49,8 +49,8 @@ bool format_token_amount_output(const uint8_t *policyId,
 /**
  * Format token amount for minted tokens
  *
- * Formats token amount for minting operations with sign prefix (space for positive, '-' for negative).
- * Includes ticker symbol.
+ * Formats token amount for minting operations with sign prefix (space for positive, '-' for
+ * negative). Includes ticker symbol.
  *
  * @param policyId         Minting policy ID
  * @param assetNameBytes   Asset name bytes

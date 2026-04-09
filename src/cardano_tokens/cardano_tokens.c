@@ -12,9 +12,9 @@
 uint64_t abs_int64(int64_t number) {
     // INT64_MIN cannot be negated safely, so handle it specially
     if (number == INT64_MIN) {
-        return (uint64_t)INT64_MAX + 1;
+        return (uint64_t) INT64_MAX + 1;
     }
-    return (uint64_t)(number < 0 ? -number : number);
+    return (uint64_t) (number < 0 ? -number : number);
 }
 
 void deriveAssetFingerprintBytes(const uint8_t* policyId,
@@ -44,7 +44,6 @@ void deriveAssetFingerprintBytes(const uint8_t* policyId,
 
     blake2b_160_hash(hashInput, hashInputSize, fingerprintBuffer, fingerprintBufferSize);
 }
-
 
 typedef struct {
     uint8_t fingerprint[ASSET_FINGERPRINT_SIZE];
@@ -98,7 +97,8 @@ bool format_token_amount_output(const uint8_t* policyId,
     ASSERT(formatted);
     size_t length = strlen(out);
 
-    const char* ticker = (tokenInfo != NULL) ? (const char*) PIC(tokenInfo->ticker) : "(unknown decimals)";
+    const char* ticker =
+        (tokenInfo != NULL) ? (const char*) PIC(tokenInfo->ticker) : "(unknown decimals)";
     TRACE("token ticker = %s", ticker);
     int written = snprintf(out + length, outSize - length, " %s", ticker);
     LEDGER_ASSERT(written > 0, "snprintf token ticker formatting failed");
@@ -121,9 +121,9 @@ bool format_token_amount_mint(const uint8_t* policyId,
 
     explicit_bzero(out, outSize);
 
-    out[0] = (amount >= 0)
-                 ? ' ' // + sign instead of the space would be nice, but is unreadable on Nano devices, bad font
-                 : '-';
+    out[0] = (amount >= 0) ? ' '  // + sign instead of the space would be nice, but is unreadable on
+                                  // Nano devices, bad font
+                           : '-';
     out[1] = '\0';
 
     bool formatted = format_token_amount_output(policyId,

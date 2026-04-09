@@ -149,13 +149,13 @@ static void test_ui_free_warnings_idempotent(void **state) {
     (void) state;
     init_heap();
 
-    ui_free_warnings();  /* safe when nothing was built */
+    ui_free_warnings(); /* safe when nothing was built */
     ui_free_warnings();
 
     warning_bits_t bits = warning_bits_mask_for(WARNING_BIT_NETWORK_UNUSUAL);
     assert_int_equal(ui_build_warnings(bits), UI_STATUS_SUCCESS);
     ui_free_warnings();
-    ui_free_warnings();  /* second call must not crash */
+    ui_free_warnings(); /* second call must not crash */
 }
 
 int main(void) {

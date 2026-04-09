@@ -32,13 +32,13 @@
  * Tracks the progression through receiving, parsing, hashing, UI preparation, and approval.
  */
 typedef enum {
-    TX_STATE_NONE,         /// idle
-    TX_STATE_AUX_DATA,     /// receiving CVote aux data
-    TX_STATE_CHUNKS,       /// receiving transaction chunks
-    TX_STATE_RECEIVED,     /// all chunks received, waiting to parse
-    TX_STATE_HASHED,       /// hash computed, UI plan ready
+    TX_STATE_NONE,       /// idle
+    TX_STATE_AUX_DATA,   /// receiving CVote aux data
+    TX_STATE_CHUNKS,     /// receiving transaction chunks
+    TX_STATE_RECEIVED,   /// all chunks received, waiting to parse
+    TX_STATE_HASHED,     /// hash computed, UI plan ready
     TX_STATE_UI_REVIEW,  /// transaction review in progress (full or streaming)
-    TX_STATE_APPROVED      /// user approved, waiting for witnesses
+    TX_STATE_APPROVED    /// user approved, waiting for witnesses
 } tx_state_e;
 
 /**
@@ -46,10 +46,10 @@ typedef enum {
  * Tracks the progression through parsing, validation, and approval phases.
  */
 typedef enum {
-    OPCERT_STATE_NONE,        /// idle
-    OPCERT_STATE_PARSED,      /// parsed from bytes, waiting for policy validation
-    OPCERT_STATE_VALIDATED,   /// parsed and security policy validated, waiting for approval
-    OPCERT_STATE_APPROVED     /// user approved, waiting for signature
+    OPCERT_STATE_NONE,       /// idle
+    OPCERT_STATE_PARSED,     /// parsed from bytes, waiting for policy validation
+    OPCERT_STATE_VALIDATED,  /// parsed and security policy validated, waiting for approval
+    OPCERT_STATE_APPROVED    /// user approved, waiting for signature
 } opcert_state_e;
 
 /**
@@ -57,10 +57,10 @@ typedef enum {
  * Tracks the progression through parsing, validation, and derivation phases.
  */
 typedef enum {
-    DERIVE_ADDRESS_STATE_NONE,        /// idle
-    DERIVE_ADDRESS_STATE_PARSED,      /// parameters parsed, waiting for policy validation
-    DERIVE_ADDRESS_STATE_VALIDATED,   /// parameters parsed, security policy validated
-    DERIVE_ADDRESS_STATE_PREPARED     /// address derived and ready
+    DERIVE_ADDRESS_STATE_NONE,       /// idle
+    DERIVE_ADDRESS_STATE_PARSED,     /// parameters parsed, waiting for policy validation
+    DERIVE_ADDRESS_STATE_VALIDATED,  /// parameters parsed, security policy validated
+    DERIVE_ADDRESS_STATE_PREPARED    /// address derived and ready
 } derive_address_state_e;
 
 /**
@@ -112,8 +112,9 @@ typedef struct {
     tx_params_t tx_params;
     uint8_t tx_hash[TX_HASH_LENGTH];
 
-    uint16_t num_witnesses;         /// Total witnesses requested by host; not decremented during signing.
-    uint16_t raw_tx_total_length;   /// Advertised raw tx size from INIT APDU (must survive AUX_DATA stage).
+    uint16_t num_witnesses;  /// Total witnesses requested by host; not decremented during signing.
+    uint16_t raw_tx_total_length;  /// Advertised raw tx size from INIT APDU (must survive AUX_DATA
+                                   /// stage).
 
     /**
      * Fields that must survive across all stages (body + witnesses).
@@ -135,28 +136,28 @@ typedef struct {
     union {
         /// Valid during TX_STATE_AUX_DATA. Zeroed atomically at tx init.
         struct {
-            uint8_t *raw_cvote_init_data;        /// Raw APDU buffer for CVote init
+            uint8_t *raw_cvote_init_data;  /// Raw APDU buffer for CVote init
             size_t raw_cvote_init_data_len;
-            cvote_aux_data_t cvote_aux_data;     /// Parsed CVote data
-            warning_bits_t cvote_warning_bits;   /// CVote AUX_DATA warnings only
+            cvote_aux_data_t cvote_aux_data;    /// Parsed CVote data
+            warning_bits_t cvote_warning_bits;  /// CVote AUX_DATA warnings only
         } aux_data;
 
         /// Valid during TX_STATE_CHUNKS .. TX_STATE_UI_REVIEW. Zeroed atomically at tx init.
         struct {
             uint8_t *raw_tx;
-            size_t raw_tx_current_length;        /// Actual received length so far
-            warning_bits_t warning_bits;         /// Transaction warnings
+            size_t raw_tx_current_length;  /// Actual received length so far
+            warning_bits_t warning_bits;   /// Transaction warnings
             uint16_t total_ui_pairs;
-            uint16_t rendered_ui_pairs;         /// Number of pairs rendered so far (start of next chunk)
-            bool     streaming_mode;            /// True when using streaming NBGL API
-            tx_ui_review_mode_e review_mode;    /// Current ui review mode
+            uint16_t rendered_ui_pairs;  /// Number of pairs rendered so far (start of next chunk)
+            bool streaming_mode;         /// True when using streaming NBGL API
+            tx_ui_review_mode_e review_mode;  /// Current ui review mode
             /// Mutable parse state; lives in globals to keep tx_hash_builder_t off the stack.
             tx_processing_state_t processing_state;
         } body;
 
         /// Valid during TX_STATE_APPROVED. Initialized at witness stage entry.
         struct {
-            uint16_t current_witness;            /// Number of witnesses already processed.
+            uint16_t current_witness;  /// Number of witnesses already processed.
             bip44_path_t witness_path;
             char witness_path_str[MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN];
             uint8_t witness_signature[ED25519_SIGNATURE_LENGTH];
@@ -167,7 +168,9 @@ typedef struct {
 /**
  * Operational certificate context.
  */
-#define MAX_OPCERT_LENGTH (KES_PUBLIC_KEY_LENGTH + OPCERT_KES_PERIOD_SIZE + OPCERT_ISSUE_COUNTER_SIZE + BIP44_MAX_PATH_SIZE)
+#define MAX_OPCERT_LENGTH                                                         \
+    (KES_PUBLIC_KEY_LENGTH + OPCERT_KES_PERIOD_SIZE + OPCERT_ISSUE_COUNTER_SIZE + \
+     BIP44_MAX_PATH_SIZE)
 
 typedef struct {
     uint8_t raw_opcert[MAX_OPCERT_LENGTH];
@@ -200,7 +203,8 @@ typedef struct {
 typedef struct {
     bool silentExport;
     bip44_path_t path;
-    char path_str[MAX_BIP44_PATH_STRING_LENGTH + UI_BUFFER_SAFETY_MARGIN];  // Static buffer for NBGL UI
+    char path_str[MAX_BIP44_PATH_STRING_LENGTH +
+                  UI_BUFFER_SAFETY_MARGIN];  // Static buffer for NBGL UI
     extendedPublicKey_t extPubKey;
 } pubkey_ctx_t;
 
@@ -223,7 +227,7 @@ typedef struct {
 
 #define MAX_VOTECAST_CHUNK_SIZE 250
 #define VOTE_PLAN_ID_SIZE       32
-#define VOTECAST_HASH_LENGTH 32
+#define VOTECAST_HASH_LENGTH    32
 
 /**
  * Context for signing a CVote votecast.

@@ -4,6 +4,7 @@
 import os
 import subprocess
 from pathlib import Path
+from git import Repo
 
 base = Path(__file__).parent.resolve() / ".test_dependencies"
 
@@ -69,8 +70,6 @@ def run_cmd(
 def clone_or_pull(repo_url: str, clone_dir: str):
     # Only needed when cloning / pulling, not when building.
     # By putting the import here we allow the script to be imported inside the docker image
-    from git import Repo
-
     git_dir = os.path.join(clone_dir, ".git")
     if not os.path.exists(git_dir):
         print(f"Cloning into {clone_dir}")

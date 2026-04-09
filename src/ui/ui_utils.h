@@ -14,15 +14,16 @@
 /**
  * UI formatting status - tracks result of UI string generation
  *
- * UI_STATUS_UNINITIALIZED (0): Default state after bzero - invalid to use, must call ui_reset_error_status()
- * UI_STATUS_SUCCESS (1):        All UI formatting succeeded
+ * UI_STATUS_UNINITIALIZED (0): Default state after bzero - invalid to use, must call
+ * ui_reset_error_status() UI_STATUS_SUCCESS (1):        All UI formatting succeeded
  * UI_STATUS_OUT_OF_MEMORY (2):  Memory allocation failure during UI formatting (fatal error)
  * UI_STATUS_CHUNK_FULL (3):     Pairs array is full — expected chunk boundary in streaming mode,
  *                               NOT a fatal error; must be reset to SUCCESS before next chunk
  *
  * CHUNK_FULL and OUT_OF_MEMORY are mutually exclusive: once one is set, the other must not be set.
- * Note: Once set to error/chunk-full state, cannot be changed back to success via ui_set_error_status;
- * streaming code must call ui_reset_error_status() before rendering the next chunk.
+ * Note: Once set to error/chunk-full state, cannot be changed back to success via
+ * ui_set_error_status; streaming code must call ui_reset_error_status() before rendering the next
+ * chunk.
  */
 typedef enum {
     UI_STATUS_UNINITIALIZED = 0,
@@ -80,8 +81,7 @@ void ui_free_pairs(void);
 void ui_all_cleanup(void);
 uint16_t ui_pairs_get_count(void);
 
-void ui_render_session_begin(ui_render_session_t *session,
-                             uint16_t render_from_pair_index);
+void ui_render_session_begin(ui_render_session_t *session, uint16_t render_from_pair_index);
 void ui_render_session_end(void);
 
 /**
@@ -114,11 +114,11 @@ void ui_check_expected_pair_delta(uint16_t pairs_before, uint16_t expected);
 // UI pair count verification macros for transaction formatting.
 // CHECK_COUNT is a no-op when OOM is set or when rendering a non-first chunk
 // (pairs before the window are skipped, so counts won't match).
-#define START_COUNT() uint16_t _pairs_before = ui_pairs_get_count()
+#define START_COUNT()         uint16_t _pairs_before = ui_pairs_get_count()
 #define CHECK_COUNT(expected) ui_check_expected_pair_delta(_pairs_before, (uint16_t) (expected))
 
 #ifdef __GNUC__
-#define UI_STATIC_LABEL(label) ((void)sizeof(char[__builtin_constant_p(label) ? 1 : -1]), (label))
+#define UI_STATIC_LABEL(label) ((void) sizeof(char[__builtin_constant_p(label) ? 1 : -1]), (label))
 #else
 #define UI_STATIC_LABEL(label) (label)
 #endif
@@ -132,7 +132,8 @@ void ui_check_expected_pair_delta(uint16_t pairs_before, uint16_t expected);
 /**
  * Add a label-value pair to the UI pairs list with optional shrinking
  *
- * @param label static label string (should be constant, compile-time checked by UI_STATIC_LABEL macro)
+ * @param label static label string (should be constant, compile-time checked by UI_STATIC_LABEL
+ * macro)
  * @param tmp_buf temporary buffer containing the value (will be freed after use)
  * @param shrink if true, allocates exact size for the value; if false, uses buffer as-is
  * @return true on success, false on failure
@@ -143,18 +144,18 @@ void ui_check_expected_pair_delta(uint16_t pairs_before, uint16_t expected);
  */
 void ui_pairs_force_new_page(void);
 
-bool ui_pairs_add_static_label_impl(const char* label, char* tmp_buf, bool shrink);
+bool ui_pairs_add_static_label_impl(const char *label, char *tmp_buf, bool shrink);
 
 /**
  * Add a label-value pair to the UI pairs list (legacy wrapper, always shrinks)
  * Use ui_pairs_add_static_label_impl with shrink=true for equivalent behavior
  *
- * @param label static label string (should be constant, compile-time checked by UI_STATIC_LABEL macro)
+ * @param label static label string (should be constant, compile-time checked by UI_STATIC_LABEL
+ * macro)
  * @param tmp_buf temporary buffer containing the value (will be freed after use)
  * @return true on success, false on failure
  */
-bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
-
+bool ui_pairs_add_static_label(const char *label, char *tmp_buf);
 
 /**
  * Format a single-parameter value and add to UI pairs.
@@ -170,21 +171,22 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
  * @param format_fn  Formatting function with signature: bool fn(value, char*, size_t)
  * @param value      Value to format (passed as first argument to format_fn)
  */
-#define UI_ADD_FORMAT1(label, max_len, format_fn, value) do { \
-    if (ui_render_should_skip()) break; \
-    char *_buf = NULL; \
-    const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
-    if (!allocate_zeroed((void **) &_buf, _buf_size) || _buf == NULL) { \
-        ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
-        break; \
-    } \
-    bool _ok = format_fn((value), _buf, _buf_size); \
-    LEDGER_ASSERT(_ok, "Format fn failed"); \
-    LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long"); \
-    if (!ui_pairs_add_static_label((label), _buf)) { \
-        break; \
-    } \
-} while(0)
+#define UI_ADD_FORMAT1(label, max_len, format_fn, value)                       \
+    do {                                                                       \
+        if (ui_render_should_skip()) break;                                    \
+        char *_buf = NULL;                                                     \
+        const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
+        if (!allocate_zeroed((void **) &_buf, _buf_size) || _buf == NULL) {    \
+            ui_set_error_status(UI_STATUS_OUT_OF_MEMORY);                      \
+            break;                                                             \
+        }                                                                      \
+        bool _ok = format_fn((value), _buf, _buf_size);                        \
+        LEDGER_ASSERT(_ok, "Format fn failed");                                \
+        LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long");    \
+        if (!ui_pairs_add_static_label((label), _buf)) {                       \
+            break;                                                             \
+        }                                                                      \
+    } while (0)
 
 /**
  * Format a two-parameter value and add to UI pairs.
@@ -193,7 +195,8 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
  * (param1, param2, output_buffer, buffer_size), verifies success and no truncation,
  * and adds result to UI pairs.
  *
- * Formatting function signature: bool format_fn(param1_type p1, param2_type p2, char *out, size_t outSize)
+ * Formatting function signature: bool format_fn(param1_type p1, param2_type p2, char *out, size_t
+ * outSize)
  *
  * @param label      Static label for UI pair (use UI_STATIC_LABEL macro)
  * @param max_len    Maximum output string length (without null terminator)
@@ -201,21 +204,22 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
  * @param param1     First parameter to pass to format_fn
  * @param param2     Second parameter to pass to format_fn
  */
-#define UI_ADD_FORMAT2(label, max_len, format_fn, param1, param2) do { \
-    if (ui_render_should_skip()) break; \
-    char *_buf = NULL; \
-    const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
-    if (!allocate_zeroed((void **) &_buf, _buf_size) || _buf == NULL) { \
-        ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
-        break; \
-    } \
-    bool _ok = format_fn((param1), (param2), _buf, _buf_size); \
-    LEDGER_ASSERT(_ok, "Format fn failed"); \
-    LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long"); \
-    if (!ui_pairs_add_static_label((label), _buf)) { \
-        break; \
-    } \
-} while(0)
+#define UI_ADD_FORMAT2(label, max_len, format_fn, param1, param2)              \
+    do {                                                                       \
+        if (ui_render_should_skip()) break;                                    \
+        char *_buf = NULL;                                                     \
+        const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
+        if (!allocate_zeroed((void **) &_buf, _buf_size) || _buf == NULL) {    \
+            ui_set_error_status(UI_STATUS_OUT_OF_MEMORY);                      \
+            break;                                                             \
+        }                                                                      \
+        bool _ok = format_fn((param1), (param2), _buf, _buf_size);             \
+        LEDGER_ASSERT(_ok, "Format fn failed");                                \
+        LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long");    \
+        if (!ui_pairs_add_static_label((label), _buf)) {                       \
+            break;                                                             \
+        }                                                                      \
+    } while (0)
 
 /**
  * Format a three-parameter value and add to UI pairs.
@@ -224,7 +228,8 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
  * (param1, param2, param3, output_buffer, buffer_size), verifies success and no truncation,
  * and adds result to UI pairs.
  *
- * Formatting function signature: bool format_fn(p1_type p1, p2_type p2, p3_type p3, char *out, size_t outSize)
+ * Formatting function signature: bool format_fn(p1_type p1, p2_type p2, p3_type p3, char *out,
+ * size_t outSize)
  *
  * @param label      Static label for UI pair (use UI_STATIC_LABEL macro)
  * @param max_len    Maximum output string length (without null terminator)
@@ -233,21 +238,22 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
  * @param param2     Second parameter to pass to format_fn
  * @param param3     Third parameter to pass to format_fn
  */
-#define UI_ADD_FORMAT3(label, max_len, format_fn, param1, param2, param3) do { \
-    if (ui_render_should_skip()) break; \
-    char *_buf = NULL; \
-    const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
-    if (!allocate_zeroed((void **) &_buf, _buf_size) || _buf == NULL) { \
-        ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
-        break; \
-    } \
-    bool _ok = format_fn((param1), (param2), (param3), _buf, _buf_size); \
-    LEDGER_ASSERT(_ok, "Format fn failed"); \
-    LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long"); \
-    if (!ui_pairs_add_static_label((label), _buf)) { \
-        break; \
-    } \
-} while(0)
+#define UI_ADD_FORMAT3(label, max_len, format_fn, param1, param2, param3)      \
+    do {                                                                       \
+        if (ui_render_should_skip()) break;                                    \
+        char *_buf = NULL;                                                     \
+        const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
+        if (!allocate_zeroed((void **) &_buf, _buf_size) || _buf == NULL) {    \
+            ui_set_error_status(UI_STATUS_OUT_OF_MEMORY);                      \
+            break;                                                             \
+        }                                                                      \
+        bool _ok = format_fn((param1), (param2), (param3), _buf, _buf_size);   \
+        LEDGER_ASSERT(_ok, "Format fn failed");                                \
+        LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long");    \
+        if (!ui_pairs_add_static_label((label), _buf)) {                       \
+            break;                                                             \
+        }                                                                      \
+    } while (0)
 
 /**
  * Add a static string value directly to UI pairs without formatting.
@@ -258,20 +264,21 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
  * @param label Static label for UI pair (use UI_STATIC_LABEL macro)
  * @param value NUL-terminated static string value
  */
-#define UI_ADD_STATIC(label, value) do { \
-    if (ui_render_should_skip()) break; \
-    const char *_static_value = (value); \
-    size_t _static_value_len = strlen(_static_value); \
-    char *_static_value_copy = NULL; \
-    if (!allocate_zeroed((void **) &_static_value_copy, _static_value_len + 1)) { \
-        ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
-        break; \
-    } \
-    memcpy(_static_value_copy, _static_value, _static_value_len + 1); \
-    if (!ui_pairs_add_static_label_impl((label), _static_value_copy, false)) { \
-        break; \
-    } \
-} while(0)
+#define UI_ADD_STATIC(label, value)                                                   \
+    do {                                                                              \
+        if (ui_render_should_skip()) break;                                           \
+        const char *_static_value = (value);                                          \
+        size_t _static_value_len = strlen(_static_value);                             \
+        char *_static_value_copy = NULL;                                              \
+        if (!allocate_zeroed((void **) &_static_value_copy, _static_value_len + 1)) { \
+            ui_set_error_status(UI_STATUS_OUT_OF_MEMORY);                             \
+            break;                                                                    \
+        }                                                                             \
+        memcpy(_static_value_copy, _static_value, _static_value_len + 1);             \
+        if (!ui_pairs_add_static_label_impl((label), _static_value_copy, false)) {    \
+            break;                                                                    \
+        }                                                                             \
+    } while (0)
 
 /**
  * Format a four-parameter value and add to UI pairs.
@@ -280,7 +287,8 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
  * (param1, param2, param3, param4, output_buffer, buffer_size), verifies success and no truncation,
  * and adds result to UI pairs.
  *
- * Formatting function signature: bool format_fn(p1_type p1, p2_type p2, p3_type p3, p4_type p4, char *out, size_t outSize)
+ * Formatting function signature: bool format_fn(p1_type p1, p2_type p2, p3_type p3, p4_type p4,
+ * char *out, size_t outSize)
  *
  * @param label      Static label for UI pair (use UI_STATIC_LABEL macro)
  * @param max_len    Maximum output string length (without null terminator)
@@ -290,18 +298,19 @@ bool ui_pairs_add_static_label(const char* label, char* tmp_buf);
  * @param param3     Third parameter to pass to format_fn
  * @param param4     Fourth parameter to pass to format_fn
  */
-#define UI_ADD_FORMAT4(label, max_len, format_fn, param1, param2, param3, param4) do { \
-    if (ui_render_should_skip()) break; \
-    char *_buf = NULL; \
-    const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN; \
-    if (!allocate_zeroed((void **) &_buf, _buf_size) || _buf == NULL) { \
-        ui_set_error_status(UI_STATUS_OUT_OF_MEMORY); \
-        break; \
-    } \
-    bool _ok = format_fn((param1), (param2), (param3), (param4), _buf, _buf_size); \
-    LEDGER_ASSERT(_ok, "Format fn failed"); \
-    LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long"); \
-    if (!ui_pairs_add_static_label((label), _buf)) { \
-        break; \
-    } \
-} while(0)
+#define UI_ADD_FORMAT4(label, max_len, format_fn, param1, param2, param3, param4)      \
+    do {                                                                               \
+        if (ui_render_should_skip()) break;                                            \
+        char *_buf = NULL;                                                             \
+        const size_t _buf_size = (size_t) (max_len) + UI_BUFFER_SAFETY_MARGIN;         \
+        if (!allocate_zeroed((void **) &_buf, _buf_size) || _buf == NULL) {            \
+            ui_set_error_status(UI_STATUS_OUT_OF_MEMORY);                              \
+            break;                                                                     \
+        }                                                                              \
+        bool _ok = format_fn((param1), (param2), (param3), (param4), _buf, _buf_size); \
+        LEDGER_ASSERT(_ok, "Format fn failed");                                        \
+        LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long");            \
+        if (!ui_pairs_add_static_label((label), _buf)) {                               \
+            break;                                                                     \
+        }                                                                              \
+    } while (0)

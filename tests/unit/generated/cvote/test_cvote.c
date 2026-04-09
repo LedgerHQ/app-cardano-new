@@ -23,7 +23,6 @@
 // CIP-36 CVote Tests (Auto-Generated)
 // ======================================================================
 
-
 static void test_cvote_should_correctly_sign_a_cip36_votecast_fragment_0(void **state) {
     (void) state;
     run_cvote_fixture(&CVOTE_FIXTURES[0]);

@@ -26,9 +26,9 @@ static void trace_record_bytes(const uint8_t* buffer, size_t size) {
     tx_body_trace_size += size;
 }
 #define TRACE_BODY(buffer, size) trace_record_bytes(buffer, size)
-#define _TRACE(...) TRACE(__VA_ARGS__)
+#define _TRACE(...)              TRACE(__VA_ARGS__)
 #else
-#define TRACE_BODY(buffer, size) (void)0
+#define TRACE_BODY(buffer, size) (void) 0
 #define _TRACE(...)
 #endif  // TRACE_TX_HASH_BUILDER
 
@@ -53,8 +53,9 @@ static void blake2b_256_append_buffer_tx_body(blake2b_256_context_t* hashCtx,
     blake2b_256_append(hashCtx, buffer, bufferSize);
 }
 
-static void
-blake2b_256_append_cbor_tx_body(blake2b_256_context_t* hashCtx, uint8_t type, uint64_t value) {
+static void blake2b_256_append_cbor_tx_body(blake2b_256_context_t* hashCtx,
+                                            uint8_t type,
+                                            uint64_t value) {
     uint8_t buffer[10] = {0};
     size_t size = 0;
     LEDGER_ASSERT(cbor_writeToken(type, value, buffer, SIZEOF(buffer), &size),
@@ -115,13 +116,11 @@ static const uint8_t* _voter_key_data_with_size(const voter_t* voter, size_t* ou
         default:
             ASSERT(false);
             return NULL;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
-size_t txHashBuilder_serializeVoterKey(const voter_t* voter,
-                                       uint8_t* buffer,
-                                       size_t bufferLen) {
+size_t txHashBuilder_serializeVoterKey(const voter_t* voter, uint8_t* buffer, size_t bufferLen) {
     ASSERT(voter != NULL);
     ASSERT(buffer != NULL);
     size_t offset = 0;
@@ -269,7 +268,7 @@ static void processOutputTopLevel(tx_hash_builder_t* builder,
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
@@ -314,7 +313,7 @@ static void assertCanLeaveCurrentOutput(tx_hash_builder_t* builder) {
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
@@ -497,9 +496,9 @@ void txHashBuilder_addOutput_topLevelData(tx_hash_builder_t* builder,
 }
 
 static void addTokenGroup(tx_hash_builder_t* builder,
-                                                    const uint8_t* policyIdBuffer,
-                                                    size_t policyIdSize,
-                                                    uint16_t numTokens) {
+                          const uint8_t* policyIdBuffer,
+                          size_t policyIdSize,
+                          uint16_t numTokens) {
     _TRACE("state = %d, outputState = %d, remainingAssetGroups = %u",
            builder->state,
            builder->outputData.outputState,
@@ -518,7 +517,7 @@ static void addTokenGroup(tx_hash_builder_t* builder,
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     ASSERT(builder->outputData.multiassetData.remainingAssetGroups > 0);
@@ -545,10 +544,10 @@ static void addTokenGroup(tx_hash_builder_t* builder,
 }
 
 static void addToken(tx_hash_builder_t* builder,
-                                               const uint8_t* assetNameBuffer,
-                                               size_t assetNameSize,
-                                               uint64_t amount,
-                                               cbor_type_tag_t typeTag) {
+                     const uint8_t* assetNameBuffer,
+                     size_t assetNameSize,
+                     uint64_t amount,
+                     cbor_type_tag_t typeTag) {
     _TRACE("state = %d, outputState = %d, remainingTokens = %u",
            builder->state,
            builder->outputData.outputState,
@@ -562,7 +561,7 @@ static void addToken(tx_hash_builder_t* builder,
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     ASSERT(builder->outputData.multiassetData.remainingTokens > 0);
@@ -625,7 +624,7 @@ void txHashBuilder_addOutput_datum(tx_hash_builder_t* builder,
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     // the babbage output format serializes some preliminary stuff
@@ -672,7 +671,7 @@ void txHashBuilder_addOutput_datum(tx_hash_builder_t* builder,
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
@@ -712,7 +711,7 @@ void txHashBuilder_addOutput_referenceScript(tx_hash_builder_t* builder, size_t 
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     //   Unsigned[3] ; map entry key
@@ -839,7 +838,7 @@ static const uint8_t* _getCredentialHashBuffer(const credential_t* credential) {
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
@@ -852,7 +851,7 @@ static size_t _getCredentialHashSize(const credential_t* credential) {
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
@@ -893,7 +892,7 @@ static void _appendDRep(tx_hash_builder_t* builder, const drep_t* drep) {
             // LCOV_EXCL_START
             default:
                 ASSERT(false);
-            // LCOV_EXCL_STOP
+                // LCOV_EXCL_STOP
         }
     }
 }
@@ -1025,9 +1024,7 @@ void txHashBuilder_addCertificate_stakePoolAndDRepDelegation(tx_hash_builder_t* 
             BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, poolKeyHashSize);
             BUILDER_APPEND_DATA(poolKeyHash, poolKeyHashSize);
         }
-        {
-            _appendDRep(builder, drep);
-        }
+        { _appendDRep(builder, drep); }
     }
 }
 
@@ -1048,7 +1045,10 @@ void txHashBuilder_addCertificate_accountRegistrationDelegationToStakePool(
     // ]
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 4);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED,
+                                CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL);
+        }
         { _appendCredential(builder, stakeCredential); }
         {
             BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, poolKeyHashSize);
@@ -1073,7 +1073,10 @@ void txHashBuilder_addCertificate_accountRegistrationDelegationToDRep(
     // ]
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 4);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED,
+                                CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP);
+        }
         { _appendCredential(builder, stakeCredential); }
         { _appendDRep(builder, drep); }
         { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, deposit); }
@@ -1099,7 +1102,10 @@ void txHashBuilder_addCertificate_accountRegistrationDelegationToStakePoolAndDRe
     // ]
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 5);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED,
+                                CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP);
+        }
         { _appendCredential(builder, stakeCredential); }
         {
             BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, poolKeyHashSize);
@@ -1554,7 +1560,7 @@ void txHashBuilder_addPoolRegistrationCertificate_addRelay(tx_hash_builder_t* bu
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
@@ -1581,7 +1587,7 @@ static void addPoolMetadata_updateState(tx_hash_builder_t* builder) {
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     builder->state = TX_HASH_BUILDER_IN_CERTIFICATES_POOL_METADATA;
@@ -2174,9 +2180,7 @@ void txHashBuilder_enterVotingProcedures(tx_hash_builder_t* builder) {
     builder->state = TX_HASH_BUILDER_IN_VOTING_PROCEDURES;
 }
 
-void txHashBuilder_addVoter(tx_hash_builder_t* builder,
-                            const voter_t* voter,
-                            uint16_t numVotes) {
+void txHashBuilder_addVoter(tx_hash_builder_t* builder, const voter_t* voter, uint16_t numVotes) {
     _TRACE("state = %d, remainingVoters = %u, numVotes = %u",
            builder->state,
            builder->remainingVoters,
@@ -2212,7 +2216,7 @@ void txHashBuilder_addVoter(tx_hash_builder_t* builder,
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     // Start the map of gov_action_id => voting_procedure
@@ -2335,7 +2339,7 @@ void txHashBuilder_finalize(tx_hash_builder_t* builder, uint8_t* outBuffer, size
 
     builder->state = TX_HASH_BUILDER_FINISHED;
 #ifdef TRACE_TX_HASH_BUILDER
-    TRACE("tx_body (%u bytes)", (unsigned int)tx_body_trace_size);
+    TRACE("tx_body (%u bytes)", (unsigned int) tx_body_trace_size);
     TRACE_BUFFER(tx_body_trace_buffer, tx_body_trace_size);
 #endif
 }

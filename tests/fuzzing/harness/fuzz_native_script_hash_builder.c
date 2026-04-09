@@ -44,10 +44,12 @@ static void add_simple_script(native_script_hash_builder_t *builder,
             break;
         }
         case 1:
-            nativeScriptHashBuilder_addScript_invalidBefore(builder, read_u64_be(data, size, offset));
+            nativeScriptHashBuilder_addScript_invalidBefore(builder,
+                                                            read_u64_be(data, size, offset));
             break;
         case 2:
-            nativeScriptHashBuilder_addScript_invalidHereafter(builder, read_u64_be(data, size, offset));
+            nativeScriptHashBuilder_addScript_invalidHereafter(builder,
+                                                               read_u64_be(data, size, offset));
             break;
         default:
             break;

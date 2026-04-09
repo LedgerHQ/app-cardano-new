@@ -10,7 +10,7 @@
 #ifdef TRACE_UI_DISPLAY
 #define TRACE_MODULE(...) TRACE("[tx_ui_render_outputs] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 #include "assert.h"

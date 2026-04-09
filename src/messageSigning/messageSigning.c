@@ -27,12 +27,7 @@ void signRawMessageWithPath(const bip44_path_t* path,
     BIP44_PRINTF(path);
     TRACE("");
 
-    crypto_eddsa_sign(path->path,
-                      path->length,
-                      messageBuffer,
-                      messageSize,
-                      outBuffer,
-                      outSize);
+    crypto_eddsa_sign(path->path, path->length, messageBuffer, messageSize, outBuffer, outSize);
 }
 
 // sign the given hash by the private key derived according to the given path

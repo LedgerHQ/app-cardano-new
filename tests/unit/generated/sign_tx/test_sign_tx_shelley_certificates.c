@@ -49,124 +49,195 @@
 // SHELLEY_CERTIFICATES Era Tests
 // ======================================================================
 
-static void test_sign_tx_with_a_stake_registration_path_certificate_preconway_expert_off(void **state) {
+static void test_sign_tx_with_a_stake_registration_path_certificate_preconway_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_REGISTRATION_PATH_CERTIFICATE_PRECONWAY, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_REGISTRATION_PATH_CERTIFICATE_PRECONWAY,
+        false);
 }
 
-static void test_sign_tx_with_a_stake_registration_path_certificate_preconway_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_a_stake_registration_path_certificate_preconway_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_REGISTRATION_PATH_CERTIFICATE_PRECONWAY, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_REGISTRATION_PATH_CERTIFICATE_PRECONWAY,
+        false);
 }
 
-static void test_sign_tx_with_a_stake_registration_path_certificate_preconway_expert_on(void **state) {
+static void test_sign_tx_with_a_stake_registration_path_certificate_preconway_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_REGISTRATION_PATH_CERTIFICATE_PRECONWAY, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_REGISTRATION_PATH_CERTIFICATE_PRECONWAY,
+        true);
 }
 
-static void test_sign_tx_with_a_stake_registration_path_certificate_preconway_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_a_stake_registration_path_certificate_preconway_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_REGISTRATION_PATH_CERTIFICATE_PRECONWAY, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_REGISTRATION_PATH_CERTIFICATE_PRECONWAY,
+        true);
 }
 
-static void test_sign_tx_with_a_stake_deregistration_path_certificate_preconway_expert_off(void **state) {
+static void test_sign_tx_with_a_stake_deregistration_path_certificate_preconway_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_PATH_CERTIFICATE_PRECONWAY, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_PATH_CERTIFICATE_PRECONWAY,
+        false);
 }
 
-static void test_sign_tx_with_a_stake_deregistration_path_certificate_preconway_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_a_stake_deregistration_path_certificate_preconway_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_PATH_CERTIFICATE_PRECONWAY, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_PATH_CERTIFICATE_PRECONWAY,
+        false);
 }
 
-static void test_sign_tx_with_a_stake_deregistration_path_certificate_preconway_expert_on(void **state) {
+static void test_sign_tx_with_a_stake_deregistration_path_certificate_preconway_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_PATH_CERTIFICATE_PRECONWAY, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_PATH_CERTIFICATE_PRECONWAY,
+        true);
 }
 
-static void test_sign_tx_with_a_stake_deregistration_path_certificate_preconway_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_a_stake_deregistration_path_certificate_preconway_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_PATH_CERTIFICATE_PRECONWAY, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_PATH_CERTIFICATE_PRECONWAY,
+        true);
 }
 
 static void test_sign_tx_with_a_stake_delegation_path_certificate_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_DELEGATION_PATH_CERTIFICATE, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_DELEGATION_PATH_CERTIFICATE,
+        false);
 }
 
-static void test_sign_tx_with_a_stake_delegation_path_certificate_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_a_stake_delegation_path_certificate_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_DELEGATION_PATH_CERTIFICATE, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_DELEGATION_PATH_CERTIFICATE,
+        false);
 }
 
 static void test_sign_tx_with_a_stake_delegation_path_certificate_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_DELEGATION_PATH_CERTIFICATE, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_DELEGATION_PATH_CERTIFICATE,
+        true);
 }
 
-static void test_sign_tx_with_a_stake_delegation_path_certificate_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_a_stake_delegation_path_certificate_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_DELEGATION_PATH_CERTIFICATE, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_A_STAKE_DELEGATION_PATH_CERTIFICATE,
+        true);
 }
 
 static void test_sign_tx_and_filter_out_witnesses_with_duplicate_paths_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_AND_FILTER_OUT_WITNESSES_WITH_DUPLICATE_PATHS, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_AND_FILTER_OUT_WITNESSES_WITH_DUPLICATE_PATHS,
+        false);
 }
 
-static void test_sign_tx_and_filter_out_witnesses_with_duplicate_paths_reject_tx_expert_off(void **state) {
+static void test_sign_tx_and_filter_out_witnesses_with_duplicate_paths_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_AND_FILTER_OUT_WITNESSES_WITH_DUPLICATE_PATHS, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_AND_FILTER_OUT_WITNESSES_WITH_DUPLICATE_PATHS,
+        false);
 }
 
 static void test_sign_tx_and_filter_out_witnesses_with_duplicate_paths_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_AND_FILTER_OUT_WITNESSES_WITH_DUPLICATE_PATHS, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_AND_FILTER_OUT_WITNESSES_WITH_DUPLICATE_PATHS,
+        true);
 }
 
-static void test_sign_tx_and_filter_out_witnesses_with_duplicate_paths_reject_tx_expert_on(void **state) {
+static void test_sign_tx_and_filter_out_witnesses_with_duplicate_paths_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_AND_FILTER_OUT_WITNESSES_WITH_DUPLICATE_PATHS, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_AND_FILTER_OUT_WITNESSES_WITH_DUPLICATE_PATHS,
+        true);
 }
 
-static void test_sign_tx_with_pool_retirement_combined_with_stake_registration_expert_off(void **state) {
+static void test_sign_tx_with_pool_retirement_combined_with_stake_registration_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_POOL_RETIREMENT_COMBINED_WITH_STAKE_REGISTRATION, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_POOL_RETIREMENT_COMBINED_WITH_STAKE_REGISTRATION,
+        false);
 }
 
-static void test_sign_tx_with_pool_retirement_combined_with_stake_registration_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_pool_retirement_combined_with_stake_registration_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_POOL_RETIREMENT_COMBINED_WITH_STAKE_REGISTRATION, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_POOL_RETIREMENT_COMBINED_WITH_STAKE_REGISTRATION,
+        false);
 }
 
-static void test_sign_tx_with_pool_retirement_combined_with_stake_registration_expert_on(void **state) {
+static void test_sign_tx_with_pool_retirement_combined_with_stake_registration_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_POOL_RETIREMENT_COMBINED_WITH_STAKE_REGISTRATION, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_POOL_RETIREMENT_COMBINED_WITH_STAKE_REGISTRATION,
+        true);
 }
 
-static void test_sign_tx_with_pool_retirement_combined_with_stake_registration_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_pool_retirement_combined_with_stake_registration_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_POOL_RETIREMENT_COMBINED_WITH_STAKE_REGISTRATION, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_POOL_RETIREMENT_COMBINED_WITH_STAKE_REGISTRATION,
+        true);
 }
 
-static void test_sign_tx_with_pool_retirement_combined_with_stake_deregistration_expert_off(void **state) {
+static void test_sign_tx_with_pool_retirement_combined_with_stake_deregistration_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_POOL_RETIREMENT_COMBINED_WITH_STAKE_DEREGISTRATION, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_POOL_RETIREMENT_COMBINED_WITH_STAKE_DEREGISTRATION,
+        false);
 }
 
-static void test_sign_tx_with_pool_retirement_combined_with_stake_deregistration_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_pool_retirement_combined_with_stake_deregistration_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_POOL_RETIREMENT_COMBINED_WITH_STAKE_DEREGISTRATION, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_POOL_RETIREMENT_COMBINED_WITH_STAKE_DEREGISTRATION,
+        false);
 }
 
-static void test_sign_tx_with_pool_retirement_combined_with_stake_deregistration_expert_on(void **state) {
+static void test_sign_tx_with_pool_retirement_combined_with_stake_deregistration_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_POOL_RETIREMENT_COMBINED_WITH_STAKE_DEREGISTRATION, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_POOL_RETIREMENT_COMBINED_WITH_STAKE_DEREGISTRATION,
+        true);
 }
 
-static void test_sign_tx_with_pool_retirement_combined_with_stake_deregistration_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_pool_retirement_combined_with_stake_deregistration_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_POOL_RETIREMENT_COMBINED_WITH_STAKE_DEREGISTRATION, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_SHELLEY_CERTIFICATES_SIGN_TX_WITH_POOL_RETIREMENT_COMBINED_WITH_STAKE_DEREGISTRATION,
+        true);
 }
 
 // ======================================================================
@@ -175,30 +246,53 @@ static void test_sign_tx_with_pool_retirement_combined_with_stake_deregistration
 
 int main(void) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_sign_tx_with_a_stake_registration_path_certificate_preconway_expert_off),
-        cmocka_unit_test(test_sign_tx_with_a_stake_registration_path_certificate_preconway_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_a_stake_registration_path_certificate_preconway_expert_on),
-        cmocka_unit_test(test_sign_tx_with_a_stake_registration_path_certificate_preconway_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_a_stake_deregistration_path_certificate_preconway_expert_off),
-        cmocka_unit_test(test_sign_tx_with_a_stake_deregistration_path_certificate_preconway_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_a_stake_deregistration_path_certificate_preconway_expert_on),
-        cmocka_unit_test(test_sign_tx_with_a_stake_deregistration_path_certificate_preconway_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_a_stake_registration_path_certificate_preconway_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_a_stake_registration_path_certificate_preconway_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_a_stake_registration_path_certificate_preconway_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_a_stake_registration_path_certificate_preconway_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_a_stake_deregistration_path_certificate_preconway_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_a_stake_deregistration_path_certificate_preconway_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_a_stake_deregistration_path_certificate_preconway_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_a_stake_deregistration_path_certificate_preconway_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_a_stake_delegation_path_certificate_expert_off),
-        cmocka_unit_test(test_sign_tx_with_a_stake_delegation_path_certificate_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_a_stake_delegation_path_certificate_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_a_stake_delegation_path_certificate_expert_on),
         cmocka_unit_test(test_sign_tx_with_a_stake_delegation_path_certificate_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_and_filter_out_witnesses_with_duplicate_paths_expert_off),
-        cmocka_unit_test(test_sign_tx_and_filter_out_witnesses_with_duplicate_paths_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_and_filter_out_witnesses_with_duplicate_paths_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_and_filter_out_witnesses_with_duplicate_paths_expert_on),
-        cmocka_unit_test(test_sign_tx_and_filter_out_witnesses_with_duplicate_paths_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_pool_retirement_combined_with_stake_registration_expert_off),
-        cmocka_unit_test(test_sign_tx_with_pool_retirement_combined_with_stake_registration_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_pool_retirement_combined_with_stake_registration_expert_on),
-        cmocka_unit_test(test_sign_tx_with_pool_retirement_combined_with_stake_registration_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_pool_retirement_combined_with_stake_deregistration_expert_off),
-        cmocka_unit_test(test_sign_tx_with_pool_retirement_combined_with_stake_deregistration_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_pool_retirement_combined_with_stake_deregistration_expert_on),
-        cmocka_unit_test(test_sign_tx_with_pool_retirement_combined_with_stake_deregistration_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_and_filter_out_witnesses_with_duplicate_paths_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_pool_retirement_combined_with_stake_registration_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_pool_retirement_combined_with_stake_registration_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_pool_retirement_combined_with_stake_registration_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_pool_retirement_combined_with_stake_registration_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_pool_retirement_combined_with_stake_deregistration_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_pool_retirement_combined_with_stake_deregistration_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_pool_retirement_combined_with_stake_deregistration_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_pool_retirement_combined_with_stake_deregistration_reject_tx_expert_on),
     };
-    return _cmocka_run_group_tests("test_sign_tx_shelley_certificates", tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);
+    return _cmocka_run_group_tests("test_sign_tx_shelley_certificates",
+                                   tests,
+                                   ARRAY_LEN(tests),
+                                   NULL,
+                                   assert_no_pending_apdu_response);
 }

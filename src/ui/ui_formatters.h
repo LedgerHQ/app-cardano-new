@@ -224,8 +224,8 @@ bool format_dns_name(const uint8_t *dnsName, size_t dnsLength, char *out, size_t
 /**
  * Format asset fingerprint in bech32 format
  *
- * Derives the fingerprint from policy ID and asset name, then encodes as bech32 with "asset" prefix.
- * Wrapper to match UI_ADD_FORMAT2 signature (tokenGroup and assetNameLen).
+ * Derives the fingerprint from policy ID and asset name, then encodes as bech32 with "asset"
+ * prefix. Wrapper to match UI_ADD_FORMAT2 signature (tokenGroup and assetNameLen).
  *
  * @param policyId         Minting policy ID
  * @param assetName        Asset name bytes
@@ -254,9 +254,9 @@ bool format_asset_fingerprint_bech32(const uint8_t *policyId,
  * @return true on success, false on failure
  */
 bool format_incomplete_hex_with_length(const uint8_t *data,
-                                     size_t dataLen,
-                                     char *out,
-                                     size_t outSize);
+                                       size_t dataLen,
+                                       char *out,
+                                       size_t outSize);
 
 bool format_input_with_index(const tx_input_t *input, char *out, size_t outSize);
 

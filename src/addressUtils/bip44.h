@@ -43,7 +43,7 @@ uint32_t bip44_unharden(uint32_t value);
 
 // Public API for safe BIP44 path reading from buffer
 // Handles buffer advancement and error checking internally
-bool buffer_read_bip44_path(buffer_t *buffer, bip44_path_t* path);
+bool buffer_read_bip44_path(buffer_t* buffer, bip44_path_t* path);
 
 // Indexes into pathSpec
 enum {

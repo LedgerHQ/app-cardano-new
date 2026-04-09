@@ -20,7 +20,9 @@ void io_capture_reset(void) {
     g_last_response_swo = 0;
 }
 
-__attribute__((weak)) int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
+__attribute__((weak)) int io_send_response_pointer(const uint8_t *buffer,
+                                                   size_t bufferLength,
+                                                   uint16_t swo) {
     LEDGER_ASSERT(bufferLength <= sizeof(g_last_response), "Response buffer overflow");
 
     if (buffer != NULL && bufferLength > 0) {

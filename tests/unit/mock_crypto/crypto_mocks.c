@@ -21,7 +21,7 @@
 
 uint8_t g_mock_last_signed_message[MOCK_SIGNED_MESSAGE_BUFFER_SIZE];
 size_t g_mock_last_signed_message_len = 0;
-const mock_signature_data_t *g_mock_last_signature_entry = NULL;
+const mock_signature_data_t* g_mock_last_signature_entry = NULL;
 
 void reset_mock_signature_state(void) {
     memset(g_mock_last_signed_message, 0, sizeof(g_mock_last_signed_message));
@@ -109,13 +109,13 @@ static void encode_raw_pubkey(const uint8_t public_key[32], uint8_t raw_pubkey[R
 
     uint8_t y_le[32];
     memcpy(y_le, public_key, 32);
-    uint8_t sign_bit = (uint8_t)(y_le[31] & 0x80u);
+    uint8_t sign_bit = (uint8_t) (y_le[31] & 0x80u);
     y_le[31] &= 0x7Fu;
 
     for (size_t i = 0; i < 32; i++) {
         raw_pubkey[RAW_PUBKEY_SIZE - 1 - i] = y_le[i];
     }
-    raw_pubkey[32] = (uint8_t)(sign_bit ? 0x01 : 0x00);
+    raw_pubkey[32] = (uint8_t) (sign_bit ? 0x01 : 0x00);
 }
 
 void crypto_get_pubkey(const uint32_t* path,
@@ -146,11 +146,14 @@ void crypto_eddsa_sign(const uint32_t* path,
     LEDGER_ASSERT(hash != NULL, "hash is NULL");
     LEDGER_ASSERT(hash_len > 0, "hash_len is zero");
     LEDGER_ASSERT(sig != NULL, "sig is NULL");
-    LEDGER_ASSERT(expected_sig_len == ED25519_SIGNATURE_LENGTH, "expected_sig_len must equal ED25519_SIGNATURE_LENGTH");
+    LEDGER_ASSERT(expected_sig_len == ED25519_SIGNATURE_LENGTH,
+                  "expected_sig_len must equal ED25519_SIGNATURE_LENGTH");
 
     if (hash_len > MOCK_SIGNED_MESSAGE_BUFFER_SIZE) {
-        LEDGER_ASSERT(false, "Signed message (%zu) exceeds mock buffer (%d)",
-                      hash_len, MOCK_SIGNED_MESSAGE_BUFFER_SIZE);
+        LEDGER_ASSERT(false,
+                      "Signed message (%zu) exceeds mock buffer (%d)",
+                      hash_len,
+                      MOCK_SIGNED_MESSAGE_BUFFER_SIZE);
     }
     g_mock_last_signed_message_len = hash_len;
     memcpy(g_mock_last_signed_message, hash, hash_len);
@@ -173,7 +176,8 @@ void crypto_eddsa_sign(const uint32_t* path,
     maybe_log_signature_entry_usage(entry);
     LEDGER_ASSERT(g_mock_last_signed_message_len == entry->message_len,
                   "Signed message length (%zu) does not match entry (%zu)",
-                  g_mock_last_signed_message_len, entry->message_len);
+                  g_mock_last_signed_message_len,
+                  entry->message_len);
 
     memcpy(sig, entry->signature, ED25519_SIGNATURE_LENGTH);
 }

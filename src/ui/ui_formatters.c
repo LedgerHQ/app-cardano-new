@@ -54,7 +54,7 @@ static const char *getCertificateTypeName(certificate_type_t type) {
         default:
             LEDGER_ASSERT(false, "Unknown certificate type");
             return "Unknown";
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
@@ -82,14 +82,14 @@ bool format_decimal_amount(uint64_t amount, size_t places, char *out, size_t out
     // We print in reverse
     // decimal digits
     for (size_t dec = 0; dec < places; dec++) {
-        if (!buffer_write_u8(&scratch_buf, (uint8_t)('0' + (amount % 10)))) {
-            return false; // LCOV_EXCL_LINE
+        if (!buffer_write_u8(&scratch_buf, (uint8_t) ('0' + (amount % 10)))) {
+            return false;  // LCOV_EXCL_LINE
         }
         amount /= 10;
     }
     if (places > 0) {
-        if (!buffer_write_u8(&scratch_buf, (uint8_t)'.')) {
-            return false; // LCOV_EXCL_LINE
+        if (!buffer_write_u8(&scratch_buf, (uint8_t) '.')) {
+            return false;  // LCOV_EXCL_LINE
         }
     }
     // We want at least one iteration
@@ -97,12 +97,12 @@ bool format_decimal_amount(uint64_t amount, size_t places, char *out, size_t out
     do {
         // thousands separator
         if (place && (place % 3 == 0)) {
-            if (!buffer_write_u8(&scratch_buf, (uint8_t)',')) {
-                return false; // LCOV_EXCL_LINE
+            if (!buffer_write_u8(&scratch_buf, (uint8_t) ',')) {
+                return false;  // LCOV_EXCL_LINE
             }
         }
-        if (!buffer_write_u8(&scratch_buf, (uint8_t)('0' + (amount % 10)))) {
-            return false; // LCOV_EXCL_LINE
+        if (!buffer_write_u8(&scratch_buf, (uint8_t) ('0' + (amount % 10)))) {
+            return false;  // LCOV_EXCL_LINE
         }
         amount /= 10;
         place++;
@@ -118,12 +118,12 @@ bool format_decimal_amount(uint64_t amount, size_t places, char *out, size_t out
     explicit_bzero(out, outSize);
     buffer_t out_buf = buffer_create(out, outSize);
     for (size_t i = 0; i < rawSize; i++) {
-        if (!buffer_write_u8(&out_buf, (uint8_t)scratchBuffer[rawSize - 1 - i])) {
-            return false; // LCOV_EXCL_LINE
+        if (!buffer_write_u8(&out_buf, (uint8_t) scratchBuffer[rawSize - 1 - i])) {
+            return false;  // LCOV_EXCL_LINE
         }
     }
     if (!buffer_write_u8(&out_buf, 0)) {
-        return false; // LCOV_EXCL_LINE
+        return false;  // LCOV_EXCL_LINE
     }
 
     // make sure all the information is displayed to the user
@@ -149,8 +149,8 @@ bool format_ada_amount(uint64_t amount, char *out, size_t outSize) {
 
     int written = snprintf(out + rawSize, outSize - rawSize, "%s", suffix);
     LEDGER_ASSERT(written > 0, "snprintf ADA suffix failed");
-    LEDGER_ASSERT((size_t)written < (outSize - rawSize), "snprintf ADA suffix truncated");
-    LEDGER_ASSERT((size_t)written == suffixLength, "ADA suffix length mismatch");
+    LEDGER_ASSERT((size_t) written < (outSize - rawSize), "snprintf ADA suffix truncated");
+    LEDGER_ASSERT((size_t) written == suffixLength, "ADA suffix length mismatch");
 
     return true;
 }
@@ -171,11 +171,13 @@ static bool format_validity_boundary_mainnet(uint64_t slotNumber, char *out, siz
     unsigned i = 0;
     while (slotNumber < EPOCH_SLOTS_CONFIG[i].startSlotNumber) {
         i++;
-        LEDGER_ASSERT(i < ARRAY_LEN(EPOCH_SLOTS_CONFIG), "Slot number exceeds configured epoch boundaries");
+        LEDGER_ASSERT(i < ARRAY_LEN(EPOCH_SLOTS_CONFIG),
+                      "Slot number exceeds configured epoch boundaries");
     }
 
     // Intentional redundant post-condition check: keeps this invariant explicit for auditability.
-    LEDGER_ASSERT(slotNumber >= EPOCH_SLOTS_CONFIG[i].startSlotNumber, "Invalid slot number for epoch");
+    LEDGER_ASSERT(slotNumber >= EPOCH_SLOTS_CONFIG[i].startSlotNumber,
+                  "Invalid slot number for epoch");
 
     uint64_t startSlotNumber = EPOCH_SLOTS_CONFIG[i].startSlotNumber;
     uint64_t startEpoch = EPOCH_SLOTS_CONFIG[i].startEpoch;
@@ -186,18 +188,21 @@ static bool format_validity_boundary_mainnet(uint64_t slotNumber, char *out, siz
 
     STATIC_ASSERT(sizeof(int) >= sizeof(uint32_t), "wrong int size");
 
-    LEDGER_ASSERT(outSize > 0, "Output buffer must not be empty");  // so we can write null terminator
+    LEDGER_ASSERT(outSize > 0,
+                  "Output buffer must not be empty");  // so we can write null terminator
     int written;
     if (epoch > 1000000) {
         // thousands of years
         written = snprintf(out, outSize, "epoch > 1000000");
     } else {
         // Safe: epoch and slotInEpoch are uint64_t but guaranteed < 1000000 by check above
-        written = snprintf(out, outSize, "epoch %u / slot %u", (unsigned) epoch, (unsigned) slotInEpoch);
+        written =
+            snprintf(out, outSize, "epoch %u / slot %u", (unsigned) epoch, (unsigned) slotInEpoch);
     }
 
     LEDGER_ASSERT(written > 0, "snprintf epoch/slot formatting failed");
-    LEDGER_ASSERT((size_t)written + 1 < outSize, "Epoch/slot string does not fit in output buffer");
+    LEDGER_ASSERT((size_t) written + 1 < outSize,
+                  "Epoch/slot string does not fit in output buffer");
 
     return true;
 }
@@ -247,7 +252,8 @@ bool format_pool_margin(uint64_t numerator, uint64_t denominator, char *out, siz
                            (unsigned long long) integer_part,
                            (unsigned long long) fractional_part);
     LEDGER_ASSERT(written > 0, "snprintf pool margin formatting failed");
-    LEDGER_ASSERT((size_t)written + 1 < outSize, "Pool margin string does not fit in output buffer");
+    LEDGER_ASSERT((size_t) written + 1 < outSize,
+                  "Pool margin string does not fit in output buffer");
     return true;
 }
 
@@ -258,7 +264,7 @@ bool format_uint16(uint16_t value, char *out, size_t outSize) {
     STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(value)), "signed type for %u");
     int written = snprintf(out, outSize, "%u", value);
     LEDGER_ASSERT(written > 0, "snprintf uint16 formatting failed");
-    LEDGER_ASSERT((size_t)written + 1 < outSize, "uint16 string does not fit in output buffer");
+    LEDGER_ASSERT((size_t) written + 1 < outSize, "uint16 string does not fit in output buffer");
     return true;
 }
 
@@ -269,7 +275,8 @@ bool format_index_with_prefix(uint32_t value, char *out, size_t outSize) {
     STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(value)), "signed type for %u");
     int written = snprintf(out, outSize, "#%u", value);
     LEDGER_ASSERT(written > 0, "snprintf index prefix formatting failed");
-    LEDGER_ASSERT((size_t)written + 1 < outSize, "Index prefix string does not fit in output buffer");
+    LEDGER_ASSERT((size_t) written + 1 < outSize,
+                  "Index prefix string does not fit in output buffer");
     return true;
 }
 
@@ -286,14 +293,16 @@ bool format_ipv4(const ipv4_t *ipv4, char *out, size_t outSize) {
     if (ipv4->isNull) {
         int written = snprintf(out, outSize, "(none)");
         LEDGER_ASSERT(written > 0, "snprintf ipv4 null formatting failed");
-        LEDGER_ASSERT((size_t)written + 1 < outSize, "IPv4 null string does not fit in output buffer");
+        LEDGER_ASSERT((size_t) written + 1 < outSize,
+                      "IPv4 null string does not fit in output buffer");
     } else {
         ASSERT(ipv4->ip != NULL);
         inet_ntop4(ipv4->ip, out, outSize);
     }
 
     // make sure all the information is displayed to the user
-    LEDGER_ASSERT(strlen(out) + 1 < outSize, "Formatted IPv4 address does not fit in output buffer");
+    LEDGER_ASSERT(strlen(out) + 1 < outSize,
+                  "Formatted IPv4 address does not fit in output buffer");
 
     return true;
 }
@@ -311,14 +320,16 @@ bool format_ipv6(const ipv6_t *ipv6, char *out, size_t outSize) {
     if (ipv6->isNull) {
         int written = snprintf(out, outSize, "(none)");
         LEDGER_ASSERT(written > 0, "snprintf ipv6 null formatting failed");
-        LEDGER_ASSERT((size_t)written + 1 < outSize, "IPv6 null string does not fit in output buffer");
+        LEDGER_ASSERT((size_t) written + 1 < outSize,
+                      "IPv6 null string does not fit in output buffer");
     } else {
         ASSERT(ipv6->ip != NULL);
         inet_ntop6(ipv6->ip, out, outSize);
     }
 
     // make sure all the information is displayed to the user
-    LEDGER_ASSERT(strlen(out) + 1 < outSize, "Formatted IPv6 address does not fit in output buffer");
+    LEDGER_ASSERT(strlen(out) + 1 < outSize,
+                  "Formatted IPv6 address does not fit in output buffer");
 
     return true;
 }
@@ -327,7 +338,7 @@ bool format_ipv6(const ipv6_t *ipv6, char *out, size_t outSize) {
  * Format vote option enum to string
  */
 bool format_vote_option(vote_t voteOption, char *out, size_t outSize) {
-    const char* vote_str;
+    const char *vote_str;
     switch (voteOption) {
         case VOTE_NO:
             vote_str = "No";
@@ -342,12 +353,13 @@ bool format_vote_option(vote_t voteOption, char *out, size_t outSize) {
         default:
             LEDGER_ASSERT(false, "Unknown vote option");
             return false;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     int written = snprintf(out, outSize, "%s", vote_str);
     LEDGER_ASSERT(written > 0, "snprintf vote option formatting failed");
-    LEDGER_ASSERT((size_t)written + 1 < outSize, "Vote option string does not fit in output buffer");
+    LEDGER_ASSERT((size_t) written + 1 < outSize,
+                  "Vote option string does not fit in output buffer");
     return true;
 }
 
@@ -358,7 +370,7 @@ bool format_vote_option(vote_t voteOption, char *out, size_t outSize) {
  * not derived from key paths or hashes.
  */
 bool format_constant_drep(ext_drep_type_t drep_type, char *out, size_t outSize) {
-    const char* drep_str;
+    const char *drep_str;
     switch (drep_type) {
         case EXT_DREP_ABSTAIN:
             drep_str = "Abstain";
@@ -370,12 +382,12 @@ bool format_constant_drep(ext_drep_type_t drep_type, char *out, size_t outSize) 
         default:
             LEDGER_ASSERT(false, "Only abstain and no confidence are constant DRep types");
             return false;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     int written = snprintf(out, outSize, "%s", drep_str);
     LEDGER_ASSERT(written > 0, "snprintf drep formatting failed");
-    LEDGER_ASSERT((size_t)written + 1 < outSize, "DRep string does not fit in output buffer");
+    LEDGER_ASSERT((size_t) written + 1 < outSize, "DRep string does not fit in output buffer");
     return true;
 }
 
@@ -386,10 +398,10 @@ bool format_certificate_type(certificate_type_t type, char *out, size_t outSize)
     const char *cert_type_name = getCertificateTypeName(type);
     int written = snprintf(out, outSize, "%s", cert_type_name);
     LEDGER_ASSERT(written > 0, "snprintf certificate type formatting failed");
-    LEDGER_ASSERT((size_t)written + 1 < outSize, "Certificate type string does not fit in output buffer");
+    LEDGER_ASSERT((size_t) written + 1 < outSize,
+                  "Certificate type string does not fit in output buffer");
     return true;
 }
-
 
 /**
  * Format URL from raw buffer
@@ -400,9 +412,11 @@ bool format_url(const uint8_t *url, size_t urlLength, char *out, size_t outSize)
     if (urlLength + 1 >= outSize) {
         return false;
     }
-    STATIC_ASSERT(MAX_ANCHOR_URL_LENGTH == MAX_POOL_METADATA_URL_LENGTH, "URL length limits must match");
+    STATIC_ASSERT(MAX_ANCHOR_URL_LENGTH == MAX_POOL_METADATA_URL_LENGTH,
+                  "URL length limits must match");
     LEDGER_ASSERT(urlLength <= MAX_ANCHOR_URL_LENGTH, "URL length exceeds maximum limit");
-    LEDGER_ASSERT(str_isPrintableAsciiWithoutSpaces(url, urlLength), "URL contains non-printable or space characters");
+    LEDGER_ASSERT(str_isPrintableAsciiWithoutSpaces(url, urlLength),
+                  "URL contains non-printable or space characters");
     memcpy(out, url, urlLength);
     out[urlLength] = '\0';
     return true;
@@ -413,7 +427,8 @@ bool format_dns_name(const uint8_t *dnsName, size_t dnsLength, char *out, size_t
         return false;
     }
     LEDGER_ASSERT(dnsLength <= MAX_DNS_NAME_LENGTH, "DNS name length exceeds maximum limit");
-    LEDGER_ASSERT(str_isUnambiguousAscii(dnsName, dnsLength), "DNS name contains invalid ASCII characters");
+    LEDGER_ASSERT(str_isUnambiguousAscii(dnsName, dnsLength),
+                  "DNS name contains invalid ASCII characters");
     memcpy(out, dnsName, dnsLength);
     out[dnsLength] = '\0';
     return true;
@@ -429,16 +444,18 @@ bool format_asset_fingerprint_bech32(const uint8_t *policyId,
                                      size_t outSize) {
     // Derive fingerprint bytes from policy ID and asset name
     uint8_t fingerprintBuffer[20];  // ASSET_FINGERPRINT_SIZE = 20
-    deriveAssetFingerprintBytes(
-        policyId,
-        MINTING_POLICY_ID_LENGTH,
-        assetName,
-        assetNameLen,
-        fingerprintBuffer,
-        sizeof(fingerprintBuffer));
+    deriveAssetFingerprintBytes(policyId,
+                                MINTING_POLICY_ID_LENGTH,
+                                assetName,
+                                assetNameLen,
+                                fingerprintBuffer,
+                                sizeof(fingerprintBuffer));
 
-    return format_bech32(
-        BECH32_PREFIX_ASSET_FINGERPRINT, fingerprintBuffer, sizeof(fingerprintBuffer), out, outSize);
+    return format_bech32(BECH32_PREFIX_ASSET_FINGERPRINT,
+                         fingerprintBuffer,
+                         sizeof(fingerprintBuffer),
+                         out,
+                         outSize);
 }
 
 /**
@@ -465,16 +482,18 @@ bool format_input_with_index(const tx_input_t *input, char *out, size_t outSize)
 
 bool format_mint_summary(uint16_t num_groups, char *out, size_t outSize) {
     STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(num_groups)), "signed type for %u");
-    int written = snprintf(out, outSize, "%u asset group%s", num_groups, (num_groups == 1) ? "" : "s");
+    int written =
+        snprintf(out, outSize, "%u asset group%s", num_groups, (num_groups == 1) ? "" : "s");
     LEDGER_ASSERT(written > 0, "snprintf mint summary formatting failed");
-    LEDGER_ASSERT((size_t)written + 1 < outSize, "Mint summary string does not fit in output buffer");
+    LEDGER_ASSERT((size_t) written + 1 < outSize,
+                  "Mint summary string does not fit in output buffer");
     return true;
 }
 
 bool format_incomplete_hex_with_length(const uint8_t *data,
-                                     size_t dataLen,
-                                     char *out,
-                                     size_t outSize) {
+                                       size_t dataLen,
+                                       char *out,
+                                       size_t outSize) {
     ASSERT(data != NULL);
     ASSERT(out != NULL);
     LEDGER_ASSERT(outSize > 0, "Zero output size");
@@ -488,12 +507,13 @@ bool format_incomplete_hex_with_length(const uint8_t *data,
     char hexPrefix[HEX_PREFIX_SIZE];
     int hexStatus = bytes_to_lowercase_hex(hexPrefix, sizeof(hexPrefix), data, previewLen);
     if (hexStatus != 0) {
-        return false; // LCOV_EXCL_LINE
+        return false;  // LCOV_EXCL_LINE
     }
 
     STATIC_ASSERT(!IS_SIGNED_TYPE(typeof(dataLen)), "signed type for %u");
-    int written = snprintf(out, outSize, "%s... (%u bytes)", hexPrefix, (unsigned int)dataLen);
+    int written = snprintf(out, outSize, "%s... (%u bytes)", hexPrefix, (unsigned int) dataLen);
     LEDGER_ASSERT(written > 0, "snprintf incomplete hex formatting failed");
-    LEDGER_ASSERT((size_t)written + 1 < outSize, "Incomplete hex string does not fit in output buffer");
+    LEDGER_ASSERT((size_t) written + 1 < outSize,
+                  "Incomplete hex string does not fit in output buffer");
     return true;
 }

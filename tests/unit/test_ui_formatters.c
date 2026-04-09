@@ -36,7 +36,7 @@ static void test_format_uint64(void **state) {
         {1, "1"},
         {4924800, "4924800"},
         {4924799, "4924799"},
-        {(uint64_t)(-1ll), "18446744073709551615"},  // Max uint64
+        {(uint64_t) (-1ll), "18446744073709551615"},  // Max uint64
     };
 
     for (size_t i = 0; i < sizeof(testVectors) / sizeof(testVectors[0]); i++) {
@@ -67,12 +67,8 @@ static void test_format_decimal_amount(void **state) {
 
     for (size_t i = 0; i < sizeof(testVectors) / sizeof(testVectors[0]); i++) {
         char tmp[100] = {0};
-        bool success = format_decimal_amount(
-            testVectors[i].amount,
-            testVectors[i].places,
-            tmp,
-            sizeof(tmp)
-        );
+        bool success =
+            format_decimal_amount(testVectors[i].amount, testVectors[i].places, tmp, sizeof(tmp));
         assert_true(success);
         size_t len = strlen(tmp);
         assert_int_equal(len, strlen(testVectors[i].expected));
@@ -111,13 +107,11 @@ static void test_format_validity_boundary(void **state) {
     // Mainnet uses epoch/slot formatting
     {
         char tmp[100] = {0};
-        bool success = format_validity_boundary(
-            4492800,
-            MAINNET_NETWORK_ID,
-            MAINNET_PROTOCOL_MAGIC,
-            tmp,
-            sizeof(tmp)
-        );
+        bool success = format_validity_boundary(4492800,
+                                                MAINNET_NETWORK_ID,
+                                                MAINNET_PROTOCOL_MAGIC,
+                                                tmp,
+                                                sizeof(tmp));
         assert_true(success);
         assert_string_equal(tmp, "epoch 208 / slot 0");
     }
@@ -125,13 +119,11 @@ static void test_format_validity_boundary(void **state) {
     // Testnet uses raw slot formatting
     {
         char tmp[100] = {0};
-        bool success = format_validity_boundary(
-            12345,
-            TESTNET_NETWORK_ID,
-            TESTNET_PROTOCOL_MAGIC_LEGACY,
-            tmp,
-            sizeof(tmp)
-        );
+        bool success = format_validity_boundary(12345,
+                                                TESTNET_NETWORK_ID,
+                                                TESTNET_PROTOCOL_MAGIC_LEGACY,
+                                                tmp,
+                                                sizeof(tmp));
         assert_true(success);
         assert_string_equal(tmp, "12345");
     }
@@ -139,13 +131,11 @@ static void test_format_validity_boundary(void **state) {
     // Mainnet with wrong protocol magic uses raw slot formatting
     {
         char tmp[100] = {0};
-        bool success = format_validity_boundary(
-            12345,
-            MAINNET_NETWORK_ID,
-            TESTNET_PROTOCOL_MAGIC_LEGACY,
-            tmp,
-            sizeof(tmp)
-        );
+        bool success = format_validity_boundary(12345,
+                                                MAINNET_NETWORK_ID,
+                                                TESTNET_PROTOCOL_MAGIC_LEGACY,
+                                                tmp,
+                                                sizeof(tmp));
         assert_true(success);
         assert_string_equal(tmp, "12345");
     }
@@ -153,13 +143,11 @@ static void test_format_validity_boundary(void **state) {
     // Mainnet boundary with large slots (epoch over limit)
     {
         char tmp[100] = {0};
-        bool success = format_validity_boundary(
-            1000001llu * 432000 + 124,
-            MAINNET_NETWORK_ID,
-            MAINNET_PROTOCOL_MAGIC,
-            tmp,
-            sizeof(tmp)
-        );
+        bool success = format_validity_boundary(1000001llu * 432000 + 124,
+                                                MAINNET_NETWORK_ID,
+                                                MAINNET_PROTOCOL_MAGIC,
+                                                tmp,
+                                                sizeof(tmp));
         assert_true(success);
         assert_string_equal(tmp, "epoch > 1000000");
     }
@@ -239,7 +227,6 @@ static void test_format_vote_option(void **state) {
     success = format_vote_option(VOTE_ABSTAIN, tmp, sizeof(tmp));
     assert_true(success);
     assert_string_equal(tmp, "Abstain");
-
 }
 
 static void test_format_constant_drep(void **state) {
@@ -305,7 +292,8 @@ static void test_format_dns_name(void **state) {
 
     // Buffer one byte too small
     char too_small[17] = {0};
-    success = format_dns_name(dns_name, strlen((const char *) dns_name), too_small, sizeof(too_small));
+    success =
+        format_dns_name(dns_name, strlen((const char *) dns_name), too_small, sizeof(too_small));
     assert_false(success);
 }
 
@@ -327,10 +315,9 @@ static void test_format_input_with_index_buffer_too_small(void **state) {
     (void) state;
 
     const uint8_t hash[TX_HASH_LENGTH] = {
-        0x3b, 0x40, 0x26, 0x51, 0x11, 0xd8, 0xbb, 0x3c,
-        0x3c, 0x60, 0x8d, 0x95, 0xb3, 0xa0, 0xbf, 0x83,
-        0x46, 0x1a, 0xce, 0x32, 0xd7, 0x93, 0x36, 0x57,
-        0x9a, 0x19, 0x39, 0xb3, 0xaa, 0xd1, 0xc0, 0xb7,
+        0x3b, 0x40, 0x26, 0x51, 0x11, 0xd8, 0xbb, 0x3c, 0x3c, 0x60, 0x8d,
+        0x95, 0xb3, 0xa0, 0xbf, 0x83, 0x46, 0x1a, 0xce, 0x32, 0xd7, 0x93,
+        0x36, 0x57, 0x9a, 0x19, 0x39, 0xb3, 0xaa, 0xd1, 0xc0, 0xb7,
     };
     const tx_input_t input = {.txHash = hash, .index = 0};
 
@@ -379,13 +366,15 @@ static void test_format_asset_fingerprint_bech32(void **state) {
     for (size_t i = 0; i < sizeof(testVectors) / sizeof(testVectors[0]); i++) {
         uint8_t policyId[MINTING_POLICY_ID_LENGTH] = {0};
         size_t policyIdSize = 0;
-        bool success_policy = decode_hex(testVectors[i].policyIdHex, policyId, sizeof(policyId), &policyIdSize);
+        bool success_policy =
+            decode_hex(testVectors[i].policyIdHex, policyId, sizeof(policyId), &policyIdSize);
         assert_true(success_policy);
         assert_int_equal(policyIdSize, MINTING_POLICY_ID_LENGTH);
 
         uint8_t assetName[MAX_ASSET_NAME_LENGTH] = {0};
         size_t assetNameSize = 0;
-        bool success = decode_hex(testVectors[i].assetNameHex, assetName, sizeof(assetName), &assetNameSize);
+        bool success =
+            decode_hex(testVectors[i].assetNameHex, assetName, sizeof(assetName), &assetNameSize);
         assert_true(success);
 
         char fingerprint[200] = {0};

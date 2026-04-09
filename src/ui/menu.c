@@ -86,14 +86,15 @@ static void controls_callback(int token, uint8_t index, int page) {
         default:
             LEDGER_ASSERT(false, "Unknown menu token");
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
 // home page definition
 void ui_menu_main(void) {
     // Initialize switches data
-    switches[SILENT_PUBKEY_EXPORT_ID].initState = (nbgl_state_t) N_storage.silent_pubkey_export_enabled;
+    switches[SILENT_PUBKEY_EXPORT_ID].initState =
+        (nbgl_state_t) N_storage.silent_pubkey_export_enabled;
 #ifdef SCREEN_SIZE_WALLET
     switches[SILENT_PUBKEY_EXPORT_ID].text = "Silent public key export";
     switches[SILENT_PUBKEY_EXPORT_ID].subText = "Allow usual public keys to be exported silently";
@@ -126,10 +127,11 @@ void ui_menu_main(void) {
     switches[BLIND_SIGNING_ID].tuneId = TUNE_TAP_CASUAL;
 #endif
 
-    TRACE("Calling nbgl_useCaseHomeAndSettings(APPNAME), expert=%d, silentPubkey=%d, blindSigning=%d",
-          N_storage.expert_mode_enabled,
-          N_storage.silent_pubkey_export_enabled,
-          N_storage.blind_signing_enabled);
+    TRACE(
+        "Calling nbgl_useCaseHomeAndSettings(APPNAME), expert=%d, silentPubkey=%d, blindSigning=%d",
+        N_storage.expert_mode_enabled,
+        N_storage.silent_pubkey_export_enabled,
+        N_storage.blind_signing_enabled);
     nbgl_useCaseHomeAndSettings(APPNAME,
                                 &ICON_APP_HOME,
                                 NULL,

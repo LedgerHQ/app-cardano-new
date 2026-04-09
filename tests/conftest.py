@@ -14,7 +14,7 @@ TEST_CLIENT_CONSTANTS_PATH = (
 
 
 @pytest.hookimpl(tryfirst=True)
-def pytest_collection_modifyitems(session, config, items):
+def pytest_collection_modifyitems(session, config, items):  # pylint: disable=unused-argument
     """Run `test_client_constants` modules before any other tests."""
     constants_items = []
     remaining_items = []

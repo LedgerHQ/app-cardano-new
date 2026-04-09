@@ -49,64 +49,104 @@
 // ALONZO_CATALYST Era Tests
 // ======================================================================
 
-static void test_sign_tx_with_catalyst_registration_metadata_with_base_address_expert_off(void **state) {
+static void test_sign_tx_with_catalyst_registration_metadata_with_base_address_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_BASE_ADDRESS, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_BASE_ADDRESS,
+        false);
 }
 
-static void test_sign_tx_with_catalyst_registration_metadata_with_base_address_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_catalyst_registration_metadata_with_base_address_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_BASE_ADDRESS, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_BASE_ADDRESS,
+        false);
 }
 
-static void test_sign_tx_with_catalyst_registration_metadata_with_base_address_reject_aux_expert_off(void **state) {
+static void
+test_sign_tx_with_catalyst_registration_metadata_with_base_address_reject_aux_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_BASE_ADDRESS, false);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_BASE_ADDRESS,
+        false);
 }
 
-static void test_sign_tx_with_catalyst_registration_metadata_with_base_address_expert_on(void **state) {
+static void test_sign_tx_with_catalyst_registration_metadata_with_base_address_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_BASE_ADDRESS, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_BASE_ADDRESS,
+        true);
 }
 
-static void test_sign_tx_with_catalyst_registration_metadata_with_base_address_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_catalyst_registration_metadata_with_base_address_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_BASE_ADDRESS, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_BASE_ADDRESS,
+        true);
 }
 
-static void test_sign_tx_with_catalyst_registration_metadata_with_base_address_reject_aux_expert_on(void **state) {
+static void test_sign_tx_with_catalyst_registration_metadata_with_base_address_reject_aux_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_BASE_ADDRESS, true);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_BASE_ADDRESS,
+        true);
 }
 
-static void test_sign_tx_with_catalyst_registration_metadata_with_stake_address_expert_off(void **state) {
+static void test_sign_tx_with_catalyst_registration_metadata_with_stake_address_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_STAKE_ADDRESS, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_STAKE_ADDRESS,
+        false);
 }
 
-static void test_sign_tx_with_catalyst_registration_metadata_with_stake_address_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_catalyst_registration_metadata_with_stake_address_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_STAKE_ADDRESS, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_STAKE_ADDRESS,
+        false);
 }
 
-static void test_sign_tx_with_catalyst_registration_metadata_with_stake_address_reject_aux_expert_off(void **state) {
+static void
+test_sign_tx_with_catalyst_registration_metadata_with_stake_address_reject_aux_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_STAKE_ADDRESS, false);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_STAKE_ADDRESS,
+        false);
 }
 
-static void test_sign_tx_with_catalyst_registration_metadata_with_stake_address_expert_on(void **state) {
+static void test_sign_tx_with_catalyst_registration_metadata_with_stake_address_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_STAKE_ADDRESS, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_STAKE_ADDRESS,
+        true);
 }
 
-static void test_sign_tx_with_catalyst_registration_metadata_with_stake_address_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_catalyst_registration_metadata_with_stake_address_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_STAKE_ADDRESS, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_STAKE_ADDRESS,
+        true);
 }
 
-static void test_sign_tx_with_catalyst_registration_metadata_with_stake_address_reject_aux_expert_on(void **state) {
+static void
+test_sign_tx_with_catalyst_registration_metadata_with_stake_address_reject_aux_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_aux_with_expert_mode(&FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_STAKE_ADDRESS, true);
+    run_fixture_reject_aux_with_expert_mode(
+        &FIXTURE_ALONZO_CATALYST_SIGN_TX_WITH_CATALYST_REGISTRATION_METADATA_WITH_STAKE_ADDRESS,
+        true);
 }
 
 // ======================================================================
@@ -115,18 +155,34 @@ static void test_sign_tx_with_catalyst_registration_metadata_with_stake_address_
 
 int main(void) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_sign_tx_with_catalyst_registration_metadata_with_base_address_expert_off),
-        cmocka_unit_test(test_sign_tx_with_catalyst_registration_metadata_with_base_address_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_catalyst_registration_metadata_with_base_address_reject_aux_expert_off),
-        cmocka_unit_test(test_sign_tx_with_catalyst_registration_metadata_with_base_address_expert_on),
-        cmocka_unit_test(test_sign_tx_with_catalyst_registration_metadata_with_base_address_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_catalyst_registration_metadata_with_base_address_reject_aux_expert_on),
-        cmocka_unit_test(test_sign_tx_with_catalyst_registration_metadata_with_stake_address_expert_off),
-        cmocka_unit_test(test_sign_tx_with_catalyst_registration_metadata_with_stake_address_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_catalyst_registration_metadata_with_stake_address_reject_aux_expert_off),
-        cmocka_unit_test(test_sign_tx_with_catalyst_registration_metadata_with_stake_address_expert_on),
-        cmocka_unit_test(test_sign_tx_with_catalyst_registration_metadata_with_stake_address_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_catalyst_registration_metadata_with_stake_address_reject_aux_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_catalyst_registration_metadata_with_base_address_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_catalyst_registration_metadata_with_base_address_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_catalyst_registration_metadata_with_base_address_reject_aux_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_catalyst_registration_metadata_with_base_address_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_catalyst_registration_metadata_with_base_address_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_catalyst_registration_metadata_with_base_address_reject_aux_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_catalyst_registration_metadata_with_stake_address_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_catalyst_registration_metadata_with_stake_address_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_catalyst_registration_metadata_with_stake_address_reject_aux_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_catalyst_registration_metadata_with_stake_address_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_catalyst_registration_metadata_with_stake_address_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_catalyst_registration_metadata_with_stake_address_reject_aux_expert_on),
     };
-    return _cmocka_run_group_tests("test_sign_tx_alonzo_catalyst", tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);
+    return _cmocka_run_group_tests("test_sign_tx_alonzo_catalyst",
+                                   tests,
+                                   ARRAY_LEN(tests),
+                                   NULL,
+                                   assert_no_pending_apdu_response);
 }

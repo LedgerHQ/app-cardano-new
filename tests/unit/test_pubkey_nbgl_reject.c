@@ -137,55 +137,63 @@ static void test_pubkey_review_title_matrix(void **state) {
     } test_cases[] = {
         {
             .name = "usual public key",
-            .path = {
-                .length = 3,
-                .path = {
-                    1852 + HARDENED_BIP32,
-                    ADA_COIN_TYPE + HARDENED_BIP32,
-                    0 + HARDENED_BIP32,
+            .path =
+                {
+                    .length = 3,
+                    .path =
+                        {
+                            1852 + HARDENED_BIP32,
+                            ADA_COIN_TYPE + HARDENED_BIP32,
+                            0 + HARDENED_BIP32,
+                        },
                 },
-            },
             .warnings = 0,
             .expected_title = "Export Public key",
         },
         {
             .name = "unusual public key",
-            .path = {
-                .length = 3,
-                .path = {
-                    1852 + HARDENED_BIP32,
-                    ADA_COIN_TYPE + HARDENED_BIP32,
-                    101 + HARDENED_BIP32,
+            .path =
+                {
+                    .length = 3,
+                    .path =
+                        {
+                            1852 + HARDENED_BIP32,
+                            ADA_COIN_TYPE + HARDENED_BIP32,
+                            101 + HARDENED_BIP32,
+                        },
                 },
-            },
             .warnings = ((warning_bits_t) 1 << WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH),
             .expected_title = "Export UNUSUAL Public key",
         },
         {
             .name = "usual cold public key",
-            .path = {
-                .length = 4,
-                .path = {
-                    1853 + HARDENED_BIP32,
-                    ADA_COIN_TYPE + HARDENED_BIP32,
-                    0 + HARDENED_BIP32,
-                    0 + HARDENED_BIP32,
+            .path =
+                {
+                    .length = 4,
+                    .path =
+                        {
+                            1853 + HARDENED_BIP32,
+                            ADA_COIN_TYPE + HARDENED_BIP32,
+                            0 + HARDENED_BIP32,
+                            0 + HARDENED_BIP32,
+                        },
                 },
-            },
             .warnings = 0,
             .expected_title = "Export Cold public key",
         },
         {
             .name = "unusual cold public key",
-            .path = {
-                .length = 4,
-                .path = {
-                    1853 + HARDENED_BIP32,
-                    ADA_COIN_TYPE + HARDENED_BIP32,
-                    0 + HARDENED_BIP32,
-                    101 + HARDENED_BIP32,
+            .path =
+                {
+                    .length = 4,
+                    .path =
+                        {
+                            1853 + HARDENED_BIP32,
+                            ADA_COIN_TYPE + HARDENED_BIP32,
+                            0 + HARDENED_BIP32,
+                            101 + HARDENED_BIP32,
+                        },
                 },
-            },
             .warnings = ((warning_bits_t) 1 << WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH),
             .expected_title = "Export UNUSUAL Cold public key",
         },

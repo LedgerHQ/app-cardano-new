@@ -2,7 +2,7 @@
 
 # build fuzzers
 
-pushd fuzzing
+pushd tests/fuzzing
 rm -rf build
 cmake -DBOLOS_SDK=../BOLOS_SDK -DTARGET=stax -Bbuild -H.
 make -C build

@@ -19,7 +19,7 @@
 #include "securityWarnings.h"
 
 static inline security_policy_t combine_security_policies(security_policy_t a,
-                                                  security_policy_t b) {
+                                                          security_policy_t b) {
     if (a == POLICY_DENY || b == POLICY_DENY) {
         return POLICY_DENY;
     }
@@ -51,8 +51,7 @@ bool shouldShowNetworkDetails(const tx_params_t* txParams);
 
 security_policy_t policyForDerivePrivateKey(const bip44_path_t* path);
 
-security_policy_t policyForGetExtendedPublicKey(const bip44_path_t* path,
-                                                warning_bits_t* w);
+security_policy_t policyForGetExtendedPublicKey(const bip44_path_t* path, warning_bits_t* w);
 
 security_policy_t policyForReturnDeriveAddress(const address_params_t* address_params,
                                                warning_bits_t* w);
@@ -61,23 +60,20 @@ security_policy_t policyForDeriveNativeScriptHashDevicePubkey(const bip44_path_t
 security_policy_t policyForShowDeriveAddress(const address_params_t* address_params,
                                              warning_bits_t* w);
 
-security_policy_t policyForSignTxInit(const tx_params_t* txParams,
-                                      warning_bits_t* w);
+security_policy_t policyForSignTxInit(const tx_params_t* txParams, warning_bits_t* w);
 
 security_policy_t policyForSignTxInput(sign_tx_signingmode_t txSigningMode,
                                        const tx_input_t* input MARK_UNUSED,
                                        warning_bits_t* w);
 
 security_policy_t policyForSignTxOutput(const tx_output_description_t* output,
-                                               sign_tx_signingmode_t txSigningMode,
-                                               const uint8_t networkId,
-                                               const uint32_t protocolMagic,
-                                               warning_bits_t* w);
-security_policy_t policyForSignTxOutputDatumHash(security_policy_t outputPolicy,
-                                                 warning_bits_t* w);
+                                        sign_tx_signingmode_t txSigningMode,
+                                        const uint8_t networkId,
+                                        const uint32_t protocolMagic,
+                                        warning_bits_t* w);
+security_policy_t policyForSignTxOutputDatumHash(security_policy_t outputPolicy, warning_bits_t* w);
 
-security_policy_t policyForSignTxOutputRefScript(security_policy_t outputPolicy,
-                                                 warning_bits_t* w);
+security_policy_t policyForSignTxOutputRefScript(security_policy_t outputPolicy, warning_bits_t* w);
 security_policy_t policyForSignTxCollateralOutputAddress(const tx_output_description_t* output,
                                                          sign_tx_signingmode_t txSigningMode,
                                                          const uint8_t networkId,
@@ -94,8 +90,7 @@ security_policy_t policyForSignTxCollateralOutputTokens(security_policy_t output
 security_policy_t policyForSignTxFee(sign_tx_signingmode_t txSigningMode,
                                      uint64_t fee,
                                      warning_bits_t* w);
-security_policy_t policyForSignTxTtl(uint64_t ttl,
-                                     warning_bits_t* w);
+security_policy_t policyForSignTxTtl(uint64_t ttl, warning_bits_t* w);
 security_policy_t policyForSignTxCertificateStaking(sign_tx_signingmode_t txSigningMode,
                                                     const certificate_type_t certificateType,
                                                     const ext_credential_t* stakeCredential,
@@ -161,17 +156,14 @@ security_policy_t policyForSignTxStakePoolRegistrationRelay(
     const sign_tx_signingmode_t txSigningMode,
     const pool_relay_t* relay,
     warning_bits_t* w);
-security_policy_t policyForSignTxStakePoolRegistrationMetadata(
-    const pool_metadata_t* metadata,
-    warning_bits_t* w);
+security_policy_t policyForSignTxStakePoolRegistrationMetadata(const pool_metadata_t* metadata,
+                                                               warning_bits_t* w);
 security_policy_t policyForSignTxStakePoolRegistrationNoMetadata(warning_bits_t* w);
-security_policy_t policyForSignTxAnchor(const anchor_t* anchor,
-                                        warning_bits_t* w);
+security_policy_t policyForSignTxAnchor(const anchor_t* anchor, warning_bits_t* w);
 security_policy_t policyForSignTxWithdrawal(sign_tx_signingmode_t txSigningMode,
                                             const ext_credential_t* stakeCredential,
                                             warning_bits_t* w);
-security_policy_t policyForSignTxAuxData(aux_data_type_t auxDataType,
-                                         warning_bits_t* w);
+security_policy_t policyForSignTxAuxData(aux_data_type_t auxDataType, warning_bits_t* w);
 
 security_policy_t policyForSignTxValidityIntervalStart(warning_bits_t* w);
 security_policy_t policyForSignTxMintInit(const sign_tx_signingmode_t txSigningMode,
@@ -228,15 +220,13 @@ security_policy_t policyForCVoteRegistrationPaymentDestination(
 security_policy_t policyForCVoteRegistrationNonce(warning_bits_t* w);
 security_policy_t policyForCVoteRegistrationVotingPurpose(warning_bits_t* w);
 
-security_policy_t policyForSignOpCert(const bip44_path_t* poolColdKeyPathSpec,
-                                      warning_bits_t* w);
+security_policy_t policyForSignOpCert(const bip44_path_t* poolColdKeyPathSpec, warning_bits_t* w);
 
 size_t warning_bits_to_definitions(warning_bits_t warnings,
                                    const warning_definition_t** definitions,
                                    size_t max_definitions);
 
-security_policy_t policyForSignCVoteWitness(const bip44_path_t* path,
-                                            warning_bits_t* w);
+security_policy_t policyForSignCVoteWitness(const bip44_path_t* path, warning_bits_t* w);
 
 security_policy_t policyForSignMsg(const bip44_path_t* witnessPath,
                                    cip8_address_field_type_t addressFieldType,

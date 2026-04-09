@@ -67,9 +67,10 @@ static void test_nbgl_reject_on_cvote_confirm_resets_context(void **state) {
     (void) state;
     reset_test_context();
 
-    // INIT payload: [remaining bytes=34] || [votePlanId(32)] || [proposalIndex(1)] || [payloadTag(1)]
+    // INIT payload: [remaining bytes=34] || [votePlanId(32)] || [proposalIndex(1)] ||
+    // [payloadTag(1)]
     uint8_t init_payload[4 + 34] = {0};
-    init_payload[3] = 34;  // big-endian u32
+    init_payload[3] = 34;      // big-endian u32
     init_payload[4 + 32] = 7;  // proposal index
     init_payload[4 + 33] = 1;  // payload type tag
     run_sign_cvote_apdu(init_payload, sizeof(init_payload), P1_CVOTE_INIT);

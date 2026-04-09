@@ -289,8 +289,7 @@ def format_bytes_as_c_array(
 
     if return_as_list:
         return lines
-    else:
-        return "\n".join(lines)
+    return "\n".join(lines)
 
 
 ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"

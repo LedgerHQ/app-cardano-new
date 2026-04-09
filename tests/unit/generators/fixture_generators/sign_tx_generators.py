@@ -64,7 +64,7 @@ def _derive_witness_signature(witness_path: str, message: bytes) -> bytes:
     except ImportError as exc:
         raise RuntimeError(
             f"Missing dependency for sign-tx signature derivation: {exc}"
-        )
+        ) from exc
 
     mnemonic = resolve_mnemonic()
     seed = Bip39SeedGenerator(mnemonic).Generate()
@@ -300,7 +300,7 @@ def _generate_fixtures_for_era(
 
         tx = test_case.tx
         builder = CommandBuilder()
-        raw_tx_bytes = builder._serialize_transaction_unpacked_raw(tx)
+        raw_tx_bytes = builder.serialize_transaction_unpacked_raw(tx)
 
         unit_test_expect = getattr(test_case, "unit_test_expect", None)
         if unit_test_expect is None:
