@@ -6,6 +6,8 @@ FUZZING_BUILD_DIR := $(FUZZING_DIR)/build
 MAKEFLAGS += --no-print-directory
 TARGET ?= stax
 JOBS ?= 8
+PYLINT_JOBS ?= $(JOBS)
+CTEST_JOBS ?= $(JOBS)
 FUZZ_SECONDS ?= 1
 
 ifneq ($(wildcard $(ROOT_DIR)/tests/venv/bin/python),)
@@ -25,15 +27,15 @@ help:
 
 python-checks:
 	cd $(ROOT_DIR) && ruff format --check . --exclude tests/venv
-	cd $(ROOT_DIR) && pylint --rcfile=.pylintrc tests/application_client tests/standalone tests/swap
+	cd $(ROOT_DIR) && pylint -j $(PYLINT_JOBS) --rcfile=.pylintrc tests/application_client tests/standalone tests/swap
 	cd $(ROOT_DIR) && mypy --config-file mypy.ini
 
 clang-format-src-check:
 	@cd $(ROOT_DIR) && \
 	if command -v clang-format-14 >/dev/null 2>&1; then \
-		SRC_FILES="$$(find src -type f \( -name '*.c' -o -name '*.h' \) | sort)"; \
-		if [ -n "$$SRC_FILES" ]; then \
-			clang-format-14 --dry-run --Werror $$SRC_FILES; \
+		SRC_FILE_SAMPLE="$$(find src -type f \( -name '*.c' -o -name '*.h' \) -print -quit)"; \
+		if [ -n "$$SRC_FILE_SAMPLE" ]; then \
+			find src -type f \( -name '*.c' -o -name '*.h' \) -print0 | sort -z | xargs -0 -n 32 -P $(JOBS) clang-format-14 --dry-run --Werror; \
 		fi; \
 	else \
 		echo "WARNING: clang-format-14 not found; skipping src C formatting check"; \
@@ -42,9 +44,9 @@ clang-format-src-check:
 clang-format-generated-check:
 	@cd $(ROOT_DIR) && \
 	if command -v clang-format-14 >/dev/null 2>&1; then \
-		GENERATED_FILES="$$(find tests/unit/generated tests/unit/mock_crypto -type f \( -name '*.c' -o -name '*.h' \) | sort)"; \
-		if [ -n "$$GENERATED_FILES" ]; then \
-			clang-format-14 --dry-run --Werror $$GENERATED_FILES; \
+		GENERATED_FILE_SAMPLE="$$(find tests/unit/generated tests/unit/mock_crypto -type f \( -name '*.c' -o -name '*.h' \) -print -quit)"; \
+		if [ -n "$$GENERATED_FILE_SAMPLE" ]; then \
+			find tests/unit/generated tests/unit/mock_crypto -type f \( -name '*.c' -o -name '*.h' \) -print0 | sort -z | xargs -0 -n 32 -P $(JOBS) clang-format-14 --dry-run --Werror; \
 		fi; \
 	else \
 		echo "WARNING: clang-format-14 not found; skipping generated C formatting check"; \
@@ -62,7 +64,7 @@ unit-build:
 	cmake --build $(UNIT_BUILD_DIR) -j$(JOBS)
 
 unit-run:
-	CTEST_OUTPUT_ON_FAILURE=1 ctest --test-dir $(UNIT_BUILD_DIR) --output-on-failure
+	CTEST_OUTPUT_ON_FAILURE=1 ctest --test-dir $(UNIT_BUILD_DIR) --output-on-failure --parallel $(CTEST_JOBS)
 
 fuzzing:
 	@test -n "$(BOLOS_SDK)" || (echo "BOLOS_SDK must be set for fuzzing builds" && exit 1)
