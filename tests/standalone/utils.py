@@ -44,7 +44,6 @@ NANO_REVIEW_CONFIRM_INSTRUCTIONS = [NavInsID.LEFT_CLICK, NavInsID.BOTH_CLICK]
 
 _REJECT_TEXT = r"^Reject operation$"
 _WARNING_PATH = "warning"
-_WARNING_CLICKS = 3
 
 
 class NavContext:
@@ -330,11 +329,14 @@ def _review_approve_with_warning(
         nano_review_instructions, [NavInsID.BOTH_CLICK]
     )
 
-    # Nano NBGL warning/review flows are fragile under screenshot comparison and
-    # can time out while waiting for intermediate screen changes. Drive them
-    # without golden comparisons regardless of do_comparison.
-    ctx.navigator.navigate(
-        [NavInsID.RIGHT_CLICK] * _WARNING_CLICKS,
+    # Intro page + one page per warning bar. The last right-click exits the
+    # warning flow and enters tx review, so no screen-change wait afterward.
+    warning_page_clicks = len(warnings) + 1
+    _navigate_maybe_compare(
+        ctx,
+        f"{test_name}/{_WARNING_PATH}",
+        [NavInsID.RIGHT_CLICK] * warning_page_clicks,
+        do_comparison,
         screen_change_after_last_instruction=False,
     )
     ctx.navigator.navigate_until_text(
@@ -401,28 +403,17 @@ def review_approve(
                 )
         return
 
-    if target_text is not None:
-        _navigate_until_text_optional_compare(
-            ctx,
-            test_name=test_name,
-            navigate_instruction=NavInsID.RIGHT_CLICK,
-            validation_instructions=_nano_instructions(
-                nano_review_instructions, NANO_CHOICE_CONFIRM_INSTRUCTIONS
-            ),
-            text=target_text,
-            do_comparison=do_comparison,
-            screen_change_before_first_instruction=screen_change_before_first_instruction,
-        )
-        return
-
     _navigate_until_text_optional_compare(
         ctx,
         test_name=test_name,
         navigate_instruction=NavInsID.RIGHT_CLICK,
         validation_instructions=_nano_instructions(
-            nano_review_instructions, NANO_REVIEW_CONFIRM_INSTRUCTIONS
+            nano_review_instructions,
+            NANO_CHOICE_CONFIRM_INSTRUCTIONS
+            if target_text is not None
+            else NANO_REVIEW_CONFIRM_INSTRUCTIONS,
         ),
-        text=_REJECT_TEXT,
+        text=target_text if target_text is not None else _REJECT_TEXT,
         do_comparison=do_comparison,
         screen_change_before_first_instruction=screen_change_before_first_instruction,
     )

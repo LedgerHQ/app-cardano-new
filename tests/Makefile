@@ -26,7 +26,7 @@ help:
 	@echo "  make -C tests fuzzing       Build fuzzing harnesses and run each for $(FUZZ_SECONDS) seconds"
 
 python-checks:
-	cd $(ROOT_DIR) && ruff format --check . --exclude tests/venv
+	cd $(ROOT_DIR) && ruff format . --exclude tests/venv --check
 	cd $(ROOT_DIR) && pylint -j $(PYLINT_JOBS) --rcfile=.pylintrc tests/application_client tests/standalone tests/swap
 	cd $(ROOT_DIR) && mypy --config-file mypy.ini
 

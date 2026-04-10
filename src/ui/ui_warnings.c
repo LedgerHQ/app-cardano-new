@@ -11,19 +11,20 @@
 #include "glyphs.h"
 
 static nbgl_warning_t *g_warning = NULL;
-static char *g_warning_summary_text = NULL;
 static char *g_warning_overflow_text = NULL;
 
 static const char SECURITY_WARNING_TITLE[] = "Security warning";
-
-#ifdef SCREEN_SIZE_WALLET
 static const char SECURITY_WARNING_REVIEW_TEXT[] = "Review all warnings before proceeding.";
 static const char SEE_MORE_WARNINGS_TITLE[] = "See more warnings";
+
+#ifdef SCREEN_SIZE_WALLET
 #define MAX_WARNING_BARS_PER_PAGE 3
+#else
+#define MAX_WARNING_BARS_PER_PAGE \
+    WARNING_BIT_COUNT  // Set to Max number of warnings. Will be displayed one per page
 #endif
 
 static void free_warning_dynamic_strings(void) {
-    APP_MEM_FREE_AND_NULL((void **) &g_warning_summary_text);
     APP_MEM_FREE_AND_NULL((void **) &g_warning_overflow_text);
 }
 
@@ -97,7 +98,6 @@ bool build_warning_summary_text(const warning_definition_t *const *warning_defs,
     return true;
 }
 
-#ifdef SCREEN_SIZE_WALLET
 static bool build_wallet_warning_details_page(const warning_definition_t *const *warning_defs,
                                               size_t warning_count,
                                               nbgl_warningDetails_t *page) {
@@ -207,7 +207,6 @@ static void free_wallet_warning_details_page(const nbgl_warningDetails_t *page) 
     }
     APP_MEM_FREE((void *) page);
 }
-#endif
 
 ui_status_t ui_build_warnings(warning_bits_t warnings) {
     LEDGER_ASSERT(g_warning == NULL, "Warnings already built");
@@ -235,7 +234,6 @@ ui_status_t ui_build_warnings(warning_bits_t warnings) {
         return UI_STATUS_OUT_OF_MEMORY;  // LCOV_EXCL_LINE
     }
 
-#ifdef SCREEN_SIZE_WALLET
     nbgl_warningDetails_t *intro = NULL;
 
     if (!allocate_zeroed((void **) &intro, sizeof(nbgl_warningDetails_t)) ||
@@ -250,36 +248,9 @@ ui_status_t ui_build_warnings(warning_bits_t warnings) {
     info->icon = &WARNING_ICON;
     info->title = (const char *) PIC(SECURITY_WARNING_TITLE);
     info->description = (const char *) PIC(SECURITY_WARNING_REVIEW_TEXT);
-
     g_warning->info = info;
     g_warning->introDetails = intro;
     g_warning->introTopRightIcon = &WARNING_ICON;
-#else
-    nbgl_warningDetails_t *intro = NULL;
-
-    if (!allocate_zeroed((void **) &intro, sizeof(nbgl_warningDetails_t)) ||
-        !build_warning_summary_text(warning_defs,
-                                    0,
-                                    warning_count,
-                                    false,
-                                    &g_warning_summary_text)) {
-        ui_free_warnings();              // LCOV_EXCL_LINE
-        return UI_STATUS_OUT_OF_MEMORY;  // LCOV_EXCL_LINE
-    }
-
-    info->icon = &WARNING_ICON;
-    info->title = (const char *) PIC(SECURITY_WARNING_TITLE);
-    info->description = NULL;
-
-    intro->title = (const char *) PIC(SECURITY_WARNING_TITLE);
-    intro->type = CENTERED_INFO_WARNING;
-    intro->centeredInfo.icon = &WARNING_ICON;
-    intro->centeredInfo.title = g_warning_summary_text;
-    intro->centeredInfo.description = NULL;
-
-    g_warning->info = info;
-    g_warning->introDetails = intro;
-#endif
 
     return UI_STATUS_SUCCESS;
 }
@@ -296,11 +267,9 @@ void ui_free_warnings(void) {
     }
 
     if (g_warning->introDetails != NULL) {
-#ifdef SCREEN_SIZE_WALLET
         if (g_warning->introDetails->type == BAR_LIST_WARNING) {
             free_wallet_warning_details_page(g_warning->introDetails);
         } else
-#endif
             APP_MEM_FREE((void *) g_warning->introDetails);
     }
     if (g_warning->reviewDetails != NULL) {
