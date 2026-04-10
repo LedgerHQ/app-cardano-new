@@ -14,11 +14,12 @@ else
 PYTHON ?= python3
 endif
 
-.PHONY: help python-checks tests-unit generated-fixture-drift unit-build unit-run fuzzing
+.PHONY: help python-checks clang-format-src-check clang-format-generated-check tests-unit generated-fixture-drift unit-build unit-run fuzzing
 
 help:
 	@echo "Available targets:"
 	@echo "  make -C tests python-checks Run Ruff format check, pylint, and mypy"
+	@echo "  make -C tests clang-format-src-check Check clang-format-14 on src/*.c and src/*.h"
 	@echo "  make -C tests tests-unit    Regenerate unit fixtures, check drift, build, and run unit tests"
 	@echo "  make -C tests fuzzing       Build fuzzing harnesses and run each for $(FUZZ_SECONDS) seconds"
 
@@ -27,10 +28,33 @@ python-checks:
 	cd $(ROOT_DIR) && pylint --rcfile=.pylintrc tests/application_client tests/standalone tests/swap
 	cd $(ROOT_DIR) && mypy --config-file mypy.ini
 
+clang-format-src-check:
+	@cd $(ROOT_DIR) && \
+	if command -v clang-format-14 >/dev/null 2>&1; then \
+		SRC_FILES="$$(find src -type f \( -name '*.c' -o -name '*.h' \) | sort)"; \
+		if [ -n "$$SRC_FILES" ]; then \
+			clang-format-14 --dry-run --Werror $$SRC_FILES; \
+		fi; \
+	else \
+		echo "WARNING: clang-format-14 not found; skipping src C formatting check"; \
+	fi
+
+clang-format-generated-check:
+	@cd $(ROOT_DIR) && \
+	if command -v clang-format-14 >/dev/null 2>&1; then \
+		GENERATED_FILES="$$(find tests/unit/generated tests/unit/mock_crypto -type f \( -name '*.c' -o -name '*.h' \) | sort)"; \
+		if [ -n "$$GENERATED_FILES" ]; then \
+			clang-format-14 --dry-run --Werror $$GENERATED_FILES; \
+		fi; \
+	else \
+		echo "WARNING: clang-format-14 not found; skipping generated C formatting check"; \
+	fi
+
 tests-unit: generated-fixture-drift unit-build unit-run
 
 generated-fixture-drift:
 	cd $(ROOT_DIR) && PYTHONPATH=. $(PYTHON) -m tests.unit.generators.generate_unit_tests_from_ragger all
+	$(MAKE) clang-format-generated-check
 	cd $(ROOT_DIR) && git diff --exit-code -- tests/unit/generated tests/unit/mock_crypto/crypto_mock_data.h
 
 unit-build:

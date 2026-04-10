@@ -18,7 +18,9 @@ import sys
 
 from tests.unit.generators.common import (
     extract_brace_delimited_entries,
+    extract_static_uint8_array_bodies,
     format_bytes_as_c_array,
+    remove_static_uint8_arrays_by_name,
     resolve_mnemonic,
 )
 from tests.unit.generators.paths import UNIT_TESTS_DIR
@@ -294,13 +296,11 @@ def regenerate_mock_data_with_options(*, verbose: bool, report_summary: bool) ->
     if verbose:
         print(f"Regenerated {len(regenerated_paths)} mock path entries.")
 
-    message_pattern = r"static const uint8_t (\w+)\[\] = \{([^}]+)\};"
     messages: dict[str, bytes] = {}
-    for match in re.finditer(message_pattern, content, flags=re.DOTALL):
-        name = match.group(1)
+    for name, array_body in extract_static_uint8_array_bodies(content).items():
         if _GENERATED_SIGN_TX_MESSAGE_NAME_PATTERN.fullmatch(name):
             continue
-        hex_values = re.findall(r"0x[0-9a-fA-F]{2}", match.group(2))
+        hex_values = re.findall(r"0x[0-9a-fA-F]{2}", array_body)
         if not hex_values:
             continue
         messages[name] = bytes(int(value, 16) for value in hex_values)
@@ -438,11 +438,12 @@ def regenerate_mock_data_with_options(*, verbose: bool, report_summary: bool) ->
     new_signature_body = "\n".join(regenerated_signatures).rstrip()
     prefix_before_signatures = content[: signature_match.start(0)]
     if generated_sign_tx_hashes:
-        prefix_before_signatures = re.sub(
-            r"\n*static const uint8_t MOCK_SIGN_TX_TX_HASH_[A-F0-9]{64}\[\] = \{.*?\n\};\n+",
-            "\n",
+        prefix_before_signatures = remove_static_uint8_arrays_by_name(
             prefix_before_signatures,
-            flags=re.DOTALL,
+            {
+                f"MOCK_SIGN_TX_TX_HASH_{expected_hash_bytes.hex().upper()}"
+                for expected_hash_bytes in generated_sign_tx_hashes
+            },
         )
     prefix_before_signatures = prefix_before_signatures.rstrip()
     supplemental_message_body = "\n\n".join(supplemental_message_arrays).rstrip()

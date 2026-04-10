@@ -13,7 +13,13 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
+from tests.unit.generators.common import (
+    extract_brace_delimited_entries,
+    extract_static_uint8_array_bodies,
+)
 from tests.unit.generators.mock_data_utils import (
+    _ENTRY_START_PATTERN,
+    _MOCK_SIGNATURES_PATTERN,
     _GENERATED_SIGN_TX_MESSAGE_NAME_PATTERN,
     collect_required_sign_tx_signature_keys,
 )
@@ -22,14 +28,6 @@ from tests.unit.generators.paths import UNIT_TESTS_DIR
 
 DEFAULT_RUNTIME_USAGE_CTEST_REGEX = (
     r"test_(message_signing|sign_msg|sign_tx|opcert|cvote)"
-)
-
-SIGNATURE_ENTRY_PATTERN = re.compile(
-    r'/\*\s*Path\s*"(?P<path>[^"]+)"\s+message\s+'
-    r"(?P<message_name>[A-Z0-9_]+)\s+"
-    r'\(hex\s+"(?P<hash_hex>[a-f0-9]+)"\)\s*\*/'
-    r".*?\.path\s*=\s*\{\s*(?P<path_words>[^}]+)\}",
-    flags=re.DOTALL,
 )
 
 
@@ -54,15 +52,44 @@ def _parse_path_words(path_words_str: str) -> tuple[int, ...]:
 def _load_signature_entries() -> list[SignatureEntry]:
     mock_data_header = UNIT_TESTS_DIR / "mock_crypto" / "crypto_mock_data.h"
     content = mock_data_header.read_text(encoding="utf-8")
+    message_bodies = extract_static_uint8_array_bodies(content)
+    mock_signatures_match = _MOCK_SIGNATURES_PATTERN.search(content)
+    if mock_signatures_match is None:
+        raise ValueError("MOCK_SIGNATURES array not found in mock crypto data header")
+
+    signature_entries_body = mock_signatures_match.group(2)
+    entry_texts = extract_brace_delimited_entries(
+        signature_entries_body, _ENTRY_START_PATTERN
+    )
 
     entries: list[SignatureEntry] = []
-    for entry_index, match in enumerate(SIGNATURE_ENTRY_PATTERN.finditer(content)):
+    for entry_index, entry_text in enumerate(entry_texts):
+        path_words_match = re.search(
+            r"\.path\s*=\s*\{\s*(?P<path_words>[^}]+)\}", entry_text
+        )
+        message_name_match = re.search(
+            r"\.message\s*=\s*(?P<message_name>[A-Z0-9_]+)", entry_text
+        )
+        if path_words_match is None or message_name_match is None:
+            raise ValueError(
+                f"Failed to parse MOCK_SIGNATURES entry at index {entry_index}"
+            )
+        message_name = message_name_match.group("message_name")
+        message_body = message_bodies.get(message_name)
+        if message_body is None:
+            raise ValueError(
+                f"Failed to resolve message buffer {message_name} "
+                f"for MOCK_SIGNATURES entry at index {entry_index}"
+            )
+        hash_bytes = bytes.fromhex(
+            "".join(re.findall(r"0x([0-9a-fA-F]{2})", message_body))
+        )
         entries.append(
             SignatureEntry(
                 index=entry_index,
-                message_name=match.group("message_name"),
-                path_words=_parse_path_words(match.group("path_words")),
-                hash_bytes=bytes.fromhex(match.group("hash_hex")),
+                message_name=message_name,
+                path_words=_parse_path_words(path_words_match.group("path_words")),
+                hash_bytes=hash_bytes,
             )
         )
     return entries

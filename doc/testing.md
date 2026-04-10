@@ -94,6 +94,7 @@ Notes:
 - Regenerate unit-test fixtures when `tests/standalone/input_files/` or
   `tests/application_client/` changes via:
   `PYTHONPATH=. tests/venv/bin/python -m tests.unit.generators.generate_unit_tests_from_ragger all` from the repository root.
+- When `clang-format-14` is available, generated unit-test C/H files are normalized by the generator itself, and `make -C tests generated-fixture-drift` verifies that generated output still matches `clang-format-14`.
 - Happy-path unit fixtures must have explicit expected output values. Missing unit
   expected results are a hard error: generators must report them, and unit tests
   must not silently skip response verification for those fixtures.
@@ -104,8 +105,25 @@ Notes:
 - Run ragger and swap tests only when explicitly requested.
 - Convenience wrappers from the repository root:
   - `make -C tests python-checks` runs Ruff format check, pylint, and mypy.
-  - `make -C tests tests-unit` regenerates unit fixtures, checks drift, builds, and runs unit tests.
+  - `make -C tests clang-format-src-check` checks `clang-format-14` on `src/**/*.c` and `src/**/*.h`.
+  - `make -C tests tests-unit` regenerates unit fixtures, checks drift and generated C formatting, builds, and runs unit tests.
   - `make -C tests fuzzing` builds fuzzing harnesses and runs each for 1 second by default (override with `FUZZ_SECONDS=<n>`, requires `BOLOS_SDK`).
+
+### Git Hook
+
+To block commits when generated unit-test C/H files are not `clang-format-14` clean, use the repo-local pre-commit hook:
+
+```bash
+git config core.hooksPath .githooks
+chmod +x .githooks/pre-commit
+```
+
+The hook runs:
+- `make -C tests python-checks`
+- `make -C tests clang-format-src-check`
+- `make -C tests clang-format-generated-check`
+
+It fails the commit if `clang-format-14` is missing or if Python formatting / linting or C formatting checks do not pass.
 
 ## Coverage Exclusion Policy
 

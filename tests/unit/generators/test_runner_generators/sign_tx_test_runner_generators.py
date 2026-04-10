@@ -19,11 +19,12 @@ from tests.unit.generators.paths import GENERATED_SIGN_TX_DIR
 
 # Match fixture declarations like: static const tx_fixture_t FIXTURE_NAME = { ... };
 _FIXTURE_PATTERN = re.compile(
-    r"static const tx_fixture_t (FIXTURE_[A-Z0-9_]+)\s*=\s*\{(.*?)\};", re.S
+    r"static\s+const\s+tx_fixture_t\s+(FIXTURE_[A-Z0-9_]+)\s*=\s*\{(.*?)\};",
+    re.S,
 )
 
-# Match .name fields within fixture bodies
-_NAME_FIELD_PATTERN = re.compile(r'\.name\s*=\s*"([^"]+)"')
+# Match .name fields within fixture bodies, including concatenated C string literals
+_NAME_FIELD_PATTERN = re.compile(r'\.name\s*=\s*((?:"[^"]*"\s*)+)')
 AUX_INCLUDED_PATTERN = re.compile(r"\.include_aux_data_hash\s*=\s*(true|false)")
 AUX_TYPE_PATTERN = re.compile(r"\.aux_data_type\s*=\s*([A-Z0-9_]+|\d+)")
 BLIND_SIGNING_MODE_PATTERN = re.compile(
@@ -139,7 +140,8 @@ def _build_test_functions(
         for suffix, expert_flag in [("expert_off", "false"), ("expert_on", "true")]:
             function_name = f"{test_name}_{suffix}"
             functions.append(
-                f"static void {function_name}(void **state) {{\n"
+                "static void\n"
+                f"{function_name}(void **state) {{\n"
                 f"    (void) state;\n"
                 f"    run_fixture_with_expert_mode(&{fixture_name}, {expert_flag});\n"
                 f"}}"
@@ -148,7 +150,8 @@ def _build_test_functions(
 
             reject_tx_function_name = f"{test_name}_reject_tx_{suffix}"
             functions.append(
-                f"static void {reject_tx_function_name}(void **state) {{\n"
+                "static void\n"
+                f"{reject_tx_function_name}(void **state) {{\n"
                 f"    (void) state;\n"
                 f"    run_fixture_reject_tx_with_expert_mode(&{fixture_name}, {expert_flag});\n"
                 f"}}"
@@ -158,7 +161,8 @@ def _build_test_functions(
             if has_cvote_aux_data:
                 reject_aux_function_name = f"{test_name}_reject_aux_{suffix}"
                 functions.append(
-                    f"static void {reject_aux_function_name}(void **state) {{\n"
+                    "static void\n"
+                    f"{reject_aux_function_name}(void **state) {{\n"
                     f"    (void) state;\n"
                     f"    run_fixture_reject_aux_with_expert_mode(&{fixture_name}, {expert_flag});\n"
                     f"}}"
@@ -170,7 +174,8 @@ def _build_test_functions(
                     f"{test_name}_blind_signing_hash_only_{suffix}"
                 )
                 functions.append(
-                    f"static void {blind_signing_hash_only_function_name}(void **state) {{\n"
+                    "static void\n"
+                    f"{blind_signing_hash_only_function_name}(void **state) {{\n"
                     f"    (void) state;\n"
                     f"    run_fixture_blind_signing_hash_only_with_expert_mode("
                     f"&{fixture_name}, {expert_flag});\n"
@@ -181,8 +186,8 @@ def _build_test_functions(
 
 
 def _build_main_function(test_names: Sequence[str], test_c_file: str) -> str:
-    registrations = ",\n        ".join(
-        f"cmocka_unit_test({name})" for name in test_names
+    registrations = ",\n".join(
+        f"        cmocka_unit_test(\n            {name})" for name in test_names
     )
     return (
         "// ======================================================================\n"
@@ -190,10 +195,13 @@ def _build_main_function(test_names: Sequence[str], test_c_file: str) -> str:
         "// ======================================================================\n\n"
         "int main(void) {\n"
         "    const struct CMUnitTest tests[] = {\n"
-        f"        {registrations},\n"
+        f"{registrations},\n"
         "    };\n"
-        f'    return _cmocka_run_group_tests("{Path(test_c_file).stem}", '
-        "tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);\n"
+        f'    return _cmocka_run_group_tests(\n        "{Path(test_c_file).stem}",\n'
+        "        tests,\n"
+        "        ARRAY_LEN(tests),\n"
+        "        NULL,\n"
+        "        assert_no_pending_apdu_response);\n"
         "}\n"
     )
 
@@ -209,7 +217,7 @@ def _extract_fixtures_from_header(
         name_match = _NAME_FIELD_PATTERN.search(body)
         if not name_match:
             continue
-        display_name = name_match.group(1)
+        display_name = "".join(re.findall(r'"([^"]*)"', name_match.group(1)))
         fixtures.append(
             (
                 fixture_name,

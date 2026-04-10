@@ -59,7 +59,7 @@ def generate_cvote_fixtures() -> int:
         init_array_name = f"{base_name}_INIT_APDU"
         header_lines.extend(
             format_bytes_as_c_array(
-                init_payload, init_array_name, bytes_per_line=16, return_as_list=True
+                init_payload, init_array_name, bytes_per_line=8, return_as_list=True
             )
         )
         header_lines.append("")
@@ -74,7 +74,7 @@ def generate_cvote_fixtures() -> int:
                 format_bytes_as_c_array(
                     chunk_payload,
                     chunk_array_name,
-                    bytes_per_line=16,
+                    bytes_per_line=8,
                     return_as_list=True,
                 )
             )
@@ -87,8 +87,13 @@ def generate_cvote_fixtures() -> int:
                 f"static const cvote_chunk_t {chunks_struct_name}[] = {{"
             )
             for chunk_array_name in chunk_array_names:
-                header_lines.append(
-                    f"    {{ .data = {chunk_array_name}, .data_len = sizeof({chunk_array_name}) }},"
+                header_lines.extend(
+                    [
+                        "    {",
+                        f"        .data = {chunk_array_name},",
+                        f"        .data_len = sizeof({chunk_array_name}),",
+                        "    },",
+                    ]
                 )
             header_lines.append("};")
             header_lines.append("")
@@ -101,7 +106,7 @@ def generate_cvote_fixtures() -> int:
             format_bytes_as_c_array(
                 confirm_payload,
                 confirm_array_name,
-                bytes_per_line=16,
+                bytes_per_line=8,
                 return_as_list=True,
             )
         )
@@ -120,7 +125,7 @@ def generate_cvote_fixtures() -> int:
                 format_bytes_as_c_array(
                     expected_votecast_hash_bytes,
                     expected_votecast_hash_array_name,
-                    bytes_per_line=16,
+                    bytes_per_line=8,
                     return_as_list=True,
                 )
             )
@@ -137,7 +142,7 @@ def generate_cvote_fixtures() -> int:
                 format_bytes_as_c_array(
                     expected_witness_signature_bytes,
                     expected_witness_signature_array_name,
-                    bytes_per_line=16,
+                    bytes_per_line=8,
                     return_as_list=True,
                 )
             )

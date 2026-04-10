@@ -103,6 +103,7 @@ Brief summary:
 - **Fuzzing**: Extra compile-health gate after unit tests.
 - **Fixture generation**: `PYTHONPATH=. tests/venv/bin/python -m tests.unit.generators.generate_unit_tests_from_ragger all` (run when ragger inputs change).
 - **Linting**: `source tests/venv/bin/activate && ruff check --fix . --exclude tests/venv` (run when Python code changes).
+- **Pre-commit hook**: repo-local hook at `.githooks/pre-commit` can be enabled via `git config core.hooksPath .githooks`; it runs `make -C tests python-checks`, `make -C tests clang-format-src-check`, and `make -C tests clang-format-generated-check`, and requires `clang-format-14` to be available.
 - **Ragger/Swap tests**: Run only on explicit request.
 - **Strictness**: Compilation warnings and lint errors are treated as failures.
 - **No leniency for expected outputs:** if a happy-path fixture is missing unit-side

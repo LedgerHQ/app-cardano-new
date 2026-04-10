@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+set -eu
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+cd "$REPO_ROOT"
+
+if ! command -v clang-format-14 >/dev/null 2>&1; then
+    echo "ERROR: clang-format-14 not found; cannot verify C formatting in pre-commit." >&2
+    echo "Install clang-format-14 or bypass with --no-verify if you need to commit without the hook." >&2
+    exit 1
+fi
+
+make -C tests python-checks
+make -C tests clang-format-src-check
+make -C tests clang-format-generated-check
