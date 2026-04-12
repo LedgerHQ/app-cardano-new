@@ -2465,7 +2465,7 @@ static const warning_definition_t WARNING_DEFINITIONS[WARNING_BIT_COUNT] = {
         {
             .bit = WARNING_BIT_NETWORK_UNUSUAL,
             .title = "Unusual network",
-            .description = "Network id or protocol magic deviates from expected nets",
+            .description = "Network id or protocol magic is unexpected",
         },
     [WARNING_BIT_NETWORK_NOT_VERIFIABLE] =
         {
@@ -2476,20 +2476,33 @@ static const warning_definition_t WARNING_DEFINITIONS[WARNING_BIT_COUNT] = {
     [WARNING_BIT_PLUTUS_MISSING_COLLATERAL] =
         {
             .bit = WARNING_BIT_PLUTUS_MISSING_COLLATERAL,
+#ifdef SCREEN_SIZE_WALLET
             .title = "Missing collateral inputs",
+#else
+            .title = "Collateral inputs",
+#endif
             .description = "Plutus transaction without collateral inputs",
         },
     [WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL] =
         {
             .bit = WARNING_BIT_PLUTUS_UNKNOWN_COLLATERAL,
+#ifdef SCREEN_SIZE_WALLET
             .title = "Collateral not specified",
+#else
+            .title = "Total collateral",
+#endif
             .description = "Plutus transaction without total collateral",
         },
     [WARNING_BIT_COLLATERAL_OUTPUT_WARNING] =
         {
             .bit = WARNING_BIT_COLLATERAL_OUTPUT_WARNING,
+#ifdef SCREEN_SIZE_WALLET
             .title = "Tokens in third-party collateral output",
             .description = "Collateral return output to third-party address includes tokens",
+#else
+            .title = "Collateral output",
+            .description = "Collateral return output includes tokens",
+#endif
         },
     [WARNING_BIT_PLUTUS_MISSING_SCRIPT_DATA_HASH] =
         {

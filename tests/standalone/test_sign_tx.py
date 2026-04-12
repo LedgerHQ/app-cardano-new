@@ -140,6 +140,11 @@ def _run_sign_tx_test(
         if not device.is_nano:
             if testCase.expected_aux_warnings:
                 detail_navigation: list[NavIns | NavInsID] = [NavInsID.RIGHT_HEADER_TAP]
+                for warning_index in range(min(len(testCase.expected_aux_warnings), 3)):
+                    detail_navigation += [
+                        NavIns(NavInsID.CHOICE_CHOOSE, (warning_index + 1,)),
+                        NavInsID.LEFT_HEADER_TAP,
+                    ]
                 if len(testCase.expected_aux_warnings) > 3:
                     detail_navigation += [
                         NavIns(NavInsID.CHOICE_CHOOSE, (4,)),

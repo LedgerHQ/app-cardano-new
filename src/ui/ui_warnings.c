@@ -15,7 +15,9 @@ static char *g_warning_overflow_text = NULL;
 
 static const char SECURITY_WARNING_TITLE[] = "Security warning";
 static const char SECURITY_WARNING_REVIEW_TEXT[] = "Review all warnings before proceeding.";
+#ifdef SCREEN_SIZE_WALLET
 static const char SEE_MORE_WARNINGS_TITLE[] = "See more warnings";
+#endif
 
 #ifdef SCREEN_SIZE_WALLET
 #define MAX_WARNING_BARS_PER_PAGE 3
@@ -146,11 +148,16 @@ static bool build_wallet_warning_details_page(const warning_definition_t *const 
 
         details[i].title = title;
         details[i].type = CENTERED_INFO_WARNING;
+#ifdef SCREEN_SIZE_WALLET
         details[i].centeredInfo.icon = &WARNING_ICON;
+#else
+        details[i].centeredInfo.icon = NULL;
+#endif
         details[i].centeredInfo.title = title;
         details[i].centeredInfo.description = description;
     }
 
+#ifdef SCREEN_SIZE_WALLET
     if (has_more_warnings) {
         size_t more_index = warnings_on_page;
         titles[more_index] = (const char *) PIC(SEE_MORE_WARNINGS_TITLE);
@@ -175,6 +182,10 @@ static bool build_wallet_warning_details_page(const warning_definition_t *const 
         details[more_index].centeredInfo.title = g_warning_overflow_text;
         details[more_index].centeredInfo.description = NULL;
     }
+#else
+    LEDGER_ASSERT(!has_more_warnings,
+                  "Nano warning UI must fit all warnings in a single bar-list page");
+#endif
 
     page->title = (const char *) PIC(SECURITY_WARNING_TITLE);
     page->type = BAR_LIST_WARNING;

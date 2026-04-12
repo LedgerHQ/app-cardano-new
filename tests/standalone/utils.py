@@ -290,6 +290,11 @@ def _review_approve_with_warning(
 ) -> None:
     if not ctx.is_nano:
         detail_navigation: list[NavIns | BaseNavInsID] = [NavInsID.RIGHT_HEADER_TAP]
+        for warning_index in range(min(len(warnings), 3)):
+            detail_navigation += [
+                NavIns(NavInsID.CHOICE_CHOOSE, (warning_index + 1,)),
+                NavInsID.LEFT_HEADER_TAP,
+            ]
         if len(warnings) > 3:
             detail_navigation += [
                 NavIns(NavInsID.CHOICE_CHOOSE, (4,)),
@@ -329,13 +334,21 @@ def _review_approve_with_warning(
         nano_review_instructions, [NavInsID.BOTH_CLICK]
     )
 
-    # Intro page + one page per warning bar. The last right-click exits the
-    # warning flow and enters tx review, so no screen-change wait afterward.
-    warning_page_clicks = len(warnings) + 1
+    # Nano warning flow: move from the intro warning page to each warning title,
+    # open its details with both buttons, return with left, then continue.
+    warning_navigation: list[NavIns | BaseNavInsID] = []
+    for _warning in warnings:
+        warning_navigation += [
+            NavInsID.RIGHT_CLICK,
+            NavInsID.BOTH_CLICK,
+            NavInsID.LEFT_CLICK,
+        ]
+    # Exit the warning flow and enter the actual review.
+    warning_navigation.append(NavInsID.RIGHT_CLICK)
     _navigate_maybe_compare(
         ctx,
         f"{test_name}/{_WARNING_PATH}",
-        [NavInsID.RIGHT_CLICK] * warning_page_clicks,
+        warning_navigation,
         do_comparison,
         screen_change_after_last_instruction=False,
     )
