@@ -106,24 +106,9 @@ Notes:
 - Convenience wrappers from the repository root:
   - `make -C tests python-checks` runs Ruff format check, pylint, and mypy.
   - `make -C tests clang-format-src-check` checks `clang-format-14` on `src/**/*.c` and `src/**/*.h`.
+  - `make -C tests clang-format-generated-check` checks `clang-format-14` on generated unit-test C/H files.
   - `make -C tests tests-unit` regenerates unit fixtures, checks drift and generated C formatting, builds, and runs unit tests.
   - `make -C tests fuzzing` builds fuzzing harnesses and runs each for 1 second by default (override with `FUZZ_SECONDS=<n>`, requires `BOLOS_SDK`).
-
-### Git Hook
-
-To block commits when generated unit-test C/H files are not `clang-format-14` clean, use the repo-local pre-commit hook:
-
-```bash
-git config core.hooksPath .githooks
-chmod +x .githooks/pre-commit
-```
-
-The hook runs:
-- `make -C tests python-checks`
-- `make -C tests clang-format-src-check`
-- `make -C tests clang-format-generated-check`
-
-It fails the commit if `clang-format-14` is missing or if Python formatting / linting or C formatting checks do not pass.
 
 ## Coverage Exclusion Policy
 
