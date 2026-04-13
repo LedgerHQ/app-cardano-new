@@ -3,6 +3,7 @@
 
 // Icon declarations for fuzzing - actual icons not needed
 extern const nbgl_icon_details_t C_cardano_64;
+extern const nbgl_icon_details_t C_Warning_40px;
 extern const nbgl_icon_details_t C_Warning_64px;
 extern const nbgl_icon_details_t C_Warning_32px;
 extern const nbgl_icon_details_t C_Info_Circle_64px;

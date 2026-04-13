@@ -102,6 +102,19 @@ unsigned short io_seph_recv(unsigned char *buffer, unsigned short maxlength, uns
     return 0;
 }
 
+uint16_t cx_crc16(const void *buf, size_t len) {
+    (void) buf;
+    (void) len;
+    return 0xFFFF;
+}
+
+uint16_t cx_crc16_update(uint16_t crc, const void *buf, size_t len) {
+    (void) crc;
+    (void) buf;
+    (void) len;
+    return 0xFFFF;
+}
+
 cx_err_t cx_blake2b_init_no_throw(cx_blake2b_t *hash, size_t size) {
     (void) hash;
     (void) size;
@@ -173,7 +186,7 @@ cx_err_t cx_eddsa_get_public_key_no_throw(const cx_ecfp_private_key_t *pv_key,
     (void) h;
     (void) h_len;
     pu_key->W_len = 65;
-    memset(pu_key, 'A', pu_key->W_len);
+    memset(pu_key->W, 'A', pu_key->W_len);
     return CX_OK;
 }
 
