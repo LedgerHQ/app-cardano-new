@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Sequence
 
 from tests.unit.generators.common import (
+    extract_brace_delimited_entries,
     read_file_safe,
     write_generated_c_file,
     sanitize_c_identifier,
@@ -23,10 +24,6 @@ _FIXTURE_ARRAY_PATTERN = re.compile(
     r"^static\s+const\s+derive_address_fixture_t\s+(DERIVE_ADDRESS_FIXTURES_[A-Z0-9_]+)\s*\[\]\s*=\s*\{",
     re.MULTILINE,
 )
-
-# Match fixture struct blocks
-_FIXTURE_STRUCT_PATTERN = re.compile(r"\{(.*?)\}", re.DOTALL)
-
 
 # ======================================================================
 # Data Structures
@@ -133,8 +130,8 @@ def extract_complete_fixture_details_from_array(
     array_body = match.group(1)
 
     fixtures = []
-    for index, struct_match in enumerate(_FIXTURE_STRUCT_PATTERN.finditer(array_body)):
-        struct_body = struct_match.group(1)
+    for index, struct_text in enumerate(extract_brace_delimited_entries(array_body)):
+        struct_body = struct_text
 
         # Extract .name field
         name_match = re.search(r'\.name\s*=\s*"([^"]+)"', struct_body)

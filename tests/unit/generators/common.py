@@ -3,6 +3,8 @@
 
 import inspect
 import re
+import shutil
+import subprocess
 import sys
 import tempfile
 import types
@@ -114,6 +116,25 @@ def write_generated_c_file(file_path: Path, content: str) -> None:
     )
 
     full_content = header + content
+    clang_format_path = shutil.which("clang-format-14")
+    if clang_format_path is not None:
+        try:
+            clang_format_result = subprocess.run(
+                [clang_format_path, f"--assume-filename={file_path.name}"],
+                input=full_content,
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+            full_content = clang_format_result.stdout
+        except subprocess.CalledProcessError as exc:
+            print(
+                "ERROR: clang-format-14 failed while formatting generated file "
+                f"{file_path}: {exc.stderr.strip()}"
+            )
+            sys.exit(1)
+    if not full_content.endswith("\n"):
+        full_content += "\n"
     write_file_safe(file_path, full_content)
 
 
@@ -251,7 +272,7 @@ def extract_apdu_payload(apdu: bytes) -> bytes:
 
 
 def format_bytes_as_c_array(
-    data: bytes, name: str, bytes_per_line: int = 16, return_as_list: bool = False
+    data: bytes, name: str, bytes_per_line: int = 8, return_as_list: bool = False
 ) -> str | list[str]:
     """
     Generate C code for a byte array declaration.
@@ -278,9 +299,19 @@ def format_bytes_as_c_array(
     if len(data) == 0:
         # Empty payloads: use explicit size [1] with dummy byte for C99 compatibility
         # Callers must explicitly pass 0 as length, not sizeof()
-        lines.append(f"static const uint8_t {name}[1] = {{ 0x00 }};")
+        declaration_line = f"static const uint8_t {name}[1] = {{ 0x00 }};"
+        if len(declaration_line) > 88:
+            lines.append("static const uint8_t")
+            lines.append(f"    {name}[1] = {{ 0x00 }};")
+        else:
+            lines.append(declaration_line)
     else:
-        lines.append(f"static const uint8_t {name}[] = {{")
+        declaration_line = f"static const uint8_t {name}[] = {{"
+        if len(declaration_line) > 88:
+            lines.append("static const uint8_t")
+            lines.append(f"    {name}[] = {{")
+        else:
+            lines.append(declaration_line)
         for i in range(0, len(data), bytes_per_line):
             chunk = data[i : i + bytes_per_line]
             hex_bytes = ", ".join(f"0x{b:02X}" for b in chunk)
@@ -416,3 +447,83 @@ def extract_brace_delimited_entries(
         entries.append(body[match_start:end_idx])
         search_pos = end_idx
     return entries
+
+
+def _find_matching_closing_brace(content: str, open_brace_index: int) -> int:
+    """Return the index of the matching closing brace for *open_brace_index*."""
+    if open_brace_index < 0 or open_brace_index >= len(content):
+        raise ValueError("Opening brace index out of bounds")
+    if content[open_brace_index] != "{":
+        raise ValueError("Opening brace not found at the provided index")
+
+    depth = 0
+    index = open_brace_index
+    while index < len(content):
+        char = content[index]
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return index
+        index += 1
+    raise ValueError("Unbalanced braces while parsing declaration body")
+
+
+def extract_static_uint8_array_bodies(content: str) -> dict[str, str]:
+    """Return ``static const uint8_t`` array initializers keyed by array name."""
+    declaration_pattern = re.compile(
+        r"static\s+const\s+uint8_t\s+([A-Z0-9_]+)\s*\[\s*(?:\d+)?\s*\]\s*=\s*\{",
+        flags=re.DOTALL,
+    )
+
+    arrays: dict[str, str] = {}
+    for match in declaration_pattern.finditer(content):
+        array_name = match.group(1)
+        opening_brace_index = content.find("{", match.start())
+        if opening_brace_index == -1:
+            raise ValueError(
+                f"Missing opening brace for array declaration {array_name}"
+            )
+        closing_brace_index = _find_matching_closing_brace(content, opening_brace_index)
+        arrays[array_name] = content[opening_brace_index + 1 : closing_brace_index]
+    return arrays
+
+
+def remove_static_uint8_arrays_by_name(content: str, array_names: set[str]) -> str:
+    """Remove complete ``static const uint8_t`` array declarations by name."""
+    if not array_names:
+        return content
+
+    declaration_pattern = re.compile(
+        r"static\s+const\s+uint8_t\s+([A-Z0-9_]+)\s*\[\s*(?:\d+)?\s*\]\s*=\s*\{",
+        flags=re.DOTALL,
+    )
+
+    result_chunks: list[str] = []
+    cursor = 0
+    for match in declaration_pattern.finditer(content):
+        array_name = match.group(1)
+        if array_name not in array_names:
+            continue
+
+        opening_brace_index = content.find("{", match.start())
+        if opening_brace_index == -1:
+            raise ValueError(
+                f"Missing opening brace for array declaration {array_name}"
+            )
+        closing_brace_index = _find_matching_closing_brace(content, opening_brace_index)
+
+        declaration_end = closing_brace_index + 1
+        while declaration_end < len(content) and content[declaration_end] in " \t":
+            declaration_end += 1
+        if declaration_end < len(content) and content[declaration_end] == ";":
+            declaration_end += 1
+        while declaration_end < len(content) and content[declaration_end] in "\r\n":
+            declaration_end += 1
+
+        result_chunks.append(content[cursor : match.start()])
+        cursor = declaration_end
+
+    result_chunks.append(content[cursor:])
+    return "".join(result_chunks)

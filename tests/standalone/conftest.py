@@ -5,6 +5,7 @@
 import sys
 from pathlib import Path
 import os
+import socket
 
 ROOT = Path(__file__).resolve().parents[2]
 TESTS_ROOT = ROOT / "tests"
@@ -76,12 +77,14 @@ def enforce_client_constants() -> None:
 pytest_plugins = ("ragger.conftest.base_conftest",)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="class")
 def additional_speculos_arguments() -> list[str]:
-    """Assign deterministic per-worker Speculos ports under pytest-xdist.
+    """Assign probed Speculos ports from a worker-specific range under pytest-xdist.
 
     Ragger's default "find a free port" logic races across xdist workers.
-    Keep single-process runs unchanged and only pin ports when running under xdist.
+    Keep workers separated in distinct port ranges, but still probe within the
+    worker's range to avoid collisions with lingering Speculos processes or
+    unrelated services.
     """
     worker_id = os.environ.get("PYTEST_XDIST_WORKER")
     if not worker_id:
@@ -91,8 +94,29 @@ def additional_speculos_arguments() -> list[str]:
         raise AssertionError(f"Unexpected xdist worker id: {worker_id}")
 
     worker_index = int(worker_id[2:])
-    api_port = 5000 + worker_index * 10
-    apdu_port = api_port + 1
+    base_port = 40000 + worker_index * 1000
+    range_size = 1000
+
+    def _port_is_free(port: int) -> bool:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            try:
+                sock.bind(("127.0.0.1", port))
+            except OSError:
+                return False
+        return True
+
+    def _find_free_port(start_offset: int) -> int:
+        for offset in range(start_offset, range_size):
+            port = base_port + offset
+            if _port_is_free(port):
+                return port
+        raise AssertionError(
+            f"No free Speculos port found in worker range {base_port}-{base_port + range_size - 1}"
+        )
+
+    api_port = _find_free_port(0)
+    apdu_port = _find_free_port((api_port - base_port) + 1)
     return ["--api-port", str(api_port), "--apdu-port", str(apdu_port)]
 
 

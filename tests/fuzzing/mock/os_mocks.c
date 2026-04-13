@@ -223,7 +223,7 @@ cx_err_t cx_ecdomain_parameters_length(cx_curve_t cv, size_t *length) {
         return CX_OK;
     }
 
-    exit(1);
+    siglongjmp(fuzz_exit_jump_ctx.jmp_buf, 1);
     return CX_INVALID_PARAMETER;
 }
 
@@ -247,7 +247,7 @@ void os_perso_derive_node_with_seed_key(unsigned int mode,
 
 void __attribute__((noreturn)) assert_exit(bool confirm) {
     (void) confirm;
-    abort();
+    siglongjmp(fuzz_exit_jump_ctx.jmp_buf, 1);
 }
 
 void __attribute__((noreturn)) app_exit(void) {

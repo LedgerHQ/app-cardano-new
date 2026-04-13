@@ -142,7 +142,7 @@ _SIGN_TX_DENY_FIXTURES_PATTERN = re.compile(
 # Match individual deny fixture entries inside the array
 _SIGN_TX_DENY_ENTRY_PATTERN = re.compile(r"\.name\s*=")
 _TX_FIXTURE_PATTERN = re.compile(
-    r"static const tx_fixture_t (FIXTURE_[A-Z0-9_]+)\s*=\s*\{(.*?)\};",
+    r"static\s+const\s+tx_fixture_t\s+(FIXTURE_[A-Z0-9_]+)\s*=\s*\{(.*?)\};",
     flags=re.DOTALL,
 )
 

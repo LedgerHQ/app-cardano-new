@@ -24,7 +24,7 @@ from tests.unit.generators.paths import GENERATED_SIGN_TX_DIR
 # ======================================================================
 
 # Match tx_fixture_t declarations
-_TX_FIXTURE_PATTERN = re.compile(r"static const tx_fixture_t [A-Z0-9_]+\s*=\s*\{")
+_TX_FIXTURE_PATTERN = re.compile(r"static\s+const\s+tx_fixture_t\s+[A-Z0-9_]+\s*=\s*\{")
 
 
 def _split_hex_string(hex_str: str, chunk_size: int = 1024) -> list[str]:

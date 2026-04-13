@@ -38,6 +38,7 @@ ledger/
 
 # VS Code workspace state managed by Ledger extension
 .vscode/settings.json
+.githooks/
 
 # Helper script git clone
 tests/swap/.test_dependencies/app-exchange/
