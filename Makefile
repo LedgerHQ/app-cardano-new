@@ -124,4 +124,10 @@ ENABLE_SWAP = 1
 ########################################
 ENABLE_DYNAMIC_ALLOC = 1
 
+########################################
+#       Lists library support          #
+########################################
+ENABLE_LISTS_LIBRARY = 1
+DEFINES += HAVE_SDK_LL_LIB
+
 include $(BOLOS_SDK)/Makefile.standard_app
