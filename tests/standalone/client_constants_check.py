@@ -620,6 +620,7 @@ def assert_sign_tx_related_constants_match() -> None:
             ],
             "MULTISIG_TRANSACTION": tx_values["SIGN_TX_SIGNINGMODE_MULTISIG_TX"],
             "PLUTUS_TRANSACTION": tx_values["SIGN_TX_SIGNINGMODE_PLUTUS_TX"],
+            "AUTO_TRANSACTION": tx_values["SIGN_TX_SIGNINGMODE_AUTO"],
         },
     )
     _assert_exact_enum_mapping(

@@ -167,6 +167,7 @@ set(SIGN_TX_COMMON_SOURCES
     ../../src/transaction/tx_parse_certificates.c
     ../../src/transaction/tx_parse_outputs.c
     ../../src/transaction/tx_utils.c
+    ../../src/transaction/tx_signing_mode.c
     ../../src/parsers/cardano_parsers.c
     ../../src/securityPolicy/securityPolicy.c
     ../../src/securityPolicy/securityPolicy_privkey.c
@@ -632,6 +633,10 @@ cardano_unit_test(test_cardano_parsers
 cardano_unit_test(test_tx_utils
     SOURCES test_tx_utils.c
     LIBS cardano_sign_tx_core)
+
+cardano_unit_test(test_tx_signing_mode
+    SOURCES test_tx_signing_mode.c ../../src/transaction/tx_signing_mode.c
+    LIBS mock_printf)
 
 cardano_unit_test(test_cvote_deny_tests
     SOURCES generated/cvote/test_cvote_deny_tests.c
