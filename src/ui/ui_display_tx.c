@@ -228,10 +228,10 @@ void ui_display_transaction(void) {
 
     const char *review_subtitle = NULL;
     switch (G_context.tx_info.tx_params.txSigningMode) {
-        case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
+        case SIGN_TX_SIGNINGMODE_PLUTUS:
             review_subtitle = "Plutus execution";
             break;
-        case SIGN_TX_SIGNINGMODE_MULTISIG_TX:
+        case SIGN_TX_SIGNINGMODE_MULTISIG:
             review_subtitle = "Multisig transaction";
             break;
         default:

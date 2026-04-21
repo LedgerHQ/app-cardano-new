@@ -611,16 +611,16 @@ def assert_sign_tx_related_constants_match() -> None:
     _assert_exact_enum_mapping(
         TransactionSigningMode,
         {
-            "ORDINARY_TRANSACTION": tx_values["SIGN_TX_SIGNINGMODE_ORDINARY_TX"],
-            "POOL_REGISTRATION_AS_OWNER": tx_values[
+            "ORDINARY": tx_values["SIGN_TX_SIGNINGMODE_ORDINARY"],
+            "POOL_REGISTRATION_OWNER": tx_values[
                 "SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER"
             ],
-            "POOL_REGISTRATION_AS_OPERATOR": tx_values[
+            "POOL_REGISTRATION_OPERATOR": tx_values[
                 "SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR"
             ],
-            "MULTISIG_TRANSACTION": tx_values["SIGN_TX_SIGNINGMODE_MULTISIG_TX"],
-            "PLUTUS_TRANSACTION": tx_values["SIGN_TX_SIGNINGMODE_PLUTUS_TX"],
-            "AUTO_TRANSACTION": tx_values["SIGN_TX_SIGNINGMODE_AUTO"],
+            "MULTISIG": tx_values["SIGN_TX_SIGNINGMODE_MULTISIG"],
+            "PLUTUS": tx_values["SIGN_TX_SIGNINGMODE_PLUTUS"],
+            "AUTO": tx_values["SIGN_TX_SIGNINGMODE_AUTO"],
         },
     )
     _assert_exact_enum_mapping(

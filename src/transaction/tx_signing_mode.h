@@ -20,7 +20,7 @@ bool is_valid_tx_signing_mode(uint8_t raw_mode);
  *
  * If any Plutus indicator is set (collateral inputs, collateral output, total
  * collateral, reference inputs, or script data hash), the mode is resolved to
- * SIGN_TX_SIGNINGMODE_PLUTUS_TX immediately.
+ * SIGN_TX_SIGNINGMODE_PLUTUS immediately.
  *
  * For all other AUTO transactions (pool, ordinary, multisig) the information
  * needed to distinguish modes is not available in the init APDU, so this

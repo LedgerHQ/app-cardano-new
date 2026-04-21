@@ -1502,7 +1502,7 @@ testsByron: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a"
         ),
@@ -1523,7 +1523,7 @@ testsByron: List[SignTxTestCase] = [
             inputs=[inputs["utxoByron"]],
             outputs=[outputs["externalByronDaedalusMainnet"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018182584c82d818584283581cd2348b8ef7b8a6d1c922efa499c669b151eeef99e4ce3521e88223f8a101581e581cf281e648a89015a9861bd9e992414d1145ddaf80690be53235b0e2e5001a199834651a002dd2e802182a030a"
         ),
@@ -1546,7 +1546,7 @@ testsByron: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018182582f82d818582583581c709bfb5d9733cbdd72f520cd2c8b9f8f942da5e6cd0b6994e1803b0aa10242182a001aef14e76d1a002dd2e802182a030a"
         ),
@@ -1570,7 +1570,7 @@ testsByron: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018182582b82d818582183581c43c3a6570ffd317743bf828bc0dd92ebe2b8e8feaecf130e39d6ca84a0001afd2374db1a002dd2e802182a030a"
         ),
@@ -1593,7 +1593,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         tx=Transaction(
             network=Mainnet, inputs=[inputs["utxoShelley"]], outputs=[], fee=42, ttl=10
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a"
         ),
@@ -1613,7 +1613,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
         tx=Transaction(
             network=Mainnet, inputs=[inputs["utxoShelley"]], outputs=[], fee=42, ttl=10
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400d90102818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a"
         ),
@@ -1635,7 +1635,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a"
         ),
@@ -1659,7 +1659,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
                 outputs["internalBaseWithStakingPath"],
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc00018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e88258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a"
         ),
@@ -1683,7 +1683,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
                 outputs["internalBaseWithStakingKeyHash"],
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e88258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f1124122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42771a006ca79302182a030a"
         ),
@@ -1704,7 +1704,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"], outputs["internalEnterprise"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e882581d6114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241a006ca79302182a030a"
         ),
@@ -1725,7 +1725,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalByronMainnet"], outputs["internalPointer"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e88258204114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11240102031a006ca79302182a030a"
         ),
@@ -1750,7 +1750,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
                 TxAuxiliaryDataHash(f"{'deadbeef' * 8}"),
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182583901f90b0dfcace47bf03e88f7469a2f4fb3a7918461aa4765bfaf55f0dae260546c20562e598fb761f419dad27edcd49f4ee4f0540b8e40d4d51a006ca79302182a030a075820deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
         ),
@@ -1780,7 +1780,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a05a1581de11d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c186f"
         ),
@@ -1813,7 +1813,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a05a1581de1e260546c20562e598fb761f419dad27edcd49f4ee4f0540b8e40d4d5186f"
         ),
@@ -1843,7 +1843,7 @@ testsShelleyNoCertificates: List[SignTxTestCase] = [
                 TxAuxiliaryDataHash(f"{'deadbeef' * 8}"),
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a075820deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
         ),
@@ -1877,7 +1877,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048182008200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c"
         ),
@@ -1908,7 +1908,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048182018200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c"
         ),
@@ -1944,7 +1944,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048183028200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb4973"
         ),
@@ -1987,7 +1987,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048282018200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c82018200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c"
         ),
@@ -2031,7 +2031,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a04828304581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b70a82008200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c"
         ),
@@ -2075,7 +2075,7 @@ testsShelleyWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a04828304581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b70a82018200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c"
         ),
@@ -2118,7 +2118,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048183078200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c11"
         ),
@@ -2154,7 +2154,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048183088200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c11"
         ),
@@ -2232,7 +2232,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048583098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a183098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c883098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c883098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c810283098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8103"
         ),
@@ -2315,7 +2315,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0485840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738200581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738102840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738103"
         ),
@@ -2352,7 +2352,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0481840b8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49731a000f4240"
         ),
@@ -2389,7 +2389,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0481840c8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11a000f4240"
         ),
@@ -2427,7 +2427,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0481850d8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11a000f4240"
         ),
@@ -2591,7 +2591,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a049082008200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c82018200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c83078200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1183088200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1183028200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738304581c8e00cd50efb2c15b548abeced2bce0ec4ee445a6954d762aa301d13f182a83098200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1830e8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba68200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c48839092830f8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba682782768747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c65416e63686f7258201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef84108200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11382782768747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c65416e63686f7258201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef83118200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11383128200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a182782768747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c65416e63686f7258201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef840a8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1840b8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49731a000f4240840c8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11a000f4240850d8200581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb49738200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11a000f4240"
         ),
@@ -2665,7 +2665,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0483830e8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba68200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c48839092830e8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba68200581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8830e8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba68201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8"
         ),
@@ -2712,7 +2712,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0482830f8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba6827880787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787858201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef830f8200581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba6f6"
         ),
@@ -2757,7 +2757,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0482830f8200581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8f6830f8201581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba6f6"
         ),
@@ -2807,7 +2807,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048284108200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a11382727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef84108200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a113f6"
         ),
@@ -2843,7 +2843,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048183118200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a113"
         ),
@@ -2890,7 +2890,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048283128200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a182727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef83128200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1f6"
         ),
@@ -2959,7 +2959,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048483098201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42778200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1830e8201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c88200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c4883909284108201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c813f683078201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b427711"
         ),
@@ -3119,7 +3119,7 @@ testsConwayWithCertificates: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048b83098201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42778200581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c883098201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42778201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c883098201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277810283098201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42778103830e8201581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba68200581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8830e8201581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba68201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8830f8201581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba682782768747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c65416e63686f7258201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef84108201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c81382782768747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c65416e63686f7258201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef83118201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c81383128201581c1afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c882782768747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c65416e63686f7258201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef83088201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b427711"
         ),
@@ -3148,7 +3148,7 @@ testsMultisig: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalShelleyBaseScripthashKeyhash"]],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e0102182a030a"
         ),
@@ -3183,7 +3183,7 @@ testsMultisig: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a05a1581df1122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277186f"
         ),
@@ -3216,7 +3216,7 @@ testsMultisig: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048182008201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277"
         ),
@@ -3250,7 +3250,7 @@ testsMultisig: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048183028201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb4973"
         ),
@@ -3283,7 +3283,7 @@ testsMultisig: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a048182018201581c122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277"
         ),
@@ -3308,7 +3308,7 @@ testsMultisig: List[SignTxTestCase] = [
             ttl=10,
             mint=mints["mintAmountVariety"],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e0102182a030a09a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a3581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff"
         ),
@@ -3338,7 +3338,7 @@ testsAllegra: List[SignTxTestCase] = [
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
             ttl=None,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a300818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a"
         ),
@@ -3361,7 +3361,7 @@ testsAllegra: List[SignTxTestCase] = [
             ttl=None,
             validityIntervalStart=47,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a08182f"
         ),
@@ -3389,7 +3389,7 @@ testsMary: List[SignTxTestCase] = [
             ],
             validityIntervalStart=7,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821904d2a1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1a007838628258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a0807"
         ),
@@ -3414,7 +3414,7 @@ testsMary: List[SignTxTestCase] = [
             ],
             validityIntervalStart=7,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821904d2a2581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a34003581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209015820000000000000000000000000000000000000000000000000000000000000000002581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a248456c204e69c3b16f1904d24874652474436f696e1a007838628258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a0807"
         ),
@@ -3438,7 +3438,7 @@ testsMary: List[SignTxTestCase] = [
             ttl=24103998870869519,
             validityIntervalStart=24103998870869519,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821b0055a275925d560fa1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1b0055a275925d560f021b0055a275925d560f031b0055a275925d560f081b0055a275925d560f"
         ),
@@ -3463,7 +3463,7 @@ testsMary: List[SignTxTestCase] = [
                 outputs["multiassetChange"],
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000182825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09018258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c821904d2a1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1a0078386202182a030a"
         ),
@@ -3487,7 +3487,7 @@ testsMary: List[SignTxTestCase] = [
             ttl=0,
             validityIntervalStart=0,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca793020003000800"
         ),
@@ -3510,7 +3510,7 @@ testsMary: List[SignTxTestCase] = [
             fee=33,
             ttl=None,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a300818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821904d2a2581c6954264b15bc92d6d592febeac84f14645e1ed46ca5ebb9acdb5c15fa14553545249501a0034bf15581caf2e27f580f7f08e93190a81f72462f153026d06450924726645891ba244445249501904d24cffffffffffffffffffffffff1904d2021821"
         ),
@@ -3532,7 +3532,7 @@ testsMary: List[SignTxTestCase] = [
             outputs=[],
             mint=mints["mintAmountVariety"],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a09a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a3581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff"
         ),
@@ -3557,7 +3557,7 @@ testsMary: List[SignTxTestCase] = [
             ttl=None,
             mint=mints["mintWithDecimalPlaces"],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182109a2581c6954264b15bc92d6d592febeac84f14645e1ed46ca5ebb9acdb5c15fa14553545249503a0034bf14581caf2e27f580f7f08e93190a81f72462f153026d06450924726645891ba244445249501904d24cffffffffffffffffffffffff1904d2"
         ),
@@ -3585,7 +3585,7 @@ testsMary: List[SignTxTestCase] = [
             validityIntervalStart=100,
             mint=mints["mintAmountVariety"],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821904d2a1581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a14874652474436f696e1a007838628258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca793020a031903e808186409a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a3581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff"
         ),
@@ -3607,7 +3607,7 @@ testsMary: List[SignTxTestCase] = [
             outputs=[],
             mint=mints["mintAmountVariety"],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a09a1581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a3581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20920581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20a1b7fffffffffffffff581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df20b3b7fffffffffffffff"
         ),
@@ -3686,7 +3686,7 @@ testsAlonzoTrezorComparison: List[SignTxTestCase] = [
             ),
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="ab00818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821a001e8480a1581c0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425a14874657374436f696e1a0078386283581d71477e52b3116b62fe8cd34a312615f5fcd678c94e1d6cdb86c1a3964c0158203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b702182a030a048382008201581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd82018201581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd83028201581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb497305a1581df129fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd1903e807582058ec01578fcdfdc376f09631a7b2adc608eaf57e3720484c7ff37c13cff90fdf08182f09a1581c0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425a24874657374436f696e1a007838624875657374436f696e3a007838610b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70f01"
         ),
@@ -3712,7 +3712,7 @@ testsAlonzoTrezorComparison: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a"
         ),
@@ -3744,7 +3744,7 @@ testsBabbageTrezorComparison: List[SignTxTestCase] = [
             totalCollateral=10,
             referenceInputs=[inputs["utxoShelley"]],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="ab00818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000182825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09821a001e8480a1581c0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425a14874657374436f696e1a0078386283581d71477e52b3116b62fe8cd34a312615f5fcd678c94e1d6cdb86c1a3964c0158203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b702182a030a08182f0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000f0110825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b0901110a12818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700"
         ),
@@ -3767,7 +3767,7 @@ testsBabbageTrezorComparison: List[SignTxTestCase] = [
             validityIntervalStart=47,
             includeNetworkId=True,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a400581d71477e52b3116b62fe8cd34a312615f5fcd678c94e1d6cdb86c1a3964c0101028201d818565579657420616e6f746865722063686f636f6c61746503d81858390080f9e2c88e6c817008f3a812ed889b4a4da8e0bd103f86e7335422aa122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b427702182a030a08182f0f01"
         ),
@@ -3832,7 +3832,7 @@ testsMultidelegation: List[SignTxTestCase] = [
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             includeNetworkId=True,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="aa00818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018282583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff821a001e8480a1581c0d63e8d2c5a00cbcffbdf9112487c443466e1ea7d8c834df5ac5c425a14874657374436f696e1a0078386283581d71477e52b3116b62fe8cd34a312615f5fcd678c94e1d6cdb86c1a3964c0158203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b702182a030a048382008200581cee6d266f2b60add5a249a3754f91cf1f423ac94c6cd964b3814f21a382018200581cee6d266f2b60add5a249a3754f91cf1f423ac94c6cd964b3814f21a383028200581cee6d266f2b60add5a249a3754f91cf1f423ac94c6cd964b3814f21a3581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb497305a1581de198acedf1c6b691f963d928147f66697c7cda3899e30c613037a4e9901903e808182f0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70e81581c86df572e0e28bec8ca8066e9d8c3681b4ac86c43c57cd52eb06ae8640f01"
         ),
@@ -3878,7 +3878,7 @@ testsConwayWithoutCertificates: List[SignTxTestCase] = [
             outputs=[outputs["externalByronMainnet"]],
             treasury=27,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a15181b"
         ),
@@ -3900,7 +3900,7 @@ testsConwayWithoutCertificates: List[SignTxTestCase] = [
             outputs=[outputs["externalByronMainnet"]],
             donation=28,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a16181c"
         ),
@@ -3923,7 +3923,7 @@ testsConwayWithoutCertificates: List[SignTxTestCase] = [
             treasury=27,
             donation=28,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a15181b16181c"
         ),
@@ -4003,7 +4003,7 @@ votingDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
 ]
@@ -4021,7 +4021,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c48839092a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef"
         ),
@@ -4051,7 +4051,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18202581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038200f6"
         ),
@@ -4081,7 +4081,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18204581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038201f6"
         ),
@@ -4115,7 +4115,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18200581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef"
         ),
@@ -4150,7 +4150,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18201581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038200f6"
         ),
@@ -4185,7 +4185,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18202581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038201f6"
         ),
@@ -4220,7 +4220,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18203581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef"
         ),
@@ -4262,7 +4262,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a28201581c8afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a28258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f68258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7058201f68203581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1a28258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef8258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f6"
         ),
@@ -4287,7 +4287,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18204581c7afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef"
         ),
@@ -4319,7 +4319,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18202581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1a38258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef8258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f68258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7058201f6"
         ),
@@ -4358,7 +4358,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a38200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c48839092a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef8202581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f68204581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7058201f6"
         ),
@@ -4404,7 +4404,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a28201581c8afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8a28258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f68258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7058201f68202581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1a28258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b703820282727777772e76616375756d6c6162732e636f6d58201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef8258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7048200f6"
         ),
@@ -4440,7 +4440,7 @@ testsConwayVotingProcedures: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a13a18200581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c48839092a18258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7038202826058201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef"
         ),
@@ -4483,7 +4483,7 @@ testsCatalystRegistration: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820e9141b460aea0abb69ce113c7302c7c03690267736d6a382ee62d2a53c2ec9260807"
         ),
@@ -4514,7 +4514,7 @@ testsCatalystRegistration: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820d19f7cb4d48a6ae8d370c64d2a42fca1f61d6b2cf3d0c0c02801541811338deb"
         ),
@@ -4549,7 +4549,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a0758201999b3bb9102b585c42616e40cf1290518d788f967ab4b3329dcb712ac933da0"
         ),
@@ -4582,7 +4582,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820d05698c555a117014a3b360a66931ec43bf18e2aa16560fc99dbd92dd7f6f6540807"
         ),
@@ -4614,7 +4614,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582077be323b8df4c6aa1bf2f180112f85ffe8d7f658bc8febdf7dbd5a07453a31cb0807"
         ),
@@ -4646,7 +4646,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582042e408fb03986a958be9e2cca01623a31e23f86f31172a5a9b84acdfce6f0e750807"
         ),
@@ -4680,7 +4680,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820d706aed1ebc1e8af188aae6d37ffdf4e259a0f04635bef5edce7f43ff632c4450807"
         ),
@@ -4722,7 +4722,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820f0e62a047ef597d9fb1bfefb9cd3f4e77558c33510ca552484ee8b5c77bbdf650807"
         ),
@@ -4764,7 +4764,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a075820abcbd886ad300fa98ab591d2bdf90dfff3f4042edec88d92fe48105c00df2ca00807"
         ),
@@ -4807,7 +4807,7 @@ testsCVoteRegistrationCIP36: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a07582092cc23c0ff5952db0243e891ef08d1360ed9a33c6970156dfe945dd4df284d980807"
         ),
@@ -4877,7 +4877,7 @@ testsAlonzo: List[SignTxTestCase] = [
             collateralInputs=[inputs["utxoShelley"]],
             includeNetworkId=True,
         ),
-        signingMode=TransactionSigningMode.AUTO_TRANSACTION,
+        signingMode=TransactionSigningMode.AUTO,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000f01"
         ),
@@ -4904,7 +4904,7 @@ testsAlonzo: List[SignTxTestCase] = [
             scriptDataHash="ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce188",
             includeNetworkId=True,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0b5820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce1880f01"
         ),
@@ -4926,7 +4926,7 @@ testsAlonzo: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["internalBaseWithStakingPath"]],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a"
         ),
@@ -4997,7 +4997,7 @@ testsAlonzo: List[SignTxTestCase] = [
                 ],
             ),
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a2005839135e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a00783862021a005b8d81030a048183128200581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1826058201afd028b504c3668102b129b37a86c09a2872f76741dc7a68e2149c8deadbeef10a2005839037cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b0901821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a1487564247542686911182f"
         ),
@@ -5034,7 +5034,7 @@ testsAlonzo: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e1a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a"
         ),
@@ -5058,7 +5058,7 @@ testsAlonzo: List[SignTxTestCase] = [
             fee=42,
             ttl=24103998870869519,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839135e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e1a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a031b0055a275925d560f"
         ),
@@ -5082,7 +5082,7 @@ testsAlonzo: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839235a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42771a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a"
         ),
@@ -5106,7 +5106,7 @@ testsAlonzo: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018183583933122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b42771a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a"
         ),
@@ -5130,7 +5130,7 @@ testsAlonzo: List[SignTxTestCase] = [
             fee=42,
             ttl=24103998870869519,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839115e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e1a006ca7935820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a031b0055a275925d560f"
         ),
@@ -5153,7 +5153,7 @@ testsAlonzo: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181835839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a007838625820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a"
         ),
@@ -5176,7 +5176,7 @@ testsAlonzo: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["missingDatumHashWithTokens"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a0078386202182a030a"
         ),
@@ -5203,7 +5203,7 @@ testsAlonzo: List[SignTxTestCase] = [
             collateralInputs=[inputs["utxoByron"]],
             includeNetworkId=True,
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0d818258201af8fa0b754ff99253d983894e63a2b09cbb56c833ba18c3384210163f63dcfc000f01"
         ),
@@ -5234,7 +5234,7 @@ testsAlonzo: List[SignTxTestCase] = [
             collateralInputs=[inputs["utxoShelley"]],
             includeNetworkId=True,
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000f01"
         ),
@@ -5272,7 +5272,7 @@ testsAlonzo: List[SignTxTestCase] = [
             ],
             includeNetworkId=True,
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0e87581cfea6646c67fb467f8a5425e9c752e1e262b0420ba4b638f39514049a581c14c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f1124581c9a70dd7c77e9db9442b560a11446962e9d7c595274c587a62f8a0b61581cf699c6400f85bdca54e44d0cad1f6141ce049a411c0d695fc30c3f73581cba41c59ac6e1a0e4ac304af98db801097d0bf8d2a5b28a54752426a1581ccf737588be6e9edeb737eb2e6d06e5cbd292bd8ee32e410c0bba1ba6581cd098c6a0a621f3343abe55877ee88fd5a83363e3c7887b3c488390920f01"
         ),
@@ -5321,7 +5321,7 @@ testsAlonzo: List[SignTxTestCase] = [
                 RequiredSigner(TxRequiredSignerType.PATH, "m/1855'/1815'/0'")
             ],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018182582b82d818582183581c9e1c71de652ec8b85fec296f0685ca3988781c94a2e1a5d89d92f45fa0001a0d0c25611a002dd2e802182a030a0e81581c43040068ce85252be6164296d6dca9595644bbf424b56b7424458227"
         ),
@@ -5374,7 +5374,7 @@ testsAlonzo: List[SignTxTestCase] = [
             ],
             includeNetworkId=True,
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a048183028200581c29fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd581cf61c42cbf7c8c53af3f520508212ad3e72f674f957fe23ff0acb497305a1581de129fb5fd4aa8cadd6705acc8263cee0fc62edca5ac38db593fec2f9fd1903e80f01"
         ),
@@ -5409,7 +5409,7 @@ testsStreaming: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Sign_tx_streaming_many_required_signers",
         tx=_tx_streaming_many_required_signers,
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex=(
                 "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0e9902bc"
@@ -5437,7 +5437,7 @@ testsStreaming: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Sign_tx_streaming_many_required_signers_nano",
         tx=_tx_streaming_many_required_signers_nano,
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex=(
                 "a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a0e990100"
@@ -5472,7 +5472,7 @@ testsStreaming: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Sign_tx_streaming_many_outputs",
         tx=_tx_streaming_many_outputs,
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex=(
                 "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001985a"
@@ -5498,7 +5498,7 @@ testsStreaming: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Sign_tx_blind_signing_prompt_many_outputs",
         tx=_tx_blind_signing_prompt_many_outputs,
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex=(
                 "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018a"
@@ -5524,7 +5524,7 @@ testsStreaming: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Sign_tx_blind_signing_prompt_many_outputs_hash_only",
         tx=_tx_blind_signing_prompt_many_outputs,
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex=(
                 "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018a"
@@ -5550,7 +5550,7 @@ testsStreaming: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Sign_tx_blind_signing_prompt_streaming_many_outputs",
         tx=_tx_streaming_many_outputs,
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex=(
                 "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001985a"
@@ -5577,7 +5577,7 @@ testsStreaming: List[SignTxTestCase] = [
     SignTxTestCase(
         name="Sign_tx_blind_signing_prompt_streaming_many_outputs_hash_only",
         tx=_tx_streaming_many_outputs,
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex=(
                 "a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001985a"
@@ -5612,7 +5612,7 @@ testsBabbage: List[SignTxTestCase] = [
             outputs=[outputs["inlineDatumWithTokensMap"]],
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a00783862028201d818565579657420616e6f746865722063686f636f6c61746502182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7"
         ),
@@ -5638,7 +5638,7 @@ testsBabbage: List[SignTxTestCase] = [
             outputs=[outputs["inlineDatum480Map"]],
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca793028201d8185901e012b8240c5470b47c159597b6f71d78c7fc99d1d8d911cb19b8f50211938ef361a22d30cd8f6354ec50e99a7d3cf3e06797ed4af3d358e01b2a957caa4010da328720b9fbe7a3a6d10209a13d2eb11933eb1bf2ab02713117e421b6dcc66297c41b95ad32d3457a0e6b44d8482385f311465964c3daff226acfb7bbda47011f1a6531db30e5b5977143c48f8b8eb739487f87dc13896f58529cfb48e415fc6123e708cdc3cb15cc1900ecf88c5fc9ff66d8ad6dae18c79e4a3c392a0df4d16ffa3e370f4dad8d8e9d171c5656bb317c78a2711057e7ae0beb1dc66ba01aa69d0c0db244e6742d7758ce8da00dfed6225d4aed4b01c42a0352688ed5803f3fd64873f11355305d9db309f4a2a6673cc408a06b8827a5edef7b0fd8742627fb8aa102a084b7db72fcb5c3d1bf437e2a936b738902a9c0258b462b9f2e9befd2c6bcfc036143bb34342b9124888a5b29fa5d60909c81319f034c11542b05ca3ff6c64c7642ff1e2b25fb60dc9bb6f5c914dd4149f31896955d4d204d822deddc46f852115a479edf7521cdf4ce596805875011855158fd303c33a2a7916a9cb7acaaf5aeca7e6efb75960e9597cd845bd9a93610bf1ab47ab0de943e8a96e26a24c4996f7b07fad437829fee5bc3496192608d4c04ac642cdec7bdbb8a948ad1d43402182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7"
         ),
@@ -5664,7 +5664,7 @@ testsBabbage: List[SignTxTestCase] = [
             outputs=[outputs["inlineDatum304WithTokensMap"]],
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a00783862028201d8185901305579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f746865722063686f636f6c6174655579657420616e6f7468657220637468657202182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7"
         ),
@@ -5690,7 +5690,7 @@ testsBabbage: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["datumHashRefScriptExternalMap"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a4005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18803d81854deadbeefdeadbeefdeadbeefdeadbeefdeadbeef02182a030a"
         ),
@@ -5711,7 +5711,7 @@ testsBabbage: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["datumHashRefScript240ExternalMap"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a4005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18803d81858f04784392787cc567ac21d7b5346a4a89ae112b7ff7610e402284042aa4e6efca7956a53c3f5cb3ec6745f5e21150f2a77bd71a2adc3f8b9539e9bab41934b477f60a8b302584d1a619ed9b178b5ce6fcad31adc0d6fc17023ede474c09f29fdbfb290a5b30b5240fae5de71168036201772c0d272ae90220181f9bf8c3198e79fc2ae32b076abf4d0e10d3166923ce56994b25c00909e3faab8ef1358c136cd3b197488efc883a7c6cfa3ac63ca9cebc62121c6e22f594420c2abd54e78282adec20ee7dba0e6de65554adb8ee8314f23f86cf7cf0906d4b6c643966baf6c54240c19f4131374e298f38a626a4ad63e6102182a030a"
         ),
@@ -5732,7 +5732,7 @@ testsBabbage: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["datumHashRefScript304ExternalMap"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a4005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18803d818590130deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeaddeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeaddeadbeef02182a030a"
         ),
@@ -5754,7 +5754,7 @@ testsBabbage: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["datumHashWithTokensMap"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a3005839105e2f080eb93bad86d401545e0ce5f2221096d6477e11e6643922fa8d2ed495234dc0d667c1316ff84e572310e265edb31330448b36b7179e01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a2487564247542686911182f4875642475426869121a007838620282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a"
         ),
@@ -5779,7 +5779,7 @@ testsBabbage: List[SignTxTestCase] = [
             ],
             validityIntervalStart=7,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000182a200583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff01821904d2a2581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a34003581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209015820000000000000000000000000000000000000000000000000000000000000000002581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a248456c204e69c3b16f1904d24874652474436f696e1a00783862a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0807"
         ),
@@ -5804,7 +5804,7 @@ testsBabbage: List[SignTxTestCase] = [
             collateralInputs=[inputs["utxoShelley"]],
             referenceInputs=[inputs["utxoShelley"], inputs["utxoShelley"]],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70012828258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7008258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700"
         ),
@@ -5829,7 +5829,7 @@ testsBabbage: List[SignTxTestCase] = [
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
             totalCollateral=10,
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7110a"
         ),
@@ -5857,7 +5857,7 @@ testsBabbage: List[SignTxTestCase] = [
             ),
             totalCollateral=10,
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b710a20058204114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f1124010203011a006ca793110a"
         ),
@@ -5887,7 +5887,7 @@ testsBabbage: List[SignTxTestCase] = [
             ),
             totalCollateral=10,
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70001818258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b710a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f1124876c29f8c45c3fa7d3af0ea45fb2564ace831f70e7d3d5b8c251739a011a006ca793110a"
         ),
@@ -5915,7 +5915,7 @@ testsBabbage: List[SignTxTestCase] = [
                 format=TxOutputFormat.ARRAY_LEGACY,
             ),
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a600818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7108258390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c1a006ca793"
         ),
@@ -5943,7 +5943,7 @@ testsBabbage: List[SignTxTestCase] = [
             collateralInputs=[inputs["utxoShelley"]],
             collateralOutput=outputs["internalBaseWithTokensMap"],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a1487564247542686911182f"
         ),
@@ -5972,7 +5972,7 @@ testsBabbage: List[SignTxTestCase] = [
             collateralOutput=outputs["internalBaseWithTokensMap"],
             totalCollateral=5,
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a800818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca79302182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010a20058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c01821a006ca793a1581c75a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a1487564247542686911182f1105"
         ),
@@ -5996,7 +5996,7 @@ testsBabbage: List[SignTxTestCase] = [
             collateralInputs=[inputs["utxoShelley"]],
             collateralOutput=outputs["externalShelleyBaseKeyhashKeyhash"],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a700818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a200583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff01821904d2a2581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a34003581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209015820000000000000000000000000000000000000000000000000000000000000000002581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a248456c204e69c3b16f1904d24874652474436f696e1a0078386202182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b0901"
         ),
@@ -6022,7 +6022,7 @@ testsBabbage: List[SignTxTestCase] = [
             collateralOutput=outputs["externalShelleyBaseKeyhashKeyhash"],
             totalCollateral=5,
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a800818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a200583901eb0baa5e570cffbe2934db29df0b6a3d7c0430ee65d4c3a7ab2fefb91bc428e4720702ebd5dab4fb175324c192dc9bb76cc5da956e3c8dff01821904d2a2581c7eae28af2208be856f7a119668ae52a49b73725e326dc16579dcc373a34003581c1e349c9bdea19fd6c147626a5260bc44b71635f398b67c59881df209015820000000000000000000000000000000000000000000000000000000000000000002581c95a292ffee938be03e9bae5657982a74e9014eb4960108c9e23a5b39a248456c204e69c3b16f1904d24874652474436f696e1a0078386202182a030a0b58203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70d818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b70010825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b09011105"
         ),
@@ -6054,7 +6054,7 @@ testsBabbage: List[SignTxTestCase] = [
             fee=42,
             ttl=10,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a400818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181a30058390114c16d7f43243bd81478e68b9db53a8528fd4fb1078d58d54a7f11241d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c011a006ca7930282005820ffd4d009f554ba4fd8ed1f1d703244819861a9d34fd4753bcf3ff32f043ce18802182a030a"
         ),
@@ -6082,7 +6082,7 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
             certificates=[certificates["poolRegistrationMixedOwnersAllRelays"]],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad858400190bb84436e44b9af68400190bb84436e44b9b500178ff2483e3a2330a34c4a5e576c2078400190bb8f6500178ff2483e3a2330a34c4a5e676c2078301190bb86d616161612e626262622e636f6d82026d616161612e626262632e636f6d82782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb"
         ),
@@ -6104,7 +6104,7 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
             certificates=[certificates["poolRegistrationDefault"]],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c818400190bb84436e44b9af682782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb"
         ),
@@ -6126,7 +6126,7 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
             certificates=[certificates["poolRegistrationMixedOwners"]],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad818400190bb84436e44b9af682782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb"
         ),
@@ -6150,7 +6150,7 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
                 certificates["poolRegistrationMixedOwnersIpv4SingleHostRelays"]
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad828400190bb84436e44b9af68301190bb86d616161612e626262622e636f6d82782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb"
         ),
@@ -6172,7 +6172,7 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
             certificates=[certificates["poolRegistrationMixedOwnersIpv4Ipv6Relays"]],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad828400190fa04436e44b9af68400190bb84436e44b9b500178ff2483e3a2330a34c4a5e576c20782782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb"
         ),
@@ -6194,7 +6194,7 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
             certificates=[certificates["poolRegistrationNoRelays"]],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c8082782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb"
         ),
@@ -6217,7 +6217,7 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
             certificates=[certificates["poolRegistrationNoMetadata"]],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c818400190bb84436e44b9af6f6"
         ),
@@ -6239,7 +6239,7 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
             certificates=[certificates["poolRegistrationEmptyMetadataUrl"]],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad81581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c818400190bb84436e44b9af682605820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb"
         ),
@@ -6264,7 +6264,7 @@ poolRegistrationOwnerTestCases: List[SignTxTestCase] = [
             outputs=[],
             certificates=[certificates["poolRegistrationMixedOwnersAllRelays"]],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b700018002182a030a04818a03581c13381d918ec0283ceeff60f7f4fc21e1540e053ccf8a77307a7a32ad582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad858400190bb84436e44b9af68400190bb84436e44b9b500178ff2483e3a2330a34c4a5e576c2078400190bb8f6500178ff2483e3a2330a34c4a5e676c2078301190bb86d616161612e626262622e636f6d82026d616161612e626262632e636f6d82782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb"
         ),
@@ -6289,7 +6289,7 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
             certificates=[certificates["poolRegistrationOperatorNoOwnersNoRelays"]],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad808082782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb"
         ),
@@ -6321,7 +6321,7 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
                 certificates["poolRegistrationOperatorOneOwnerOperatorNoRelays"]
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1eef1689a3970b7880dcf3cb4ca9f22453b3833824fea34105117c84081581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad8082782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb"
         ),
@@ -6350,7 +6350,7 @@ poolRegistrationOperatorTestCases: List[SignTxTestCase] = [
                 certificates["poolRegistrationOperatorMultipleOwnersAllRelays"]
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         unit_test_expect=SignTxUnitTestExpect(
             txBodyHex="a500818258203b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7000181825839017cb05fce110fb999f01abb4f62bc455e217d4a51fde909fa9aea545443ac53c046cf6a42095e3c60310fa802771d0672f8fe2d1861138b090102182a030a04818a03581cdbfee4665e58c8f8e9b9ff02b17f32e08a42c855476a5d867c2737b7582007821cd344d7fd7e3ae5f2ed863218cb979ff1d59e50c4276bdc479b0d0844501b0000000ba43b74001a1443fd00d81e82031864581de1794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad82581c794d9b3408c9fb67b950a48a0690f070f117e9978f7fc1d120fc58ad581c0bd5d796f5e54866a14300ec2a18d706f7461b8f0502cc2a182bc88d848400190bb84436e44b9af68400190bb84436e44b9b500178ff2483e3a2330a34c4a5e576c2078301190bb86d616161612e626262622e636f6d82026d616161612e626262632e636f6d82782968747470733a2f2f7777772e76616375756d6c6162732e636f6d2f73616d706c6555726c2e6a736f6e5820cdb714fd722c24aeb10c93dbb0ff03bd4783441cd5ba2a8b6f373390520535bb"
         ),
@@ -6382,7 +6382,7 @@ requiredSignerDenyTestCases: List[SignTxTestCase] = [
             ],
             includeNetworkId=True,
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -6396,7 +6396,7 @@ requiredSignerDenyTestCases: List[SignTxTestCase] = [
             ],
             includeNetworkId=True,
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -6410,7 +6410,7 @@ requiredSignerDenyTestCases: List[SignTxTestCase] = [
             ],
             includeNetworkId=True,
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -6424,7 +6424,7 @@ requiredSignerDenyTestCases: List[SignTxTestCase] = [
             ],
             includeNetworkId=True,
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
 ]
@@ -6441,7 +6441,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
             collateralInputs=[inputs["utxoShelley"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -6454,7 +6454,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
             certificates=[certificates["poolRegistrationOperatorNoOwnersNoRelays"]],
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -6493,7 +6493,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
             ],
             scriptDataHash="3b40265111d8bb3c3c608d95b3a0bf83461ace32d79336579a1939b3aad1c0b7",
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -6504,7 +6504,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_INVALID_PROTOCOL_MAGIC,
     ),
     SignTxTestCase(
@@ -6514,7 +6514,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_INVALID_NETWORK_ID,
     ),
     SignTxTestCase(
@@ -6524,7 +6524,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
             inputs=[],
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -6534,7 +6534,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         expected_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
     ),
@@ -6545,7 +6545,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
             inputs=[inputs["utxoMultisig"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         expected_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
     ),
@@ -6596,7 +6596,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -6658,7 +6658,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -6698,7 +6698,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -6744,7 +6744,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -6781,7 +6781,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -6824,7 +6824,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -6835,7 +6835,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["inlineByronMainnet3003112"]],
             collateralInputs=[inputs["utxoShelley"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         expected_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
     ),
@@ -6847,7 +6847,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["inlineByronMainnet3003112"]],
             collateralInputs=[inputs["utxoShelley"]],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -6879,7 +6879,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
             ],
             collateralInputs=[inputs["utxoShelley"]],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -6917,7 +6917,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
             ],
             collateralInputs=[inputs["utxoShelley"]],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -6953,7 +6953,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -6995,7 +6995,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7017,7 +7017,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
                 datum=None,
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7039,7 +7039,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
                 datum=None,
             ),
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7082,7 +7082,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
                 datum=None,
             ),
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7131,7 +7131,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
                 datum=None,
             ),
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7142,7 +7142,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["inlineByronMainnet3003112"]],
             totalCollateral=8,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7153,7 +7153,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["inlineByronMainnet3003112"]],
             totalCollateral=8,
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7185,7 +7185,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
             ],
             totalCollateral=8,
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7223,7 +7223,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
             ],
             totalCollateral=8,
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7240,7 +7240,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7257,7 +7257,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7295,7 +7295,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7339,7 +7339,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7349,7 +7349,7 @@ transactionInitDenyTestCases: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
         ),
-        signingMode=TransactionSigningMode.AUTO_TRANSACTION,
+        signingMode=TransactionSigningMode.AUTO,
         expected_swo=StatusWord.SWO_AMBIGUOUS_TX_SIGNING_MODE,
         deny_before_review=True,
     ),
@@ -7379,7 +7379,7 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7405,7 +7405,7 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7431,7 +7431,7 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7457,7 +7457,7 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7483,7 +7483,7 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7509,7 +7509,7 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7535,7 +7535,7 @@ addressParamsDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
 ]
@@ -7569,7 +7569,7 @@ certificateDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7600,7 +7600,7 @@ certificateDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7631,7 +7631,7 @@ certificateDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7653,7 +7653,7 @@ certificateDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7674,7 +7674,7 @@ certificateDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7695,7 +7695,7 @@ certificateDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7716,7 +7716,7 @@ certificateDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7737,7 +7737,7 @@ certificateDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7759,7 +7759,7 @@ certificateDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         deny_before_review=True,
     ),
@@ -7782,7 +7782,7 @@ certificateDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         deny_before_review=True,
     ),
@@ -7805,7 +7805,7 @@ certificateDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7827,7 +7827,7 @@ certificateDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
 ]
@@ -7851,7 +7851,7 @@ certificateStakingDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7872,7 +7872,7 @@ certificateStakingDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -7893,7 +7893,7 @@ certificateStakingDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
 ]
@@ -7918,7 +7918,7 @@ certificateStakePoolRetirementDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         expected_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
     ),
@@ -7941,7 +7941,7 @@ withdrawalDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -7961,7 +7961,7 @@ withdrawalDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -7980,7 +7980,7 @@ withdrawalDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -8000,7 +8000,7 @@ withdrawalDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -8027,7 +8027,7 @@ withdrawalDenyTestCases: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_WITHDRAWALS,
         unsuitable_in_ragger_reason="Seed-dependent: canonical ordering depends on derived reward addresses",
     ),
@@ -8047,7 +8047,7 @@ withdrawalDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8066,7 +8066,7 @@ withdrawalDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8085,7 +8085,7 @@ withdrawalDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8104,7 +8104,7 @@ withdrawalDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
 ]
@@ -8117,7 +8117,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         additionalWitnessPaths=("m/1852'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8128,7 +8128,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         additionalWitnessPaths=("m/1854'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8139,7 +8139,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         additionalWitnessPaths=("m/1854'/1815'/0'/0/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8150,7 +8150,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         additionalWitnessPaths=("m/1854'/1815'/0'/2/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8161,7 +8161,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         additionalWitnessPaths=("m/1855'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8172,7 +8172,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         additionalWitnessPaths=("m/1852'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8183,7 +8183,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         additionalWitnessPaths=("m/1854'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8194,7 +8194,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         additionalWitnessPaths=("m/1852'/1815'/0'/0/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8205,7 +8205,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         additionalWitnessPaths=("m/1852'/1815'/0'/2/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8216,7 +8216,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         additionalWitnessPaths=("m/1855'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8227,7 +8227,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         additionalWitnessPaths=("m/1853'/1815'/0'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8238,7 +8238,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         additionalWitnessPaths=("m/1852'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8249,7 +8249,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
             inputs=[inputs["utxoShelley"]],
             outputs=[outputs["inlineByronMainnet3003112"]],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         additionalWitnessPaths=("m/1854'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8287,7 +8287,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         additionalWitnessPaths=("m/1854'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8325,7 +8325,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         additionalWitnessPaths=("m/1852'/1815'/0'/0/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8363,7 +8363,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         additionalWitnessPaths=("m/1854'/1815'/0'/0/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8401,7 +8401,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         additionalWitnessPaths=("m/1854'/1815'/0'/2/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8439,7 +8439,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         additionalWitnessPaths=("m/1855'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8477,7 +8477,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         additionalWitnessPaths=("m/1853'/1815'/0'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8509,7 +8509,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         additionalWitnessPaths=("m/1854'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8541,7 +8541,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         additionalWitnessPaths=("m/1854'/1815'/0'/0/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8573,7 +8573,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         additionalWitnessPaths=("m/1852'/1815'/0'/2/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8605,7 +8605,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         additionalWitnessPaths=("m/1854'/1815'/0'/2/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8637,7 +8637,7 @@ witnessDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         additionalWitnessPaths=("m/1855'/1815'/0'",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -8679,7 +8679,7 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8700,7 +8700,7 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8719,7 +8719,7 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8768,7 +8768,7 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -8816,7 +8816,7 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -8847,7 +8847,7 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -8882,7 +8882,7 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         expected_warnings=(WarningBit.WARNING_BIT_NETWORK_UNUSUAL,),
     ),
@@ -8909,7 +8909,7 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -8928,7 +8928,7 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -8948,7 +8948,7 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -8967,7 +8967,7 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -8987,7 +8987,7 @@ singleAccountDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.MULTISIG_TRANSACTION,
+        signingMode=TransactionSigningMode.MULTISIG,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -9002,7 +9002,7 @@ collateralOutputDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["externalShelleyBaseKeyhashKeyhash"]],
             collateralOutput=outputs["externalByronMainnet"],
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -9028,7 +9028,7 @@ collateralOutputDenyTestCases: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -9054,7 +9054,7 @@ collateralOutputDenyTestCases: List[SignTxTestCase] = [
                 referenceScriptHex=None,
             ),
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -9077,7 +9077,7 @@ collateralOutputDenyTestCases: List[SignTxTestCase] = [
                 referenceScriptHex="deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
             ),
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -9090,7 +9090,7 @@ collateralOutputDenyTestCases: List[SignTxTestCase] = [
                 destination=destinations["deny2"], amount=7120787
             ),
         ),
-        signingMode=TransactionSigningMode.PLUTUS_TRANSACTION,
+        signingMode=TransactionSigningMode.PLUTUS,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -9102,7 +9102,7 @@ collateralOutputDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["trezorParityDatumHash1"]],
             certificates=[certificates["poolRegistrationOperatorNoOwnersNoRelays"]],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -9138,7 +9138,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
     ),
     SignTxTestCase(
@@ -9170,7 +9170,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
     ),
     SignTxTestCase(
@@ -9201,7 +9201,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
     ),
     SignTxTestCase(
@@ -9232,7 +9232,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
     ),
     SignTxTestCase(
@@ -9263,7 +9263,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
     ),
     SignTxTestCase(
@@ -9289,7 +9289,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                 ),
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
     ),
     SignTxTestCase(
@@ -9311,7 +9311,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
     ),
     SignTxTestCase(
@@ -9324,7 +9324,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                 VoterVotes(Voter(VoterType.DREP_KEY_PATH, "m/1852'/1815'/0'/3/0"), [])
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_VOTING_PROCEDURES,
     ),
     SignTxTestCase(
@@ -9340,7 +9340,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_MINT,
     ),
     SignTxTestCase(
@@ -9368,7 +9368,7 @@ testsInvalidTokenBundleOrdering: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_OUTPUTS,
     ),
 ]
@@ -9440,7 +9440,7 @@ poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         additionalWitnessPaths=("m/1852'/1815'/0'/2/0", "m/1852'/1815'/0'/2/1"),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -9510,7 +9510,7 @@ poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         additionalWitnessPaths=("m/1852'/1815'/0'/2/0", "m/1852'/1815'/0'/2/1"),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -9580,7 +9580,7 @@ poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         additionalWitnessPaths=("m/1852'/1815'/0'/2/0", "m/1854'/1815'/0'/2/0"),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -9646,7 +9646,7 @@ poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         additionalWitnessPaths=("m/1852'/1815'/0'/2/0", "m/1854'/1815'/0'/2/0"),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -9712,7 +9712,7 @@ poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         additionalWitnessPaths=("m/1852'/1815'/0'/2/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -9760,7 +9760,7 @@ poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         additionalWitnessPaths=("m/1852'/1815'/0'/2/0", "m/1854'/1815'/0'/2/0"),
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         deny_before_review=True,
@@ -9809,7 +9809,7 @@ poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         additionalWitnessPaths=("m/1852'/1815'/0'/2/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
@@ -9857,7 +9857,7 @@ poolRegistrationOwnerDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
 ]
@@ -9906,7 +9906,7 @@ stakePoolRegistrationPoolIdDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -9954,7 +9954,7 @@ stakePoolRegistrationPoolIdDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -9969,7 +9969,7 @@ outputDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["trezorParityDatumHash1"]],
             certificates=[certificates["poolRegistrationOperatorNoOwnersNoRelays"]],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -9981,7 +9981,7 @@ outputDenyTestCases: List[SignTxTestCase] = [
             outputs=[outputs["refScriptExternalMap"]],
             certificates=[certificates["poolRegistrationOperatorNoOwnersNoRelays"]],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
     ),
@@ -10005,7 +10005,7 @@ outputDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -10028,7 +10028,7 @@ outputDenyTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -10055,7 +10055,7 @@ outputDenyTestCases: List[SignTxTestCase] = [
             ],
             fee=170000,
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_OUTPUTS,
         deny_before_review=True,
     ),
@@ -10086,7 +10086,7 @@ testsCVoteRegistrationDenies: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_CVOTE_AUX_DATA_PARSING_FAIL,
         deny_before_review=True,
         unsuitable_in_ragger_reason=None,
@@ -10109,7 +10109,7 @@ testsCVoteRegistrationDenies: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
         unsuitable_in_ragger_reason=None,
@@ -10133,7 +10133,7 @@ testsCVoteRegistrationDenies: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_CVOTE_AUX_DATA_PARSING_FAIL,
         deny_before_review=True,
         unsuitable_in_ragger_reason=None,
@@ -10156,7 +10156,7 @@ testsCVoteRegistrationDenies: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
         unsuitable_in_ragger_reason=None,
@@ -10181,7 +10181,7 @@ testsCVoteRegistrationDenies: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
         unsuitable_in_ragger_reason=None,
@@ -10204,7 +10204,7 @@ testsCVoteRegistrationDenies: List[SignTxTestCase] = [
                 ),
             ),
         ),
-        signingMode=TransactionSigningMode.ORDINARY_TRANSACTION,
+        signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
         deny_before_review=True,
         unsuitable_in_ragger_reason=None,
@@ -10260,7 +10260,7 @@ invalidCertificates: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
     SignTxTestCase(
@@ -10302,7 +10302,7 @@ invalidCertificates: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
 ]
@@ -10352,7 +10352,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         deny_before_review=True,
     ),
@@ -10400,7 +10400,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         deny_before_review=True,
     ),
@@ -10448,7 +10448,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         deny_before_review=True,
     ),
@@ -10496,7 +10496,7 @@ invalidPoolMetadataTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         deny_before_review=True,
     ),
@@ -10547,7 +10547,7 @@ invalidRelayTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         deny_before_review=True,
     ),
@@ -10593,7 +10593,7 @@ invalidRelayTestCases: List[SignTxTestCase] = [
                 )
             ],
         ),
-        signingMode=TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
+        signingMode=TransactionSigningMode.POOL_REGISTRATION_OWNER,
         expected_swo=StatusWord.SWO_TX_PARSING_FAIL_CERTIFICATES,
         deny_before_review=True,
     ),

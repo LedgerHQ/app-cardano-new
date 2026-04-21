@@ -61,7 +61,7 @@ static init_apdu_params_t make_default_init_apdu_params(void) {
         .options = 0,
         .networkId = MAINNET_NETWORK_ID,
         .protocolMagic = MAINNET_PROTOCOL_MAGIC,
-        .signingMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX,
+        .signingMode = SIGN_TX_SIGNINGMODE_ORDINARY,
         .numInputs = 1,
         .numOutputs = 1,
         .includeTtl = false,
@@ -692,7 +692,7 @@ static void test_tx_witness_trailing_bytes(void **state) {
     G_context.req_type = REQUEST_SIGN_TRANSACTION;
     G_context.state.tx_state = TX_STATE_APPROVED;
     G_context.tx_info.num_witnesses = 1;
-    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
     G_context.tx_info.tx_params.num_mint_asset_groups = 0;
 
     uint8_t path_raw[32];
@@ -727,7 +727,7 @@ static void test_witness_extraction_with_wrong_state(void **state) {
     G_context.req_type = REQUEST_SIGN_TRANSACTION;
     G_context.state.tx_state = TX_STATE_NONE;
     G_context.tx_info.num_witnesses = 1;
-    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
     G_context.tx_info.tx_params.num_mint_asset_groups = 0;
 
     uint8_t path_raw[32];

@@ -110,7 +110,7 @@ static void test_collateral_output_top_level_policy_device_owned(void **state) {
 
     security_policy_t policy_without_total =
         policyForSignTxCollateralOutputAddress(&output,
-                                               SIGN_TX_SIGNINGMODE_PLUTUS_TX,
+                                               SIGN_TX_SIGNINGMODE_PLUTUS,
                                                MAINNET_NETWORK_ID,
                                                MAINNET_PROTOCOL_MAGIC,
                                                false,
@@ -119,7 +119,7 @@ static void test_collateral_output_top_level_policy_device_owned(void **state) {
 
     security_policy_t policy_with_total =
         policyForSignTxCollateralOutputAddress(&output,
-                                               SIGN_TX_SIGNINGMODE_PLUTUS_TX,
+                                               SIGN_TX_SIGNINGMODE_PLUTUS,
                                                MAINNET_NETWORK_ID,
                                                MAINNET_PROTOCOL_MAGIC,
                                                true,
@@ -136,7 +136,7 @@ static void test_collateral_output_top_level_policy_third_party(void **state) {
 
     security_policy_t policy_without_total =
         policyForSignTxCollateralOutputAddress(&output,
-                                               SIGN_TX_SIGNINGMODE_PLUTUS_TX,
+                                               SIGN_TX_SIGNINGMODE_PLUTUS,
                                                MAINNET_NETWORK_ID,
                                                MAINNET_PROTOCOL_MAGIC,
                                                false,
@@ -145,7 +145,7 @@ static void test_collateral_output_top_level_policy_third_party(void **state) {
 
     security_policy_t policy_with_total =
         policyForSignTxCollateralOutputAddress(&output,
-                                               SIGN_TX_SIGNINGMODE_PLUTUS_TX,
+                                               SIGN_TX_SIGNINGMODE_PLUTUS,
                                                MAINNET_NETWORK_ID,
                                                MAINNET_PROTOCOL_MAGIC,
                                                true,
@@ -189,7 +189,7 @@ static void test_collateral_output_subpolicy_matrix(void **state) {
 
                     security_policy_t top_level_policy =
                         policyForSignTxCollateralOutputAddress(&output,
-                                                               SIGN_TX_SIGNINGMODE_PLUTUS_TX,
+                                                               SIGN_TX_SIGNINGMODE_PLUTUS,
                                                                MAINNET_NETWORK_ID,
                                                                MAINNET_PROTOCOL_MAGIC,
                                                                total_collateral_present,

@@ -8,11 +8,11 @@
 
 bool is_valid_tx_signing_mode(uint8_t raw_mode) {
     switch (raw_mode) {
-        case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
+        case SIGN_TX_SIGNINGMODE_ORDINARY:
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
-        case SIGN_TX_SIGNINGMODE_MULTISIG_TX:
-        case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
+        case SIGN_TX_SIGNINGMODE_MULTISIG:
+        case SIGN_TX_SIGNINGMODE_PLUTUS:
         case SIGN_TX_SIGNINGMODE_AUTO:
             return true;
         default:
@@ -34,7 +34,7 @@ bool resolve_auto_tx_signing_mode(tx_params_t *tx_params) {
     }
 
     if (_has_plutus_indicator(tx_params)) {
-        tx_params->txSigningMode = SIGN_TX_SIGNINGMODE_PLUTUS_TX;
+        tx_params->txSigningMode = SIGN_TX_SIGNINGMODE_PLUTUS;
         return true;
     }
 

@@ -388,10 +388,17 @@ def _run_sign_tx_test(
     collected_witnesses: list[Witness] = []
     for path_idx, path in enumerate(witness_paths):
         # Pool registration witnesses (owner/operator) always need confirmation.
+        # Plutus witnesses also always show a review screen.
+        # AUTO is included here because all current AUTO fixtures resolve to PLUTUS
+        # (they use Plutus indicators such as collateral inputs), so the device
+        # shows the same witness confirmation screen as PLUTUS.  If an AUTO fixture
+        # is added that resolves to ORDINARY or MULTISIG this grouping would need
+        # to be revisited.
         pool_or_plutus_modes = (
-            TransactionSigningMode.POOL_REGISTRATION_AS_OWNER,
-            TransactionSigningMode.POOL_REGISTRATION_AS_OPERATOR,
-            TransactionSigningMode.PLUTUS_TRANSACTION,
+            TransactionSigningMode.POOL_REGISTRATION_OWNER,
+            TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
+            TransactionSigningMode.PLUTUS,
+            TransactionSigningMode.AUTO,
         )
         witness_has_non_hidden_review = (
             _is_unusual_witness_path_for_navigation(path)
@@ -600,7 +607,7 @@ def test_sign_tx_deny(
         if len(testCase.expected_warnings) > 0:
             return True
 
-        if deny_signing_mode == TransactionSigningMode.PLUTUS_TRANSACTION:
+        if deny_signing_mode == TransactionSigningMode.PLUTUS:
             return True
 
         for certificate in deny_tx.certificates:

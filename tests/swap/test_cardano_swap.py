@@ -155,14 +155,12 @@ class CardanoShelleySwapTests(ExchangeTestRunner):
         # In swap mode, no UI review is needed (on_review=None)
         client.sign_tx(
             tx,
-            TransactionSigningMode.ORDINARY_TRANSACTION,
+            TransactionSigningMode.ORDINARY,
             on_review=None,
         )
 
         # Swap flow is completed only after all witnesses are requested and signed.
-        witness_paths = gather_witness_paths(
-            tx, TransactionSigningMode.ORDINARY_TRANSACTION, []
-        )
+        witness_paths = gather_witness_paths(tx, TransactionSigningMode.ORDINARY, [])
         for witness_path in witness_paths:
             client.sign_tx_witness(witness_path)
 
@@ -177,7 +175,7 @@ class CardanoShelleySwapDenyMultipleThirdPartyOutputs(CardanoShelleySwapTests):
         # Must be denied in swap mode with SWO_SWAP_CHECKING_FAIL.
         client.sign_tx(
             tx,
-            TransactionSigningMode.ORDINARY_TRANSACTION,
+            TransactionSigningMode.ORDINARY,
             on_review=None,
         )
 
@@ -211,14 +209,14 @@ class CardanoShelleySwapDenyWitnessPoolColdPath(CardanoShelleySwapTests):
         denied_witness_path = "m/1853'/1815'/0'/0'"
         client.sign_tx(
             tx,
-            TransactionSigningMode.ORDINARY_TRANSACTION,
+            TransactionSigningMode.ORDINARY,
             additional_witness_paths=[denied_witness_path],
             on_review=None,
         )
 
         witness_paths = gather_witness_paths(
             tx,
-            TransactionSigningMode.ORDINARY_TRANSACTION,
+            TransactionSigningMode.ORDINARY,
             [denied_witness_path],
         )
         for witness_path in witness_paths:

@@ -30,11 +30,11 @@ static tx_params_t make_params(sign_tx_signingmode_t mode) {
 
 static void test_is_valid_accepts_all_concrete_modes(void **state) {
     (void) state;
-    assert_true(is_valid_tx_signing_mode(SIGN_TX_SIGNINGMODE_ORDINARY_TX));
+    assert_true(is_valid_tx_signing_mode(SIGN_TX_SIGNINGMODE_ORDINARY));
     assert_true(is_valid_tx_signing_mode(SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER));
     assert_true(is_valid_tx_signing_mode(SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR));
-    assert_true(is_valid_tx_signing_mode(SIGN_TX_SIGNINGMODE_MULTISIG_TX));
-    assert_true(is_valid_tx_signing_mode(SIGN_TX_SIGNINGMODE_PLUTUS_TX));
+    assert_true(is_valid_tx_signing_mode(SIGN_TX_SIGNINGMODE_MULTISIG));
+    assert_true(is_valid_tx_signing_mode(SIGN_TX_SIGNINGMODE_PLUTUS));
 }
 
 static void test_is_valid_accepts_auto(void **state) {
@@ -57,17 +57,17 @@ static void test_is_valid_rejects_unknown_values(void **state) {
 
 static void test_resolve_noop_on_concrete_mode(void **state) {
     (void) state;
-    tx_params_t p = make_params(SIGN_TX_SIGNINGMODE_ORDINARY_TX);
+    tx_params_t p = make_params(SIGN_TX_SIGNINGMODE_ORDINARY);
     assert_true(resolve_auto_tx_signing_mode(&p));
-    assert_int_equal(p.txSigningMode, SIGN_TX_SIGNINGMODE_ORDINARY_TX);
+    assert_int_equal(p.txSigningMode, SIGN_TX_SIGNINGMODE_ORDINARY);
 
-    p = make_params(SIGN_TX_SIGNINGMODE_PLUTUS_TX);
+    p = make_params(SIGN_TX_SIGNINGMODE_PLUTUS);
     assert_true(resolve_auto_tx_signing_mode(&p));
-    assert_int_equal(p.txSigningMode, SIGN_TX_SIGNINGMODE_PLUTUS_TX);
+    assert_int_equal(p.txSigningMode, SIGN_TX_SIGNINGMODE_PLUTUS);
 
-    p = make_params(SIGN_TX_SIGNINGMODE_MULTISIG_TX);
+    p = make_params(SIGN_TX_SIGNINGMODE_MULTISIG);
     assert_true(resolve_auto_tx_signing_mode(&p));
-    assert_int_equal(p.txSigningMode, SIGN_TX_SIGNINGMODE_MULTISIG_TX);
+    assert_int_equal(p.txSigningMode, SIGN_TX_SIGNINGMODE_MULTISIG);
 }
 
 // ---------------------------------------------------------------------------
@@ -79,7 +79,7 @@ static void test_resolve_auto_via_collateral_inputs(void **state) {
     tx_params_t p = make_params(SIGN_TX_SIGNINGMODE_AUTO);
     p.num_collateral_inputs = 1;
     assert_true(resolve_auto_tx_signing_mode(&p));
-    assert_int_equal(p.txSigningMode, SIGN_TX_SIGNINGMODE_PLUTUS_TX);
+    assert_int_equal(p.txSigningMode, SIGN_TX_SIGNINGMODE_PLUTUS);
 }
 
 static void test_resolve_auto_via_collateral_output(void **state) {
@@ -87,7 +87,7 @@ static void test_resolve_auto_via_collateral_output(void **state) {
     tx_params_t p = make_params(SIGN_TX_SIGNINGMODE_AUTO);
     p.includeCollateralOutput = true;
     assert_true(resolve_auto_tx_signing_mode(&p));
-    assert_int_equal(p.txSigningMode, SIGN_TX_SIGNINGMODE_PLUTUS_TX);
+    assert_int_equal(p.txSigningMode, SIGN_TX_SIGNINGMODE_PLUTUS);
 }
 
 static void test_resolve_auto_via_total_collateral(void **state) {
@@ -95,7 +95,7 @@ static void test_resolve_auto_via_total_collateral(void **state) {
     tx_params_t p = make_params(SIGN_TX_SIGNINGMODE_AUTO);
     p.includeTotalCollateral = true;
     assert_true(resolve_auto_tx_signing_mode(&p));
-    assert_int_equal(p.txSigningMode, SIGN_TX_SIGNINGMODE_PLUTUS_TX);
+    assert_int_equal(p.txSigningMode, SIGN_TX_SIGNINGMODE_PLUTUS);
 }
 
 static void test_resolve_auto_via_reference_inputs(void **state) {
@@ -103,7 +103,7 @@ static void test_resolve_auto_via_reference_inputs(void **state) {
     tx_params_t p = make_params(SIGN_TX_SIGNINGMODE_AUTO);
     p.num_reference_inputs = 1;
     assert_true(resolve_auto_tx_signing_mode(&p));
-    assert_int_equal(p.txSigningMode, SIGN_TX_SIGNINGMODE_PLUTUS_TX);
+    assert_int_equal(p.txSigningMode, SIGN_TX_SIGNINGMODE_PLUTUS);
 }
 
 static void test_resolve_auto_via_script_data_hash(void **state) {
@@ -111,7 +111,7 @@ static void test_resolve_auto_via_script_data_hash(void **state) {
     tx_params_t p = make_params(SIGN_TX_SIGNINGMODE_AUTO);
     p.includeScriptDataHash = true;
     assert_true(resolve_auto_tx_signing_mode(&p));
-    assert_int_equal(p.txSigningMode, SIGN_TX_SIGNINGMODE_PLUTUS_TX);
+    assert_int_equal(p.txSigningMode, SIGN_TX_SIGNINGMODE_PLUTUS);
 }
 
 // ---------------------------------------------------------------------------
