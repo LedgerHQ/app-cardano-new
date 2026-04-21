@@ -38,6 +38,12 @@
 #include "swap_lib.h"
 #endif
 
+#ifdef TRACE_HANDLERS
+#define TRACE_MODULE(...) TRACE("[dispatcher] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void) 0
+#endif
+
 /**
  * Map request type to its expected instruction
  * Used to detect instruction interleaving attacks
@@ -45,7 +51,7 @@
  * Precondition: req_type != REQUEST_NONE
  */
 static command_e req_type_to_instruction(request_type_e req_type) {
-    LEDGER_ASSERT(req_type != REQUEST_NONE, "REQUEST_NONE does not map to an instruction");
+    ASSERT(req_type != REQUEST_NONE);
 
     switch (req_type) {
         case REQUEST_EXPORT_PUBKEY:
@@ -72,29 +78,20 @@ static command_e req_type_to_instruction(request_type_e req_type) {
 
 void apdu_dispatcher(const command_t *cmd) {
     ASSERT(cmd != NULL);
-    apdu_response_begin(cmd->ins);
-    TRACE("G_context.req_type: %d", G_context.req_type);
-
-    // Log the appropriate state based on request type
-    switch (G_context.req_type) {
-        case REQUEST_SIGN_TRANSACTION:
-            TRACE("G_context.state.tx_state: %d", G_context.state.tx_state);
-            break;
-        case REQUEST_SIGN_OPCERT:
-            TRACE("G_context.state.opcert_state: %d", G_context.state.opcert_state);
-            break;
-        case REQUEST_DERIVE_ADDRESS:
-            TRACE("G_context.state.derive_address_state: %d", G_context.state.derive_address_state);
-            break;
-        default:
-            // Stateless operations (GET_PUBLIC_KEY, GET_VERSION, etc.)
-            break;
-    }
+    TRACE_MODULE("G_context.req_type: %d", G_context.req_type);
 
     if (cmd->cla != CLA) {
+        // No handler is invoked for malformed top-level APDUs; send the terminal SW directly.
         TRACE("Invalid CLA: got=0x%02x expected=0x%02x", cmd->cla, CLA);
-        apdu_response_send_sw(SWO_INVALID_CLA);
-        apdu_response_assert_sent_or_deferred();
+        int io_send_result = io_send_sw(SWO_INVALID_CLA);
+        ASSERT(io_send_result >= 0);
+        return;
+    }
+
+    if (apdu_response_is_pending_ux()) {
+        TRACE_MODULE("Deferred APDU still pending UX, rejecting new command ins=%d", cmd->ins);
+        int io_send_result = io_send_sw(SWO_COMMAND_NOT_ALLOWED);
+        ASSERT(io_send_result >= 0);
         return;
     }
 
@@ -103,18 +100,43 @@ void apdu_dispatcher(const command_t *cmd) {
     if (G_context.req_type != REQUEST_NONE) {
         command_e expected_ins = req_type_to_instruction(G_context.req_type);
         if (cmd->ins != expected_ins) {
-            TRACE("Instruction interleaving detected: current=%d (req_type=%d), attempted=%d",
-                  expected_ins,
-                  G_context.req_type,
-                  cmd->ins);
-            send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
-            apdu_response_assert_sent_or_deferred();
+            TRACE(
+                "Stale in-progress call detected: current=%d (req_type=%d), attempted=%d;"
+                " resetting and asking host to retry",
+                expected_ins,
+                G_context.req_type,
+                cmd->ins);
+            // Non-UX stale state from an abandoned transport stream: reset to idle and return
+            // a dedicated retryable status so the host can safely re-send the first APDU.
+            // UX-pending case was already handled above and is explicitly not this path.
+            reset_app_context();
+            int io_send_result = io_send_sw(SWO_STILL_IN_CALL_RESET_DONE);
+            ASSERT(io_send_result >= 0);
             return;
         }
-        TRACE("Same instruction continuing: ins=%d", cmd->ins);
+        TRACE_MODULE("Same instruction continuing: ins=%d", cmd->ins);
     } else {
         // This is a new request, ensure we start with a clean context
         reset_app_context();
+    }
+
+    apdu_response_begin(cmd->ins);
+
+    // Log the appropriate state based on request type
+    switch (G_context.req_type) {
+        case REQUEST_SIGN_TRANSACTION:
+            TRACE_MODULE("G_context.state.tx_state: %d", G_context.state.tx_state);
+            break;
+        case REQUEST_SIGN_OPCERT:
+            TRACE_MODULE("G_context.state.opcert_state: %d", G_context.state.opcert_state);
+            break;
+        case REQUEST_DERIVE_ADDRESS:
+            TRACE_MODULE("G_context.state.derive_address_state: %d",
+                         G_context.state.derive_address_state);
+            break;
+        default:
+            // Stateless operations (GET_PUBLIC_KEY, GET_VERSION, etc.)
+            break;
     }
 
 #ifdef HAVE_SWAP
@@ -135,7 +157,7 @@ void apdu_dispatcher(const command_t *cmd) {
     do {                                             \
         if (condition) {                             \
             send_swo_and_reset(SWO_INCORRECT_P1_P2); \
-            apdu_response_assert_sent_or_deferred(); \
+            apdu_response_finalize_after_handler();  \
             return;                                  \
         }                                            \
     } while (0)
@@ -147,28 +169,28 @@ void apdu_dispatcher(const command_t *cmd) {
             REJECT_USED_P1(cmd->p1);
             REJECT_USED_P2(cmd->p2);
             handler_get_serial(&data_buffer);
-            apdu_response_assert_sent_or_deferred();
+            apdu_response_finalize_after_handler();
             return;
 
         case INS_GET_VERSION:
             REJECT_USED_P1(cmd->p1);
             REJECT_USED_P2(cmd->p2);
             handler_get_version(&data_buffer);
-            apdu_response_assert_sent_or_deferred();
+            apdu_response_finalize_after_handler();
             return;
 
         case INS_GET_APP_NAME:
             REJECT_USED_P1(cmd->p1);
             REJECT_USED_P2(cmd->p2);
             handler_get_app_name(&data_buffer);
-            apdu_response_assert_sent_or_deferred();
+            apdu_response_finalize_after_handler();
             return;
 
         case INS_GET_PUBLIC_KEY: {
             REJECT_USED_P1(cmd->p1);
             REJECT_USED_P2(cmd->p2);
             handler_get_public_key(&data_buffer);
-            apdu_response_assert_sent_or_deferred();
+            apdu_response_finalize_after_handler();
             return;
         }
 
@@ -178,11 +200,11 @@ void apdu_dispatcher(const command_t *cmd) {
                 case P1_ADDRESS_RETURN:
                 case P1_ADDRESS_DISPLAY:
                     handler_derive_address(&data_buffer, cmd->p1);
-                    apdu_response_assert_sent_or_deferred();
+                    apdu_response_finalize_after_handler();
                     return;
                 default:
                     send_swo_and_reset(SWO_INCORRECT_P1_P2);
-                    apdu_response_assert_sent_or_deferred();
+                    apdu_response_finalize_after_handler();
                     return;
             }
             ASSERT(false);
@@ -195,11 +217,11 @@ void apdu_dispatcher(const command_t *cmd) {
                 case P1_NATIVE_SCRIPT_ADD_SIMPLE:
                 case P1_NATIVE_SCRIPT_FINISH:
                     handler_derive_native_script_hash(&data_buffer, cmd->p1);
-                    apdu_response_assert_sent_or_deferred();
+                    apdu_response_finalize_after_handler();
                     return;
                 default:
                     send_swo_and_reset(SWO_INCORRECT_P1_P2);
-                    apdu_response_assert_sent_or_deferred();
+                    apdu_response_finalize_after_handler();
                     return;
             }
 
@@ -207,12 +229,12 @@ void apdu_dispatcher(const command_t *cmd) {
             if (cmd->p1 == P1_TX_AUX_DATA) {
                 if (cmd->p2 != P2_AUX_DATA_INIT && cmd->p2 != P2_AUX_DATA_DELEGATION) {
                     send_swo_and_reset(SWO_INCORRECT_P1_P2);
-                    apdu_response_assert_sent_or_deferred();
+                    apdu_response_finalize_after_handler();
                     return;
                 }
 
                 handler_sign_tx_aux_data(&data_buffer, cmd->p2);
-                apdu_response_assert_sent_or_deferred();
+                apdu_response_finalize_after_handler();
                 return;
             }
 
@@ -221,19 +243,19 @@ void apdu_dispatcher(const command_t *cmd) {
 
             if (cmd->p1 == P1_TX_SIGN_WITNESS) {
                 handler_sign_tx_witness(&data_buffer);
-                apdu_response_assert_sent_or_deferred();
+                apdu_response_finalize_after_handler();
                 return;
             }
 
             handler_sign_tx(&data_buffer, cmd->p1);
-            apdu_response_assert_sent_or_deferred();
+            apdu_response_finalize_after_handler();
             return;
 
         case INS_SIGN_OPCERT: {
             REJECT_USED_P1(cmd->p1);
             REJECT_USED_P2(cmd->p2);
             handler_sign_opcert(&data_buffer);
-            apdu_response_assert_sent_or_deferred();
+            apdu_response_finalize_after_handler();
             return;
         }
 
@@ -244,11 +266,11 @@ void apdu_dispatcher(const command_t *cmd) {
                 case P1_CVOTE_CHUNK:
                 case P1_CVOTE_CONFIRM:
                     handler_sign_cvote(&data_buffer, cmd->p1);
-                    apdu_response_assert_sent_or_deferred();
+                    apdu_response_finalize_after_handler();
                     return;
                 default:
                     send_swo_and_reset(SWO_INCORRECT_P1_P2);
-                    apdu_response_assert_sent_or_deferred();
+                    apdu_response_finalize_after_handler();
                     return;
             }
         }
@@ -260,11 +282,11 @@ void apdu_dispatcher(const command_t *cmd) {
                 case P1_SIGN_MSG_CHUNK:
                 case P1_SIGN_MSG_CONFIRM:
                     handler_sign_msg(&data_buffer, cmd->p1);
-                    apdu_response_assert_sent_or_deferred();
+                    apdu_response_finalize_after_handler();
                     return;
                 default:
                     send_swo_and_reset(SWO_INCORRECT_P1_P2);
-                    apdu_response_assert_sent_or_deferred();
+                    apdu_response_finalize_after_handler();
                     return;
             }
         }
@@ -275,18 +297,19 @@ void apdu_dispatcher(const command_t *cmd) {
             REJECT_USED_P1(cmd->p1);
             REJECT_USED_P2(cmd->p2);
             handler_debug_set_settings(&data_buffer);
-            apdu_response_assert_sent_or_deferred();
+            apdu_response_finalize_after_handler();
             return;
         }
 #endif
 
         default:
             send_swo_and_reset(SWO_INVALID_INS);
-            apdu_response_assert_sent_or_deferred();
+            apdu_response_finalize_after_handler();
             return;
     }
 
 #undef REJECT_USED_P2
 #undef REJECT_USED_P1
 #undef REJECT_INCORRECT_P1_P2_IF
+#undef TRACE_MODULE
 }

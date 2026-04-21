@@ -122,7 +122,7 @@ static void test_reward_key_third_party_output_denied(void **state) {
     warning_bits_t w = 0;
 
     security_policy_t policy = policyForSignTxOutput(&output,
-                                                     SIGN_TX_SIGNINGMODE_ORDINARY_TX,
+                                                     SIGN_TX_SIGNINGMODE_ORDINARY,
                                                      MAINNET_NETWORK_ID,
                                                      764824073,
                                                      &w);
@@ -156,7 +156,7 @@ static void test_reward_script_third_party_output_denied(void **state) {
     warning_bits_t w = 0;
 
     security_policy_t policy = policyForSignTxOutput(&output,
-                                                     SIGN_TX_SIGNINGMODE_ORDINARY_TX,
+                                                     SIGN_TX_SIGNINGMODE_ORDINARY,
                                                      MAINNET_NETWORK_ID,
                                                      764824073,
                                                      &w);
@@ -204,7 +204,7 @@ static void test_committee_hot_key_hash_voter_denied_in_ordinary_tx(void **state
     warning_bits_t w = 0;
 
     security_policy_t policy =
-        policyForSignTxVotingProcedure(SIGN_TX_SIGNINGMODE_ORDINARY_TX, &voter, &w);
+        policyForSignTxVotingProcedure(SIGN_TX_SIGNINGMODE_ORDINARY, &voter, &w);
     assert_int_equal(policy, POLICY_DENY);
 }
 
@@ -223,7 +223,7 @@ static void test_committee_hot_key_hash_voter_denied_in_multisig_tx(void **state
     warning_bits_t w = 0;
 
     security_policy_t policy =
-        policyForSignTxVotingProcedure(SIGN_TX_SIGNINGMODE_MULTISIG_TX, &voter, &w);
+        policyForSignTxVotingProcedure(SIGN_TX_SIGNINGMODE_MULTISIG, &voter, &w);
     assert_int_equal(policy, POLICY_DENY);
 }
 
@@ -262,7 +262,7 @@ static void test_pool_retirement_denied_in_multisig(void **state) {
     ext_credential_t pool_credential = make_pool_cold_credential();
     warning_bits_t w = 0;
     security_policy_t policy =
-        policyForSignTxCertificateStakePoolRetirement(SIGN_TX_SIGNINGMODE_MULTISIG_TX,
+        policyForSignTxCertificateStakePoolRetirement(SIGN_TX_SIGNINGMODE_MULTISIG,
                                                       &pool_credential,
                                                       0,
                                                       &w);
@@ -304,7 +304,7 @@ static void test_pool_retirement_allowed_in_ordinary(void **state) {
     ext_credential_t pool_credential = make_pool_cold_credential();
     warning_bits_t w = 0;
     security_policy_t policy =
-        policyForSignTxCertificateStakePoolRetirement(SIGN_TX_SIGNINGMODE_ORDINARY_TX,
+        policyForSignTxCertificateStakePoolRetirement(SIGN_TX_SIGNINGMODE_ORDINARY,
                                                       &pool_credential,
                                                       0,
                                                       &w);
@@ -318,7 +318,7 @@ static void test_pool_retirement_allowed_in_plutus(void **state) {
     ext_credential_t pool_credential = make_pool_cold_credential();
     warning_bits_t w = 0;
     security_policy_t policy =
-        policyForSignTxCertificateStakePoolRetirement(SIGN_TX_SIGNINGMODE_PLUTUS_TX,
+        policyForSignTxCertificateStakePoolRetirement(SIGN_TX_SIGNINGMODE_PLUTUS,
                                                       &pool_credential,
                                                       0,
                                                       &w);

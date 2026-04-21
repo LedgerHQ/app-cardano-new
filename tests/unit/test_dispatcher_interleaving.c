@@ -95,7 +95,7 @@ void apdu_response_deferred(void) {
     g_apdu_response_deferred = true;
 }
 
-void apdu_response_assert_sent_or_deferred(void) {
+void apdu_response_finalize_after_handler(void) {
     if (!g_apdu_response_active) {
         abort();
     }
@@ -107,6 +107,10 @@ void apdu_response_assert_sent_or_deferred(void) {
         g_apdu_response_sent = false;
         g_apdu_response_deferred = false;
     }
+}
+
+bool apdu_response_is_pending_ux(void) {
+    return !g_apdu_response_sent && g_apdu_response_deferred;
 }
 
 void apdu_response_send_sw(uint16_t swo) {
@@ -284,9 +288,85 @@ static void test_interleaving_guard_blocks_other_instructions(void **state) {
         command_t cmd = make_command(attempted_ins, P1_UNUSED, P2_UNUSED);
         apdu_dispatcher(&cmd);
 
-        assert_int_equal(g_last_swo, SWO_COMMAND_NOT_ALLOWED);
+        // Non-UX stale in-progress call: dispatcher resets to idle and returns the
+        // dedicated retryable status (equivalent to the old app's ERR_STILL_IN_CALL).
+        assert_int_equal(g_last_swo, SWO_STILL_IN_CALL_RESET_DONE);
         assert_int_equal(G_context.req_type, REQUEST_NONE);
+        assert_false(g_apdu_response_active);
     }
+}
+
+static void test_stale_call_reset_allows_fresh_request_to_succeed(void **state) {
+    (void) state;
+
+    // Simulate the old-app "stray first APDU of a new operation after a host-abandoned previous
+    // stream" scenario: the app holds stale non-UX req_type, the host sends a different INS, the
+    // dispatcher must reset and return SWO_STILL_IN_CALL_RESET_DONE, and a follow-up (retry) of
+    // the new first APDU must then succeed cleanly.
+    reset_test_context();
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+
+    command_t stray_cmd = make_command(INS_GET_PUBLIC_KEY, P1_UNUSED, P2_UNUSED);
+    apdu_dispatcher(&stray_cmd);
+
+    assert_int_equal(g_last_swo, SWO_STILL_IN_CALL_RESET_DONE);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+    assert_false(g_apdu_response_active);
+
+    // Host retries the same first APDU: it must now be dispatched normally.
+    g_last_swo = 0;
+    g_last_called_ins = 0;
+    command_t retry_cmd = make_command(INS_GET_PUBLIC_KEY, P1_UNUSED, P2_UNUSED);
+    apdu_dispatcher(&retry_cmd);
+
+    assert_int_equal(g_last_swo, SWO_SUCCESS);
+    assert_int_equal(g_last_called_ins, INS_GET_PUBLIC_KEY);
+}
+
+static void test_interleaving_during_deferred_response_preserves_original_state(void **state) {
+    (void) state;
+
+    reset_test_context();
+    g_get_serial_should_defer = true;
+
+    command_t deferred_cmd = make_command(INS_GET_SERIAL, P1_UNUSED, P2_UNUSED);
+    apdu_dispatcher(&deferred_cmd);
+
+    assert_int_equal(g_last_called_ins, INS_GET_SERIAL);
+    assert_true(g_apdu_response_active);
+    assert_true(g_apdu_response_deferred);
+
+    G_context.req_type = REQUEST_EXPORT_PUBKEY;
+
+    command_t stray_cmd = make_command(INS_GET_VERSION, P1_UNUSED, P2_UNUSED);
+    apdu_dispatcher(&stray_cmd);
+
+    assert_int_equal(g_last_swo, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(G_context.req_type, REQUEST_EXPORT_PUBKEY);
+    assert_true(g_apdu_response_active);
+    assert_true(g_apdu_response_deferred);
+}
+
+static void test_same_instruction_during_deferred_response_is_rejected(void **state) {
+    (void) state;
+
+    reset_test_context();
+    g_get_serial_should_defer = true;
+
+    command_t deferred_cmd = make_command(INS_GET_SERIAL, P1_UNUSED, P2_UNUSED);
+    apdu_dispatcher(&deferred_cmd);
+
+    assert_int_equal(g_last_called_ins, INS_GET_SERIAL);
+    assert_true(g_apdu_response_active);
+    assert_true(g_apdu_response_deferred);
+
+    command_t same_ins_cmd = make_command(INS_GET_SERIAL, P1_UNUSED, P2_UNUSED);
+    apdu_dispatcher(&same_ins_cmd);
+
+    assert_int_equal(g_last_swo, SWO_COMMAND_NOT_ALLOWED);
+    assert_int_equal(G_context.req_type, REQUEST_NONE);
+    assert_true(g_apdu_response_active);
+    assert_true(g_apdu_response_deferred);
 }
 
 static void test_interleaving_allows_expected_instruction(void **state) {
@@ -505,6 +585,9 @@ static int assert_no_pending_deferred_response(void **state) {
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_interleaving_guard_blocks_other_instructions),
+        cmocka_unit_test(test_stale_call_reset_allows_fresh_request_to_succeed),
+        cmocka_unit_test(test_interleaving_during_deferred_response_preserves_original_state),
+        cmocka_unit_test(test_same_instruction_during_deferred_response_is_rejected),
         cmocka_unit_test(test_interleaving_allows_expected_instruction),
         cmocka_unit_test(test_deferred_response_is_allowed),
         cmocka_unit_test(test_invalid_cla_is_rejected),

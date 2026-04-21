@@ -68,6 +68,7 @@ class StatusWord(IntEnum):
     SWO_TX_PARSING_FAIL_BUFFER_NOT_FULLY_CONSUMED = 0x6B3A
     SWO_TX_PARSING_FAIL_CANONICAL_ORDER = 0x6B3B
     SWO_INVALID_TX_SIGNING_MODE = 0x6B3C
+    SWO_AMBIGUOUS_TX_SIGNING_MODE = 0x6B3D
     SWO_CVOTE_PARSING_FAIL_VOTE_PLAN_ID = 0x6B51
     SWO_CVOTE_PARSING_FAIL_PROPOSAL_INDEX = 0x6B52
     SWO_CVOTE_PARSING_FAIL_PAYLOAD_TYPE_TAG = 0x6B53
@@ -87,3 +88,9 @@ class StatusWord(IntEnum):
 
     # Swap validation errors
     SWO_SWAP_CHECKING_FAIL = 0x6001
+
+    # Stale-call recovery (matches old Cardano app's ERR_STILL_IN_CALL = 0x6E04).
+    # Emitted when the dispatcher detects a stale non-UX in-progress request after a new
+    # instruction arrives; the app has already reset to idle and the host may retry the
+    # first APDU once.
+    SWO_STILL_IN_CALL_RESET_DONE = 0x6E04

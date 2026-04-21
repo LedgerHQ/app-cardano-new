@@ -148,7 +148,7 @@ static void test_sign_tx_witness_deny_before_approved_state(void **state) {
 
     setup_active_sign_tx_request(TX_STATE_NONE);
     G_context.tx_info.num_witnesses = 1;
-    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
 
     uint8_t path_raw[32] = {0};
     size_t path_len = write_standard_payment_path(path_raw, sizeof(path_raw));

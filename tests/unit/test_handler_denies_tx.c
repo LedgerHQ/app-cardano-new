@@ -61,7 +61,7 @@ static init_apdu_params_t make_default_init_apdu_params(void) {
         .options = 0,
         .networkId = MAINNET_NETWORK_ID,
         .protocolMagic = MAINNET_PROTOCOL_MAGIC,
-        .signingMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX,
+        .signingMode = SIGN_TX_SIGNINGMODE_ORDINARY,
         .numInputs = 1,
         .numOutputs = 1,
         .includeTtl = false,
@@ -529,6 +529,25 @@ static void test_tx_aux_data_init_rejects_wrong_aux_state(void **state) {
     assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
+// AUX_DATA INIT with a zero-length payload triggers the empty-payload guard
+// in handler_tx_aux_data_init before any allocation or parsing.
+static void test_tx_aux_data_init_rejects_empty_payload(void **state) {
+    (void) state;
+    reset_context();
+    assert_true(test_mem_init());
+
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    G_context.state.tx_state = TX_STATE_AUX_DATA;
+    tx_aux_data_ctx()->cvote_aux_data.state = CVOTE_AUX_DATA_STATE_EXPECTING_INIT;
+
+    // Empty buffer — buffer_data_size(cdata) == 0 triggers the early-return guard.
+    static const uint8_t placeholder[1] = {0x00};
+    run_sign_tx_aux_data_apdu(
+        &(buffer_t){.ptr = (uint8_t *) placeholder, .size = 0, .offset = 0},
+        P2_AUX_DATA_INIT);
+    assert_int_equal(g_last_response_swo, SWO_CVOTE_AUX_DATA_PARSING_FAIL);
+}
+
 static void test_tx_aux_data_delegation_rejects_wrong_aux_state(void **state) {
     (void) state;
     reset_context();
@@ -673,7 +692,7 @@ static void test_tx_witness_trailing_bytes(void **state) {
     G_context.req_type = REQUEST_SIGN_TRANSACTION;
     G_context.state.tx_state = TX_STATE_APPROVED;
     G_context.tx_info.num_witnesses = 1;
-    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
     G_context.tx_info.tx_params.num_mint_asset_groups = 0;
 
     uint8_t path_raw[32];
@@ -708,7 +727,7 @@ static void test_witness_extraction_with_wrong_state(void **state) {
     G_context.req_type = REQUEST_SIGN_TRANSACTION;
     G_context.state.tx_state = TX_STATE_NONE;
     G_context.tx_info.num_witnesses = 1;
-    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
     G_context.tx_info.tx_params.num_mint_asset_groups = 0;
 
     uint8_t path_raw[32];
@@ -880,6 +899,7 @@ int main(void) {
         cmocka_unit_test(test_tx_aux_data_rejects_wrong_request_type),
         cmocka_unit_test(test_tx_aux_data_rejects_wrong_tx_state),
         cmocka_unit_test(test_tx_aux_data_init_rejects_wrong_aux_state),
+        cmocka_unit_test(test_tx_aux_data_init_rejects_empty_payload),
         cmocka_unit_test(test_tx_aux_data_delegation_rejects_wrong_aux_state),
         cmocka_unit_test(test_tx_aux_data_delegation_rejects_truncated_credential),
         cmocka_unit_test(test_tx_aux_data_delegation_rejects_missing_weight),

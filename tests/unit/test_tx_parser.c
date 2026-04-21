@@ -61,7 +61,7 @@ static void test_parse_tx_fails_on_missing_inputs(void **state) {
     uint8_t empty_tx = 0;
     // num_inputs=0 with ORDINARY_TX would be denied by policyForSignTxInit (no inputs = no replay
     // protection). Use num_inputs=1 so init policy passes; the empty buffer then fails at inputs.
-    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
     G_context.tx_info.tx_params.networkId = MAINNET_NETWORK_ID;
     G_context.tx_info.tx_params.protocolMagic = MAINNET_PROTOCOL_MAGIC;
     G_context.tx_info.tx_params.num_inputs = 1;
@@ -71,7 +71,7 @@ static void test_parse_tx_fails_on_missing_inputs(void **state) {
     tx_body_ctx()->raw_tx_current_length = 0;
     apdu_response_begin(INS_SIGN_TX);
     bool ok = tx_validate();
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_false(ok);
     assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_INPUTS);
 }
@@ -82,7 +82,7 @@ static void test_parse_tx_rejects_oversized_buffer(void **state) {
 
     apdu_response_begin(INS_SIGN_TX);
     tx_handle_parse_error(SWO_INVALID_TX_LENGTH);
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_int_equal(g_last_swo, SWO_INVALID_TX_LENGTH);
 }
 
@@ -92,7 +92,7 @@ static void test_parse_error_mapping_fee(void **state) {
 
     apdu_response_begin(INS_SIGN_TX);
     tx_handle_parse_error(SWO_TX_PARSING_FAIL_FEE);
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_FEE);
 }
 
@@ -102,7 +102,7 @@ static void test_parse_error_mapping_buffer_not_fully_consumed(void **state) {
 
     apdu_response_begin(INS_SIGN_TX);
     tx_handle_parse_error(SWO_TX_PARSING_FAIL_BUFFER_NOT_FULLY_CONSUMED);
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_BUFFER_NOT_FULLY_CONSUMED);
 }
 
@@ -125,7 +125,7 @@ static void test_process_inputs_field_pass1_success(void **state) {
         .offset = 0,
     };
 
-    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_PLUTUS_TX;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_PLUTUS;
     G_context.tx_info.tx_params.num_inputs = 1;
 
     tx_processing_mode_t mode = {
@@ -154,7 +154,7 @@ static void test_process_inputs_field_parse_error_sends_inputs_swo(void **state)
         .offset = 0,
     };
 
-    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_PLUTUS_TX;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_PLUTUS;
     G_context.tx_info.tx_params.num_inputs = 1;
 
     tx_processing_mode_t mode = {
@@ -168,7 +168,7 @@ static void test_process_inputs_field_parse_error_sends_inputs_swo(void **state)
 
     apdu_response_begin(INS_SIGN_TX);
     bool ok = tx_process_inputs(&buf, &tx_body_ctx()->processing_state);
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_false(ok);
     assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_INPUTS);
 }
@@ -186,7 +186,7 @@ static void test_process_collateral_inputs_field_pass1_success(void **state) {
         .offset = 0,
     };
 
-    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_PLUTUS_TX;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_PLUTUS;
     G_context.tx_info.tx_params.num_collateral_inputs = 1;
 
     tx_processing_mode_t mode = {
@@ -215,7 +215,7 @@ static void test_process_reference_inputs_field_parse_error_sends_reference_swo(
         .offset = 0,
     };
 
-    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
     G_context.tx_info.tx_params.num_reference_inputs = 1;
 
     tx_processing_mode_t mode = {
@@ -229,7 +229,7 @@ static void test_process_reference_inputs_field_parse_error_sends_reference_swo(
 
     apdu_response_begin(INS_SIGN_TX);
     bool ok = tx_process_reference_inputs(&buf, &tx_body_ctx()->processing_state);
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_false(ok);
     assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_REFERENCE_INPUTS);
 }
@@ -250,7 +250,7 @@ static void test_process_required_signers_field_pass1_success(void **state) {
         .offset = 0,
     };
 
-    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
     G_context.tx_info.tx_params.num_required_signers = 1;
 
     tx_processing_mode_t mode = {
@@ -279,7 +279,7 @@ static void test_process_required_signers_field_parse_error_sends_required_swo(v
         .offset = 0,
     };
 
-    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
     G_context.tx_info.tx_params.num_required_signers = 1;
 
     tx_processing_mode_t mode = {
@@ -293,7 +293,7 @@ static void test_process_required_signers_field_parse_error_sends_required_swo(v
 
     apdu_response_begin(INS_SIGN_TX);
     bool ok = tx_process_required_signers(&buf, &tx_body_ctx()->processing_state);
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_false(ok);
     assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_REQUIRED_SIGNERS);
 }
@@ -309,7 +309,7 @@ static void test_mode_allows_rendering_with_validation(void **state) {
         .offset = 0,
     };
 
-    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
     G_context.tx_info.tx_params.num_inputs = 0;
 
     tx_processing_mode_t mode = {
@@ -385,7 +385,7 @@ static void test_validate_from_raw_success(void **state) {
 
     assert_int_equal(offset, sizeof(raw_tx));
 
-    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
     G_context.tx_info.tx_params.networkId = MAINNET_NETWORK_ID;
     G_context.tx_info.tx_params.protocolMagic = MAINNET_PROTOCOL_MAGIC;
     G_context.tx_info.tx_params.num_inputs = 1;
@@ -444,7 +444,7 @@ static void test_validate_fails_on_truncated_fee(void **state) {
     // fee (truncated: only 4 bytes instead of 8)
     offset += 4;
 
-    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
     G_context.tx_info.tx_params.num_inputs = 1;
     G_context.tx_info.tx_params.num_outputs = 1;
     tx_body_ctx()->raw_tx = raw_tx;
@@ -453,7 +453,7 @@ static void test_validate_fails_on_truncated_fee(void **state) {
 
     apdu_response_begin(INS_SIGN_TX);
     bool ok = tx_validate();
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_false(ok);
     assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_FEE);
 }
@@ -493,7 +493,7 @@ static void test_validate_fails_on_truncated_ttl(void **state) {
     // ttl (truncated: only 4 bytes instead of 8)
     offset += 4;
 
-    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
     G_context.tx_info.tx_params.num_inputs = 1;
     G_context.tx_info.tx_params.num_outputs = 1;
     G_context.tx_info.tx_params.includeTtl = true;
@@ -503,7 +503,7 @@ static void test_validate_fails_on_truncated_ttl(void **state) {
 
     apdu_response_begin(INS_SIGN_TX);
     bool ok = tx_validate();
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_false(ok);
     assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_TTL);
 }
@@ -542,7 +542,7 @@ static void test_validate_fails_on_truncated_withdrawals(void **state) {
     // withdrawal: only 4 bytes of amount, credential missing
     offset += 4;
 
-    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
     G_context.tx_info.tx_params.num_inputs = 1;
     G_context.tx_info.tx_params.num_outputs = 1;
     G_context.tx_info.tx_params.num_withdrawals = 1;
@@ -552,7 +552,7 @@ static void test_validate_fails_on_truncated_withdrawals(void **state) {
 
     apdu_response_begin(INS_SIGN_TX);
     bool ok = tx_validate();
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_false(ok);
     assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_WITHDRAWALS);
 }
@@ -643,7 +643,7 @@ static void test_validate_from_raw_with_tokens_and_mint_success(void **state) {
 
     assert_int_equal(offset, sizeof(raw_tx));
 
-    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY_TX;
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
     G_context.tx_info.tx_params.networkId = MAINNET_NETWORK_ID;
     G_context.tx_info.tx_params.protocolMagic = MAINNET_PROTOCOL_MAGIC;
     G_context.tx_info.tx_params.num_inputs = 1;

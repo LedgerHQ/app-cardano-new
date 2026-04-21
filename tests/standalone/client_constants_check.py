@@ -506,8 +506,15 @@ def assert_settings_menu_constants_match() -> None:
         if not callback_pattern.search(text):
             raise AssertionError(f"Callback wiring mismatch for {setting_name}")
 
+        # Accept either direct NVM access or the validated accessor function
+        setting_value_fn = (
+            storage_field_name.removesuffix("_enabled") + "_setting_value()"
+        )
+        init_value_pattern = (
+            rf"(?:N_storage\.{storage_field_name}|{re.escape(setting_value_fn)})"
+        )
         init_pattern = re.compile(
-            rf"switches\[{setting_name}_ID\]\.initState\s*=\s*\(nbgl_state_t\)\s*N_storage\.{storage_field_name};"
+            rf"switches\[{setting_name}_ID\]\.initState\s*=\s*\(nbgl_state_t\)\s*{init_value_pattern};"
             rf".*?switches\[{setting_name}_ID\]\.token\s*=\s*{setting_name}_TOKEN;",
             re.DOTALL,
         )
@@ -604,15 +611,16 @@ def assert_sign_tx_related_constants_match() -> None:
     _assert_exact_enum_mapping(
         TransactionSigningMode,
         {
-            "ORDINARY_TRANSACTION": tx_values["SIGN_TX_SIGNINGMODE_ORDINARY_TX"],
-            "POOL_REGISTRATION_AS_OWNER": tx_values[
+            "ORDINARY": tx_values["SIGN_TX_SIGNINGMODE_ORDINARY"],
+            "POOL_REGISTRATION_OWNER": tx_values[
                 "SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER"
             ],
-            "POOL_REGISTRATION_AS_OPERATOR": tx_values[
+            "POOL_REGISTRATION_OPERATOR": tx_values[
                 "SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR"
             ],
-            "MULTISIG_TRANSACTION": tx_values["SIGN_TX_SIGNINGMODE_MULTISIG_TX"],
-            "PLUTUS_TRANSACTION": tx_values["SIGN_TX_SIGNINGMODE_PLUTUS_TX"],
+            "MULTISIG": tx_values["SIGN_TX_SIGNINGMODE_MULTISIG"],
+            "PLUTUS": tx_values["SIGN_TX_SIGNINGMODE_PLUTUS"],
+            "AUTO": tx_values["SIGN_TX_SIGNINGMODE_AUTO"],
         },
     )
     _assert_exact_enum_mapping(

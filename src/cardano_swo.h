@@ -62,7 +62,8 @@ typedef enum {
     SWO_TX_PARSING_FAIL_INCLUSION_FLAG = 0x6B39,             // optional field flag error
     SWO_TX_PARSING_FAIL_BUFFER_NOT_FULLY_CONSUMED = 0x6B3A,  // extra data in buffer
     SWO_TX_PARSING_FAIL_CANONICAL_ORDER = 0x6B3B,            // CBOR canonical ordering
-    SWO_INVALID_TX_SIGNING_MODE = 0x6B3C,  // unknown or unsupported tx signing mode
+    SWO_INVALID_TX_SIGNING_MODE = 0x6B3C,    // unknown or unsupported tx signing mode
+    SWO_AMBIGUOUS_TX_SIGNING_MODE = 0x6B3D,  // AUTO mode cannot determine signing mode from tx
 
     SWO_CVOTE_PARSING_FAIL_REMAINING_VOTECAST_BYTES =
         0x6B54,                                        // failed to read remaining votecast bytes
@@ -86,4 +87,12 @@ typedef enum {
 
     // Swap validation errors
     SWO_SWAP_CHECKING_FAIL = 0x6001,  // swap parameter validation failed
+
+    // Stale-call recovery: a new instruction arrived while a previous (non-UX) request was still
+    // in progress. The dispatcher has reset the app to idle before returning this status; the host
+    // may safely retry the first APDU of the new operation once. Must NOT be emitted when a
+    // deferred UX response is still pending — that case continues to return
+    // SWO_COMMAND_NOT_ALLOWED. Value and semantics match the old Cardano app's ERR_STILL_IN_CALL,
+    // so LedgerJS' existing retry-once wrapper works unchanged.
+    SWO_STILL_IN_CALL_RESET_DONE = 0x6E04,
 } cardano_status_word_t;

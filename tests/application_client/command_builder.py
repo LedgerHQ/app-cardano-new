@@ -115,11 +115,12 @@ MAX_SIGN_TX_CHUNK_SIZE = 250
 
 
 class TransactionSigningMode(IntEnum):
-    ORDINARY_TRANSACTION = 0x03
-    POOL_REGISTRATION_AS_OWNER = 0x04
-    POOL_REGISTRATION_AS_OPERATOR = 0x05
-    MULTISIG_TRANSACTION = 0x06
-    PLUTUS_TRANSACTION = 0x07
+    ORDINARY = 0x03
+    POOL_REGISTRATION_OWNER = 0x04
+    POOL_REGISTRATION_OPERATOR = 0x05
+    MULTISIG = 0x06
+    PLUTUS = 0x07
+    AUTO = 0x08
 
 
 class TxAuxiliaryDataType(IntEnum):
@@ -826,7 +827,7 @@ def gather_witness_paths(
 
     witness_paths: List[str] = []
 
-    if signing_mode == TransactionSigningMode.MULTISIG_TRANSACTION:
+    if signing_mode == TransactionSigningMode.MULTISIG:
         for additional_path in additional_witness_paths:
             if additional_path not in witness_paths:
                 witness_paths.append(additional_path)

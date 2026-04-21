@@ -44,10 +44,12 @@ bool tx_render_ui_or_fail(tx_ui_review_mode_e review_mode) {
         return true;
     }
 
+    // LCOV_EXCL_START
     tx_review_cleanup();
     TRACE_MODULE("TX UI render failed");
     send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
     return false;
+    // LCOV_EXCL_STOP
 }
 
 static void tx_review_choice(bool confirm) {
@@ -82,7 +84,7 @@ static void tx_blind_signing_choice(bool confirm) {
     tx_ui_review_mode_e review_mode =
         confirm ? TX_UI_REVIEW_MODE_DETAILS : TX_UI_REVIEW_MODE_HASH_ONLY;
     if (!tx_render_ui_or_fail(review_mode)) {
-        return;
+        return;  // LCOV_EXCL_LINE
     }
     ui_display_transaction();
 }
@@ -226,10 +228,10 @@ void ui_display_transaction(void) {
 
     const char *review_subtitle = NULL;
     switch (G_context.tx_info.tx_params.txSigningMode) {
-        case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
+        case SIGN_TX_SIGNINGMODE_PLUTUS:
             review_subtitle = "Plutus execution";
             break;
-        case SIGN_TX_SIGNINGMODE_MULTISIG_TX:
+        case SIGN_TX_SIGNINGMODE_MULTISIG:
             review_subtitle = "Multisig transaction";
             break;
         default:
