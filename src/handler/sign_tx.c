@@ -32,8 +32,8 @@
 #include "utils.h"
 #include "cardano_buffer.h"
 
-/* Optional module-specific tracing for debugging.
- * Enabled via -DTRACE_HANDLERS to trace handler-level flow.
+/* Optional verbose flow tracing, compiled out unless -DTRACE_HANDLERS.
+ * Error paths use plain TRACE() so they are always visible for third-party debug.
  */
 #ifdef TRACE_HANDLERS
 #define TRACE_MODULE(...) TRACE("[sign_tx] " __VA_ARGS__)
@@ -49,9 +49,9 @@
 
 static bool ensure_sign_tx_state(tx_state_e required_state) {
     if (G_context.state.tx_state != required_state) {
-        TRACE_MODULE("Rejecting sign_tx command in state %d (expected %d)",
-                     G_context.state.tx_state,
-                     required_state);
+        TRACE("Rejecting sign_tx command in state %d (expected %d)",
+              G_context.state.tx_state,
+              required_state);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return false;
     }
@@ -60,9 +60,9 @@ static bool ensure_sign_tx_state(tx_state_e required_state) {
 
 static bool ensure_sign_tx_request_type(request_type_e required_request_type) {
     if (G_context.req_type != required_request_type) {
-        TRACE_MODULE("Rejecting sign_tx command for req_type %d (expected %d)",
-                     G_context.req_type,
-                     required_request_type);
+        TRACE("Rejecting sign_tx command for req_type %d (expected %d)",
+              G_context.req_type,
+              required_request_type);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return false;
     }
@@ -330,7 +330,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         return;
     }
 
-    TRACE(
+    TRACE_MODULE(
         "TX Mode=%d, Network: ID=%d, Magic=%u, Inputs=%u, Outputs=%u, Certificates=%u, "
         "Withdrawals=%u, Mint=%u, includeTTL=%d, includeVIS=%d, Witnesses=%u, RawTotalLength=%u",
         tx_params->txSigningMode,
@@ -352,7 +352,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         send_swo_and_reset(SWO_AMBIGUOUS_TX_SIGNING_MODE);
         return;
     }
-    TRACE("TX mode after AUTO resolution: %d", tx_params->txSigningMode);
+    TRACE_MODULE("TX mode after AUTO resolution: %d", tx_params->txSigningMode);
 
     // Check security policy for DENY at init time (before buffering the tx body).
     // Warning bits are intentionally discarded here; they will be re-set in tx_validate
@@ -360,7 +360,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     {
         warning_bits_t dummy_warnings = 0;
         security_policy_t init_policy = policyForSignTxInit(tx_params, &dummy_warnings);
-        TRACE("Transaction init security policy: %d", (int) init_policy);
+        TRACE_MODULE("Transaction init security policy: %d", (int) init_policy);
         if (init_policy == POLICY_DENY) {
             TRACE("Security policy DENY - rejecting transaction init");
             send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
@@ -377,7 +377,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     if (!G_called_from_swap)
 #endif
     {
-        TRACE("Calling nbgl_useCaseSpinner(\"Processing\")");
+        TRACE_MODULE("Calling nbgl_useCaseSpinner(\"Processing\")");
         nbgl_useCaseSpinner("Processing");
     }
 
@@ -385,11 +385,11 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         // Transition to AUX_DATA state; set initial aux_data sub-state before accessor is valid.
         G_context.state.tx_state = TX_STATE_AUX_DATA;
         tx_aux_data_ctx()->cvote_aux_data.state = CVOTE_AUX_DATA_STATE_EXPECTING_INIT;
-        TRACE("Transaction initialized, waiting for CVote AUX_DATA");
+        TRACE_MODULE("Transaction initialized, waiting for CVote AUX_DATA");
     } else {
         // Transition directly to CHUNKS state - no aux data expected.
         G_context.state.tx_state = TX_STATE_CHUNKS;
-        TRACE("Transaction initialized, waiting for data chunks");
+        TRACE_MODULE("Transaction initialized, waiting for data chunks");
     }
 
     apdu_response_send_sw(SWO_SUCCESS);
@@ -424,7 +424,7 @@ static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
     // Allocate buffer on first data chunk (using advertised size from client)
     if (tx_body_ctx()->raw_tx == NULL) {
         uint16_t alloc_size = G_context.tx_info.raw_tx_total_length;
-        TRACE("Allocating transaction buffer: %u bytes (advertised by client)", alloc_size);
+        TRACE_MODULE("Allocating transaction buffer: %u bytes (advertised by client)", alloc_size);
         if (!APP_MEM_CALLOC((void **) &tx_body_ctx()->raw_tx, alloc_size)) {
             // LCOV_EXCL_START
             // APP_MEM_CALLOC failure requires OOM condition unreachable in unit tests
@@ -433,7 +433,9 @@ static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
             return false;
             // LCOV_EXCL_STOP
         }
-        TRACE("Transaction buffer allocated: %u bytes at %p", alloc_size, tx_body_ctx()->raw_tx);
+        TRACE_MODULE("Transaction buffer allocated: %u bytes at %p",
+                     alloc_size,
+                     tx_body_ctx()->raw_tx);
     }
 
     // Check if adding this chunk would exceed advertised buffer size
@@ -452,9 +454,9 @@ static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
                                     chunk_size);
     LEDGER_ASSERT(chunk_copied, "buffer_move failed unexpectedly");
     tx_body_ctx()->raw_tx_current_length += chunk_size;
-    TRACE("Copied %u bytes, total: %u",
-          (unsigned) chunk_size,
-          (unsigned) tx_body_ctx()->raw_tx_current_length);
+    TRACE_MODULE("Copied %u bytes, total: %u",
+                 (unsigned) chunk_size,
+                 (unsigned) tx_body_ctx()->raw_tx_current_length);
     return true;
 }
 
@@ -471,11 +473,11 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 #ifdef HAVE_SWAP
             if (G_called_from_swap && G_swap_response_ready) {
                 // Safety against trying to make the app sign multiple TXs in swap mode
-                TRACE("Safety against double signing triggered");
+                TRACE_MODULE("Safety against double signing triggered");
                 swap_reject_and_exit(SWAP_EC_ERROR_GENERIC, SWAP_APP_CODE_MULTI_SIGN);
             }
             if (G_called_from_swap) {
-                TRACE("Swap mode transaction started");
+                TRACE_MODULE("Swap mode transaction started");
             }
 #endif
             G_context.req_type = REQUEST_SIGN_TRANSACTION;
@@ -632,7 +634,7 @@ void finalize_witness(void) {
         // Must be set before apdu_response_send_data(): the SDK IO send path checks
         // G_swap_response_ready while transmitting the response and calls os_lib_end()
         // immediately to return control to Exchange.
-        TRACE("Swap mode: final witness response will return to Exchange");
+        TRACE_MODULE("Swap mode: final witness response will return to Exchange");
         G_swap_response_ready = true;
     }
 #endif
@@ -687,9 +689,9 @@ void handler_sign_tx_witness(buffer_t *cdata) {
         return;
     }
 
-    TRACE("Witness %d: path length=%d",
-          tx_witness_ctx()->current_witness,
-          tx_witness_ctx()->witness_path.length);
+    TRACE_MODULE("Witness %d: path length=%d",
+                 tx_witness_ctx()->current_witness,
+                 tx_witness_ctx()->witness_path.length);
 
     // Check security policy for witness signing
     // Determine if mint is present in the transaction
@@ -723,7 +725,7 @@ void handler_sign_tx_witness(buffer_t *cdata) {
                                                       poolOwnerPath,
                                                       &witness_warnings);
 
-    TRACE("Witness security policy: %d", (int) policy);
+    TRACE_MODULE("Witness security policy: %d", (int) policy);
 
 #ifdef HAVE_SWAP
     // Invariant: swap-validated params must only exist in swap invocation context.
@@ -758,7 +760,7 @@ void handler_sign_tx_witness(buffer_t *cdata) {
                               "Swap flow must terminate before returning from finalize_witness");
 #endif
                 // All witnesses processed - return to main menu
-                TRACE("All POLICY_HIDE witnesses complete, returning to main menu");
+                TRACE_MODULE("All POLICY_HIDE witnesses complete, returning to main menu");
                 ui_menu_main();
             }
             return;
