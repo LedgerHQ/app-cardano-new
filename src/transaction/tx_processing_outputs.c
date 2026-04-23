@@ -121,6 +121,11 @@ static bool tx_process_output(buffer_t *output_buf,
             if (!swap_check_amount_validity(output_desc.amount)) {
                 swap_reject_and_exit(SWAP_EC_ERROR_WRONG_AMOUNT, SWAP_APP_CODE_DEFAULT);
             }
+            if (output_desc.numAssetGroups != 0) {
+                // Native tokens on a third-party output would silently redirect value;
+                // swap mode only moves ADA.
+                swap_reject_and_exit(SWAP_EC_ERROR_GENERIC, SWAP_APP_CODE_DEFAULT);
+            }
         }
 #endif
 

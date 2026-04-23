@@ -30,7 +30,7 @@ APPNAME = "Cardano ADA"
 # Application version
 APPVERSION_M = 8
 APPVERSION_N = 0
-APPVERSION_P = 1
+APPVERSION_P = 2
 APPVERSION = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 
 # Application source files
@@ -128,6 +128,5 @@ ENABLE_DYNAMIC_ALLOC = 1
 #       Lists library support          #
 ########################################
 ENABLE_LISTS_LIBRARY = 1
-DEFINES += HAVE_SDK_LL_LIB
 
 include $(BOLOS_SDK)/Makefile.standard_app

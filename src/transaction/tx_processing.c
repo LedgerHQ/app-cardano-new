@@ -956,6 +956,14 @@ static bool tx_process_donation(buffer_t *buf, tx_processing_state_t *state) {
         return true;
     }
 
+#ifdef HAVE_SWAP
+    if (G_called_from_swap) {
+        // Donation is not part of the Exchange-reviewed ADA amount; reject to prevent
+        // a hidden value transfer the user never confirmed.
+        swap_reject_and_exit(SWAP_EC_ERROR_GENERIC, SWAP_APP_CODE_DEFAULT);
+    }
+#endif
+
     uint64_t donation = 0;
     if (!buffer_read_u64(buf, &donation, BE)) {
         tx_handle_parse_error(SWO_TX_PARSING_FAIL_DONATION);
