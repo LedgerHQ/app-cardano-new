@@ -819,8 +819,7 @@ security_policy_t policyForSignTxOutputDatumHash(security_policy_t outputPolicy,
             break;
         // LCOV_EXCL_STOP
         case POLICY_SHOW:
-            SHOW_IF(is_expert_mode());
-            HIDE();
+            SHOW();
             break;
         case POLICY_HIDE:
             HIDE();
