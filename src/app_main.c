@@ -53,6 +53,11 @@ void app_main_process_one_apdu(void) {
             if (!apdu_parser(&cmd, G_io_apdu_buffer, input_len)) {
                 TRACE("BAD LENGTH:");
                 TRACE_BUFFER(G_io_apdu_buffer, input_len);
+                if (apdu_response_is_pending_ux()) {
+                    int io_send_result = io_send_sw(SWO_COMMAND_NOT_ALLOWED);
+                    ASSERT(io_send_result >= 0);
+                    return;
+                }
                 int io_send_result = io_send_sw(SWO_WRONG_DATA_LENGTH);
                 ASSERT(io_send_result >= 0);
                 reset_app_context();
