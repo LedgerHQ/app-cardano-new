@@ -75,6 +75,6 @@ unit-coverage:
 
 fuzzing:
 	@test -n "$(BOLOS_SDK)" || (echo "BOLOS_SDK must be set for fuzzing builds" && exit 1)
-	GNUMAKEFLAGS=--no-print-directory cmake -S $(FUZZING_DIR) -B $(FUZZING_BUILD_DIR) -DBOLOS_SDK=$(BOLOS_SDK) -DTARGET=$(TARGET) -DCMAKE_C_COMPILER=clang -DCMAKE_BUILD_TYPE=Debug -DSANITIZER=address
+	GNUMAKEFLAGS=--no-print-directory cmake -S $(FUZZING_DIR) -B $(FUZZING_BUILD_DIR) -DBOLOS_SDK=$(BOLOS_SDK) -DTARGET=$(TARGET) -DCMAKE_C_COMPILER=clang -DCMAKE_BUILD_TYPE=Debug -DSANITIZER=address -DAPP_BUILD_PATH=$(ROOT_DIR)
 	GNUMAKEFLAGS=--no-print-directory cmake --build $(FUZZING_BUILD_DIR) -j$(JOBS)
 	cd $(FUZZING_DIR) && ./run_all_fuzzers.sh $(FUZZ_SECONDS)
