@@ -67,13 +67,14 @@ This creates `tests/swap/.test_dependencies/` and clones:
 
 ```bash
 # From the repository root
-docker run --user "$(id -u)":"$(id -g)" --rm -ti \
-  -v "$(realpath .):/app" \
-  ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest \
+docker exec --user "$(id -u)":"$(id -g)" ledger-app-cardano-container \
   bash -c "cd /app/tests/swap && python3 helper_tool_build_dependencies.py"
 ```
 
 This builds Exchange and Ethereum apps for all devices (stax, flex, nanox, nanos+).
+Build these dependencies in the same Ledger dev-tools container used to build the
+Cardano app. Speculos rejects swap test runs when the Exchange main app and
+sideloaded apps were built with different SDK API levels.
 
 ## Running Tests
 
@@ -191,6 +192,9 @@ The test suite validates:
 
 **Build dependencies fails**
 - Make sure you're running the build script inside the Ledger Docker container
+- Prefer the active dev-tools container used by the Ledger VS Code plugin, e.g. `ledger-app-cardano-container`; avoid rebuilding swap dependencies with an older `ledger-app-builder:latest` image.
+- If Speculos reports `Invalid api_level in ... (26 vs 25)`, rebuild Exchange and Ethereum with the same API-level SDK used for Cardano.
+- If rebuilding `app-ethereum` fails on `fatal error: 'lists.h' file not found`, the checked-out `app-ethereum` revision is not compatible with the SDK/app-builder combination currently being used. Update or pin the swap dependency revision before rebuilding.
 - Check that you have enough disk space for building multiple apps
 
 ## CI Integration
