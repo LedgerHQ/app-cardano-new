@@ -19,6 +19,161 @@
 #include "test_sign_tx_fixtures_shelley.h"
 #include "apdu_finalization_check.h"
 
+static bip44_path_t make_swap_test_ordinary_payment_path(void) {
+    bip44_path_t path;
+    memset(&path, 0, sizeof(path));
+    path.length = 5;
+    path.path[0] = bip44_harden(PURPOSE_SHELLEY);
+    path.path[1] = bip44_harden(ADA_COIN_TYPE);
+    path.path[2] = bip44_harden(0);
+    path.path[3] = 1;
+    path.path[4] = 0;
+    return path;
+}
+
+static bip44_path_t make_swap_test_ordinary_staking_path(void) {
+    bip44_path_t path;
+    memset(&path, 0, sizeof(path));
+    path.length = 5;
+    path.path[0] = bip44_harden(PURPOSE_SHELLEY);
+    path.path[1] = bip44_harden(ADA_COIN_TYPE);
+    path.path[2] = bip44_harden(0);
+    path.path[3] = 2;
+    path.path[4] = 0;
+    return path;
+}
+
+static address_params_t make_swap_test_standard_change_address_params(void) {
+    address_params_t params;
+    memset(&params, 0, sizeof(params));
+    params.type = BASE_PAYMENT_KEY_STAKE_KEY;
+    params.networkId = MAINNET_NETWORK_ID;
+    params.paymentPartType = PAYMENT_PART_KEY_PATH;
+    params.paymentKeyPath = make_swap_test_ordinary_payment_path();
+    params.stakingPartType = STAKING_PART_KEY_PATH;
+    params.stakingKeyPath = make_swap_test_ordinary_staking_path();
+    return params;
+}
+
+static tx_params_t make_swap_test_base_tx_params(void) {
+    tx_params_t tx_params;
+    memset(&tx_params, 0, sizeof(tx_params));
+    tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
+    tx_params.networkId = MAINNET_NETWORK_ID;
+    tx_params.protocolMagic = MAINNET_PROTOCOL_MAGIC;
+    tx_params.num_inputs = 1;
+    tx_params.num_outputs = 2;
+    tx_params.includeTtl = true;
+    tx_params.includeValidityIntervalStart = true;
+    return tx_params;
+}
+
+static void test_sign_tx_swap_init_policy_allows_plain_ada_swap_shape(void **state) {
+    (void) state;
+
+    reset_context();
+
+    tx_params_t tx_params = make_swap_test_base_tx_params();
+    warning_bits_t w = 0;
+
+    security_policy_t policy = policyForSignTxSwapInit(&tx_params, &w);
+    assert_int_equal(policy, POLICY_HIDE);
+}
+
+static void test_sign_tx_swap_init_policy_rejects_required_signers(void **state) {
+    (void) state;
+
+    reset_context();
+
+    tx_params_t tx_params = make_swap_test_base_tx_params();
+    tx_params.num_required_signers = 1;
+    warning_bits_t w = 0;
+
+    security_policy_t policy = policyForSignTxSwapInit(&tx_params, &w);
+    assert_int_equal(policy, POLICY_DENY);
+}
+
+static void test_sign_tx_swap_output_policy_allows_plain_ada_device_owned_change(void **state) {
+    (void) state;
+
+    reset_context();
+
+    tx_output_description_t output = {
+        .format = MAP_BABBAGE,
+        .destination =
+            {
+                .type = DESTINATION_DEVICE_OWNED,
+                .params = make_swap_test_standard_change_address_params(),
+            },
+        .amount = 10,
+        .numAssetGroups = 0,
+        .includeDatum = false,
+        .includeRefScript = false,
+    };
+    warning_bits_t w = 0;
+
+    security_policy_t policy = policyForSignTxSwapOutput(&output,
+                                                         SIGN_TX_SIGNINGMODE_ORDINARY,
+                                                         MAINNET_NETWORK_ID,
+                                                         MAINNET_PROTOCOL_MAGIC,
+                                                         &w);
+    assert_int_equal(policy, POLICY_HIDE);
+}
+
+static void test_sign_tx_swap_output_policy_rejects_change_tokens(void **state) {
+    (void) state;
+
+    reset_context();
+
+    tx_output_description_t output = {
+        .format = MAP_BABBAGE,
+        .destination =
+            {
+                .type = DESTINATION_DEVICE_OWNED,
+                .params = make_swap_test_standard_change_address_params(),
+            },
+        .amount = 10,
+        .numAssetGroups = 1,
+        .includeDatum = false,
+        .includeRefScript = false,
+    };
+    warning_bits_t w = 0;
+
+    security_policy_t policy = policyForSignTxSwapOutput(&output,
+                                                         SIGN_TX_SIGNINGMODE_ORDINARY,
+                                                         MAINNET_NETWORK_ID,
+                                                         MAINNET_PROTOCOL_MAGIC,
+                                                         &w);
+    assert_int_equal(policy, POLICY_DENY);
+}
+
+static void test_sign_tx_swap_output_policy_rejects_change_datum(void **state) {
+    (void) state;
+
+    reset_context();
+
+    tx_output_description_t output = {
+        .format = MAP_BABBAGE,
+        .destination =
+            {
+                .type = DESTINATION_DEVICE_OWNED,
+                .params = make_swap_test_standard_change_address_params(),
+            },
+        .amount = 10,
+        .numAssetGroups = 0,
+        .includeDatum = true,
+        .includeRefScript = false,
+    };
+    warning_bits_t w = 0;
+
+    security_policy_t policy = policyForSignTxSwapOutput(&output,
+                                                         SIGN_TX_SIGNINGMODE_ORDINARY,
+                                                         MAINNET_NETWORK_ID,
+                                                         MAINNET_PROTOCOL_MAGIC,
+                                                         &w);
+    assert_int_equal(policy, POLICY_DENY);
+}
+
 static void test_sign_tx_swap_mode_skips_ui_and_validates_exchange_parameters(void **state) {
     (void) state;
 
@@ -63,6 +218,11 @@ static void test_sign_tx_swap_mode_skips_ui_and_validates_exchange_parameters(vo
 
 int main(void) {
     const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_sign_tx_swap_init_policy_allows_plain_ada_swap_shape),
+        cmocka_unit_test(test_sign_tx_swap_init_policy_rejects_required_signers),
+        cmocka_unit_test(test_sign_tx_swap_output_policy_allows_plain_ada_device_owned_change),
+        cmocka_unit_test(test_sign_tx_swap_output_policy_rejects_change_tokens),
+        cmocka_unit_test(test_sign_tx_swap_output_policy_rejects_change_datum),
         cmocka_unit_test(test_sign_tx_swap_mode_skips_ui_and_validates_exchange_parameters),
     };
     return _cmocka_run_group_tests("test_handler_sign_tx_swap",

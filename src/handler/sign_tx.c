@@ -367,7 +367,18 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     // so they are available for UI display.
     {
         warning_bits_t dummy_warnings = 0;
-        security_policy_t init_policy = policyForSignTxInit(tx_params, &dummy_warnings);
+        security_policy_t init_policy = POLICY_DENY;
+#ifdef HAVE_SWAP
+        if (G_called_from_swap) {
+            init_policy = policyForSignTxSwapInit(tx_params, &dummy_warnings);
+            if (init_policy == POLICY_DENY) {
+                swap_reject_and_exit(SWAP_EC_ERROR_GENERIC, SWAP_APP_CODE_DEFAULT);
+            }
+        } else
+#endif
+        {
+            init_policy = policyForSignTxInit(tx_params, &dummy_warnings);
+        }
         TRACE_MODULE("Transaction init security policy: %d", (int) init_policy);
         if (init_policy == POLICY_DENY) {
             TRACE("Security policy DENY - rejecting transaction init");
@@ -547,21 +558,6 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
                 // In swap mode there is no interactive transaction review, so we intentionally
                 // skip TX_STATE_UI_REVIEW and transition directly to TX_STATE_APPROVED.
                 // Consequently, finalize_sign_tx() is not used in this flow.
-
-                // Enforce that the transaction is a plain ADA transfer: any field that could
-                // carry unreviewed side-effects must be absent.
-                const tx_params_t *swap_tx_params = &G_context.tx_info.tx_params;
-                if (swap_tx_params->num_certificates != 0 || swap_tx_params->num_withdrawals != 0 ||
-                    swap_tx_params->num_mint_asset_groups != 0 ||
-                    swap_tx_params->num_required_signers != 0 || swap_tx_params->num_voters != 0 ||
-                    swap_tx_params->includeTreasury || swap_tx_params->includeDonation ||
-                    swap_tx_params->num_collateral_inputs != 0 ||
-                    swap_tx_params->includeCollateralOutput ||
-                    swap_tx_params->includeTotalCollateral ||
-                    swap_tx_params->num_reference_inputs != 0 ||
-                    swap_tx_params->includeScriptDataHash || swap_tx_params->includeAuxDataHash) {
-                    swap_reject_and_exit(SWAP_EC_ERROR_GENERIC, SWAP_APP_CODE_DEFAULT);
-                }
 
                 // Free raw_tx while body slot is still valid, before the union is repurposed.
                 APP_MEM_FREE_AND_NULL((void **) &tx_body_ctx()->raw_tx);

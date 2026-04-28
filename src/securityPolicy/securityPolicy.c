@@ -87,16 +87,16 @@ static address_type_t getDestinationAddressType(const tx_output_destination_t *d
  * - WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH must be set only via
  *   mark_unusual_key_derivation(w, ...), never directly.
  */
-static warning_bits_t __attribute__((noinline)) policy_warnings_snapshot(const warning_bits_t *w) {
+static warning_bits_t policy_warnings_snapshot(const warning_bits_t *w) {
     ASSERT(w != NULL);
     return *w;
 }
 
-static security_policy_t __attribute__((noinline))
-policy_checked_return(const warning_bits_t *w, warning_bits_t w_start, security_policy_t policy) {
+static security_policy_t policy_checked_return(const warning_bits_t *w,
+                                               warning_bits_t w_start,
+                                               security_policy_t policy) {
     ASSERT(w != NULL);
-    LEDGER_ASSERT(policy != POLICY_HIDE || warning_bits_except_mask(*w, w_start) == 0,
-                  "HIDE with newly added w");
+    ASSERT(policy != POLICY_HIDE || warning_bits_except_mask(*w, w_start) == 0);
     return policy;
 }
 
@@ -492,6 +492,36 @@ security_policy_t policyForSignTxInit(const tx_params_t *txParams, warning_bits_
     SHOW();
 }
 
+security_policy_t policyForSignTxSwapInit(const tx_params_t *txParams, warning_bits_t *w) {
+    POLICY_INIT();
+    ASSERT(txParams != NULL);
+
+    warning_bits_t normal_policy_warnings = 0;
+    DENY_IF(policyForSignTxInit(txParams, &normal_policy_warnings) == POLICY_DENY);
+
+    DENY_UNLESS(txParams->txSigningMode == SIGN_TX_SIGNINGMODE_ORDINARY);
+    DENY_UNLESS(txParams->networkId == MAINNET_NETWORK_ID);
+    DENY_UNLESS(txParams->protocolMagic == MAINNET_PROTOCOL_MAGIC);
+    DENY_IF(txParams->num_inputs == 0);
+    DENY_IF(txParams->num_outputs == 0);
+
+    DENY_IF(txParams->num_certificates != 0);
+    DENY_IF(txParams->num_withdrawals != 0);
+    DENY_IF(txParams->includeAuxDataHash);
+    DENY_IF(txParams->num_mint_asset_groups != 0);
+    DENY_IF(txParams->includeScriptDataHash);
+    DENY_IF(txParams->num_collateral_inputs != 0);
+    DENY_IF(txParams->num_required_signers != 0);
+    DENY_IF(txParams->includeCollateralOutput);
+    DENY_IF(txParams->includeTotalCollateral);
+    DENY_IF(txParams->num_reference_inputs != 0);
+    DENY_IF(txParams->num_voters != 0);
+    DENY_IF(txParams->includeTreasury);
+    DENY_IF(txParams->includeDonation);
+
+    HIDE();
+}
+
 // ======================================= Inputs =======================================
 
 security_policy_t policyForSignTxInput(sign_tx_signingmode_t txSigningMode,
@@ -799,6 +829,53 @@ security_policy_t policyForSignTxOutput(const tx_output_description_t *output,
                                                       networkId,
                                                       protocolMagic,
                                                       w));
+        // LCOV_EXCL_START
+        default:
+            ASSERT(false);
+            break;
+            // LCOV_EXCL_STOP
+    }
+
+    DENY();  // should not be reached
+}
+
+security_policy_t policyForSignTxSwapOutput(const tx_output_description_t *output,
+                                            sign_tx_signingmode_t txSigningMode,
+                                            const uint8_t networkId,
+                                            const uint32_t protocolMagic,
+                                            warning_bits_t *w) {
+    POLICY_INIT();
+    ASSERT(output != NULL);
+
+    DENY_UNLESS(txSigningMode == SIGN_TX_SIGNINGMODE_ORDINARY);
+    DENY_UNLESS(networkId == MAINNET_NETWORK_ID);
+    DENY_UNLESS(protocolMagic == MAINNET_PROTOCOL_MAGIC);
+
+    warning_bits_t normal_policy_warnings = 0;
+    security_policy_t normal_output_policy = policyForSignTxOutput(output,
+                                                                   txSigningMode,
+                                                                   networkId,
+                                                                   protocolMagic,
+                                                                   &normal_policy_warnings);
+    DENY_IF(normal_output_policy == POLICY_DENY);
+    DENY_IF(normal_policy_warnings != 0);
+
+    DENY_IF(output->numAssetGroups != 0);
+    DENY_IF(output->includeDatum);
+    DENY_IF(output->includeRefScript);
+
+    switch (output->destination.type) {
+        case DESTINATION_THIRD_PARTY:
+            HIDE();
+            break;
+
+        case DESTINATION_DEVICE_OWNED:
+            // In swap mode there is no Cardano-app UI, so change outputs must be
+            // boring enough for the normal policy to hide.
+            DENY_UNLESS(normal_output_policy == POLICY_HIDE);
+            HIDE();
+            break;
+
         // LCOV_EXCL_START
         default:
             ASSERT(false);
