@@ -216,6 +216,15 @@ bool ui_pairs_add_static_label(const char *label, char *tmp_buf) {
     return ui_pairs_add_static_label_impl(label, tmp_buf, true);
 }
 
+__attribute__((noinline)) bool ui_add_formatted_value(const char *label,
+                                                      char *buf,
+                                                      size_t max_len,
+                                                      bool format_ok) {
+    LEDGER_ASSERT(format_ok, "Format fn failed");
+    LEDGER_ASSERT(buf != NULL && strlen(buf) <= max_len, "Format output too long");
+    return ui_pairs_add_static_label(label, buf);
+}
+
 /**
  * Initialize the buffers
  *
