@@ -749,8 +749,8 @@ void handler_sign_tx_witness(buffer_t *cdata) {
 
 #ifdef HAVE_SWAP
     // Invariant: swap-validated params must only exist in swap invocation context.
-    if (swap_transaction_params_initialized() && !G_called_from_swap) {
-        ASSERT(false);
+    if (swap_transaction_params_initialized() && !G_called_from_swap) {  // LCOV_EXCL_LINE
+        ASSERT(false);                                                   // LCOV_EXCL_LINE
     }
 #endif
 
@@ -775,10 +775,12 @@ void handler_sign_tx_witness(buffer_t *cdata) {
 
             // Handle UI state: if this was the last witness, return to main menu.
             if (is_last_witness) {
+                // LCOV_EXCL_START
 #ifdef HAVE_SWAP
                 LEDGER_ASSERT(!G_called_from_swap,
                               "Swap flow must terminate before returning from finalize_witness");
 #endif
+                // LCOV_EXCL_STOP
                 // All witnesses processed - return to main menu
                 TRACE_MODULE("All POLICY_HIDE witnesses complete, returning to main menu");
                 ui_menu_main();

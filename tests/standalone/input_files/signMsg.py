@@ -587,6 +587,17 @@ signMsgDenyTestCases = [
         expected_swo=StatusWord.SWO_INSUFFICIENT_MEMORY,
     ),
     SignMsgDenyTestCase(
+        name="Sign_msg_deny_ascii_msg_causing_ui_ascii_buffer_overflow",
+        msgData=MessageData(
+            messageHex="41" * 65534,  # 65534 bytes -> 65534 + 2 safety bytes = overflow
+            signingPath="m/1852'/1815'/0'/0/1",
+            hashPayload=True,
+            isAscii=True,
+            addressFieldType=MessageAddressFieldType.KEY_HASH,
+        ),
+        expected_swo=StatusWord.SWO_INSUFFICIENT_MEMORY,
+    ),
+    SignMsgDenyTestCase(
         name="Sign_msg_deny_nonhashed_msg_causing_sig_structure_overflow",
         msgData=MessageData(
             messageHex="de"

@@ -120,123 +120,139 @@ static void test_sign_message_deny_sign_msg_deny_nonascii_msg_causing_ui_hex_buf
 }
 
 static const uint8_t
-    SIGN_MSG_DENY_004_SIGN_MSG_DENY_NONHASHED_MSG_CAUSING_SIG_STRUCTURE_OVERFLOW_INIT_APDU[] = {
-        0x00, 0x00, 0xFF, 0x00, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x02,
+    SIGN_MSG_DENY_004_SIGN_MSG_DENY_ASCII_MSG_CAUSING_UI_ASCII_BUFFER_OVERFLOW_INIT_APDU[] = {
+        0x00, 0x00, 0xFF, 0xFE, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x02, 0x02,
 };
 
-static void test_sign_message_deny_sign_msg_deny_nonhashed_msg_causing_sig_structure_overflow_4(
+static void test_sign_message_deny_sign_msg_deny_ascii_msg_causing_ui_ascii_buffer_overflow_4(
     void **state) {
     (void) state;
     run_deny_init_fixture(
-        SIGN_MSG_DENY_004_SIGN_MSG_DENY_NONHASHED_MSG_CAUSING_SIG_STRUCTURE_OVERFLOW_INIT_APDU,
+        SIGN_MSG_DENY_004_SIGN_MSG_DENY_ASCII_MSG_CAUSING_UI_ASCII_BUFFER_OVERFLOW_INIT_APDU,
         sizeof(
-            SIGN_MSG_DENY_004_SIGN_MSG_DENY_NONHASHED_MSG_CAUSING_SIG_STRUCTURE_OVERFLOW_INIT_APDU),
+            SIGN_MSG_DENY_004_SIGN_MSG_DENY_ASCII_MSG_CAUSING_UI_ASCII_BUFFER_OVERFLOW_INIT_APDU),
         SWO_INSUFFICIENT_MEMORY);
 }
 
 static const uint8_t
-    SIGN_MSG_DENY_005_SIGN_MSG_DENY_ASCII_NONHASHED_MSG_CAUSING_SIG_STRUCTURE_OVERFLOW_INIT_APDU[] =
+    SIGN_MSG_DENY_005_SIGN_MSG_DENY_NONHASHED_MSG_CAUSING_SIG_STRUCTURE_OVERFLOW_INIT_APDU[] = {
+        0x00, 0x00, 0xFF, 0x00, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x02,
+};
+
+static void test_sign_message_deny_sign_msg_deny_nonhashed_msg_causing_sig_structure_overflow_5(
+    void **state) {
+    (void) state;
+    run_deny_init_fixture(
+        SIGN_MSG_DENY_005_SIGN_MSG_DENY_NONHASHED_MSG_CAUSING_SIG_STRUCTURE_OVERFLOW_INIT_APDU,
+        sizeof(
+            SIGN_MSG_DENY_005_SIGN_MSG_DENY_NONHASHED_MSG_CAUSING_SIG_STRUCTURE_OVERFLOW_INIT_APDU),
+        SWO_INSUFFICIENT_MEMORY);
+}
+
+static const uint8_t
+    SIGN_MSG_DENY_006_SIGN_MSG_DENY_ASCII_NONHASHED_MSG_CAUSING_SIG_STRUCTURE_OVERFLOW_INIT_APDU[] =
         {
             0x00, 0x00, 0xFF, 0x00, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x02, 0x02,
 };
 
 static void
-test_sign_message_deny_sign_msg_deny_ascii_nonhashed_msg_causing_sig_structure_overflow_5(
+test_sign_message_deny_sign_msg_deny_ascii_nonhashed_msg_causing_sig_structure_overflow_6(
     void **state) {
     (void) state;
     run_deny_init_fixture(
-        SIGN_MSG_DENY_005_SIGN_MSG_DENY_ASCII_NONHASHED_MSG_CAUSING_SIG_STRUCTURE_OVERFLOW_INIT_APDU,
+        SIGN_MSG_DENY_006_SIGN_MSG_DENY_ASCII_NONHASHED_MSG_CAUSING_SIG_STRUCTURE_OVERFLOW_INIT_APDU,
         sizeof(
-            SIGN_MSG_DENY_005_SIGN_MSG_DENY_ASCII_NONHASHED_MSG_CAUSING_SIG_STRUCTURE_OVERFLOW_INIT_APDU),
+            SIGN_MSG_DENY_006_SIGN_MSG_DENY_ASCII_NONHASHED_MSG_CAUSING_SIG_STRUCTURE_OVERFLOW_INIT_APDU),
         SWO_INSUFFICIENT_MEMORY);
 }
 
-static const uint8_t SIGN_MSG_DENY_006_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_MSG_LENGTH_INIT_APDU[] =
+static const uint8_t SIGN_MSG_DENY_007_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_MSG_LENGTH_INIT_APDU[] =
     {
         0x00,
         0x00,
 };
 
-static void test_sign_message_deny_sign_msg_deny_init_truncated_before_msg_length_6(void **state) {
+static void test_sign_message_deny_sign_msg_deny_init_truncated_before_msg_length_7(void **state) {
     (void) state;
     run_deny_init_fixture(
-        SIGN_MSG_DENY_006_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_MSG_LENGTH_INIT_APDU,
-        sizeof(SIGN_MSG_DENY_006_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_MSG_LENGTH_INIT_APDU),
+        SIGN_MSG_DENY_007_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_MSG_LENGTH_INIT_APDU,
+        sizeof(SIGN_MSG_DENY_007_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_MSG_LENGTH_INIT_APDU),
         SWO_SIGN_MSG_PARSING_FAIL_MSG_LENGTH);
 }
 
 static const uint8_t
-    SIGN_MSG_DENY_007_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_SIGNING_PATH_INIT_APDU[] = {
+    SIGN_MSG_DENY_008_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_SIGNING_PATH_INIT_APDU[] = {
         0x00,
         0x00,
         0x00,
         0x04,
 };
 
-static void test_sign_message_deny_sign_msg_deny_init_truncated_before_signing_path_7(
+static void test_sign_message_deny_sign_msg_deny_init_truncated_before_signing_path_8(
     void **state) {
     (void) state;
     run_deny_init_fixture(
-        SIGN_MSG_DENY_007_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_SIGNING_PATH_INIT_APDU,
-        sizeof(SIGN_MSG_DENY_007_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_SIGNING_PATH_INIT_APDU),
+        SIGN_MSG_DENY_008_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_SIGNING_PATH_INIT_APDU,
+        sizeof(SIGN_MSG_DENY_008_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_SIGNING_PATH_INIT_APDU),
         SWO_SIGN_MSG_PARSING_FAIL_SIGNING_PATH);
 }
 
 static const uint8_t
-    SIGN_MSG_DENY_008_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_HASH_PAYLOAD_FLAG_INIT_APDU[] = {
+    SIGN_MSG_DENY_009_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_HASH_PAYLOAD_FLAG_INIT_APDU[] = {
         0x00, 0x00, 0x00, 0x04, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17,
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
 };
 
-static void test_sign_message_deny_sign_msg_deny_init_truncated_before_hash_payload_flag_8(
+static void test_sign_message_deny_sign_msg_deny_init_truncated_before_hash_payload_flag_9(
     void **state) {
     (void) state;
     run_deny_init_fixture(
-        SIGN_MSG_DENY_008_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_HASH_PAYLOAD_FLAG_INIT_APDU,
-        sizeof(SIGN_MSG_DENY_008_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_HASH_PAYLOAD_FLAG_INIT_APDU),
+        SIGN_MSG_DENY_009_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_HASH_PAYLOAD_FLAG_INIT_APDU,
+        sizeof(SIGN_MSG_DENY_009_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_HASH_PAYLOAD_FLAG_INIT_APDU),
         SWO_SIGN_MSG_PARSING_FAIL_HASH_PAYLOAD);
 }
 
 static const uint8_t
-    SIGN_MSG_DENY_009_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_IS_ASCII_FLAG_INIT_APDU[] = {
+    SIGN_MSG_DENY_010_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_IS_ASCII_FLAG_INIT_APDU[] = {
         0x00, 0x00, 0x00, 0x04, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17,
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01,
 };
 
-static void test_sign_message_deny_sign_msg_deny_init_truncated_before_is_ascii_flag_9(
+static void test_sign_message_deny_sign_msg_deny_init_truncated_before_is_ascii_flag_10(
     void **state) {
     (void) state;
     run_deny_init_fixture(
-        SIGN_MSG_DENY_009_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_IS_ASCII_FLAG_INIT_APDU,
-        sizeof(SIGN_MSG_DENY_009_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_IS_ASCII_FLAG_INIT_APDU),
+        SIGN_MSG_DENY_010_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_IS_ASCII_FLAG_INIT_APDU,
+        sizeof(SIGN_MSG_DENY_010_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_IS_ASCII_FLAG_INIT_APDU),
         SWO_SIGN_MSG_PARSING_FAIL_IS_ASCII);
 }
 
 static const uint8_t
-    SIGN_MSG_DENY_010_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_ADDRESS_FIELD_TYPE_INIT_APDU[] = {
+    SIGN_MSG_DENY_011_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_ADDRESS_FIELD_TYPE_INIT_APDU[] = {
         0x00, 0x00, 0x00, 0x04, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01,
 };
 
-static void test_sign_message_deny_sign_msg_deny_init_truncated_before_address_field_type_10(
+static void test_sign_message_deny_sign_msg_deny_init_truncated_before_address_field_type_11(
     void **state) {
     (void) state;
     run_deny_init_fixture(
-        SIGN_MSG_DENY_010_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_ADDRESS_FIELD_TYPE_INIT_APDU,
-        sizeof(SIGN_MSG_DENY_010_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_ADDRESS_FIELD_TYPE_INIT_APDU),
+        SIGN_MSG_DENY_011_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_ADDRESS_FIELD_TYPE_INIT_APDU,
+        sizeof(SIGN_MSG_DENY_011_SIGN_MSG_DENY_INIT_TRUNCATED_BEFORE_ADDRESS_FIELD_TYPE_INIT_APDU),
         SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_FIELD_TYPE);
 }
 
 static const uint8_t
-    SIGN_MSG_DENY_011_SIGN_MSG_DENY_CHUNK_SIZE_EXCEEDS_REMAINING_BYTES_INIT_APDU[] = {
+    SIGN_MSG_DENY_012_SIGN_MSG_DENY_CHUNK_SIZE_EXCEEDS_REMAINING_BYTES_INIT_APDU[] = {
         0x00, 0x00, 0x00, 0x0A, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x02,
 };
 
 static const uint8_t
-    SIGN_MSG_DENY_011_SIGN_MSG_DENY_CHUNK_SIZE_EXCEEDS_REMAINING_BYTES_CHUNK_APDU[] = {
+    SIGN_MSG_DENY_012_SIGN_MSG_DENY_CHUNK_SIZE_EXCEEDS_REMAINING_BYTES_CHUNK_APDU[] = {
         0x00,
         0x00,
         0x00,
@@ -253,31 +269,31 @@ static const uint8_t
         0xDE,
 };
 
-static void test_sign_message_deny_sign_msg_deny_chunk_size_exceeds_remaining_bytes_11(
+static void test_sign_message_deny_sign_msg_deny_chunk_size_exceeds_remaining_bytes_12(
     void **state) {
     (void) state;
     reset_sign_msg_test_state();
     // Send INIT successfully
     run_deny_init_fixture(
-        SIGN_MSG_DENY_011_SIGN_MSG_DENY_CHUNK_SIZE_EXCEEDS_REMAINING_BYTES_INIT_APDU,
-        sizeof(SIGN_MSG_DENY_011_SIGN_MSG_DENY_CHUNK_SIZE_EXCEEDS_REMAINING_BYTES_INIT_APDU),
+        SIGN_MSG_DENY_012_SIGN_MSG_DENY_CHUNK_SIZE_EXCEEDS_REMAINING_BYTES_INIT_APDU,
+        sizeof(SIGN_MSG_DENY_012_SIGN_MSG_DENY_CHUNK_SIZE_EXCEEDS_REMAINING_BYTES_INIT_APDU),
         SWO_SUCCESS);
     // Send CHUNK with invalid size
     run_deny_chunk_fixture(
-        SIGN_MSG_DENY_011_SIGN_MSG_DENY_CHUNK_SIZE_EXCEEDS_REMAINING_BYTES_CHUNK_APDU,
-        sizeof(SIGN_MSG_DENY_011_SIGN_MSG_DENY_CHUNK_SIZE_EXCEEDS_REMAINING_BYTES_CHUNK_APDU),
+        SIGN_MSG_DENY_012_SIGN_MSG_DENY_CHUNK_SIZE_EXCEEDS_REMAINING_BYTES_CHUNK_APDU,
+        sizeof(SIGN_MSG_DENY_012_SIGN_MSG_DENY_CHUNK_SIZE_EXCEEDS_REMAINING_BYTES_CHUNK_APDU),
         SWO_SIGN_MSG_INVALID_CHUNK_SIZE);
 }
 
 static const uint8_t
-    SIGN_MSG_DENY_012_SIGN_MSG_DENY_CHUNK_SIZE_SMALLER_THAN_EXPECTED_FOR_NONFINAL_CHUNK_INIT_APDU
+    SIGN_MSG_DENY_013_SIGN_MSG_DENY_CHUNK_SIZE_SMALLER_THAN_EXPECTED_FOR_NONFINAL_CHUNK_INIT_APDU
         [] = {
             0x00, 0x00, 0x01, 0x2C, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x02,
 };
 
 static const uint8_t
-    SIGN_MSG_DENY_012_SIGN_MSG_DENY_CHUNK_SIZE_SMALLER_THAN_EXPECTED_FOR_NONFINAL_CHUNK_CHUNK_APDU
+    SIGN_MSG_DENY_013_SIGN_MSG_DENY_CHUNK_SIZE_SMALLER_THAN_EXPECTED_FOR_NONFINAL_CHUNK_CHUNK_APDU
         [] = {
             0x00, 0x00, 0x00, 0xF9, 0xDE, 0xDE, 0xDE, 0xDE, 0xDE, 0xDE, 0xDE, 0xDE, 0xDE, 0xDE,
             0xDE, 0xDE, 0xDE, 0xDE, 0xDE, 0xDE, 0xDE, 0xDE, 0xDE, 0xDE, 0xDE, 0xDE, 0xDE, 0xDE,
@@ -301,32 +317,32 @@ static const uint8_t
 };
 
 static void
-test_sign_message_deny_sign_msg_deny_chunk_size_smaller_than_expected_for_nonfinal_chunk_12(
+test_sign_message_deny_sign_msg_deny_chunk_size_smaller_than_expected_for_nonfinal_chunk_13(
     void **state) {
     (void) state;
     reset_sign_msg_test_state();
     // Send INIT successfully
     run_deny_init_fixture(
-        SIGN_MSG_DENY_012_SIGN_MSG_DENY_CHUNK_SIZE_SMALLER_THAN_EXPECTED_FOR_NONFINAL_CHUNK_INIT_APDU,
+        SIGN_MSG_DENY_013_SIGN_MSG_DENY_CHUNK_SIZE_SMALLER_THAN_EXPECTED_FOR_NONFINAL_CHUNK_INIT_APDU,
         sizeof(
-            SIGN_MSG_DENY_012_SIGN_MSG_DENY_CHUNK_SIZE_SMALLER_THAN_EXPECTED_FOR_NONFINAL_CHUNK_INIT_APDU),
+            SIGN_MSG_DENY_013_SIGN_MSG_DENY_CHUNK_SIZE_SMALLER_THAN_EXPECTED_FOR_NONFINAL_CHUNK_INIT_APDU),
         SWO_SUCCESS);
     // Send CHUNK with invalid size
     run_deny_chunk_fixture(
-        SIGN_MSG_DENY_012_SIGN_MSG_DENY_CHUNK_SIZE_SMALLER_THAN_EXPECTED_FOR_NONFINAL_CHUNK_CHUNK_APDU,
+        SIGN_MSG_DENY_013_SIGN_MSG_DENY_CHUNK_SIZE_SMALLER_THAN_EXPECTED_FOR_NONFINAL_CHUNK_CHUNK_APDU,
         sizeof(
-            SIGN_MSG_DENY_012_SIGN_MSG_DENY_CHUNK_SIZE_SMALLER_THAN_EXPECTED_FOR_NONFINAL_CHUNK_CHUNK_APDU),
+            SIGN_MSG_DENY_013_SIGN_MSG_DENY_CHUNK_SIZE_SMALLER_THAN_EXPECTED_FOR_NONFINAL_CHUNK_CHUNK_APDU),
         SWO_SIGN_MSG_INVALID_CHUNK_SIZE);
 }
 
 static const uint8_t
-    SIGN_MSG_DENY_013_SIGN_MSG_DENY_NONASCII_BYTE_IN_MESSAGE_MARKED_AS_ASCII_INIT_APDU[] = {
+    SIGN_MSG_DENY_014_SIGN_MSG_DENY_NONASCII_BYTE_IN_MESSAGE_MARKED_AS_ASCII_INIT_APDU[] = {
         0x00, 0x00, 0x00, 0x06, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x02, 0x02,
 };
 
 static const uint8_t
-    SIGN_MSG_DENY_013_SIGN_MSG_DENY_NONASCII_BYTE_IN_MESSAGE_MARKED_AS_ASCII_CHUNK_APDU[] = {
+    SIGN_MSG_DENY_014_SIGN_MSG_DENY_NONASCII_BYTE_IN_MESSAGE_MARKED_AS_ASCII_CHUNK_APDU[] = {
         0x00,
         0x00,
         0x00,
@@ -339,23 +355,23 @@ static const uint8_t
         0xFF,
 };
 
-static void test_sign_message_deny_sign_msg_deny_nonascii_byte_in_message_marked_as_ascii_13(
+static void test_sign_message_deny_sign_msg_deny_nonascii_byte_in_message_marked_as_ascii_14(
     void **state) {
     (void) state;
     reset_sign_msg_test_state();
     // Send INIT successfully
     run_deny_init_fixture(
-        SIGN_MSG_DENY_013_SIGN_MSG_DENY_NONASCII_BYTE_IN_MESSAGE_MARKED_AS_ASCII_INIT_APDU,
-        sizeof(SIGN_MSG_DENY_013_SIGN_MSG_DENY_NONASCII_BYTE_IN_MESSAGE_MARKED_AS_ASCII_INIT_APDU),
+        SIGN_MSG_DENY_014_SIGN_MSG_DENY_NONASCII_BYTE_IN_MESSAGE_MARKED_AS_ASCII_INIT_APDU,
+        sizeof(SIGN_MSG_DENY_014_SIGN_MSG_DENY_NONASCII_BYTE_IN_MESSAGE_MARKED_AS_ASCII_INIT_APDU),
         SWO_SUCCESS);
     // Send CHUNK with non-ASCII data
     run_deny_chunk_fixture(
-        SIGN_MSG_DENY_013_SIGN_MSG_DENY_NONASCII_BYTE_IN_MESSAGE_MARKED_AS_ASCII_CHUNK_APDU,
-        sizeof(SIGN_MSG_DENY_013_SIGN_MSG_DENY_NONASCII_BYTE_IN_MESSAGE_MARKED_AS_ASCII_CHUNK_APDU),
+        SIGN_MSG_DENY_014_SIGN_MSG_DENY_NONASCII_BYTE_IN_MESSAGE_MARKED_AS_ASCII_CHUNK_APDU,
+        sizeof(SIGN_MSG_DENY_014_SIGN_MSG_DENY_NONASCII_BYTE_IN_MESSAGE_MARKED_AS_ASCII_CHUNK_APDU),
         SWO_SIGN_MSG_INVALID_ASCII);
 }
 
-static const uint8_t SIGN_MSG_DENY_014_SIGN_MSG_DENY_CHUNK_WITHOUT_INIT_CHUNK_APDU[] = {
+static const uint8_t SIGN_MSG_DENY_015_SIGN_MSG_DENY_CHUNK_WITHOUT_INIT_CHUNK_APDU[] = {
     0x00,
     0x00,
     0x00,
@@ -366,45 +382,45 @@ static const uint8_t SIGN_MSG_DENY_014_SIGN_MSG_DENY_CHUNK_WITHOUT_INIT_CHUNK_AP
     0xEF,
 };
 
-static void test_sign_message_deny_sign_msg_deny_chunk_without_init_14(void **state) {
+static void test_sign_message_deny_sign_msg_deny_chunk_without_init_15(void **state) {
     (void) state;
     reset_sign_msg_test_state();
-    run_deny_chunk_fixture(SIGN_MSG_DENY_014_SIGN_MSG_DENY_CHUNK_WITHOUT_INIT_CHUNK_APDU,
-                           sizeof(SIGN_MSG_DENY_014_SIGN_MSG_DENY_CHUNK_WITHOUT_INIT_CHUNK_APDU),
+    run_deny_chunk_fixture(SIGN_MSG_DENY_015_SIGN_MSG_DENY_CHUNK_WITHOUT_INIT_CHUNK_APDU,
+                           sizeof(SIGN_MSG_DENY_015_SIGN_MSG_DENY_CHUNK_WITHOUT_INIT_CHUNK_APDU),
                            SWO_COMMAND_NOT_ALLOWED);
 }
 
 static const uint8_t
-    SIGN_MSG_DENY_015_SIGN_MSG_DENY_CONFIRM_BEFORE_ALL_CHUNKS_RECEIVED_INIT_APDU[] = {
+    SIGN_MSG_DENY_016_SIGN_MSG_DENY_CONFIRM_BEFORE_ALL_CHUNKS_RECEIVED_INIT_APDU[] = {
         0x00, 0x00, 0x01, 0x2C, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x02,
 };
 
 static const uint8_t
-    SIGN_MSG_DENY_015_SIGN_MSG_DENY_CONFIRM_BEFORE_ALL_CHUNKS_RECEIVED_CONFIRM_APDU[1] = {0x00};
+    SIGN_MSG_DENY_016_SIGN_MSG_DENY_CONFIRM_BEFORE_ALL_CHUNKS_RECEIVED_CONFIRM_APDU[1] = {0x00};
 
-static void test_sign_message_deny_sign_msg_deny_confirm_before_all_chunks_received_15(
+static void test_sign_message_deny_sign_msg_deny_confirm_before_all_chunks_received_16(
     void **state) {
     (void) state;
     reset_sign_msg_test_state();
     // Send INIT successfully
     run_deny_init_fixture(
-        SIGN_MSG_DENY_015_SIGN_MSG_DENY_CONFIRM_BEFORE_ALL_CHUNKS_RECEIVED_INIT_APDU,
-        sizeof(SIGN_MSG_DENY_015_SIGN_MSG_DENY_CONFIRM_BEFORE_ALL_CHUNKS_RECEIVED_INIT_APDU),
+        SIGN_MSG_DENY_016_SIGN_MSG_DENY_CONFIRM_BEFORE_ALL_CHUNKS_RECEIVED_INIT_APDU,
+        sizeof(SIGN_MSG_DENY_016_SIGN_MSG_DENY_CONFIRM_BEFORE_ALL_CHUNKS_RECEIVED_INIT_APDU),
         SWO_SUCCESS);
     // Try to send CONFIRM before all chunks received (empty payload)
     run_deny_confirm_fixture(
-        SIGN_MSG_DENY_015_SIGN_MSG_DENY_CONFIRM_BEFORE_ALL_CHUNKS_RECEIVED_CONFIRM_APDU,
+        SIGN_MSG_DENY_016_SIGN_MSG_DENY_CONFIRM_BEFORE_ALL_CHUNKS_RECEIVED_CONFIRM_APDU,
         0,
         SWO_COMMAND_NOT_ALLOWED);
 }
 
-static const uint8_t SIGN_MSG_DENY_016_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLOAD_INIT_APDU[] = {
+static const uint8_t SIGN_MSG_DENY_017_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLOAD_INIT_APDU[] = {
     0x00, 0x00, 0x00, 0x04, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x02,
 };
 
-static const uint8_t SIGN_MSG_DENY_016_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLOAD_CHUNK_0_APDU[] =
+static const uint8_t SIGN_MSG_DENY_017_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLOAD_CHUNK_0_APDU[] =
     {
         0x00,
         0x00,
@@ -416,7 +432,7 @@ static const uint8_t SIGN_MSG_DENY_016_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLO
         0xEF,
 };
 
-static const uint8_t SIGN_MSG_DENY_016_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLOAD_CONFIRM_APDU[] =
+static const uint8_t SIGN_MSG_DENY_017_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLOAD_CONFIRM_APDU[] =
     {
         0xDE,
         0xAD,
@@ -424,94 +440,94 @@ static const uint8_t SIGN_MSG_DENY_016_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLO
         0xEF,
 };
 
-static void test_sign_message_deny_sign_msg_deny_confirm_with_nonempty_payload_16(void **state) {
+static void test_sign_message_deny_sign_msg_deny_confirm_with_nonempty_payload_17(void **state) {
     (void) state;
     reset_sign_msg_test_state();
     // Send INIT successfully
     run_deny_init_fixture(
-        SIGN_MSG_DENY_016_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLOAD_INIT_APDU,
-        sizeof(SIGN_MSG_DENY_016_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLOAD_INIT_APDU),
+        SIGN_MSG_DENY_017_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLOAD_INIT_APDU,
+        sizeof(SIGN_MSG_DENY_017_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLOAD_INIT_APDU),
         SWO_SUCCESS);
     // Send CHUNK 0 successfully
     run_deny_chunk_fixture(
-        SIGN_MSG_DENY_016_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLOAD_CHUNK_0_APDU,
-        sizeof(SIGN_MSG_DENY_016_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLOAD_CHUNK_0_APDU),
+        SIGN_MSG_DENY_017_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLOAD_CHUNK_0_APDU,
+        sizeof(SIGN_MSG_DENY_017_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLOAD_CHUNK_0_APDU),
         SWO_SUCCESS);
     // Try to send CONFIRM with non-empty payload
     run_deny_confirm_fixture(
-        SIGN_MSG_DENY_016_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLOAD_CONFIRM_APDU,
-        sizeof(SIGN_MSG_DENY_016_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLOAD_CONFIRM_APDU),
+        SIGN_MSG_DENY_017_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLOAD_CONFIRM_APDU,
+        sizeof(SIGN_MSG_DENY_017_SIGN_MSG_DENY_CONFIRM_WITH_NONEMPTY_PAYLOAD_CONFIRM_APDU),
         SWO_SIGN_MSG_CONFIRM_MUST_BE_EMPTY);
 }
 
 static const uint8_t
-    SIGN_MSG_DENY_017_SIGN_MSG_DENY_INVALID_WITNESS_PATH_WRONG_COIN_TYPE_INIT_APDU[] = {
+    SIGN_MSG_DENY_018_SIGN_MSG_DENY_INVALID_WITNESS_PATH_WRONG_COIN_TYPE_INIT_APDU[] = {
         0x00, 0x00, 0x00, 0x04, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x00, 0x00, 0x80,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x02,
 };
 
-static void test_sign_message_deny_sign_msg_deny_invalid_witness_path_wrong_coin_type_17(
+static void test_sign_message_deny_sign_msg_deny_invalid_witness_path_wrong_coin_type_18(
     void **state) {
     (void) state;
     run_deny_init_fixture(
-        SIGN_MSG_DENY_017_SIGN_MSG_DENY_INVALID_WITNESS_PATH_WRONG_COIN_TYPE_INIT_APDU,
-        sizeof(SIGN_MSG_DENY_017_SIGN_MSG_DENY_INVALID_WITNESS_PATH_WRONG_COIN_TYPE_INIT_APDU),
+        SIGN_MSG_DENY_018_SIGN_MSG_DENY_INVALID_WITNESS_PATH_WRONG_COIN_TYPE_INIT_APDU,
+        sizeof(SIGN_MSG_DENY_018_SIGN_MSG_DENY_INVALID_WITNESS_PATH_WRONG_COIN_TYPE_INIT_APDU),
         SWO_SECURITY_CONDITION_NOT_SATISFIED);
 }
 
-static const uint8_t SIGN_MSG_DENY_018_SIGN_MSG_DENY_INVALID_WITNESS_PATH_WRONG_LENGTH_INIT_APDU[] =
+static const uint8_t SIGN_MSG_DENY_019_SIGN_MSG_DENY_INVALID_WITNESS_PATH_WRONG_LENGTH_INIT_APDU[] =
     {
         0x00, 0x00, 0x00, 0x04, 0x03, 0x80, 0x00, 0x07, 0x3C, 0x80,
         0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x01, 0x01, 0x02,
 };
 
-static void test_sign_message_deny_sign_msg_deny_invalid_witness_path_wrong_length_18(
+static void test_sign_message_deny_sign_msg_deny_invalid_witness_path_wrong_length_19(
     void **state) {
     (void) state;
     run_deny_init_fixture(
-        SIGN_MSG_DENY_018_SIGN_MSG_DENY_INVALID_WITNESS_PATH_WRONG_LENGTH_INIT_APDU,
-        sizeof(SIGN_MSG_DENY_018_SIGN_MSG_DENY_INVALID_WITNESS_PATH_WRONG_LENGTH_INIT_APDU),
+        SIGN_MSG_DENY_019_SIGN_MSG_DENY_INVALID_WITNESS_PATH_WRONG_LENGTH_INIT_APDU,
+        sizeof(SIGN_MSG_DENY_019_SIGN_MSG_DENY_INVALID_WITNESS_PATH_WRONG_LENGTH_INIT_APDU),
         SWO_SECURITY_CONDITION_NOT_SATISFIED);
 }
 
 static const uint8_t
-    SIGN_MSG_DENY_019_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_POINTER_IN_ADDRESS_MODE_INIT_APDU[] = {
+    SIGN_MSG_DENY_020_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_POINTER_IN_ADDRESS_MODE_INIT_APDU[] = {
         0x00, 0x00, 0x00, 0x04, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17,
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00, 0x01,
         0x01, 0x01, 0x04, 0x01, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17,
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x44,
 };
 
-static void test_sign_message_deny_sign_msg_deny_invalid_address_type_pointer_in_address_mode_19(
+static void test_sign_message_deny_sign_msg_deny_invalid_address_type_pointer_in_address_mode_20(
     void **state) {
     (void) state;
     run_deny_init_fixture(
-        SIGN_MSG_DENY_019_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_POINTER_IN_ADDRESS_MODE_INIT_APDU,
+        SIGN_MSG_DENY_020_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_POINTER_IN_ADDRESS_MODE_INIT_APDU,
         sizeof(
-            SIGN_MSG_DENY_019_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_POINTER_IN_ADDRESS_MODE_INIT_APDU),
+            SIGN_MSG_DENY_020_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_POINTER_IN_ADDRESS_MODE_INIT_APDU),
         SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS);
 }
 
 static const uint8_t
-    SIGN_MSG_DENY_020_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_BYRON_IN_ADDRESS_MODE_INIT_APDU[] = {
+    SIGN_MSG_DENY_021_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_BYRON_IN_ADDRESS_MODE_INIT_APDU[] = {
         0x00, 0x00, 0x00, 0x04, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01,
         0x08, 0x2D, 0x96, 0x4A, 0x09, 0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17,
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x11,
 };
 
-static void test_sign_message_deny_sign_msg_deny_invalid_address_type_byron_in_address_mode_20(
+static void test_sign_message_deny_sign_msg_deny_invalid_address_type_byron_in_address_mode_21(
     void **state) {
     (void) state;
     run_deny_init_fixture(
-        SIGN_MSG_DENY_020_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_BYRON_IN_ADDRESS_MODE_INIT_APDU,
+        SIGN_MSG_DENY_021_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_BYRON_IN_ADDRESS_MODE_INIT_APDU,
         sizeof(
-            SIGN_MSG_DENY_020_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_BYRON_IN_ADDRESS_MODE_INIT_APDU),
+            SIGN_MSG_DENY_021_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_BYRON_IN_ADDRESS_MODE_INIT_APDU),
         SWO_SECURITY_CONDITION_NOT_SATISFIED);
 }
 
 static const uint8_t
-    SIGN_MSG_DENY_021_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_PAYMENT_SCRIPT_IN_ADDRESS_MODE_INIT_APDU
+    SIGN_MSG_DENY_022_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_PAYMENT_SCRIPT_IN_ADDRESS_MODE_INIT_APDU
         [] = {
             0x00, 0x00, 0x00, 0x04, 0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17,
             0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00, 0x01,
@@ -520,13 +536,13 @@ static const uint8_t
 };
 
 static void
-test_sign_message_deny_sign_msg_deny_invalid_address_type_payment_script_in_address_mode_21(
+test_sign_message_deny_sign_msg_deny_invalid_address_type_payment_script_in_address_mode_22(
     void **state) {
     (void) state;
     run_deny_init_fixture(
-        SIGN_MSG_DENY_021_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_PAYMENT_SCRIPT_IN_ADDRESS_MODE_INIT_APDU,
+        SIGN_MSG_DENY_022_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_PAYMENT_SCRIPT_IN_ADDRESS_MODE_INIT_APDU,
         sizeof(
-            SIGN_MSG_DENY_021_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_PAYMENT_SCRIPT_IN_ADDRESS_MODE_INIT_APDU),
+            SIGN_MSG_DENY_022_SIGN_MSG_DENY_INVALID_ADDRESS_TYPE_PAYMENT_SCRIPT_IN_ADDRESS_MODE_INIT_APDU),
         SWO_SIGN_MSG_PARSING_FAIL_ADDRESS_PARAMS);
 }
 
@@ -542,36 +558,38 @@ int main(void) {
         cmocka_unit_test(
             test_sign_message_deny_sign_msg_deny_nonascii_msg_causing_ui_hex_buffer_overflow_3),
         cmocka_unit_test(
-            test_sign_message_deny_sign_msg_deny_nonhashed_msg_causing_sig_structure_overflow_4),
+            test_sign_message_deny_sign_msg_deny_ascii_msg_causing_ui_ascii_buffer_overflow_4),
         cmocka_unit_test(
-            test_sign_message_deny_sign_msg_deny_ascii_nonhashed_msg_causing_sig_structure_overflow_5),
-        cmocka_unit_test(test_sign_message_deny_sign_msg_deny_init_truncated_before_msg_length_6),
-        cmocka_unit_test(test_sign_message_deny_sign_msg_deny_init_truncated_before_signing_path_7),
+            test_sign_message_deny_sign_msg_deny_nonhashed_msg_causing_sig_structure_overflow_5),
         cmocka_unit_test(
-            test_sign_message_deny_sign_msg_deny_init_truncated_before_hash_payload_flag_8),
+            test_sign_message_deny_sign_msg_deny_ascii_nonhashed_msg_causing_sig_structure_overflow_6),
+        cmocka_unit_test(test_sign_message_deny_sign_msg_deny_init_truncated_before_msg_length_7),
+        cmocka_unit_test(test_sign_message_deny_sign_msg_deny_init_truncated_before_signing_path_8),
         cmocka_unit_test(
-            test_sign_message_deny_sign_msg_deny_init_truncated_before_is_ascii_flag_9),
+            test_sign_message_deny_sign_msg_deny_init_truncated_before_hash_payload_flag_9),
         cmocka_unit_test(
-            test_sign_message_deny_sign_msg_deny_init_truncated_before_address_field_type_10),
+            test_sign_message_deny_sign_msg_deny_init_truncated_before_is_ascii_flag_10),
         cmocka_unit_test(
-            test_sign_message_deny_sign_msg_deny_chunk_size_exceeds_remaining_bytes_11),
+            test_sign_message_deny_sign_msg_deny_init_truncated_before_address_field_type_11),
         cmocka_unit_test(
-            test_sign_message_deny_sign_msg_deny_chunk_size_smaller_than_expected_for_nonfinal_chunk_12),
+            test_sign_message_deny_sign_msg_deny_chunk_size_exceeds_remaining_bytes_12),
         cmocka_unit_test(
-            test_sign_message_deny_sign_msg_deny_nonascii_byte_in_message_marked_as_ascii_13),
-        cmocka_unit_test(test_sign_message_deny_sign_msg_deny_chunk_without_init_14),
+            test_sign_message_deny_sign_msg_deny_chunk_size_smaller_than_expected_for_nonfinal_chunk_13),
         cmocka_unit_test(
-            test_sign_message_deny_sign_msg_deny_confirm_before_all_chunks_received_15),
-        cmocka_unit_test(test_sign_message_deny_sign_msg_deny_confirm_with_nonempty_payload_16),
+            test_sign_message_deny_sign_msg_deny_nonascii_byte_in_message_marked_as_ascii_14),
+        cmocka_unit_test(test_sign_message_deny_sign_msg_deny_chunk_without_init_15),
         cmocka_unit_test(
-            test_sign_message_deny_sign_msg_deny_invalid_witness_path_wrong_coin_type_17),
-        cmocka_unit_test(test_sign_message_deny_sign_msg_deny_invalid_witness_path_wrong_length_18),
+            test_sign_message_deny_sign_msg_deny_confirm_before_all_chunks_received_16),
+        cmocka_unit_test(test_sign_message_deny_sign_msg_deny_confirm_with_nonempty_payload_17),
         cmocka_unit_test(
-            test_sign_message_deny_sign_msg_deny_invalid_address_type_pointer_in_address_mode_19),
+            test_sign_message_deny_sign_msg_deny_invalid_witness_path_wrong_coin_type_18),
+        cmocka_unit_test(test_sign_message_deny_sign_msg_deny_invalid_witness_path_wrong_length_19),
         cmocka_unit_test(
-            test_sign_message_deny_sign_msg_deny_invalid_address_type_byron_in_address_mode_20),
+            test_sign_message_deny_sign_msg_deny_invalid_address_type_pointer_in_address_mode_20),
         cmocka_unit_test(
-            test_sign_message_deny_sign_msg_deny_invalid_address_type_payment_script_in_address_mode_21),
+            test_sign_message_deny_sign_msg_deny_invalid_address_type_byron_in_address_mode_21),
+        cmocka_unit_test(
+            test_sign_message_deny_sign_msg_deny_invalid_address_type_payment_script_in_address_mode_22),
     };
     return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
 }

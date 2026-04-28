@@ -573,6 +573,11 @@ cardano_unit_test(test_handler_state_machines
 cardano_unit_test(test_handler_sign_tx_swap
     SOURCES test_handler_sign_tx_swap.c
     LIBS cardano_sign_tx_core_swap)
+target_compile_definitions(test_handler_sign_tx_swap PRIVATE HAVE_SWAP)
+
+cardano_unit_test(test_handler_sign_tx_ui_render_failure
+    SOURCES test_handler_sign_tx_ui_render_failure.c
+    LIBS cardano_sign_tx_core)
 
 cardano_unit_test(test_sign_tx_witness_nbgl_reject
     SOURCES test_sign_tx_witness_nbgl_reject.c

@@ -126,6 +126,11 @@ def test_sign_message_deny(
             and (
                 msg_len > 65535  # Exceeds UINT16_MAX
                 or (
+                    testCase.msgData.isAscii
+                    and testCase.msgData.hashPayload
+                    and msg_len >= 65534
+                )  # ASCII display allocation overflows with the +2 safety bytes
+                or (
                     not testCase.msgData.isAscii and msg_len >= 32767
                 )  # Non-ASCII hex buffer overflow
                 or (not testCase.msgData.hashPayload and msg_len >= 65280)
