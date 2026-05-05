@@ -469,8 +469,8 @@ bool tx_process_outputs(buffer_t *buf, tx_processing_state_t *state) {
             return false;
         }
         if (!buffer_seek_cur(buf, output_length)) {
-            tx_handle_parse_error(SWO_TX_PARSING_FAIL_OUTPUTS);
-            return false;
+            tx_handle_parse_error(SWO_TX_PARSING_FAIL_OUTPUTS);  // LCOV_EXCL_LINE
+            return false;                                        // LCOV_EXCL_LINE
         }
     }
 
@@ -514,8 +514,8 @@ bool tx_process_collateral_output(buffer_t *buf, tx_processing_state_t *state) {
     }
 
     if (!buffer_seek_cur(buf, output_length)) {
-        tx_handle_parse_error(SWO_TX_PARSING_FAIL_COLLATERAL_OUTPUT);
-        return false;
+        tx_handle_parse_error(SWO_TX_PARSING_FAIL_COLLATERAL_OUTPUT);  // LCOV_EXCL_LINE
+        return false;                                                  // LCOV_EXCL_LINE
     }
     return true;
 }

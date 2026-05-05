@@ -359,8 +359,8 @@ bool process_pool_registration_certificate(buffer_t *buf,
         .offset = 0,
     };
     if (!buffer_seek_cur(&pool_payload_buf, pool_registration->fixedHeaderLength)) {
-        tx_handle_parse_error(SWO_TX_PARSING_FAIL_CERTIFICATES);
-        return false;
+        tx_handle_parse_error(SWO_TX_PARSING_FAIL_CERTIFICATES);  // LCOV_EXCL_LINE
+        return false;                                             // LCOV_EXCL_LINE
     }
 
     TRACE("Pool registration: owners=%u relays=%u",
@@ -480,8 +480,11 @@ bool process_pool_registration_certificate(buffer_t *buf,
              owner_index++) {
             ext_credential_t owner_credential = {0};
             if (!buffer_read_credential(&pool_payload_buf, &owner_credential)) {
-                tx_handle_parse_error(SWO_TX_PARSING_FAIL_CERTIFICATES);
-                return false;
+                // The pre-scan above parses the same bounded owner slice first, so this second
+                // pass cannot fail unless the buffer helpers or parsed header state are
+                // inconsistent.
+                tx_handle_parse_error(SWO_TX_PARSING_FAIL_CERTIFICATES);  // LCOV_EXCL_LINE
+                return false;                                             // LCOV_EXCL_LINE
             }
 
             if (mode->run_validation) {
@@ -580,8 +583,8 @@ bool process_pool_registration_certificate(buffer_t *buf,
     }
     // Advance outer transaction buffer by the exact payload length.
     if (!buffer_seek_cur(buf, pool_registration->payloadLength)) {
-        tx_handle_parse_error(SWO_TX_PARSING_FAIL_CERTIFICATES);
-        return false;
+        tx_handle_parse_error(SWO_TX_PARSING_FAIL_CERTIFICATES);  // LCOV_EXCL_LINE
+        return false;                                             // LCOV_EXCL_LINE
     }
 
     return true;

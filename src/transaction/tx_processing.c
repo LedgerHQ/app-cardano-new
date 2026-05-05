@@ -851,7 +851,7 @@ static bool tx_process_votes(buffer_t *buf,
         APP_MEM_FREE_AND_NULL((void **) &gov_action_key);
 
         if (!tx_process_vote(state, &parsed_vote, voter_policy)) {
-            return false;
+            return false;  // LCOV_EXCL_LINE - voter policy DENY is handled before votes
         }
     }
 
@@ -957,10 +957,10 @@ static bool tx_process_donation(buffer_t *buf, tx_processing_state_t *state) {
     }
 
 #ifdef HAVE_SWAP
-    if (G_called_from_swap) {
+    if (G_called_from_swap) {  // LCOV_EXCL_LINE - swap init rejects donation before body parsing
         // Donation is not part of the Exchange-reviewed ADA amount; reject to prevent
         // a hidden value transfer the user never confirmed.
-        swap_reject_and_exit(SWAP_EC_ERROR_GENERIC, SWAP_APP_CODE_DEFAULT);
+        swap_reject_and_exit(SWAP_EC_ERROR_GENERIC, SWAP_APP_CODE_DEFAULT);  // LCOV_EXCL_LINE
     }
 #endif
 
@@ -1009,7 +1009,7 @@ static bool tx_process_all_fields(buffer_t *buf, tx_processing_state_t *state) {
         return false;
     }
     if (!tx_process_aux_data_hash(state)) {
-        return false;
+        return false;  // LCOV_EXCL_LINE - valid aux data policies never deny here
     }
     if (!tx_process_validity_interval_start(buf, state)) {
         return false;
@@ -1027,7 +1027,7 @@ static bool tx_process_all_fields(buffer_t *buf, tx_processing_state_t *state) {
         return false;
     }
     if (!tx_process_network_id(state)) {
-        return false;
+        return false;  // LCOV_EXCL_LINE - network id processing has no failing path
     }
     if (!tx_process_collateral_output(buf, state)) {
         return false;

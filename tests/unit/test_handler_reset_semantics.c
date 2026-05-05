@@ -96,6 +96,21 @@ static void test_reset_app_context_cleans_stale_deferred_state(void **state) {
     apdu_response_finalize_after_handler();
 }
 
+static void test_apdu_response_is_pending_ux_tracks_deferred_state(void **state) {
+    (void) state;
+    reset_test_context();
+
+    apdu_response_begin(INS_GET_PUBLIC_KEY);
+    assert_false(apdu_response_is_pending_ux());
+
+    apdu_response_deferred();
+    assert_true(apdu_response_is_pending_ux());
+
+    apdu_response_send_sw(SWO_SUCCESS);
+    assert_false(apdu_response_is_pending_ux());
+    apdu_response_finalize_after_handler();
+}
+
 static void test_native_script_finish_before_script_completion_resets_context(void **state) {
     (void) state;
     reset_test_context();
@@ -128,6 +143,7 @@ static void test_native_script_finish_before_script_completion_resets_context(vo
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_reset_app_context_cleans_stale_deferred_state),
+        cmocka_unit_test(test_apdu_response_is_pending_ux_tracks_deferred_state),
         cmocka_unit_test(test_native_script_finish_before_script_completion_resets_context),
     };
     return cmocka_run_group_tests(tests, NULL, assert_no_pending_apdu_response);
