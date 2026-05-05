@@ -180,12 +180,14 @@ static void hash_certificate(tx_hash_builder_t *hash_builder,
                                      pool_key_hash,
                                      SIZEOF(pool_key_hash));
                     break;
+                // LCOV_EXCL_START
                 case EXT_CREDENTIAL_KEY_HASH:
                     ASSERT(pool_credential->keyHash != NULL);
                     STATIC_ASSERT(ADDRESS_KEY_HASH_LENGTH == POOL_KEY_HASH_LENGTH,
                                   "pool credential hash size mismatch");
                     memmove(pool_key_hash, pool_credential->keyHash, SIZEOF(pool_key_hash));
                     break;
+                    // LCOV_EXCL_STOP
                 // LCOV_EXCL_START
                 default:
                     LEDGER_ASSERT(false, "Unknown ext_credential_type_t for pool retirement");

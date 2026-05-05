@@ -625,6 +625,10 @@ cardano_unit_test(test_tx_parse_certificates
     SOURCES test_tx_parse_certificates.c
     LIBS cardano_sign_tx_core)
 
+cardano_unit_test(test_tx_ui_render_certificates
+    SOURCES test_tx_ui_render_certificates.c
+    LIBS cardano_sign_tx_core)
+
 # test_cvote_parser: keep manual (needs target_link_options)
 add_executable(test_cvote_parser test_cvote_parser.c)
 target_link_libraries(test_cvote_parser PUBLIC cmocka gcov cardano_sign_tx_core)

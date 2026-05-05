@@ -838,9 +838,11 @@ void tx_ui_plan_or_render_certificate(const tx_processing_mode_t *mode,
             plan_or_render_certificate_pool_retirement(mode, certificate_data);
             break;
 
+        // LCOV_EXCL_START
         case CERTIFICATE_STAKE_POOL_REGISTRATION:
             LEDGER_ASSERT(false, "CERTIFICATE_STAKE_POOL_REGISTRATION handled separately");
             break;
+            // LCOV_EXCL_STOP
 
         // LCOV_EXCL_START
         default:

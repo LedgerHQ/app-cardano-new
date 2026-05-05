@@ -332,10 +332,183 @@ static void test_tx_hash_builder_minimal(void** state) {
     assert_memory_equal(result, expected, SIZEOF(result));
 }
 
+static void add_single_test_input(tx_hash_builder_t* builder) {
+    tx_input_t input = {0};
+    input.index = 0;
+    static const char* inputHashHex =
+        "34BBDF0A10E7290AD22E3EE791B6B3C35C206AB8B51BB749A2B06489CEEBF5F4";
+    uint8_t inputHashBuffer[TX_HASH_LENGTH] = {0};
+    decode_hex_buffer(inputHashHex, inputHashBuffer, TX_HASH_LENGTH);
+    input.txHash = inputHashBuffer;
+
+    txHashBuilder_enterInputs(builder);
+    txHashBuilder_addInput(builder, &input);
+}
+
+static tx_output_destination_t make_test_output_destination(uint8_t* addressBuffer,
+                                                            size_t addressBufferSize) {
+    static const char* addressHex =
+        "83581C5F5BEE73ED41FF6C8490DFDB4732178E0216CCF7BADBE1E77D5D7FF8A1"
+        "01581E581C1E9A0361BDC37DB7AB7EA2A3F187761877F3DB11211FC7436131F15E00";
+    const size_t addressLength = decode_hex_buffer(addressHex, addressBuffer, addressBufferSize);
+    return tx_output_destination_make_third_party(addressBuffer, addressLength);
+}
+
+static void test_tx_hash_builder_reference_script_after_top_level_and_assets(void** state) {
+    (void) state;
+
+    tx_hash_builder_t builder = {0};
+    tx_params_t txParams = {
+        .tagCborSets = false,
+        .num_inputs = 1,
+        .num_outputs = 2,
+    };
+
+    txHashBuilder_init(&builder, &txParams);
+    add_single_test_input(&builder);
+
+    uint8_t firstAddressBuffer[200] = {0};
+    tx_output_description_t firstOutput = {
+        .format = MAP_BABBAGE,
+        .destination = make_test_output_destination(firstAddressBuffer, SIZEOF(firstAddressBuffer)),
+        .amount = 1,
+        .numAssetGroups = 0,
+        .includeDatum = false,
+        .includeRefScript = true,
+    };
+
+    txHashBuilder_enterOutputs(&builder);
+    txHashBuilder_addOutput_topLevelData(&builder, &firstOutput);
+
+    const uint8_t firstReferenceScript[] = {0x01, 0x02};
+    txHashBuilder_addOutput_referenceScript(&builder, SIZEOF(firstReferenceScript));
+    txHashBuilder_addOutput_referenceScript_dataChunk(&builder,
+                                                      firstReferenceScript,
+                                                      SIZEOF(firstReferenceScript));
+    assert_int_equal(builder.outputData.outputState, TX_OUTPUT_SCRIPT_REFERENCE_CHUNKS);
+    assert_int_equal(builder.outputData.referenceScriptData.remainingBytes, 0);
+
+    uint8_t secondAddressBuffer[200] = {0};
+    tx_output_description_t secondOutput = {
+        .format = MAP_BABBAGE,
+        .destination =
+            make_test_output_destination(secondAddressBuffer, SIZEOF(secondAddressBuffer)),
+        .amount = 2,
+        .numAssetGroups = 1,
+        .includeDatum = false,
+        .includeRefScript = true,
+    };
+
+    txHashBuilder_addOutput_topLevelData(&builder, &secondOutput);
+
+    uint8_t policyId[MINTING_POLICY_ID_LENGTH] = {0};
+    memset(policyId, 0x11, SIZEOF(policyId));
+    txHashBuilder_addOutput_tokenGroup(&builder, policyId, SIZEOF(policyId), 1);
+
+    const uint8_t assetName[] = "A";
+    txHashBuilder_addOutput_token(&builder, assetName, sizeof(assetName) - 1, 3);
+
+    const uint8_t secondReferenceScript[] = {0x03};
+    txHashBuilder_addOutput_referenceScript(&builder, SIZEOF(secondReferenceScript));
+    txHashBuilder_addOutput_referenceScript_dataChunk(&builder,
+                                                      secondReferenceScript,
+                                                      SIZEOF(secondReferenceScript));
+
+    txHashBuilder_addFee(&builder, 0);
+
+    uint8_t result[TX_HASH_LENGTH] = {0};
+    txHashBuilder_finalize(&builder, result, SIZEOF(result));
+    assert_int_equal(builder.state, TX_HASH_BUILDER_FINISHED);
+}
+
+static void enter_empty_inputs_and_outputs(tx_hash_builder_t* builder) {
+    txHashBuilder_enterInputs(builder);
+    txHashBuilder_enterOutputs(builder);
+    txHashBuilder_addFee(builder, 0);
+}
+
+static void add_pool_registration_header(tx_hash_builder_t* builder,
+                                         uint16_t numOwners,
+                                         uint16_t numRelays) {
+    uint8_t poolKeyHash[POOL_KEY_HASH_LENGTH] = {0};
+    uint8_t vrfKeyHash[VRF_KEY_HASH_LENGTH] = {0};
+    uint8_t rewardAccount[REWARD_ACCOUNT_LENGTH] = {0};
+    memset(poolKeyHash, 0x21, SIZEOF(poolKeyHash));
+    memset(vrfKeyHash, 0x22, SIZEOF(vrfKeyHash));
+    memset(rewardAccount, 0x23, SIZEOF(rewardAccount));
+
+    txHashBuilder_poolRegistrationCertificate_enter(builder, numOwners, numRelays);
+    txHashBuilder_poolRegistrationCertificate_poolKeyHash(builder, poolKeyHash, SIZEOF(poolKeyHash));
+    txHashBuilder_poolRegistrationCertificate_vrfKeyHash(builder, vrfKeyHash, SIZEOF(vrfKeyHash));
+    txHashBuilder_poolRegistrationCertificate_financials(builder, 1, 2, 1, 3);
+    txHashBuilder_poolRegistrationCertificate_rewardAccount(builder,
+                                                            rewardAccount,
+                                                            SIZEOF(rewardAccount));
+}
+
+static void test_tx_hash_builder_pool_registration_zero_owners_and_relays(void** state) {
+    (void) state;
+
+    tx_hash_builder_t builder = {0};
+    tx_params_t txParams = {
+        .tagCborSets = true,
+        .num_inputs = 0,
+        .num_outputs = 0,
+        .num_certificates = 1,
+    };
+
+    txHashBuilder_init(&builder, &txParams);
+    enter_empty_inputs_and_outputs(&builder);
+
+    txHashBuilder_enterCertificates(&builder);
+    add_pool_registration_header(&builder, 0, 0);
+    txHashBuilder_addPoolRegistrationCertificate_addPoolMetadata_null(&builder);
+
+    uint8_t result[TX_HASH_LENGTH] = {0};
+    txHashBuilder_finalize(&builder, result, SIZEOF(result));
+    assert_int_equal(builder.state, TX_HASH_BUILDER_FINISHED);
+}
+
+static void test_tx_hash_builder_pool_registration_null_relay_port(void** state) {
+    (void) state;
+
+    tx_hash_builder_t builder = {0};
+    tx_params_t txParams = {
+        .tagCborSets = true,
+        .num_inputs = 0,
+        .num_outputs = 0,
+        .num_certificates = 1,
+    };
+
+    txHashBuilder_init(&builder, &txParams);
+    enter_empty_inputs_and_outputs(&builder);
+
+    txHashBuilder_enterCertificates(&builder);
+    add_pool_registration_header(&builder, 0, 1);
+    txHashBuilder_addPoolRegistrationCertificate_enterRelays(&builder);
+
+    uint8_t ipv4[IPV4_LENGTH] = {127, 0, 0, 1};
+    pool_relay_t relay = {
+        .format = RELAY_SINGLE_HOST_IP,
+        .port = {.isNull = true},
+        .ipv4 = {.isNull = false, .ip = ipv4},
+        .ipv6 = {.isNull = true},
+    };
+    txHashBuilder_addPoolRegistrationCertificate_addRelay(&builder, &relay);
+    txHashBuilder_addPoolRegistrationCertificate_addPoolMetadata_null(&builder);
+
+    uint8_t result[TX_HASH_LENGTH] = {0};
+    txHashBuilder_finalize(&builder, result, SIZEOF(result));
+    assert_int_equal(builder.state, TX_HASH_BUILDER_FINISHED);
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_tx_hash_builder_minimal),
         cmocka_unit_test(test_tx_hash_builder_full),
+        cmocka_unit_test(test_tx_hash_builder_reference_script_after_top_level_and_assets),
+        cmocka_unit_test(test_tx_hash_builder_pool_registration_zero_owners_and_relays),
+        cmocka_unit_test(test_tx_hash_builder_pool_registration_null_relay_port),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
