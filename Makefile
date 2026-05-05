@@ -76,6 +76,7 @@ VARIANT_VALUES = cardano_ada
 # When DEBUG is enabled, add DEBUG as a preprocessor define so #ifdef DEBUG works in code
 ifneq ($(DEBUG), 0)
     DEFINES += DEBUG
+    DEBUG_OS_STACK_CONSUMPTION ?= 1
 endif
 
 ########################################

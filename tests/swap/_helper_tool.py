@@ -148,7 +148,10 @@ def clone_and_pull_exchange():
 def build_and_copy_exchange():
     build_app(
         APP_EXCHANGE_CLONE_DIR,
-        flags="TESTING=1 TEST_PUBLIC_KEY=1 TRUSTED_NAME_TEST_KEY=1 DEBUG=1",
+        flags=(
+            "TESTING=1 TEST_PUBLIC_KEY=1 TRUSTED_NAME_TEST_KEY=1 DEBUG=1"
+            " DEBUG_OS_STACK_CONSUMPTION=1"
+        ),
     )
     copy_build_output(APP_EXCHANGE_CLONE_DIR, APP_EXCHANGE_DIR)
 

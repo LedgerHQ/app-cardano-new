@@ -17,9 +17,7 @@ source tests/venv/bin/activate
 # 3. Clone and build test dependencies (first time only)
 # These scripts can be run from the repository root
 python3 tests/swap/helper_tool_clone_dependencies.py
-docker run --user "$(id -u)":"$(id -g)" --rm -ti \
-  -v "$(realpath .):/app" \
-  ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest \
+docker exec --user "$(id -u)":"$(id -g)" ledger-app-cardano-container \
   bash -c "cd /app/tests/swap && python3 helper_tool_build_dependencies.py"
 
 # 4. Run tests
@@ -50,6 +48,10 @@ This installs all required dependencies including:
 ### 3. Clone and Build Test Dependencies
 
 The swap tests require the Exchange app and Ethereum app binaries.
+Speculos starts Exchange as the main app and loads Cardano and Ethereum as
+sideloaded libraries. Ragger's `--get-stack-consumption` debug APDU is sent to
+the main Exchange app, so the helper builds Exchange with
+`DEBUG_OS_STACK_CONSUMPTION=1`.
 
 **Clone dependencies:**
 
@@ -63,7 +65,7 @@ This creates `tests/swap/.test_dependencies/` and clones:
 - `app-exchange` (main orchestrator)
 - `app-ethereum` (secondary blockchain for testing)
 
-**Build dependencies (inside Ledger Docker):**
+**Build dependencies (inside the active Ledger VS Code dev-tools container):**
 
 ```bash
 # From the repository root
@@ -71,10 +73,11 @@ docker exec --user "$(id -u)":"$(id -g)" ledger-app-cardano-container \
   bash -c "cd /app/tests/swap && python3 helper_tool_build_dependencies.py"
 ```
 
-This builds Exchange and Ethereum apps for all devices (stax, flex, nanox, nanos+).
-Build these dependencies in the same Ledger dev-tools container used to build the
-Cardano app. Speculos rejects swap test runs when the Exchange main app and
-sideloaded apps were built with different SDK API levels.
+This builds Exchange and Ethereum apps for all devices (stax, flex, nanox,
+nanos+, apex_p). Build these dependencies in the same active Ledger VS Code
+dev-tools container used to build the Cardano app. Speculos rejects swap test
+runs when the Exchange main app and sideloaded apps were built with different
+SDK API levels.
 
 ## Running Tests
 
