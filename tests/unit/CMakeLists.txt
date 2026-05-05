@@ -881,7 +881,6 @@ set(DERIVE_NATIVE_SCRIPT_COMMON_SOURCES
     mock_sources/glyphs_mock.c
     mock_sources/nbgl_mock.c
     mock_sources/hex_stub.c
-    mock_sources/io_stub.c
     test_native_script_utils.c
 )
 set(DERIVE_NATIVE_SCRIPT_COMMON_LIBS
