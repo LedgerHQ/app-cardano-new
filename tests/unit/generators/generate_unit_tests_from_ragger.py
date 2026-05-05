@@ -486,7 +486,6 @@ def _verify_ragger_test_coverage(
         "test_client_constants.py",
         "test_app_mainmenu.py",
         "test_error_cmd.py",
-        "test_mock_key_derivation.py",
         "test_get_app_info.py",
     }
     skip_test_funcs = {
