@@ -30,7 +30,7 @@ APPNAME = "Cardano ADA"
 # Application version
 APPVERSION_M = 8
 APPVERSION_N = 0
-APPVERSION_P = 2
+APPVERSION_P = 3
 APPVERSION = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 
 # Application source files
@@ -76,6 +76,7 @@ VARIANT_VALUES = cardano_ada
 # When DEBUG is enabled, add DEBUG as a preprocessor define so #ifdef DEBUG works in code
 ifneq ($(DEBUG), 0)
     DEFINES += DEBUG
+    DEBUG_OS_STACK_CONSUMPTION ?= 1
 endif
 
 ########################################

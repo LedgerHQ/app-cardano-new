@@ -573,6 +573,11 @@ cardano_unit_test(test_handler_state_machines
 cardano_unit_test(test_handler_sign_tx_swap
     SOURCES test_handler_sign_tx_swap.c
     LIBS cardano_sign_tx_core_swap)
+target_compile_definitions(test_handler_sign_tx_swap PRIVATE HAVE_SWAP)
+
+cardano_unit_test(test_handler_sign_tx_ui_render_failure
+    SOURCES test_handler_sign_tx_ui_render_failure.c
+    LIBS cardano_sign_tx_core)
 
 cardano_unit_test(test_sign_tx_witness_nbgl_reject
     SOURCES test_sign_tx_witness_nbgl_reject.c
@@ -618,6 +623,10 @@ cardano_unit_test(test_tx_parse_outputs
 
 cardano_unit_test(test_tx_parse_certificates
     SOURCES test_tx_parse_certificates.c
+    LIBS cardano_sign_tx_core)
+
+cardano_unit_test(test_tx_ui_render_certificates
+    SOURCES test_tx_ui_render_certificates.c
     LIBS cardano_sign_tx_core)
 
 # test_cvote_parser: keep manual (needs target_link_options)
@@ -876,7 +885,6 @@ set(DERIVE_NATIVE_SCRIPT_COMMON_SOURCES
     mock_sources/glyphs_mock.c
     mock_sources/nbgl_mock.c
     mock_sources/hex_stub.c
-    mock_sources/io_stub.c
     test_native_script_utils.c
 )
 set(DERIVE_NATIVE_SCRIPT_COMMON_LIBS

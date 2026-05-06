@@ -34,6 +34,11 @@ static size_t _write_u64_be(uint8_t *dst, uint64_t value) {
     return 8;
 }
 
+static void _write_payload_length(uint8_t *dst, size_t payload_length) {
+    dst[0] = (uint8_t) (payload_length >> 8);
+    dst[1] = (uint8_t) (payload_length & 0xFF);
+}
+
 // ---------------------------------------------------------------------------
 // parse_certificate_stake_registration_deregistration
 // ---------------------------------------------------------------------------
@@ -361,6 +366,15 @@ static void test_cert_drep_registration_deposit_too_large(void **state) {
     assert_false(parse_certificate_drep_registration(&buf, &cert));
 }
 
+static void test_cert_drep_registration_truncated_deposit(void **state) {
+    (void) state;
+    uint8_t buf_data[1 + ADDRESS_KEY_HASH_LENGTH + 4] = {0};
+    _write_key_hash_credential(buf_data);
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    certificate_data_t cert;
+    assert_false(parse_certificate_drep_registration(&buf, &cert));
+}
+
 static void test_cert_drep_registration_truncated_anchor(void **state) {
     (void) state;
     // Valid credential + valid deposit, but no anchor bytes.
@@ -389,6 +403,15 @@ static void test_cert_drep_deregistration_deposit_too_large(void **state) {
     uint8_t buf_data[1 + ADDRESS_KEY_HASH_LENGTH + 8] = {0};
     size_t off = _write_key_hash_credential(buf_data);
     _write_u64_be(buf_data + off, LOVELACE_MAX_SUPPLY);
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    certificate_data_t cert;
+    assert_false(parse_certificate_drep_deregistration(&buf, &cert));
+}
+
+static void test_cert_drep_deregistration_truncated_deposit(void **state) {
+    (void) state;
+    uint8_t buf_data[1 + ADDRESS_KEY_HASH_LENGTH + 4] = {0};
+    _write_key_hash_credential(buf_data);
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     certificate_data_t cert;
     assert_false(parse_certificate_drep_deregistration(&buf, &cert));
@@ -424,6 +447,14 @@ static void test_cert_parse_unknown_type(void **state) {
     // Certificate type byte 0xFF is not a valid certificate_type_t.
     uint8_t buf_data[1] = {0xFF};
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    certificate_data_t cert;
+    assert_false(parse_certificate(&buf, &cert));
+}
+
+static void test_cert_parse_truncated_type(void **state) {
+    (void) state;
+    uint8_t buf_data[1] = {0};
+    buffer_t buf = {.ptr = buf_data, .size = 0, .offset = 0};
     certificate_data_t cert;
     assert_false(parse_certificate(&buf, &cert));
 }
@@ -623,6 +654,14 @@ static void test_cert_pool_reg_unknown_reward_account_type(void **state) {
     assert_false(parse_certificate_stake_pool_registration(&buf, &cert));
 }
 
+static void test_cert_pool_reg_payload_length_exceeds_buffer(void **state) {
+    (void) state;
+    uint8_t buf_data[2] = {0x00, 0x01};
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    certificate_data_t cert;
+    assert_false(parse_certificate_stake_pool_registration(&buf, &cert));
+}
+
 // ---------------------------------------------------------------------------
 // _parse_pool_id error paths (called via parse_certificate_stake_pool_registration)
 // We test it by building minimal pool reg payloads that fail at pool id parsing.
@@ -654,6 +693,17 @@ static void test_pool_id_hash_truncated(void **state) {
     buf_data[0] = 0x00;
     buf_data[1] = 1 + 5;  // payloadLength = 6
     buf_data[2] = EXT_CREDENTIAL_KEY_HASH;
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    certificate_data_t cert;
+    assert_false(parse_certificate_stake_pool_registration(&buf, &cert));
+}
+
+static void test_pool_id_path_truncated(void **state) {
+    (void) state;
+    uint8_t buf_data[2 + 2] = {0};
+    _write_payload_length(buf_data, 2);
+    buf_data[2] = EXT_CREDENTIAL_KEY_PATH;
+    buf_data[3] = 5;  // path length byte, no path words follow
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     certificate_data_t cert;
     assert_false(parse_certificate_stake_pool_registration(&buf, &cert));
@@ -713,6 +763,21 @@ static void test_pool_reg_pledge_too_large(void **state) {
     assert_false(parse_certificate_stake_pool_registration(&buf, &cert));
 }
 
+static void test_pool_reg_truncated_pledge(void **state) {
+    (void) state;
+    const size_t PAYLOAD_SIZE = 1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH + 4;
+    uint8_t buf_data[2 + PAYLOAD_SIZE];
+    memset(buf_data, 0, sizeof(buf_data));
+    _write_payload_length(buf_data, PAYLOAD_SIZE);
+    size_t off = 2;
+    buf_data[off++] = EXT_CREDENTIAL_KEY_HASH;
+    off += POOL_KEY_HASH_LENGTH;
+    off += VRF_KEY_HASH_LENGTH;
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    certificate_data_t cert;
+    assert_false(parse_certificate_stake_pool_registration(&buf, &cert));
+}
+
 static void test_pool_reg_cost_too_large(void **state) {
     (void) state;
     const size_t PAYLOAD_SIZE = 1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH + 8 + 8;
@@ -727,6 +792,133 @@ static void test_pool_reg_cost_too_large(void **state) {
     _write_u64_be(buf_data + off, 1);
     off += 8;                                            // pledge valid
     _write_u64_be(buf_data + off, LOVELACE_MAX_SUPPLY);  // cost = max (invalid)
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    certificate_data_t cert;
+    assert_false(parse_certificate_stake_pool_registration(&buf, &cert));
+}
+
+static void test_pool_reg_truncated_cost(void **state) {
+    (void) state;
+    const size_t PAYLOAD_SIZE = 1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH + 8 + 4;
+    uint8_t buf_data[2 + PAYLOAD_SIZE];
+    memset(buf_data, 0, sizeof(buf_data));
+    _write_payload_length(buf_data, PAYLOAD_SIZE);
+    size_t off = 2;
+    buf_data[off++] = EXT_CREDENTIAL_KEY_HASH;
+    off += POOL_KEY_HASH_LENGTH;
+    off += VRF_KEY_HASH_LENGTH;
+    _write_u64_be(buf_data + off, 1);
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    certificate_data_t cert;
+    assert_false(parse_certificate_stake_pool_registration(&buf, &cert));
+}
+
+static void test_pool_reg_truncated_margin_numerator(void **state) {
+    (void) state;
+    const size_t PAYLOAD_SIZE = 1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH + 8 + 8 + 4;
+    uint8_t buf_data[2 + PAYLOAD_SIZE];
+    memset(buf_data, 0, sizeof(buf_data));
+    _write_payload_length(buf_data, PAYLOAD_SIZE);
+    size_t off = 2;
+    buf_data[off++] = EXT_CREDENTIAL_KEY_HASH;
+    off += POOL_KEY_HASH_LENGTH;
+    off += VRF_KEY_HASH_LENGTH;
+    _write_u64_be(buf_data + off, 1);
+    off += 8;
+    _write_u64_be(buf_data + off, 1);
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    certificate_data_t cert;
+    assert_false(parse_certificate_stake_pool_registration(&buf, &cert));
+}
+
+static void test_pool_reg_truncated_margin_denominator(void **state) {
+    (void) state;
+    const size_t PAYLOAD_SIZE = 1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH + 8 + 8 + 8 + 4;
+    uint8_t buf_data[2 + PAYLOAD_SIZE];
+    memset(buf_data, 0, sizeof(buf_data));
+    _write_payload_length(buf_data, PAYLOAD_SIZE);
+    size_t off = 2;
+    buf_data[off++] = EXT_CREDENTIAL_KEY_HASH;
+    off += POOL_KEY_HASH_LENGTH;
+    off += VRF_KEY_HASH_LENGTH;
+    _write_u64_be(buf_data + off, 1);
+    off += 8;
+    _write_u64_be(buf_data + off, 1);
+    off += 8;
+    _write_u64_be(buf_data + off, 1);
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    certificate_data_t cert;
+    assert_false(parse_certificate_stake_pool_registration(&buf, &cert));
+}
+
+static void test_pool_reg_truncated_reward_account_type(void **state) {
+    (void) state;
+    const size_t PAYLOAD_SIZE = 1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH + 8 + 8 + 8 + 8;
+    uint8_t buf_data[2 + PAYLOAD_SIZE];
+    memset(buf_data, 0, sizeof(buf_data));
+    _write_payload_length(buf_data, PAYLOAD_SIZE);
+    size_t off = 2;
+    buf_data[off++] = EXT_CREDENTIAL_KEY_HASH;
+    off += POOL_KEY_HASH_LENGTH;
+    off += VRF_KEY_HASH_LENGTH;
+    _write_u64_be(buf_data + off, 1);
+    off += 8;
+    _write_u64_be(buf_data + off, 1);
+    off += 8;
+    _write_u64_be(buf_data + off, 1);
+    off += 8;
+    _write_u64_be(buf_data + off, 2);
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    certificate_data_t cert;
+    assert_false(parse_certificate_stake_pool_registration(&buf, &cert));
+}
+
+static void test_pool_reg_truncated_reward_account_hash(void **state) {
+    (void) state;
+    const size_t PAYLOAD_SIZE = 1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH + 8 + 8 + 8 + 8 +
+                                1 + 5;
+    uint8_t buf_data[2 + PAYLOAD_SIZE];
+    memset(buf_data, 0, sizeof(buf_data));
+    _write_payload_length(buf_data, PAYLOAD_SIZE);
+    size_t off = 2;
+    buf_data[off++] = EXT_CREDENTIAL_KEY_HASH;
+    off += POOL_KEY_HASH_LENGTH;
+    off += VRF_KEY_HASH_LENGTH;
+    _write_u64_be(buf_data + off, 1);
+    off += 8;
+    _write_u64_be(buf_data + off, 1);
+    off += 8;
+    _write_u64_be(buf_data + off, 1);
+    off += 8;
+    _write_u64_be(buf_data + off, 2);
+    off += 8;
+    buf_data[off++] = EXT_CREDENTIAL_KEY_HASH;
+    buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
+    certificate_data_t cert;
+    assert_false(parse_certificate_stake_pool_registration(&buf, &cert));
+}
+
+static void test_pool_reg_truncated_reward_account_path(void **state) {
+    (void) state;
+    const size_t PAYLOAD_SIZE = 1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH + 8 + 8 + 8 + 8 +
+                                1 + 1;
+    uint8_t buf_data[2 + PAYLOAD_SIZE];
+    memset(buf_data, 0, sizeof(buf_data));
+    _write_payload_length(buf_data, PAYLOAD_SIZE);
+    size_t off = 2;
+    buf_data[off++] = EXT_CREDENTIAL_KEY_HASH;
+    off += POOL_KEY_HASH_LENGTH;
+    off += VRF_KEY_HASH_LENGTH;
+    _write_u64_be(buf_data + off, 1);
+    off += 8;
+    _write_u64_be(buf_data + off, 1);
+    off += 8;
+    _write_u64_be(buf_data + off, 1);
+    off += 8;
+    _write_u64_be(buf_data + off, 2);
+    off += 8;
+    buf_data[off++] = EXT_CREDENTIAL_KEY_PATH;
+    buf_data[off++] = 5;
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     certificate_data_t cert;
     assert_false(parse_certificate_stake_pool_registration(&buf, &cert));
@@ -1157,24 +1349,35 @@ int main(void) {
         cmocka_unit_test(test_cert_resign_committee_cold_truncated_anchor),
         // parse_certificate_drep_registration
         cmocka_unit_test(test_cert_drep_registration_truncated_credential),
+        cmocka_unit_test(test_cert_drep_registration_truncated_deposit),
         cmocka_unit_test(test_cert_drep_registration_deposit_too_large),
         cmocka_unit_test(test_cert_drep_registration_truncated_anchor),
         // parse_certificate_drep_deregistration
         cmocka_unit_test(test_cert_drep_deregistration_truncated_credential),
+        cmocka_unit_test(test_cert_drep_deregistration_truncated_deposit),
         cmocka_unit_test(test_cert_drep_deregistration_deposit_too_large),
         // parse_certificate_drep_update
         cmocka_unit_test(test_cert_drep_update_truncated_credential),
         cmocka_unit_test(test_cert_drep_update_truncated_anchor),
         // parse_certificate dispatcher
+        cmocka_unit_test(test_cert_parse_truncated_type),
         cmocka_unit_test(test_cert_parse_unknown_type),
         // parse_pool_relay
         cmocka_unit_test(test_pool_id_truncated_type),
         cmocka_unit_test(test_pool_id_unknown_type),
         cmocka_unit_test(test_pool_id_hash_truncated),
+        cmocka_unit_test(test_pool_id_path_truncated),
 
         cmocka_unit_test(test_pool_reg_truncated_vrf_hash),
+        cmocka_unit_test(test_pool_reg_truncated_pledge),
         cmocka_unit_test(test_pool_reg_pledge_too_large),
+        cmocka_unit_test(test_pool_reg_truncated_cost),
         cmocka_unit_test(test_pool_reg_cost_too_large),
+        cmocka_unit_test(test_pool_reg_truncated_margin_numerator),
+        cmocka_unit_test(test_pool_reg_truncated_margin_denominator),
+        cmocka_unit_test(test_pool_reg_truncated_reward_account_type),
+        cmocka_unit_test(test_pool_reg_truncated_reward_account_hash),
+        cmocka_unit_test(test_pool_reg_truncated_reward_account_path),
         cmocka_unit_test(test_pool_reg_truncated_num_owners),
         cmocka_unit_test(test_pool_reg_truncated_num_relays),
         cmocka_unit_test(test_pool_reg_truncated_metadata_flag),
@@ -1211,6 +1414,7 @@ int main(void) {
         cmocka_unit_test(test_relay_multiple_host_name_truncated_dns),
         cmocka_unit_test(test_parse_pool_relay_unknown_type),
         // parse_certificate_stake_pool_registration
+        cmocka_unit_test(test_cert_pool_reg_payload_length_exceeds_buffer),
         cmocka_unit_test(test_cert_pool_reg_invalid_margin),
         cmocka_unit_test(test_cert_pool_reg_unknown_reward_account_type),
     };

@@ -40,7 +40,7 @@ CTEST_OUTPUT_ON_FAILURE=1 make -C build -j4 test 2>&1 | grep test_mock_key_deriv
 
 **Expected result:** ✓ All entries verified successfully
 
-### 2. Ragger Test for Mock Key Derivation (`tests/standalone/test_mock_key_derivation.py`)
+### 2. Python Test for Mock Key Derivation (`tests/unit/test_mock_key_derivation.py`)
 
 **What it does:**
 - Python version of key derivation verification
@@ -50,8 +50,7 @@ CTEST_OUTPUT_ON_FAILURE=1 make -C build -j4 test 2>&1 | grep test_mock_key_deriv
 
 **How to run:**
 ```bash
-cd tests/standalone
-pytest -xvs --device stax test_mock_key_derivation.py::test_all_mock_key_derivation
+PYTHONPATH=. tests/venv/bin/pytest -xvs tests/unit/test_mock_key_derivation.py::test_all_mock_key_derivation
 ```
 
 **Key paths verified:**

@@ -16,6 +16,7 @@
 #include "transaction/tx_credential_types.h"
 #include "buffer.h"
 #include "hexUtils.h"
+#include "base58.h"
 
 #define HD                 HARDENED_BIP32
 #define MAX_ADDRESS_LENGTH 128
@@ -230,6 +231,26 @@ static void test_address_derivation(void **state) {
                                     NULL,
                                     "01f90b0dfcace47bf03e88f7469a2f4fb3a7918461aa4765bfaf55f0dae260"
                                     "546c20562e598fb761f419dad27edcd49f4ee4f0540b8e40d4d5");
+}
+
+static void test_format_byron_address_rejects_oversized_input(void **state) {
+    (void) state;
+
+    uint8_t address[MAX_ENC_INPUT_SIZE + 1] = {0};
+    address[0] = (uint8_t) (BYRON << 4);
+    char out[MAX_HUMAN_ADDRESS_LENGTH] = {0};
+
+    assert_false(format_address_human_readable(address, sizeof(address), out, sizeof(out)));
+}
+
+static void test_format_byron_address_rejects_tiny_output_buffer(void **state) {
+    (void) state;
+
+    uint8_t address[2] = {0};
+    address[0] = (uint8_t) (BYRON << 4);
+    char out[1] = {0};
+
+    assert_false(format_address_human_readable(address, sizeof(address), out, sizeof(out)));
 }
 
 static void test_buffer_parse_address_params_payment_script_hash(void **state) {
@@ -705,6 +726,8 @@ static void test_format_blockchain_pointer(void **state) {
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_address_derivation),
+        cmocka_unit_test(test_format_byron_address_rejects_oversized_input),
+        cmocka_unit_test(test_format_byron_address_rejects_tiny_output_buffer),
         cmocka_unit_test(test_buffer_parse_address_params_payment_script_hash),
         cmocka_unit_test(test_buffer_parse_address_params_payment_script_hash_with_pointer),
         cmocka_unit_test(test_buffer_parse_address_params_payment_script_hash_with_stake_path),

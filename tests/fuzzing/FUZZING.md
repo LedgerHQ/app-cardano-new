@@ -54,18 +54,21 @@ Current harnesses:
 
 ### Preparation
 
-The fuzzer can be run using the Docker image `ledger-app-dev-tools`. You can download it from the
-`ghcr.io` docker repository:
+The fuzzer can be run inside the active Ledger VS Code dev-tools container used
+for this repository, typically `ledger-app-cardano-container`. That keeps the
+SDK version aligned with normal app builds.
 
 ```bash
-docker pull ghcr.io/ledgerhq/ledger-app-builder/ledger-app-dev-tools:latest
+docker exec -ti ledger-app-cardano-container bash
 ```
 
-You can then enter this development environment by executing the following command from the
-repository root directory:
+If the VS Code container is not running, start it through the Ledger VS Code
+extension. As a fallback, use the same dev-tools image and mount the repository
+at `/app`:
 
 ```bash
-docker run --rm -ti -v "$(realpath .):/app" ghcr.io/ledgerhq/ledger-app-builder/ledger-app-dev-tools:latest
+docker run --rm -ti -v "$(realpath .):/app" \
+  ghcr.io/ledgerhq/ledger-app-builder/ledger-app-dev-tools:latest
 ```
 
 ### Compile and run the fuzzer from the container

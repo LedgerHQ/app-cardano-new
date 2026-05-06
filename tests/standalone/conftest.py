@@ -31,6 +31,7 @@ from .client_constants_check import (
     assert_sign_tx_related_constants_match,
     assert_settings_menu_constants_match,
     assert_setting_value_constants_match,
+    assert_warning_bit_constants_match,
 )
 
 NANO_STREAMING_TIMEOUT_SECONDS = 600
@@ -54,13 +55,12 @@ NANO_STREAMING_TIMEOUT_SECONDS = 600
 #########################
 
 
-@pytest.fixture(scope="session", autouse=True)
-def enforce_client_constants() -> None:
-    """Ensure the Python helpers stay aligned with the C dispatcher before raggers run."""
+def _assert_client_constants_match() -> None:
     assert_ins_constants_match()
     assert_p1_p2_constants_match()
     assert_cla_constant_match()
     assert_cvote_credential_constants_match()
+    assert_warning_bit_constants_match()
     assert_max_sign_tx_chunk_size_match()
     assert_max_sign_msg_chunk_size_match()
     assert_setting_value_constants_match()
@@ -71,6 +71,17 @@ def enforce_client_constants() -> None:
     assert_sign_tx_related_constants_match()
     assert_sign_msg_and_native_script_constants_match()
     assert_response_unpacker_constants_match()
+
+
+def pytest_sessionstart(session: pytest.Session) -> None:  # pylint: disable=unused-argument
+    """Ensure the Python helpers stay aligned with the C dispatcher before raggers run."""
+    try:
+        _assert_client_constants_match()
+    except AssertionError as assertion_error:
+        pytest.exit(
+            f"Client constants do not match the C app sources: {assertion_error}",
+            returncode=1,
+        )
 
 
 # Pull all features from the base ragger conftest using the overridden configuration

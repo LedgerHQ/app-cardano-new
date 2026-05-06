@@ -37,6 +37,16 @@ For standalone functional tests (ragger), you also need:
 sudo apt install qemu-user-static
 ```
 
+## Ledger Docker Environment
+
+For app builds and swap dependency builds, use the active Ledger VS Code
+dev-tools container for this repository, typically `ledger-app-cardano-container`.
+It carries the current per-device SDKs used by the VS Code Ledger plugin. Avoid
+using older standalone builder images such as
+`ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest` for swap
+dependencies, because they can produce binaries with an older SDK API level than
+the local Cardano app.
+
 ### Linting and Formatting (Ruff)
 
 The project uses [Ruff](https://docs.astral.sh/ruff/) for Python linting and formatting. Ruff is included in the shared `tests/requirements.txt`.
@@ -102,7 +112,12 @@ Notes:
   `tests/unit/README.md` -> `Fixture Workflow`.
 - Use the shared venv above when running generator scripts or other Python-based
   test tooling.
-- Run ragger and swap tests only when explicitly requested.
+- Run ragger and swap tests only when explicitly requested. For standalone
+  ragger tests, `--get-stack-consumption` is a useful optional diagnostic flag:
+  it prints a per-test stack usage summary when the app binary is built with
+  `DEBUG_OS_STACK_CONSUMPTION=1`. This is an SDK build variable handled by
+  `$(BOLOS_SDK)/Makefile.standard_app`; this app enables it automatically for
+  `DEBUG=1` builds.
 - Convenience wrappers from the repository root:
   - `make -C tests python-checks` runs Ruff format check, pylint, and mypy.
   - `make -C tests clang-format-src-check` checks `clang-format-14` on `src/**/*.c` and `src/**/*.h`.

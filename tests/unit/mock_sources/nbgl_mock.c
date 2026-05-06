@@ -25,9 +25,6 @@ static bool g_final_decisions_storage[NBGL_MOCK_MAX_FINAL_DECISIONS];
 static size_t g_final_decision_count = 0;
 static size_t g_final_decision_index = 0;
 static bool g_final_decisions_strict = false;
-static bool g_reject_next_final_decision_enabled = false;
-static bool g_reject_next_final_decision_consumed = false;
-static nbgl_opType_t g_reject_next_operation_type = TYPE_TRANSACTION;
 static nbgl_operationType_t g_last_streaming_operation_type = TYPE_TRANSACTION;
 static bool g_streaming_start_auto_complete = false;
 static bool g_streaming_start_confirm = true;
@@ -50,9 +47,6 @@ void nbgl_mock_reset(void) {
     g_final_decision_count = 0;
     g_final_decision_index = 0;
     g_final_decisions_strict = false;
-    g_reject_next_final_decision_enabled = false;
-    g_reject_next_final_decision_consumed = false;
-    g_reject_next_operation_type = TYPE_TRANSACTION;
     g_last_streaming_operation_type = TYPE_TRANSACTION;
     g_streaming_start_auto_complete = false;
     g_streaming_start_confirm = true;
@@ -93,12 +87,6 @@ void nbgl_mock_assert_all_final_decisions_consumed(void) {
     }
 }
 
-void nbgl_mock_reject_next_final_decision_for_operation(nbgl_opType_t operation_type) {
-    g_reject_next_final_decision_enabled = true;
-    g_reject_next_final_decision_consumed = false;
-    g_reject_next_operation_type = operation_type;
-}
-
 void nbgl_mock_set_streaming_start_auto_complete(bool enabled, bool confirm) {
     g_streaming_start_auto_complete = enabled;
     g_streaming_start_confirm = confirm;
@@ -108,10 +96,6 @@ void nbgl_mock_set_streaming_continue_reject_at_call(size_t call_index) {
     g_streaming_continue_reject_enabled = true;
     g_streaming_continue_reject_at_call = call_index;
     g_streaming_continue_call_count = 0;
-}
-
-static nbgl_opType_t nbgl_mock_operation_base_type(nbgl_operationType_t operation_type) {
-    return (nbgl_opType_t) (operation_type & 0x0F);
 }
 
 static bool nbgl_mock_next_final_decision(void) {
@@ -129,14 +113,7 @@ static bool nbgl_mock_next_final_decision(void) {
 }
 
 static bool nbgl_mock_final_decision_for_operation(nbgl_operationType_t operation_type) {
-    const nbgl_opType_t operation_base_type = nbgl_mock_operation_base_type(operation_type);
-
-    if (g_reject_next_final_decision_enabled && !g_reject_next_final_decision_consumed &&
-        operation_base_type == g_reject_next_operation_type) {
-        g_reject_next_final_decision_consumed = true;
-        return false;
-    }
-
+    (void) operation_type;
     return nbgl_mock_next_final_decision();
 }
 

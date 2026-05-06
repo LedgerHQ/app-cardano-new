@@ -14,10 +14,14 @@
 #include "sign_tx_ctx.h"
 #include "tx_parse.h"
 #include "tx_constants.h"
+#include "tx_processing_certificates.h"
+#include "tx_processing_outputs.h"
 #include "cardano_constants.h"
 #include "cardano_swo.h"
+#include "cardano_parsers.h"
 #include "mem.h"
 #include "app_context.h"
+#include "ui_utils.h"
 
 void tx_handle_parse_error(uint16_t swo);
 void tx_processing_setup_state(const tx_processing_mode_t *mode, warning_bits_t *warning_bits);
@@ -25,6 +29,10 @@ bool tx_process_inputs(buffer_t *buf, tx_processing_state_t *state);
 bool tx_process_collateral_inputs(buffer_t *buf, tx_processing_state_t *state);
 bool tx_process_required_signers(buffer_t *buf, tx_processing_state_t *state);
 bool tx_process_reference_inputs(buffer_t *buf, tx_processing_state_t *state);
+bool tx_render_ui_chunk(uint16_t from);
+bool tx_render_ui(tx_ui_review_mode_e review_mode);
+void mem_utils_stub_fail_after_successful_allocations(uint32_t successful_allocations);
+void mem_utils_stub_reset_failure(void);
 
 #define TEST_HEAP_SIZE (23 * 1024)
 static uint8_t test_heap[TEST_HEAP_SIZE];
@@ -52,6 +60,134 @@ int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_
     (void) bufferLength;
     g_last_swo = swo;
     return 0;
+}
+
+static void write_u16_be_test(uint8_t *dst, uint16_t value) {
+    dst[0] = (uint8_t) (value >> 8);
+    dst[1] = (uint8_t) (value & 0xFF);
+}
+
+static void write_u32_be_test(uint8_t *dst, uint32_t value) {
+    dst[0] = (uint8_t) (value >> 24);
+    dst[1] = (uint8_t) (value >> 16);
+    dst[2] = (uint8_t) (value >> 8);
+    dst[3] = (uint8_t) value;
+}
+
+static size_t write_u64_be_test(uint8_t *dst, uint64_t value) {
+    for (size_t i = 0; i < sizeof(uint64_t); i++) {
+        dst[sizeof(uint64_t) - 1 - i] = (uint8_t) (value >> (8 * i));
+    }
+    return sizeof(uint64_t);
+}
+
+static void setup_tx_validate_base_params(sign_tx_signingmode_t signing_mode) {
+    G_context.tx_info.tx_params.txSigningMode = signing_mode;
+    G_context.tx_info.tx_params.networkId = MAINNET_NETWORK_ID;
+    G_context.tx_info.tx_params.protocolMagic = MAINNET_PROTOCOL_MAGIC;
+    G_context.tx_info.tx_params.num_inputs = 1;
+    G_context.tx_info.tx_params.num_outputs = 0;
+}
+
+static size_t write_minimal_input_and_fee(uint8_t *raw_tx, uint64_t fee) {
+    size_t off = 0;
+    memset(raw_tx + off, 0xAA, TX_HASH_LENGTH);
+    off += TX_HASH_LENGTH;
+    write_u32_be_test(raw_tx + off, 0);
+    off += sizeof(uint32_t);
+    off += write_u64_be_test(raw_tx + off, fee);
+    return off;
+}
+
+static void assert_tx_validate_fails_with_swo(uint8_t *raw_tx,
+                                              size_t raw_tx_length,
+                                              uint16_t expected_swo) {
+    tx_body_ctx()->raw_tx = raw_tx;
+    G_context.tx_info.raw_tx_total_length = raw_tx_length;
+    tx_body_ctx()->raw_tx_current_length = raw_tx_length;
+
+    apdu_response_begin(INS_SIGN_TX);
+    assert_false(tx_validate());
+    apdu_response_finalize_after_handler();
+    assert_int_equal(g_last_swo, expected_swo);
+}
+
+static size_t write_valid_output_top_level(uint8_t *dst,
+                                           tx_output_serialization_format_t format,
+                                           bool includeDatum,
+                                           bool includeRefScript,
+                                           uint16_t numAssetGroups) {
+    size_t off = 0;
+    dst[off++] = DESTINATION_THIRD_PARTY;
+    write_u16_be_test(dst + off, 29);
+    off += 2;
+    dst[off] = 0x61;  // enterprise mainnet address header
+    off += 29;
+    off += write_u64_be_test(dst + off, 1500000);
+    dst[off++] = (uint8_t) format;
+    dst[off++] = includeDatum ? FLAG_INCLUDED_YES : FLAG_INCLUDED_NO;
+    dst[off++] = includeRefScript ? FLAG_INCLUDED_YES : FLAG_INCLUDED_NO;
+    write_u16_be_test(dst + off, numAssetGroups);
+    off += 2;
+    return off;
+}
+
+static size_t wrap_single_output(uint8_t *dst, const uint8_t *outputData, size_t outputLength) {
+    assert_true(outputLength <= UINT16_MAX);
+    write_u16_be_test(dst, (uint16_t) outputLength);
+    memcpy(dst + 2, outputData, outputLength);
+    return 2 + outputLength;
+}
+
+static void setup_output_processing_state(uint16_t numOutputs, bool includeCollateralOutput) {
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
+    G_context.tx_info.tx_params.networkId = MAINNET_NETWORK_ID;
+    G_context.tx_info.tx_params.protocolMagic = MAINNET_PROTOCOL_MAGIC;
+    G_context.tx_info.tx_params.num_outputs = numOutputs;
+    G_context.tx_info.tx_params.includeCollateralOutput = includeCollateralOutput;
+
+    const tx_processing_mode_t mode = {
+        .run_validation = false,
+        .run_hash_builder = false,
+        .ui_count_pairs = false,
+        .ui_render = false,
+    };
+    warning_bits_t warnings = 0;
+    tx_processing_setup_state(&mode, &warnings);
+}
+
+static void assert_outputs_processing_fails_with_swo(uint8_t *payload,
+                                                     size_t payloadSize,
+                                                     uint16_t expectedSwo) {
+    buffer_t buf = {
+        .ptr = payload,
+        .size = payloadSize,
+        .offset = 0,
+    };
+
+    apdu_response_begin(INS_SIGN_TX);
+    bool ok = tx_process_outputs(&buf, &tx_body_ctx()->processing_state);
+    apdu_response_finalize_after_handler();
+
+    assert_false(ok);
+    assert_int_equal(g_last_swo, expectedSwo);
+}
+
+static void assert_collateral_output_processing_fails_with_swo(uint8_t *payload,
+                                                               size_t payloadSize,
+                                                               uint16_t expectedSwo) {
+    buffer_t buf = {
+        .ptr = payload,
+        .size = payloadSize,
+        .offset = 0,
+    };
+
+    apdu_response_begin(INS_SIGN_TX);
+    bool ok = tx_process_collateral_output(&buf, &tx_body_ctx()->processing_state);
+    apdu_response_finalize_after_handler();
+
+    assert_false(ok);
+    assert_int_equal(g_last_swo, expectedSwo);
 }
 
 static void test_parse_tx_fails_on_missing_inputs(void **state) {
@@ -204,6 +340,36 @@ static void test_process_collateral_inputs_field_pass1_success(void **state) {
     assert_int_equal(tx_body_ctx()->total_ui_pairs, 0);  // non-expert mode hides collateral inputs
 }
 
+static void test_process_collateral_inputs_field_parse_error_sends_collateral_swo(void **state) {
+    (void) state;
+    reset_test_context();
+
+    uint8_t too_short_input[TX_HASH_LENGTH + sizeof(uint32_t) - 1] = {0};
+    buffer_t buf = {
+        .ptr = too_short_input,
+        .size = sizeof(too_short_input),
+        .offset = 0,
+    };
+
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_PLUTUS;
+    G_context.tx_info.tx_params.num_collateral_inputs = 1;
+
+    tx_processing_mode_t mode = {
+        .run_validation = true,
+        .run_hash_builder = false,
+        .ui_count_pairs = true,
+        .ui_render = false,
+    };
+    warning_bits_t warnings = 0;
+    tx_processing_setup_state(&mode, &warnings);
+
+    apdu_response_begin(INS_SIGN_TX);
+    bool ok = tx_process_collateral_inputs(&buf, &tx_body_ctx()->processing_state);
+    apdu_response_finalize_after_handler();
+    assert_false(ok);
+    assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_COLLATERAL_INPUTS);
+}
+
 static void test_process_reference_inputs_field_parse_error_sends_reference_swo(void **state) {
     (void) state;
     reset_test_context();
@@ -296,6 +462,312 @@ static void test_process_required_signers_field_parse_error_sends_required_swo(v
     apdu_response_finalize_after_handler();
     assert_false(ok);
     assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_REQUIRED_SIGNERS);
+}
+
+static void test_process_outputs_length_prefix_exceeds_buffer(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_output_processing_state(1, false);
+
+    uint8_t payload[2] = {0x00, 0x01};
+    assert_outputs_processing_fails_with_swo(payload, sizeof(payload), SWO_TX_PARSING_FAIL_OUTPUTS);
+}
+
+static void test_process_outputs_top_level_parse_error(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_output_processing_state(1, false);
+
+    uint8_t output_data[1] = {0xFF};
+    uint8_t payload[2 + sizeof(output_data)] = {0};
+    const size_t payload_size = wrap_single_output(payload, output_data, sizeof(output_data));
+
+    assert_outputs_processing_fails_with_swo(payload, payload_size, SWO_TX_PARSING_FAIL_OUTPUTS);
+}
+
+static void test_process_outputs_asset_group_parse_error(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_output_processing_state(1, false);
+
+    uint8_t output_data[64] = {0};
+    const size_t output_length =
+        write_valid_output_top_level(output_data, MAP_BABBAGE, false, false, 1);
+    uint8_t payload[2 + sizeof(output_data)] = {0};
+    const size_t payload_size = wrap_single_output(payload, output_data, output_length);
+
+    assert_outputs_processing_fails_with_swo(payload, payload_size, SWO_TX_PARSING_FAIL_OUTPUTS);
+}
+
+static void test_process_outputs_token_parse_error(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_output_processing_state(1, false);
+
+    uint8_t output_data[96] = {0};
+    size_t off = write_valid_output_top_level(output_data, MAP_BABBAGE, false, false, 1);
+    memset(output_data + off, 0x11, MINTING_POLICY_ID_LENGTH);
+    off += MINTING_POLICY_ID_LENGTH;
+    write_u16_be_test(output_data + off, 1);
+    off += 2;
+    uint8_t payload[2 + sizeof(output_data)] = {0};
+    const size_t payload_size = wrap_single_output(payload, output_data, off);
+
+    assert_outputs_processing_fails_with_swo(payload, payload_size, SWO_TX_PARSING_FAIL_OUTPUTS);
+}
+
+static void test_process_outputs_datum_parse_error(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_output_processing_state(1, false);
+
+    uint8_t output_data[64] = {0};
+    const size_t output_length =
+        write_valid_output_top_level(output_data, MAP_BABBAGE, true, false, 0);
+    uint8_t payload[2 + sizeof(output_data)] = {0};
+    const size_t payload_size = wrap_single_output(payload, output_data, output_length);
+
+    assert_outputs_processing_fails_with_swo(payload, payload_size, SWO_TX_PARSING_FAIL_OUTPUTS);
+}
+
+static void test_process_outputs_ref_script_parse_error(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_output_processing_state(1, false);
+
+    uint8_t output_data[64] = {0};
+    const size_t output_length =
+        write_valid_output_top_level(output_data, MAP_BABBAGE, false, true, 0);
+    uint8_t payload[2 + sizeof(output_data)] = {0};
+    const size_t payload_size = wrap_single_output(payload, output_data, output_length);
+
+    assert_outputs_processing_fails_with_swo(payload, payload_size, SWO_TX_PARSING_FAIL_OUTPUTS);
+}
+
+static void test_process_outputs_trailing_bytes(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_output_processing_state(1, false);
+
+    uint8_t output_data[64] = {0};
+    size_t off = write_valid_output_top_level(output_data, MAP_BABBAGE, false, false, 0);
+    output_data[off++] = 0x99;
+    uint8_t payload[2 + sizeof(output_data)] = {0};
+    const size_t payload_size = wrap_single_output(payload, output_data, off);
+
+    assert_outputs_processing_fails_with_swo(payload, payload_size, SWO_TX_PARSING_FAIL_OUTPUTS);
+}
+
+static void test_process_collateral_output_length_prefix_exceeds_buffer(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_output_processing_state(0, true);
+
+    uint8_t payload[2] = {0x00, 0x01};
+    assert_collateral_output_processing_fails_with_swo(payload,
+                                                       sizeof(payload),
+                                                       SWO_TX_PARSING_FAIL_COLLATERAL_OUTPUT);
+}
+
+static void test_process_collateral_output_top_level_parse_error(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_output_processing_state(0, true);
+
+    uint8_t output_data[1] = {0xFF};
+    uint8_t payload[2 + sizeof(output_data)] = {0};
+    const size_t payload_size = wrap_single_output(payload, output_data, sizeof(output_data));
+
+    assert_collateral_output_processing_fails_with_swo(payload,
+                                                       payload_size,
+                                                       SWO_TX_PARSING_FAIL_COLLATERAL_OUTPUT);
+}
+
+static void test_process_collateral_output_asset_group_parse_error(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_output_processing_state(0, true);
+
+    uint8_t output_data[64] = {0};
+    const size_t output_length =
+        write_valid_output_top_level(output_data, MAP_BABBAGE, false, false, 1);
+    uint8_t payload[2 + sizeof(output_data)] = {0};
+    const size_t payload_size = wrap_single_output(payload, output_data, output_length);
+
+    assert_collateral_output_processing_fails_with_swo(payload,
+                                                       payload_size,
+                                                       SWO_TX_PARSING_FAIL_COLLATERAL_OUTPUT);
+}
+
+static void test_process_collateral_output_token_parse_error(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_output_processing_state(0, true);
+
+    uint8_t output_data[96] = {0};
+    size_t off = write_valid_output_top_level(output_data, MAP_BABBAGE, false, false, 1);
+    memset(output_data + off, 0x11, MINTING_POLICY_ID_LENGTH);
+    off += MINTING_POLICY_ID_LENGTH;
+    write_u16_be_test(output_data + off, 1);
+    off += 2;
+    uint8_t payload[2 + sizeof(output_data)] = {0};
+    const size_t payload_size = wrap_single_output(payload, output_data, off);
+
+    assert_collateral_output_processing_fails_with_swo(payload,
+                                                       payload_size,
+                                                       SWO_TX_PARSING_FAIL_COLLATERAL_OUTPUT);
+}
+
+static void test_process_collateral_output_rejects_datum_flag(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_output_processing_state(0, true);
+
+    uint8_t output_data[64] = {0};
+    const size_t output_length =
+        write_valid_output_top_level(output_data, MAP_BABBAGE, true, false, 0);
+    uint8_t payload[2 + sizeof(output_data)] = {0};
+    const size_t payload_size = wrap_single_output(payload, output_data, output_length);
+
+    assert_collateral_output_processing_fails_with_swo(payload,
+                                                       payload_size,
+                                                       SWO_TX_PARSING_FAIL_COLLATERAL_OUTPUT);
+}
+
+static void test_process_collateral_output_trailing_bytes(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_output_processing_state(0, true);
+
+    uint8_t output_data[64] = {0};
+    size_t off = write_valid_output_top_level(output_data, MAP_BABBAGE, false, false, 0);
+    output_data[off++] = 0x99;
+    uint8_t payload[2 + sizeof(output_data)] = {0};
+    const size_t payload_size = wrap_single_output(payload, output_data, off);
+
+    assert_collateral_output_processing_fails_with_swo(payload,
+                                                       payload_size,
+                                                       SWO_TX_PARSING_FAIL_COLLATERAL_OUTPUT);
+}
+
+static void test_process_pool_registration_payload_shorter_than_header(void **state) {
+    (void) state;
+    reset_test_context();
+
+    uint8_t payload_byte = 0;
+    buffer_t buf = {
+        .ptr = &payload_byte,
+        .size = sizeof(payload_byte),
+        .offset = 0,
+    };
+
+    certificate_data_t parsed_certificate_data = {
+        .type = CERTIFICATE_STAKE_POOL_REGISTRATION,
+        .poolRegistration =
+            {
+                .payloadLength = 1,
+                .fixedHeaderLength = 2,
+            },
+    };
+
+    const tx_processing_mode_t mode = {
+        .run_validation = true,
+        .run_hash_builder = false,
+        .ui_count_pairs = true,
+        .ui_render = false,
+    };
+    warning_bits_t warnings = 0;
+    tx_processing_setup_state(&mode, &warnings);
+
+    apdu_response_begin(INS_SIGN_TX);
+    bool ok = process_pool_registration_certificate(&buf,
+                                                    &tx_body_ctx()->processing_state,
+                                                    &parsed_certificate_data);
+    apdu_response_finalize_after_handler();
+    assert_false(ok);
+    assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_CERTIFICATES);
+}
+
+static void test_process_pool_registration_owner_scan_parse_error(void **state) {
+    (void) state;
+    reset_test_context();
+
+    uint8_t payload_byte = 0;
+    buffer_t buf = {
+        .ptr = &payload_byte,
+        .size = sizeof(payload_byte),
+        .offset = 0,
+    };
+
+    certificate_data_t parsed_certificate_data = {
+        .type = CERTIFICATE_STAKE_POOL_REGISTRATION,
+        .poolRegistration =
+            {
+                .payloadLength = 1,
+                .fixedHeaderLength = 0,
+                .numPoolOwners = 1,
+                .numRelays = 0,
+                .hasMetadata = false,
+            },
+    };
+
+    const tx_processing_mode_t mode = {
+        .run_validation = true,
+        .run_hash_builder = false,
+        .ui_count_pairs = true,
+        .ui_render = false,
+    };
+    warning_bits_t warnings = 0;
+    tx_processing_setup_state(&mode, &warnings);
+
+    apdu_response_begin(INS_SIGN_TX);
+    bool ok = process_pool_registration_certificate(&buf,
+                                                    &tx_body_ctx()->processing_state,
+                                                    &parsed_certificate_data);
+    apdu_response_finalize_after_handler();
+    assert_false(ok);
+    assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_CERTIFICATES);
+}
+
+static void test_process_pool_registration_rejects_trailing_payload_bytes(void **state) {
+    (void) state;
+    reset_test_context();
+
+    uint8_t trailing_payload_byte = 0x99;
+    buffer_t buf = {
+        .ptr = &trailing_payload_byte,
+        .size = sizeof(trailing_payload_byte),
+        .offset = 0,
+    };
+
+    certificate_data_t parsed_certificate_data = {
+        .type = CERTIFICATE_STAKE_POOL_REGISTRATION,
+        .poolRegistration =
+            {
+                .payloadLength = 1,
+                .fixedHeaderLength = 0,
+                .numPoolOwners = 0,
+                .numRelays = 0,
+                .hasMetadata = false,
+            },
+    };
+
+    const tx_processing_mode_t mode = {
+        .run_validation = false,
+        .run_hash_builder = false,
+        .ui_count_pairs = false,
+        .ui_render = false,
+    };
+    warning_bits_t warnings = 0;
+    tx_processing_setup_state(&mode, &warnings);
+
+    apdu_response_begin(INS_SIGN_TX);
+    bool ok = process_pool_registration_certificate(&buf,
+                                                    &tx_body_ctx()->processing_state,
+                                                    &parsed_certificate_data);
+    apdu_response_finalize_after_handler();
+    assert_false(ok);
+    assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_CERTIFICATES);
 }
 
 static void test_mode_allows_rendering_with_validation(void **state) {
@@ -892,8 +1364,400 @@ static void test_parse_mint_token_zero_amount(void **state) {
     assert_false(parse_mint_token(&buf, &out));
 }
 
+static void test_tx_validate_fee_denied(void **state) {
+    (void) state;
+    reset_test_context();
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
+    G_context.tx_info.tx_params.networkId = MAINNET_NETWORK_ID;
+    G_context.tx_info.tx_params.protocolMagic = MAINNET_PROTOCOL_MAGIC;
+    G_context.tx_info.tx_params.num_inputs = 1;
+    G_context.tx_info.tx_params.num_outputs = 0;
+
+    uint8_t raw_tx[100] = {0};
+    size_t off = 0;
+    // Input (32 bytes hash + 4 bytes index)
+    memset(raw_tx + off, 0xAA, 32);
+    off += 32;
+    write_u32_be_test(raw_tx + off, 0);
+    off += 4;
+
+    tx_body_ctx()->raw_tx = raw_tx;
+    G_context.tx_info.raw_tx_total_length = off;
+    tx_body_ctx()->raw_tx_current_length = off;
+    apdu_response_begin(INS_SIGN_TX);
+    assert_false(tx_validate());
+    apdu_response_finalize_after_handler();
+    assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_FEE);
+}
+
+static void test_tx_validate_validity_interval_start_denied(void **state) {
+    (void) state;
+    reset_test_context();
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
+    G_context.tx_info.tx_params.networkId = MAINNET_NETWORK_ID;
+    G_context.tx_info.tx_params.protocolMagic = MAINNET_PROTOCOL_MAGIC;
+    G_context.tx_info.tx_params.num_inputs = 1;
+    G_context.tx_info.tx_params.num_outputs = 0;
+    G_context.tx_info.tx_params.includeValidityIntervalStart = true;
+
+    uint8_t raw_tx[100] = {0};
+    size_t off = 0;
+    memset(raw_tx + off, 0xAA, 32);
+    off += 32;
+    write_u32_be_test(raw_tx + off, 0);
+    off += 4;
+    off += write_u64_be_test(raw_tx + off, 1500000);
+    off += 7;
+
+    tx_body_ctx()->raw_tx = raw_tx;
+    G_context.tx_info.raw_tx_total_length = off;
+    tx_body_ctx()->raw_tx_current_length = off;
+    apdu_response_begin(INS_SIGN_TX);
+    assert_false(tx_validate());
+    apdu_response_finalize_after_handler();
+    assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_VALIDITY_INTERVAL_START);
+}
+
+static void test_tx_validate_script_data_hash_denied(void **state) {
+    (void) state;
+    reset_test_context();
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_ORDINARY;
+    G_context.tx_info.tx_params.networkId = MAINNET_NETWORK_ID;
+    G_context.tx_info.tx_params.protocolMagic = MAINNET_PROTOCOL_MAGIC;
+    G_context.tx_info.tx_params.num_inputs = 1;
+    G_context.tx_info.tx_params.num_outputs = 0;
+    G_context.tx_info.tx_params.includeScriptDataHash = true;
+
+    uint8_t raw_tx[100] = {0};
+    size_t off = 0;
+    memset(raw_tx + off, 0xAA, 32);
+    off += 32;
+    write_u32_be_test(raw_tx + off, 0);
+    off += 4;
+    off += write_u64_be_test(raw_tx + off, 1500000);
+    off += SCRIPT_DATA_HASH_LENGTH - 1;
+
+    tx_body_ctx()->raw_tx = raw_tx;
+    G_context.tx_info.raw_tx_total_length = off;
+    tx_body_ctx()->raw_tx_current_length = off;
+    apdu_response_begin(INS_SIGN_TX);
+    assert_false(tx_validate());
+    apdu_response_finalize_after_handler();
+    assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_SCRIPT_DATA_HASH);
+}
+
+static void test_tx_validate_total_collateral_denied(void **state) {
+    (void) state;
+    reset_test_context();
+    G_context.tx_info.tx_params.txSigningMode = SIGN_TX_SIGNINGMODE_PLUTUS;
+    G_context.tx_info.tx_params.networkId = MAINNET_NETWORK_ID;
+    G_context.tx_info.tx_params.protocolMagic = MAINNET_PROTOCOL_MAGIC;
+    G_context.tx_info.tx_params.num_inputs = 1;
+    G_context.tx_info.tx_params.num_outputs = 0;
+    G_context.tx_info.tx_params.includeTotalCollateral = true;
+
+    uint8_t raw_tx[100] = {0};
+    size_t off = 0;
+    memset(raw_tx + off, 0xAA, 32);
+    off += 32;
+    write_u32_be_test(raw_tx + off, 0);
+    off += 4;
+    off += write_u64_be_test(raw_tx + off, 1500000);
+    off += 7;
+
+    tx_body_ctx()->raw_tx = raw_tx;
+    G_context.tx_info.raw_tx_total_length = off;
+    tx_body_ctx()->raw_tx_current_length = off;
+    apdu_response_begin(INS_SIGN_TX);
+    assert_false(tx_validate());
+    apdu_response_finalize_after_handler();
+    assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_TOTAL_COLLATERAL);
+}
+
+static void test_tx_validate_fee_too_large_denied(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_tx_validate_base_params(SIGN_TX_SIGNINGMODE_ORDINARY);
+
+    uint8_t raw_tx[100] = {0};
+    size_t off = write_minimal_input_and_fee(raw_tx, LOVELACE_MAX_SUPPLY);
+
+    assert_tx_validate_fails_with_swo(raw_tx, off, SWO_TX_PARSING_FAIL_FEE);
+}
+
+static void test_tx_validate_mint_policy_id_truncated_denied(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_tx_validate_base_params(SIGN_TX_SIGNINGMODE_ORDINARY);
+    G_context.tx_info.tx_params.num_mint_asset_groups = 1;
+
+    uint8_t raw_tx[128] = {0};
+    size_t off = write_minimal_input_and_fee(raw_tx, 1500000);
+    memset(raw_tx + off, 0x11, MINTING_POLICY_ID_LENGTH - 1);
+    off += MINTING_POLICY_ID_LENGTH - 1;
+
+    assert_tx_validate_fails_with_swo(raw_tx, off, SWO_TX_PARSING_FAIL_MINT);
+}
+
+static void test_tx_validate_mint_token_count_truncated_denied(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_tx_validate_base_params(SIGN_TX_SIGNINGMODE_ORDINARY);
+    G_context.tx_info.tx_params.num_mint_asset_groups = 1;
+
+    uint8_t raw_tx[128] = {0};
+    size_t off = write_minimal_input_and_fee(raw_tx, 1500000);
+    memset(raw_tx + off, 0x11, MINTING_POLICY_ID_LENGTH);
+    off += MINTING_POLICY_ID_LENGTH;
+    raw_tx[off++] = 0x00;
+
+    assert_tx_validate_fails_with_swo(raw_tx, off, SWO_TX_PARSING_FAIL_MINT);
+}
+
+static void test_tx_validate_mint_token_truncated_denied(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_tx_validate_base_params(SIGN_TX_SIGNINGMODE_ORDINARY);
+    G_context.tx_info.tx_params.num_mint_asset_groups = 1;
+
+    uint8_t raw_tx[128] = {0};
+    size_t off = write_minimal_input_and_fee(raw_tx, 1500000);
+    memset(raw_tx + off, 0x11, MINTING_POLICY_ID_LENGTH);
+    off += MINTING_POLICY_ID_LENGTH;
+    write_u16_be_test(raw_tx + off, 1);
+    off += sizeof(uint16_t);
+    raw_tx[off++] = 1;
+
+    assert_tx_validate_fails_with_swo(raw_tx, off, SWO_TX_PARSING_FAIL_MINT);
+}
+
+static void test_tx_validate_total_collateral_too_large_denied(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_tx_validate_base_params(SIGN_TX_SIGNINGMODE_PLUTUS);
+    G_context.tx_info.tx_params.includeTotalCollateral = true;
+
+    uint8_t raw_tx[128] = {0};
+    size_t off = write_minimal_input_and_fee(raw_tx, 1500000);
+    off += write_u64_be_test(raw_tx + off, LOVELACE_MAX_SUPPLY);
+
+    assert_tx_validate_fails_with_swo(raw_tx, off, SWO_TX_PARSING_FAIL_TOTAL_COLLATERAL);
+}
+
+static void test_tx_validate_voting_vote_truncated_denied(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_tx_validate_base_params(SIGN_TX_SIGNINGMODE_PLUTUS);
+    G_context.tx_info.tx_params.num_voters = 1;
+
+    uint8_t raw_tx[128] = {0};
+    size_t off = write_minimal_input_and_fee(raw_tx, 1500000);
+    raw_tx[off++] = (uint8_t) EXT_VOTER_STAKE_POOL_KEY_HASH;
+    memset(raw_tx + off, 0x22, ADDRESS_KEY_HASH_LENGTH);
+    off += ADDRESS_KEY_HASH_LENGTH;
+    write_u16_be_test(raw_tx + off, 1);
+    off += sizeof(uint16_t);
+
+    assert_tx_validate_fails_with_swo(raw_tx, off, SWO_TX_PARSING_FAIL_VOTING_PROCEDURES);
+}
+
+static void test_tx_validate_treasury_truncated_denied(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_tx_validate_base_params(SIGN_TX_SIGNINGMODE_ORDINARY);
+    G_context.tx_info.tx_params.includeTreasury = true;
+
+    uint8_t raw_tx[128] = {0};
+    size_t off = write_minimal_input_and_fee(raw_tx, 1500000);
+    off += 7;
+
+    assert_tx_validate_fails_with_swo(raw_tx, off, SWO_TX_PARSING_FAIL_TREASURY);
+}
+
+static void test_tx_validate_treasury_too_large_denied(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_tx_validate_base_params(SIGN_TX_SIGNINGMODE_ORDINARY);
+    G_context.tx_info.tx_params.includeTreasury = true;
+
+    uint8_t raw_tx[128] = {0};
+    size_t off = write_minimal_input_and_fee(raw_tx, 1500000);
+    off += write_u64_be_test(raw_tx + off, LOVELACE_MAX_SUPPLY);
+
+    assert_tx_validate_fails_with_swo(raw_tx, off, SWO_TX_PARSING_FAIL_TREASURY);
+}
+
+static void test_tx_validate_donation_truncated_denied(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_tx_validate_base_params(SIGN_TX_SIGNINGMODE_ORDINARY);
+    G_context.tx_info.tx_params.includeDonation = true;
+
+    uint8_t raw_tx[128] = {0};
+    size_t off = write_minimal_input_and_fee(raw_tx, 1500000);
+    off += 7;
+
+    assert_tx_validate_fails_with_swo(raw_tx, off, SWO_TX_PARSING_FAIL_DONATION);
+}
+
+static void test_tx_validate_donation_too_large_denied(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_tx_validate_base_params(SIGN_TX_SIGNINGMODE_ORDINARY);
+    G_context.tx_info.tx_params.includeDonation = true;
+
+    uint8_t raw_tx[128] = {0};
+    size_t off = write_minimal_input_and_fee(raw_tx, 1500000);
+    off += write_u64_be_test(raw_tx + off, LOVELACE_MAX_SUPPLY);
+
+    assert_tx_validate_fails_with_swo(raw_tx, off, SWO_TX_PARSING_FAIL_DONATION);
+}
+
+static void test_tx_validate_collateral_input_truncated_denied(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_tx_validate_base_params(SIGN_TX_SIGNINGMODE_PLUTUS);
+    G_context.tx_info.tx_params.num_collateral_inputs = 1;
+
+    uint8_t raw_tx[128] = {0};
+    size_t off = write_minimal_input_and_fee(raw_tx, 1500000);
+    off += TX_HASH_LENGTH - 1;
+
+    assert_tx_validate_fails_with_swo(raw_tx, off, SWO_TX_PARSING_FAIL_COLLATERAL_INPUTS);
+}
+
+static void test_tx_validate_reference_input_truncated_denied(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_tx_validate_base_params(SIGN_TX_SIGNINGMODE_PLUTUS);
+    G_context.tx_info.tx_params.num_reference_inputs = 1;
+
+    uint8_t raw_tx[128] = {0};
+    size_t off = write_minimal_input_and_fee(raw_tx, 1500000);
+    off += TX_HASH_LENGTH - 1;
+
+    assert_tx_validate_fails_with_swo(raw_tx, off, SWO_TX_PARSING_FAIL_REFERENCE_INPUTS);
+}
+
+static void test_tx_validate_rejects_trailing_unconsumed_byte(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_tx_validate_base_params(SIGN_TX_SIGNINGMODE_ORDINARY);
+
+    uint8_t raw_tx[128] = {0};
+    size_t off = write_minimal_input_and_fee(raw_tx, 1500000);
+    raw_tx[off++] = 0x99;
+
+    assert_tx_validate_fails_with_swo(raw_tx, off, SWO_TX_PARSING_FAIL_BUFFER_NOT_FULLY_CONSUMED);
+}
+
+static void test_tx_render_ui_chunk_cleans_up_after_parse_failure(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_tx_validate_base_params(SIGN_TX_SIGNINGMODE_ORDINARY);
+
+    uint8_t raw_tx[128] = {0};
+    size_t off = write_minimal_input_and_fee(raw_tx, 1500000);
+    tx_body_ctx()->raw_tx = raw_tx;
+    G_context.tx_info.raw_tx_total_length = off;
+    tx_body_ctx()->raw_tx_current_length = off;
+
+    assert_true(tx_validate());
+    G_context.tx_info.raw_tx_total_length = 0;
+
+    apdu_response_begin(INS_SIGN_TX);
+    assert_false(tx_render_ui_chunk(0));
+    apdu_response_finalize_after_handler();
+    assert_int_equal(g_last_swo, SWO_TX_PARSING_FAIL_INPUTS);
+}
+
+static void test_tx_render_ui_oom_after_first_pair_enters_streaming_mode(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_tx_validate_base_params(SIGN_TX_SIGNINGMODE_ORDINARY);
+
+    uint8_t raw_tx[256] = {0};
+    size_t off = 0;
+    memset(raw_tx + off, 0xAA, TX_HASH_LENGTH);
+    off += TX_HASH_LENGTH;
+    write_u32_be_test(raw_tx + off, 0);
+    off += sizeof(uint32_t);
+
+    uint8_t output_data[64] = {0};
+    const size_t output_length =
+        write_valid_output_top_level(output_data, MAP_BABBAGE, false, false, 0);
+    off += wrap_single_output(raw_tx + off, output_data, output_length);
+    off += write_u64_be_test(raw_tx + off, 1500000);
+
+    G_context.tx_info.tx_params.num_outputs = 1;
+    tx_body_ctx()->raw_tx = raw_tx;
+    G_context.tx_info.raw_tx_total_length = off;
+    tx_body_ctx()->raw_tx_current_length = off;
+
+    assert_true(tx_validate());
+
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    G_context.state.tx_state = TX_STATE_HASHED;
+
+    // ui_pairs_init succeeds twice; the first rendered pair succeeds with buffer+shrink; the next
+    // allocation fails, leaving one rendered pair and exercising OOM streaming fallback.
+    mem_utils_stub_fail_after_successful_allocations(4);
+    assert_true(tx_render_ui(TX_UI_REVIEW_MODE_DETAILS));
+    mem_utils_stub_reset_failure();
+
+    assert_true(tx_body_ctx()->streaming_mode);
+    assert_int_equal(tx_body_ctx()->rendered_ui_pairs, 1);
+    assert_int_equal(G_context.state.tx_state, TX_STATE_UI_REVIEW);
+}
+
+static void test_tx_render_ui_oom_before_first_pair_fails(void **state) {
+    (void) state;
+    reset_test_context();
+    setup_tx_validate_base_params(SIGN_TX_SIGNINGMODE_ORDINARY);
+
+    uint8_t raw_tx[128] = {0};
+    size_t off = write_minimal_input_and_fee(raw_tx, 1500000);
+    tx_body_ctx()->raw_tx = raw_tx;
+    G_context.tx_info.raw_tx_total_length = off;
+    tx_body_ctx()->raw_tx_current_length = off;
+
+    assert_true(tx_validate());
+
+    G_context.req_type = REQUEST_SIGN_TRANSACTION;
+    G_context.state.tx_state = TX_STATE_HASHED;
+
+    // ui_pairs_init succeeds twice; the first UI value allocation fails before any pair is stored.
+    mem_utils_stub_fail_after_successful_allocations(2);
+    assert_false(tx_render_ui(TX_UI_REVIEW_MODE_DETAILS));
+    mem_utils_stub_reset_failure();
+    ui_free_pairs();
+
+    assert_false(tx_body_ctx()->streaming_mode);
+    assert_int_equal(G_context.state.tx_state, TX_STATE_HASHED);
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_tx_validate_fee_denied),
+        cmocka_unit_test(test_tx_validate_validity_interval_start_denied),
+        cmocka_unit_test(test_tx_validate_script_data_hash_denied),
+        cmocka_unit_test(test_tx_validate_total_collateral_denied),
+        cmocka_unit_test(test_tx_validate_fee_too_large_denied),
+        cmocka_unit_test(test_tx_validate_mint_policy_id_truncated_denied),
+        cmocka_unit_test(test_tx_validate_mint_token_count_truncated_denied),
+        cmocka_unit_test(test_tx_validate_mint_token_truncated_denied),
+        cmocka_unit_test(test_tx_validate_total_collateral_too_large_denied),
+        cmocka_unit_test(test_tx_validate_voting_vote_truncated_denied),
+        cmocka_unit_test(test_tx_validate_treasury_truncated_denied),
+        cmocka_unit_test(test_tx_validate_treasury_too_large_denied),
+        cmocka_unit_test(test_tx_validate_donation_truncated_denied),
+        cmocka_unit_test(test_tx_validate_donation_too_large_denied),
+        cmocka_unit_test(test_tx_validate_collateral_input_truncated_denied),
+        cmocka_unit_test(test_tx_validate_reference_input_truncated_denied),
+        cmocka_unit_test(test_tx_validate_rejects_trailing_unconsumed_byte),
+        cmocka_unit_test(test_tx_render_ui_chunk_cleans_up_after_parse_failure),
+        cmocka_unit_test(test_tx_render_ui_oom_after_first_pair_enters_streaming_mode),
+        cmocka_unit_test(test_tx_render_ui_oom_before_first_pair_fails),
         cmocka_unit_test(test_parse_tx_fails_on_missing_inputs),
         cmocka_unit_test(test_parse_tx_rejects_oversized_buffer),
         cmocka_unit_test(test_parse_error_mapping_fee),
@@ -901,9 +1765,26 @@ int main(void) {
         cmocka_unit_test(test_process_inputs_field_pass1_success),
         cmocka_unit_test(test_process_inputs_field_parse_error_sends_inputs_swo),
         cmocka_unit_test(test_process_collateral_inputs_field_pass1_success),
+        cmocka_unit_test(test_process_collateral_inputs_field_parse_error_sends_collateral_swo),
         cmocka_unit_test(test_process_reference_inputs_field_parse_error_sends_reference_swo),
         cmocka_unit_test(test_process_required_signers_field_pass1_success),
         cmocka_unit_test(test_process_required_signers_field_parse_error_sends_required_swo),
+        cmocka_unit_test(test_process_outputs_length_prefix_exceeds_buffer),
+        cmocka_unit_test(test_process_outputs_top_level_parse_error),
+        cmocka_unit_test(test_process_outputs_asset_group_parse_error),
+        cmocka_unit_test(test_process_outputs_token_parse_error),
+        cmocka_unit_test(test_process_outputs_datum_parse_error),
+        cmocka_unit_test(test_process_outputs_ref_script_parse_error),
+        cmocka_unit_test(test_process_outputs_trailing_bytes),
+        cmocka_unit_test(test_process_collateral_output_length_prefix_exceeds_buffer),
+        cmocka_unit_test(test_process_collateral_output_top_level_parse_error),
+        cmocka_unit_test(test_process_collateral_output_asset_group_parse_error),
+        cmocka_unit_test(test_process_collateral_output_token_parse_error),
+        cmocka_unit_test(test_process_collateral_output_rejects_datum_flag),
+        cmocka_unit_test(test_process_collateral_output_trailing_bytes),
+        cmocka_unit_test(test_process_pool_registration_payload_shorter_than_header),
+        cmocka_unit_test(test_process_pool_registration_owner_scan_parse_error),
+        cmocka_unit_test(test_process_pool_registration_rejects_trailing_payload_bytes),
         cmocka_unit_test(test_mode_allows_rendering_with_validation),
         cmocka_unit_test(test_validate_from_raw_success),
         cmocka_unit_test(test_validate_fails_on_truncated_fee),

@@ -113,18 +113,27 @@ static bool tx_process_output(buffer_t *output_buf,
 
     if (mode->run_validation) {
 #ifdef HAVE_SWAP
-        if (G_called_from_swap && output_desc.destination.type == DESTINATION_THIRD_PARTY) {
-            state->swap_third_party_output_count++;
-            if (!swap_check_destination_validity(&output_desc.destination)) {
-                swap_reject_and_exit(SWAP_EC_ERROR_WRONG_DESTINATION, SWAP_APP_CODE_DEFAULT);
-            }
-            if (!swap_check_amount_validity(output_desc.amount)) {
-                swap_reject_and_exit(SWAP_EC_ERROR_WRONG_AMOUNT, SWAP_APP_CODE_DEFAULT);
-            }
-            if (output_desc.numAssetGroups != 0) {
-                // Native tokens on a third-party output would silently redirect value;
-                // swap mode only moves ADA.
+        if (G_called_from_swap) {
+            // Swap output policy checks the no-UI output shape.  The third-party
+            // output still needs the Exchange-provided destination/amount checks below.
+            security_policy_t swap_output_policy =
+                policyForSignTxSwapOutput(&output_desc,
+                                          tx_params->txSigningMode,
+                                          tx_params->networkId,
+                                          tx_params->protocolMagic,
+                                          state->warning_bits);
+            if (swap_output_policy == POLICY_DENY) {
                 swap_reject_and_exit(SWAP_EC_ERROR_GENERIC, SWAP_APP_CODE_DEFAULT);
+            }
+
+            if (output_desc.destination.type == DESTINATION_THIRD_PARTY) {
+                state->swap_third_party_output_count++;
+                if (!swap_check_destination_validity(&output_desc.destination)) {
+                    swap_reject_and_exit(SWAP_EC_ERROR_WRONG_DESTINATION, SWAP_APP_CODE_DEFAULT);
+                }
+                if (!swap_check_amount_validity(output_desc.amount)) {
+                    swap_reject_and_exit(SWAP_EC_ERROR_WRONG_AMOUNT, SWAP_APP_CODE_DEFAULT);
+                }
             }
         }
 #endif
@@ -460,8 +469,8 @@ bool tx_process_outputs(buffer_t *buf, tx_processing_state_t *state) {
             return false;
         }
         if (!buffer_seek_cur(buf, output_length)) {
-            tx_handle_parse_error(SWO_TX_PARSING_FAIL_OUTPUTS);
-            return false;
+            tx_handle_parse_error(SWO_TX_PARSING_FAIL_OUTPUTS);  // LCOV_EXCL_LINE
+            return false;                                        // LCOV_EXCL_LINE
         }
     }
 
@@ -505,8 +514,8 @@ bool tx_process_collateral_output(buffer_t *buf, tx_processing_state_t *state) {
     }
 
     if (!buffer_seek_cur(buf, output_length)) {
-        tx_handle_parse_error(SWO_TX_PARSING_FAIL_COLLATERAL_OUTPUT);
-        return false;
+        tx_handle_parse_error(SWO_TX_PARSING_FAIL_COLLATERAL_OUTPUT);  // LCOV_EXCL_LINE
+        return false;                                                  // LCOV_EXCL_LINE
     }
     return true;
 }

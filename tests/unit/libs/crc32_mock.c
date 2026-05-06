@@ -39,16 +39,3 @@ uint32_t cx_crc32(const void *buf, size_t len) {
 
     return crc ^ 0xffffffff;
 }
-
-// Accumulate CRC32 with existing state
-uint32_t cx_crc32_update(uint32_t crc_state, const void *buf, size_t len) {
-    const unsigned char *data = (const unsigned char *) buf;
-
-    for (size_t i = 0; i < len; ++i) {
-        crc_state ^= data[i];
-        crc_state = crc32_table[crc_state & 0x0f] ^ (crc_state >> 4);
-        crc_state = crc32_table[crc_state & 0x0f] ^ (crc_state >> 4);
-    }
-
-    return crc_state;
-}

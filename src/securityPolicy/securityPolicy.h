@@ -61,6 +61,7 @@ security_policy_t policyForShowDeriveAddress(const address_params_t* address_par
                                              warning_bits_t* w);
 
 security_policy_t policyForSignTxInit(const tx_params_t* txParams, warning_bits_t* w);
+security_policy_t policyForSignTxSwapInit(const tx_params_t* txParams, warning_bits_t* w);
 
 security_policy_t policyForSignTxInput(sign_tx_signingmode_t txSigningMode,
                                        const tx_input_t* input MARK_UNUSED,
@@ -71,6 +72,11 @@ security_policy_t policyForSignTxOutput(const tx_output_description_t* output,
                                         const uint8_t networkId,
                                         const uint32_t protocolMagic,
                                         warning_bits_t* w);
+security_policy_t policyForSignTxSwapOutput(const tx_output_description_t* output,
+                                            sign_tx_signingmode_t txSigningMode,
+                                            const uint8_t networkId,
+                                            const uint32_t protocolMagic,
+                                            warning_bits_t* w);
 security_policy_t policyForSignTxOutputDatumHash(security_policy_t outputPolicy, warning_bits_t* w);
 
 security_policy_t policyForSignTxOutputRefScript(security_policy_t outputPolicy, warning_bits_t* w);

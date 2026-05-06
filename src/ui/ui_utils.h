@@ -157,6 +157,14 @@ bool ui_pairs_add_static_label_impl(const char *label, char *tmp_buf, bool shrin
  */
 bool ui_pairs_add_static_label(const char *label, char *tmp_buf);
 
+// Validates format result and length, then adds label+buf to UI pairs.
+// Centralises the two LEDGER_ASSERTs that would otherwise appear at every UI_ADD_FORMAT* call site;
+// duplicating them across ~200 call sites bloats .text in debug builds and causes flash overflow.
+__attribute__((noinline)) bool ui_add_formatted_value(const char *label,
+                                                      char *buf,
+                                                      size_t max_len,
+                                                      bool format_ok);
+
 /**
  * Format a single-parameter value and add to UI pairs.
  *
@@ -190,11 +198,7 @@ bool ui_pairs_add_static_label(const char *label, char *tmp_buf);
             break;                                                             \
         }                                                                      \
         bool _ok = format_fn((value), _buf, _buf_size);                        \
-        LEDGER_ASSERT(_ok, "Format fn failed");                                \
-        LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long");    \
-        if (!ui_pairs_add_static_label((label), _buf)) {                       \
-            break;                                                             \
-        }                                                                      \
+        if (!ui_add_formatted_value((label), _buf, (max_len), _ok)) break;     \
     } while (0)
 
 /**
@@ -225,11 +229,7 @@ bool ui_pairs_add_static_label(const char *label, char *tmp_buf);
             break;                                                             \
         }                                                                      \
         bool _ok = format_fn((param1), (param2), _buf, _buf_size);             \
-        LEDGER_ASSERT(_ok, "Format fn failed");                                \
-        LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long");    \
-        if (!ui_pairs_add_static_label((label), _buf)) {                       \
-            break;                                                             \
-        }                                                                      \
+        if (!ui_add_formatted_value((label), _buf, (max_len), _ok)) break;     \
     } while (0)
 
 /**
@@ -261,11 +261,7 @@ bool ui_pairs_add_static_label(const char *label, char *tmp_buf);
             break;                                                             \
         }                                                                      \
         bool _ok = format_fn((param1), (param2), (param3), _buf, _buf_size);   \
-        LEDGER_ASSERT(_ok, "Format fn failed");                                \
-        LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long");    \
-        if (!ui_pairs_add_static_label((label), _buf)) {                       \
-            break;                                                             \
-        }                                                                      \
+        if (!ui_add_formatted_value((label), _buf, (max_len), _ok)) break;     \
     } while (0)
 
 /**
@@ -323,9 +319,5 @@ bool ui_pairs_add_static_label(const char *label, char *tmp_buf);
             break;                                                                     \
         }                                                                              \
         bool _ok = format_fn((param1), (param2), (param3), (param4), _buf, _buf_size); \
-        LEDGER_ASSERT(_ok, "Format fn failed");                                        \
-        LEDGER_ASSERT(strlen(_buf) <= (max_len), "Format output too long");            \
-        if (!ui_pairs_add_static_label((label), _buf)) {                               \
-            break;                                                                     \
-        }                                                                              \
+        if (!ui_add_formatted_value((label), _buf, (max_len), _ok)) break;             \
     } while (0)
