@@ -121,7 +121,7 @@ class TransactionSigningMode(IntEnum):
     MULTISIG = 0x06
     PLUTUS = 0x07
     UNRESTRICTED = 0x09
-    AUTO = 0xEE
+    AUTO = 0x08
 
 
 class TxAuxiliaryDataType(IntEnum):

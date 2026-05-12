@@ -53,7 +53,7 @@ typedef enum {
     // tx body fields present in the init APDU.  It is replaced by a concrete
     // mode before any security-policy check runs; no policy function ever sees
     // this value.
-    SIGN_TX_SIGNINGMODE_AUTO = 0xee,
+    SIGN_TX_SIGNINGMODE_AUTO = 8,
 } sign_tx_signingmode_t;
 
 // Transaction parameters parsed from SIGN_TX INIT APDU.

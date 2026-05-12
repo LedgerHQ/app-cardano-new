@@ -15,8 +15,8 @@
 
 #include "securityPolicy.h"
 
-static bool is_staking_credential_key_path_allowed(sign_tx_signingmode_t txSigningMode,
-                                                   const bip44_path_t *path) {
+static bool is_stake_credential_key_path_allowed(sign_tx_signingmode_t txSigningMode,
+                                                 const bip44_path_t *path) {
     switch (txSigningMode) {
         case SIGN_TX_SIGNINGMODE_ORDINARY:
         case SIGN_TX_SIGNINGMODE_PLUTUS:
@@ -25,13 +25,13 @@ static bool is_staking_credential_key_path_allowed(sign_tx_signingmode_t txSigni
         case SIGN_TX_SIGNINGMODE_UNRESTRICTED:
             return bip44_isOrdinaryStakingKeyPath(path) || bip44_isMultisigStakingKeyPath(path);
 
+        // LCOV_EXCL_START
         case SIGN_TX_SIGNINGMODE_MULTISIG:
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
-            return false;
-
-        // LCOV_EXCL_START
         default:
+            // key credentials are not allowed in SIGN_TX_SIGNINGMODE_MULTISIG at all,
+            // and this function is not supposed to be called for pool registration modes
             ASSERT(false);
             return false;
             // LCOV_EXCL_STOP
@@ -1332,15 +1332,15 @@ static security_policy_t _policyForSignTxCertificateStakeCredential(
         case EXT_CREDENTIAL_KEY_PATH:
             switch (txSigningMode) {
                 case SIGN_TX_SIGNINGMODE_UNRESTRICTED:
-                    DENY_UNLESS(is_staking_credential_key_path_allowed(txSigningMode,
-                                                                       &stakeCredential->keyPath));
+                    DENY_UNLESS(is_stake_credential_key_path_allowed(txSigningMode,
+                                                                     &stakeCredential->keyPath));
                     break;
 
                 case SIGN_TX_SIGNINGMODE_ORDINARY:
                 case SIGN_TX_SIGNINGMODE_MULTISIG:
                 case SIGN_TX_SIGNINGMODE_PLUTUS:
-                    DENY_UNLESS(is_staking_credential_key_path_allowed(txSigningMode,
-                                                                       &stakeCredential->keyPath));
+                    DENY_UNLESS(is_stake_credential_key_path_allowed(txSigningMode,
+                                                                     &stakeCredential->keyPath));
                     DENY_IF(violatesSingleAccountOrStoreIt(&stakeCredential->keyPath));
                     break;
 
@@ -1900,16 +1900,16 @@ security_policy_t policyForSignTxWithdrawal(sign_tx_signingmode_t txSigningMode,
         case EXT_CREDENTIAL_KEY_PATH:
             switch (txSigningMode) {
                 case SIGN_TX_SIGNINGMODE_UNRESTRICTED:
-                    DENY_UNLESS(is_staking_credential_key_path_allowed(txSigningMode,
-                                                                       &stakeCredential->keyPath));
+                    DENY_UNLESS(is_stake_credential_key_path_allowed(txSigningMode,
+                                                                     &stakeCredential->keyPath));
                     SHOW_IF(mark_unusual_key_derivation(w, &stakeCredential->keyPath));
                     SHOW();
                     break;
 
                 case SIGN_TX_SIGNINGMODE_ORDINARY:
                 case SIGN_TX_SIGNINGMODE_PLUTUS:
-                    DENY_UNLESS(is_staking_credential_key_path_allowed(txSigningMode,
-                                                                       &stakeCredential->keyPath));
+                    DENY_UNLESS(is_stake_credential_key_path_allowed(txSigningMode,
+                                                                     &stakeCredential->keyPath));
                     DENY_IF(violatesSingleAccountOrStoreIt(&stakeCredential->keyPath));
                     SHOW_IF(mark_unusual_key_derivation(w, &stakeCredential->keyPath));
                     SHOW_IF(is_expert_mode());
@@ -2609,9 +2609,11 @@ static inline security_policy_t _unrestrictedWitnessPolicy(const bip44_path_t *p
             SHOW();
             break;
 
+        // LCOV_EXCL_START
         default:
             DENY();
             break;
+            // LCOV_EXCL_STOP
     }
 }
 

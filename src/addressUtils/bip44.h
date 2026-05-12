@@ -85,6 +85,7 @@ bool bip44_isMultisigStakingKeyPath(const bip44_path_t* pathSpec);
 bool bip44_isMultidelegationStakingKeyPath(const bip44_path_t* pathSpec);
 
 bool bip44_isOrdinaryDRepKeyPath(const bip44_path_t* pathSpec);
+bool bip44_isMultisigDRepKeyPath(const bip44_path_t* pathSpec);
 bool bip44_isCommitteeColdKeyPath(const bip44_path_t* pathSpec);
 bool bip44_isCommitteeHotKeyPath(const bip44_path_t* pathSpec);
 

@@ -48,7 +48,7 @@ static void test_is_valid_rejects_unknown_values(void **state) {
     assert_false(is_valid_tx_signing_mode(0));
     assert_false(is_valid_tx_signing_mode(1));
     assert_false(is_valid_tx_signing_mode(2));
-    assert_false(is_valid_tx_signing_mode(8));
+    // 8 is SIGN_TX_SIGNINGMODE_AUTO, which is now valid
     assert_false(is_valid_tx_signing_mode(0xFF));
 }
 

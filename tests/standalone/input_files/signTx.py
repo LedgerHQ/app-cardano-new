@@ -4299,6 +4299,123 @@ votingDenyTestCases: List[SignTxTestCase] = [
         signingMode=TransactionSigningMode.ORDINARY,
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
+    SignTxTestCase(
+        name="Plutus_tx_with_committee_key_path_as_staking_path",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            votingProcedures=[
+                VoterVotes(
+                    Voter(
+                        VoterType.COMMITTEE_KEY_PATH,
+                        "m/1852'/1815'/0'/2/0",
+                    ),
+                    [vote1],
+                )
+            ],
+        ),
+        signingMode=TransactionSigningMode.PLUTUS,
+        expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    ),
+    SignTxTestCase(
+        name="Plutus_tx_with_drep_key_path_as_payment_path",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            votingProcedures=[
+                VoterVotes(
+                    Voter(
+                        VoterType.DREP_KEY_PATH,
+                        "m/1852'/1815'/0'/0/0",
+                    ),
+                    [vote2],
+                )
+            ],
+        ),
+        signingMode=TransactionSigningMode.PLUTUS,
+        expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    ),
+    SignTxTestCase(
+        name="Plutus_tx_with_stake_pool_key_path_as_staking_path",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            votingProcedures=[
+                VoterVotes(
+                    Voter(
+                        VoterType.STAKE_POOL_KEY_PATH,
+                        "m/1852'/1815'/0'/2/0",
+                    ),
+                    [vote3],
+                )
+            ],
+        ),
+        signingMode=TransactionSigningMode.PLUTUS,
+        expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    ),
+    SignTxTestCase(
+        name="Unrestricted_tx_with_committee_key_path_as_staking_path",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            votingProcedures=[
+                VoterVotes(
+                    Voter(
+                        VoterType.COMMITTEE_KEY_PATH,
+                        "m/1852'/1815'/0'/2/0",
+                    ),
+                    [vote1],
+                )
+            ],
+        ),
+        signingMode=TransactionSigningMode.UNRESTRICTED,
+        required_expert_mode=True,
+        expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    ),
+    SignTxTestCase(
+        name="Unrestricted_tx_with_drep_key_path_as_payment_path",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            votingProcedures=[
+                VoterVotes(
+                    Voter(
+                        VoterType.DREP_KEY_PATH,
+                        "m/1852'/1815'/0'/0/0",
+                    ),
+                    [vote2],
+                )
+            ],
+        ),
+        signingMode=TransactionSigningMode.UNRESTRICTED,
+        required_expert_mode=True,
+        expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    ),
+    SignTxTestCase(
+        name="Unrestricted_tx_with_stake_pool_key_path_as_staking_path",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+            votingProcedures=[
+                VoterVotes(
+                    Voter(
+                        VoterType.STAKE_POOL_KEY_PATH,
+                        "m/1852'/1815'/0'/2/0",
+                    ),
+                    [vote3],
+                )
+            ],
+        ),
+        signingMode=TransactionSigningMode.UNRESTRICTED,
+        required_expert_mode=True,
+        expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    ),
 ]
 
 testsConwayVotingProcedures: List[SignTxTestCase] = [
@@ -9384,6 +9501,17 @@ witnessDenyTestCases: List[SignTxTestCase] = [
         ),
         signingMode=TransactionSigningMode.POOL_REGISTRATION_OPERATOR,
         additionalWitnessPaths=("m/1855'/1815'/0'",),
+        expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
+    ),
+    SignTxTestCase(
+        name="Plutus_tx_with_cvote_key_path_witness",
+        tx=Transaction(
+            network=Mainnet,
+            inputs=[inputs["utxoShelley"]],
+            outputs=[outputs["externalByronMainnet"]],
+        ),
+        signingMode=TransactionSigningMode.PLUTUS,
+        additionalWitnessPaths=("m/1855'/1815'/0'/0/0",),
         expected_swo=StatusWord.SWO_SECURITY_CONDITION_NOT_SATISFIED,
     ),
 ]

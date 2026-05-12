@@ -40,6 +40,14 @@ For detailed analysis, see:
 
 If you make a wrong decision, take a wrong approach, or the user has to stop and redirect you, append a 1–2 sentence note to a `## Lessons Learned` section at the bottom of this file summarizing: (1) what the mistake was, and (2) the correct behavior going forward. Keep entries terse and actionable — the goal is to prevent repeating the same error.
 
+### When to Ask Questions
+
+When a requirement, design intent, or correctness of a behavior cannot be definitively answered from the code itself (e.g., whether a path rejection is intentional or an oversight, whether dead code should be removed vs. excluded vs. tested), do not guess. Prepare a concise numbered list of specific questions and ask the human user.
+
+The one exception is straightforward mechanical tasks (e.g., declaring an existing function in a header, regenerating fixtures) where the only risk is trivial — those can be done directly.
+
+This also applies when the user gives a direction that has multiple plausible interpretations: lay out the interpretations in a short list and ask which they meant.
+
 ### What NOT to DO
 - **Do NOT modify `src/transaction/tx_hash_builder.c` or `src/addressUtils/bip44.c`** without explicit confirmation. They are trusted components.
 - **Do NOT add custom CBOR serialization**, address manipulation, or BIP44 path functions. Use existing utilities.

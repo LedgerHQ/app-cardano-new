@@ -15,6 +15,10 @@ Complete rewrite of the Cardano Ledger app.
 - Dropped support for Ledger Nano S.
 - Switched to NBGL-only UI flows across supported devices.
 
+### Fixed
+
+- Added voter path validation for Plutus signing mode (previously any path was silently accepted).
+
 ### Added
 
 - Support for combined Conway delegation certificates.
