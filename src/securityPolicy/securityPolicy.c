@@ -2977,7 +2977,7 @@ static const warning_definition_t WARNING_DEFINITIONS[WARNING_BIT_COUNT] = {
         {
             .bit = WARNING_BIT_UNRESTRICTED_SIGNING,
             .title = "Unrestricted signing",
-            .description = "Unusual elements! Witness might sign many opaque script hashes.",
+            .description = "Safety restrictions relaxed, use extra caution!",
         },
 };
 
