@@ -917,12 +917,15 @@ class CommandBuilder:
                 f"Extended-length APDUs are not supported: payload length {len(cdata)}"
             )
 
-        header = bytearray()
-        header.append(CLA)
-        header.append(ins)
-        header.append(p1)
-        header.append(p2)
-        header.append(len(cdata))
+        header = bytes(
+            [
+                CLA,
+                ins,
+                p1,
+                p2,
+                len(cdata),
+            ]
+        )
         return header + cdata
 
     def get_version(self) -> bytes:
