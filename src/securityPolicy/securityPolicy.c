@@ -382,8 +382,8 @@ bool shouldShowNetworkDetails(const tx_params_t *txParams) {
         return false;
     }
 
-    // we hide usual network details to avoid bothering users
-    return !isNetworkUsual(txParams->networkId, txParams->protocolMagic);
+    // show network details in expert mode or for unusual networks
+    return is_expert_mode() || !isNetworkUsual(txParams->networkId, txParams->protocolMagic);
 }
 
 static inline void set_missing_collateral_warning(warning_bits_t *w,
