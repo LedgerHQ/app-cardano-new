@@ -22,6 +22,27 @@
 #include "dispatcher.h"  // For P1 constants
 
 // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases >
+// Deny_unrestricted_tx_without_expert_mode
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_DENY_UNRESTRICTED_TX_WITHOUT_EXPERT_MODE[] =
+    {
+        {
+            .hex_payload = "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+                           "000000000049010039017CB05FCE110FB999F01ABB4F62BC455E217D4A51FDE9"
+                           "09FA9AEA545443AC53C046CF6A42095E3C60310FA802771D0672F8FE2D186113"
+                           "8B0900000000000000010001010000000000000000002A000000000000000A",
+            .p1 = P1_TX_CONFIRM,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+        {
+            .hex_payload = "058000073C80000717800000000000000000000000",
+            .p1 = P1_TX_SIGN_WITNESS,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+};
+
+// Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases >
 // Deny_ordinary_tx_with_collateral_inputs
 static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_INIT_DENY_ORDINARY_TX_WITH_COLLATERAL_INPUTS[] = {
     {
@@ -1008,6 +1029,30 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_ADDRESS_POOL_OWNER_UNCONDITION
                        "8000073C8000071780000000000000020000000000000000006CA79300010100"
                        "00000000000000002A000000000000000A",
         .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+};
+
+// Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases >
+// Pool_registration_in_Unrestricted_Tx
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_CERT_POOL_REGISTRATION_IN_UNRESTRICTED_TX[] = {
+    {
+        .hex_payload = "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+                       "00000000003B01002B82D818582183581C9E1C71DE652EC8B85FEC296F0685CA"
+                       "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
+                       "00000000000000002A000000000000000A03007902058000073C800007178000"
+                       "0000000000000000000001234567890123456789012345678901234567890123"
+                       "4567890123456789012300000000000000000000000000000000000000000000"
+                       "0000000000000000000100F12345678901234567890123456789012345678901"
+                       "23456789012345670000000001",
+        .p1 = P1_TX_CONFIRM,
+        .p2 = P2_UNUSED,
+        .more = false,
+    },
+    {
+        .hex_payload = "058000073C80000717800000000000000000000000",
+        .p1 = P1_TX_SIGN_WITNESS,
         .p2 = P2_UNUSED,
         .more = false,
     },
@@ -2132,6 +2177,27 @@ static const apdu_segment_t
         },
 };
 
+// Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases >
+// Plutus_tx_with_cvote_key_path_witness
+static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_WITNESS_PLUTUS_TX_WITH_CVOTE_KEY_PATH_WITNESS[] =
+    {
+        {
+            .hex_payload = "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+                           "00000000003B01002B82D818582183581C9E1C71DE652EC8B85FEC296F0685CA"
+                           "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
+                           "00000000000000002A000000000000000A",
+            .p1 = P1_TX_CONFIRM,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+        {
+            .hex_payload = "058000073F80000717800000000000000000000000",
+            .p1 = P1_TX_SIGN_WITNESS,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+};
+
 // Source: tests/standalone/input_files/signTx.py > singleAccountDenyTestCases >
 // Input_and_change_output_account_mismatch
 static const apdu_segment_t
@@ -2875,6 +2941,172 @@ static const apdu_segment_t
         },
         {
             .hex_payload = "058000073C80000717800000000000000000000000",
+            .p1 = P1_TX_SIGN_WITNESS,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+};
+
+// Source: tests/standalone/input_files/signTx.py > votingDenyTestCases >
+// Plutus_tx_with_committee_key_path_as_staking_path
+static const apdu_segment_t
+    SIGN_TX_SEGMENTS_DENY_VOTING_PLUTUS_TX_WITH_COMMITTEE_KEY_PATH_AS_STAKING_PATH[] = {
+        {
+            .hex_payload = "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+                           "00000000003B01002B82D818582183581C9E1C71DE652EC8B85FEC296F0685CA"
+                           "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
+                           "00000000000000002A000000000000000A64058000073C800007178000000000"
+                           "0000020000000000013B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336"
+                           "579A1939B3AAD1C0B700000003020200127777772E76616375756D6C6162732E"
+                           "636F6D1AFD028B504C3668102B129B37A86C09A2872F76741DC7A68E2149C8DE"
+                           "ADBEEF",
+            .p1 = P1_TX_CONFIRM,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+        {
+            .hex_payload = "058000073C80000717800000000000000000000000",
+            .p1 = P1_TX_SIGN_WITNESS,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+        {
+            .hex_payload = "058000073C80000717800000000000000200000000",
+            .p1 = P1_TX_SIGN_WITNESS,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+};
+
+// Source: tests/standalone/input_files/signTx.py > votingDenyTestCases >
+// Plutus_tx_with_drep_key_path_as_payment_path
+static const apdu_segment_t
+    SIGN_TX_SEGMENTS_DENY_VOTING_PLUTUS_TX_WITH_DREP_KEY_PATH_AS_PAYMENT_PATH[] = {
+        {
+            .hex_payload = "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+                           "00000000003B01002B82D818582183581C9E1C71DE652EC8B85FEC296F0685CA"
+                           "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
+                           "00000000000000002A000000000000000A66058000073C800007178000000000"
+                           "0000000000000000013B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336"
+                           "579A1939B3AAD1C0B7000000030001",
+            .p1 = P1_TX_CONFIRM,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+        {
+            .hex_payload = "058000073C80000717800000000000000000000000",
+            .p1 = P1_TX_SIGN_WITNESS,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+};
+
+// Source: tests/standalone/input_files/signTx.py > votingDenyTestCases >
+// Plutus_tx_with_stake_pool_key_path_as_staking_path
+static const apdu_segment_t
+    SIGN_TX_SEGMENTS_DENY_VOTING_PLUTUS_TX_WITH_STAKE_POOL_KEY_PATH_AS_STAKING_PATH[] = {
+        {
+            .hex_payload = "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+                           "00000000003B01002B82D818582183581C9E1C71DE652EC8B85FEC296F0685CA"
+                           "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
+                           "00000000000000002A000000000000000A68058000073C800007178000000000"
+                           "0000020000000000013B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336"
+                           "579A1939B3AAD1C0B7000000030101",
+            .p1 = P1_TX_CONFIRM,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+        {
+            .hex_payload = "058000073C80000717800000000000000000000000",
+            .p1 = P1_TX_SIGN_WITNESS,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+        {
+            .hex_payload = "058000073C80000717800000000000000200000000",
+            .p1 = P1_TX_SIGN_WITNESS,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+};
+
+// Source: tests/standalone/input_files/signTx.py > votingDenyTestCases >
+// Unrestricted_tx_with_committee_key_path_as_staking_path
+static const apdu_segment_t
+    SIGN_TX_SEGMENTS_DENY_VOTING_UNRESTRICTED_TX_WITH_COMMITTEE_KEY_PATH_AS_STAKING_PATH[] = {
+        {
+            .hex_payload = "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+                           "00000000003B01002B82D818582183581C9E1C71DE652EC8B85FEC296F0685CA"
+                           "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
+                           "00000000000000002A000000000000000A64058000073C800007178000000000"
+                           "0000020000000000013B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336"
+                           "579A1939B3AAD1C0B700000003020200127777772E76616375756D6C6162732E"
+                           "636F6D1AFD028B504C3668102B129B37A86C09A2872F76741DC7A68E2149C8DE"
+                           "ADBEEF",
+            .p1 = P1_TX_CONFIRM,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+        {
+            .hex_payload = "058000073C80000717800000000000000000000000",
+            .p1 = P1_TX_SIGN_WITNESS,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+        {
+            .hex_payload = "058000073C80000717800000000000000200000000",
+            .p1 = P1_TX_SIGN_WITNESS,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+};
+
+// Source: tests/standalone/input_files/signTx.py > votingDenyTestCases >
+// Unrestricted_tx_with_drep_key_path_as_payment_path
+static const apdu_segment_t
+    SIGN_TX_SEGMENTS_DENY_VOTING_UNRESTRICTED_TX_WITH_DREP_KEY_PATH_AS_PAYMENT_PATH[] = {
+        {
+            .hex_payload = "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+                           "00000000003B01002B82D818582183581C9E1C71DE652EC8B85FEC296F0685CA"
+                           "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
+                           "00000000000000002A000000000000000A66058000073C800007178000000000"
+                           "0000000000000000013B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336"
+                           "579A1939B3AAD1C0B7000000030001",
+            .p1 = P1_TX_CONFIRM,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+        {
+            .hex_payload = "058000073C80000717800000000000000000000000",
+            .p1 = P1_TX_SIGN_WITNESS,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+};
+
+// Source: tests/standalone/input_files/signTx.py > votingDenyTestCases >
+// Unrestricted_tx_with_stake_pool_key_path_as_staking_path
+static const apdu_segment_t
+    SIGN_TX_SEGMENTS_DENY_VOTING_UNRESTRICTED_TX_WITH_STAKE_POOL_KEY_PATH_AS_STAKING_PATH[] = {
+        {
+            .hex_payload = "3B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336579A1939B3AAD1C0B7"
+                           "00000000003B01002B82D818582183581C9E1C71DE652EC8B85FEC296F0685CA"
+                           "3988781C94A2E1A5D89D92F45FA0001A0D0C256100000000002DD2E800010100"
+                           "00000000000000002A000000000000000A68058000073C800007178000000000"
+                           "0000020000000000013B40265111D8BB3C3C608D95B3A0BF83461ACE32D79336"
+                           "579A1939B3AAD1C0B7000000030101",
+            .p1 = P1_TX_CONFIRM,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+        {
+            .hex_payload = "058000073C80000717800000000000000000000000",
+            .p1 = P1_TX_SIGN_WITNESS,
+            .p2 = P2_UNUSED,
+            .more = false,
+        },
+        {
+            .hex_payload = "058000073C80000717800000000000000200000000",
             .p1 = P1_TX_SIGN_WITNESS,
             .p2 = P2_UNUSED,
             .more = false,
@@ -3971,6 +4203,21 @@ static const apdu_segment_t SIGN_TX_SEGMENTS_DENY_RELAY_MULTIHOST_MISSING_DNS[] 
 
 static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
     // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases >
+    // Deny_unrestricted_tx_without_expert_mode
+    {
+        .name = "[DENY_INIT] Deny_unrestricted_tx_without_expert_mode",
+        .init_hex = "0000000000000000012D964A0909000100010200000000010100000100000000"
+                    "0101010000000001010001007F",
+        .chunks = SIGN_TX_SEGMENTS_DENY_INIT_DENY_UNRESTRICTED_TX_WITHOUT_EXPERT_MODE,
+        .chunk_count =
+            ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_INIT_DENY_UNRESTRICTED_TX_WITHOUT_EXPERT_MODE),
+        .expected_swo = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = true,
+        .has_required_expert_mode = true,
+        .required_expert_mode = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > transactionInitDenyTestCases >
     // Deny_ordinary_tx_with_collateral_inputs
     {
         .name = "[DENY_INIT] Deny_ordinary_tx_with_collateral_inputs",
@@ -4472,6 +4719,20 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases >
+    // Pool_registration_in_Unrestricted_Tx
+    {
+        .name = "[DENY_CERT] Pool_registration_in_Unrestricted_Tx",
+        .init_hex = "0000000000000000012D964A0909000100010200010000010100000100000000"
+                    "010101000000000101000100ED",
+        .chunks = SIGN_TX_SEGMENTS_DENY_CERT_POOL_REGISTRATION_IN_UNRESTRICTED_TX,
+        .chunk_count = ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_CERT_POOL_REGISTRATION_IN_UNRESTRICTED_TX),
+        .expected_swo = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .has_required_expert_mode = true,
+        .required_expert_mode = true,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > certificateDenyTestCases >
     // Pool_registration_in_Ordinary_Tx
     {
         .name = "[DENY_CERT] Pool_registration_in_Ordinary_Tx",
@@ -4735,7 +4996,7 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
             SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_DENY_TX_WITH_INVALID_CANONICAL_ORDERING_OF_WITHDRAWALS,
         .chunk_count = ARRAY_LEN(
             SIGN_TX_SEGMENTS_DENY_WITHDRAWAL_DENY_TX_WITH_INVALID_CANONICAL_ORDERING_OF_WITHDRAWALS),
-        .expected_swo = SWO_TX_PARSING_FAIL_WITHDRAWALS,
+        .expected_swo = SWO_TX_PARSING_FAIL_CANONICAL_ORDER,
         .expect_init_failure = false,
         .skip_reason = NULL,
     },
@@ -5102,6 +5363,19 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
         .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_MINT_PATH_IN_POOL_REGISTRATION_OPERATOR_TX,
         .chunk_count =
             ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_MINT_PATH_IN_POOL_REGISTRATION_OPERATOR_TX),
+        .expected_swo = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > witnessDenyTestCases >
+    // Plutus_tx_with_cvote_key_path_witness
+    {
+        .name = "[DENY_WITNESS] Plutus_tx_with_cvote_key_path_witness",
+        .init_hex = "0000000000000000012D964A0907000100010200000000010100000100000000"
+                    "01010100000000010100010071",
+        .chunks = SIGN_TX_SEGMENTS_DENY_WITNESS_PLUTUS_TX_WITH_CVOTE_KEY_PATH_WITNESS,
+        .chunk_count =
+            ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_WITNESS_PLUTUS_TX_WITH_CVOTE_KEY_PATH_WITNESS),
         .expected_swo = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
         .skip_reason = NULL,
@@ -5501,6 +5775,92 @@ static const sign_tx_deny_fixture_t SIGN_TX_DENY_FIXTURES[] = {
             ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_VOTING_ORDINARY_TX_WITH_COMMITTEE_HOT_KEY_HASH_VOTER),
         .expected_swo = SWO_SECURITY_CONDITION_NOT_SATISFIED,
         .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > votingDenyTestCases >
+    // Plutus_tx_with_committee_key_path_as_staking_path
+    {
+        .name = "[DENY_VOTING] Plutus_tx_with_committee_key_path_as_staking_path",
+        .init_hex = "0000000000000000012D964A0907000100010200000000010100000100000000"
+                    "010101000000010101000200E3",
+        .chunks = SIGN_TX_SEGMENTS_DENY_VOTING_PLUTUS_TX_WITH_COMMITTEE_KEY_PATH_AS_STAKING_PATH,
+        .chunk_count = ARRAY_LEN(
+            SIGN_TX_SEGMENTS_DENY_VOTING_PLUTUS_TX_WITH_COMMITTEE_KEY_PATH_AS_STAKING_PATH),
+        .expected_swo = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > votingDenyTestCases >
+    // Plutus_tx_with_drep_key_path_as_payment_path
+    {
+        .name = "[DENY_VOTING] Plutus_tx_with_drep_key_path_as_payment_path",
+        .init_hex = "0000000000000000012D964A0907000100010200000000010100000100000000"
+                    "010101000000010101000100AF",
+        .chunks = SIGN_TX_SEGMENTS_DENY_VOTING_PLUTUS_TX_WITH_DREP_KEY_PATH_AS_PAYMENT_PATH,
+        .chunk_count =
+            ARRAY_LEN(SIGN_TX_SEGMENTS_DENY_VOTING_PLUTUS_TX_WITH_DREP_KEY_PATH_AS_PAYMENT_PATH),
+        .expected_swo = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > votingDenyTestCases >
+    // Plutus_tx_with_stake_pool_key_path_as_staking_path
+    {
+        .name = "[DENY_VOTING] Plutus_tx_with_stake_pool_key_path_as_staking_path",
+        .init_hex = "0000000000000000012D964A0907000100010200000000010100000100000000"
+                    "010101000000010101000200AF",
+        .chunks = SIGN_TX_SEGMENTS_DENY_VOTING_PLUTUS_TX_WITH_STAKE_POOL_KEY_PATH_AS_STAKING_PATH,
+        .chunk_count = ARRAY_LEN(
+            SIGN_TX_SEGMENTS_DENY_VOTING_PLUTUS_TX_WITH_STAKE_POOL_KEY_PATH_AS_STAKING_PATH),
+        .expected_swo = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > votingDenyTestCases >
+    // Unrestricted_tx_with_committee_key_path_as_staking_path
+    {
+        .name = "[DENY_VOTING] Unrestricted_tx_with_committee_key_path_as_staking_path",
+        .init_hex = "0000000000000000012D964A0909000100010200000000010100000100000000"
+                    "010101000000010101000200E3",
+        .chunks =
+            SIGN_TX_SEGMENTS_DENY_VOTING_UNRESTRICTED_TX_WITH_COMMITTEE_KEY_PATH_AS_STAKING_PATH,
+        .chunk_count = ARRAY_LEN(
+            SIGN_TX_SEGMENTS_DENY_VOTING_UNRESTRICTED_TX_WITH_COMMITTEE_KEY_PATH_AS_STAKING_PATH),
+        .expected_swo = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .has_required_expert_mode = true,
+        .required_expert_mode = true,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > votingDenyTestCases >
+    // Unrestricted_tx_with_drep_key_path_as_payment_path
+    {
+        .name = "[DENY_VOTING] Unrestricted_tx_with_drep_key_path_as_payment_path",
+        .init_hex = "0000000000000000012D964A0909000100010200000000010100000100000000"
+                    "010101000000010101000100AF",
+        .chunks = SIGN_TX_SEGMENTS_DENY_VOTING_UNRESTRICTED_TX_WITH_DREP_KEY_PATH_AS_PAYMENT_PATH,
+        .chunk_count = ARRAY_LEN(
+            SIGN_TX_SEGMENTS_DENY_VOTING_UNRESTRICTED_TX_WITH_DREP_KEY_PATH_AS_PAYMENT_PATH),
+        .expected_swo = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .has_required_expert_mode = true,
+        .required_expert_mode = true,
+        .skip_reason = NULL,
+    },
+    // Source: tests/standalone/input_files/signTx.py > votingDenyTestCases >
+    // Unrestricted_tx_with_stake_pool_key_path_as_staking_path
+    {
+        .name = "[DENY_VOTING] Unrestricted_tx_with_stake_pool_key_path_as_staking_path",
+        .init_hex = "0000000000000000012D964A0909000100010200000000010100000100000000"
+                    "010101000000010101000200AF",
+        .chunks =
+            SIGN_TX_SEGMENTS_DENY_VOTING_UNRESTRICTED_TX_WITH_STAKE_POOL_KEY_PATH_AS_STAKING_PATH,
+        .chunk_count = ARRAY_LEN(
+            SIGN_TX_SEGMENTS_DENY_VOTING_UNRESTRICTED_TX_WITH_STAKE_POOL_KEY_PATH_AS_STAKING_PATH),
+        .expected_swo = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expect_init_failure = false,
+        .has_required_expert_mode = true,
+        .required_expert_mode = true,
         .skip_reason = NULL,
     },
     // Source: tests/standalone/input_files/signTx.py > requiredSignerDenyTestCases >

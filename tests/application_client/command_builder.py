@@ -120,6 +120,7 @@ class TransactionSigningMode(IntEnum):
     POOL_REGISTRATION_OPERATOR = 0x05
     MULTISIG = 0x06
     PLUTUS = 0x07
+    UNRESTRICTED = 0x09
     AUTO = 0x08
 
 
@@ -916,12 +917,15 @@ class CommandBuilder:
                 f"Extended-length APDUs are not supported: payload length {len(cdata)}"
             )
 
-        header = bytearray()
-        header.append(CLA)
-        header.append(ins)
-        header.append(p1)
-        header.append(p2)
-        header.append(len(cdata))
+        header = bytes(
+            [
+                CLA,
+                ins,
+                p1,
+                p2,
+                len(cdata),
+            ]
+        )
         return header + cdata
 
     def get_version(self) -> bytes:

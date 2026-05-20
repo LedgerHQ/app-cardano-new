@@ -11,10 +11,11 @@
 // CRITICAL: These must match exactly with the actual UI_ADD_* calls in tx_parse.c (pass 2
 // rendering). Ordered by CBOR transaction body keys (0, 1, 2, 3, 4, 5, 7, 8, 9, 11, 13, 14, 17, 18,
 // 21, 22, ...)
-#define LONG_TX_REVIEW_THRESHOLD 25  // Long transaction review threshold in UI pairs
-#define UI_PAIRS_INPUT           1   // key 0: "Input"
-#define UI_PAIRS_OUTPUT_BASE     3   // key 1: "Output", "Address", "Amount"
-#define UI_PAIRS_PAYMENT_INFO    1   // "Payment key path" or "Payment script hash"
+#define LONG_TX_REVIEW_THRESHOLD            25  // Long transaction review threshold in UI pairs
+#define CERTIFICATE_NEW_PAGE_COUNT_TRESHOLD 3   // Force new page per certificate when count >= this
+#define UI_PAIRS_INPUT                      1   // key 0: "Input"
+#define UI_PAIRS_OUTPUT_BASE                3   // key 1: "Output", "Address", "Amount"
+#define UI_PAIRS_PAYMENT_INFO               1   // "Payment key path" or "Payment script hash"
 #define UI_PAIRS_STAKING_INFO \
     1  // "Staking path", "Stake key hash", "Stake script hash", "Stake key pointer", or warning
 #define UI_PAIRS_OUTPUT_DEVICE_OWNED \

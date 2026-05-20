@@ -84,7 +84,8 @@ bool bip44_isOrdinaryStakingKeyPath(const bip44_path_t* pathSpec);
 bool bip44_isMultisigStakingKeyPath(const bip44_path_t* pathSpec);
 bool bip44_isMultidelegationStakingKeyPath(const bip44_path_t* pathSpec);
 
-bool bip44_isDRepKeyPath(const bip44_path_t* pathSpec);
+bool bip44_isOrdinaryDRepKeyPath(const bip44_path_t* pathSpec);
+bool bip44_isMultisigDRepKeyPath(const bip44_path_t* pathSpec);
 bool bip44_isCommitteeColdKeyPath(const bip44_path_t* pathSpec);
 bool bip44_isCommitteeHotKeyPath(const bip44_path_t* pathSpec);
 
@@ -110,8 +111,9 @@ typedef enum {
     PATH_MULTISIG_STAKING_KEY,
 
     // DRep key
-    // m / 1852' / 1815' / account' / 3 / address_index
-    PATH_DREP_KEY,
+    // m / 185[2/4]' / 1815' / account' / 3 / address_index
+    PATH_ORDINARY_DREP_KEY,
+    PATH_MULTISIG_DREP_KEY,
 
     // constitutional committee hot key
     // m / 1852' / 1815' / account' / 4 / address_index
