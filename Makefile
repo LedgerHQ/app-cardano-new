@@ -25,7 +25,7 @@ include $(BOLOS_SDK)/Makefile.target
 #        Mandatory configuration       #
 ########################################
 # Application name
-APPNAME = "Cardano ADA"
+APPNAME = "Cardano"
 
 # Application version
 APPVERSION_M = 8
