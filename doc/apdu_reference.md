@@ -749,7 +749,7 @@ Every APDU response ends with a 2-byte status word (SW).  `0x9000` means success
 other value signals an error with no response data.  The tables below list all values
 the app can return, grouped by origin and category.
 
-### SDK standard words (re-used from ISO 7816-4)
+### SDK standard words (reused from ISO 7816-4)
 
 | SW | Name | Meaning |
 |----|------|---------|
