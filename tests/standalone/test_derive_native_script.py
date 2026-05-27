@@ -195,9 +195,14 @@ def _deriveNativeScriptHash_init(
                 screen_change_after_last_instruction=False,
             )
         else:
-            nav_ctx.navigator.navigate(
+            snap_name = f"{test_name}/step_{step_counter[0]:02d}_init"
+            step_counter[0] += 1
+            nav_ctx.navigator.navigate_and_compare(
+                nav_ctx.screenshot_path,
+                snap_name,
                 [NavInsID.USE_CASE_REVIEW_TAP],
-                screen_change_before_first_instruction=False,
+                screen_change_before_first_instruction=True,
+                screen_change_after_last_instruction=False,
             )
 
     response = client.get_async_response()
@@ -288,9 +293,14 @@ def _deriveNativeScriptHash_addSimpleScript(
                     screen_change_before_first_instruction=True,
                 )
         else:
-            nav_ctx.navigator.navigate(
+            snap_name = f"{test_name}/step_{step_counter[0]:02d}_simple"
+            step_counter[0] += 1
+            nav_ctx.navigator.navigate_and_compare(
+                nav_ctx.screenshot_path,
+                snap_name,
                 [NavInsID.USE_CASE_REVIEW_TAP],
-                screen_change_before_first_instruction=False,
+                screen_change_before_first_instruction=True,
+                screen_change_after_last_instruction=False,
             )
 
     # Check the status (Asynchronous)
@@ -331,9 +341,14 @@ def _deriveScriptHash_startComplexScript(
                 screen_change_after_last_instruction=False,
             )
         else:
-            nav_ctx.navigator.navigate(
+            snap_name = f"{test_name}/step_{step_counter[0]:02d}_complex"
+            step_counter[0] += 1
+            nav_ctx.navigator.navigate_and_compare(
+                nav_ctx.screenshot_path,
+                snap_name,
                 [NavInsID.USE_CASE_REVIEW_TAP],
-                screen_change_before_first_instruction=False,
+                screen_change_before_first_instruction=True,
+                screen_change_after_last_instruction=False,
             )
 
     # Check the status (Asynchronous)
@@ -375,9 +390,15 @@ def _deriveNativeScriptHash_finishWholeNativeScript(
                 screen_change_before_first_instruction=True,
             )
         else:
-            nav_ctx.navigator.navigate(
-                [NavInsID.USE_CASE_REVIEW_TAP, NavInsID.USE_CASE_REVIEW_CONFIRM],
-                screen_change_before_first_instruction=False,
+            snap_name = f"{testCase.name}/step_{step_counter[0]:02d}_finish"
+            step_counter[0] += 1
+            nav_ctx.navigator.navigate_until_text_and_compare(
+                navigate_instruction=NavInsID.USE_CASE_REVIEW_TAP,
+                validation_instructions=[NavInsID.USE_CASE_REVIEW_CONFIRM],
+                text=r"^Confirm hash$",
+                path=nav_ctx.screenshot_path,
+                test_case_name=snap_name,
+                screen_change_before_first_instruction=True,
             )
     # Check the status (Asynchronous)
     response = client.get_async_response()
