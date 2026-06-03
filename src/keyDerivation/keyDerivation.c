@@ -33,7 +33,8 @@ static void extractRawPublicKey(uint8_t rawPubkey[static ED25519_PUBKEY_UNCOMPRE
 // pub_key + chain_code
 // This function either succeeds or crashes the app (via CX_ASSERT).
 // Crypto failures are unrecoverable and indicate broken device, buggy crypto, or wrong usage.
-void deriveExtendedPublicKey(const bip44_path_t* path, extendedPublicKey_t* out) {
+__noinline_due_to_stack__ void deriveExtendedPublicKey(const bip44_path_t* path,
+                                                       extendedPublicKey_t* out) {
     uint8_t rawPubkey[ED25519_PUBKEY_UNCOMPRESSED_LENGTH] = {0};
     uint8_t chainCode[CHAIN_CODE_LENGTH] = {0};
 
@@ -59,7 +60,9 @@ void deriveExtendedPublicKey(const bip44_path_t* path, extendedPublicKey_t* out)
     explicit_bzero(chainCode, SIZEOF(chainCode));
 }
 
-void keyPathToKeyHash(const bip44_path_t* pathSpec, uint8_t* hash, size_t hashSize) {
+__noinline_due_to_stack__ void keyPathToKeyHash(const bip44_path_t* pathSpec,
+                                                uint8_t* hash,
+                                                size_t hashSize) {
     ASSERT(hashSize < BUFFER_SIZE_PARANOIA);
 
     extendedPublicKey_t extPubKey = {0};

@@ -160,7 +160,9 @@ bytes. Regenerate these fixtures from a speculos run.
   it prints a per-test stack usage summary when the app binary is built with
   `DEBUG_OS_STACK_CONSUMPTION=1`. This is an SDK build variable handled by
   `$(BOLOS_SDK)/Makefile.standard_app`; this app enables it automatically for
-  `DEBUG=1` builds.
+  `DEBUG=1` builds. For Nano X swap/library-mode stack and raw-buffer memory
+  layout diagnostics, see
+  [`doc/tx_raw_buffer.md`](tx_raw_buffer.md#nano-x-stackbss-interaction-in-swap-library-mode).
 - Convenience wrappers from the repository root:
   - `make -C tests python-checks` runs Ruff format check, pylint, and mypy.
   - `make -C tests clang-format-src-check` checks `clang-format-14` on `src/**/*.c` and `src/**/*.h`.

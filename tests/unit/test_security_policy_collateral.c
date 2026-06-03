@@ -75,7 +75,11 @@ static tx_output_description_t make_collateral_output_description_device_owned(
     init_standard_device_owned_address_params(&params);
 
     tx_output_description_t output = {
-        .destination = tx_output_destination_make_device_owned(&params),
+        .destination =
+            {
+                .type = DESTINATION_DEVICE_OWNED,
+                .params = params,
+            },
         .amount = 1,
         .numAssetGroups = num_asset_groups,
         .includeDatum = false,
