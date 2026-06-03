@@ -1,7 +1,9 @@
 # SPDX-FileCopyrightText: 2025-2026 Vacuumlabs
 # SPDX-License-Identifier: Apache-2.0
 
+import sys
 import time
+
 import pytest
 from ledger_app_clients.exchange.test_runner import (
     ExchangeTestRunner,
@@ -13,6 +15,7 @@ from ragger.error import ExceptionRAPDU
 import bech32
 
 from tests.application_client.command_sender import CommandSender
+from tests.application_client.status_words import StatusWord
 from tests.application_client.command_builder import gather_witness_paths
 from tests.application_client.command_builder import (
     AddressParams,
@@ -33,6 +36,7 @@ from . import cal_helper as cal
 
 # Swap checking fail error code returned by the app
 SWO_SWAP_CHECKING_FAIL = 0x6001
+ED25519_SIGNATURE_LENGTH = 64
 
 
 class CardanoShelleySwapTests(ExchangeTestRunner):
@@ -63,6 +67,35 @@ class CardanoShelleySwapTests(ExchangeTestRunner):
 
     # Error code the app returns when swap validation fails
     signature_refusal_error_code = SWO_SWAP_CHECKING_FAIL
+
+    def perform_coin_specific_final_tx(self, destination, send_amount, fees, memo):
+        """Run final Cardano signing without letting post-sign snapshots hide APDU failures."""
+        primary_exception_info = None
+        post_sign_exception_info = None
+
+        try:
+            self.perform_final_tx(destination, send_amount, fees, memo)
+        except Exception:  # pylint: disable=broad-exception-caught
+            primary_exception_info = sys.exc_info()
+
+        try:
+            self.exchange_navigation_helper.check_post_sign_display()
+        except Exception:  # pylint: disable=broad-exception-caught
+            post_sign_exception_info = sys.exc_info()
+        finally:
+            try:
+                handle_lib_call_start_or_stop(self.backend)
+            except Exception:  # pylint: disable=broad-exception-caught
+                if primary_exception_info is None and post_sign_exception_info is None:
+                    raise
+
+        if primary_exception_info is not None:
+            _, exception, traceback = primary_exception_info
+            raise exception.with_traceback(traceback)
+
+        if post_sign_exception_info is not None:
+            _, exception, traceback = post_sign_exception_info
+            raise exception.with_traceback(traceback)
 
     def _assert_exchange_started_with_retry(self):
         # In negative library paths, GET_VERSION may briefly return SWO_SWAP_CHECKING_FAIL
@@ -161,8 +194,14 @@ class CardanoShelleySwapTests(ExchangeTestRunner):
 
         # Swap flow is completed only after all witnesses are requested and signed.
         witness_paths = gather_witness_paths(tx, TransactionSigningMode.ORDINARY, [])
+        assert witness_paths, (
+            "Expected at least one witness path for swap final transaction"
+        )
         for witness_path in witness_paths:
-            client.sign_tx_witness(witness_path)
+            witness_response = client.sign_tx_witness(witness_path)
+
+        assert witness_response.status == StatusWord.SWO_SUCCESS
+        assert len(witness_response.data) == ED25519_SIGNATURE_LENGTH
 
 
 class CardanoShelleySwapDenyMultipleThirdPartyOutputs(CardanoShelleySwapTests):

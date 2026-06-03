@@ -17,7 +17,7 @@
 #include "os.h"
 
 #if defined(TARGET_NANOX)
-#define SIZE_MEM_BUFFER (23 * 1024)
+#define SIZE_MEM_BUFFER (22 * 1024)
 #else
 #define SIZE_MEM_BUFFER (25 * 1024)
 #endif

@@ -32,7 +32,7 @@ ADA_SHELLEY_PACKED_DERIVATION_PATH = bytes(
     ]
 )
 
-ADA_CONF = create_currency_config("ADA", "Cardano ADA")
+ADA_CONF = create_currency_config("ADA", "Cardano")
 
 ADA_SHELLEY_CURRENCY_CONFIGURATION = CurrencyConfiguration(
     ticker="ADA",

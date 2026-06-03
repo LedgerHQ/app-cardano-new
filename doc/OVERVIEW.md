@@ -44,10 +44,8 @@ The application is written in C and runs on Ledger devices (Stax, Flex, Nano X, 
 - **`crypto/`**: Cryptographic operations and key derivation.
 - **`keyDerivation/`**: BIP32/BIP44 key derivation logic.
 - **`cardano_tokens/`**: Token registry for native token metadata.
-- **`memory/`**: Custom memory management.
-    - `mem.c`: Simple allocator (`app_mem_alloc`) used during transaction processing.
 - **`parsers/`**: Generic parsing utilities for CBOR and other formats.
-- **`utils/`**: Helper utilities (`textUtils`, `cbor`, `buffer_write`, `ipUtils`, `assert`).
+- **`utils/`**: Helper utilities (`textUtils`, `cbor`, `buffer_write`, `ipUtils`, `assert`, `mem.c` allocator).
 
 ### Stack Usage Discipline
 

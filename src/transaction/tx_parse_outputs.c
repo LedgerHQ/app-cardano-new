@@ -56,14 +56,11 @@ __noinline_due_to_stack__ uint16_t parse_output_destination(buffer_t* buf,
         }
 
         case DESTINATION_DEVICE_OWNED: {
-            // Parse address params directly into the embedded storage.
-            // Credential pointers within params reference the persistent raw buffer.
-            address_params_t params = {0};
-            if (!buffer_read_address_params(buf, &params)) {
+            if (!buffer_read_address_params(buf, &destination->params)) {
                 TRACE("Failed to read address params");
                 return SWO_TX_PARSING_FAIL_OUTPUTS;
             }
-            *destination = tx_output_destination_make_device_owned(&params);
+            destination->type = DESTINATION_DEVICE_OWNED;
             break;
         }
 

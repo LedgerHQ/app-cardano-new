@@ -66,11 +66,14 @@ __noinline_due_to_stack__ static void hash_add_output_top_level(
                                                &address_size);
     LEDGER_ASSERT(destination_parsed, "Failed to build output address bytes for hashing");
 
-    tx_output_description_t hash_description = *output_description;
-    hash_description.destination =
+    tx_output_description_t *hash_description =
+        (tx_output_description_t *) tx_alloc_temp_buffer_or_fail(sizeof(*hash_description));
+    *hash_description = *output_description;
+    hash_description->destination =
         tx_output_destination_make_third_party(address_bytes, address_size);
-    hash_fn(tx_hash_builder, &hash_description);
+    hash_fn(tx_hash_builder, hash_description);
 
+    APP_MEM_FREE_AND_NULL((void **) &hash_description);
     APP_MEM_FREE_AND_NULL((void **) &address_bytes);
 }
 

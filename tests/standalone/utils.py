@@ -382,10 +382,15 @@ def _review_approve_with_warning(
         do_comparison,
         screen_change_after_last_instruction=False,
     )
-    ctx.navigator.navigate_until_text(
+
+    # Navigate and snapshot the transaction review screens.
+    _navigate_until_text_optional_compare(
+        ctx,
+        test_name=test_name,
         navigate_instruction=NavInsID.RIGHT_CLICK,
         validation_instructions=nano_review_instructions,
         text=target_text,
+        do_comparison=do_comparison,
         screen_change_before_first_instruction=False,
     )
 

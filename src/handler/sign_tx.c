@@ -497,6 +497,9 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
             }
             if (G_called_from_swap) {
                 TRACE_MODULE("Swap mode transaction started");
+                // The transaction hash is an intermediate response in Cardano's swap flow.
+                // Only the final witness response may return control to Exchange.
+                G_swap_response_ready = false;
             }
 #endif
             G_context.req_type = REQUEST_SIGN_TRANSACTION;

@@ -28,17 +28,6 @@ static inline tx_output_destination_t tx_output_destination_make_third_party(
     return destination;
 }
 
-static inline tx_output_destination_t tx_output_destination_make_device_owned(
-    const address_params_t* params) {
-    ASSERT(params != NULL);
-
-    tx_output_destination_t destination = {
-        .type = DESTINATION_DEVICE_OWNED,
-        .params = *params,
-    };
-    return destination;
-}
-
 /**
  * Parse transaction output destination from buffer.
  *
