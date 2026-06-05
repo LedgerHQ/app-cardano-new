@@ -25,12 +25,14 @@ include $(BOLOS_SDK)/Makefile.target
 #        Mandatory configuration       #
 ########################################
 # Application name
-APPNAME = "Cardano"
+# Note: this is the name registered with BOLOS and returned by the GET_APP_NAME
+# APDU. The home screen / UI uses the shorter "Cardano" label (see src/ui/menu.c).
+APPNAME = "Cardano ADA"
 
 # Application version
 APPVERSION_M = 8
 APPVERSION_N = 0
-APPVERSION_P = 4
+APPVERSION_P = 5
 APPVERSION = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 
 # Application source files
