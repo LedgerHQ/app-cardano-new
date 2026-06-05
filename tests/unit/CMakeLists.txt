@@ -98,7 +98,7 @@ add_compile_definitions(HAVE_SNPRINTF_FORMAT_U)
 add_compile_definitions(HAVE_SNPRINTF_FORMAT_LL)
 # Prevent os.h from defining PRINTF as empty macro
 add_compile_definitions(PRINTF=mcu_usb_printf)
-add_compile_definitions(APPNAME=\"Cardano\")
+add_compile_definitions(APPNAME=\"Cardano ADA\")
 add_compile_definitions(APPVERSION=\"8.0.0\")
 add_compile_definitions(MAJOR_VERSION=8)
 add_compile_definitions(MINOR_VERSION=0)

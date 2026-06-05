@@ -16,6 +16,11 @@
 //  ----------------------- HOME PAGE -------------------------
 //  -----------------------------------------------------------
 
+// Name displayed on the home screen / UI. Intentionally shorter than the
+// BOLOS application name (APPNAME = "Cardano ADA", see Makefile), which is
+// kept for the dashboard and the GET_APP_NAME APDU response.
+#define UI_APP_NAME "Cardano"
+
 //  -----------------------------------------------------------
 //  --------------------- SETTINGS MENU -----------------------
 //  -----------------------------------------------------------
@@ -130,11 +135,12 @@ void ui_menu_main(void) {
 #endif
 
     TRACE(
-        "Calling nbgl_useCaseHomeAndSettings(APPNAME), expert=%d, silentPubkey=%d, blindSigning=%d",
+        "Calling nbgl_useCaseHomeAndSettings(UI_APP_NAME), expert=%d, silentPubkey=%d, "
+        "blindSigning=%d",
         expert_mode_setting_value(),
         silent_pubkey_export_setting_value(),
         blind_signing_setting_value());
-    nbgl_useCaseHomeAndSettings(APPNAME,
+    nbgl_useCaseHomeAndSettings(UI_APP_NAME,
                                 &ICON_APP_HOME,
                                 NULL,
                                 INIT_HOME_PAGE,
