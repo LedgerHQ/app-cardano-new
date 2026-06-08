@@ -111,7 +111,7 @@ static inline void run_tx_and_verify(const uint8_t *init_raw,
                                      size_t *response_len,
                                      uint16_t *response_sw) {
     assert_true(init_len > 0);
-    run_sign_tx_apdu(&(buffer_t){.ptr = (uint8_t *) init_raw, .size = init_len, .offset = 0},
+    run_sign_tx_apdu(&(buffer_t) {.ptr = (uint8_t *) init_raw, .size = init_len, .offset = 0},
                      P1_TX_INIT);
     assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
     if (include_aux_data_hash && aux_data_type == AUX_DATA_TYPE_CVOTE_REGISTRATION) {
@@ -289,7 +289,7 @@ static inline init_apdu_params_t build_init_params_from_fixture(const tx_fixture
                                                                 size_t aux_hash_len) {
     bool has_arbitrary_aux =
         fixture->include_aux_data_hash && fixture->aux_data_type == AUX_DATA_TYPE_ARBITRARY_HASH;
-    return (init_apdu_params_t){
+    return (init_apdu_params_t) {
         .options = fixture->options,
         .networkId = fixture->network_id,
         .protocolMagic = fixture->protocol_magic,
@@ -403,7 +403,7 @@ static inline void run_fixture_init_deny_with_expert_mode(const tx_fixture_t *fi
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 
-    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t) {.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_swo, expected_swo);
     assert_int_equal(G_context.req_type, REQUEST_NONE);
 
@@ -465,7 +465,7 @@ static inline void run_fixture_reject_with_expert_mode(const tx_fixture_t *fixtu
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 
-    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t) {.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
 
@@ -583,7 +583,7 @@ static inline void run_fixture_reject_streaming_start_with_expert_mode(const tx_
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 
-    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t) {.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
 
@@ -626,7 +626,7 @@ static inline void run_fixture_reject_streaming_continue_at_call_with_expert_mod
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 
-    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t) {.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
 
@@ -669,7 +669,7 @@ static inline void run_fixture_reject_streaming_finish_with_expert_mode(const tx
     size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 
-    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t) {.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
 

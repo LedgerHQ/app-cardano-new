@@ -16,6 +16,6 @@ typedef struct {
     key_reference_type_t keyReferenceType;
     union {
         bip44_path_t path;
-        const uint8_t* hashBuffer;
+        const uint8_t *hashBuffer;
     };
 } pool_reward_account_t;

@@ -500,7 +500,7 @@ def assert_settings_menu_constants_match() -> None:
             rf"case\s+{setting_name}_TOKEN:\s*"
             rf".*?flip_bool_setting\(N_storage\.{storage_field_name}\)"
             rf".*?switches\[{setting_name}_ID\]\.initState"
-            rf".*?nvm_write\(\(void\*\)\s*&N_storage\.{storage_field_name},\s*&switch_value,\s*1\);",
+            rf".*?nvm_write\(\(void\s*\*\)\s*&N_storage\.{storage_field_name},\s*&switch_value,\s*1\);",
             re.DOTALL,
         )
         if not callback_pattern.search(text):

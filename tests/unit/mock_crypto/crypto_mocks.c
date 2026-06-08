@@ -21,7 +21,7 @@
 
 uint8_t g_mock_last_signed_message[MOCK_SIGNED_MESSAGE_BUFFER_SIZE];
 size_t g_mock_last_signed_message_len = 0;
-const mock_signature_data_t* g_mock_last_signature_entry = NULL;
+const mock_signature_data_t *g_mock_last_signature_entry = NULL;
 
 void reset_mock_signature_state(void) {
     memset(g_mock_last_signed_message, 0, sizeof(g_mock_last_signed_message));
@@ -29,7 +29,7 @@ void reset_mock_signature_state(void) {
     g_mock_last_signature_entry = NULL;
 }
 
-static bool path_matches(const uint32_t* lhs, size_t lhs_len, const uint32_t* rhs, size_t rhs_len) {
+static bool path_matches(const uint32_t *lhs, size_t lhs_len, const uint32_t *rhs, size_t rhs_len) {
     if (lhs_len != rhs_len) {
         return false;
     }
@@ -41,7 +41,7 @@ static bool path_matches(const uint32_t* lhs, size_t lhs_len, const uint32_t* rh
     return true;
 }
 
-static const mock_path_data_t* find_path_entry(const uint32_t* path, size_t path_len) {
+static const mock_path_data_t *find_path_entry(const uint32_t *path, size_t path_len) {
     for (size_t i = 0; i < MOCK_PATH_COUNT; i++) {
         if (path_matches(path, path_len, MOCK_PATHS[i].path, MOCK_PATHS[i].path_len)) {
             return &MOCK_PATHS[i];
@@ -50,12 +50,12 @@ static const mock_path_data_t* find_path_entry(const uint32_t* path, size_t path
     return NULL;
 }
 
-static const mock_signature_data_t* find_signature_entry(const uint32_t* path,
+static const mock_signature_data_t *find_signature_entry(const uint32_t *path,
                                                          size_t path_len,
-                                                         const uint8_t* message,
+                                                         const uint8_t *message,
                                                          size_t message_len) {
     for (size_t i = 0; i < MOCK_SIGNATURE_COUNT; i++) {
-        const mock_signature_data_t* entry = &MOCK_SIGNATURES[i];
+        const mock_signature_data_t *entry = &MOCK_SIGNATURES[i];
         if (!path_matches(path, path_len, entry->path, entry->path_len)) {
             continue;
         }
@@ -70,8 +70,8 @@ static const mock_signature_data_t* find_signature_entry(const uint32_t* path,
     return NULL;
 }
 
-static void maybe_log_signature_entry_usage(const mock_signature_data_t* entry) {
-    const char* log_path = getenv("CARDANO_MOCK_SIGNATURE_USAGE_LOG");
+static void maybe_log_signature_entry_usage(const mock_signature_data_t *entry) {
+    const char *log_path = getenv("CARDANO_MOCK_SIGNATURE_USAGE_LOG");
     if (log_path == NULL || log_path[0] == '\0') {
         return;
     }
@@ -118,11 +118,11 @@ static void encode_raw_pubkey(const uint8_t public_key[32], uint8_t raw_pubkey[R
     raw_pubkey[32] = (uint8_t) (sign_bit ? 0x01 : 0x00);
 }
 
-void crypto_get_pubkey(const uint32_t* path,
+void crypto_get_pubkey(const uint32_t *path,
                        size_t path_len,
                        uint8_t raw_pubkey[static RAW_PUBKEY_SIZE],
-                       uint8_t* chain_code) {
-    const mock_path_data_t* entry = find_path_entry(path, path_len);
+                       uint8_t *chain_code) {
+    const mock_path_data_t *entry = find_path_entry(path, path_len);
     if (entry == NULL) {
         fprintf(stderr, "crypto_mock: missing pubkey path len=%zu [", path_len);
         for (size_t i = 0; i < path_len; i++) {
@@ -135,11 +135,11 @@ void crypto_get_pubkey(const uint32_t* path,
     memcpy(chain_code, entry->chain_code, CHAIN_CODE_LENGTH);
 }
 
-void crypto_eddsa_sign(const uint32_t* path,
+void crypto_eddsa_sign(const uint32_t *path,
                        size_t path_len,
-                       const uint8_t* hash,
+                       const uint8_t *hash,
                        size_t hash_len,
-                       uint8_t* sig,
+                       uint8_t *sig,
                        size_t expected_sig_len) {
     LEDGER_ASSERT(path != NULL, "path is NULL");
     LEDGER_ASSERT(path_len > 0, "path_len is zero");
@@ -158,7 +158,7 @@ void crypto_eddsa_sign(const uint32_t* path,
     g_mock_last_signed_message_len = hash_len;
     memcpy(g_mock_last_signed_message, hash, hash_len);
 
-    const mock_signature_data_t* entry = find_signature_entry(path, path_len, hash, hash_len);
+    const mock_signature_data_t *entry = find_signature_entry(path, path_len, hash, hash_len);
     if (entry == NULL) {
         fprintf(stderr, "crypto_mock: missing signature path len=%zu [", path_len);
         for (size_t i = 0; i < path_len; i++) {

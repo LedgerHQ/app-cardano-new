@@ -54,7 +54,8 @@ static void test_app_main_handle_unexpected_exception_without_response_sends_unk
     apdu_response_finalize_after_handler();
 }
 
-static void test_app_main_handle_unexpected_exception_after_response_does_not_double_send(void **state) {
+static void test_app_main_handle_unexpected_exception_after_response_does_not_double_send(
+    void **state) {
     (void) state;
     reset_test_state();
 
@@ -68,8 +69,7 @@ static void test_app_main_handle_unexpected_exception_after_response_does_not_do
 
 int main(void) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(
-            test_app_main_handle_unexpected_exception_without_response_sends_unknown),
+        cmocka_unit_test(test_app_main_handle_unexpected_exception_without_response_sends_unknown),
         cmocka_unit_test(
             test_app_main_handle_unexpected_exception_after_response_does_not_double_send),
     };

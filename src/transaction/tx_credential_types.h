@@ -20,8 +20,8 @@ typedef struct {
     ext_credential_type_t type;
     union {
         bip44_path_t keyPath;
-        const uint8_t* keyHash;
-        const uint8_t* scriptHash;
+        const uint8_t *keyHash;
+        const uint8_t *scriptHash;
     };
 } ext_credential_t;
 
@@ -67,7 +67,7 @@ typedef struct {
     ext_drep_type_t type;
     union {
         bip44_path_t keyPath;
-        const uint8_t* keyHash;
-        const uint8_t* scriptHash;
+        const uint8_t *keyHash;
+        const uint8_t *scriptHash;
     };
 } ext_drep_t;

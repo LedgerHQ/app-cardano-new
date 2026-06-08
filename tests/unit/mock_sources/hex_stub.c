@@ -4,9 +4,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-int bytes_to_lowercase_hex(char* out, size_t outl, const void* value, size_t len) {
+int bytes_to_lowercase_hex(char *out, size_t outl, const void *value, size_t len) {
     static const char hex_table[] = "0123456789abcdef";
-    const uint8_t* bytes = (const uint8_t*) value;
+    const uint8_t *bytes = (const uint8_t *) value;
     if (outl < (len * 2) + 1) {
         return -1;
     }

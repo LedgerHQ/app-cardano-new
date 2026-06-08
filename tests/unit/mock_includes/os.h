@@ -71,16 +71,16 @@ cx_err_t os_derive_bip32_no_throw(cx_curve_t curve,
 // -----------------------------------------------------------------------
 // - BASIC MATHS
 // -----------------------------------------------------------------------
-#define U2(hi, lo) ((((hi) &0xFFu) << 8) | ((lo) &0xFFu))
+#define U2(hi, lo) ((((hi) & 0xFFu) << 8) | ((lo) & 0xFFu))
 #define U4(hi3, hi2, lo1, lo0) \
-    ((((hi3) &0xFFu) << 24) | (((hi2) &0xFFu) << 16) | (((lo1) &0xFFu) << 8) | ((lo0) &0xFFu))
+    ((((hi3) & 0xFFu) << 24) | (((hi2) & 0xFFu) << 16) | (((lo1) & 0xFFu) << 8) | ((lo0) & 0xFFu))
 #define U2BE(buf, off) ((((buf)[off] & 0xFFu) << 8) | ((buf)[off + 1] & 0xFFu))
 #define U2LE(buf, off) ((((buf)[off + 1] & 0xFFu) << 8) | ((buf)[off] & 0xFFu))
 #define U4BE(buf, off) ((U2BE(buf, off) << 16) | (U2BE(buf, off + 2) & 0xFFFFu))
 #define U4LE(buf, off) ((U2LE(buf, off + 2) << 16) | (U2LE(buf, off) & 0xFFFFu))
 #define MIN(x, y)      ((x) < (y) ? (x) : (y))
 #define MAX(x, y)      ((x) > (y) ? (x) : (y))
-#define IS_POW2(x)     (((x) & ((x) -1)) == 0)
+#define IS_POW2(x)     (((x) & ((x) - 1)) == 0)
 #define UPPER_ALIGN(adr, align, type)                                                       \
     (type)((type) ((type) (adr) +                                                           \
                    (type) ((type) ((type) MAX((type) (align), (type) 1UL)) - (type) 1UL)) & \
@@ -145,7 +145,7 @@ cx_err_t os_derive_bip32_no_throw(cx_curve_t curve,
 // error type definition
 typedef unsigned short exception_t;
 
-//#define macro_offsetof // already defined in stddef.h
+// #define macro_offsetof // already defined in stddef.h
 #define OS_LITTLE_ENDIAN
 #define NATIVE_64BITS
 #define NVM_ERASED_WORD_VALUE 0xFFFFFFFFUL
@@ -954,7 +954,7 @@ SYSCALL void os_lib_throw(unsigned int exception);
 #define OS_FLAG_SIGNED_MCU_CODE 2
 #define OS_FLAG_ONBOARDED       4
 #define OS_FLAG_PIN_VALIDATED   128
-//#define OS_FLAG_CUSTOM_UX       4
+// #define OS_FLAG_CUSTOM_UX       4
 /* Enable application to retrieve OS current running options */
 SYSCALL PERMISSION(APPLICATION_FLAG_NONE)
 unsigned int os_flags(void);

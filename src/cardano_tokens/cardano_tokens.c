@@ -17,11 +17,11 @@ uint64_t abs_int64(int64_t number) {
     return (uint64_t) (number < 0 ? -number : number);
 }
 
-void deriveAssetFingerprintBytes(const uint8_t* policyId,
+void deriveAssetFingerprintBytes(const uint8_t *policyId,
                                  size_t policyIdSize,
-                                 const uint8_t* assetName,
+                                 const uint8_t *assetName,
                                  size_t assetNameSize,
-                                 uint8_t* fingerprintBuffer,
+                                 uint8_t *fingerprintBuffer,
                                  size_t fingerprintBufferSize) {
     ASSERT(policyIdSize == MINTING_POLICY_ID_LENGTH);
     ASSERT(assetNameSize <= MAX_ASSET_NAME_LENGTH);
@@ -48,7 +48,7 @@ void deriveAssetFingerprintBytes(const uint8_t* policyId,
 typedef struct {
     uint8_t fingerprint[ASSET_FINGERPRINT_SIZE];
     uint8_t decimals;
-    const char* ticker;
+    const char *ticker;
 } token_info_t;
 
 const token_info_t tokenInfos[] = {
@@ -56,8 +56,8 @@ const token_info_t tokenInfos[] = {
 #include "../tokenRegistry/token_data.csource"
 };
 
-static const token_info_t* _getTokenInfo(const uint8_t* policyId,
-                                         const uint8_t* assetNameBytes,
+static const token_info_t *_getTokenInfo(const uint8_t *policyId,
+                                         const uint8_t *assetNameBytes,
                                          size_t assetNameSize) {
     ASSERT(assetNameSize <= MAX_ASSET_NAME_LENGTH);
 
@@ -79,26 +79,26 @@ static const token_info_t* _getTokenInfo(const uint8_t* policyId,
     return NULL;
 }
 
-bool format_token_amount_output(const uint8_t* policyId,
-                                const uint8_t* assetNameBytes,
+bool format_token_amount_output(const uint8_t *policyId,
+                                const uint8_t *assetNameBytes,
                                 size_t assetNameSize,
                                 uint64_t amount,
-                                char* out,
+                                char *out,
                                 size_t outSize) {
     ASSERT(assetNameSize <= MAX_ASSET_NAME_LENGTH);
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
 
     explicit_bzero(out, outSize);
 
-    const token_info_t* tokenInfo = _getTokenInfo(policyId, assetNameBytes, assetNameSize);
+    const token_info_t *tokenInfo = _getTokenInfo(policyId, assetNameBytes, assetNameSize);
     int decimals = (tokenInfo != NULL) ? tokenInfo->decimals : 0;
     TRACE("token decimal places = %u", decimals);
     bool formatted = format_decimal_amount(amount, decimals, out, outSize);
     ASSERT(formatted);
     size_t length = strlen(out);
 
-    const char* ticker =
-        (tokenInfo != NULL) ? (const char*) PIC(tokenInfo->ticker) : "(unknown decimals)";
+    const char *ticker =
+        (tokenInfo != NULL) ? (const char *) PIC(tokenInfo->ticker) : "(unknown decimals)";
     TRACE("token ticker = %s", ticker);
     int written = snprintf(out + length, outSize - length, " %s", ticker);
     LEDGER_ASSERT(written > 0, "snprintf token ticker formatting failed");
@@ -110,11 +110,11 @@ bool format_token_amount_output(const uint8_t* policyId,
     return true;
 }
 
-bool format_token_amount_mint(const uint8_t* policyId,
-                              const uint8_t* assetNameBytes,
+bool format_token_amount_mint(const uint8_t *policyId,
+                              const uint8_t *assetNameBytes,
                               size_t assetNameSize,
                               int64_t amount,
-                              char* out,
+                              char *out,
                               size_t outSize) {
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
     ASSERT(outSize >= 2);

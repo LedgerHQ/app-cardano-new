@@ -80,7 +80,7 @@ static void init_and_run_fixture_until_hash_ready(const tx_fixture_t *fixture) {
     const size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 
-    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t) {.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
     assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
@@ -193,7 +193,7 @@ static void test_sign_tx_witness_flow_signs_and_resets_context(void **state) {
                                                           sizeof(witness_path_apdu),
                                                           witness_path,
                                                           ARRAY_LEN(witness_path));
-    run_sign_tx_witness_apdu(&(buffer_t){
+    run_sign_tx_witness_apdu(&(buffer_t) {
         .ptr = witness_path_apdu,
         .size = witness_path_apdu_len,
         .offset = 0,
@@ -226,7 +226,7 @@ static void test_sign_tx_zero_witnesses_auto_resets_context(void **state) {
     const size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 
-    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t) {.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.tx_info.num_witnesses, 0);
     assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);

@@ -43,6 +43,6 @@ void tx_review_cleanup(void);
  * @param securityPolicy Security policy result
  * @param warnings Warning bits
  */
-void ui_display_witness(const bip44_path_t* witnessPath,
+void ui_display_witness(const bip44_path_t *witnessPath,
                         security_policy_t securityPolicy,
                         warning_bits_t warnings);

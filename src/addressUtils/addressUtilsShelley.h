@@ -44,7 +44,7 @@ typedef enum {
 #define MAX_ADDRESS_LENGTH       128
 #define MAX_HUMAN_ADDRESS_LENGTH 150
 
-uint8_t getAddressHeader(const uint8_t* addressBuffer, size_t addressSize);
+uint8_t getAddressHeader(const uint8_t *addressBuffer, size_t addressSize);
 
 address_type_t getAddressType(uint8_t addressHeader);
 bool isSupportedAddressType(uint8_t addressHeader);
@@ -103,15 +103,15 @@ typedef struct {
     // Internal representation detail; prefer address utils helpers for branching.
     payment_part_type_t paymentPartType;
     bip44_path_t paymentKeyPath;
-    const uint8_t* paymentScriptHash;
+    const uint8_t *paymentScriptHash;
 
     // Internal representation detail; prefer address utils helpers for branching.
     staking_part_type_t stakingPartType;
 
     bip44_path_t stakingKeyPath;
-    const uint8_t* stakingKeyHash;
+    const uint8_t *stakingKeyHash;
     blockchainPointer_t stakingKeyBlockchainPointer;
-    const uint8_t* stakingScriptHash;
+    const uint8_t *stakingScriptHash;
 } address_params_t;
 
 typedef struct {
@@ -119,13 +119,13 @@ typedef struct {
     uint8_t stakingHash[ADDRESS_KEY_HASH_LENGTH];
 } address_params_hashes_storage_t;
 
-__noinline_due_to_stack__ size_t deriveAddress(const address_params_t* address_params,
-                                               uint8_t* outBuffer,
+__noinline_due_to_stack__ size_t deriveAddress(const address_params_t *address_params,
+                                               uint8_t *outBuffer,
                                                size_t outSize);
 
-__noinline_due_to_stack__ size_t constructRewardAddressFromKeyPath(const bip44_path_t* path,
+__noinline_due_to_stack__ size_t constructRewardAddressFromKeyPath(const bip44_path_t *path,
                                                                    uint8_t networkId,
-                                                                   uint8_t* outBuffer,
+                                                                   uint8_t *outBuffer,
                                                                    size_t outSize);
 
 typedef enum {
@@ -135,43 +135,43 @@ typedef enum {
 
 __noinline_due_to_stack__ size_t constructRewardAddressFromHash(uint8_t networkId,
                                                                 reward_address_hash_source_t source,
-                                                                const uint8_t* hashBuffer,
+                                                                const uint8_t *hashBuffer,
                                                                 size_t hashSize,
-                                                                uint8_t* outBuffer,
+                                                                uint8_t *outBuffer,
                                                                 size_t outSize);
 
-bool format_blockchain_pointer(blockchainPointer_t blockchainPointer, char* out, size_t outSize);
+bool format_blockchain_pointer(blockchainPointer_t blockchainPointer, char *out, size_t outSize);
 
-bool format_address_human_readable(const uint8_t* address,
+bool format_address_human_readable(const uint8_t *address,
                                    size_t addressSize,
-                                   char* out,
+                                   char *out,
                                    size_t outSize);
 __noinline_due_to_stack__ bool format_reward_account_from_credential(
     uint8_t networkId,
-    const ext_credential_t* credential,
-    char* out,
+    const ext_credential_t *credential,
+    char *out,
     size_t outSize);
 
 __noinline_due_to_stack__ bool format_pool_reward_account(
     uint8_t networkId,
-    const pool_reward_account_t* rewardAccount,
-    char* out,
+    const pool_reward_account_t *rewardAccount,
+    char *out,
     size_t outSize);
 
-bool buffer_read_address_params(buffer_t* buffer, address_params_t* params);
+bool buffer_read_address_params(buffer_t *buffer, address_params_t *params);
 
 /**
  * Copy any hash pointers inside address_params into storage and update pointers
  * to reference the storage buffers. Use this when the original buffer (e.g. APDU)
  * will be overwritten before params are consumed.
  */
-void address_params_copyHashesToStorage(address_params_t* params,
-                                        address_params_hashes_storage_t* storage);
+void address_params_copyHashesToStorage(address_params_t *params,
+                                        address_params_hashes_storage_t *storage);
 
-bool isValidAddressParams(const address_params_t* address_params);
+bool isValidAddressParams(const address_params_t *address_params);
 payment_choice_t determinePaymentChoice(address_type_t addressType);
-payment_part_type_t addressParams_getPaymentPartType(const address_params_t* address_params);
-staking_part_type_t addressParams_getStakingPartType(const address_params_t* address_params);
+payment_part_type_t addressParams_getPaymentPartType(const address_params_t *address_params);
+staking_part_type_t addressParams_getStakingPartType(const address_params_t *address_params);
 
 /**
  * Convert a reward account to its binary representation.
@@ -182,6 +182,6 @@ staking_part_type_t addressParams_getStakingPartType(const address_params_t* add
  * @param rewardAccountBuffer Output buffer to store the serialized reward account
  * (REWARD_ACCOUNT_LENGTH bytes)
  */
-void poolRewardAccountToBuffer(const pool_reward_account_t* rewardAccount,
+void poolRewardAccountToBuffer(const pool_reward_account_t *rewardAccount,
                                uint8_t networkId,
-                               uint8_t* rewardAccountBuffer);
+                               uint8_t *rewardAccountBuffer);

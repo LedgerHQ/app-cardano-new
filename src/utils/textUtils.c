@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 // check if a non-null-terminated buffer contains printable ASCII between 33 and 126 (inclusive)
-bool str_isPrintableAsciiWithoutSpaces(const uint8_t* buffer, size_t bufferSize) {
+bool str_isPrintableAsciiWithoutSpaces(const uint8_t *buffer, size_t bufferSize) {
     ASSERT(bufferSize < BUFFER_SIZE_PARANOIA);
 
     for (size_t i = 0; i < bufferSize; i++) {
@@ -20,7 +20,7 @@ bool str_isPrintableAsciiWithoutSpaces(const uint8_t* buffer, size_t bufferSize)
 }
 
 // check if a non-null-terminated buffer contains printable ASCII between 32 and 126 (inclusive)
-bool str_isPrintableAsciiWithSpaces(const uint8_t* buffer, size_t bufferSize) {
+bool str_isPrintableAsciiWithSpaces(const uint8_t *buffer, size_t bufferSize) {
     ASSERT(bufferSize < BUFFER_SIZE_PARANOIA);
 
     for (size_t i = 0; i < bufferSize; i++) {
@@ -32,7 +32,7 @@ bool str_isPrintableAsciiWithSpaces(const uint8_t* buffer, size_t bufferSize) {
 }
 
 // check if the string can be unambiguously displayed to the user
-bool str_isUnambiguousAscii(const uint8_t* buffer, size_t bufferSize) {
+bool str_isUnambiguousAscii(const uint8_t *buffer, size_t bufferSize) {
     ASSERT(bufferSize < BUFFER_SIZE_PARANOIA);
 
     // must not be empty

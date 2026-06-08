@@ -10,7 +10,7 @@
 #include "base58.h"
 #include "bech32.h"
 
-uint8_t getAddressHeader(const uint8_t* addressBuffer, size_t addressSize) {
+uint8_t getAddressHeader(const uint8_t *addressBuffer, size_t addressSize) {
     ASSERT(addressSize > 0);
     ASSERT(addressSize < BUFFER_SIZE_PARANOIA);
 
@@ -88,7 +88,7 @@ static bool is_valid_staking_part_type(staking_part_type_t stakingPartType) {
     }
 }
 
-static bool is_staking_part_consistent_with_address_type(const address_params_t* address_params) {
+static bool is_staking_part_consistent_with_address_type(const address_params_t *address_params) {
 #define CONSISTENT_WITH(STAKING_CHOICE) \
     if (address_params->stakingPartType == (STAKING_CHOICE)) return true
 
@@ -132,8 +132,8 @@ static bool is_staking_part_consistent_with_address_type(const address_params_t*
 }
 
 __noinline_due_to_stack__ static bool buffer_write_pubkey_hash(
-    buffer_t* buf,
-    const bip44_path_t* keyDerivationPath) {
+    buffer_t *buf,
+    const bip44_path_t *keyDerivationPath) {
     uint8_t hashedPubKey[ADDRESS_KEY_HASH_LENGTH] = {0};
     keyPathToKeyHash(keyDerivationPath, hashedPubKey, SIZEOF(hashedPubKey));
 
@@ -141,7 +141,7 @@ __noinline_due_to_stack__ static bool buffer_write_pubkey_hash(
 }
 
 // Write the payment credential (key-hash or script-hash) into buf.
-static void write_payment_credential(buffer_t* buf, const address_params_t* address_params) {
+static void write_payment_credential(buffer_t *buf, const address_params_t *address_params) {
     ASSERT(isValidAddressParams(address_params));
     switch (address_params->paymentPartType) {
         case PAYMENT_PART_KEY_PATH:
@@ -163,7 +163,7 @@ static void write_payment_credential(buffer_t* buf, const address_params_t* addr
 // Write the staking credential (key-hash or script-hash) into buf.
 // stakingPartType must be one of STAKING_PART_KEY_PATH / STAKING_PART_KEY_HASH /
 // STAKING_PART_SCRIPT_HASH.
-static void write_staking_credential(buffer_t* buf, const address_params_t* address_params) {
+static void write_staking_credential(buffer_t *buf, const address_params_t *address_params) {
     ASSERT(isValidAddressParams(address_params));
     switch (address_params->stakingPartType) {
         case STAKING_PART_KEY_PATH:
@@ -183,7 +183,7 @@ static void write_staking_credential(buffer_t* buf, const address_params_t* addr
     }
 }
 
-static bool buffer_appendVariableLengthUInt(buffer_t* buf, uint64_t value) {
+static bool buffer_appendVariableLengthUInt(buffer_t *buf, uint64_t value) {
     ASSERT(value < (1llu << 63));  // avoid accidental cast from negative signed value
 
     if (value == 0) {
@@ -215,8 +215,8 @@ static bool buffer_appendVariableLengthUInt(buffer_t* buf, uint64_t value) {
     return buffer_write_bytes(buf, &chunks[0], 1);
 }
 
-static size_t deriveAddress_reward(const address_params_t* address_params,
-                                   uint8_t* outBuffer,
+static size_t deriveAddress_reward(const address_params_t *address_params,
+                                   uint8_t *outBuffer,
                                    size_t outSize) {
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
 
@@ -230,9 +230,9 @@ static size_t deriveAddress_reward(const address_params_t* address_params,
     return out.offset;
 }
 
-__noinline_due_to_stack__ size_t constructRewardAddressFromKeyPath(const bip44_path_t* path,
+__noinline_due_to_stack__ size_t constructRewardAddressFromKeyPath(const bip44_path_t *path,
                                                                    uint8_t networkId,
-                                                                   uint8_t* outBuffer,
+                                                                   uint8_t *outBuffer,
                                                                    size_t outSize) {
     ASSERT(outSize == REWARD_ACCOUNT_LENGTH);
     ASSERT(bip44_isOrdinaryStakingKeyPath(path));
@@ -249,9 +249,9 @@ __noinline_due_to_stack__ size_t constructRewardAddressFromKeyPath(const bip44_p
 
 __noinline_due_to_stack__ size_t constructRewardAddressFromHash(uint8_t networkId,
                                                                 reward_address_hash_source_t source,
-                                                                const uint8_t* hashBuffer,
+                                                                const uint8_t *hashBuffer,
                                                                 size_t hashSize,
-                                                                uint8_t* outBuffer,
+                                                                uint8_t *outBuffer,
                                                                 size_t outSize) {
     ASSERT(isValidNetworkId(networkId));
     ASSERT(hashBuffer != NULL);
@@ -275,8 +275,8 @@ __noinline_due_to_stack__ size_t constructRewardAddressFromHash(uint8_t networkI
     return out.offset;
 }
 
-__noinline_due_to_stack__ size_t deriveAddress(const address_params_t* address_params,
-                                               uint8_t* outBuffer,
+__noinline_due_to_stack__ size_t deriveAddress(const address_params_t *address_params,
+                                               uint8_t *outBuffer,
                                                size_t outSize) {
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
     ASSERT(isValidAddressParams(address_params));
@@ -309,7 +309,7 @@ __noinline_due_to_stack__ size_t deriveAddress(const address_params_t* address_p
             write_staking_credential(&out, address_params);
             break;
         case STAKING_PART_BLOCKCHAIN_POINTER: {
-            const blockchainPointer_t* ptr = &address_params->stakingKeyBlockchainPointer;
+            const blockchainPointer_t *ptr = &address_params->stakingKeyBlockchainPointer;
             ASSERT(buffer_appendVariableLengthUInt(&out, ptr->blockIndex));
             ASSERT(buffer_appendVariableLengthUInt(&out, ptr->txIndex));
             ASSERT(buffer_appendVariableLengthUInt(&out, ptr->certificateIndex));
@@ -327,7 +327,7 @@ __noinline_due_to_stack__ size_t deriveAddress(const address_params_t* address_p
     return out.offset;
 }
 
-bool format_blockchain_pointer(blockchainPointer_t blockchainPointer, char* out, size_t outSize) {
+bool format_blockchain_pointer(blockchainPointer_t blockchainPointer, char *out, size_t outSize) {
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
 
     explicit_bzero(out, outSize);
@@ -351,9 +351,9 @@ bool format_blockchain_pointer(blockchainPointer_t blockchainPointer, char* out,
     return true;
 }
 
-bool format_address_human_readable(const uint8_t* address,
+bool format_address_human_readable(const uint8_t *address,
                                    size_t addressSize,
-                                   char* out,
+                                   char *out,
                                    size_t outSize) {
     ASSERT(addressSize > 0);
     ASSERT(addressSize < BUFFER_SIZE_PARANOIA);
@@ -387,7 +387,7 @@ bool format_address_human_readable(const uint8_t* address,
         // LCOV_EXCL_STOP
         case REWARD_KEY:
         case REWARD_SCRIPT: {
-            const char* hrp = (networkId == TESTNET_NETWORK_ID)
+            const char *hrp = (networkId == TESTNET_NETWORK_ID)
                                   ? BECH32_PREFIX_TESTNET_STAKE_ADDRESS
                                   : BECH32_PREFIX_STAKE_ADDRESS;
             bool encoded = format_bech32(hrp, address, addressSize, out, outSize);
@@ -400,7 +400,7 @@ bool format_address_human_readable(const uint8_t* address,
 
         default:  // all other shelley addresses
         {
-            const char* hrp = (networkId == TESTNET_NETWORK_ID) ? BECH32_PREFIX_TESTNET_ADDRESS
+            const char *hrp = (networkId == TESTNET_NETWORK_ID) ? BECH32_PREFIX_TESTNET_ADDRESS
                                                                 : BECH32_PREFIX_ADDRESS;
             bool encoded = format_bech32(hrp, address, addressSize, out, outSize);
             if (!encoded) {
@@ -414,8 +414,8 @@ bool format_address_human_readable(const uint8_t* address,
 
 __noinline_due_to_stack__ bool format_reward_account_from_credential(
     uint8_t networkId,
-    const ext_credential_t* credential,
-    char* out,
+    const ext_credential_t *credential,
+    char *out,
     size_t outSize) {
     ASSERT(credential != NULL);
     ASSERT(out != NULL);
@@ -459,8 +459,8 @@ __noinline_due_to_stack__ bool format_reward_account_from_credential(
 
 __noinline_due_to_stack__ bool format_pool_reward_account(
     uint8_t networkId,
-    const pool_reward_account_t* rewardAccount,
-    char* out,
+    const pool_reward_account_t *rewardAccount,
+    char *out,
     size_t outSize) {
     ASSERT(rewardAccount != NULL);
     ASSERT(out != NULL);
@@ -499,7 +499,7 @@ __noinline_due_to_stack__ bool format_pool_reward_account(
  *
  * (see also enums in addressUtilsShelley.h)
  */
-bool buffer_read_address_params(buffer_t* buffer, address_params_t* params) {
+bool buffer_read_address_params(buffer_t *buffer, address_params_t *params) {
     explicit_bzero(params, SIZEOF(*params));
 
     // address type
@@ -647,7 +647,7 @@ bool buffer_read_address_params(buffer_t* buffer, address_params_t* params) {
     return true;
 }
 
-static inline bool isValidStakingInfo(const address_params_t* params) {
+static inline bool isValidStakingInfo(const address_params_t *params) {
 #define CHECK(cond) \
     if (!(cond)) return false
     CHECK(is_staking_part_consistent_with_address_type(params));
@@ -664,7 +664,7 @@ static inline bool isValidStakingInfo(const address_params_t* params) {
 #undef CHECK
 }
 
-static inline bool isValidPaymentInfo(const address_params_t* params) {
+static inline bool isValidPaymentInfo(const address_params_t *params) {
 #define CHECK(cond) \
     if (!(cond)) return false
     switch (params->type) {
@@ -707,7 +707,7 @@ static inline bool isValidPaymentInfo(const address_params_t* params) {
 #undef CHECK
 }
 
-bool isValidAddressParams(const address_params_t* params) {
+bool isValidAddressParams(const address_params_t *params) {
 #define CHECK(cond) \
     if (!(cond)) return false
 
@@ -722,8 +722,8 @@ bool isValidAddressParams(const address_params_t* params) {
 #undef CHECK
 }
 
-void address_params_copyHashesToStorage(address_params_t* params,
-                                        address_params_hashes_storage_t* storage) {
+void address_params_copyHashesToStorage(address_params_t *params,
+                                        address_params_hashes_storage_t *storage) {
     ASSERT(params != NULL);
     ASSERT(storage != NULL);
 
@@ -779,19 +779,19 @@ payment_choice_t determinePaymentChoice(address_type_t addressType) {
     }
 }
 
-payment_part_type_t addressParams_getPaymentPartType(const address_params_t* address_params) {
+payment_part_type_t addressParams_getPaymentPartType(const address_params_t *address_params) {
     ASSERT(address_params != NULL);
     return address_params->paymentPartType;
 }
 
-staking_part_type_t addressParams_getStakingPartType(const address_params_t* address_params) {
+staking_part_type_t addressParams_getStakingPartType(const address_params_t *address_params) {
     ASSERT(address_params != NULL);
     return address_params->stakingPartType;
 }
 
-void poolRewardAccountToBuffer(const pool_reward_account_t* rewardAccount,
+void poolRewardAccountToBuffer(const pool_reward_account_t *rewardAccount,
                                uint8_t networkId,
-                               uint8_t* rewardAccountBuffer) {
+                               uint8_t *rewardAccountBuffer) {
     switch (rewardAccount->keyReferenceType) {
         case KEY_REFERENCE_HASH: {
             ASSERT(rewardAccount->hashBuffer != NULL);

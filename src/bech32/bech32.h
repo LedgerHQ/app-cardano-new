@@ -32,8 +32,8 @@
  *
  * Returns true on success; formatting failures indicate bugs and should not happen in production.
  */
-bool format_bech32(const char* hrp,
-                   const uint8_t* bytes,
+bool format_bech32(const char *hrp,
+                   const uint8_t *bytes,
                    size_t bytesSize,
-                   char* output,
+                   char *output,
                    size_t maxOutputSize);

@@ -57,7 +57,7 @@ static void witness_review_choice(bool confirm) {
     }
 }
 
-void ui_display_witness(const bip44_path_t* witnessPath,
+void ui_display_witness(const bip44_path_t *witnessPath,
                         security_policy_t securityPolicy,
                         warning_bits_t warnings) {
     TRACE_MODULE("=== ui_display_witness START ===");

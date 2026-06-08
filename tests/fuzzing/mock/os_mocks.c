@@ -79,8 +79,7 @@ void *pic(void *linked_addr) {
 }
 // void ui_idle(){};
 void halt() {
-    for (;;)
-        ;
+    for (;;);
 };
 
 void io_send_buf(unsigned short code, unsigned char *buffer, size_t tx) {

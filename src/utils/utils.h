@@ -31,7 +31,7 @@
  * - Array:  typeof(arr) vs typeof(&arr[0]) (int*)... NOT Compatible.
  * - Pointer: typeof(ptr) vs typeof(&ptr[0]) (int*)... ARE Compatible.
  */
-#define _SAFE_DUMMY_ARR ((int[1]){0})
+#define _SAFE_DUMMY_ARR ((int[1]) {0})
 
 #define _IS_UNSAFE_PTR(x)                                                                       \
     __builtin_types_compatible_p(                                                               \

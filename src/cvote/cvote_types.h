@@ -37,6 +37,6 @@ typedef struct {
         // 32 bytes for CVOTE_CREDENTIAL_KEY type
         // WARNING: For delegations, this pointer is transient (points to APDU buffer) and must be
         // consumed immediately. For INIT, it points to the persistent raw_cvote_init_data buffer.
-        const uint8_t* publicKey;
+        const uint8_t *publicKey;
     };
 } cvote_credential_t;

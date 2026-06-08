@@ -34,9 +34,9 @@ typedef enum {
 
 typedef struct {
     bool isIncluded;
-    const uint8_t* url;
+    const uint8_t *url;
     uint16_t urlLength;
-    const uint8_t* hash;
+    const uint8_t *hash;
 } anchor_t;
 
 // Relay definitions used by pool registration certificates
@@ -48,12 +48,12 @@ typedef enum {
 
 typedef struct {
     bool isNull;
-    const uint8_t* ip;
+    const uint8_t *ip;
 } ipv4_t;
 
 typedef struct {
     bool isNull;
-    const uint8_t* ip;
+    const uint8_t *ip;
 } ipv6_t;
 
 typedef struct {
@@ -67,21 +67,21 @@ typedef struct {
     ipv4_t ipv4;
     ipv6_t ipv6;
     size_t dnsNameSize;
-    const uint8_t* dnsName;
+    const uint8_t *dnsName;
 } pool_relay_t;
 
 typedef struct {
     key_reference_type_t keyReferenceType;
     union {
         bip44_path_t path;
-        const uint8_t* hash;
+        const uint8_t *hash;
     };
 } pool_id_t;
 
 typedef struct {
-    const uint8_t* url;
+    const uint8_t *url;
     size_t urlSize;
-    const uint8_t* hash;
+    const uint8_t *hash;
 } pool_metadata_t;
 
 typedef struct {
@@ -91,7 +91,7 @@ typedef struct {
     // Number of bytes consumed by the fixed pool registration header
     // (before owners/relays/metadata).
     uint16_t fixedHeaderLength;
-    const uint8_t* vrfKeyHash;
+    const uint8_t *vrfKeyHash;
     uint64_t pledge;
     uint64_t cost;
     uint64_t marginNumerator;
@@ -103,7 +103,7 @@ typedef struct {
 } pool_registration_data_t;
 
 typedef struct {
-    const uint8_t* txHash;
+    const uint8_t *txHash;
     uint32_t govActionIndex;
 } gov_action_id_t;
 
@@ -139,8 +139,8 @@ typedef struct {
     ext_voter_type_t type;
     union {
         bip44_path_t keyPath;
-        const uint8_t* keyHash;
-        const uint8_t* scriptHash;
+        const uint8_t *keyHash;
+        const uint8_t *scriptHash;
     };
 } ext_voter_t;
 

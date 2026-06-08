@@ -547,16 +547,16 @@ static void test_multi_phase_handlers_accept_all_supported_p1_values(void **stat
         const uint8_t *valid_p1_values;
         size_t valid_p1_values_count;
     } cases[] = {
-        {INS_DERIVE_ADDRESS, (const uint8_t[]){P1_ADDRESS_RETURN, P1_ADDRESS_DISPLAY}, 2},
+        {INS_DERIVE_ADDRESS, (const uint8_t[]) {P1_ADDRESS_RETURN, P1_ADDRESS_DISPLAY}, 2},
         {INS_DERIVE_NATIVE_SCRIPT_HASH,
-         (const uint8_t[]){P1_NATIVE_SCRIPT_INIT,
-                           P1_NATIVE_SCRIPT_START_COMPLEX,
-                           P1_NATIVE_SCRIPT_ADD_SIMPLE,
-                           P1_NATIVE_SCRIPT_FINISH},
+         (const uint8_t[]) {P1_NATIVE_SCRIPT_INIT,
+                            P1_NATIVE_SCRIPT_START_COMPLEX,
+                            P1_NATIVE_SCRIPT_ADD_SIMPLE,
+                            P1_NATIVE_SCRIPT_FINISH},
          4},
-        {INS_SIGN_CVOTE, (const uint8_t[]){P1_CVOTE_INIT, P1_CVOTE_CHUNK, P1_CVOTE_CONFIRM}, 3},
+        {INS_SIGN_CVOTE, (const uint8_t[]) {P1_CVOTE_INIT, P1_CVOTE_CHUNK, P1_CVOTE_CONFIRM}, 3},
         {INS_SIGN_MSG,
-         (const uint8_t[]){P1_SIGN_MSG_INIT, P1_SIGN_MSG_CHUNK, P1_SIGN_MSG_CONFIRM},
+         (const uint8_t[]) {P1_SIGN_MSG_INIT, P1_SIGN_MSG_CHUNK, P1_SIGN_MSG_CONFIRM},
          3},
     };
 

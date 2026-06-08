@@ -14,13 +14,13 @@
 #include "hexUtils.h"
 #include "utils/utils.h"
 
-static size_t decode_hex_buffer(const char* hex, uint8_t* dst, size_t dstSize) {
+static size_t decode_hex_buffer(const char *hex, uint8_t *dst, size_t dstSize) {
     size_t decodedLen = 0;
     assert_true(decode_hex(hex, dst, dstSize, &decodedLen));
     return decodedLen;
 }
 
-static void test_tx_hash_builder_full(void** state) {
+static void test_tx_hash_builder_full(void **state) {
     (void) state;
 
     tx_hash_builder_t builder = {0};
@@ -51,7 +51,7 @@ static void test_tx_hash_builder_full(void** state) {
 
     tx_input_t input = {0};
     input.index = 0;
-    static const char* inputHashHex =
+    static const char *inputHashHex =
         "34BBDF0A10E7290AD22E3EE791B6B3C35C206AB8B51BB749A2B06489CEEBF5F4";
     uint8_t inputHashBuffer[TX_HASH_LENGTH] = {0};
     decode_hex_buffer(inputHashHex, inputHashBuffer, TX_HASH_LENGTH);
@@ -82,7 +82,7 @@ static void test_tx_hash_builder_full(void** state) {
     txHashBuilder_enterOutputs(&builder);
     txHashBuilder_addOutput_topLevelData(&builder, &output);
 
-    static const char* policyIdHex = "0A0B0C0D0E0F101112131415161718191A1B1C1D1E1F2021222324";
+    static const char *policyIdHex = "0A0B0C0D0E0F101112131415161718191A1B1C1D1E1F2021222324";
     uint8_t policyId[MINTING_POLICY_ID_LENGTH] = {0};
     decode_hex_buffer(policyIdHex, policyId, SIZEOF(policyId));
     txHashBuilder_addOutput_tokenGroup(&builder, policyId, SIZEOF(policyId), 1);
@@ -90,7 +90,7 @@ static void test_tx_hash_builder_full(void** state) {
     const uint8_t assetName[] = "Token";
     txHashBuilder_addOutput_token(&builder, assetName, sizeof(assetName) - 1, 10);
 
-    static const char* datumHex =
+    static const char *datumHex =
         "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
     uint8_t datumHash[OUTPUT_DATUM_HASH_LENGTH] = {0};
     decode_hex_buffer(datumHex, datumHash, SIZEOF(datumHash));
@@ -102,11 +102,11 @@ static void test_tx_hash_builder_full(void** state) {
     txHashBuilder_enterCertificates(&builder);
     credential_t stakeCredential = {0};
     stakeCredential.type = CREDENTIAL_KEY_HASH;
-    static const char* stakeKeyHex = "0C0D0E0F101112131415161718191A1B1C1D1E1F20212223242526";
+    static const char *stakeKeyHex = "0C0D0E0F101112131415161718191A1B1C1D1E1F20212223242526";
     decode_hex_buffer(stakeKeyHex, stakeCredential.keyHash, SIZEOF(stakeCredential.keyHash));
 
     uint8_t poolKeyHash[POOL_KEY_HASH_LENGTH] = {0};
-    static const char* poolKeyHashHex = "1C1D1E1F202122232425262728292A2B2C2D2E2F30313233343536";
+    static const char *poolKeyHashHex = "1C1D1E1F202122232425262728292A2B2C2D2E2F30313233343536";
     decode_hex_buffer(poolKeyHashHex, poolKeyHash, SIZEOF(poolKeyHash));
 
     txHashBuilder_addCertificate_stakeDelegation(&builder,
@@ -116,12 +116,12 @@ static void test_tx_hash_builder_full(void** state) {
 
     txHashBuilder_enterWithdrawals(&builder);
     uint8_t rewardAddress[REWARD_ACCOUNT_LENGTH] = {0};
-    static const char* rewardAddrHex = "E1A1A2A3A4A5A6A7A8A9AAABACADAEB0B1B2B3B4B5B6B7B8B9";
+    static const char *rewardAddrHex = "E1A1A2A3A4A5A6A7A8A9AAABACADAEB0B1B2B3B4B5B6B7B8B9";
     decode_hex_buffer(rewardAddrHex, rewardAddress, SIZEOF(rewardAddress));
     txHashBuilder_addWithdrawal(&builder, rewardAddress, SIZEOF(rewardAddress), 500000ULL);
 
     uint8_t auxDataHash[AUX_DATA_HASH_LENGTH] = {0};
-    static const char* auxHashHex =
+    static const char *auxHashHex =
         "C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3";
     decode_hex_buffer(auxHashHex, auxDataHash, SIZEOF(auxDataHash));
     txHashBuilder_addAuxData(&builder, auxDataHash, SIZEOF(auxDataHash));
@@ -134,7 +134,7 @@ static void test_tx_hash_builder_full(void** state) {
     txHashBuilder_addMint_token(&builder, assetName, sizeof(assetName) - 1, 5);
 
     uint8_t scriptDataHash[SCRIPT_DATA_HASH_LENGTH] = {0};
-    static const char* scriptHashHex =
+    static const char *scriptHashHex =
         "0102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F20";
     decode_hex_buffer(scriptHashHex, scriptDataHash, SIZEOF(scriptDataHash));
     txHashBuilder_addScriptDataHash(&builder, scriptDataHash, SIZEOF(scriptDataHash));
@@ -150,7 +150,7 @@ static void test_tx_hash_builder_full(void** state) {
     txHashBuilder_addCollateralInput(&builder, &collateralInput);
 
     uint8_t requiredSigner[ADDRESS_KEY_HASH_LENGTH] = {0};
-    static const char* signerHex = "1F202122232425262728292A2B2C2D2E2F303132333435363738";
+    static const char *signerHex = "1F202122232425262728292A2B2C2D2E2F303132333435363738";
     decode_hex_buffer(signerHex, requiredSigner, SIZEOF(requiredSigner));
 
     txHashBuilder_enterRequiredSigners(&builder);
@@ -217,7 +217,7 @@ static void test_tx_hash_builder_full(void** state) {
     uint8_t result[TX_HASH_LENGTH] = {0};
     txHashBuilder_finalize(&builder, result, SIZEOF(result));
 
-    static const char* expectedHex =
+    static const char *expectedHex =
         "BFBC406FD11F7381A7084410210596A5A5AFD4F6A490659495FBA3ED564B67C8";
     uint8_t expected[TX_HASH_LENGTH] = {0};
     decode_hex_buffer(expectedHex, expected, SIZEOF(expected));
@@ -225,7 +225,7 @@ static void test_tx_hash_builder_full(void** state) {
     assert_memory_equal(result, expected, SIZEOF(result));
 }
 
-static void test_tx_hash_builder_minimal(void** state) {
+static void test_tx_hash_builder_minimal(void **state) {
     (void) state;
 
     tx_hash_builder_t builder = {0};
@@ -256,7 +256,7 @@ static void test_tx_hash_builder_minimal(void** state) {
 
     tx_input_t input = {0};
     input.index = 0;
-    static const char* inputHashHex =
+    static const char *inputHashHex =
         "34BBDF0A10E7290AD22E3EE791B6B3C35C206AB8B51BB749A2B06489CEEBF5F4";
     uint8_t inputHashBuffer2[TX_HASH_LENGTH] = {0};
     decode_hex_buffer(inputHashHex, inputHashBuffer2, TX_HASH_LENGTH);
@@ -266,7 +266,7 @@ static void test_tx_hash_builder_minimal(void** state) {
     txHashBuilder_addInput(&builder, &input);
 
     static const struct {
-        const char* address;
+        const char *address;
         uint64_t amount;
     } outputs[] = {
         {
@@ -324,7 +324,7 @@ static void test_tx_hash_builder_minimal(void** state) {
     uint8_t result[TX_HASH_LENGTH] = {0};
     txHashBuilder_finalize(&builder, result, SIZEOF(result));
 
-    static const char* expectedHex =
+    static const char *expectedHex =
         "E831231470909FB213520983E1D478388E4093D81D507041B20A95406F44E2D0";
     uint8_t expected[TX_HASH_LENGTH] = {0};
     decode_hex_buffer(expectedHex, expected, SIZEOF(expected));
@@ -332,10 +332,10 @@ static void test_tx_hash_builder_minimal(void** state) {
     assert_memory_equal(result, expected, SIZEOF(result));
 }
 
-static void add_single_test_input(tx_hash_builder_t* builder) {
+static void add_single_test_input(tx_hash_builder_t *builder) {
     tx_input_t input = {0};
     input.index = 0;
-    static const char* inputHashHex =
+    static const char *inputHashHex =
         "34BBDF0A10E7290AD22E3EE791B6B3C35C206AB8B51BB749A2B06489CEEBF5F4";
     uint8_t inputHashBuffer[TX_HASH_LENGTH] = {0};
     decode_hex_buffer(inputHashHex, inputHashBuffer, TX_HASH_LENGTH);
@@ -345,16 +345,16 @@ static void add_single_test_input(tx_hash_builder_t* builder) {
     txHashBuilder_addInput(builder, &input);
 }
 
-static tx_output_destination_t make_test_output_destination(uint8_t* addressBuffer,
+static tx_output_destination_t make_test_output_destination(uint8_t *addressBuffer,
                                                             size_t addressBufferSize) {
-    static const char* addressHex =
+    static const char *addressHex =
         "83581C5F5BEE73ED41FF6C8490DFDB4732178E0216CCF7BADBE1E77D5D7FF8A1"
         "01581E581C1E9A0361BDC37DB7AB7EA2A3F187761877F3DB11211FC7436131F15E00";
     const size_t addressLength = decode_hex_buffer(addressHex, addressBuffer, addressBufferSize);
     return tx_output_destination_make_third_party(addressBuffer, addressLength);
 }
 
-static void test_tx_hash_builder_reference_script_after_top_level_and_assets(void** state) {
+static void test_tx_hash_builder_reference_script_after_top_level_and_assets(void **state) {
     (void) state;
 
     tx_hash_builder_t builder = {0};
@@ -421,13 +421,13 @@ static void test_tx_hash_builder_reference_script_after_top_level_and_assets(voi
     assert_int_equal(builder.state, TX_HASH_BUILDER_FINISHED);
 }
 
-static void enter_empty_inputs_and_outputs(tx_hash_builder_t* builder) {
+static void enter_empty_inputs_and_outputs(tx_hash_builder_t *builder) {
     txHashBuilder_enterInputs(builder);
     txHashBuilder_enterOutputs(builder);
     txHashBuilder_addFee(builder, 0);
 }
 
-static void add_pool_registration_header(tx_hash_builder_t* builder,
+static void add_pool_registration_header(tx_hash_builder_t *builder,
                                          uint16_t numOwners,
                                          uint16_t numRelays) {
     uint8_t poolKeyHash[POOL_KEY_HASH_LENGTH] = {0};
@@ -438,7 +438,9 @@ static void add_pool_registration_header(tx_hash_builder_t* builder,
     memset(rewardAccount, 0x23, SIZEOF(rewardAccount));
 
     txHashBuilder_poolRegistrationCertificate_enter(builder, numOwners, numRelays);
-    txHashBuilder_poolRegistrationCertificate_poolKeyHash(builder, poolKeyHash, SIZEOF(poolKeyHash));
+    txHashBuilder_poolRegistrationCertificate_poolKeyHash(builder,
+                                                          poolKeyHash,
+                                                          SIZEOF(poolKeyHash));
     txHashBuilder_poolRegistrationCertificate_vrfKeyHash(builder, vrfKeyHash, SIZEOF(vrfKeyHash));
     txHashBuilder_poolRegistrationCertificate_financials(builder, 1, 2, 1, 3);
     txHashBuilder_poolRegistrationCertificate_rewardAccount(builder,
@@ -446,7 +448,7 @@ static void add_pool_registration_header(tx_hash_builder_t* builder,
                                                             SIZEOF(rewardAccount));
 }
 
-static void test_tx_hash_builder_pool_registration_zero_owners_and_relays(void** state) {
+static void test_tx_hash_builder_pool_registration_zero_owners_and_relays(void **state) {
     (void) state;
 
     tx_hash_builder_t builder = {0};
@@ -469,7 +471,7 @@ static void test_tx_hash_builder_pool_registration_zero_owners_and_relays(void**
     assert_int_equal(builder.state, TX_HASH_BUILDER_FINISHED);
 }
 
-static void test_tx_hash_builder_pool_registration_null_relay_port(void** state) {
+static void test_tx_hash_builder_pool_registration_null_relay_port(void **state) {
     (void) state;
 
     tx_hash_builder_t builder = {0};

@@ -22,7 +22,7 @@
 #include "assert.h"
 #include "ipUtils.h"
 
-void addPaymentInfoUIPairs(const address_params_t* address_params) {
+void addPaymentInfoUIPairs(const address_params_t *address_params) {
     TRACE_MODULE("addPaymentInfoUIPairs: address_type=%u", (unsigned) address_params->type);
     START_COUNT();
     switch (determinePaymentChoice(address_params->type)) {
@@ -59,7 +59,7 @@ void addPaymentInfoUIPairs(const address_params_t* address_params) {
     CHECK_COUNT(UI_PAIRS_PAYMENT_INFO);
 }
 
-void addStakingInfoUIPairs(const address_params_t* address_params) {
+void addStakingInfoUIPairs(const address_params_t *address_params) {
     TRACE_MODULE("addStakingInfoUIPairs: staking_part_type=%u",
                  (unsigned) addressParams_getStakingPartType(address_params));
     START_COUNT();

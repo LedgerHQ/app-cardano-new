@@ -12,20 +12,20 @@
 #include "assert.h"
 #include "utils.h"
 
-uint8_t* tx_alloc_temp_buffer_or_fail(size_t size) {
-    uint8_t* buffer = NULL;
-    bool allocated = allocate_zeroed((void**) &buffer, size);
+uint8_t *tx_alloc_temp_buffer_or_fail(size_t size) {
+    uint8_t *buffer = NULL;
+    bool allocated = allocate_zeroed((void **) &buffer, size);
     ASSERT(allocated && buffer != NULL);
     return buffer;
 }
 
-bool violatesSingleAccountOrStoreIt(const bip44_path_t* path) {
+bool violatesSingleAccountOrStoreIt(const bip44_path_t *path) {
     ASSERT(path != NULL);
     TRACE("Considering path");
     BIP44_PRINTF(path);
     TRACE("");
 
-    single_account_data_t* singleAccountData = &(G_context.tx_info.single_account_data);
+    single_account_data_t *singleAccountData = &(G_context.tx_info.single_account_data);
 
     ASSERT(bip44_hasOrdinaryWalletKeyPrefix(path) && bip44_containsAccount(path));
 
@@ -54,10 +54,10 @@ bool violatesSingleAccountOrStoreIt(const bip44_path_t* path) {
     return false;
 }
 
-bool tx_output_destination_to_address_bytes(const tx_output_destination_t* destination,
-                                            uint8_t* addressBuffer,
+bool tx_output_destination_to_address_bytes(const tx_output_destination_t *destination,
+                                            uint8_t *addressBuffer,
                                             size_t addressBufferSize,
-                                            size_t* outAddressLength) {
+                                            size_t *outAddressLength) {
     ASSERT(destination != NULL);
     ASSERT(addressBuffer != NULL);
     ASSERT(outAddressLength != NULL);
@@ -97,8 +97,8 @@ bool tx_output_destination_to_address_bytes(const tx_output_destination_t* desti
 }
 
 __noinline_due_to_stack__ bool format_tx_output_destination_human_readable(
-    const tx_output_destination_t* destination,
-    char* out,
+    const tx_output_destination_t *destination,
+    char *out,
     size_t outSize) {
     // Use a stack buffer — formatters used with UI_ADD_FORMAT* must not heap-allocate.
     // See the contract note in ui_utils.h.

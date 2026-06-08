@@ -11,10 +11,10 @@
 #include "cx.h"
 #include "os.h"
 
-static cx_err_t crypto_init_privkey(const uint32_t* path,
+static cx_err_t crypto_init_privkey(const uint32_t *path,
                                     size_t path_len,
-                                    cx_ecfp_256_extended_private_key_t* privkey,
-                                    uint8_t* chain_code) {
+                                    cx_ecfp_256_extended_private_key_t *privkey,
+                                    uint8_t *chain_code) {
     cx_err_t error = CX_OK;
     uint8_t raw_privkey[ED25519_EXTENDED_PRIVKEY_LENGTH];
 
@@ -40,10 +40,10 @@ end:
     return error;
 }
 
-void crypto_get_pubkey(const uint32_t* path,
+void crypto_get_pubkey(const uint32_t *path,
                        size_t path_len,
                        uint8_t raw_pubkey[static ED25519_PUBKEY_UNCOMPRESSED_LENGTH],
-                       uint8_t* chain_code) {
+                       uint8_t *chain_code) {
     cx_ecfp_256_extended_private_key_t privkey = {0};
     cx_ecfp_256_public_key_t pubkey = {0};
     cx_err_t error = CX_OK;
@@ -54,7 +54,7 @@ void crypto_get_pubkey(const uint32_t* path,
     // Generate associated pubkey
     // Do not use cx_ecfp_generate_pair2_no_throw as it doesn't
     // support 64 bytes for CX_CURVE_Ed25519 curve
-    CX_CHECK(cx_eddsa_get_public_key_no_throw((const struct cx_ecfp_256_private_key_s*) &privkey,
+    CX_CHECK(cx_eddsa_get_public_key_no_throw((const struct cx_ecfp_256_private_key_s *) &privkey,
                                               CX_SHA512,
                                               &pubkey,
                                               NULL,
@@ -80,11 +80,11 @@ end:
     }
 }
 
-static void crypto_eddsa_sign_impl(const uint32_t* path,
+static void crypto_eddsa_sign_impl(const uint32_t *path,
                                    size_t path_len,
-                                   const uint8_t* hash,
+                                   const uint8_t *hash,
                                    size_t hash_len,
-                                   uint8_t* sig,
+                                   uint8_t *sig,
                                    size_t expected_sig_len) {
     ASSERT(path != NULL);
     LEDGER_ASSERT(path_len > 0, "path is empty");
@@ -108,7 +108,7 @@ static void crypto_eddsa_sign_impl(const uint32_t* path,
     // Derive private key according to BIP32 path
     CX_CHECK(crypto_init_privkey(path, path_len, &privkey, NULL));
 
-    CX_CHECK(cx_eddsa_sign_no_throw((const struct cx_ecfp_256_private_key_s*) &privkey,
+    CX_CHECK(cx_eddsa_sign_no_throw((const struct cx_ecfp_256_private_key_s *) &privkey,
                                     CX_SHA512,
                                     hash,
                                     hash_len,
@@ -126,11 +126,11 @@ end:
     }
 }
 
-void crypto_eddsa_sign(const uint32_t* path,
+void crypto_eddsa_sign(const uint32_t *path,
                        size_t path_len,
-                       const uint8_t* hash,
+                       const uint8_t *hash,
                        size_t hash_len,
-                       uint8_t* sig,
+                       uint8_t *sig,
                        size_t expected_sig_len) {
     crypto_eddsa_sign_impl(path, path_len, hash, hash_len, sig, expected_sig_len);
 }
