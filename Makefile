@@ -79,6 +79,10 @@ VARIANT_VALUES = cardano_ada
 ifneq ($(DEBUG), 0)
     DEFINES += DEBUG
     DEBUG_OS_STACK_CONSUMPTION ?= 1
+    MEMORY_PROFILING ?= 0
+    ifneq ($(MEMORY_PROFILING),0)
+        DEFINES += HAVE_MEMORY_PROFILING
+    endif
 endif
 
 ########################################
