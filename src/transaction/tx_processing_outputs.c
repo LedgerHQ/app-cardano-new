@@ -73,8 +73,8 @@ __noinline_due_to_stack__ static void hash_add_output_top_level(
         tx_output_destination_make_third_party(address_bytes, address_size);
     hash_fn(tx_hash_builder, hash_description);
 
-    APP_MEM_FREE_AND_NULL((void **) &hash_description);
-    APP_MEM_FREE_AND_NULL((void **) &address_bytes);
+    tx_free_temp_buffer((void **) &hash_description);
+    tx_free_temp_buffer((void **) &address_bytes);
 }
 
 // ---------------------------------------------------------------------------

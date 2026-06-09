@@ -513,7 +513,7 @@ static bool tx_process_withdrawals(buffer_t *buf, tx_processing_state_t *state) 
                                             parsed_withdrawal.amount);
             }
 
-            APP_MEM_FREE_AND_NULL((void **) &reward_address);
+            tx_free_temp_buffer((void **) &reward_address);
         }
     }
 
@@ -871,7 +871,7 @@ static bool tx_process_votes(buffer_t *buf,
                                          gov_action_key,
                                          gov_action_key_length,
                                          SWO_TX_PARSING_FAIL_CANONICAL_ORDER);
-        APP_MEM_FREE_AND_NULL((void **) &gov_action_key);
+        tx_free_temp_buffer((void **) &gov_action_key);
 
         if (!tx_process_vote(state, &parsed_vote, voter_policy)) {
             return false;  // LCOV_EXCL_LINE - voter policy DENY is handled before votes
@@ -937,7 +937,7 @@ static bool tx_process_voting_procedures(buffer_t *buf, tx_processing_state_t *s
                                          voter_key,
                                          voter_key_length,
                                          SWO_TX_PARSING_FAIL_CANONICAL_ORDER);
-        APP_MEM_FREE_AND_NULL((void **) &voter_key);
+        tx_free_temp_buffer((void **) &voter_key);
 
         if (mode->run_hash_builder) {
             txHashBuilder_addVoter(&state->hash_builder, &voter_for_hashbuilder, num_votes);

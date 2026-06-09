@@ -12,11 +12,61 @@
 #include "assert.h"
 #include "utils.h"
 
+/**
+ * Registry of currently-live temporary buffers allocated via tx_alloc_temp_buffer_or_fail().
+ *
+ * Transaction parsing routinely allocates a short-lived scratch buffer, then aborts deep in the
+ * call stack on a malformed input or a security-policy DENY. Those abort paths reach
+ * reset_app_context() -> mem_utils_reset_app_heap(), which reclaims the whole app heap in one shot
+ * BEFORE control unwinds back to the function that owns the scratch buffer. The owner therefore
+ * cannot free it after the fact (the heap is already gone) and the memory profiler would flag the
+ * unmatched allocation as a leak.
+ *
+ * To keep ownership simple, every temp buffer is registered here on allocation and removed on its
+ * normal free. reset_app_context() calls tx_free_all_temp_buffers() before the bulk heap reset, so
+ * any buffer still live at an abort is freed explicitly (and visible to the profiler) while the
+ * heap is still valid. The slot count only needs to cover the maximum number simultaneously live
+ * (currently 2: e.g. address_bytes + hash_description, or parsed_certificate_data + a nested
+ * scratch); 4 leaves head-room.
+ */
+#define MAX_LIVE_TEMP_BUFFERS 4
+static uint8_t *g_temp_buffers[MAX_LIVE_TEMP_BUFFERS];
+
 uint8_t *tx_alloc_temp_buffer_or_fail(size_t size) {
     uint8_t *buffer = NULL;
     bool allocated = allocate_zeroed((void **) &buffer, size);
     ASSERT(allocated && buffer != NULL);
-    return buffer;
+
+    for (size_t i = 0; i < MAX_LIVE_TEMP_BUFFERS; i++) {
+        if (g_temp_buffers[i] == NULL) {
+            g_temp_buffers[i] = buffer;
+            return buffer;
+        }
+    }
+    // Invariant: the number of simultaneously-live temp buffers never exceeds the registry size.
+    LEDGER_ASSERT(false, "temp buffer registry full");  // LCOV_EXCL_LINE
+    return buffer;                                      // LCOV_EXCL_LINE
+}
+
+void tx_free_temp_buffer(void **buffer) {
+    if (buffer == NULL || *buffer == NULL) {
+        return;
+    }
+    for (size_t i = 0; i < MAX_LIVE_TEMP_BUFFERS; i++) {
+        if (g_temp_buffers[i] == *buffer) {
+            g_temp_buffers[i] = NULL;
+            break;
+        }
+    }
+    APP_MEM_FREE_AND_NULL(buffer);
+}
+
+void tx_free_all_temp_buffers(void) {
+    for (size_t i = 0; i < MAX_LIVE_TEMP_BUFFERS; i++) {
+        if (g_temp_buffers[i] != NULL) {
+            APP_MEM_FREE_AND_NULL((void **) &g_temp_buffers[i]);
+        }
+    }
 }
 
 bool violatesSingleAccountOrStoreIt(const bip44_path_t *path) {

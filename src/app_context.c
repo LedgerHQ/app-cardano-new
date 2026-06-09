@@ -10,6 +10,7 @@
 #include "mem.h"
 #include "ui_utils.h"
 #include "ui_warnings.h"
+#include "tx_utils.h"
 #include "io.h"
 
 typedef struct {
@@ -84,8 +85,56 @@ bool apdu_response_is_pending_ux(void) {
     return !G_apdu_response_state.response_sent && G_apdu_response_state.response_deferred_to_ux;
 }
 
+/**
+ * Free request-scoped heap buffers owned by G_context before the heap is reset.
+ *
+ * reset_app_context() reclaims all transient memory in bulk via mem_utils_reset_app_heap(). That
+ * bulk reset does not emit per-allocation free events, so the memory profiler would otherwise flag
+ * any still-live context buffer as a leak on deny / parse-error paths (the happy path frees them
+ * explicitly). The context is the owner of last resort for these buffers, so freeing them here
+ * keeps the profiler accurate on every terminal path that routes through send_swo_and_reset().
+ *
+ * Buffers are accessed via their union members directly (not the tx_*_ctx() accessors, which assert
+ * a specific state) under explicit req_type/state guards. APP_MEM_FREE_AND_NULL is idempotent, so
+ * double-coverage with the happy-path frees (e.g. finalize_sign_tx / finalize_sign_msg) is safe.
+ */
+static void free_request_context_buffers(void) {
+    switch (G_context.req_type) {
+        case REQUEST_SIGN_TRANSACTION:
+            switch (G_context.state.tx_state) {
+                case TX_STATE_AUX_DATA:
+                    APP_MEM_FREE_AND_NULL(
+                        (void **) &G_context.tx_info.aux_data.raw_cvote_init_data);
+                    break;
+                case TX_STATE_CHUNKS:
+                case TX_STATE_RECEIVED:
+                case TX_STATE_HASHED:
+                case TX_STATE_UI_REVIEW:
+                    APP_MEM_FREE_AND_NULL((void **) &G_context.tx_info.body.raw_tx);
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case REQUEST_SIGN_MSG:
+            APP_MEM_FREE_AND_NULL((void **) &G_context.sign_msg_info.msgBuffer);
+            APP_MEM_FREE_AND_NULL((void **) &G_context.sign_msg_info.sigStructureBuffer);
+            break;
+        default:
+            break;
+    }
+}
+
 void reset_app_context(void) {
     ui_all_cleanup();
+
+    // Free request-scoped heap buffers explicitly so the memory profiler observes per-allocation
+    // free events, before the bulk heap reset below reclaims everything at once.
+    free_request_context_buffers();
+
+    // Free any transaction-parsing temp buffers still live at an abort (parse error / policy DENY),
+    // for the same reason. No-op on the happy path. Must run before the bulk heap reset.
+    tx_free_all_temp_buffers();
 
     // Reset the SDK allocator to wipe all transient memory
     ASSERT(mem_utils_reset_app_heap());

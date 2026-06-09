@@ -24,6 +24,9 @@ static uint16_t g_last_response_swo = 0;
 void ui_all_cleanup(void) {
 }
 
+void tx_free_all_temp_buffers(void) {
+}
+
 int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
     (void) buffer;
     (void) bufferLength;

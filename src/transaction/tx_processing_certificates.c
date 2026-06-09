@@ -469,7 +469,7 @@ bool process_pool_registration_certificate(buffer_t *buf,
         txHashBuilder_poolRegistrationCertificate_rewardAccount(hash_builder,
                                                                 reward_account_buffer,
                                                                 REWARD_ACCOUNT_LENGTH);
-        APP_MEM_FREE_AND_NULL((void **) &reward_account_buffer);
+        tx_free_temp_buffer((void **) &reward_account_buffer);
         txHashBuilder_addPoolRegistrationCertificate_enterOwners(hash_builder);
     }
 
@@ -613,7 +613,7 @@ bool tx_process_certificates(buffer_t *buf, tx_processing_state_t *state) {
         explicit_bzero(parsed_certificate_data, sizeof(certificate_data_t));
 
         if (!parse_certificate(buf, parsed_certificate_data)) {
-            APP_MEM_FREE_AND_NULL((void **) &parsed_certificate_data);
+            tx_free_temp_buffer((void **) &parsed_certificate_data);
             tx_handle_parse_error(SWO_TX_PARSING_FAIL_CERTIFICATES);
             return false;
         }
@@ -652,6 +652,6 @@ bool tx_process_certificates(buffer_t *buf, tx_processing_state_t *state) {
         }
     }
 
-    APP_MEM_FREE_AND_NULL((void **) &parsed_certificate_data);
+    tx_free_temp_buffer((void **) &parsed_certificate_data);
     return true;
 }

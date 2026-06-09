@@ -43,6 +43,23 @@ bool violatesSingleAccountOrStoreIt(const bip44_path_t *path);
 uint8_t *tx_alloc_temp_buffer_or_fail(size_t size);
 
 /**
+ * Free a temporary buffer allocated via tx_alloc_temp_buffer_or_fail() and remove it from the
+ * live-buffer registry. Drop-in replacement for APP_MEM_FREE_AND_NULL() on these buffers: pass the
+ * address of the owning pointer; it is set to NULL. Safe to call on a NULL pointer.
+ */
+void tx_free_temp_buffer(void **buffer);
+
+/**
+ * Free every temporary buffer still registered as live and clear the registry.
+ *
+ * Called by reset_app_context() immediately before the bulk app-heap reset, so scratch buffers
+ * that were still live when transaction processing aborted (parse error / policy DENY) are freed
+ * explicitly while the heap is still valid. A no-op on the happy path, where each buffer was
+ * already released via tx_free_temp_buffer().
+ */
+void tx_free_all_temp_buffers(void);
+
+/**
  * Resolve a transaction output destination into raw address bytes.
  *
  * For third-party destinations, copies the provided raw bytes.
