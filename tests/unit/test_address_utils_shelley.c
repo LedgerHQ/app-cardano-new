@@ -105,7 +105,7 @@ static void test_address_derivation(void **state) {
     testcase_derive_address_shelley(
         BYRON,
         MAINNET_PROTOCOL_MAGIC,
-        (uint32_t[]){HD + 44, HD + 1815, HD + 0, 1, 55},
+        (uint32_t[]) {HD + 44, HD + 1815, HD + 0, 1, 55},
         5,
         STAKING_PART_NONE,
         NULL,
@@ -116,10 +116,10 @@ static void test_address_derivation(void **state) {
 
     testcase_derive_address_shelley(BASE_PAYMENT_KEY_STAKE_KEY,
                                     0x03,
-                                    (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1},
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1},
                                     5,
                                     STAKING_PART_KEY_PATH,
-                                    (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 2, 0},
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 2, 0},
                                     5,
                                     NULL,
                                     NULL,
@@ -128,10 +128,10 @@ static void test_address_derivation(void **state) {
 
     testcase_derive_address_shelley(BASE_PAYMENT_KEY_STAKE_KEY,
                                     0x00,
-                                    (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1},
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1},
                                     5,
                                     STAKING_PART_KEY_PATH,
-                                    (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 2, 0},
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 2, 0},
                                     5,
                                     NULL,
                                     NULL,
@@ -140,7 +140,7 @@ static void test_address_derivation(void **state) {
 
     testcase_derive_address_shelley(BASE_PAYMENT_KEY_STAKE_KEY,
                                     0x00,
-                                    (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1},
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1},
                                     5,
                                     STAKING_PART_KEY_HASH,
                                     NULL,
@@ -152,7 +152,7 @@ static void test_address_derivation(void **state) {
 
     testcase_derive_address_shelley(BASE_PAYMENT_KEY_STAKE_KEY,
                                     0x03,
-                                    (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1},
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1},
                                     5,
                                     STAKING_PART_KEY_HASH,
                                     NULL,
@@ -164,7 +164,7 @@ static void test_address_derivation(void **state) {
 
     testcase_derive_address_shelley(ENTERPRISE_KEY,
                                     0x00,
-                                    (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1},
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1},
                                     5,
                                     STAKING_PART_NONE,
                                     NULL,
@@ -175,7 +175,7 @@ static void test_address_derivation(void **state) {
 
     testcase_derive_address_shelley(ENTERPRISE_KEY,
                                     0x03,
-                                    (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1},
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1},
                                     5,
                                     STAKING_PART_NONE,
                                     NULL,
@@ -187,45 +187,45 @@ static void test_address_derivation(void **state) {
     testcase_derive_address_shelley(
         POINTER_KEY,
         0x00,
-        (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1},
+        (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1},
         5,
         STAKING_PART_BLOCKCHAIN_POINTER,
         NULL,
         0,
         NULL,
-        &(blockchainPointer_t){.blockIndex = 1, .txIndex = 2, .certificateIndex = 3},
+        &(blockchainPointer_t) {.blockIndex = 1, .txIndex = 2, .certificateIndex = 3},
         "405a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3010203");
 
     testcase_derive_address_shelley(
         POINTER_KEY,
         0x03,
-        (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1},
+        (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1},
         5,
         STAKING_PART_BLOCKCHAIN_POINTER,
         NULL,
         0,
         NULL,
-        &(blockchainPointer_t){.blockIndex = 24157, .txIndex = 177, .certificateIndex = 42},
+        &(blockchainPointer_t) {.blockIndex = 24157, .txIndex = 177, .certificateIndex = 42},
         "435a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b381bc5d81312a");
 
     testcase_derive_address_shelley(
         POINTER_KEY,
         0x03,
-        (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1},
+        (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1},
         5,
         STAKING_PART_BLOCKCHAIN_POINTER,
         NULL,
         0,
         NULL,
-        &(blockchainPointer_t){.blockIndex = 0, .txIndex = 0, .certificateIndex = 0},
+        &(blockchainPointer_t) {.blockIndex = 0, .txIndex = 0, .certificateIndex = 0},
         "435a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3000000");
 
     testcase_derive_address_shelley(BASE_PAYMENT_KEY_STAKE_KEY,
                                     MAINNET_NETWORK_ID,
-                                    (uint32_t[]){HD + 1852, HD + 1815, HD + 456, 0, 5000000},
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 456, 0, 5000000},
                                     5,
                                     STAKING_PART_KEY_PATH,
-                                    (uint32_t[]){HD + 1852, HD + 1815, HD + 456, 2, 0},
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 456, 2, 0},
                                     5,
                                     NULL,
                                     NULL,
@@ -513,7 +513,7 @@ static void test_invalid_params_base_key_with_blockchain_pointer(void **state) {
     params.type = BASE_PAYMENT_KEY_STAKE_KEY;
     params.networkId = MAINNET_NETWORK_ID;
     params.paymentPartType = PAYMENT_PART_KEY_PATH;
-    init_path(&params.paymentKeyPath, (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 0}, 5);
+    init_path(&params.paymentKeyPath, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 0}, 5);
     params.stakingPartType = STAKING_PART_BLOCKCHAIN_POINTER;
     assert_false(isValidAddressParams(&params));
 }
@@ -525,7 +525,7 @@ static void test_invalid_params_pointer_key_with_key_hash(void **state) {
     params.type = POINTER_KEY;
     params.networkId = MAINNET_NETWORK_ID;
     params.paymentPartType = PAYMENT_PART_KEY_PATH;
-    init_path(&params.paymentKeyPath, (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 0}, 5);
+    init_path(&params.paymentKeyPath, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 0}, 5);
     params.stakingPartType = STAKING_PART_KEY_HASH;
     static uint8_t dummyHash[ADDRESS_KEY_HASH_LENGTH];
     params.stakingKeyHash = dummyHash;
@@ -539,9 +539,9 @@ static void test_invalid_params_enterprise_key_with_key_path(void **state) {
     params.type = ENTERPRISE_KEY;
     params.networkId = MAINNET_NETWORK_ID;
     params.paymentPartType = PAYMENT_PART_KEY_PATH;
-    init_path(&params.paymentKeyPath, (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 0}, 5);
+    init_path(&params.paymentKeyPath, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 0}, 5);
     params.stakingPartType = STAKING_PART_KEY_PATH;
-    init_path(&params.stakingKeyPath, (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 2, 0}, 5);
+    init_path(&params.stakingKeyPath, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 2, 0}, 5);
     assert_false(isValidAddressParams(&params));
 }
 
@@ -553,7 +553,7 @@ static void test_invalid_params_reward_script_with_key_path(void **state) {
     params.networkId = MAINNET_NETWORK_ID;
     params.paymentPartType = PAYMENT_PART_NONE;
     params.stakingPartType = STAKING_PART_KEY_PATH;
-    init_path(&params.stakingKeyPath, (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 2, 0}, 5);
+    init_path(&params.stakingKeyPath, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 2, 0}, 5);
     assert_false(isValidAddressParams(&params));
 }
 
@@ -678,7 +678,7 @@ static void test_derive_reward_key_address(void **state) {
     params.networkId = MAINNET_NETWORK_ID;
     params.paymentPartType = PAYMENT_PART_NONE;
     params.stakingPartType = STAKING_PART_KEY_PATH;
-    init_path(&params.stakingKeyPath, (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 2, 0}, 5);
+    init_path(&params.stakingKeyPath, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 2, 0}, 5);
 
     uint8_t out[MAX_ADDRESS_LENGTH];
     size_t outSize = deriveAddress(&params, out, sizeof(out));

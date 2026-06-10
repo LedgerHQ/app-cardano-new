@@ -51,7 +51,7 @@ static void opcert_buffer_cleanup(void) {
  * @param opcert Parsed operational certificate data
  * @return UI_STATUS_SUCCESS on success, UI_STATUS_OUT_OF_MEMORY on allocation failure
  */
-static ui_status_t format_opcert_fields(const parsed_opcert_t* opcert) {
+static ui_status_t format_opcert_fields(const parsed_opcert_t *opcert) {
     ui_render_session_t session = {0};
     ui_render_scope_begin(&session);
 
@@ -176,7 +176,7 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
             return;
             // LCOV_EXCL_STOP
     }
-    const nbgl_warning_t* warningPtr = ui_get_warnings();
+    const nbgl_warning_t *warningPtr = ui_get_warnings();
     nbgl_useCaseAdvancedReview(TYPE_OPERATION,
                                g_pairsList,
                                &ICON_APP_CARDANO,

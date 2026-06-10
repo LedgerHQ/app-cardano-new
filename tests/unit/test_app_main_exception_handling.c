@@ -24,6 +24,9 @@ static uint16_t g_last_response_swo = 0;
 void ui_all_cleanup(void) {
 }
 
+void tx_free_all_temp_buffers(void) {
+}
+
 int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_t swo) {
     (void) buffer;
     (void) bufferLength;
@@ -54,7 +57,8 @@ static void test_app_main_handle_unexpected_exception_without_response_sends_unk
     apdu_response_finalize_after_handler();
 }
 
-static void test_app_main_handle_unexpected_exception_after_response_does_not_double_send(void **state) {
+static void test_app_main_handle_unexpected_exception_after_response_does_not_double_send(
+    void **state) {
     (void) state;
     reset_test_state();
 
@@ -68,8 +72,7 @@ static void test_app_main_handle_unexpected_exception_after_response_does_not_do
 
 int main(void) {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(
-            test_app_main_handle_unexpected_exception_without_response_sends_unknown),
+        cmocka_unit_test(test_app_main_handle_unexpected_exception_without_response_sends_unknown),
         cmocka_unit_test(
             test_app_main_handle_unexpected_exception_after_response_does_not_double_send),
     };

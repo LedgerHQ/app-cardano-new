@@ -38,10 +38,10 @@
 #define PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE \
     (PUBKEY_EXPORT_TITLE_BUFFER_SIZE + UI_BUFFER_SAFETY_MARGIN)
 
-static char* g_pubkey_export_choice_title = NULL;
+static char *g_pubkey_export_choice_title = NULL;
 
 static void pubkey_review_cleanup(void) {
-    APP_MEM_FREE_AND_NULL((void**) &g_pubkey_export_choice_title);
+    APP_MEM_FREE_AND_NULL((void **) &g_pubkey_export_choice_title);
 }
 
 static void pubkey_review_choice(bool confirm) {
@@ -74,7 +74,7 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
                   "ui_display_pubkey called with wrong request type: %d",
                   G_context.req_type);
 
-    pubkey_ctx_t* pk = &G_context.pk_info;
+    pubkey_ctx_t *pk = &G_context.pk_info;
     LEDGER_ASSERT(warning_bits_except_mask(
                       warnings,
                       warning_bits_mask_for(WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH)) == 0,
@@ -108,15 +108,15 @@ void ui_display_pubkey(security_policy_t securityPolicy, warning_bits_t warnings
     }
 
     bool isColdKey = (bip44_classifyPath(&pk->path) == PATH_POOL_COLD_KEY);
-    const char* keyTypeLabel = isColdKey ? "Cold public key" : "Public key";
+    const char *keyTypeLabel = isColdKey ? "Cold public key" : "Public key";
 
     // Prepare icon and title based on whether path is unusual
     bool isUnusual = warning_bits_has(warnings, WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH);
-    const nbgl_icon_details_t* icon = isUnusual ? &WARNING_ICON : &ICON_APP_CARDANO;
-    const char* exportPrefix = isUnusual ? "Export UNUSUAL" : "Export";
+    const nbgl_icon_details_t *icon = isUnusual ? &WARNING_ICON : &ICON_APP_CARDANO;
+    const char *exportPrefix = isUnusual ? "Export UNUSUAL" : "Export";
 
     pubkey_review_cleanup();
-    LEDGER_ASSERT(allocate_zeroed((void**) &g_pubkey_export_choice_title,
+    LEDGER_ASSERT(allocate_zeroed((void **) &g_pubkey_export_choice_title,
                                   PUBKEY_EXPORT_TITLE_ALLOCATION_SIZE),
                   "Failed to allocate public key export title");
 

@@ -362,12 +362,8 @@ static void test_swap_witness_second_account_payment_path_denied(void **state) {
     // First call: account 0 — stores the account in single_account_data.
     bip44_path_t path_account0 = make_shelley_payment_path();  // account = harden(0)
     warning_bits_t w = 0;
-    security_policy_t first_policy = policyForSignTxWitness(SIGN_TX_SIGNINGMODE_ORDINARY,
-                                                            true,
-                                                            &path_account0,
-                                                            false,
-                                                            NULL,
-                                                            &w);
+    security_policy_t first_policy =
+        policyForSignTxWitness(SIGN_TX_SIGNINGMODE_ORDINARY, true, &path_account0, false, NULL, &w);
     assert_int_equal(first_policy, POLICY_HIDE);
 
     // Second call: account 1 — must be denied.
@@ -379,12 +375,8 @@ static void test_swap_witness_second_account_payment_path_denied(void **state) {
     path_account1.path[3] = 0;                // external chain
     path_account1.path[4] = 0;
     w = 0;
-    security_policy_t second_policy = policyForSignTxWitness(SIGN_TX_SIGNINGMODE_ORDINARY,
-                                                             true,
-                                                             &path_account1,
-                                                             false,
-                                                             NULL,
-                                                             &w);
+    security_policy_t second_policy =
+        policyForSignTxWitness(SIGN_TX_SIGNINGMODE_ORDINARY, true, &path_account1, false, NULL, &w);
     assert_int_equal(second_policy, POLICY_DENY);
 }
 

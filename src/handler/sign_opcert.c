@@ -45,7 +45,7 @@ static bool ensure_sign_opcert_init_request_state(void) {
     return true;
 }
 
-void handler_sign_opcert(buffer_t* cdata) {
+void handler_sign_opcert(buffer_t *cdata) {
     ASSERT(cdata != NULL);
     TRACE_BUFFER_T(cdata);
 
@@ -75,7 +75,7 @@ void handler_sign_opcert(buffer_t* cdata) {
         return;
     }
     G_context.state.opcert_state = OPCERT_STATE_PARSED;
-    const parsed_opcert_t* opcert = &G_context.opcert_info.opcert;
+    const parsed_opcert_t *opcert = &G_context.opcert_info.opcert;
 
     // Log parsed opcert details (path, KES period, issue counter)
     BIP44_PRINTF(&opcert->poolColdKeyPath);
@@ -106,14 +106,14 @@ void finalize_sign_opcert(void) {
     G_context.state.opcert_state = OPCERT_STATE_APPROVED;
 
     // assemble the opcert bytestring and sign it
-    const parsed_opcert_t* opcert = &G_context.opcert_info.opcert;
+    const parsed_opcert_t *opcert = &G_context.opcert_info.opcert;
     uint8_t opCertBodyBuffer[OP_CERT_BODY_LENGTH] = {0};
     {
         buffer_t buf = buffer_create(opCertBodyBuffer, SIZEOF(opCertBodyBuffer));
 
         // Buffer is exactly sized - failure is programming error
         LEDGER_ASSERT(
-            buffer_write_bytes(&buf, (const uint8_t*) opcert->kesPublicKey, KES_PUBLIC_KEY_LENGTH),
+            buffer_write_bytes(&buf, (const uint8_t *) opcert->kesPublicKey, KES_PUBLIC_KEY_LENGTH),
             "Write KES pubkey failed");
         LEDGER_ASSERT(buffer_write_u64(&buf, opcert->issueCounter, BE),
                       "Write issueCounter failed");

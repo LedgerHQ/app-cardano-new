@@ -28,8 +28,8 @@ enum {
     */
 };
 
-void addressRootFromExtPubKey(const extendedPublicKey_t* extPubKey,
-                              uint8_t* outBuffer,
+void addressRootFromExtPubKey(const extendedPublicKey_t *extPubKey,
+                              uint8_t *outBuffer,
                               size_t outSize) {
     STATIC_ASSERT(SIZEOF(*extPubKey) == EXTENDED_PUBKEY_SIZE, "wrong ext pub key size");
     ASSERT(outSize == ADDRESS_ROOT_SIZE);
@@ -41,7 +41,9 @@ void addressRootFromExtPubKey(const extendedPublicKey_t* extPubKey,
         // [0, [0, publicKey:chainCode], Map(0)]
         // Note(ppershing): what are the first two 0 constants?
         ASSERT(buffer_write_cbor_token(&cbor, CBOR_TYPE_ARRAY, 3));
-        { ASSERT(buffer_write_cbor_token(&cbor, CBOR_TYPE_UNSIGNED, CARDANO_ADDRESS_TYPE_PUBKEY)); }
+        {
+            ASSERT(buffer_write_cbor_token(&cbor, CBOR_TYPE_UNSIGNED, CARDANO_ADDRESS_TYPE_PUBKEY));
+        }
         {
             ASSERT(buffer_write_cbor_token(&cbor, CBOR_TYPE_ARRAY, 2));
             {
@@ -51,10 +53,13 @@ void addressRootFromExtPubKey(const extendedPublicKey_t* extPubKey,
             }
             {
                 ASSERT(buffer_write_cbor_token(&cbor, CBOR_TYPE_BYTES, EXTENDED_PUBKEY_SIZE));
-                ASSERT(buffer_write_bytes(&cbor, (const uint8_t*) extPubKey, EXTENDED_PUBKEY_SIZE));
+                ASSERT(
+                    buffer_write_bytes(&cbor, (const uint8_t *) extPubKey, EXTENDED_PUBKEY_SIZE));
             }
         }
-        { ASSERT(buffer_write_cbor_token(&cbor, CBOR_TYPE_MAP, 0 /* addrAttributes is empty */)); }
+        {
+            ASSERT(buffer_write_cbor_token(&cbor, CBOR_TYPE_MAP, 0 /* addrAttributes is empty */));
+        }
     }
 
     // cborBuffer is hashed twice. First by sha3_256 and then by blake2b_224
@@ -63,10 +68,10 @@ void addressRootFromExtPubKey(const extendedPublicKey_t* extPubKey,
     blake2b_224_hash(cborShaHash, SIZEOF(cborShaHash), outBuffer, outSize);
 }
 
-size_t cborEncodePubkeyAddressInner(const uint8_t* addressRoot,
+size_t cborEncodePubkeyAddressInner(const uint8_t *addressRoot,
                                     size_t addressRootSize,
                                     uint32_t protocolMagic,
-                                    uint8_t* outBuffer,
+                                    uint8_t *outBuffer,
                                     size_t outSize
                                     /* potential attributes */
 ) {
@@ -117,9 +122,9 @@ size_t cborEncodePubkeyAddressInner(const uint8_t* addressRoot,
     return out.offset;
 }
 
-size_t cborPackRawAddressWithChecksum(const uint8_t* rawAddressBuffer,
+size_t cborPackRawAddressWithChecksum(const uint8_t *rawAddressBuffer,
                                       size_t rawAddressSize,
-                                      uint8_t* outputBuffer,
+                                      uint8_t *outputBuffer,
                                       size_t outputSize) {
     ASSERT(rawAddressSize < BUFFER_SIZE_PARANOIA);
     ASSERT(outputSize < BUFFER_SIZE_PARANOIA);
@@ -147,9 +152,9 @@ size_t cborPackRawAddressWithChecksum(const uint8_t* rawAddressBuffer,
     return output.offset;
 }
 
-size_t deriveRawAddress(const bip44_path_t* pathSpec,
+size_t deriveRawAddress(const bip44_path_t *pathSpec,
                         uint32_t protocolMagic,
-                        uint8_t* outBuffer,
+                        uint8_t *outBuffer,
                         size_t outSize) {
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
 
@@ -170,9 +175,9 @@ size_t deriveRawAddress(const bip44_path_t* pathSpec,
                                         outSize);
 }
 
-size_t deriveAddress_byron(const bip44_path_t* pathSpec,
+size_t deriveAddress_byron(const bip44_path_t *pathSpec,
                            uint32_t protocolMagic,
-                           uint8_t* outBuffer,
+                           uint8_t *outBuffer,
                            size_t outSize) {
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
 
@@ -185,7 +190,7 @@ size_t deriveAddress_byron(const bip44_path_t* pathSpec,
 
 // Parse helpers for extractProtocolMagic - return false on error
 // These helpers work with CBOR data from address parsing.
-static bool parseToken(buffer_t* buf, uint8_t expectedType, uint64_t* out_value) {
+static bool parseToken(buffer_t *buf, uint8_t expectedType, uint64_t *out_value) {
     cbor_token_t token = {0};
 
     if (!cbor_parseToken(buffer_get_cur(buf), buffer_data_size(buf), &token)) {
@@ -203,7 +208,7 @@ static bool parseToken(buffer_t* buf, uint8_t expectedType, uint64_t* out_value)
     return true;
 }
 
-static bool parseTokenWithValue(buffer_t* buf, uint8_t expectedType, uint64_t expectedValue) {
+static bool parseTokenWithValue(buffer_t *buf, uint8_t expectedType, uint64_t expectedValue) {
     uint64_t value;
     if (!parseToken(buf, expectedType, &value)) {
         return false;
@@ -214,7 +219,7 @@ static bool parseTokenWithValue(buffer_t* buf, uint8_t expectedType, uint64_t ex
     return true;
 }
 
-static bool parseBytesSizeToken(buffer_t* buf, size_t* out_size) {
+static bool parseBytesSizeToken(buffer_t *buf, size_t *out_size) {
     uint64_t parsedSize;
     if (!parseToken(buf, CBOR_TYPE_BYTES, &parsedSize)) {
         return false;
@@ -238,14 +243,14 @@ static bool parseBytesSizeToken(buffer_t* buf, size_t* out_size) {
     return true;
 }
 
-bool extractProtocolMagic(const uint8_t* addressBuffer,
+bool extractProtocolMagic(const uint8_t *addressBuffer,
                           size_t addressSize,
-                          uint32_t* out_protocol_magic) {
+                          uint32_t *out_protocol_magic) {
     ASSERT(addressBuffer != NULL);
     ASSERT(out_protocol_magic != NULL);
     ASSERT(addressSize < BUFFER_SIZE_PARANOIA);
 
-    buffer_t buf = {.ptr = (uint8_t*) addressBuffer, .size = addressSize, .offset = 0};
+    buffer_t buf = {.ptr = (uint8_t *) addressBuffer, .size = addressSize, .offset = 0};
 
     uint32_t protocolMagic =
         MAINNET_PROTOCOL_MAGIC;  // mainnet addresses do not contain protocol magic
@@ -263,9 +268,9 @@ bool extractProtocolMagic(const uint8_t* addressBuffer,
     if (!parseBytesSizeToken(&buf, &addressPayloadSize)) {
         return false;
     }
-    const uint8_t* addressPayload = buf.ptr + buf.offset;
+    const uint8_t *addressPayload = buf.ptr + buf.offset;
     buffer_t addressPayloadBuf = {
-        .ptr = (uint8_t*) addressPayload,
+        .ptr = (uint8_t *) addressPayload,
         .size = addressPayloadSize,
         .offset = 0,
     };

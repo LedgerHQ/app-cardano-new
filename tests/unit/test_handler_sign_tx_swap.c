@@ -313,7 +313,7 @@ static void test_sign_tx_swap_mode_skips_ui_and_validates_exchange_parameters(vo
     const size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 
-    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t) {.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.req_type, REQUEST_SIGN_TRANSACTION);
     assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
@@ -357,7 +357,7 @@ static void test_sign_tx_swap_init_rejects_multiple_witnesses(void **state) {
     assert_true(init_len > 0);
 
     run_sign_tx_apdu_expect_swap_reject(
-        &(buffer_t){
+        &(buffer_t) {
             .ptr = init_raw,
             .size = init_len,
             .offset = 0,
@@ -391,7 +391,7 @@ static void test_sign_tx_swap_init_rejects_policy_denial(void **state) {
     assert_true(init_len > 0);
 
     run_sign_tx_apdu_expect_swap_reject(
-        &(buffer_t){
+        &(buffer_t) {
             .ptr = init_raw,
             .size = init_len,
             .offset = 0,
@@ -425,7 +425,7 @@ static void test_sign_tx_swap_init_rejects_unrestricted_mode(void **state) {
     assert_true(init_len > 0);
 
     run_sign_tx_apdu_expect_swap_reject(
-        &(buffer_t){
+        &(buffer_t) {
             .ptr = init_raw,
             .size = init_len,
             .offset = 0,
@@ -457,7 +457,7 @@ static void test_sign_tx_swap_init_rejects_double_signing(void **state) {
     assert_true(init_len > 0);
 
     run_sign_tx_apdu_expect_swap_reject(
-        &(buffer_t){
+        &(buffer_t) {
             .ptr = init_raw,
             .size = init_len,
             .offset = 0,
@@ -489,7 +489,7 @@ static void test_sign_tx_swap_witness_rejects_non_payment_path(void **state) {
     const size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 
-    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t) {.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     run_sign_tx_body_chunked(fixture->raw_tx, fixture->raw_tx_len);
     assert_int_equal(g_last_response_swo, SWO_SUCCESS);
@@ -509,7 +509,7 @@ static void test_sign_tx_swap_witness_rejects_non_payment_path(void **state) {
                                                           ARRAY_LEN(witness_path));
 
     run_sign_tx_witness_apdu_expect_swap_reject(
-        &(buffer_t){.ptr = witness_path_apdu, .size = witness_path_apdu_len, .offset = 0},
+        &(buffer_t) {.ptr = witness_path_apdu, .size = witness_path_apdu_len, .offset = 0},
         SWAP_EC_ERROR_GENERIC,
         SWAP_APP_CODE_DENIED_WITNESS_POLICY);
 
@@ -540,7 +540,7 @@ static void test_sign_tx_swap_witness_finalization_triggers_os_lib_end(void **st
     const size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 
-    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t) {.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     assert_int_equal(G_context.state.tx_state, TX_STATE_CHUNKS);
 
@@ -552,7 +552,7 @@ static void test_sign_tx_swap_witness_finalization_triggers_os_lib_end(void **st
 
     assert_true(fixture->witness_payload_count > 0);
     const witness_payload_t *witness_payload = &fixture->witness_payloads[0];
-    run_sign_tx_witness_apdu_expect_os_lib_end(&(buffer_t){
+    run_sign_tx_witness_apdu_expect_os_lib_end(&(buffer_t) {
         .ptr = (uint8_t *) witness_payload->payload,
         .size = witness_payload->payload_len,
         .offset = 0,
@@ -569,9 +569,9 @@ static void run_sign_tx_body_chunked_custom(const uint8_t *raw_tx, size_t raw_tx
 
         uint8_t p1 = (tx_offset + current_chunk_size < raw_tx_len) ? P1_TX_CHUNK : P1_TX_CONFIRM;
 
-        run_sign_tx_apdu(&(buffer_t){.ptr = (uint8_t *) raw_tx + tx_offset,
-                                     .size = current_chunk_size,
-                                     .offset = 0},
+        run_sign_tx_apdu(&(buffer_t) {.ptr = (uint8_t *) raw_tx + tx_offset,
+                                      .size = current_chunk_size,
+                                      .offset = 0},
                          p1);
         if (g_last_response_swo != SWO_SUCCESS) {
             break;
@@ -675,7 +675,7 @@ static void test_handler_sign_tx_swap_denies_donation(void **state) {
 
     G_called_from_swap = true;
     run_sign_tx_apdu_expect_swap_reject(
-        &(buffer_t){
+        &(buffer_t) {
             .ptr = init_raw,
             .size = init_len,
             .offset = 0,
@@ -705,7 +705,7 @@ static void test_handler_sign_tx_swap_denies_wrong_fee(void **state) {
     const size_t init_len = build_init_apdu(&init_params, init_raw, sizeof(init_raw));
 
     G_called_from_swap = true;
-    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t) {.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
     // Mock swap fee check to fail
@@ -742,7 +742,7 @@ static void test_handler_sign_tx_swap_denies_output_policy_violation(void **stat
     const size_t init_len = build_init_apdu(&init_params, init_raw, sizeof(init_raw));
 
     G_called_from_swap = true;
-    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t) {.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
     jmp_buf reject_jmp;
@@ -775,7 +775,7 @@ static void test_handler_sign_tx_swap_denies_wrong_destination(void **state) {
     const size_t init_len = build_init_apdu(&init_params, init_raw, sizeof(init_raw));
 
     G_called_from_swap = true;
-    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t) {.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
     jmp_buf reject_jmp;
@@ -808,7 +808,7 @@ static void test_handler_sign_tx_swap_denies_wrong_amount(void **state) {
     const size_t init_len = build_init_apdu(&init_params, init_raw, sizeof(init_raw));
 
     G_called_from_swap = true;
-    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t) {.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
     jmp_buf reject_jmp;
@@ -841,7 +841,7 @@ static void test_handler_sign_tx_swap_denies_multiple_third_party_outputs(void *
     const size_t init_len = build_init_apdu(&init_params, init_raw, sizeof(init_raw));
 
     G_called_from_swap = true;
-    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t) {.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_swo, SWO_SUCCESS);
 
     jmp_buf reject_jmp;

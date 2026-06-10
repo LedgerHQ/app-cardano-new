@@ -18,8 +18,8 @@
 #define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
-__noinline_due_to_stack__ uint16_t parse_output_destination(buffer_t* buf,
-                                                            tx_output_destination_t* destination) {
+__noinline_due_to_stack__ uint16_t parse_output_destination(buffer_t *buf,
+                                                            tx_output_destination_t *destination) {
     ASSERT(buf != NULL);
     ASSERT(destination != NULL);
 
@@ -46,7 +46,7 @@ __noinline_due_to_stack__ uint16_t parse_output_destination(buffer_t* buf,
             }
 
             // Store pointer to address in raw buffer instead of copying
-            const uint8_t* address_buffer = NULL;
+            const uint8_t *address_buffer = NULL;
             if (!buffer_read_bytes_ptr(buf, &address_buffer, address_size)) {
                 TRACE("Failed to read address bytes");
                 return SWO_TX_PARSING_FAIL_OUTPUTS;
@@ -72,8 +72,8 @@ __noinline_due_to_stack__ uint16_t parse_output_destination(buffer_t* buf,
     return SWO_OK;
 }
 
-uint16_t parse_output_format(buffer_t* buf,
-                             tx_output_serialization_format_t* format,
+uint16_t parse_output_format(buffer_t *buf,
+                             tx_output_serialization_format_t *format,
                              uint16_t parseFailureSwo) {
     ASSERT(buf != NULL);
     ASSERT(format != NULL);
@@ -97,8 +97,8 @@ uint16_t parse_output_format(buffer_t* buf,
     }
 }
 
-uint16_t parse_output_top_level(buffer_t* buf,
-                                tx_output_description_t* out_description,
+uint16_t parse_output_top_level(buffer_t *buf,
+                                tx_output_description_t *out_description,
                                 uint16_t parseFailureSwo) {
     ASSERT(buf != NULL);
     ASSERT(out_description != NULL);
@@ -153,7 +153,7 @@ uint16_t parse_output_top_level(buffer_t* buf,
     return SWO_OK;
 }
 
-bool parse_output_asset_group(buffer_t* buf, output_asset_group_t* out_group) {
+bool parse_output_asset_group(buffer_t *buf, output_asset_group_t *out_group) {
     ASSERT(buf != NULL);
     ASSERT(out_group != NULL);
 
@@ -175,7 +175,7 @@ bool parse_output_asset_group(buffer_t* buf, output_asset_group_t* out_group) {
     return true;
 }
 
-bool parse_output_token(buffer_t* buf, output_token_t* out_token) {
+bool parse_output_token(buffer_t *buf, output_token_t *out_token) {
     ASSERT(buf != NULL);
     ASSERT(out_token != NULL);
 
@@ -203,7 +203,7 @@ bool parse_output_token(buffer_t* buf, output_token_t* out_token) {
     return true;
 }
 
-bool parse_output_datum(buffer_t* buf, output_datum_t* datum) {
+bool parse_output_datum(buffer_t *buf, output_datum_t *datum) {
     ASSERT(buf != NULL);
     ASSERT(datum != NULL);
 
@@ -264,7 +264,7 @@ bool parse_output_datum(buffer_t* buf, output_datum_t* datum) {
     return true;
 }
 
-bool parse_output_ref_script(buffer_t* buf, ref_script_t* ref_script) {
+bool parse_output_ref_script(buffer_t *buf, ref_script_t *ref_script) {
     ASSERT(buf != NULL);
     ASSERT(ref_script != NULL);
 

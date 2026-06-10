@@ -3,6 +3,9 @@ build_directory = "./"
 sdk = "C"
 devices = ["nanox", "nanos+", "stax", "flex", "apex_p"]
 
+[use_cases]
+memory_profiling = "DEBUG=1 MEMORY_PROFILING=1"
+
 [unit_tests]
 directory = "./tests/unit/"
 

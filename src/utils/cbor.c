@@ -18,7 +18,7 @@ static const uint64_t VALUE_W2_UPPER_THRESHOLD = (uint64_t) 1 << 8;
 static const uint64_t VALUE_W4_UPPER_THRESHOLD = (uint64_t) 1 << 16;
 static const uint64_t VALUE_W8_UPPER_THRESHOLD = (uint64_t) 1 << 32;
 
-bool cbor_parseToken(const uint8_t* buf, size_t size, cbor_token_t* out_token) {
+bool cbor_parseToken(const uint8_t *buf, size_t size, cbor_token_t *out_token) {
     ASSERT(buf != NULL);
     ASSERT(out_token != NULL);
 
@@ -145,9 +145,9 @@ uint64_t cbor_token_value_from_negative_i64(int64_t negativeValue) {
 
 bool cbor_writeToken(uint8_t type,
                      uint64_t value,
-                     uint8_t* buffer,
+                     uint8_t *buffer,
                      size_t bufferSize,
-                     size_t* out_size) {
+                     size_t *out_size) {
     ASSERT(bufferSize < BUFFER_SIZE_PARANOIA);
     ASSERT(out_size != NULL);
     ASSERT(buffer != NULL);

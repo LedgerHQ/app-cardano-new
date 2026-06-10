@@ -26,7 +26,7 @@ static void init_path(bip44_path_t *dst, const uint32_t *elems, size_t len) {
 static void test_sign_raw_message(void **state) {
     (void) state;
     bip44_path_t path = {0};
-    init_path(&path, (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1}, 5);
+    init_path(&path, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1}, 5);
 
     const uint8_t message[] = {0x00,
                                0x01,
@@ -62,7 +62,7 @@ static void test_sign_raw_message(void **state) {
 static void test_witness_signature(void **state) {
     (void) state;
     bip44_path_t path = {0};
-    init_path(&path, (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1}, 5);
+    init_path(&path, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1}, 5);
 
     const uint8_t hash[] = {
         0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0x00, 0xaa,
@@ -86,7 +86,7 @@ static void test_witness_signature(void **state) {
 static void test_cvote_signature(void **state) {
     (void) state;
     bip44_path_t path = {0};
-    init_path(&path, (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 2, 0}, 5);
+    init_path(&path, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 2, 0}, 5);
 
     const uint8_t payload[] = {
         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,

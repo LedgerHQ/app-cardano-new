@@ -23,7 +23,7 @@ typedef struct {
     uint16_t numWithdrawals;
     bool includeAuxData;
     aux_data_type_t auxDataType;
-    const uint8_t* auxDataHash;
+    const uint8_t *auxDataHash;
     size_t auxDataHashLen;
     bool includeValidityIntervalStart;
     uint16_t numMintAssetGroups;
@@ -45,30 +45,30 @@ static inline uint8_t _flag_included(bool include) {
     return include ? FLAG_INCLUDED_YES : FLAG_INCLUDED_NO;
 }
 
-static inline void _append_u8(uint8_t* buffer, size_t* pos, uint8_t value) {
+static inline void _append_u8(uint8_t *buffer, size_t *pos, uint8_t value) {
     buffer[(*pos)++] = value;
 }
 
-static inline void _append_u16_be(uint8_t* buffer, size_t* pos, uint16_t value) {
+static inline void _append_u16_be(uint8_t *buffer, size_t *pos, uint16_t value) {
     buffer[(*pos)++] = (uint8_t) ((value >> 8) & 0xFF);
     buffer[(*pos)++] = (uint8_t) (value & 0xFF);
 }
 
-static inline void _append_u32_be(uint8_t* buffer, size_t* pos, uint32_t value) {
+static inline void _append_u32_be(uint8_t *buffer, size_t *pos, uint32_t value) {
     buffer[(*pos)++] = (uint8_t) ((value >> 24) & 0xFF);
     buffer[(*pos)++] = (uint8_t) ((value >> 16) & 0xFF);
     buffer[(*pos)++] = (uint8_t) ((value >> 8) & 0xFF);
     buffer[(*pos)++] = (uint8_t) (value & 0xFF);
 }
 
-static inline void _append_u64_be(uint8_t* buffer, size_t* pos, uint64_t value) {
+static inline void _append_u64_be(uint8_t *buffer, size_t *pos, uint64_t value) {
     for (int i = 7; i >= 0; i--) {
         buffer[(*pos)++] = (uint8_t) ((value >> (i * 8)) & 0xFF);
     }
 }
 
-static inline size_t build_init_apdu(const init_apdu_params_t* params,
-                                     uint8_t* out,
+static inline size_t build_init_apdu(const init_apdu_params_t *params,
+                                     uint8_t *out,
                                      size_t out_size) {
     size_t pos = 0;
 

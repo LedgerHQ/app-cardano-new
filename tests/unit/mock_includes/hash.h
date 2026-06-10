@@ -25,12 +25,12 @@
 #define CX_LAST 0x80000000
 
 // Forward declarations for functions defined in hash_mocks.c
-cx_err_t cx_blake2b_init_no_throw(cx_blake2b_t* ctx, uint8_t output_len);
-cx_err_t cx_hash_no_throw(cx_hash_t* hash,
+cx_err_t cx_blake2b_init_no_throw(cx_blake2b_t *ctx, uint8_t output_len);
+cx_err_t cx_hash_no_throw(cx_hash_t *hash,
                           int mode,
-                          const uint8_t* in,
+                          const uint8_t *in,
                           size_t in_len,
-                          uint8_t* out,
+                          uint8_t *out,
                           size_t out_len);
 
 // Hash size constants
@@ -48,56 +48,56 @@ enum {
 };
 
 // Macro to generate hash context types and functions
-#define __CIPHER_DECLARE(CIPHER, cipher, bits)                                                    \
-    typedef struct {                                                                              \
-        uint16_t initialized_magic;                                                               \
-        cx_##cipher##_t cx_ctx;                                                                   \
-    } cipher##_##bits##_context_t;                                                                \
-                                                                                                  \
-    static inline                                                                                 \
-        __attribute__((unused)) void cipher##_##bits##_init(cipher##_##bits##_context_t* ctx) {   \
-        STATIC_ASSERT(bits == CIPHER##_##bits##_SIZE * 8, "bad cipher size");                     \
-        CX_ASSERT(cx_##cipher##_init_no_throw(&ctx->cx_ctx, CIPHER##_##bits##_SIZE * 8 / 8));     \
-        ctx->initialized_magic = HASH_CONTEXT_INITIALIZED_MAGIC;                                  \
-    }                                                                                             \
-                                                                                                  \
-    static inline                                                                                 \
-        __attribute__((unused)) void cipher##_##bits##_append(cipher##_##bits##_context_t* ctx,   \
-                                                              const uint8_t* inBuffer,            \
-                                                              size_t inSize) {                    \
-        ASSERT(ctx->initialized_magic == HASH_CONTEXT_INITIALIZED_MAGIC);                         \
-        CX_ASSERT(cx_hash_no_throw(&ctx->cx_ctx.header,                                           \
-                                   0, /* Do not output the hash, yet */                           \
-                                   inBuffer,                                                      \
-                                   inSize,                                                        \
-                                   NULL,                                                          \
-                                   0));                                                           \
-    }                                                                                             \
-                                                                                                  \
-    static inline                                                                                 \
-        __attribute__((unused)) void cipher##_##bits##_finalize(cipher##_##bits##_context_t* ctx, \
-                                                                uint8_t* outBuffer,               \
-                                                                size_t outSize) {                 \
-        ASSERT(ctx->initialized_magic == HASH_CONTEXT_INITIALIZED_MAGIC);                         \
-        ASSERT(outSize == CIPHER##_##bits##_SIZE);                                                \
-        CX_ASSERT(cx_hash_no_throw(&ctx->cx_ctx.header,                                           \
-                                   CX_LAST, /* Output the hash */                                 \
-                                   NULL,                                                          \
-                                   0,                                                             \
-                                   outBuffer,                                                     \
-                                   CIPHER##_##bits##_SIZE));                                      \
-    }                                                                                             \
-    /* Convenience function to make all in one step */                                            \
-    static inline __attribute__((unused)) void cipher##_##bits##_hash(const uint8_t* inBuffer,    \
-                                                                      size_t inSize,              \
-                                                                      uint8_t* outBuffer,         \
-                                                                      size_t outSize) {           \
-        ASSERT(inSize < BUFFER_SIZE_PARANOIA);                                                    \
-        ASSERT(outSize == CIPHER##_##bits##_SIZE);                                                \
-        cipher##_##bits##_context_t ctx;                                                          \
-        cipher##_##bits##_init(&ctx);                                                             \
-        cipher##_##bits##_append(&ctx, inBuffer, inSize);                                         \
-        cipher##_##bits##_finalize(&ctx, outBuffer, outSize);                                     \
+#define __CIPHER_DECLARE(CIPHER, cipher, bits)                                                 \
+    typedef struct {                                                                           \
+        uint16_t initialized_magic;                                                            \
+        cx_##cipher##_t cx_ctx;                                                                \
+    } cipher##_##bits##_context_t;                                                             \
+                                                                                               \
+    static inline __attribute__((unused)) void cipher##_##bits##_init(                         \
+        cipher##_##bits##_context_t *ctx) {                                                    \
+        STATIC_ASSERT(bits == CIPHER##_##bits##_SIZE * 8, "bad cipher size");                  \
+        CX_ASSERT(cx_##cipher##_init_no_throw(&ctx->cx_ctx, CIPHER##_##bits##_SIZE * 8 / 8));  \
+        ctx->initialized_magic = HASH_CONTEXT_INITIALIZED_MAGIC;                               \
+    }                                                                                          \
+                                                                                               \
+    static inline __attribute__((unused)) void cipher##_##bits##_append(                       \
+        cipher##_##bits##_context_t *ctx,                                                      \
+        const uint8_t *inBuffer,                                                               \
+        size_t inSize) {                                                                       \
+        ASSERT(ctx->initialized_magic == HASH_CONTEXT_INITIALIZED_MAGIC);                      \
+        CX_ASSERT(cx_hash_no_throw(&ctx->cx_ctx.header,                                        \
+                                   0, /* Do not output the hash, yet */                        \
+                                   inBuffer,                                                   \
+                                   inSize,                                                     \
+                                   NULL,                                                       \
+                                   0));                                                        \
+    }                                                                                          \
+                                                                                               \
+    static inline __attribute__((unused)) void cipher##_##bits##_finalize(                     \
+        cipher##_##bits##_context_t *ctx,                                                      \
+        uint8_t *outBuffer,                                                                    \
+        size_t outSize) {                                                                      \
+        ASSERT(ctx->initialized_magic == HASH_CONTEXT_INITIALIZED_MAGIC);                      \
+        ASSERT(outSize == CIPHER##_##bits##_SIZE);                                             \
+        CX_ASSERT(cx_hash_no_throw(&ctx->cx_ctx.header,                                        \
+                                   CX_LAST, /* Output the hash */                              \
+                                   NULL,                                                       \
+                                   0,                                                          \
+                                   outBuffer,                                                  \
+                                   CIPHER##_##bits##_SIZE));                                   \
+    }                                                                                          \
+    /* Convenience function to make all in one step */                                         \
+    static inline __attribute__((unused)) void cipher##_##bits##_hash(const uint8_t *inBuffer, \
+                                                                      size_t inSize,           \
+                                                                      uint8_t *outBuffer,      \
+                                                                      size_t outSize) {        \
+        ASSERT(inSize < BUFFER_SIZE_PARANOIA);                                                 \
+        ASSERT(outSize == CIPHER##_##bits##_SIZE);                                             \
+        cipher##_##bits##_context_t ctx;                                                       \
+        cipher##_##bits##_init(&ctx);                                                          \
+        cipher##_##bits##_append(&ctx, inBuffer, inSize);                                      \
+        cipher##_##bits##_finalize(&ctx, outBuffer, outSize);                                  \
     }
 
 __CIPHER_DECLARE(BLAKE2B, blake2b, 160)
@@ -109,12 +109,12 @@ __CIPHER_DECLARE(BLAKE2B, blake2b, 512)
 // __CIPHER_DECLARE(SHA3, sha3, 256)
 
 // Simple inline SHA3-256 implementation
-static inline void sha3_256_hash(const uint8_t* inBuffer,
+static inline void sha3_256_hash(const uint8_t *inBuffer,
                                  size_t inSize,
-                                 uint8_t* outBuffer,
+                                 uint8_t *outBuffer,
                                  size_t outSize) {
     // Forward declare the reference implementation function
-    extern void calc_sha3_256(uint8_t * hash, const uint8_t* data, size_t len);
+    extern void calc_sha3_256(uint8_t *hash, const uint8_t *data, size_t len);
     ASSERT(outSize == 32);
     ASSERT(inSize < BUFFER_SIZE_PARANOIA);
     calc_sha3_256(outBuffer, inBuffer, inSize);

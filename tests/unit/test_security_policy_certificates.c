@@ -368,12 +368,8 @@ static void test_pool_registration_denied_in_unrestricted(void **state) {
     reset_context();
 
     warning_bits_t w = 0;
-    security_policy_t policy = policyForSignTxStakePoolRegistrationInit(
-        SIGN_TX_SIGNINGMODE_UNRESTRICTED,
-        1,
-        1,
-        0,
-        &w);
+    security_policy_t policy =
+        policyForSignTxStakePoolRegistrationInit(SIGN_TX_SIGNINGMODE_UNRESTRICTED, 1, 1, 0, &w);
     assert_int_equal(policy, POLICY_DENY);
 }
 

@@ -7,7 +7,7 @@
 #define BUFFER_SIZE_PARANOIA (1024 * 1024)
 #define ASSERT(x)            ((void) 0)
 
-uint32_t cx_crc32(const uint8_t* inBuffer, size_t inSize) {
+uint32_t cx_crc32(const uint8_t *inBuffer, size_t inSize) {
     ASSERT(inSize < BUFFER_SIZE_PARANOIA);
 
     uint32_t byte, crc, mask;

@@ -33,10 +33,10 @@ static void test_bip44_simple_paths(void **state) {
         const char *expected;
     } testVectors[] = {
         // Simple paths without hardening
-        {(uint32_t[]){1, 2, 3, 4, 5}, 5, "m/1/2/3/4/5"},
-        {(uint32_t[]){0}, 1, "m/0"},
-        {(uint32_t[]){1}, 1, "m/1"},
-        {(uint32_t[]){44, 1815, 0}, 3, "m/44/1815/0"},
+        {(uint32_t[]) {1, 2, 3, 4, 5}, 5, "m/1/2/3/4/5"},
+        {(uint32_t[]) {0}, 1, "m/0"},
+        {(uint32_t[]) {1}, 1, "m/1"},
+        {(uint32_t[]) {44, 1815, 0}, 3, "m/44/1815/0"},
     };
 
     for (size_t i = 0; i < sizeof(testVectors) / sizeof(testVectors[0]); i++) {
@@ -64,11 +64,11 @@ static void test_bip44_hardened_paths(void **state) {
         const char *expected;
     } testVectors[] = {
         // Hardened paths (with ')
-        {(uint32_t[]){HD + 44, HD + 1815, HD + 0, 1, 55}, 5, "m/44'/1815'/0'/1/55"},
-        {(uint32_t[]){HD + 44, HD + 1815}, 2, "m/44'/1815'"},
-        {(uint32_t[]){HD + 0}, 1, "m/0'"},
+        {(uint32_t[]) {HD + 44, HD + 1815, HD + 0, 1, 55}, 5, "m/44'/1815'/0'/1/55"},
+        {(uint32_t[]) {HD + 44, HD + 1815}, 2, "m/44'/1815'"},
+        {(uint32_t[]) {HD + 0}, 1, "m/0'"},
         // Mixed paths
-        {(uint32_t[]){HD + 44, HD + 1815, HD + 0, 0, 0}, 5, "m/44'/1815'/0'/0/0"},
+        {(uint32_t[]) {HD + 44, HD + 1815, HD + 0, 0, 0}, 5, "m/44'/1815'/0'/0/0"},
     };
 
     for (size_t i = 0; i < sizeof(testVectors) / sizeof(testVectors[0]); i++) {
@@ -112,19 +112,22 @@ static void test_bip44_cardano_paths(void **state) {
         const char *description;
     } testVectors[] = {
         // Cardano standard paths (CIP-3)
-        {(uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 0},
+        {(uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 0},
          5,
          "m/1852'/1815'/0'/0/0",
          "Shelley payment address path"},
 
-        {(uint32_t[]){HD + 1852, HD + 1815, HD + 0, 2, 0},
+        {(uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 2, 0},
          5,
          "m/1852'/1815'/0'/2/0",
          "Shelley stake key path"},
 
-        {(uint32_t[]){HD + 1852, HD + 1815, HD + 0}, 3, "m/1852'/1815'/0'", "Shelley account path"},
+        {(uint32_t[]) {HD + 1852, HD + 1815, HD + 0},
+         3,
+         "m/1852'/1815'/0'",
+         "Shelley account path"},
 
-        {(uint32_t[]){HD + 1852, HD + 1815}, 2, "m/1852'/1815'", "Shelley coin path"},
+        {(uint32_t[]) {HD + 1852, HD + 1815}, 2, "m/1852'/1815'", "Shelley coin path"},
     };
 
     for (size_t i = 0; i < sizeof(testVectors) / sizeof(testVectors[0]); i++) {
@@ -206,8 +209,8 @@ static void test_paths_equal_different_lengths(void **state) {
     (void) state;
 
     bip44_path_t lhs, rhs;
-    pathSpec_init(&lhs, (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1}, 5);
-    pathSpec_init(&rhs, (uint32_t[]){HD + 1852, HD + 1815, HD + 0}, 3);
+    pathSpec_init(&lhs, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1}, 5);
+    pathSpec_init(&rhs, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0}, 3);
     assert_false(bip44_pathsEqual(&lhs, &rhs));
 }
 
@@ -222,49 +225,49 @@ static void testcase_classify_path_invalid(const uint32_t *pathArray, uint32_t p
 static void test_classify_ordinary_path_length_4(void **state) {
     (void) state;
     // Ordinary wallet prefix (1852'/1815') but length 4 — neither account (3) nor full key (5)
-    testcase_classify_path_invalid((uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0}, 4);
+    testcase_classify_path_invalid((uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0}, 4);
 }
 
 static void test_classify_ordinary_path_non_hardened_account(void **state) {
     (void) state;
     // Ordinary wallet prefix but account is not hardened
-    testcase_classify_path_invalid((uint32_t[]){HD + 1852, HD + 1815, 0, 0, 0}, 5);
+    testcase_classify_path_invalid((uint32_t[]) {HD + 1852, HD + 1815, 0, 0, 0}, 5);
 }
 
 static void test_classify_multisig_path_no_account(void **state) {
     (void) state;
     // Multisig prefix (1854'/1815') but path ends at coin type — no account component
-    testcase_classify_path_invalid((uint32_t[]){HD + 1854, HD + 1815}, 2);
+    testcase_classify_path_invalid((uint32_t[]) {HD + 1854, HD + 1815}, 2);
 }
 
 static void test_classify_multisig_path_non_hardened_account(void **state) {
     (void) state;
     // Multisig prefix (1854'/1815') but account is not hardened
-    testcase_classify_path_invalid((uint32_t[]){HD + 1854, HD + 1815, 0, 0, 0}, 5);
+    testcase_classify_path_invalid((uint32_t[]) {HD + 1854, HD + 1815, 0, 0, 0}, 5);
 }
 
 static void test_classify_multisig_path_length_4(void **state) {
     (void) state;
     // Multisig prefix but length 4 — neither account (3) nor full key (5)
-    testcase_classify_path_invalid((uint32_t[]){HD + 1854, HD + 1815, HD + 0, 0}, 4);
+    testcase_classify_path_invalid((uint32_t[]) {HD + 1854, HD + 1815, HD + 0, 0}, 4);
 }
 
 static void test_classify_cvote_path_no_account(void **state) {
     (void) state;
     // CVote prefix (1694'/1815') but path ends at coin type — no account component
-    testcase_classify_path_invalid((uint32_t[]){HD + 1694, HD + 1815}, 2);
+    testcase_classify_path_invalid((uint32_t[]) {HD + 1694, HD + 1815}, 2);
 }
 
 static void test_classify_cvote_path_non_hardened_account(void **state) {
     (void) state;
     // CVote prefix (1694'/1815') but account is not hardened
-    testcase_classify_path_invalid((uint32_t[]){HD + 1694, HD + 1815, 0, 3, 0}, 5);
+    testcase_classify_path_invalid((uint32_t[]) {HD + 1694, HD + 1815, 0, 3, 0}, 5);
 }
 
 static void test_classify_cvote_path_length_4(void **state) {
     (void) state;
     // CVote prefix but length 4 — neither account (3) nor full key (5)
-    testcase_classify_path_invalid((uint32_t[]){HD + 1694, HD + 1815, HD + 0, 3}, 4);
+    testcase_classify_path_invalid((uint32_t[]) {HD + 1694, HD + 1815, HD + 0, 3}, 4);
 }
 
 int main(void) {

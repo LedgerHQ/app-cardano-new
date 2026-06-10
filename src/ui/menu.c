@@ -25,8 +25,8 @@
 //  --------------------- SETTINGS MENU -----------------------
 //  -----------------------------------------------------------
 #define SETTING_INFO_NB 3
-static const char* const INFO_TYPES[SETTING_INFO_NB] = {"Version", "Developer", "Copyright"};
-static const char* const INFO_CONTENTS[SETTING_INFO_NB] = {APPVERSION,
+static const char *const INFO_TYPES[SETTING_INFO_NB] = {"Version", "Developer", "Copyright"};
+static const char *const INFO_CONTENTS[SETTING_INFO_NB] = {APPVERSION,
                                                            "Vacuumlabs",
                                                            "(c) 2026 Ledger"};
 
@@ -70,7 +70,7 @@ static void controls_callback(int token, uint8_t index, int page) {
             switch_value = flip_bool_setting(N_storage.silent_pubkey_export_enabled);
             switches[SILENT_PUBKEY_EXPORT_ID].initState = (nbgl_state_t) switch_value;
             // store the new setting value in NVM
-            nvm_write((void*) &N_storage.silent_pubkey_export_enabled, &switch_value, 1);
+            nvm_write((void *) &N_storage.silent_pubkey_export_enabled, &switch_value, 1);
             break;
 
         case EXPERT_MODE_TOKEN:
@@ -78,7 +78,7 @@ static void controls_callback(int token, uint8_t index, int page) {
             switch_value = flip_bool_setting(N_storage.expert_mode_enabled);
             switches[EXPERT_MODE_ID].initState = (nbgl_state_t) switch_value;
             // store the new setting value in NVM
-            nvm_write((void*) &N_storage.expert_mode_enabled, &switch_value, 1);
+            nvm_write((void *) &N_storage.expert_mode_enabled, &switch_value, 1);
             break;
 
         case BLIND_SIGNING_TOKEN:
@@ -86,7 +86,7 @@ static void controls_callback(int token, uint8_t index, int page) {
             switch_value = flip_bool_setting(N_storage.blind_signing_enabled);
             switches[BLIND_SIGNING_ID].initState = (nbgl_state_t) switch_value;
             // store the new setting value in NVM
-            nvm_write((void*) &N_storage.blind_signing_enabled, &switch_value, 1);
+            nvm_write((void *) &N_storage.blind_signing_enabled, &switch_value, 1);
             break;
 
         // LCOV_EXCL_START

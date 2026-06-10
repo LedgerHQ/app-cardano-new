@@ -875,8 +875,8 @@ static void test_pool_reg_truncated_reward_account_type(void **state) {
 
 static void test_pool_reg_truncated_reward_account_hash(void **state) {
     (void) state;
-    const size_t PAYLOAD_SIZE = 1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH + 8 + 8 + 8 + 8 +
-                                1 + 5;
+    const size_t PAYLOAD_SIZE =
+        1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH + 8 + 8 + 8 + 8 + 1 + 5;
     uint8_t buf_data[2 + PAYLOAD_SIZE];
     memset(buf_data, 0, sizeof(buf_data));
     _write_payload_length(buf_data, PAYLOAD_SIZE);
@@ -900,8 +900,8 @@ static void test_pool_reg_truncated_reward_account_hash(void **state) {
 
 static void test_pool_reg_truncated_reward_account_path(void **state) {
     (void) state;
-    const size_t PAYLOAD_SIZE = 1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH + 8 + 8 + 8 + 8 +
-                                1 + 1;
+    const size_t PAYLOAD_SIZE =
+        1 + POOL_KEY_HASH_LENGTH + VRF_KEY_HASH_LENGTH + 8 + 8 + 8 + 8 + 1 + 1;
     uint8_t buf_data[2 + PAYLOAD_SIZE];
     memset(buf_data, 0, sizeof(buf_data));
     _write_payload_length(buf_data, PAYLOAD_SIZE);

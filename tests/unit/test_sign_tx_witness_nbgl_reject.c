@@ -56,7 +56,7 @@ static void test_nbgl_reject_on_witness_review_resets_context(void **state) {
     const size_t init_len = build_init_apdu(&params, init_raw, sizeof(init_raw));
     assert_true(init_len > 0);
 
-    run_sign_tx_apdu(&(buffer_t){.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
+    run_sign_tx_apdu(&(buffer_t) {.ptr = init_raw, .size = init_len, .offset = 0}, P1_TX_INIT);
     assert_int_equal(g_last_response_swo, SWO_SUCCESS);
     run_sign_tx_body_chunked(fixture->raw_tx, fixture->raw_tx_len);
     assert_int_equal(g_last_response_swo, SWO_SUCCESS);
@@ -79,7 +79,7 @@ static void test_nbgl_reject_on_witness_review_resets_context(void **state) {
                                                           sizeof(witness_path_apdu),
                                                           witness_path,
                                                           ARRAY_LEN(witness_path));
-    run_sign_tx_witness_apdu(&(buffer_t){
+    run_sign_tx_witness_apdu(&(buffer_t) {
         .ptr = witness_path_apdu,
         .size = witness_path_apdu_len,
         .offset = 0,

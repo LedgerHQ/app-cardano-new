@@ -47,7 +47,7 @@
  * author:
  *	Paul Vixie, 1996.
  */
-void inet_ntop4(const uint8_t* src, char* dst, size_t dstSize) {
+void inet_ntop4(const uint8_t *src, char *dst, size_t dstSize) {
     ASSERT(dstSize >= MAX_IPV4_STR_LENGTH);
 
     static const char fmt[] = "%u.%u.%u.%u";
@@ -62,7 +62,7 @@ void inet_ntop4(const uint8_t* src, char* dst, size_t dstSize) {
  * author:
  *	Paul Vixie, 1996.
  */
-void inet_ntop6(const uint8_t* src, char* dst, size_t dstSize) {
+void inet_ntop6(const uint8_t *src, char *dst, size_t dstSize) {
     STATIC_ASSERT(sizeof(size_t) >= 4, "bad size_t size");
     STATIC_ASSERT(sizeof(unsigned int) >= 4, "bad unsigned int size");
 
@@ -115,7 +115,7 @@ void inet_ntop6(const uint8_t* src, char* dst, size_t dstSize) {
     /*
      * Format the result.
      */
-    char* tp = tmp;
+    char *tp = tmp;
     for (int i = 0; i < (NS_IN6ADDRSZ / NS_INT16SZ); i++) {
         /* Are we inside the best run of 0x00's? */
         if (best.base != -1 && i >= best.base && i < (best.base + best.len)) {
