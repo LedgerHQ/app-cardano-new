@@ -47,12 +47,12 @@ void swap_handle_check_address(check_address_parameters_t *params) {
         return;
     }
 
-    uint32_t purpose = pathSpec.path[BIP44_I_PURPOSE] & (~HARDENED_BIP32);
-
-    if (purpose != PURPOSE_SHELLEY) {
-        // Intentionally reject non-Shelley purposes (including PURPOSE_BYRON).
-        // Swap flow in this app supports only Shelley refund path/address checks.
-        TRACE("ERROR: unsupported purpose %u for swap check address", purpose);
+    // Swap flow in this app supports only Shelley refund path/address checks.
+    // Reject any other prefix (including Byron). bip44_hasShelleyPrefix enforces
+    // a hardened 1852' purpose and the ADA 1815' coin type, unlike a bare purpose
+    // comparison.
+    if (!bip44_hasShelleyPrefix(&pathSpec)) {
+        TRACE("ERROR: unsupported path prefix for swap check address");
         return;
     }
 
