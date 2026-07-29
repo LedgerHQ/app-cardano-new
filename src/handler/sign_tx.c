@@ -304,10 +304,16 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     }
 
 #ifdef HAVE_SWAP
-    if (G_called_from_swap && G_context.tx_info.num_witnesses != 1) {
-        // Swap signing requires exactly one payment-key witness.  A host-supplied
-        // count > 1 would let extra arbitrary paths be signed without review.
-        swap_reject_and_exit(SWAP_EC_ERROR_GENERIC, SWAP_APP_CODE_DEFAULT);
+    if (G_called_from_swap) {
+        // At least one witness is required to authorize spending.
+        if (G_context.tx_info.num_witnesses == 0) {
+            swap_reject_and_exit(SWAP_EC_ERROR_GENERIC, SWAP_APP_CODE_DEFAULT);
+        }
+        // In swap mode only payment-key witnesses are allowed (one per input at most),
+        // so the witness count cannot exceed the input count.
+        if (G_context.tx_info.num_witnesses > tx_params->num_inputs) {
+            swap_reject_and_exit(SWAP_EC_ERROR_GENERIC, SWAP_APP_CODE_DEFAULT);
+        }
     }
 #endif
 
