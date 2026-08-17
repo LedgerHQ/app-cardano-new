@@ -5,7 +5,7 @@
 #include "cardano_constants.h"
 #include "cardano_parsers.h"
 #include "tx_certificate_types.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "textUtils.h"
 #include "utils.h"
 #include "cardano_buffer.h"

@@ -7,7 +7,7 @@
 #include "os.h"
 
 #include "cardano_swo.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "utils.h"
 #include "textUtils.h"
 #include "ui_formatters.h"

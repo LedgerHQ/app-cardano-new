@@ -2,7 +2,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 
 #include "cbor_canonical.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "utils.h"
 
 #include <string.h>

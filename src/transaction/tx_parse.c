@@ -10,7 +10,7 @@
 #include "cardano_parsers.h"
 #include "tx.h"
 #include "utils.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "tx_constants.h"
 #include "keyDerivation.h"
 

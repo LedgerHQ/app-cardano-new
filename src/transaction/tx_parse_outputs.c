@@ -2,7 +2,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 
 #include "tx_parse_outputs.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "addressUtilsShelley.h"
 #include "cardano_swo.h"
 #include "cardano_parsers.h"

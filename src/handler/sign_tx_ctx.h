@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "assert.h"
+#include "app_assert.h"
 #include "globals.h"
 
 /**

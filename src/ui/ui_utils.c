@@ -9,7 +9,7 @@
 #include "io.h"
 #include "cardano_swo.h"
 #include "utils.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "ui_warnings.h"
 
 nbgl_contentTagValue_t *g_pairs = NULL;

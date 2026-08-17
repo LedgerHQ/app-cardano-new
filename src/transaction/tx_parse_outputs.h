@@ -8,7 +8,7 @@
 #include "buffer.h"
 #include "tx_hash_builder.h"
 #include "tx_output_types.h"
-#include "assert.h"
+#include "app_assert.h"
 
 static inline tx_output_destination_t tx_output_destination_make_third_party(
     const uint8_t *addressBuffer,

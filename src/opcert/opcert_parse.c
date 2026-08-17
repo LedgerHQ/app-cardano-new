@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "assert.h"
+#include "app_assert.h"
 #include "app_context.h"
 #include "bip44.h"
 #include "buffer.h"

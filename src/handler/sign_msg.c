@@ -12,7 +12,7 @@
 #include "globals.h"
 #include "addressUtilsShelley.h"
 #include "securityPolicy.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "app_context.h"
 #include "io.h"
 #include "cardano_parsers.h"

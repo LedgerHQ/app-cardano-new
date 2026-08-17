@@ -7,7 +7,7 @@
 #include <stdbool.h>  // bool
 
 #include "cardano_constants.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "cx.h"
 #include "os.h"
 

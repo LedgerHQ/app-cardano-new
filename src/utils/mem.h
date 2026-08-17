@@ -9,7 +9,7 @@
 #include <stdint.h>
 
 #include "app_mem_utils.h"
-#include "assert.h"
+#include "app_assert.h"
 
 bool mem_utils_reset_app_heap(void);
 

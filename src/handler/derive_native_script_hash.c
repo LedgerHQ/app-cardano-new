@@ -5,7 +5,7 @@
 
 #include "addressUtilsShelley.h"
 #include "app_context.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "buffer.h"
 #include "cardano_parsers.h"
 #include "cardano_swo.h"

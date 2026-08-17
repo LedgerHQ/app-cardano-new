@@ -5,7 +5,7 @@
 #include "cardano_swo.h"
 #include "read.h"
 #include "write.h"
-#include "assert.h"
+#include "app_assert.h"
 #include <string.h>
 #include <limits.h>
 

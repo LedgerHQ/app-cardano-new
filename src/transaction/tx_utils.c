@@ -9,7 +9,7 @@
 #include "mem.h"
 #include "globals.h"
 #include "bip44.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "utils.h"
 
 /**
