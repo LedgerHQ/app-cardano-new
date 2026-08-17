@@ -1,0 +1,184 @@
+# Cardano app fuzz manifest. Schema, field meanings and how to create/update
+# this file: see the "Manifest" page of the SDK Fuzzing Framework docs.
+# One [[targets]] block per fuzzer built by CMakeLists.txt.
+
+harness_version = "4"
+
+[coverage]
+exclude_regexes = [
+    '.*ledger-secure-sdk.*',
+    '.*fuzzing/mock/.*',
+    '.*fuzzing/harness/.*',
+    '.*fuzzer\.c',
+    '.*src/app_main\.c',
+    '.*src/nbgl/.*',
+]
+
+# ── fuzz_all_handlers: full-app multi-APDU target ───────────────────────────
+[[targets]]
+fuzzer = "fuzz_all_handlers"
+# One input is a sequence of APDUs, so it reads well past the 255-byte
+# single-payload limit — enough room for several multi-chunk tx flows.
+tail_budget = 1024
+key_files = [
+    "src/apdu/dispatcher.c",
+    "src/handler/get_version.c",
+    "src/handler/get_serial.c",
+    "src/handler/get_app_name.c",
+    "src/handler/get_public_key.c",
+    "src/handler/derive_address.c",
+    "src/handler/derive_native_script_hash.c",
+    "src/handler/sign_tx.c",
+    "src/handler/sign_opcert.c",
+    "src/handler/sign_cvote.c",
+    "src/handler/sign_msg.c",
+]
+seeds = { ins = [0x00, 0x01, 0x04, 0x10, 0x11, 0x12, 0x21, 0x22, 0x23, 0x24] }
+
+[targets.dictionary]
+tokens = [
+    { name = "cla", value = "\\xD7" },
+    { name = "ins_get_version", value = "\\xD7\\x00\\x00\\x00" },
+    { name = "ins_get_serial", value = "\\xD7\\x01\\x00\\x00" },
+    { name = "ins_get_app_name", value = "\\xD7\\x04\\x00\\x00" },
+    { name = "ins_get_public_key", value = "\\xD7\\x10\\x00\\x00" },
+    { name = "ins_derive_address", value = "\\xD7\\x11\\x00\\x00" },
+    { name = "ins_derive_native_script_hash", value = "\\xD7\\x12\\x00\\x00" },
+    { name = "ins_sign_tx", value = "\\xD7\\x21\\x00\\x00" },
+    { name = "ins_sign_opcert", value = "\\xD7\\x22\\x00\\x00" },
+    { name = "ins_sign_cvote", value = "\\xD7\\x23\\x00\\x00" },
+    { name = "ins_sign_msg", value = "\\xD7\\x24\\x00\\x00" },
+    { name = "p1_tx_init", value = "\\x10" },
+    { name = "p1_tx_chunk", value = "\\x11" },
+    { name = "p1_tx_confirm", value = "\\x12" },
+    { name = "p1_tx_aux_data", value = "\\x13" },
+    { name = "p1_tx_witness", value = "\\x0F" },
+    { name = "p1_addr_return", value = "\\x01" },
+    { name = "p1_addr_display", value = "\\x02" },
+    { name = "p1_cvote_init", value = "\\x50" },
+    { name = "p1_cvote_chunk", value = "\\x51" },
+    { name = "p1_cvote_confirm", value = "\\x52" },
+    { name = "p1_msg_init", value = "\\x01" },
+    { name = "p1_msg_chunk", value = "\\x02" },
+    { name = "p1_msg_confirm", value = "\\x03" },
+    { name = "p2_aux_data_init", value = "\\x36" },
+    { name = "p2_aux_data_delegation", value = "\\x37" },
+]
+
+# ── fuzz_getVersion: INS_GET_VERSION (0x00) ──────────────────────────────────
+[[targets]]
+fuzzer = "fuzz_getVersion"
+key_files = ["src/handler/get_version.c"]
+seeds = { ins = [0x00] }
+
+# ── fuzz_getSerial: INS_GET_SERIAL (0x01) ────────────────────────────────────
+[[targets]]
+fuzzer = "fuzz_getSerial"
+key_files = ["src/handler/get_serial.c"]
+seeds = { ins = [0x01] }
+
+# ── fuzz_getAppName: INS_GET_APP_NAME (0x04) ─────────────────────────────────
+[[targets]]
+fuzzer = "fuzz_getAppName"
+key_files = ["src/handler/get_app_name.c"]
+seeds = { ins = [0x04] }
+
+# ── fuzz_getPublicKeys: INS_GET_PUBLIC_KEY (0x10) ────────────────────────────
+[[targets]]
+fuzzer = "fuzz_getPublicKeys"
+key_files = [
+    "src/handler/get_public_key.c",
+    "src/keyDerivation/keyDerivation.c",
+    "src/securityPolicy/securityPolicy.c",
+    "src/addressUtils/bip44.c",
+]
+seeds = { ins = [0x10] }
+
+# ── fuzz_deriveAddress: INS_DERIVE_ADDRESS (0x11) ────────────────────────────
+[[targets]]
+fuzzer = "fuzz_deriveAddress"
+key_files = [
+    "src/handler/derive_address.c",
+    "src/addressUtils/addressUtilsShelley.c",
+    "src/addressUtils/addressUtilsByron.c",
+    "src/securityPolicy/securityPolicy.c",
+]
+seeds = { ins = [0x11] }
+
+# ── fuzz_deriveNativeScriptHash: INS_DERIVE_NATIVE_SCRIPT_HASH (0x12) ────────
+[[targets]]
+fuzzer = "fuzz_deriveNativeScriptHash"
+key_files = [
+    "src/handler/derive_native_script_hash.c",
+    "src/deriveNativeScriptHash/derive_native_script_hash_builder.c",
+]
+seeds = { ins = [0x12] }
+
+# ── fuzz_signTx: INS_SIGN_TX (0x21) ─────────────────────────────────────────
+[[targets]]
+fuzzer = "fuzz_signTx"
+# Multi-chunk transaction flows read up to 255 bytes per APDU; give room for
+# a realistic small transaction across several chunks.
+tail_budget = 512
+key_files = [
+    "src/handler/sign_tx.c",
+    "src/transaction/tx_parse.c",
+    "src/transaction/tx_parse_outputs.c",
+    "src/transaction/tx_parse_certificates.c",
+    "src/transaction/tx_processing.c",
+    "src/transaction/tx_hash_builder.c",
+    "src/cardano_tokens/cardano_tokens.c",
+    "src/securityPolicy/securityPolicy.c",
+]
+seeds = { ins = [0x21] }
+
+# ── fuzz_signOpCert: INS_SIGN_OPCERT (0x22) ──────────────────────────────────
+[[targets]]
+fuzzer = "fuzz_signOpCert"
+key_files = [
+    "src/handler/sign_opcert.c",
+    "src/opcert/opcert_parse.c",
+    "src/securityPolicy/securityPolicy.c",
+]
+seeds = { ins = [0x22] }
+
+# ── fuzz_bip44_policy: BIP44 path classification and security policies ────────
+[[targets]]
+fuzzer = "fuzz_bip44_policy"
+key_files = [
+    "src/addressUtils/bip44.c",
+    "src/securityPolicy/securityPolicy.c",
+    "src/messageSigning/messageSigning.c",
+]
+
+# ── fuzz_cvote_aux_parser: CVote auxiliary data parser ───────────────────────
+[[targets]]
+fuzzer = "fuzz_cvote_aux_parser"
+key_files = [
+    "src/cvote/cvote_parser.c",
+    "src/handler/sign_cvote.c",
+    "src/handler/sign_tx_aux_data.c",
+    "src/securityPolicy/securityPolicy.c",
+]
+
+# ── fuzz_native_script_hash_builder: native script hash builder ───────────────
+[[targets]]
+fuzzer = "fuzz_native_script_hash_builder"
+key_files = [
+    "src/deriveNativeScriptHash/derive_native_script_hash_builder.c",
+]
+
+# ── fuzz_tx_parser_entrypoints: transaction parser sub-functions ──────────────
+[[targets]]
+fuzzer = "fuzz_tx_parser_entrypoints"
+# Mode byte + tx params header + body data; give enough room for non-trivial
+# transaction bodies.
+tail_budget = 512
+key_files = [
+    "src/transaction/tx_parse.c",
+    "src/transaction/tx_parse_outputs.c",
+    "src/transaction/tx_parse_certificates.c",
+    "src/transaction/tx_processing.c",
+    "src/parsers/cardano_parsers.c",
+    "src/securityPolicy/securityPolicy.c",
+]

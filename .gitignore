@@ -20,6 +20,8 @@ tests/fuzzing/out/
 tests/fuzzing/out-local/
 tests/fuzzing/*.profraw
 tests/fuzzing/*.profdata
+# Absolution invariant models: machine-local, regenerated per build.
+tests/fuzzing/invariants/*.zon
 
 # Python
 *.pyc[cod]

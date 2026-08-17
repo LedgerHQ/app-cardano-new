@@ -11,7 +11,10 @@
 #include "securityPolicy.h"
 #include "securityWarnings.h"
 
-int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+#define FUZZ_APP_CUSTOM_ENTRY
+#include "fuzz_harness.h"
+
+int fuzz_entry(const uint8_t *data, size_t size) {
     fuzzing_reset_state();
 
     // Parse INIT payload via global raw_cvote_init_data.
@@ -37,8 +40,6 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
                 }
             }
 
-            // aux_data.destination.params is embedded by value; no cleanup needed.
-
             free(init_copy);
             G_context.tx_info.aux_data.raw_cvote_init_data = NULL;
             G_context.tx_info.aux_data.raw_cvote_init_data_len = 0;
@@ -62,7 +63,6 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     };
     tx_output_destination_t destination = {0};
     (void) cvote_parse_destination(&destination_buffer, &destination);
-    // destination.params is embedded by value; no cleanup needed.
 
     return 0;
 }

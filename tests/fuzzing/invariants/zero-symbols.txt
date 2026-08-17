@@ -1,0 +1,17 @@
+# Symbols that Absolution should treat as zero-initialised (i.e. ignore when
+# computing the global-state prefix). Add one mangled symbol name per line.
+# See the SDK Fuzzing Framework docs, "Invariants / zero-symbols" section.
+
+# UI heap-pointer globals (src/ui/ui_utils.c, src/ui/ui_warnings.c).
+# These point into the app heap which is reset by mem_utils_reset_app_heap()
+# at the end of every fuzzer iteration. If Absolution restores a non-NULL
+# stale pointer from the snapshot, fuzzing_reset_state() → ui_free_pairs()
+# crashes inside ensure_chunk_valid with a corrupted chunk pointer.
+# Zeroing them forces ui_free_pairs() / ui_free_warnings() to see NULL and
+# skip the free, relying on mem_utils_reset_app_heap() for heap teardown.
+g_pairs
+g_pairsList
+g_next_pair_index
+g_active_render_session
+g_warning
+g_warning_overflow_text

@@ -1,7 +1,6 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include "addressUtilsShelley.h"
 #include "bip44.h"
 #include "buffer.h"
 #include "fuzz_utils.h"
@@ -9,7 +8,10 @@
 #include "securityPolicy.h"
 #include "securityWarnings.h"
 
-int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+#define FUZZ_APP_CUSTOM_ENTRY
+#include "fuzz_harness.h"
+
+int fuzz_entry(const uint8_t *data, size_t size) {
     fuzzing_reset_state();
 
     buffer_t path_buffer = {

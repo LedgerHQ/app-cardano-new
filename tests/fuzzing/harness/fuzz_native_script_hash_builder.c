@@ -6,6 +6,9 @@
 #include "derive_native_script_hash_builder.h"
 #include "fuzz_utils.h"
 
+#define FUZZ_APP_CUSTOM_ENTRY
+#include "fuzz_harness.h"
+
 static uint8_t read_u8(const uint8_t *data, size_t size, size_t *offset) {
     if (*offset >= size) {
         return 0;
@@ -56,7 +59,7 @@ static void add_simple_script(native_script_hash_builder_t *builder,
     }
 }
 
-int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+int fuzz_entry(const uint8_t *data, size_t size) {
     fuzzing_reset_state();
 
     if (size == 0) {

@@ -3,20 +3,21 @@
 #include <string.h>
 
 #include "buffer.h"
+#include "cardano_parsers.h"
 #include "cardano_swo.h"
 #include "fuzz_utils.h"
 #include "globals.h"
-#include "mem.h"
-#include "tx.h"
-#include "tx_parse.h"
-#include "tx_parse_certificates.h"
-#include "tx_parse_outputs.h"
-#include "tx_processing.h"
-#include "cardano_parsers.h"
 #include "securityPolicy.h"
 #include "securityWarnings.h"
+#include "tx.h"
+#include "tx_parse.h"
+#include "tx_parse_outputs.h"
+#include "tx_processing.h"
 
-int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+#define FUZZ_APP_CUSTOM_ENTRY
+#include "fuzz_harness.h"
+
+int fuzz_entry(const uint8_t *data, size_t size) {
     fuzzing_reset_state();
 
     if (size == 0) {

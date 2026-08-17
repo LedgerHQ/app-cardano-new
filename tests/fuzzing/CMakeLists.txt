@@ -1,96 +1,77 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.20)
 
-if(${CMAKE_VERSION} VERSION_LESS 3.14)
-  cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
-endif()
-
-# project information
 project(CardanoFuzzers
         VERSION 1.0
         DESCRIPTION "Fuzzing harnesses for Cardano Ledger app"
         LANGUAGES C)
 
 if(NOT DEFINED BOLOS_SDK)
-  message(FATAL_ERROR "BOLOS_SDK must be defined, CMake will exit.")
-  return()
+  message(FATAL_ERROR "BOLOS_SDK must be defined")
 endif()
 
-# Pull in the SDK fuzzing framework: secure_sdk target, macro extraction,
-# sanitizer/coverage flags, mock libraries, etc.
-add_subdirectory(${BOLOS_SDK}/fuzzing ${CMAKE_CURRENT_BINARY_DIR}/ledger-secure-sdk EXCLUDE_FROM_ALL)
+# Exports the `secure_sdk` target and ledger_fuzz_add_app_target().
+include(${BOLOS_SDK}/fuzzing/cmake/LedgerAppFuzz.cmake)
+ledger_fuzz_setup()
 
-set(DEFINES FUZZ)
+set(APP_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../../src)
 
-set(APP_SRC ${CMAKE_SOURCE_DIR}/../../src)
-
-file(GLOB_RECURSE C_SOURCES
-  ${APP_SRC}/*.c
-  ${CMAKE_SOURCE_DIR}/mock/*.c
-  ${CMAKE_SOURCE_DIR}/src/fuzz_utils.c
-)
-
+# Whole app plus the fuzz mocks; app_main.c and non-portable swap helpers are
+# replaced by the fuzz entry point or are not used in fuzzing context.
+file(GLOB_RECURSE C_SOURCES CONFIGURE_DEPENDS
+    ${APP_SOURCE_DIR}/*.c
+    ${CMAKE_SOURCE_DIR}/mock/*.c
+    ${CMAKE_SOURCE_DIR}/src/fuzz_utils.c)
 list(REMOVE_ITEM C_SOURCES
-  ${APP_SRC}/app_main.c
-  ${APP_SRC}/handler/debug_settings.c
-  ${APP_SRC}/swap/swap_check_address.c
-  ${APP_SRC}/swap/swap_printable_amount.c
-)
+    ${APP_SOURCE_DIR}/app_main.c
+    ${APP_SOURCE_DIR}/handler/debug_settings.c
+    ${APP_SOURCE_DIR}/swap/swap_check_address.c
+    ${APP_SOURCE_DIR}/swap/swap_printable_amount.c)
 
-add_library(code_lib ${C_SOURCES})
+# Collect all header directories under src/, mock/, and include/ recursively.
+ledger_fuzz_collect_include_dirs(APP_INCLUDE_DIRS ${APP_SOURCE_DIR})
+list(APPEND APP_INCLUDE_DIRS
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/mock
+    ${CMAKE_SOURCE_DIR}/include)
 
-target_include_directories(
-  code_lib
-  PUBLIC ${CMAKE_SOURCE_DIR}/src
-         ${CMAKE_SOURCE_DIR}/mock
-         ${CMAKE_SOURCE_DIR}/include
-         ${APP_SRC}
-         ${APP_SRC}/bech32
-         ${APP_SRC}/addressUtils
-         ${APP_SRC}/apdu
-         ${APP_SRC}/cardano_tokens
-         ${APP_SRC}/cvote
-         ${APP_SRC}/crypto
-         ${APP_SRC}/deriveNativeScriptHash
-         ${APP_SRC}/handler
-         ${APP_SRC}/keyDerivation
-         ${APP_SRC}/memory
-         ${APP_SRC}/messageSigning
-         ${APP_SRC}/opcert
-         ${APP_SRC}/parsers
-         ${APP_SRC}/securityPolicy
-         ${APP_SRC}/swap
-         ${APP_SRC}/transaction
-         ${APP_SRC}/txHashBuilder
-         ${APP_SRC}/ui
-         ${APP_SRC}/utils
-)
+# FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION is the shared app/SDK sentinel for
+# fuzz-only relaxations. HAVE_* / APPNAME / ... arrive transitively from
+# secure_sdk (make list-defines + macros/add_macros.txt).
+# Invariant models are machine-local and regenerated per build (.gitignored).
+function(cardano_add_fuzz_target NAME)
+  set(INVARIANT "${CMAKE_SOURCE_DIR}/invariants/${NAME}.zon")
+  ledger_fuzz_bootstrap_file("${INVARIANT}" ".{}\n")
+  ledger_fuzz_add_app_target(
+      NAME ${NAME}
+      HARNESS ${CMAKE_SOURCE_DIR}/harness/${NAME}.c
+      INVARIANT ${INVARIANT}
+      SOURCES ${C_SOURCES}
+      INCLUDE_DIRECTORIES ${APP_INCLUDE_DIRS}
+      COMPILE_DEFINITIONS FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION=1)
+  # Absolution's generated fuzzer.c calls assert() without including <assert.h>.
+  # src/utils/assert.h (now a proxy to the system header via #include_next) used
+  # to shadow <assert.h> in this build, preventing -include from finding the real
+  # one. With the proxy in place, -include assert.h now reaches the system header
+  # and defines the assert() macro, resolving both the warning and the linker error.
+  # Suppress alignment sanitizer: the app uses packed struct accesses
+  # that trigger false positives with UBSan alignment checks.
+  target_compile_options(${NAME} PRIVATE -include assert.h -fno-sanitize=alignment)
+  target_link_options(${NAME} PRIVATE -fno-sanitize=alignment)
+endfunction()
 
-target_link_libraries(code_lib PUBLIC secure_sdk)
-target_compile_definitions(code_lib PUBLIC ${DEFINES} FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION=1)
+# ── Single-APDU targets (standard fuzz_harness.h loop) ──────────────────────
+cardano_add_fuzz_target(fuzz_getVersion)
+cardano_add_fuzz_target(fuzz_getSerial)
+cardano_add_fuzz_target(fuzz_getAppName)
+cardano_add_fuzz_target(fuzz_getPublicKeys)
+cardano_add_fuzz_target(fuzz_deriveAddress)
+cardano_add_fuzz_target(fuzz_deriveNativeScriptHash)
+cardano_add_fuzz_target(fuzz_signTx)
+cardano_add_fuzz_target(fuzz_signOpCert)
 
-# Suppress alignment sanitizer: the app uses packed struct accesses
-# that trigger false positives with UBSan alignment checks.
-target_compile_options(code_lib PUBLIC -fno-sanitize=alignment)
-target_link_options(code_lib PUBLIC -fno-sanitize=alignment)
-
-# Create the different fuzzing targets automatically
-file(GLOB FUZZ_HARNESSES "${CMAKE_SOURCE_DIR}/harness/fuzz_*.c")
-
-foreach(HARNESS_FILE ${FUZZ_HARNESSES})
-  # Extract the base name of the file without extension
-  get_filename_component(HARNESS_NAME ${HARNESS_FILE} NAME_WE)
-
-  # Create the executable target
-  add_executable(${HARNESS_NAME} ${HARNESS_FILE})
-
-  # Define the compilation options
-  target_compile_definitions(${HARNESS_NAME} PUBLIC macros FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION=1)
-
-  # Link against the secure_sdk and code_lib libraries
-  target_link_libraries(${HARNESS_NAME} PUBLIC secure_sdk code_lib)
-
-  # Override SDK's cx_ecdsa_verify_no_throw to avoid MemorySanitizer false positives
-  target_link_options(${HARNESS_NAME} PRIVATE -Wl,--wrap=cx_ecdsa_verify_no_throw)
-
-  message(STATUS "Creating fuzzer target: ${HARNESS_NAME}")
-endforeach()
+# ── Multi-APDU and parser-level targets (custom fuzz_entry) ─────────────────
+cardano_add_fuzz_target(fuzz_all_handlers)
+cardano_add_fuzz_target(fuzz_bip44_policy)
+cardano_add_fuzz_target(fuzz_cvote_aux_parser)
+cardano_add_fuzz_target(fuzz_native_script_hash_builder)
+cardano_add_fuzz_target(fuzz_tx_parser_entrypoints)
