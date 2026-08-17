@@ -12,7 +12,7 @@
 #define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
-#include "assert.h"
+#include "app_assert.h"
 #include "bech32.h"
 #include "bip44.h"
 #include "globals.h"

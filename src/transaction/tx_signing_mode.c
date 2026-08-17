@@ -3,7 +3,7 @@
 
 #include "tx_signing_mode.h"
 
-#include "assert.h"
+#include "app_assert.h"
 #include "tx.h"
 
 bool is_valid_tx_signing_mode(uint8_t raw_mode) {

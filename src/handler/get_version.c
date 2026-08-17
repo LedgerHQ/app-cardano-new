@@ -4,7 +4,6 @@
 
 #include <stdint.h>  // uint*_t
 #include <limits.h>  // UINT8_MAX
-#include <assert.h>  // _Static_assert
 
 #include "io.h"
 #include "buffer.h"
@@ -12,7 +11,7 @@
 #include "get_version.h"
 #include "globals.h"
 #include "cardano_swo.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "app_context.h"
 #include "cardano_buffer.h"
 #include "utils.h"

@@ -7,7 +7,7 @@
 #include <string.h>
 #include "nbgl_use_case.h"
 #include "mem.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "ui_constants.h"
 #include "bech32.h"
 

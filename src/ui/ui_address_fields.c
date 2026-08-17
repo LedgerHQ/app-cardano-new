@@ -19,7 +19,7 @@
 #include "bip44.h"
 #include "bech32.h"
 #include "keyDerivation.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "ipUtils.h"
 
 void addPaymentInfoUIPairs(const address_params_t *address_params) {

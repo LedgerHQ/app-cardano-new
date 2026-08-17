@@ -4,7 +4,7 @@
 #pragma once
 
 #include "globals.h"
-#include "utils/assert.h"
+#include "utils/app_assert.h"
 
 enum { STORAGE_INITIALIZED = 0x01 };
 

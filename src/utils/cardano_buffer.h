@@ -8,7 +8,7 @@
 #include <stdbool.h>
 
 #include "buffer.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "app_context.h"
 
 /**

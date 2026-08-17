@@ -5,7 +5,7 @@
 
 #include <string.h>
 
-#include "assert.h"
+#include "app_assert.h"
 #ifdef HAVE_SWAP
 #include "os.h"
 #include "swap.h"

@@ -9,7 +9,7 @@
 
 #include "get_serial.h"
 #include "cardano_swo.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "app_context.h"
 #include "cardano_buffer.h"
 #include "utils.h"

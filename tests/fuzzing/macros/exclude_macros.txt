@@ -1,7 +1,4 @@
-# Disable printf macro for fuzzing builds
-PRINTF
-PRINTF(...)=
-# Keep assertions enabled during fuzzing (NDEBUG would disable them)
+# Keep assertions enabled during fuzzing (NDEBUG would disable them).
+# Note: PRINTF(...)=, USE_OS_IO_STACK, and HAVE_SHA512_WITH_BLOCK_ALT_METHOD
+# are already excluded by the SDK's macros/exclude_macros.txt.
 NDEBUG
-# Breaks pic mock function (see SDK fuzzing/macros/exclude_macros.txt)
-USE_OS_IO_STACK

@@ -23,7 +23,7 @@
 
 #include <string.h>
 
-#include "assert.h"
+#include "app_assert.h"
 #include "utils.h"
 #include "bech32.h"
 

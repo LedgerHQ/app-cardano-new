@@ -13,7 +13,7 @@
 #define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
-#include "assert.h"
+#include "app_assert.h"
 #include "addressUtilsShelley.h"
 #include "bech32.h"
 #include "cardano_constants.h"

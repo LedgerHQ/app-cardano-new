@@ -5,7 +5,7 @@
 #include "utils.h"
 #include "cardano_swo.h"
 #include "read.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "cardano_buffer.h"
 
 enum {

@@ -5,7 +5,7 @@
 #include "hash.h"
 #include "cbor.h"
 #include "write.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "utils.h"
 #include <string.h>
 

@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>  // Required for size_t
-#include "assert.h"
+#include "app_assert.h"
 #include "cardano_buffer.h"
 
 // -----------------------------------------------------------------------------

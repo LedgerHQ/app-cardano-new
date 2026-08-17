@@ -1,3 +1,4 @@
 # Additional defines needed for fuzzing builds that are not
 # extracted from the app Makefile via 'make list-defines'.
-FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION=1
+# Note: FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION is already in the SDK's
+# add_macros.txt and does not need to be repeated here.

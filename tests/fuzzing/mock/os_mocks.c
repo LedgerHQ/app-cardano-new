@@ -5,11 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ux.h>
-#include <setjmp.h>
 
 #include "buffer.h"
 #include "cardano_constants.h"
-#include "fuzz_utils.h"
 #include "globals.h"
 
 typedef struct nbgl_warning_s nbgl_warning_t;
@@ -26,11 +24,9 @@ int io_send_response_pointer(const uint8_t *buffer, size_t bufferLength, uint16_
     return 0;
 }
 
-// Global context for the app
 global_ctx_t G_context;
 uint16_t G_apdu_error = 0;
 
-// Mock storage for fuzzing
 const internal_storage_t N_storage_real = {.expert_mode_enabled = 1,
                                            .silent_pubkey_export_enabled = 0,
                                            .blind_signing_enabled = 0,
@@ -41,10 +37,6 @@ int io_send_response_buffers(const buffer_t *buffer_list, size_t buffer_count, u
     (void) buffer_count;
     (void) swo;
     return 0;
-}
-
-void nvm_write(void *dst_adr, void *src_adr, unsigned int src_len) {
-    memcpy(dst_adr, src_adr, src_len);
 }
 
 bool swap_check_validity(uint64_t amount, tx_output_destination_t *destination) {
@@ -58,29 +50,13 @@ unsigned int os_serial(unsigned char *serial, unsigned int maxlength) {
     return maxlength;
 }
 
-void __attribute__((noreturn)) os_sched_exit(bolos_task_status_t exit_code) {
-    (void) exit_code;
-    siglongjmp(fuzz_exit_jump_ctx.jmp_buf, 1);
-}
-
-try_context_t *current_context = NULL;
-try_context_t *try_context_get(void) {
-    return current_context;
-}
-
-try_context_t *try_context_set(try_context_t *ctx) {
-    try_context_t *previous_ctx = current_context;
-    current_context = ctx;
-    return previous_ctx;
-}
-
 void *pic(void *linked_addr) {
     return linked_addr;
 }
-// void ui_idle(){};
-void halt() {
+
+void halt(void) {
     for (;;);
-};
+}
 
 void io_send_buf(unsigned short code, unsigned char *buffer, size_t tx) {
     (void) code;
@@ -213,42 +189,4 @@ cx_err_t cx_eddsa_sign_no_throw(const cx_ecfp_private_key_t *pvkey,
     }
 
     return CX_OK;
-}
-
-cx_err_t cx_ecdomain_parameters_length(cx_curve_t cv, size_t *length) {
-    // cardano uses CX_CURVE_Ed25519
-    if (cv == CX_CURVE_Ed25519) {
-        *length = 32;
-        return CX_OK;
-    }
-
-    siglongjmp(fuzz_exit_jump_ctx.jmp_buf, 1);
-    return CX_INVALID_PARAMETER;
-}
-
-void os_perso_derive_node_with_seed_key(unsigned int mode,
-                                        cx_curve_t curve,
-                                        const unsigned int *path,
-                                        unsigned int pathLength,
-                                        unsigned char *privateKey,
-                                        unsigned char *chain,
-                                        unsigned char *seed_key,
-                                        unsigned int seed_key_length) {
-    (void) mode;
-    (void) curve;
-    (void) path;
-    (void) pathLength;
-    (void) privateKey;
-    (void) chain;
-    (void) seed_key;
-    (void) seed_key_length;
-}
-
-void __attribute__((noreturn)) assert_exit(bool confirm) {
-    (void) confirm;
-    siglongjmp(fuzz_exit_jump_ctx.jmp_buf, 1);
-}
-
-void __attribute__((noreturn)) app_exit(void) {
-    siglongjmp(fuzz_exit_jump_ctx.jmp_buf, 1);
 }

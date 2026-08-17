@@ -3,7 +3,7 @@
 
 #include "cardano_buffer.h"
 #include "cbor.h"  // for cbor_writeToken
-#include "assert.h"
+#include "app_assert.h"
 
 bool buffer_read_bytes_ptr(buffer_t *buffer, const uint8_t **destBuffer, size_t n) {
     ASSERT(buffer != NULL);

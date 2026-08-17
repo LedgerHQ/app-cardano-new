@@ -3,7 +3,7 @@
 
 #include <string.h>  // explicit_bzero
 
-#include "assert.h"
+#include "app_assert.h"
 #include "cardano_buffer.h"
 #include "addressUtilsByron.h"
 #include "keyDerivation.h"
@@ -13,7 +13,6 @@
 #include "lcx_crc.h"
 #include "cardano_swo.h"
 #include "utils.h"
-#include "assert.h"
 
 #define BYRON_ADDRESS_CBOR_HASH_SIZE 32
 #define ADDRESS_ROOT_SIZE            28

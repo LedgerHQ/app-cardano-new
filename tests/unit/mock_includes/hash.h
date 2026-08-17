@@ -10,13 +10,13 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "assert.h"
+#include "app_assert.h"
 #include "utils/utils.h"
 #include "lcx_hash.h"
 #include "ledger_assert.h"
 
 // Mock definitions for compile-time assertions and memory checks
-// Note: ASSERT and LEDGER_ASSERT are defined in assert.h/ledger_assert.h
+// Note: ASSERT and LEDGER_ASSERT are defined in app_assert.h/ledger_assert.h
 // Note: TRACE and BUFFER_SIZE_PARANOIA are defined in utils.h
 
 #ifdef CX_LAST

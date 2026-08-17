@@ -15,7 +15,7 @@
 #include "crypto.h"
 #include "keyDerivation.h"
 #include "crypto_mock_data.h"
-#include "utils/assert.h"
+#include "utils/app_assert.h"
 
 #define RAW_PUBKEY_SIZE 65
 

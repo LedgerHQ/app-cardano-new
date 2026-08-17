@@ -25,7 +25,7 @@
 
 #include <string.h>
 
-#include "assert.h"
+#include "app_assert.h"
 #include "ipUtils.h"
 #include "utils.h"
 

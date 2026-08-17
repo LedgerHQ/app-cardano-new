@@ -1,7 +1,7 @@
 /* SPDX-FileCopyrightText: 2025-2026 Vacuumlabs */
 /* SPDX-License-Identifier: Apache-2.0 */
 
-#include "utils/assert.h"
+#include "utils/app_assert.h"
 #include "hexUtils.h"
 #include <string.h>
 

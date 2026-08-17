@@ -13,7 +13,7 @@
 #include "dispatcher.h"
 #include "globals.h"
 #include "cardano_swo.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "utils.h"
 #include "app_context.h"
 #include "get_serial.h"

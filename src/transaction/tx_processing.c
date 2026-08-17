@@ -19,7 +19,7 @@
 #include "tx_processing_certificates.h"
 #include "tx.h"
 #include "utils.h"
-#include "assert.h"
+#include "app_assert.h"
 #include "tx_constants.h"
 #include "tx_output_types.h"
 #include "keyDerivation.h"

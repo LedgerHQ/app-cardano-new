@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "assert.h"
+#include "app_assert.h"
 
 // Source of truth for these strings is CIP-0005. Keep only prefixes currently used by this app.
 
