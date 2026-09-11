@@ -66,18 +66,20 @@ static inline void run_fixture(const derive_address_fixture_t *fixture) {
 
     // Mock the handler call with fixture data
     // The handler should reject and return the expected status word
-    test_read_buffer_t derive_address_buffer = make_test_read_buffer(fixture->data, fixture->data_len);
+    test_read_buffer_t derive_address_buffer =
+        make_test_read_buffer(fixture->data, fixture->data_len);
     TRACE_BUFFER(derive_address_buffer.sdk_buffer.ptr, derive_address_buffer.sdk_buffer.size);
     apdu_response_begin(INS_DERIVE_ADDRESS);
     handler_derive_address(&derive_address_buffer.sdk_buffer, fixture->p1);
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_read_buffer_unchanged_and_cleanup(&derive_address_buffer, fixture->data);
     assert_int_equal(g_last_response_swo, fixture->check_expected);
 
     if (fixture->check_expected == SWO_SUCCESS && fixture->p1 == P1_ADDRESS_RETURN) {
         if (fixture->expected_address == NULL || fixture->expected_address_len == 0) {
             fprintf(stderr, "UNIT_CAPTURE [%s] expectedAddressHex=", fixture->name);
-            for (size_t i = 0; i < g_last_response_len; i++) fprintf(stderr, "%02x", g_last_response[i]);
+            for (size_t i = 0; i < g_last_response_len; i++)
+                fprintf(stderr, "%02x", g_last_response[i]);
             fprintf(stderr, "\n");
             fail_msg("Missing unit expected result for derive_address fixture '%s'", fixture->name);
         }

@@ -2,7 +2,8 @@
 
 ## Overview
 
-Fuzzing allows us to test how a program behaves when provided with invalid, unexpected, or random data as input. Fuzzing is part of our comprehensive testing strategy, which is described in the testing section of [doc/OVERVIEW.md](../doc/OVERVIEW.md).
+Fuzzing allows us to test how a program behaves when provided with invalid, unexpected, or random data as input.
+Fuzzing is part of our comprehensive testing strategy, which is described in the testing section of [doc/OVERVIEW.md](../doc/OVERVIEW.md).
 
 This directory contains 13 fuzzing harnesses covering APDU handlers, transaction
 parsing, address derivation, script hashing, and other security-critical components.
@@ -34,6 +35,7 @@ internal parsers/builders, and a combined dispatcher fuzzer. Each implements
 `int LLVMFuzzerTestOneInput(...)` and is built into a `fuzz_*` binary.
 
 Current harnesses:
+
 - `fuzz_all_handlers`
 - `fuzz_bip44_policy`
 - `fuzz_cvote_aux_parser`
@@ -47,6 +49,77 @@ Current harnesses:
 - `fuzz_signOpCert`
 - `fuzz_signTx`
 - `fuzz_tx_parser_entrypoints`
+
+## Building and Running Fuzzers from the container
+
+### Preparation
+
+The fuzzer can be run inside the active Ledger VS Code dev-tools container used
+for this repository, typically `ledger-app-cardano-container`. That keeps the
+SDK version aligned with normal app builds.
+
+```bash
+docker exec -ti ledger-app-cardano-container bash
+```
+
+If the VS Code container is not running, start it through the Ledger VS Code
+extension. As a fallback, use the same dev-tools image and mount the repository
+at `/app`:
+
+```bash
+docker run --rm -ti -v "$(realpath .):/app" \
+  ghcr.io/ledgerhq/ledger-app-builder/ledger-app-dev-tools:latest
+```
+
+### Compile and run the fuzzer from the container
+
+Once inside the container, navigate to the `tests/fuzzing` folder to generate the fuzzer:
+
+#### Preparation
+
+Install the needed modules and set the BOLOS_SDK variable:
+
+```bash
+export BOLOS_SDK=/opt/flex-secure-sdk/
+cd tests/fuzzing
+```
+
+#### Compile the fuzzers
+
+```bash
+${BOLOS_SDK}/fuzzing/local_run.sh --j=4 --build=1 --BOLOS_SDK=${BOLOS_SDK}
+```
+
+#### Run the fuzzer
+
+```bash
+${BOLOS_SDK}/fuzzing/local_run.sh --j=4 --run-fuzzer=1 --fuzzer=build/fuzz_XXX --compute-coverage=1
+```
+
+#### Compile and run the fuzzer
+
+```bash
+${BOLOS_SDK}/fuzzing/local_run.sh --j=4 --build=1 --BOLOS_SDK=${BOLOS_SDK} \
+                                  --run-fuzzer=1 --fuzzer=build/fuzz_XXX --compute-coverage=1
+```
+
+### About local_run.sh
+
+| Parameter              | Type                | Description                                                          |
+| :--------------------- | :------------------ | :------------------------------------------------------------------- |
+| `--BOLOS_SDK`          | `PATH TO BOLOS SDK` | **Required**. Path to the BOLOS SDK                                  |
+| `--build`              | `bool`              | **Optional**. Whether to build the project (default: 0)              |
+| `--fuzzer`             | `PATH`              | **Required**. Path to the fuzzer binary                              |
+| `--compute-coverage`   | `bool`              | **Optional**. Whether to compute coverage after fuzzing (default: 0) |
+| `--run-fuzzer`         | `bool`              | **Optional**. Whether to run or not the fuzzer (default: 0)          |
+| `--run-crash`          | `FILENAME`          | **Optional**. Run the on a specific crash input file (default: 0)    |
+| `--sanitizer`          | `address or memory` | **Optional**. Compile with sanitizer (default: address)              |
+| `--j`                  | `int`               | **Optional**. N-parallel jobs for build and fuzzing (default: 1)     |
+| `--help`               |                     | **Optional**. Display help message                                   |
+
+### Visualizing code coverage
+
+After running your fuzzer, if `--compute-coverage=1` the coverage will be available in your browser.
 
 ## Building and Running Fuzzers (SDK Fuzzing Framework)
 
@@ -177,6 +250,7 @@ For production continuous fuzzing integration with Google's OSS-Fuzz infrastruct
 The repository includes `.clusterfuzzlite/` configuration files that enable automatic fuzzing campaigns.
 
 **How it works:**
+
 1. `.clusterfuzzlite/Dockerfile` - Uses `ledger-app-builder-lite` to provide the SDK,
    then `oss-fuzz-base/base-builder` for clang/libfuzzer/sanitizers.
 2. `.clusterfuzzlite/build.sh` - Runs cmake with `LIB_FUZZING_ENGINE` and `CFLAGS`

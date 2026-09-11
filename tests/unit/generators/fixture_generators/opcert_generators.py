@@ -2,15 +2,15 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
-from typing import Sequence
+from collections.abc import Sequence
 
 from tests.unit.generators.common import (
     _ensure_base58_module,
     extract_apdu_payload,
-    write_generated_c_file,
-    sanitize_c_identifier,
     format_bytes_as_c_array,
+    sanitize_c_identifier,
     warning_expr_from_test_case,
+    write_generated_c_file,
 )
 from tests.unit.generators.paths import GENERATED_OPCERT_DIR
 
@@ -47,7 +47,7 @@ def generate_opcert_fixtures() -> None:
     ]
 
     fixture_entries: list[str] = []
-    for test_index, test_case in enumerate(test_cases):
+    for _, test_case in enumerate(test_cases):
         safe_name = sanitize_c_identifier(test_case.name, uppercase=True)
         array_name = f"OPCERT_FIXTURE_{safe_name}_PAYLOAD"
         apdu = builder.sign_opcert(test_case)
@@ -59,15 +59,11 @@ def generate_opcert_fixtures() -> None:
         expected_signature_array_name = "NULL"
         expected_signature_len = "0"
         if getattr(test_case, "unit_test_expect", None) is not None:
-            expected_signature_bytes = bytes.fromhex(
-                test_case.unit_test_expect.signatureHex
+            expected_signature_bytes = bytes.fromhex(test_case.unit_test_expect.signatureHex)
+            expected_signature_array_name = f"OPCERT_FIXTURE_{safe_name}_EXPECTED_SIGNATURE"
+            expected_signature_lines = format_bytes_as_c_array(expected_signature_bytes, expected_signature_array_name).split(
+                "\n"
             )
-            expected_signature_array_name = (
-                f"OPCERT_FIXTURE_{safe_name}_EXPECTED_SIGNATURE"
-            )
-            expected_signature_lines = format_bytes_as_c_array(
-                expected_signature_bytes, expected_signature_array_name
-            ).split("\n")
             header_lines.extend(expected_signature_lines)
             header_lines.append("")
             expected_signature_len = f"sizeof({expected_signature_array_name})"

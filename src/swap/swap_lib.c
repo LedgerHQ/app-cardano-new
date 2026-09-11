@@ -21,7 +21,7 @@
 #ifdef TRACE_SWAP
 #define TRACE_MODULE(...) TRACE("[swap_lib] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 typedef struct swap_validated_s {
@@ -56,7 +56,7 @@ bool swap_copy_transaction_parameters(create_transaction_parameters_t *params) {
     }
     if (params->destination_address_extra_id[0] != '\0') {
         TRACE_MODULE("destination_address_extra_id expected empty, not '%s'",
-              params->destination_address_extra_id);
+                     params->destination_address_extra_id);
         return false;
     }
 
@@ -123,8 +123,8 @@ bool swap_check_destination_validity(const tx_output_destination_t *destination)
             }
             if (strcmp(G_swap_validated.destination, rawAddressHuman) != 0) {
                 TRACE_MODULE("Destination mismatch: tx=%s, swap=%s",
-                      rawAddressHuman,
-                      G_swap_validated.destination);
+                             rawAddressHuman,
+                             G_swap_validated.destination);
                 return false;
             }
             break;
@@ -132,7 +132,7 @@ bool swap_check_destination_validity(const tx_output_destination_t *destination)
         default:
             LEDGER_ASSERT(false, "Invalid destination type for swap: %d", destination->type);
             return false;  // Unreachable
-        // LCOV_EXCL_STOP
+                           // LCOV_EXCL_STOP
     }
     TRACE_MODULE("Destination VALID");
     return true;

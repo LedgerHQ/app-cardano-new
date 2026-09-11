@@ -1,0 +1,19 @@
+name: Misspellings checks
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  misspell:
+    name: Check misspellings
+    uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_spell_check.yml@v1
+    with:
+      ignore_words_list: shrinked,cips,CIPs,atLeast,Weill,Caue,Shepard,Sting,Lins

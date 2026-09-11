@@ -29,9 +29,8 @@ static uint8_t cvote_payload_trace_buffer[CVOTE_PAYLOAD_TRACE_BUFFER_SIZE];
 static size_t cvote_payload_trace_size = 0;
 
 static void auxDataHashBuilder_trace_record(uint8_t hashContexts,
-                                            const uint8_t* buffer,
-                                            size_t size)
-{
+                                            const uint8_t *buffer,
+                                            size_t size) {
     ASSERT(buffer != NULL);
     if (hashContexts & HC_AUX_DATA) {
         ASSERT(aux_data_hash_trace_size + size <= AUX_DATA_TRACE_BUFFER_SIZE);
@@ -46,7 +45,7 @@ static void auxDataHashBuilder_trace_record(uint8_t hashContexts,
 }
 #define _TRACE(...) TRACE(__VA_ARGS__)
 #else
-#define auxDataHashBuilder_trace_record(hashContexts, buffer, size) ((void)0)
+#define auxDataHashBuilder_trace_record(hashContexts, buffer, size) ((void) 0)
 #define _TRACE(...)
 #endif
 
@@ -56,7 +55,7 @@ static void auxDataHashBuilder_trace_record(uint8_t hashContexts,
 #define APPEND_DATA(hashContexts, buffer, bufferSize) \
     auxDataHashBuilder_append_buffer(builder, hashContexts, buffer, bufferSize)
 
-static void auxDataHashBuilder_append_cbor(aux_data_hash_builder_t* builder,
+static void auxDataHashBuilder_append_cbor(aux_data_hash_builder_t *builder,
                                            uint8_t hashContexts,
                                            uint8_t type,
                                            uint64_t value) {
@@ -72,9 +71,9 @@ static void auxDataHashBuilder_append_cbor(aux_data_hash_builder_t* builder,
     }
 }
 
-static void auxDataHashBuilder_append_buffer(aux_data_hash_builder_t* builder,
+static void auxDataHashBuilder_append_buffer(aux_data_hash_builder_t *builder,
                                              uint8_t hashContexts,
-                                             const uint8_t* buffer,
+                                             const uint8_t *buffer,
                                              size_t bufferSize) {
     ASSERT(buffer != NULL);
     ASSERT(bufferSize < BUFFER_SIZE_PARANOIA);
@@ -87,7 +86,7 @@ static void auxDataHashBuilder_append_buffer(aux_data_hash_builder_t* builder,
     }
 }
 
-void auxDataHashBuilder_init(aux_data_hash_builder_t* builder) {
+void auxDataHashBuilder_init(aux_data_hash_builder_t *builder) {
     ASSERT(builder != NULL);
 
     // Clear the entire structure to prevent stale data
@@ -106,7 +105,7 @@ void auxDataHashBuilder_init(aux_data_hash_builder_t* builder) {
     builder->state = AUX_DATA_HASH_BUILDER_INIT;
 }
 
-void auxDataHashBuilder_cVoteRegistration_enter(aux_data_hash_builder_t* builder,
+void auxDataHashBuilder_cVoteRegistration_enter(aux_data_hash_builder_t *builder,
                                                 cvote_registration_format_t format) {
     _TRACE("state = %d", builder->state);
 
@@ -119,7 +118,7 @@ void auxDataHashBuilder_cVoteRegistration_enter(aux_data_hash_builder_t* builder
     builder->state = AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_INIT;
 }
 
-void auxDataHashBuilder_cVoteRegistration_enterPayload(aux_data_hash_builder_t* builder) {
+void auxDataHashBuilder_cVoteRegistration_enterPayload(aux_data_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     ASSERT(builder->state == AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_INIT);
@@ -131,8 +130,8 @@ void auxDataHashBuilder_cVoteRegistration_enterPayload(aux_data_hash_builder_t* 
     builder->state = AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_PAYLOAD_INIT;
 }
 
-void auxDataHashBuilder_cVoteRegistration_addVoteKey(aux_data_hash_builder_t* builder,
-                                                     const uint8_t* votePubKeyBuffer,
+void auxDataHashBuilder_cVoteRegistration_addVoteKey(aux_data_hash_builder_t *builder,
+                                                     const uint8_t *votePubKeyBuffer,
                                                      size_t votePubKeySize) {
     _TRACE("state = %d", builder->state);
 
@@ -149,7 +148,7 @@ void auxDataHashBuilder_cVoteRegistration_addVoteKey(aux_data_hash_builder_t* bu
     builder->state = AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_PAYLOAD_VOTE_KEY;
 }
 
-void auxDataHashBuilder_cVoteRegistration_enterDelegations(aux_data_hash_builder_t* builder,
+void auxDataHashBuilder_cVoteRegistration_enterDelegations(aux_data_hash_builder_t *builder,
                                                            uint16_t numDelegations) {
     _TRACE("state = %d", builder->state);
 
@@ -165,8 +164,8 @@ void auxDataHashBuilder_cVoteRegistration_enterDelegations(aux_data_hash_builder
     builder->state = AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_PAYLOAD_DELEGATIONS;
 }
 
-void auxDataHashBuilder_cVoteRegistration_addDelegation(aux_data_hash_builder_t* builder,
-                                                        const uint8_t* votePubKeyBuffer,
+void auxDataHashBuilder_cVoteRegistration_addDelegation(aux_data_hash_builder_t *builder,
+                                                        const uint8_t *votePubKeyBuffer,
                                                         size_t votePubKeySize,
                                                         uint32_t weight) {
     _TRACE("state = %d", builder->state);
@@ -193,8 +192,8 @@ void auxDataHashBuilder_cVoteRegistration_addDelegation(aux_data_hash_builder_t*
     }
 }
 
-void auxDataHashBuilder_cVoteRegistration_addStakingKey(aux_data_hash_builder_t* builder,
-                                                        const uint8_t* stakingPubKeyBuffer,
+void auxDataHashBuilder_cVoteRegistration_addStakingKey(aux_data_hash_builder_t *builder,
+                                                        const uint8_t *stakingPubKeyBuffer,
                                                         size_t stakingPubKeySize) {
     _TRACE("state = %d", builder->state);
 
@@ -213,7 +212,7 @@ void auxDataHashBuilder_cVoteRegistration_addStakingKey(aux_data_hash_builder_t*
         default:
             ASSERT(false);
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     {
@@ -233,8 +232,8 @@ void auxDataHashBuilder_cVoteRegistration_addStakingKey(aux_data_hash_builder_t*
     builder->state = AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_PAYLOAD_STAKING_KEY;
 }
 
-void auxDataHashBuilder_cVoteRegistration_addPaymentAddress(aux_data_hash_builder_t* builder,
-                                                            const uint8_t* addressBuffer,
+void auxDataHashBuilder_cVoteRegistration_addPaymentAddress(aux_data_hash_builder_t *builder,
+                                                            const uint8_t *addressBuffer,
                                                             size_t addressSize) {
     _TRACE("state = %d", builder->state);
 
@@ -254,7 +253,7 @@ void auxDataHashBuilder_cVoteRegistration_addPaymentAddress(aux_data_hash_builde
     builder->state = AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_PAYLOAD_PAYMENT_ADDRESS;
 }
 
-void auxDataHashBuilder_cVoteRegistration_addNonce(aux_data_hash_builder_t* builder,
+void auxDataHashBuilder_cVoteRegistration_addNonce(aux_data_hash_builder_t *builder,
                                                    uint64_t nonce) {
     _TRACE("state = %d", builder->state);
 
@@ -268,7 +267,7 @@ void auxDataHashBuilder_cVoteRegistration_addNonce(aux_data_hash_builder_t* buil
     builder->state = AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_PAYLOAD_NONCE;
 }
 
-void auxDataHashBuilder_cVoteRegistration_addVotingPurpose(aux_data_hash_builder_t* builder,
+void auxDataHashBuilder_cVoteRegistration_addVotingPurpose(aux_data_hash_builder_t *builder,
                                                            uint64_t votingPurpose) {
     _TRACE("state = %d", builder->state);
 
@@ -285,8 +284,8 @@ void auxDataHashBuilder_cVoteRegistration_addVotingPurpose(aux_data_hash_builder
     builder->state = AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_PAYLOAD_VOTING_PURPOSE;
 }
 
-void auxDataHashBuilder_cVoteRegistration_finalizePayload(aux_data_hash_builder_t* builder,
-                                                          uint8_t* outBuffer,
+void auxDataHashBuilder_cVoteRegistration_finalizePayload(aux_data_hash_builder_t *builder,
+                                                          uint8_t *outBuffer,
                                                           size_t outSize) {
     _TRACE("state = %d", builder->state);
 
@@ -296,12 +295,14 @@ void auxDataHashBuilder_cVoteRegistration_finalizePayload(aux_data_hash_builder_
            builder->state == AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_PAYLOAD_VOTING_PURPOSE);
 
     ASSERT(outSize == CVOTE_REGISTRATION_PAYLOAD_HASH_LENGTH);
-    { blake2b_256_finalize(&builder->cVoteRegistrationData.payloadHash, outBuffer, outSize); }
+    {
+        blake2b_256_finalize(&builder->cVoteRegistrationData.payloadHash, outBuffer, outSize);
+    }
     builder->state = AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_PAYLOAD_FINALIZED;
 }
 
-void auxDataHashBuilder_cVoteRegistration_addSignature(aux_data_hash_builder_t* builder,
-                                                       const uint8_t* signatureBuffer,
+void auxDataHashBuilder_cVoteRegistration_addSignature(aux_data_hash_builder_t *builder,
+                                                       const uint8_t *signatureBuffer,
                                                        size_t signatureSize) {
     _TRACE("state = %d", builder->state);
 
@@ -321,7 +322,7 @@ void auxDataHashBuilder_cVoteRegistration_addSignature(aux_data_hash_builder_t* 
     builder->state = AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_SIGNATURE;
 }
 
-void auxDataHashBuilder_cVoteRegistration_addAuxiliaryScripts(aux_data_hash_builder_t* builder) {
+void auxDataHashBuilder_cVoteRegistration_addAuxiliaryScripts(aux_data_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     ASSERT(builder->state == AUX_DATA_HASH_BUILDER_IN_CVOTE_REGISTRATION_SIGNATURE);
@@ -333,8 +334,8 @@ void auxDataHashBuilder_cVoteRegistration_addAuxiliaryScripts(aux_data_hash_buil
     builder->state = AUX_DATA_HASH_BUILDER_IN_AUXILIARY_SCRIPTS;
 }
 
-void auxDataHashBuilder_finalize(aux_data_hash_builder_t* builder,
-                                 uint8_t* outBuffer,
+void auxDataHashBuilder_finalize(aux_data_hash_builder_t *builder,
+                                 uint8_t *outBuffer,
                                  size_t outSize) {
     _TRACE("state = %d", builder->state);
 

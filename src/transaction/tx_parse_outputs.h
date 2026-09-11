@@ -10,30 +10,20 @@
 #include "tx_output_types.h"
 #include "assert.h"
 
-static inline tx_output_destination_t tx_output_destination_make_third_party(const uint8_t* addressBuffer,
-                                                                              size_t addressLength)
-{
+static inline tx_output_destination_t tx_output_destination_make_third_party(
+    const uint8_t *addressBuffer,
+    size_t addressLength) {
     ASSERT(addressBuffer != NULL);
     ASSERT(addressLength > 0);
     ASSERT(addressLength <= MAX_ADDRESS_LENGTH);
 
     tx_output_destination_t destination = {
         .type = DESTINATION_THIRD_PARTY,
-        .address = {
-            .buffer = addressBuffer,
-            .length = addressLength,
-        },
-    };
-    return destination;
-}
-
-static inline tx_output_destination_t tx_output_destination_make_device_owned(const address_params_t* params)
-{
-    ASSERT(params != NULL);
-
-    tx_output_destination_t destination = {
-        .type = DESTINATION_DEVICE_OWNED,
-        .params = *params,
+        .address =
+            {
+                .buffer = addressBuffer,
+                .length = addressLength,
+            },
     };
     return destination;
 }
@@ -59,7 +49,7 @@ static inline tx_output_destination_t tx_output_destination_make_device_owned(co
  *     credential pointers within params reference the persistent raw buffer
  * @return 0 on success, SWO_* on failure
  */
-uint16_t parse_output_destination(buffer_t* buf, tx_output_destination_t* destination);
+uint16_t parse_output_destination(buffer_t *buf, tx_output_destination_t *destination);
 
 /**
  * Parse transaction output serialization format from buffer.
@@ -74,8 +64,8 @@ uint16_t parse_output_destination(buffer_t* buf, tx_output_destination_t* destin
  * @param[in] parseFailureSwo SWO to return on parse failure
  * @return 0 on success, parseFailureSwo on failure
  */
-uint16_t parse_output_format(buffer_t* buf,
-                             tx_output_serialization_format_t* format,
+uint16_t parse_output_format(buffer_t *buf,
+                             tx_output_serialization_format_t *format,
                              uint16_t parseFailureSwo);
 
 /**
@@ -93,12 +83,12 @@ uint16_t parse_output_format(buffer_t* buf,
  * @param[in] parseFailureSwo SWO to return on parse failure
  * @return 0 on success, or parseFailureSwo on failure
  */
-uint16_t parse_output_top_level(buffer_t* buf,
-                                tx_output_description_t* out_description,
+uint16_t parse_output_top_level(buffer_t *buf,
+                                tx_output_description_t *out_description,
                                 uint16_t parseFailureSwo);
 
 typedef struct {
-    const uint8_t* policyId;   // points into raw tx buffer
+    const uint8_t *policyId;  // points into raw tx buffer
     uint16_t numTokens;
 } output_asset_group_t;
 
@@ -109,7 +99,7 @@ typedef struct {
  * @param[out] out_group Populated on success
  * @return true on success, false on parse failure
  */
-bool parse_output_asset_group(buffer_t* buf, output_asset_group_t* out_group);
+bool parse_output_asset_group(buffer_t *buf, output_asset_group_t *out_group);
 
 /**
  * Parse one token (asset name + amount) from a transaction output.
@@ -118,7 +108,7 @@ bool parse_output_asset_group(buffer_t* buf, output_asset_group_t* out_group);
  * @param[out] out_token Populated on success
  * @return true on success, false on parse failure
  */
-bool parse_output_token(buffer_t* buf, output_token_t* out_token);
+bool parse_output_token(buffer_t *buf, output_token_t *out_token);
 
 /**
  * Parse transaction output datum body from buffer (presence flag already consumed).
@@ -135,7 +125,7 @@ bool parse_output_token(buffer_t* buf, output_token_t* out_token);
  * @param[out] datum_out Populated on success
  * @return true on success, false on parse failure
  */
-bool parse_output_datum(buffer_t* buf, output_datum_t* datum);
+bool parse_output_datum(buffer_t *buf, output_datum_t *datum);
 
 /**
  * Parse transaction output reference script body from buffer (presence flag already consumed).
@@ -148,4 +138,4 @@ bool parse_output_datum(buffer_t* buf, output_datum_t* datum);
  * @param[out] ref_script_out Populated on success
  * @return true on success, false on parse failure
  */
-bool parse_output_ref_script(buffer_t* buf, ref_script_t* ref_script);
+bool parse_output_ref_script(buffer_t *buf, ref_script_t *ref_script);

@@ -22,7 +22,7 @@
 #ifdef TRACE_TX_PARSE
 #define TRACE_MODULE(...) TRACE("[tx_parse] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 // ---------------------------------------------------------------------------
@@ -82,9 +82,7 @@ bool parse_required_signer(buffer_t *buf, required_signer_t *out_required_signer
     return true;
 }
 
-bool parse_voter_votes_header(buffer_t *buf,
-                              ext_voter_t *out_voter,
-                              uint16_t *out_num_votes) {
+bool parse_voter_votes_header(buffer_t *buf, ext_voter_t *out_voter, uint16_t *out_num_votes) {
     ASSERT(buf != NULL);
     ASSERT(out_voter != NULL);
     ASSERT(out_num_votes != NULL);
@@ -211,8 +209,10 @@ bool parse_mint_token(buffer_t *buf, mint_token_t *out_mint_token) {
     ASSERT(out_mint_token != NULL);
 
     uint8_t asset_name_length = 0;
-    if (!buffer_read_u8(buf, &asset_name_length) || asset_name_length > MAX_MINT_ASSET_NAME_LENGTH) {
-        TRACE("Failed to read mint asset name length or too long: %u", (unsigned) asset_name_length);
+    if (!buffer_read_u8(buf, &asset_name_length) ||
+        asset_name_length > MAX_MINT_ASSET_NAME_LENGTH) {
+        TRACE("Failed to read mint asset name length or too long: %u",
+              (unsigned) asset_name_length);
         return false;
     }
 

@@ -153,8 +153,11 @@ static void test_buffer_read_drep_rejects_truncated_key_path(void **state) {
 
     uint8_t raw[] = {
         EXT_DREP_KEY_PATH,
-        0x02,                    // claims 2 path elements
-        0x80, 0x00, 0x07, 0x3c,  // only one element present
+        0x02,  // claims 2 path elements
+        0x80,
+        0x00,
+        0x07,
+        0x3c,  // only one element present
     };
     buffer_t buf = buffer_create(raw, sizeof(raw));
     ext_drep_t drep = {0};
@@ -225,8 +228,11 @@ static void test_buffer_read_credential_rejects_truncated_key_path(void **state)
 
     uint8_t raw[] = {
         EXT_CREDENTIAL_KEY_PATH,
-        0x02,                    // claims 2 path elements
-        0x80, 0x00, 0x07, 0x3c,  // only one element present
+        0x02,  // claims 2 path elements
+        0x80,
+        0x00,
+        0x07,
+        0x3c,  // only one element present
     };
     buffer_t buf = buffer_create(raw, sizeof(raw));
     ext_credential_t credential = {0};

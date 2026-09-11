@@ -3,7 +3,7 @@
 
 #include "securityPolicy.h"
 
-security_policy_t policyForDerivePrivateKey(const bip44_path_t* path) {
+security_policy_t policyForDerivePrivateKey(const bip44_path_t *path) {
     switch (bip44_classifyPath(path)) {
         case PATH_ORDINARY_ACCOUNT:
         case PATH_ORDINARY_PAYMENT_KEY:
@@ -13,7 +13,9 @@ security_policy_t policyForDerivePrivateKey(const bip44_path_t* path) {
         case PATH_MULTISIG_PAYMENT_KEY:
         case PATH_MULTISIG_STAKING_KEY:
 
-        case PATH_DREP_KEY:
+        case PATH_ORDINARY_DREP_KEY:
+        case PATH_MULTISIG_DREP_KEY:
+
         case PATH_COMMITTEE_COLD_KEY:
         case PATH_COMMITTEE_HOT_KEY:
 
@@ -25,11 +27,11 @@ security_policy_t policyForDerivePrivateKey(const bip44_path_t* path) {
         case PATH_CVOTE_KEY:
             return POLICY_HIDE;
 
-        case PATH_INVALID:
         // LCOV_EXCL_START
+        case PATH_INVALID:
         default:
             ASSERT(false);
             return POLICY_DENY;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }

@@ -59,7 +59,7 @@ static void run_sign_cvote_apdu(const uint8_t *data, size_t data_len, uint8_t p1
     test_read_buffer_t cvote_buffer = make_test_read_buffer(data, data_len);
     apdu_response_begin(INS_SIGN_CVOTE);
     handler_sign_cvote(&cvote_buffer.sdk_buffer, p1);
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_read_buffer_unchanged_and_cleanup(&cvote_buffer, data);
 }
 
@@ -67,9 +67,10 @@ static void test_nbgl_reject_on_cvote_confirm_resets_context(void **state) {
     (void) state;
     reset_test_context();
 
-    // INIT payload: [remaining bytes=34] || [votePlanId(32)] || [proposalIndex(1)] || [payloadTag(1)]
+    // INIT payload: [remaining bytes=34] || [votePlanId(32)] || [proposalIndex(1)] ||
+    // [payloadTag(1)]
     uint8_t init_payload[4 + 34] = {0};
-    init_payload[3] = 34;  // big-endian u32
+    init_payload[3] = 34;      // big-endian u32
     init_payload[4 + 32] = 7;  // proposal index
     init_payload[4 + 33] = 1;  // payload type tag
     run_sign_cvote_apdu(init_payload, sizeof(init_payload), P1_CVOTE_INIT);

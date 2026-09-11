@@ -18,7 +18,7 @@
 static uint8_t tx_body_trace_buffer[4 * 1024];
 static size_t tx_body_trace_size = 0;
 
-static void trace_record_bytes(const uint8_t* buffer, size_t size) {
+static void trace_record_bytes(const uint8_t *buffer, size_t size) {
     if (tx_body_trace_size + size > sizeof(tx_body_trace_buffer)) {
         return;
     }
@@ -26,9 +26,9 @@ static void trace_record_bytes(const uint8_t* buffer, size_t size) {
     tx_body_trace_size += size;
 }
 #define TRACE_BODY(buffer, size) trace_record_bytes(buffer, size)
-#define _TRACE(...) TRACE(__VA_ARGS__)
+#define _TRACE(...)              TRACE(__VA_ARGS__)
 #else
-#define TRACE_BODY(buffer, size) (void)0
+#define TRACE_BODY(buffer, size) (void) 0
 #define _TRACE(...)
 #endif  // TRACE_TX_HASH_BUILDER
 
@@ -46,15 +46,16 @@ The following macros and functions have dual purpose:
 
 // bufferSize == 0 is safe: blake2b_update() is a no-op for inlen == 0,
 // so callers may pass buffer == NULL when bufferSize == 0 (e.g. empty pool metadata URL).
-static void blake2b_256_append_buffer_tx_body(blake2b_256_context_t* hashCtx,
-                                              const uint8_t* buffer,
+static void blake2b_256_append_buffer_tx_body(blake2b_256_context_t *hashCtx,
+                                              const uint8_t *buffer,
                                               size_t bufferSize) {
     TRACE_BODY(buffer, bufferSize);
     blake2b_256_append(hashCtx, buffer, bufferSize);
 }
 
-static void
-blake2b_256_append_cbor_tx_body(blake2b_256_context_t* hashCtx, uint8_t type, uint64_t value) {
+static void blake2b_256_append_cbor_tx_body(blake2b_256_context_t *hashCtx,
+                                            uint8_t type,
+                                            uint64_t value) {
     uint8_t buffer[10] = {0};
     size_t size = 0;
     LEDGER_ASSERT(cbor_writeToken(type, value, buffer, SIZEOF(buffer), &size),
@@ -69,9 +70,9 @@ blake2b_256_append_cbor_tx_body(blake2b_256_context_t* hashCtx, uint8_t type, ui
         BUILDER_APPEND_CBOR(CBOR_TYPE_TAG, CBOR_TAG_SET); \
     }
 
-static void _append_cbor_token(uint8_t* buffer,
+static void _append_cbor_token(uint8_t *buffer,
                                size_t bufferLen,
-                               size_t* offset,
+                               size_t *offset,
                                uint8_t type,
                                uint64_t value) {
     ASSERT(buffer != NULL);
@@ -84,10 +85,10 @@ static void _append_cbor_token(uint8_t* buffer,
     *offset += tokenSize;
 }
 
-static void _append_map_key_bytes(uint8_t* buffer,
+static void _append_map_key_bytes(uint8_t *buffer,
                                   size_t bufferLen,
-                                  size_t* offset,
-                                  const uint8_t* data,
+                                  size_t *offset,
+                                  const uint8_t *data,
                                   size_t dataLen) {
     ASSERT(buffer != NULL && offset != NULL && data != NULL);
     LEDGER_ASSERT(bufferLen >= *offset, "Map bytes invalid offset");
@@ -97,7 +98,7 @@ static void _append_map_key_bytes(uint8_t* buffer,
     *offset += dataLen;
 }
 
-static const uint8_t* _voter_key_data_with_size(const voter_t* voter, size_t* out_size) {
+static const uint8_t *_voter_key_data_with_size(const voter_t *voter, size_t *out_size) {
     ASSERT(voter != NULL);
     ASSERT(out_size != NULL);
 
@@ -115,18 +116,16 @@ static const uint8_t* _voter_key_data_with_size(const voter_t* voter, size_t* ou
         default:
             ASSERT(false);
             return NULL;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
-size_t txHashBuilder_serializeVoterKey(const voter_t* voter,
-                                       uint8_t* buffer,
-                                       size_t bufferLen) {
+size_t txHashBuilder_serializeVoterKey(const voter_t *voter, uint8_t *buffer, size_t bufferLen) {
     ASSERT(voter != NULL);
     ASSERT(buffer != NULL);
     size_t offset = 0;
     size_t keyLen = 0;
-    const uint8_t* keyBytes = _voter_key_data_with_size(voter, &keyLen);
+    const uint8_t *keyBytes = _voter_key_data_with_size(voter, &keyLen);
     ASSERT(keyBytes != NULL);
 
     _append_cbor_token(buffer, bufferLen, &offset, CBOR_TYPE_ARRAY, 2);
@@ -137,8 +136,8 @@ size_t txHashBuilder_serializeVoterKey(const voter_t* voter,
     return offset;
 }
 
-size_t txHashBuilder_serializeGovActionKey(const gov_action_id_t* govActionId,
-                                           uint8_t* buffer,
+size_t txHashBuilder_serializeGovActionKey(const gov_action_id_t *govActionId,
+                                           uint8_t *buffer,
                                            size_t bufferLen) {
     ASSERT(govActionId != NULL);
     ASSERT(buffer != NULL);
@@ -154,8 +153,8 @@ size_t txHashBuilder_serializeGovActionKey(const gov_action_id_t* govActionId,
 
 /* End of hash computation utilities. */
 
-static void cbor_append_txInput(tx_hash_builder_t* builder,
-                                const uint8_t* utxoHashBuffer,
+static void cbor_append_txInput(tx_hash_builder_t *builder,
+                                const uint8_t *utxoHashBuffer,
                                 size_t utxoHashSize,
                                 uint32_t utxoIndex) {
     // Array(2)[
@@ -168,11 +167,13 @@ static void cbor_append_txInput(tx_hash_builder_t* builder,
         BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, utxoHashSize);
         BUILDER_APPEND_DATA(utxoHashBuffer, utxoHashSize);
     }
-    { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, utxoIndex); }
+    {
+        BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, utxoIndex);
+    }
 }
 
-static void cbor_append_txOutput_array(tx_hash_builder_t* builder,
-                                       const tx_output_description_t* output) {
+static void cbor_append_txOutput_array(tx_hash_builder_t *builder,
+                                       const tx_output_description_t *output) {
     ASSERT(output->format == ARRAY_LEGACY);
 
     // Array(2 + includeDatumHash)[
@@ -206,8 +207,8 @@ static void cbor_append_txOutput_array(tx_hash_builder_t* builder,
     }
 }
 
-static void cbor_append_txOutput_map(tx_hash_builder_t* builder,
-                                     const tx_output_description_t* output) {
+static void cbor_append_txOutput_map(tx_hash_builder_t *builder,
+                                     const tx_output_description_t *output) {
     ASSERT(output->format == MAP_BABBAGE);
 
     // Map(2 + includeDatum + includeRefScript)[
@@ -252,8 +253,8 @@ static void cbor_append_txOutput_map(tx_hash_builder_t* builder,
 }
 
 // adds top level data: address, ADA amount, starts multiasset map; tokens are added later
-static void processOutputTopLevel(tx_hash_builder_t* builder,
-                                  const tx_output_description_t* output) {
+static void processOutputTopLevel(tx_hash_builder_t *builder,
+                                  const tx_output_description_t *output) {
     builder->outputData.serializationFormat = output->format;
     builder->outputData.includeDatum = output->includeDatum;
     builder->outputData.includeRefScript = output->includeRefScript;
@@ -269,11 +270,11 @@ static void processOutputTopLevel(tx_hash_builder_t* builder,
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
-static void assertCanLeaveCurrentOutput(tx_hash_builder_t* builder) {
+static void assertCanLeaveCurrentOutput(tx_hash_builder_t *builder) {
     switch (builder->outputData.outputState) {
         case TX_OUTPUT_INIT:
         case TX_OUTPUT_TOP_LEVEL_DATA:
@@ -314,14 +315,14 @@ static void assertCanLeaveCurrentOutput(tx_hash_builder_t* builder) {
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
 // ============================== TX HASH BUILDER STATE INITIALIZATION
 // ==============================
 
-void txHashBuilder_init(tx_hash_builder_t* builder, const tx_params_t* txParams) {
+void txHashBuilder_init(tx_hash_builder_t *builder, const tx_params_t *txParams) {
     ASSERT(builder != NULL);
     ASSERT(txParams != NULL);
 
@@ -425,7 +426,7 @@ void txHashBuilder_init(tx_hash_builder_t* builder, const tx_params_t* txParams)
     builder->state = TX_HASH_BUILDER_INIT;
 }
 
-static void txHashBuilder_assertCanLeaveInit(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveInit(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     ASSERT(builder->state == TX_HASH_BUILDER_INIT);
@@ -433,7 +434,7 @@ static void txHashBuilder_assertCanLeaveInit(tx_hash_builder_t* builder) {
 
 // ============================== INPUTS ==============================
 
-void txHashBuilder_enterInputs(tx_hash_builder_t* builder) {
+void txHashBuilder_enterInputs(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     txHashBuilder_assertCanLeaveInit(builder);
@@ -446,7 +447,7 @@ void txHashBuilder_enterInputs(tx_hash_builder_t* builder) {
     builder->state = TX_HASH_BUILDER_IN_INPUTS;
 }
 
-void txHashBuilder_addInput(tx_hash_builder_t* builder, const tx_input_t* input) {
+void txHashBuilder_addInput(tx_hash_builder_t *builder, const tx_input_t *input) {
     _TRACE("state = %d, remainingInputs = %u", builder->state, builder->remainingInputs);
 
     ASSERT(builder->state == TX_HASH_BUILDER_IN_INPUTS);
@@ -456,7 +457,7 @@ void txHashBuilder_addInput(tx_hash_builder_t* builder, const tx_input_t* input)
     cbor_append_txInput(builder, input->txHash, TX_HASH_LENGTH, input->index);
 }
 
-static void txHashBuilder_assertCanLeaveInputs(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveInputs(tx_hash_builder_t *builder) {
     _TRACE("state = %d, remainingInputs = %u", builder->state, builder->remainingInputs);
 
     ASSERT(builder->state == TX_HASH_BUILDER_IN_INPUTS);
@@ -465,7 +466,7 @@ static void txHashBuilder_assertCanLeaveInputs(tx_hash_builder_t* builder) {
 
 // ============================== OUTPUTS ==============================
 
-void txHashBuilder_enterOutputs(tx_hash_builder_t* builder) {
+void txHashBuilder_enterOutputs(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     txHashBuilder_assertCanLeaveInputs(builder);
@@ -478,8 +479,8 @@ void txHashBuilder_enterOutputs(tx_hash_builder_t* builder) {
     builder->outputData.outputState = TX_OUTPUT_INIT;
 }
 
-void txHashBuilder_addOutput_topLevelData(tx_hash_builder_t* builder,
-                                          const tx_output_description_t* output) {
+void txHashBuilder_addOutput_topLevelData(tx_hash_builder_t *builder,
+                                          const tx_output_description_t *output) {
     _TRACE("state = %d, outputState = %d, remainingOutputs = %u",
            builder->state,
            builder->outputData.outputState,
@@ -496,10 +497,10 @@ void txHashBuilder_addOutput_topLevelData(tx_hash_builder_t* builder,
     builder->outputData.outputState = TX_OUTPUT_TOP_LEVEL_DATA;
 }
 
-static void addTokenGroup(tx_hash_builder_t* builder,
-                                                    const uint8_t* policyIdBuffer,
-                                                    size_t policyIdSize,
-                                                    uint16_t numTokens) {
+static void addTokenGroup(tx_hash_builder_t *builder,
+                          const uint8_t *policyIdBuffer,
+                          size_t policyIdSize,
+                          uint16_t numTokens) {
     _TRACE("state = %d, outputState = %d, remainingAssetGroups = %u",
            builder->state,
            builder->outputData.outputState,
@@ -518,7 +519,7 @@ static void addTokenGroup(tx_hash_builder_t* builder,
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     ASSERT(builder->outputData.multiassetData.remainingAssetGroups > 0);
@@ -538,17 +539,19 @@ static void addTokenGroup(tx_hash_builder_t* builder,
             BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, policyIdSize);
             BUILDER_APPEND_DATA(policyIdBuffer, policyIdSize);
         }
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_MAP, numTokens); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_MAP, numTokens);
+        }
     }
 
     builder->outputData.outputState = TX_OUTPUT_ASSET_GROUP;
 }
 
-static void addToken(tx_hash_builder_t* builder,
-                                               const uint8_t* assetNameBuffer,
-                                               size_t assetNameSize,
-                                               uint64_t amount,
-                                               cbor_type_tag_t typeTag) {
+static void addToken(tx_hash_builder_t *builder,
+                     const uint8_t *assetNameBuffer,
+                     size_t assetNameSize,
+                     uint64_t amount,
+                     cbor_type_tag_t typeTag) {
     _TRACE("state = %d, outputState = %d, remainingTokens = %u",
            builder->state,
            builder->outputData.outputState,
@@ -562,7 +565,7 @@ static void addToken(tx_hash_builder_t* builder,
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     ASSERT(builder->outputData.multiassetData.remainingTokens > 0);
@@ -577,14 +580,16 @@ static void addToken(tx_hash_builder_t* builder,
             BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, assetNameSize);
             BUILDER_APPEND_DATA(assetNameBuffer, assetNameSize);
         }
-        { BUILDER_APPEND_CBOR(typeTag, amount); }
+        {
+            BUILDER_APPEND_CBOR(typeTag, amount);
+        }
     }
 
     builder->outputData.outputState = TX_OUTPUT_ASSET_GROUP;
 }
 
-void txHashBuilder_addOutput_tokenGroup(tx_hash_builder_t* builder,
-                                        const uint8_t* policyIdBuffer,
+void txHashBuilder_addOutput_tokenGroup(tx_hash_builder_t *builder,
+                                        const uint8_t *policyIdBuffer,
                                         size_t policyIdSize,
                                         uint16_t numTokens) {
     ASSERT(builder->state == TX_HASH_BUILDER_IN_OUTPUTS);
@@ -592,8 +597,8 @@ void txHashBuilder_addOutput_tokenGroup(tx_hash_builder_t* builder,
     addTokenGroup(builder, policyIdBuffer, policyIdSize, numTokens);
 }
 
-void txHashBuilder_addOutput_token(tx_hash_builder_t* builder,
-                                   const uint8_t* assetNameBuffer,
+void txHashBuilder_addOutput_token(tx_hash_builder_t *builder,
+                                   const uint8_t *assetNameBuffer,
                                    size_t assetNameSize,
                                    uint64_t amount) {
     ASSERT(builder->state == TX_HASH_BUILDER_IN_OUTPUTS);
@@ -601,9 +606,9 @@ void txHashBuilder_addOutput_token(tx_hash_builder_t* builder,
     addToken(builder, assetNameBuffer, assetNameSize, amount, CBOR_TYPE_UNSIGNED);
 }
 
-void txHashBuilder_addOutput_datum(tx_hash_builder_t* builder,
+void txHashBuilder_addOutput_datum(tx_hash_builder_t *builder,
                                    datum_type_t datumType,
-                                   const uint8_t* buffer,
+                                   const uint8_t *buffer,
                                    size_t bufferSize) {
     ASSERT(builder->outputData.includeDatum);
 
@@ -625,7 +630,7 @@ void txHashBuilder_addOutput_datum(tx_hash_builder_t* builder,
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     // the babbage output format serializes some preliminary stuff
@@ -640,7 +645,9 @@ void txHashBuilder_addOutput_datum(tx_hash_builder_t* builder,
 
         BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, TX_OUTPUT_KEY_DATUM_OPTION);
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 2);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, datumType); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, datumType);
+        }
     }
 
     switch (datumType) {
@@ -672,20 +679,22 @@ void txHashBuilder_addOutput_datum(tx_hash_builder_t* builder,
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
-void txHashBuilder_addOutput_datum_inline_chunk(tx_hash_builder_t* builder,
-                                                const uint8_t* buffer,
+void txHashBuilder_addOutput_datum_inline_chunk(tx_hash_builder_t *builder,
+                                                const uint8_t *buffer,
                                                 size_t bufferSize) {
     ASSERT(builder->outputData.outputState == TX_OUTPUT_DATUM_INLINE);
     ASSERT(bufferSize <= builder->outputData.datumData.remainingBytes);
     builder->outputData.datumData.remainingBytes -= bufferSize;
-    { BUILDER_APPEND_DATA(buffer, bufferSize); }
+    {
+        BUILDER_APPEND_DATA(buffer, bufferSize);
+    }
 }
 
-void txHashBuilder_addOutput_referenceScript(tx_hash_builder_t* builder, size_t scriptSize) {
+void txHashBuilder_addOutput_referenceScript(tx_hash_builder_t *builder, size_t scriptSize) {
     ASSERT(builder->outputData.includeRefScript);
 
     switch (builder->outputData.outputState) {
@@ -712,12 +721,14 @@ void txHashBuilder_addOutput_referenceScript(tx_hash_builder_t* builder, size_t 
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     //   Unsigned[3] ; map entry key
     //   #6.24(Bytes[buffer])
-    { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, TX_OUTPUT_KEY_SCRIPT_REF); }
+    {
+        BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, TX_OUTPUT_KEY_SCRIPT_REF);
+    }
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_TAG, CBOR_TAG_EMBEDDED_CBOR_BYTE_STRING);
         BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, scriptSize);
@@ -727,16 +738,18 @@ void txHashBuilder_addOutput_referenceScript(tx_hash_builder_t* builder, size_t 
     builder->outputData.outputState = TX_OUTPUT_SCRIPT_REFERENCE_CHUNKS;
 }
 
-void txHashBuilder_addOutput_referenceScript_dataChunk(tx_hash_builder_t* builder,
-                                                       const uint8_t* buffer,
+void txHashBuilder_addOutput_referenceScript_dataChunk(tx_hash_builder_t *builder,
+                                                       const uint8_t *buffer,
                                                        size_t bufferSize) {
     ASSERT(builder->outputData.outputState == TX_OUTPUT_SCRIPT_REFERENCE_CHUNKS);
     ASSERT(bufferSize <= builder->outputData.referenceScriptData.remainingBytes);
     builder->outputData.referenceScriptData.remainingBytes -= bufferSize;
-    { BUILDER_APPEND_DATA(buffer, bufferSize); }
+    {
+        BUILDER_APPEND_DATA(buffer, bufferSize);
+    }
 }
 
-static void txHashBuilder_assertCanLeaveOutputs(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveOutputs(tx_hash_builder_t *builder) {
     _TRACE("state = %d, remainingOutputs = %u", builder->state, builder->remainingOutputs);
 
     // we need to check this first to make sure the subsequent checks are meaningful
@@ -748,7 +761,7 @@ static void txHashBuilder_assertCanLeaveOutputs(tx_hash_builder_t* builder) {
 
 // ============================== FEE ==============================
 
-void txHashBuilder_addFee(tx_hash_builder_t* builder, uint64_t fee) {
+void txHashBuilder_addFee(tx_hash_builder_t *builder, uint64_t fee) {
     _TRACE("state = %d", builder->state);
 
     txHashBuilder_assertCanLeaveOutputs(builder);
@@ -760,7 +773,7 @@ void txHashBuilder_addFee(tx_hash_builder_t* builder, uint64_t fee) {
     builder->state = TX_HASH_BUILDER_IN_FEE;
 }
 
-static void txHashBuilder_assertCanLeaveFee(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveFee(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     ASSERT(builder->state == TX_HASH_BUILDER_IN_FEE);
@@ -768,7 +781,7 @@ static void txHashBuilder_assertCanLeaveFee(tx_hash_builder_t* builder) {
 
 // ============================== TTL ==============================
 
-void txHashBuilder_addTtl(tx_hash_builder_t* builder, uint64_t ttl) {
+void txHashBuilder_addTtl(tx_hash_builder_t *builder, uint64_t ttl) {
     _TRACE("state = %d", builder->state);
 
     txHashBuilder_assertCanLeaveFee(builder);
@@ -780,7 +793,7 @@ void txHashBuilder_addTtl(tx_hash_builder_t* builder, uint64_t ttl) {
     builder->state = TX_HASH_BUILDER_IN_TTL;
 }
 
-static void txHashBuilder_assertCanLeaveTtl(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveTtl(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     switch (builder->state) {
@@ -799,7 +812,7 @@ static void txHashBuilder_assertCanLeaveTtl(tx_hash_builder_t* builder) {
 
 // ============================== CERTIFICATES ==============================
 
-void txHashBuilder_enterCertificates(tx_hash_builder_t* builder) {
+void txHashBuilder_enterCertificates(tx_hash_builder_t *builder) {
     _TRACE("state = %d, remaining certificates = %u",
            builder->state,
            builder->remainingCertificates);
@@ -820,7 +833,7 @@ void txHashBuilder_enterCertificates(tx_hash_builder_t* builder) {
     builder->state = TX_HASH_BUILDER_IN_CERTIFICATES;
 }
 
-static void _initNewCertificate(tx_hash_builder_t* builder) {
+static void _initNewCertificate(tx_hash_builder_t *builder) {
     _TRACE("state = %d, remainingCertificates = %u",
            builder->state,
            builder->remainingCertificates);
@@ -830,7 +843,7 @@ static void _initNewCertificate(tx_hash_builder_t* builder) {
     builder->remainingCertificates--;
 }
 
-static const uint8_t* _getCredentialHashBuffer(const credential_t* credential) {
+static const uint8_t *_getCredentialHashBuffer(const credential_t *credential) {
     switch (credential->type) {
         case CREDENTIAL_KEY_HASH:
             return credential->keyHash;
@@ -839,11 +852,11 @@ static const uint8_t* _getCredentialHashBuffer(const credential_t* credential) {
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
-static size_t _getCredentialHashSize(const credential_t* credential) {
+static size_t _getCredentialHashSize(const credential_t *credential) {
     switch (credential->type) {
         case CREDENTIAL_KEY_HASH:
             return SIZEOF(credential->keyHash);
@@ -852,13 +865,15 @@ static size_t _getCredentialHashSize(const credential_t* credential) {
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
-static void _appendCredential(tx_hash_builder_t* builder, const credential_t* credential) {
+static void _appendCredential(tx_hash_builder_t *builder, const credential_t *credential) {
     BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 2);
-    { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, credential->type); }
+    {
+        BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, credential->type);
+    }
     {
         const size_t size = _getCredentialHashSize(credential);
         BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, size);
@@ -866,7 +881,7 @@ static void _appendCredential(tx_hash_builder_t* builder, const credential_t* cr
     }
 }
 
-static void _appendDRep(tx_hash_builder_t* builder, const drep_t* drep) {
+static void _appendDRep(tx_hash_builder_t *builder, const drep_t *drep) {
     ASSERT(drep != NULL);
     {
         switch (drep->type) {
@@ -893,16 +908,16 @@ static void _appendDRep(tx_hash_builder_t* builder, const drep_t* drep) {
             // LCOV_EXCL_START
             default:
                 ASSERT(false);
-            // LCOV_EXCL_STOP
+                // LCOV_EXCL_STOP
         }
     }
 }
 
 // stake key certificate registration or deregistration
 // will be deprecated after Conway
-void txHashBuilder_addCertificate_stakingOld(tx_hash_builder_t* builder,
+void txHashBuilder_addCertificate_stakingOld(tx_hash_builder_t *builder,
                                              const certificate_type_t certificateType,
-                                             const credential_t* stakeCredential) {
+                                             const credential_t *stakeCredential) {
     _initNewCertificate(builder);
 
     ASSERT((certificateType == CERTIFICATE_STAKE_REGISTRATION) ||
@@ -917,16 +932,20 @@ void txHashBuilder_addCertificate_stakingOld(tx_hash_builder_t* builder,
     // ]
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 2);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, certificateType); }
-        { _appendCredential(builder, stakeCredential); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, certificateType);
+        }
+        {
+            _appendCredential(builder, stakeCredential);
+        }
     }
 }
 
 // stake key certificate registration or deregistration
 // exists since Conway
-void txHashBuilder_addCertificate_staking(tx_hash_builder_t* builder,
+void txHashBuilder_addCertificate_staking(tx_hash_builder_t *builder,
                                           const certificate_type_t certificateType,
-                                          const credential_t* stakeCredential,
+                                          const credential_t *stakeCredential,
                                           uint64_t deposit) {
     _initNewCertificate(builder);
 
@@ -943,15 +962,21 @@ void txHashBuilder_addCertificate_staking(tx_hash_builder_t* builder,
     // ]
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 3);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, certificateType); }
-        { _appendCredential(builder, stakeCredential); }
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, deposit); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, certificateType);
+        }
+        {
+            _appendCredential(builder, stakeCredential);
+        }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, deposit);
+        }
     }
 }
 
-void txHashBuilder_addCertificate_stakeDelegation(tx_hash_builder_t* builder,
-                                                  const credential_t* stakeCredential,
-                                                  const uint8_t* poolKeyHash,
+void txHashBuilder_addCertificate_stakeDelegation(tx_hash_builder_t *builder,
+                                                  const credential_t *stakeCredential,
+                                                  const uint8_t *poolKeyHash,
                                                   size_t poolKeyHashSize) {
     _initNewCertificate(builder);
 
@@ -967,8 +992,12 @@ void txHashBuilder_addCertificate_stakeDelegation(tx_hash_builder_t* builder,
     // ]
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 3);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_STAKE_DELEGATION); }
-        { _appendCredential(builder, stakeCredential); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_STAKE_DELEGATION);
+        }
+        {
+            _appendCredential(builder, stakeCredential);
+        }
         {
             BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, poolKeyHashSize);
             BUILDER_APPEND_DATA(poolKeyHash, poolKeyHashSize);
@@ -976,9 +1005,9 @@ void txHashBuilder_addCertificate_stakeDelegation(tx_hash_builder_t* builder,
     }
 }
 
-void txHashBuilder_addCertificate_voteDelegation(tx_hash_builder_t* builder,
-                                                 const credential_t* stakeCredential,
-                                                 const drep_t* drep) {
+void txHashBuilder_addCertificate_voteDelegation(tx_hash_builder_t *builder,
+                                                 const credential_t *stakeCredential,
+                                                 const drep_t *drep) {
     _initNewCertificate(builder);
 
     // Array(3)[
@@ -994,17 +1023,23 @@ void txHashBuilder_addCertificate_voteDelegation(tx_hash_builder_t* builder,
     // ]
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 3);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_VOTE_DELEGATION); }
-        { _appendCredential(builder, stakeCredential); }
-        { _appendDRep(builder, drep); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_VOTE_DELEGATION);
+        }
+        {
+            _appendCredential(builder, stakeCredential);
+        }
+        {
+            _appendDRep(builder, drep);
+        }
     }
 }
 
-void txHashBuilder_addCertificate_stakePoolAndDRepDelegation(tx_hash_builder_t* builder,
-                                                             const credential_t* stakeCredential,
-                                                             const uint8_t* poolKeyHash,
+void txHashBuilder_addCertificate_stakePoolAndDRepDelegation(tx_hash_builder_t *builder,
+                                                             const credential_t *stakeCredential,
+                                                             const uint8_t *poolKeyHash,
                                                              size_t poolKeyHashSize,
-                                                             const drep_t* drep) {
+                                                             const drep_t *drep) {
     _initNewCertificate(builder);
     ASSERT(poolKeyHashSize == POOL_KEY_HASH_LENGTH);
 
@@ -1019,8 +1054,12 @@ void txHashBuilder_addCertificate_stakePoolAndDRepDelegation(tx_hash_builder_t* 
     // ]
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 4);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION); }
-        { _appendCredential(builder, stakeCredential); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_STAKE_POOL_AND_DREP_DELEGATION);
+        }
+        {
+            _appendCredential(builder, stakeCredential);
+        }
         {
             BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, poolKeyHashSize);
             BUILDER_APPEND_DATA(poolKeyHash, poolKeyHashSize);
@@ -1032,9 +1071,9 @@ void txHashBuilder_addCertificate_stakePoolAndDRepDelegation(tx_hash_builder_t* 
 }
 
 void txHashBuilder_addCertificate_accountRegistrationDelegationToStakePool(
-    tx_hash_builder_t* builder,
-    const credential_t* stakeCredential,
-    const uint8_t* poolKeyHash,
+    tx_hash_builder_t *builder,
+    const credential_t *stakeCredential,
+    const uint8_t *poolKeyHash,
     size_t poolKeyHashSize,
     uint64_t deposit) {
     _initNewCertificate(builder);
@@ -1048,20 +1087,27 @@ void txHashBuilder_addCertificate_accountRegistrationDelegationToStakePool(
     // ]
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 4);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL); }
-        { _appendCredential(builder, stakeCredential); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED,
+                                CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL);
+        }
+        {
+            _appendCredential(builder, stakeCredential);
+        }
         {
             BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, poolKeyHashSize);
             BUILDER_APPEND_DATA(poolKeyHash, poolKeyHashSize);
         }
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, deposit); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, deposit);
+        }
     }
 }
 
 void txHashBuilder_addCertificate_accountRegistrationDelegationToDRep(
-    tx_hash_builder_t* builder,
-    const credential_t* stakeCredential,
-    const drep_t* drep,
+    tx_hash_builder_t *builder,
+    const credential_t *stakeCredential,
+    const drep_t *drep,
     uint64_t deposit) {
     _initNewCertificate(builder);
 
@@ -1073,19 +1119,28 @@ void txHashBuilder_addCertificate_accountRegistrationDelegationToDRep(
     // ]
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 4);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP); }
-        { _appendCredential(builder, stakeCredential); }
-        { _appendDRep(builder, drep); }
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, deposit); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED,
+                                CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP);
+        }
+        {
+            _appendCredential(builder, stakeCredential);
+        }
+        {
+            _appendDRep(builder, drep);
+        }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, deposit);
+        }
     }
 }
 
 void txHashBuilder_addCertificate_accountRegistrationDelegationToStakePoolAndDRep(
-    tx_hash_builder_t* builder,
-    const credential_t* stakeCredential,
-    const uint8_t* poolKeyHash,
+    tx_hash_builder_t *builder,
+    const credential_t *stakeCredential,
+    const uint8_t *poolKeyHash,
     size_t poolKeyHashSize,
-    const drep_t* drep,
+    const drep_t *drep,
     uint64_t deposit) {
     _initNewCertificate(builder);
     ASSERT(poolKeyHashSize == POOL_KEY_HASH_LENGTH);
@@ -1099,20 +1154,29 @@ void txHashBuilder_addCertificate_accountRegistrationDelegationToStakePoolAndDRe
     // ]
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 5);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP); }
-        { _appendCredential(builder, stakeCredential); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED,
+                                CERTIFICATE_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP);
+        }
+        {
+            _appendCredential(builder, stakeCredential);
+        }
         {
             BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, poolKeyHashSize);
             BUILDER_APPEND_DATA(poolKeyHash, poolKeyHashSize);
         }
-        { _appendDRep(builder, drep); }
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, deposit); }
+        {
+            _appendDRep(builder, drep);
+        }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, deposit);
+        }
     }
 }
 
-void txHashBuilder_addCertificate_committeeAuthHot(tx_hash_builder_t* builder,
-                                                   const credential_t* coldCredential,
-                                                   const credential_t* hotCredential) {
+void txHashBuilder_addCertificate_committeeAuthHot(tx_hash_builder_t *builder,
+                                                   const credential_t *coldCredential,
+                                                   const credential_t *hotCredential) {
     _initNewCertificate(builder);
 
     // Array(3)[
@@ -1128,13 +1192,19 @@ void txHashBuilder_addCertificate_committeeAuthHot(tx_hash_builder_t* builder,
     // ]
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 3);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_AUTHORIZE_COMMITTEE_HOT); }
-        { _appendCredential(builder, coldCredential); }
-        { _appendCredential(builder, hotCredential); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_AUTHORIZE_COMMITTEE_HOT);
+        }
+        {
+            _appendCredential(builder, coldCredential);
+        }
+        {
+            _appendCredential(builder, hotCredential);
+        }
     }
 }
 
-static void _appendAnchor(tx_hash_builder_t* builder, const anchor_t* anchor) {
+static void _appendAnchor(tx_hash_builder_t *builder, const anchor_t *anchor) {
     if (anchor->isIncluded) {
         // Array(2)[
         //   Tstr[url]
@@ -1155,9 +1225,9 @@ static void _appendAnchor(tx_hash_builder_t* builder, const anchor_t* anchor) {
     }
 }
 
-void txHashBuilder_addCertificate_committeeResign(tx_hash_builder_t* builder,
-                                                  const credential_t* coldCredential,
-                                                  const anchor_t* anchor) {
+void txHashBuilder_addCertificate_committeeResign(tx_hash_builder_t *builder,
+                                                  const credential_t *coldCredential,
+                                                  const anchor_t *anchor) {
     _initNewCertificate(builder);
 
     // Array(3)[
@@ -1170,16 +1240,22 @@ void txHashBuilder_addCertificate_committeeResign(tx_hash_builder_t* builder,
     // ]
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 3);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_RESIGN_COMMITTEE_COLD); }
-        { _appendCredential(builder, coldCredential); }
-        { _appendAnchor(builder, anchor); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_RESIGN_COMMITTEE_COLD);
+        }
+        {
+            _appendCredential(builder, coldCredential);
+        }
+        {
+            _appendAnchor(builder, anchor);
+        }
     }
 }
 
-void txHashBuilder_addCertificate_dRepRegistration(tx_hash_builder_t* builder,
-                                                   const credential_t* dRepCredential,
+void txHashBuilder_addCertificate_dRepRegistration(tx_hash_builder_t *builder,
+                                                   const credential_t *dRepCredential,
                                                    uint64_t deposit,
-                                                   const anchor_t* anchor) {
+                                                   const anchor_t *anchor) {
     _initNewCertificate(builder);
 
     // Array(4)[
@@ -1193,15 +1269,23 @@ void txHashBuilder_addCertificate_dRepRegistration(tx_hash_builder_t* builder,
     // ]
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 4);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_DREP_REGISTRATION); }
-        { _appendCredential(builder, dRepCredential); }
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, deposit); }
-        { _appendAnchor(builder, anchor); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_DREP_REGISTRATION);
+        }
+        {
+            _appendCredential(builder, dRepCredential);
+        }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, deposit);
+        }
+        {
+            _appendAnchor(builder, anchor);
+        }
     }
 }
 
-void txHashBuilder_addCertificate_dRepDeregistration(tx_hash_builder_t* builder,
-                                                     const credential_t* dRepCredential,
+void txHashBuilder_addCertificate_dRepDeregistration(tx_hash_builder_t *builder,
+                                                     const credential_t *dRepCredential,
                                                      uint64_t deposit) {
     _initNewCertificate(builder);
 
@@ -1215,15 +1299,21 @@ void txHashBuilder_addCertificate_dRepDeregistration(tx_hash_builder_t* builder,
     // ]
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 3);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_DREP_DEREGISTRATION); }
-        { _appendCredential(builder, dRepCredential); }
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, deposit); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_DREP_DEREGISTRATION);
+        }
+        {
+            _appendCredential(builder, dRepCredential);
+        }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, deposit);
+        }
     }
 }
 
-void txHashBuilder_addCertificate_dRepUpdate(tx_hash_builder_t* builder,
-                                             const credential_t* dRepCredential,
-                                             const anchor_t* anchor) {
+void txHashBuilder_addCertificate_dRepUpdate(tx_hash_builder_t *builder,
+                                             const credential_t *dRepCredential,
+                                             const anchor_t *anchor) {
     _initNewCertificate(builder);
 
     // Array(3)[
@@ -1236,14 +1326,20 @@ void txHashBuilder_addCertificate_dRepUpdate(tx_hash_builder_t* builder,
     // ]
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 3);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_DREP_UPDATE); }
-        { _appendCredential(builder, dRepCredential); }
-        { _appendAnchor(builder, anchor); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_DREP_UPDATE);
+        }
+        {
+            _appendCredential(builder, dRepCredential);
+        }
+        {
+            _appendAnchor(builder, anchor);
+        }
     }
 }
 
-void txHashBuilder_addCertificate_poolRetirement(tx_hash_builder_t* builder,
-                                                 const uint8_t* poolKeyHash,
+void txHashBuilder_addCertificate_poolRetirement(tx_hash_builder_t *builder,
+                                                 const uint8_t *poolKeyHash,
                                                  size_t poolKeyHashSize,
                                                  uint64_t epoch) {
     _initNewCertificate(builder);
@@ -1257,7 +1353,9 @@ void txHashBuilder_addCertificate_poolRetirement(tx_hash_builder_t* builder,
     // ]
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 3);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_STAKE_POOL_RETIREMENT); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_STAKE_POOL_RETIREMENT);
+        }
         {
             BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, poolKeyHashSize);
             BUILDER_APPEND_DATA(poolKeyHash, poolKeyHashSize);
@@ -1266,7 +1364,7 @@ void txHashBuilder_addCertificate_poolRetirement(tx_hash_builder_t* builder,
     }
 }
 
-void txHashBuilder_poolRegistrationCertificate_enter(tx_hash_builder_t* builder,
+void txHashBuilder_poolRegistrationCertificate_enter(tx_hash_builder_t *builder,
                                                      uint16_t numOwners,
                                                      uint16_t numRelays) {
     _initNewCertificate(builder);
@@ -1281,14 +1379,16 @@ void txHashBuilder_poolRegistrationCertificate_enter(tx_hash_builder_t* builder,
 
     {
         BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 10);
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_STAKE_POOL_REGISTRATION); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, CERTIFICATE_STAKE_POOL_REGISTRATION);
+        }
     }
 
     builder->state = TX_HASH_BUILDER_IN_CERTIFICATES_POOL_INIT;
 }
 
-void txHashBuilder_poolRegistrationCertificate_poolKeyHash(tx_hash_builder_t* builder,
-                                                           const uint8_t* poolKeyHash,
+void txHashBuilder_poolRegistrationCertificate_poolKeyHash(tx_hash_builder_t *builder,
+                                                           const uint8_t *poolKeyHash,
                                                            size_t poolKeyHashSize) {
     _TRACE("state = %d", builder->state);
 
@@ -1306,8 +1406,8 @@ void txHashBuilder_poolRegistrationCertificate_poolKeyHash(tx_hash_builder_t* bu
     builder->state = TX_HASH_BUILDER_IN_CERTIFICATES_POOL_KEY_HASH;
 }
 
-void txHashBuilder_poolRegistrationCertificate_vrfKeyHash(tx_hash_builder_t* builder,
-                                                          const uint8_t* vrfKeyHash,
+void txHashBuilder_poolRegistrationCertificate_vrfKeyHash(tx_hash_builder_t *builder,
+                                                          const uint8_t *vrfKeyHash,
                                                           size_t vrfKeyHashSize) {
     _TRACE("state = %d", builder->state);
 
@@ -1324,7 +1424,7 @@ void txHashBuilder_poolRegistrationCertificate_vrfKeyHash(tx_hash_builder_t* bui
     builder->state = TX_HASH_BUILDER_IN_CERTIFICATES_POOL_VRF;
 }
 
-void txHashBuilder_poolRegistrationCertificate_financials(tx_hash_builder_t* builder,
+void txHashBuilder_poolRegistrationCertificate_financials(tx_hash_builder_t *builder,
                                                           uint64_t pledge,
                                                           uint64_t cost,
                                                           uint64_t marginNumerator,
@@ -1340,21 +1440,29 @@ void txHashBuilder_poolRegistrationCertificate_financials(tx_hash_builder_t* bui
     //     Unsigned[marginNumerator]
     //   ]
     {
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, pledge); }
-        { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, cost); }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, pledge);
+        }
+        {
+            BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, cost);
+        }
         {
             BUILDER_APPEND_CBOR(CBOR_TYPE_TAG, CBOR_TAG_UNIT_INTERVAL);
             BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 2);
-            { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, marginNumerator); }
-            { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, marginDenominator); }
+            {
+                BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, marginNumerator);
+            }
+            {
+                BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, marginDenominator);
+            }
         }
     }
 
     builder->state = TX_HASH_BUILDER_IN_CERTIFICATES_POOL_FINANCIALS;
 }
 
-void txHashBuilder_poolRegistrationCertificate_rewardAccount(tx_hash_builder_t* builder,
-                                                             const uint8_t* rewardAccount,
+void txHashBuilder_poolRegistrationCertificate_rewardAccount(tx_hash_builder_t *builder,
+                                                             const uint8_t *rewardAccount,
                                                              size_t rewardAccountSize) {
     _TRACE("state = %d", builder->state);
 
@@ -1371,7 +1479,7 @@ void txHashBuilder_poolRegistrationCertificate_rewardAccount(tx_hash_builder_t* 
     builder->state = TX_HASH_BUILDER_IN_CERTIFICATES_POOL_REWARD_ACCOUNT;
 }
 
-void txHashBuilder_addPoolRegistrationCertificate_enterOwners(tx_hash_builder_t* builder) {
+void txHashBuilder_addPoolRegistrationCertificate_enterOwners(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     ASSERT(builder->state == TX_HASH_BUILDER_IN_CERTIFICATES_POOL_REWARD_ACCOUNT);
@@ -1384,8 +1492,8 @@ void txHashBuilder_addPoolRegistrationCertificate_enterOwners(tx_hash_builder_t*
     builder->state = TX_HASH_BUILDER_IN_CERTIFICATES_POOL_OWNERS;
 }
 
-void txHashBuilder_addPoolRegistrationCertificate_addOwner(tx_hash_builder_t* builder,
-                                                           const uint8_t* stakingKeyHash,
+void txHashBuilder_addPoolRegistrationCertificate_addOwner(tx_hash_builder_t *builder,
+                                                           const uint8_t *stakingKeyHash,
                                                            size_t stakingKeyHashSize) {
     _TRACE("state = %d, remainingOwners = %u",
            builder->state,
@@ -1404,7 +1512,7 @@ void txHashBuilder_addPoolRegistrationCertificate_addOwner(tx_hash_builder_t* bu
     }
 }
 
-void txHashBuilder_addPoolRegistrationCertificate_enterRelays(tx_hash_builder_t* builder) {
+void txHashBuilder_addPoolRegistrationCertificate_enterRelays(tx_hash_builder_t *builder) {
     _TRACE("state = %d, remainingOwners = %u",
            builder->state,
            builder->poolCertificateData.remainingOwners);
@@ -1418,12 +1526,14 @@ void txHashBuilder_addPoolRegistrationCertificate_enterRelays(tx_hash_builder_t*
     ASSERT(builder->state == TX_HASH_BUILDER_IN_CERTIFICATES_POOL_OWNERS);
     ASSERT(builder->poolCertificateData.remainingOwners == 0);
 
-    { BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, builder->poolCertificateData.remainingRelays); }
+    {
+        BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, builder->poolCertificateData.remainingRelays);
+    }
 
     builder->state = TX_HASH_BUILDER_IN_CERTIFICATES_POOL_RELAYS;
 }
 
-static void _relay_addPort(tx_hash_builder_t* builder, const ipport_t* port) {
+static void _relay_addPort(tx_hash_builder_t *builder, const ipport_t *port) {
     _TRACE("state = %d, remainingRelays = %u",
            builder->state,
            builder->poolCertificateData.remainingRelays);
@@ -1438,7 +1548,7 @@ static void _relay_addPort(tx_hash_builder_t* builder, const ipport_t* port) {
     }
 }
 
-static void _relay_addIpv4(tx_hash_builder_t* builder, const ipv4_t* ipv4) {
+static void _relay_addIpv4(tx_hash_builder_t *builder, const ipv4_t *ipv4) {
     _TRACE("state = %d, remainingRelays = %u",
            builder->state,
            builder->poolCertificateData.remainingRelays);
@@ -1455,7 +1565,7 @@ static void _relay_addIpv4(tx_hash_builder_t* builder, const ipv4_t* ipv4) {
     }
 }
 
-static void _relay_addIpv6(tx_hash_builder_t* builder, const ipv6_t* ipv6) {
+static void _relay_addIpv6(tx_hash_builder_t *builder, const ipv6_t *ipv6) {
     _TRACE("state = %d, remainingRelays = %u",
            builder->state,
            builder->poolCertificateData.remainingRelays);
@@ -1482,7 +1592,7 @@ static void _relay_addIpv6(tx_hash_builder_t* builder, const ipv6_t* ipv6) {
     }
 }
 
-static void _relay_addDnsName(tx_hash_builder_t* builder, const pool_relay_t* relay) {
+static void _relay_addDnsName(tx_hash_builder_t *builder, const pool_relay_t *relay) {
     _TRACE("state = %d, remainingRelays = %u",
            builder->state,
            builder->poolCertificateData.remainingRelays);
@@ -1498,8 +1608,8 @@ static void _relay_addDnsName(tx_hash_builder_t* builder, const pool_relay_t* re
     }
 }
 
-void txHashBuilder_addPoolRegistrationCertificate_addRelay(tx_hash_builder_t* builder,
-                                                           const pool_relay_t* relay) {
+void txHashBuilder_addPoolRegistrationCertificate_addRelay(tx_hash_builder_t *builder,
+                                                           const pool_relay_t *relay) {
     _TRACE("state = %d, remainingRelays = %u",
            builder->state,
            builder->poolCertificateData.remainingRelays);
@@ -1518,7 +1628,9 @@ void txHashBuilder_addPoolRegistrationCertificate_addRelay(tx_hash_builder_t* bu
             // ]
             {
                 BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 4);
-                { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, 0); }
+                {
+                    BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, 0);
+                }
                 _relay_addPort(builder, &relay->port);
                 _relay_addIpv4(builder, &relay->ipv4);
                 _relay_addIpv6(builder, &relay->ipv6);
@@ -1533,7 +1645,9 @@ void txHashBuilder_addPoolRegistrationCertificate_addRelay(tx_hash_builder_t* bu
             // ]
             {
                 BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 3);
-                { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, 1); }
+                {
+                    BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, 1);
+                }
                 _relay_addPort(builder, &relay->port);
                 _relay_addDnsName(builder, relay);
             }
@@ -1546,7 +1660,9 @@ void txHashBuilder_addPoolRegistrationCertificate_addRelay(tx_hash_builder_t* bu
             // ]
             {
                 BUILDER_APPEND_CBOR(CBOR_TYPE_ARRAY, 2);
-                { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, 2); }
+                {
+                    BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, 2);
+                }
                 _relay_addDnsName(builder, relay);
             }
             break;
@@ -1554,12 +1670,12 @@ void txHashBuilder_addPoolRegistrationCertificate_addRelay(tx_hash_builder_t* bu
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
 // enter empty owners or relays if none were received
-static void addPoolMetadata_updateState(tx_hash_builder_t* builder) {
+static void addPoolMetadata_updateState(tx_hash_builder_t *builder) {
     switch (builder->state) {
         case TX_HASH_BUILDER_IN_CERTIFICATES_POOL_REWARD_ACCOUNT:
             // skipping owners is only possible if none were expected
@@ -1581,16 +1697,16 @@ static void addPoolMetadata_updateState(tx_hash_builder_t* builder) {
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     builder->state = TX_HASH_BUILDER_IN_CERTIFICATES_POOL_METADATA;
 }
 
-void txHashBuilder_addPoolRegistrationCertificate_addPoolMetadata(tx_hash_builder_t* builder,
-                                                                  const uint8_t* url,
+void txHashBuilder_addPoolRegistrationCertificate_addPoolMetadata(tx_hash_builder_t *builder,
+                                                                  const uint8_t *url,
                                                                   size_t urlSize,
-                                                                  const uint8_t* metadataHash,
+                                                                  const uint8_t *metadataHash,
                                                                   size_t metadataHashSize) {
     _TRACE("state = %d", builder->state);
 
@@ -1619,16 +1735,18 @@ void txHashBuilder_addPoolRegistrationCertificate_addPoolMetadata(tx_hash_builde
     builder->state = TX_HASH_BUILDER_IN_CERTIFICATES;
 }
 
-void txHashBuilder_addPoolRegistrationCertificate_addPoolMetadata_null(tx_hash_builder_t* builder) {
+void txHashBuilder_addPoolRegistrationCertificate_addPoolMetadata_null(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     addPoolMetadata_updateState(builder);
     ASSERT(builder->state == TX_HASH_BUILDER_IN_CERTIFICATES_POOL_METADATA);
-    { BUILDER_APPEND_CBOR(CBOR_TYPE_NULL, 0); }
+    {
+        BUILDER_APPEND_CBOR(CBOR_TYPE_NULL, 0);
+    }
     builder->state = TX_HASH_BUILDER_IN_CERTIFICATES;
 }
 
-static void txHashBuilder_assertCanLeaveCertificates(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveCertificates(tx_hash_builder_t *builder) {
     _TRACE("state = %d, remainingCertificates = %u",
            builder->state,
            builder->remainingCertificates);
@@ -1650,7 +1768,7 @@ static void txHashBuilder_assertCanLeaveCertificates(tx_hash_builder_t* builder)
 
 // ============================== WITHDRAWALS ==============================
 
-void txHashBuilder_enterWithdrawals(tx_hash_builder_t* builder) {
+void txHashBuilder_enterWithdrawals(tx_hash_builder_t *builder) {
     _TRACE("state = %d, remainingWithdrawals = %u", builder->state, builder->remainingWithdrawals);
 
     txHashBuilder_assertCanLeaveCertificates(builder);
@@ -1665,8 +1783,8 @@ void txHashBuilder_enterWithdrawals(tx_hash_builder_t* builder) {
     builder->state = TX_HASH_BUILDER_IN_WITHDRAWALS;
 }
 
-void txHashBuilder_addWithdrawal(tx_hash_builder_t* builder,
-                                 const uint8_t* rewardAddressBuffer,
+void txHashBuilder_addWithdrawal(tx_hash_builder_t *builder,
+                                 const uint8_t *rewardAddressBuffer,
                                  size_t rewardAddressSize,
                                  uint64_t amount) {
     _TRACE("state = %d, remainingWithdrawals = %u", builder->state, builder->remainingWithdrawals);
@@ -1684,10 +1802,12 @@ void txHashBuilder_addWithdrawal(tx_hash_builder_t* builder,
         BUILDER_APPEND_CBOR(CBOR_TYPE_BYTES, rewardAddressSize);
         BUILDER_APPEND_DATA(rewardAddressBuffer, rewardAddressSize);
     }
-    { BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, amount); }
+    {
+        BUILDER_APPEND_CBOR(CBOR_TYPE_UNSIGNED, amount);
+    }
 }
 
-static void txHashBuilder_assertCanLeaveWithdrawals(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveWithdrawals(tx_hash_builder_t *builder) {
     _TRACE("state = %d, remainingWithdrawals = %u", builder->state, builder->remainingWithdrawals);
 
     switch (builder->state) {
@@ -1707,8 +1827,8 @@ static void txHashBuilder_assertCanLeaveWithdrawals(tx_hash_builder_t* builder) 
 
 // ============================== AUXILIARY DATA ==============================
 
-void txHashBuilder_addAuxData(tx_hash_builder_t* builder,
-                              const uint8_t* auxDataHashBuffer,
+void txHashBuilder_addAuxData(tx_hash_builder_t *builder,
+                              const uint8_t *auxDataHashBuffer,
                               size_t auxDataHashBufferSize) {
     _TRACE("state = %d, remainingWithdrawals = %u", builder->state, builder->remainingWithdrawals);
 
@@ -1724,7 +1844,7 @@ void txHashBuilder_addAuxData(tx_hash_builder_t* builder,
     builder->state = TX_HASH_BUILDER_IN_AUX_DATA;
 }
 
-static void txHashBuilder_assertCanLeaveAuxData(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveAuxData(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     switch (builder->state) {
@@ -1743,7 +1863,7 @@ static void txHashBuilder_assertCanLeaveAuxData(tx_hash_builder_t* builder) {
 
 // ============================== VALIDITY INTERVAL START ==============================
 
-void txHashBuilder_addValidityIntervalStart(tx_hash_builder_t* builder,
+void txHashBuilder_addValidityIntervalStart(tx_hash_builder_t *builder,
                                             uint64_t validityIntervalStart) {
     _TRACE("state = %d", builder->state);
 
@@ -1757,7 +1877,7 @@ void txHashBuilder_addValidityIntervalStart(tx_hash_builder_t* builder,
     builder->state = TX_HASH_BUILDER_IN_VALIDITY_INTERVAL_START;
 }
 
-static void txHashBuilder_assertCanLeaveValidityIntervalStart(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveValidityIntervalStart(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     switch (builder->state) {
@@ -1776,7 +1896,7 @@ static void txHashBuilder_assertCanLeaveValidityIntervalStart(tx_hash_builder_t*
 
 // ============================== MINT ==============================
 
-void txHashBuilder_enterMint(tx_hash_builder_t* builder) {
+void txHashBuilder_enterMint(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     txHashBuilder_assertCanLeaveValidityIntervalStart(builder);
@@ -1789,7 +1909,7 @@ void txHashBuilder_enterMint(tx_hash_builder_t* builder) {
     builder->state = TX_HASH_BUILDER_IN_MINT;
 }
 
-void txHashBuilder_addMint_topLevelData(tx_hash_builder_t* builder, uint16_t numAssetGroups) {
+void txHashBuilder_addMint_topLevelData(tx_hash_builder_t *builder, uint16_t numAssetGroups) {
     _TRACE("state = %u", builder->state);
 
     ASSERT(builder->state == TX_HASH_BUILDER_IN_MINT);
@@ -1805,8 +1925,8 @@ void txHashBuilder_addMint_topLevelData(tx_hash_builder_t* builder, uint16_t num
     builder->outputData.outputState = TX_OUTPUT_TOP_LEVEL_DATA;
 }
 
-void txHashBuilder_addMint_tokenGroup(tx_hash_builder_t* builder,
-                                      const uint8_t* policyIdBuffer,
+void txHashBuilder_addMint_tokenGroup(tx_hash_builder_t *builder,
+                                      const uint8_t *policyIdBuffer,
                                       size_t policyIdSize,
                                       uint16_t numTokens) {
     ASSERT(builder->state == TX_HASH_BUILDER_IN_MINT);
@@ -1814,8 +1934,8 @@ void txHashBuilder_addMint_tokenGroup(tx_hash_builder_t* builder,
     addTokenGroup(builder, policyIdBuffer, policyIdSize, numTokens);
 }
 
-void txHashBuilder_addMint_token(tx_hash_builder_t* builder,
-                                 const uint8_t* assetNameBuffer,
+void txHashBuilder_addMint_token(tx_hash_builder_t *builder,
+                                 const uint8_t *assetNameBuffer,
                                  size_t assetNameSize,
                                  int64_t amount) {
     ASSERT(builder->state == TX_HASH_BUILDER_IN_MINT);
@@ -1827,7 +1947,7 @@ void txHashBuilder_addMint_token(tx_hash_builder_t* builder,
              amount < 0 ? CBOR_TYPE_NEGATIVE : CBOR_TYPE_UNSIGNED);
 }
 
-static void txHashBuilder_assertCanLeaveMint(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveMint(tx_hash_builder_t *builder) {
     _TRACE("state = %u, remainingMintAssetGroups = %u, remainingMintTokens = %u",
            builder->state,
            builder->outputData.multiassetData.remainingAssetGroups,
@@ -1851,8 +1971,8 @@ static void txHashBuilder_assertCanLeaveMint(tx_hash_builder_t* builder) {
 
 // ========================= SCRIPT DATA HASH ==========================
 
-void txHashBuilder_addScriptDataHash(tx_hash_builder_t* builder,
-                                     const uint8_t* scriptHashData,
+void txHashBuilder_addScriptDataHash(tx_hash_builder_t *builder,
+                                     const uint8_t *scriptHashData,
                                      size_t scriptHashDataSize) {
     _TRACE("state = %d", builder->state);
 
@@ -1868,7 +1988,7 @@ void txHashBuilder_addScriptDataHash(tx_hash_builder_t* builder,
     builder->state = TX_HASH_BUILDER_IN_SCRIPT_DATA_HASH;
 }
 
-static void txHashBuilder_assertCanLeaveScriptDataHash(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveScriptDataHash(tx_hash_builder_t *builder) {
     _TRACE("state = %u", builder->state);
 
     switch (builder->state) {
@@ -1887,7 +2007,7 @@ static void txHashBuilder_assertCanLeaveScriptDataHash(tx_hash_builder_t* builde
 
 // ========================= COLLATERAL INPUTS ==========================
 
-void txHashBuilder_enterCollateralInputs(tx_hash_builder_t* builder) {
+void txHashBuilder_enterCollateralInputs(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     txHashBuilder_assertCanLeaveScriptDataHash(builder);
@@ -1903,7 +2023,7 @@ void txHashBuilder_enterCollateralInputs(tx_hash_builder_t* builder) {
     builder->state = TX_HASH_BUILDER_IN_COLLATERAL_INPUTS;
 }
 
-void txHashBuilder_addCollateralInput(tx_hash_builder_t* builder, const tx_input_t* collInput) {
+void txHashBuilder_addCollateralInput(tx_hash_builder_t *builder, const tx_input_t *collInput) {
     _TRACE("state = %d, remainingCollateralInputs = %u",
            builder->state,
            builder->remainingCollateralInputs);
@@ -1915,7 +2035,7 @@ void txHashBuilder_addCollateralInput(tx_hash_builder_t* builder, const tx_input
     cbor_append_txInput(builder, collInput->txHash, TX_HASH_LENGTH, collInput->index);
 }
 
-static void txHashBuilder_assertCanLeaveCollateralInputs(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveCollateralInputs(tx_hash_builder_t *builder) {
     _TRACE("state = %u", builder->state);
 
     switch (builder->state) {
@@ -1935,7 +2055,7 @@ static void txHashBuilder_assertCanLeaveCollateralInputs(tx_hash_builder_t* buil
 
 // ========================= REQUIRED SIGNERS ==========================
 
-void txHashBuilder_enterRequiredSigners(tx_hash_builder_t* builder) {
+void txHashBuilder_enterRequiredSigners(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     txHashBuilder_assertCanLeaveCollateralInputs(builder);
@@ -1951,8 +2071,8 @@ void txHashBuilder_enterRequiredSigners(tx_hash_builder_t* builder) {
     builder->state = TX_HASH_BUILDER_IN_REQUIRED_SIGNERS;
 }
 
-void txHashBuilder_addRequiredSigner(tx_hash_builder_t* builder,
-                                     const uint8_t* vkeyBuffer,
+void txHashBuilder_addRequiredSigner(tx_hash_builder_t *builder,
+                                     const uint8_t *vkeyBuffer,
                                      size_t vkeySize) {
     _TRACE("state = %d, remainingRequiredSigners = %u",
            builder->state,
@@ -1972,7 +2092,7 @@ void txHashBuilder_addRequiredSigner(tx_hash_builder_t* builder,
     }
 }
 
-static void txHashBuilder_assertCanLeaveRequiredSigners(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveRequiredSigners(tx_hash_builder_t *builder) {
     _TRACE("state = %u", builder->state);
 
     switch (builder->state) {
@@ -1992,7 +2112,7 @@ static void txHashBuilder_assertCanLeaveRequiredSigners(tx_hash_builder_t* build
 
 // ========================= NETWORK ID ==========================
 
-void txHashBuilder_addNetworkId(tx_hash_builder_t* builder, uint8_t networkId) {
+void txHashBuilder_addNetworkId(tx_hash_builder_t *builder, uint8_t networkId) {
     _TRACE("state = %d", builder->state);
 
     txHashBuilder_assertCanLeaveRequiredSigners(builder);
@@ -2005,7 +2125,7 @@ void txHashBuilder_addNetworkId(tx_hash_builder_t* builder, uint8_t networkId) {
     builder->state = TX_HASH_BUILDER_IN_NETWORK_ID;
 }
 
-static void txHashBuilder_assertCanLeaveNetworkId(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveNetworkId(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     switch (builder->state) {
@@ -2024,8 +2144,8 @@ static void txHashBuilder_assertCanLeaveNetworkId(tx_hash_builder_t* builder) {
 
 // ========================= COLLATERAL RETURN OUTPUT ==========================
 
-void txHashBuilder_addCollateralOutput(tx_hash_builder_t* builder,
-                                       const tx_output_description_t* output) {
+void txHashBuilder_addCollateralOutput(tx_hash_builder_t *builder,
+                                       const tx_output_description_t *output) {
     _TRACE("state = %d", builder->state);
 
     txHashBuilder_assertCanLeaveNetworkId(builder);
@@ -2041,8 +2161,8 @@ void txHashBuilder_addCollateralOutput(tx_hash_builder_t* builder,
     builder->state = TX_HASH_BUILDER_IN_COLLATERAL_OUTPUT;
 }
 
-void txHashBuilder_addCollateralOutput_tokenGroup(tx_hash_builder_t* builder,
-                                                  const uint8_t* policyIdBuffer,
+void txHashBuilder_addCollateralOutput_tokenGroup(tx_hash_builder_t *builder,
+                                                  const uint8_t *policyIdBuffer,
                                                   size_t policyIdSize,
                                                   uint16_t numTokens) {
     ASSERT(builder->state == TX_HASH_BUILDER_IN_COLLATERAL_OUTPUT);
@@ -2050,8 +2170,8 @@ void txHashBuilder_addCollateralOutput_tokenGroup(tx_hash_builder_t* builder,
     addTokenGroup(builder, policyIdBuffer, policyIdSize, numTokens);
 }
 
-void txHashBuilder_addCollateralOutput_token(tx_hash_builder_t* builder,
-                                             const uint8_t* assetNameBuffer,
+void txHashBuilder_addCollateralOutput_token(tx_hash_builder_t *builder,
+                                             const uint8_t *assetNameBuffer,
                                              size_t assetNameSize,
                                              uint64_t amount) {
     ASSERT(builder->state == TX_HASH_BUILDER_IN_COLLATERAL_OUTPUT);
@@ -2059,7 +2179,7 @@ void txHashBuilder_addCollateralOutput_token(tx_hash_builder_t* builder,
     addToken(builder, assetNameBuffer, assetNameSize, amount, CBOR_TYPE_UNSIGNED);
 }
 
-static void txHashBuilder_assertCanLeaveCollateralOutput(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveCollateralOutput(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     switch (builder->state) {
@@ -2079,7 +2199,7 @@ static void txHashBuilder_assertCanLeaveCollateralOutput(tx_hash_builder_t* buil
 
 // ========================= TOTAL COLLATERAL ==========================
 
-void txHashBuilder_addTotalCollateral(tx_hash_builder_t* builder, uint64_t txColl) {
+void txHashBuilder_addTotalCollateral(tx_hash_builder_t *builder, uint64_t txColl) {
     _TRACE("state = %d", builder->state);
 
     txHashBuilder_assertCanLeaveCollateralOutput(builder);
@@ -2092,7 +2212,7 @@ void txHashBuilder_addTotalCollateral(tx_hash_builder_t* builder, uint64_t txCol
     builder->state = TX_HASH_BUILDER_IN_TOTAL_COLLATERAL;
 }
 
-static void txHashBuilder_assertCanLeaveTotalCollateral(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveTotalCollateral(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     switch (builder->state) {
@@ -2111,7 +2231,7 @@ static void txHashBuilder_assertCanLeaveTotalCollateral(tx_hash_builder_t* build
 
 // ========================= REFERENCE INPUTS ==========================
 
-void txHashBuilder_enterReferenceInputs(tx_hash_builder_t* builder) {
+void txHashBuilder_enterReferenceInputs(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     txHashBuilder_assertCanLeaveTotalCollateral(builder);
@@ -2127,7 +2247,7 @@ void txHashBuilder_enterReferenceInputs(tx_hash_builder_t* builder) {
     builder->state = TX_HASH_BUILDER_IN_REFERENCE_INPUTS;
 }
 
-void txHashBuilder_addReferenceInput(tx_hash_builder_t* builder, const tx_input_t* refInput) {
+void txHashBuilder_addReferenceInput(tx_hash_builder_t *builder, const tx_input_t *refInput) {
     _TRACE("state = %d, remainingReferenceInputs = %u",
            builder->state,
            builder->remainingReferenceInputs);
@@ -2139,7 +2259,7 @@ void txHashBuilder_addReferenceInput(tx_hash_builder_t* builder, const tx_input_
     cbor_append_txInput(builder, refInput->txHash, TX_HASH_LENGTH, refInput->index);
 }
 
-static void txHashBuilder_assertCanLeaveReferenceInputs(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveReferenceInputs(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     switch (builder->state) {
@@ -2159,7 +2279,7 @@ static void txHashBuilder_assertCanLeaveReferenceInputs(tx_hash_builder_t* build
 
 // ========================= VOTING PROCEDURES ==========================
 
-void txHashBuilder_enterVotingProcedures(tx_hash_builder_t* builder) {
+void txHashBuilder_enterVotingProcedures(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     txHashBuilder_assertCanLeaveReferenceInputs(builder);
@@ -2174,9 +2294,7 @@ void txHashBuilder_enterVotingProcedures(tx_hash_builder_t* builder) {
     builder->state = TX_HASH_BUILDER_IN_VOTING_PROCEDURES;
 }
 
-void txHashBuilder_addVoter(tx_hash_builder_t* builder,
-                            const voter_t* voter,
-                            uint16_t numVotes) {
+void txHashBuilder_addVoter(tx_hash_builder_t *builder, const voter_t *voter, uint16_t numVotes) {
     _TRACE("state = %d, remainingVoters = %u, numVotes = %u",
            builder->state,
            builder->remainingVoters,
@@ -2212,16 +2330,16 @@ void txHashBuilder_addVoter(tx_hash_builder_t* builder,
         // LCOV_EXCL_START
         default:
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     // Start the map of gov_action_id => voting_procedure
     BUILDER_APPEND_CBOR(CBOR_TYPE_MAP, numVotes);
 }
 
-void txHashBuilder_addVote(tx_hash_builder_t* builder,
-                           gov_action_id_t* govActionId,
-                           voting_procedure_t* votingProcedure) {
+void txHashBuilder_addVote(tx_hash_builder_t *builder,
+                           gov_action_id_t *govActionId,
+                           voting_procedure_t *votingProcedure) {
     _TRACE("state = %d", builder->state);
 
     ASSERT(builder->state == TX_HASH_BUILDER_IN_VOTING_PROCEDURES);
@@ -2243,7 +2361,7 @@ void txHashBuilder_addVote(tx_hash_builder_t* builder,
     _appendAnchor(builder, &votingProcedure->anchor);
 }
 
-static void txHashBuilder_assertCanLeaveVotingProcedures(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveVotingProcedures(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     switch (builder->state) {
@@ -2265,7 +2383,7 @@ static void txHashBuilder_assertCanLeaveVotingProcedures(tx_hash_builder_t* buil
 
 // ============================== TREASURY ==============================
 
-void txHashBuilder_addTreasury(tx_hash_builder_t* builder, uint64_t treasury) {
+void txHashBuilder_addTreasury(tx_hash_builder_t *builder, uint64_t treasury) {
     _TRACE("state = %d", builder->state);
 
     txHashBuilder_assertCanLeaveVotingProcedures(builder);
@@ -2277,7 +2395,7 @@ void txHashBuilder_addTreasury(tx_hash_builder_t* builder, uint64_t treasury) {
     builder->state = TX_HASH_BUILDER_IN_TREASURY;
 }
 
-static void txHashBuilder_assertCanLeaveTreasury(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveTreasury(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     switch (builder->state) {
@@ -2296,7 +2414,7 @@ static void txHashBuilder_assertCanLeaveTreasury(tx_hash_builder_t* builder) {
 
 // ============================== DONATION ==============================
 
-void txHashBuilder_addDonation(tx_hash_builder_t* builder, uint64_t donation) {
+void txHashBuilder_addDonation(tx_hash_builder_t *builder, uint64_t donation) {
     _TRACE("state = %d", builder->state);
 
     txHashBuilder_assertCanLeaveTreasury(builder);
@@ -2308,7 +2426,7 @@ void txHashBuilder_addDonation(tx_hash_builder_t* builder, uint64_t donation) {
     builder->state = TX_HASH_BUILDER_IN_DONATION;
 }
 
-static void txHashBuilder_assertCanLeaveDonation(tx_hash_builder_t* builder) {
+static void txHashBuilder_assertCanLeaveDonation(tx_hash_builder_t *builder) {
     _TRACE("state = %d", builder->state);
 
     switch (builder->state) {
@@ -2327,22 +2445,24 @@ static void txHashBuilder_assertCanLeaveDonation(tx_hash_builder_t* builder) {
 
 // ========================= FINALIZE ==========================
 
-void txHashBuilder_finalize(tx_hash_builder_t* builder, uint8_t* outBuffer, size_t outSize) {
+void txHashBuilder_finalize(tx_hash_builder_t *builder, uint8_t *outBuffer, size_t outSize) {
     txHashBuilder_assertCanLeaveDonation(builder);
 
     ASSERT(outSize == TX_HASH_LENGTH);
-    { blake2b_256_finalize(&builder->txHash, outBuffer, outSize); }
+    {
+        blake2b_256_finalize(&builder->txHash, outBuffer, outSize);
+    }
 
     builder->state = TX_HASH_BUILDER_FINISHED;
 #ifdef TRACE_TX_HASH_BUILDER
-    TRACE("tx_body (%u bytes)", (unsigned int)tx_body_trace_size);
+    TRACE("tx_body (%u bytes)", (unsigned int) tx_body_trace_size);
     TRACE_BUFFER(tx_body_trace_buffer, tx_body_trace_size);
 #endif
 }
 
 #ifdef TRACE_TX_HASH_BUILDER
 // LCOV_EXCL_START
-size_t txHashBuilder_get_trace_body(uint8_t* outBuffer, size_t outMaxSize) {
+size_t txHashBuilder_get_trace_body(uint8_t *outBuffer, size_t outMaxSize) {
     size_t copy = (tx_body_trace_size < outMaxSize) ? tx_body_trace_size : outMaxSize;
     memcpy(outBuffer, tx_body_trace_buffer, copy);
     return copy;

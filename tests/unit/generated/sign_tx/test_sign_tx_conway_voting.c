@@ -51,262 +51,487 @@
 
 static void test_sign_tx_with_voting_procedures_committee_key_path_voter_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_KEY_PATH_VOTER, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_KEY_PATH_VOTER,
+        false);
 }
 
-static void test_sign_tx_with_voting_procedures_committee_key_path_voter_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_voting_procedures_committee_key_path_voter_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_KEY_PATH_VOTER, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_KEY_PATH_VOTER,
+        false);
 }
 
 static void test_sign_tx_with_voting_procedures_committee_key_path_voter_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_KEY_PATH_VOTER, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_KEY_PATH_VOTER,
+        true);
 }
 
-static void test_sign_tx_with_voting_procedures_committee_key_path_voter_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_voting_procedures_committee_key_path_voter_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_KEY_PATH_VOTER, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_KEY_PATH_VOTER,
+        true);
 }
 
 static void test_sign_tx_with_voting_procedures_drep_key_path_voter_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_KEY_PATH_VOTER, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_KEY_PATH_VOTER,
+        false);
 }
 
-static void test_sign_tx_with_voting_procedures_drep_key_path_voter_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_voting_procedures_drep_key_path_voter_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_KEY_PATH_VOTER, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_KEY_PATH_VOTER,
+        false);
 }
 
 static void test_sign_tx_with_voting_procedures_drep_key_path_voter_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_KEY_PATH_VOTER, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_KEY_PATH_VOTER,
+        true);
 }
 
-static void test_sign_tx_with_voting_procedures_drep_key_path_voter_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_voting_procedures_drep_key_path_voter_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_KEY_PATH_VOTER, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_KEY_PATH_VOTER,
+        true);
 }
 
 static void test_sign_tx_with_voting_procedures_stake_pool_key_path_voter_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_STAKE_POOL_KEY_PATH_VOTER, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_STAKE_POOL_KEY_PATH_VOTER,
+        false);
 }
 
-static void test_sign_tx_with_voting_procedures_stake_pool_key_path_voter_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_voting_procedures_stake_pool_key_path_voter_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_STAKE_POOL_KEY_PATH_VOTER, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_STAKE_POOL_KEY_PATH_VOTER,
+        false);
 }
 
 static void test_sign_tx_with_voting_procedures_stake_pool_key_path_voter_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_STAKE_POOL_KEY_PATH_VOTER, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_STAKE_POOL_KEY_PATH_VOTER,
+        true);
 }
 
-static void test_sign_tx_with_voting_procedures_stake_pool_key_path_voter_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_voting_procedures_stake_pool_key_path_voter_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_STAKE_POOL_KEY_PATH_VOTER, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_STAKE_POOL_KEY_PATH_VOTER,
+        true);
+}
+
+static void test_unrestricted_tx_with_stake_pool_key_path_voter_deny_init_expert_off(void **state) {
+    (void) state;
+    run_fixture_init_deny_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_UNRESTRICTED_TX_WITH_STAKE_POOL_KEY_PATH_VOTER,
+        false,
+        SWO_SECURITY_CONDITION_NOT_SATISFIED);
+}
+
+static void test_unrestricted_tx_with_stake_pool_key_path_voter_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_UNRESTRICTED_TX_WITH_STAKE_POOL_KEY_PATH_VOTER,
+        true);
+}
+
+static void test_unrestricted_tx_with_stake_pool_key_path_voter_reject_tx_expert_on(void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_UNRESTRICTED_TX_WITH_STAKE_POOL_KEY_PATH_VOTER,
+        true);
 }
 
 static void test_sign_tx_with_voting_procedures_committee_key_hash_voter_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_KEY_HASH_VOTER, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_KEY_HASH_VOTER,
+        false);
 }
 
-static void test_sign_tx_with_voting_procedures_committee_key_hash_voter_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_voting_procedures_committee_key_hash_voter_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_KEY_HASH_VOTER, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_KEY_HASH_VOTER,
+        false);
 }
 
 static void test_sign_tx_with_voting_procedures_committee_key_hash_voter_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_KEY_HASH_VOTER, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_KEY_HASH_VOTER,
+        true);
 }
 
-static void test_sign_tx_with_voting_procedures_committee_key_hash_voter_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_voting_procedures_committee_key_hash_voter_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_KEY_HASH_VOTER, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_KEY_HASH_VOTER,
+        true);
 }
 
-static void test_sign_tx_with_voting_procedures_committee_script_hash_voter_expert_off(void **state) {
+static void test_sign_tx_with_voting_procedures_committee_script_hash_voter_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_SCRIPT_HASH_VOTER, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_SCRIPT_HASH_VOTER,
+        false);
 }
 
-static void test_sign_tx_with_voting_procedures_committee_script_hash_voter_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_voting_procedures_committee_script_hash_voter_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_SCRIPT_HASH_VOTER, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_SCRIPT_HASH_VOTER,
+        false);
 }
 
-static void test_sign_tx_with_voting_procedures_committee_script_hash_voter_expert_on(void **state) {
+static void test_sign_tx_with_voting_procedures_committee_script_hash_voter_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_SCRIPT_HASH_VOTER, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_SCRIPT_HASH_VOTER,
+        true);
 }
 
-static void test_sign_tx_with_voting_procedures_committee_script_hash_voter_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_voting_procedures_committee_script_hash_voter_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_SCRIPT_HASH_VOTER, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_COMMITTEE_SCRIPT_HASH_VOTER,
+        true);
 }
 
 static void test_sign_tx_with_voting_procedures_drep_key_hash_voter_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_KEY_HASH_VOTER, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_KEY_HASH_VOTER,
+        false);
 }
 
-static void test_sign_tx_with_voting_procedures_drep_key_hash_voter_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_voting_procedures_drep_key_hash_voter_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_KEY_HASH_VOTER, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_KEY_HASH_VOTER,
+        false);
 }
 
 static void test_sign_tx_with_voting_procedures_drep_key_hash_voter_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_KEY_HASH_VOTER, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_KEY_HASH_VOTER,
+        true);
 }
 
-static void test_sign_tx_with_voting_procedures_drep_key_hash_voter_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_voting_procedures_drep_key_hash_voter_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_KEY_HASH_VOTER, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_KEY_HASH_VOTER,
+        true);
 }
 
 static void test_sign_tx_with_voting_procedures_drep_script_hash_voter_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_SCRIPT_HASH_VOTER, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_SCRIPT_HASH_VOTER,
+        false);
 }
 
-static void test_sign_tx_with_voting_procedures_drep_script_hash_voter_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_voting_procedures_drep_script_hash_voter_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_SCRIPT_HASH_VOTER, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_SCRIPT_HASH_VOTER,
+        false);
 }
 
 static void test_sign_tx_with_voting_procedures_drep_script_hash_voter_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_SCRIPT_HASH_VOTER, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_SCRIPT_HASH_VOTER,
+        true);
 }
 
-static void test_sign_tx_with_voting_procedures_drep_script_hash_voter_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_voting_procedures_drep_script_hash_voter_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_SCRIPT_HASH_VOTER, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_DREP_SCRIPT_HASH_VOTER,
+        true);
 }
 
 static void test_multisig_tx_with_script_hash_voting_procedures_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_MULTISIG_TX_WITH_SCRIPT_HASH_VOTING_PROCEDURES, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_MULTISIG_TX_WITH_SCRIPT_HASH_VOTING_PROCEDURES,
+        false);
 }
 
 static void test_multisig_tx_with_script_hash_voting_procedures_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_MULTISIG_TX_WITH_SCRIPT_HASH_VOTING_PROCEDURES, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_MULTISIG_TX_WITH_SCRIPT_HASH_VOTING_PROCEDURES,
+        false);
 }
 
 static void test_multisig_tx_with_script_hash_voting_procedures_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_MULTISIG_TX_WITH_SCRIPT_HASH_VOTING_PROCEDURES, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_MULTISIG_TX_WITH_SCRIPT_HASH_VOTING_PROCEDURES,
+        true);
 }
 
 static void test_multisig_tx_with_script_hash_voting_procedures_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_MULTISIG_TX_WITH_SCRIPT_HASH_VOTING_PROCEDURES, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_MULTISIG_TX_WITH_SCRIPT_HASH_VOTING_PROCEDURES,
+        true);
 }
 
 static void test_sign_tx_with_voting_procedures_stake_pool_key_hash_voter_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_STAKE_POOL_KEY_HASH_VOTER, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_STAKE_POOL_KEY_HASH_VOTER,
+        false);
 }
 
-static void test_sign_tx_with_voting_procedures_stake_pool_key_hash_voter_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_voting_procedures_stake_pool_key_hash_voter_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_STAKE_POOL_KEY_HASH_VOTER, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_STAKE_POOL_KEY_HASH_VOTER,
+        false);
 }
 
 static void test_sign_tx_with_voting_procedures_stake_pool_key_hash_voter_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_STAKE_POOL_KEY_HASH_VOTER, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_STAKE_POOL_KEY_HASH_VOTER,
+        true);
 }
 
-static void test_sign_tx_with_voting_procedures_stake_pool_key_hash_voter_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_voting_procedures_stake_pool_key_hash_voter_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_STAKE_POOL_KEY_HASH_VOTER, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_STAKE_POOL_KEY_HASH_VOTER,
+        true);
 }
 
-static void test_sign_tx_with_voting_procedures_single_voter_multiple_votes_expert_off(void **state) {
+static void test_unrestricted_tx_with_stake_pool_key_hash_voter_deny_init_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_SINGLE_VOTER_MULTIPLE_VOTES, false);
+    run_fixture_init_deny_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_UNRESTRICTED_TX_WITH_STAKE_POOL_KEY_HASH_VOTER,
+        false,
+        SWO_SECURITY_CONDITION_NOT_SATISFIED);
 }
 
-static void test_sign_tx_with_voting_procedures_single_voter_multiple_votes_reject_tx_expert_off(void **state) {
+static void test_unrestricted_tx_with_stake_pool_key_hash_voter_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_SINGLE_VOTER_MULTIPLE_VOTES, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_UNRESTRICTED_TX_WITH_STAKE_POOL_KEY_HASH_VOTER,
+        true);
 }
 
-static void test_sign_tx_with_voting_procedures_single_voter_multiple_votes_expert_on(void **state) {
+static void test_unrestricted_tx_with_stake_pool_key_hash_voter_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_SINGLE_VOTER_MULTIPLE_VOTES, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_UNRESTRICTED_TX_WITH_STAKE_POOL_KEY_HASH_VOTER,
+        true);
 }
 
-static void test_sign_tx_with_voting_procedures_single_voter_multiple_votes_reject_tx_expert_on(void **state) {
+static void test_unrestricted_tx_with_committee_key_path_voter_deny_init_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_SINGLE_VOTER_MULTIPLE_VOTES, true);
+    run_fixture_init_deny_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_UNRESTRICTED_TX_WITH_COMMITTEE_KEY_PATH_VOTER,
+        false,
+        SWO_SECURITY_CONDITION_NOT_SATISFIED);
 }
 
-static void test_sign_tx_with_voting_procedures_multiple_voters_single_vote_expert_off(void **state) {
+static void test_unrestricted_tx_with_committee_key_path_voter_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_MULTIPLE_VOTERS_SINGLE_VOTE, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_UNRESTRICTED_TX_WITH_COMMITTEE_KEY_PATH_VOTER,
+        true);
 }
 
-static void test_sign_tx_with_voting_procedures_multiple_voters_single_vote_reject_tx_expert_off(void **state) {
+static void test_unrestricted_tx_with_committee_key_path_voter_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_MULTIPLE_VOTERS_SINGLE_VOTE, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_UNRESTRICTED_TX_WITH_COMMITTEE_KEY_PATH_VOTER,
+        true);
 }
 
-static void test_sign_tx_with_voting_procedures_multiple_voters_single_vote_expert_on(void **state) {
+static void test_unrestricted_tx_with_committee_and_drep_voter_types_deny_init_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_MULTIPLE_VOTERS_SINGLE_VOTE, true);
+    run_fixture_init_deny_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_UNRESTRICTED_TX_WITH_COMMITTEE_AND_DREP_VOTER_TYPES,
+        false,
+        SWO_SECURITY_CONDITION_NOT_SATISFIED);
 }
 
-static void test_sign_tx_with_voting_procedures_multiple_voters_single_vote_reject_tx_expert_on(void **state) {
+static void test_unrestricted_tx_with_committee_and_drep_voter_types_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_MULTIPLE_VOTERS_SINGLE_VOTE, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_UNRESTRICTED_TX_WITH_COMMITTEE_AND_DREP_VOTER_TYPES,
+        true);
 }
 
-static void test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_expert_off(void **state) {
+static void test_unrestricted_tx_with_committee_and_drep_voter_types_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_MULTIPLE_VOTERS_MULTIPLE_VOTES, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_UNRESTRICTED_TX_WITH_COMMITTEE_AND_DREP_VOTER_TYPES,
+        true);
 }
 
-static void test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_voting_procedures_single_voter_multiple_votes_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_MULTIPLE_VOTERS_MULTIPLE_VOTES, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_SINGLE_VOTER_MULTIPLE_VOTES,
+        false);
 }
 
-static void test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_expert_on(void **state) {
+static void test_sign_tx_with_voting_procedures_single_voter_multiple_votes_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_MULTIPLE_VOTERS_MULTIPLE_VOTES, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_SINGLE_VOTER_MULTIPLE_VOTES,
+        false);
 }
 
-static void test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_voting_procedures_single_voter_multiple_votes_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_MULTIPLE_VOTERS_MULTIPLE_VOTES, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_SINGLE_VOTER_MULTIPLE_VOTES,
+        true);
+}
+
+static void test_sign_tx_with_voting_procedures_single_voter_multiple_votes_reject_tx_expert_on(
+    void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_SINGLE_VOTER_MULTIPLE_VOTES,
+        true);
+}
+
+static void test_sign_tx_with_voting_procedures_multiple_voters_single_vote_expert_off(
+    void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_MULTIPLE_VOTERS_SINGLE_VOTE,
+        false);
+}
+
+static void test_sign_tx_with_voting_procedures_multiple_voters_single_vote_reject_tx_expert_off(
+    void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_MULTIPLE_VOTERS_SINGLE_VOTE,
+        false);
+}
+
+static void test_sign_tx_with_voting_procedures_multiple_voters_single_vote_expert_on(
+    void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_MULTIPLE_VOTERS_SINGLE_VOTE,
+        true);
+}
+
+static void test_sign_tx_with_voting_procedures_multiple_voters_single_vote_reject_tx_expert_on(
+    void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_MULTIPLE_VOTERS_SINGLE_VOTE,
+        true);
+}
+
+static void test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_expert_off(
+    void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_MULTIPLE_VOTERS_MULTIPLE_VOTES,
+        false);
+}
+
+static void test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_reject_tx_expert_off(
+    void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_MULTIPLE_VOTERS_MULTIPLE_VOTES,
+        false);
+}
+
+static void test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_expert_on(
+    void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_MULTIPLE_VOTERS_MULTIPLE_VOTES,
+        true);
+}
+
+static void test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_reject_tx_expert_on(
+    void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_MULTIPLE_VOTERS_MULTIPLE_VOTES,
+        true);
 }
 
 static void test_sign_tx_with_voting_procedures_empty_anchor_url_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_EMPTY_ANCHOR_URL, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_EMPTY_ANCHOR_URL,
+        false);
 }
 
-static void test_sign_tx_with_voting_procedures_empty_anchor_url_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_voting_procedures_empty_anchor_url_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_EMPTY_ANCHOR_URL, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_EMPTY_ANCHOR_URL,
+        false);
 }
 
 static void test_sign_tx_with_voting_procedures_empty_anchor_url_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_EMPTY_ANCHOR_URL, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_EMPTY_ANCHOR_URL,
+        true);
 }
 
 static void test_sign_tx_with_voting_procedures_empty_anchor_url_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_EMPTY_ANCHOR_URL, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_VOTING_SIGN_TX_WITH_VOTING_PROCEDURES_EMPTY_ANCHOR_URL,
+        true);
 }
 
 // ======================================================================
@@ -316,57 +541,102 @@ static void test_sign_tx_with_voting_procedures_empty_anchor_url_reject_tx_exper
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_sign_tx_with_voting_procedures_committee_key_path_voter_expert_off),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_committee_key_path_voter_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_committee_key_path_voter_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_committee_key_path_voter_expert_on),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_committee_key_path_voter_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_committee_key_path_voter_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_drep_key_path_voter_expert_off),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_drep_key_path_voter_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_drep_key_path_voter_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_drep_key_path_voter_expert_on),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_drep_key_path_voter_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_drep_key_path_voter_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_stake_pool_key_path_voter_expert_off),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_stake_pool_key_path_voter_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_stake_pool_key_path_voter_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_stake_pool_key_path_voter_expert_on),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_stake_pool_key_path_voter_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_stake_pool_key_path_voter_reject_tx_expert_on),
+        cmocka_unit_test(test_unrestricted_tx_with_stake_pool_key_path_voter_deny_init_expert_off),
+        cmocka_unit_test(test_unrestricted_tx_with_stake_pool_key_path_voter_expert_on),
+        cmocka_unit_test(test_unrestricted_tx_with_stake_pool_key_path_voter_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_committee_key_hash_voter_expert_off),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_committee_key_hash_voter_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_committee_key_hash_voter_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_committee_key_hash_voter_expert_on),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_committee_key_hash_voter_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_committee_script_hash_voter_expert_off),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_committee_script_hash_voter_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_committee_key_hash_voter_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_committee_script_hash_voter_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_committee_script_hash_voter_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_committee_script_hash_voter_expert_on),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_committee_script_hash_voter_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_committee_script_hash_voter_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_drep_key_hash_voter_expert_off),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_drep_key_hash_voter_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_drep_key_hash_voter_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_drep_key_hash_voter_expert_on),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_drep_key_hash_voter_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_drep_key_hash_voter_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_drep_script_hash_voter_expert_off),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_drep_script_hash_voter_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_drep_script_hash_voter_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_drep_script_hash_voter_expert_on),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_drep_script_hash_voter_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_drep_script_hash_voter_reject_tx_expert_on),
         cmocka_unit_test(test_multisig_tx_with_script_hash_voting_procedures_expert_off),
         cmocka_unit_test(test_multisig_tx_with_script_hash_voting_procedures_reject_tx_expert_off),
         cmocka_unit_test(test_multisig_tx_with_script_hash_voting_procedures_expert_on),
         cmocka_unit_test(test_multisig_tx_with_script_hash_voting_procedures_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_stake_pool_key_hash_voter_expert_off),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_stake_pool_key_hash_voter_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_stake_pool_key_hash_voter_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_stake_pool_key_hash_voter_expert_on),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_stake_pool_key_hash_voter_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_single_voter_multiple_votes_expert_off),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_single_voter_multiple_votes_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_stake_pool_key_hash_voter_reject_tx_expert_on),
+        cmocka_unit_test(test_unrestricted_tx_with_stake_pool_key_hash_voter_deny_init_expert_off),
+        cmocka_unit_test(test_unrestricted_tx_with_stake_pool_key_hash_voter_expert_on),
+        cmocka_unit_test(test_unrestricted_tx_with_stake_pool_key_hash_voter_reject_tx_expert_on),
+        cmocka_unit_test(test_unrestricted_tx_with_committee_key_path_voter_deny_init_expert_off),
+        cmocka_unit_test(test_unrestricted_tx_with_committee_key_path_voter_expert_on),
+        cmocka_unit_test(test_unrestricted_tx_with_committee_key_path_voter_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_unrestricted_tx_with_committee_and_drep_voter_types_deny_init_expert_off),
+        cmocka_unit_test(test_unrestricted_tx_with_committee_and_drep_voter_types_expert_on),
+        cmocka_unit_test(
+            test_unrestricted_tx_with_committee_and_drep_voter_types_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_single_voter_multiple_votes_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_single_voter_multiple_votes_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_single_voter_multiple_votes_expert_on),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_single_voter_multiple_votes_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_multiple_voters_single_vote_expert_off),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_multiple_voters_single_vote_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_single_voter_multiple_votes_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_multiple_voters_single_vote_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_multiple_voters_single_vote_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_multiple_voters_single_vote_expert_on),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_multiple_voters_single_vote_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_expert_off),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_expert_on),
-        cmocka_unit_test(test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_multiple_voters_single_vote_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_voting_procedures_multiple_voters_multiple_votes_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_empty_anchor_url_expert_off),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_empty_anchor_url_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_empty_anchor_url_expert_on),
         cmocka_unit_test(test_sign_tx_with_voting_procedures_empty_anchor_url_reject_tx_expert_on),
     };
-    return _cmocka_run_group_tests("test_sign_tx_conway_voting", tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);
+    return _cmocka_run_group_tests("test_sign_tx_conway_voting",
+                                   tests,
+                                   ARRAY_LEN(tests),
+                                   NULL,
+                                   assert_no_pending_apdu_response);
 }

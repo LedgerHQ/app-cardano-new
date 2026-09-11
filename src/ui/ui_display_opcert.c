@@ -35,7 +35,7 @@
 #ifdef TRACE_UI_DISPLAY
 #define TRACE_MODULE(...) TRACE("[ui_opcert] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 /**
@@ -51,13 +51,13 @@ static void opcert_buffer_cleanup(void) {
  * @param opcert Parsed operational certificate data
  * @return UI_STATUS_SUCCESS on success, UI_STATUS_OUT_OF_MEMORY on allocation failure
  */
-static ui_status_t format_opcert_fields(const parsed_opcert_t* opcert) {
+static ui_status_t format_opcert_fields(const parsed_opcert_t *opcert) {
     ui_render_session_t session = {0};
     ui_render_scope_begin(&session);
 
     if (!ui_pairs_init(5)) {
         TRACE_MODULE("Failed to initialize pairs");
-        return ui_render_scope_end(); // LCOV_EXCL_LINE
+        return ui_render_scope_end();  // LCOV_EXCL_LINE
     }
 
     // Format and add all opcert fields using unified macros
@@ -72,12 +72,16 @@ static ui_status_t format_opcert_fields(const parsed_opcert_t* opcert) {
     UI_ADD_FORMAT3(UI_STATIC_LABEL("Pool ID"),
                    MAX_BECH32_STRING_LENGTH,
                    format_bech32,
-                   BECH32_PREFIX_POOL_ID, poolKeyHash, POOL_KEY_HASH_LENGTH);
+                   BECH32_PREFIX_POOL_ID,
+                   poolKeyHash,
+                   POOL_KEY_HASH_LENGTH);
 
     UI_ADD_FORMAT3(UI_STATIC_LABEL("KES public key"),
                    MAX_BECH32_STRING_LENGTH,
                    format_bech32,
-                   BECH32_PREFIX_KES_VERIFICATION_KEY, opcert->kesPublicKey, KES_PUBLIC_KEY_LENGTH);
+                   BECH32_PREFIX_KES_VERIFICATION_KEY,
+                   opcert->kesPublicKey,
+                   KES_PUBLIC_KEY_LENGTH);
 
     UI_ADD_FORMAT1(UI_STATIC_LABEL("KES period"),
                    MAX_UINT64_STRING_LENGTH,
@@ -113,8 +117,12 @@ static void opcert_review_choice(bool confirm) {
 }
 
 void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_OPCERT, "ui_display_opcert called with wrong request type: %d", G_context.req_type);
-    LEDGER_ASSERT(G_context.state.opcert_state == OPCERT_STATE_VALIDATED, "ui_display_opcert called in wrong state: %d", G_context.state.opcert_state);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_OPCERT,
+                  "ui_display_opcert called with wrong request type: %d",
+                  G_context.req_type);
+    LEDGER_ASSERT(G_context.state.opcert_state == OPCERT_STATE_VALIDATED,
+                  "ui_display_opcert called in wrong state: %d",
+                  G_context.state.opcert_state);
     TRACE_MODULE("=== ui_display_opcert START ===");
     TRACE_MODULE("securityPolicy: %d", securityPolicy);
 
@@ -133,7 +141,7 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
         default:
             LEDGER_ASSERT(false, "Unexpected security policy");
             return;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     // Format all opcert fields and check for errors
@@ -149,7 +157,7 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
         default:
             LEDGER_ASSERT(false, "Unexpected UI status");
             return;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     // Build warnings if needed
@@ -166,19 +174,18 @@ void ui_display_opcert(security_policy_t securityPolicy, warning_bits_t warnings
         default:
             LEDGER_ASSERT(false, "Unexpected warning status");
             return;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
-    const nbgl_warning_t* warningPtr = ui_get_warnings();
+    const nbgl_warning_t *warningPtr = ui_get_warnings();
     nbgl_useCaseAdvancedReview(TYPE_OPERATION,
-                        g_pairsList,
-                        &ICON_APP_CARDANO,
-                        "Sign operational certificate",
-                        NULL,
-                        "Sign certificate",
-                        NULL,
-                        warningPtr,
-                        opcert_review_choice
-    );
+                               g_pairsList,
+                               &ICON_APP_CARDANO,
+                               "Sign operational certificate",
+                               NULL,
+                               "Sign certificate",
+                               NULL,
+                               warningPtr,
+                               opcert_review_choice);
 
     return;
 }

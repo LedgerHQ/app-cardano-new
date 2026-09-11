@@ -32,16 +32,30 @@
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_byronpath_1
 static const uint8_t PUBKEY_test_pubkey_confirm_000_EXPORT_PUBKEY_BYRONPATH_1_APDU[] = {
-    0x03, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x01,
+    0x03,
+    0x80,
+    0x00,
+    0x00,
+    0x2C,
+    0x80,
+    0x00,
+    0x07,
+    0x17,
+    0x80,
+    0x00,
+    0x00,
+    0x01,
 };
 
 // Public key (hex): eb6e933ce45516ac7b0e023de700efae5e212ccc6bf0fcb33ba9243b9d832827
 // Chain code (hex): 0b161cb11babe1f56c3f9f1cbbb7b6d2d13eeb3efa67205198a69b8d81885354
-static const uint8_t PUBKEY_test_pubkey_confirm_000_EXPORT_PUBKEY_BYRONPATH_1_EXPECTED_RESPONSE[] = {
-    0xEB, 0x6E, 0x93, 0x3C, 0xE4, 0x55, 0x16, 0xAC, 0x7B, 0x0E, 0x02, 0x3D, 0xE7, 0x00, 0xEF, 0xAE,
-    0x5E, 0x21, 0x2C, 0xCC, 0x6B, 0xF0, 0xFC, 0xB3, 0x3B, 0xA9, 0x24, 0x3B, 0x9D, 0x83, 0x28, 0x27,
-    0x0B, 0x16, 0x1C, 0xB1, 0x1B, 0xAB, 0xE1, 0xF5, 0x6C, 0x3F, 0x9F, 0x1C, 0xBB, 0xB7, 0xB6, 0xD2,
-    0xD1, 0x3E, 0xEB, 0x3E, 0xFA, 0x67, 0x20, 0x51, 0x98, 0xA6, 0x9B, 0x8D, 0x81, 0x88, 0x53, 0x54,
+static const uint8_t PUBKEY_test_pubkey_confirm_000_EXPORT_PUBKEY_BYRONPATH_1_EXPECTED_RESPONSE[] =
+    {
+        0xEB, 0x6E, 0x93, 0x3C, 0xE4, 0x55, 0x16, 0xAC, 0x7B, 0x0E, 0x02, 0x3D, 0xE7,
+        0x00, 0xEF, 0xAE, 0x5E, 0x21, 0x2C, 0xCC, 0x6B, 0xF0, 0xFC, 0xB3, 0x3B, 0xA9,
+        0x24, 0x3B, 0x9D, 0x83, 0x28, 0x27, 0x0B, 0x16, 0x1C, 0xB1, 0x1B, 0xAB, 0xE1,
+        0xF5, 0x6C, 0x3F, 0x9F, 0x1C, 0xBB, 0xB7, 0xB6, 0xD2, 0xD1, 0x3E, 0xEB, 0x3E,
+        0xFA, 0x67, 0x20, 0x51, 0x98, 0xA6, 0x9B, 0x8D, 0x81, 0x88, 0x53, 0x54,
 };
 
 // ----------------------------------------------------------------------
@@ -52,17 +66,19 @@ static const uint8_t PUBKEY_test_pubkey_confirm_000_EXPORT_PUBKEY_BYRONPATH_1_EX
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_byronpath_2
 static const uint8_t PUBKEY_test_pubkey_confirm_001_EXPORT_PUBKEY_BYRONPATH_2_APDU[] = {
-    0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-    0x00, 0x80, 0x00, 0x00, 0x37,
+    0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x37,
 };
 
 // Public key (hex): 83220849a3ada3e95495e22b24aee95c3120d4c8a9faafed312914769e65b70d
 // Chain code (hex): 69d1b1d5a95ba88b2851d6e1da2d2113f4eca6949f31ababf007deffaba6ae26
-static const uint8_t PUBKEY_test_pubkey_confirm_001_EXPORT_PUBKEY_BYRONPATH_2_EXPECTED_RESPONSE[] = {
-    0x83, 0x22, 0x08, 0x49, 0xA3, 0xAD, 0xA3, 0xE9, 0x54, 0x95, 0xE2, 0x2B, 0x24, 0xAE, 0xE9, 0x5C,
-    0x31, 0x20, 0xD4, 0xC8, 0xA9, 0xFA, 0xAF, 0xED, 0x31, 0x29, 0x14, 0x76, 0x9E, 0x65, 0xB7, 0x0D,
-    0x69, 0xD1, 0xB1, 0xD5, 0xA9, 0x5B, 0xA8, 0x8B, 0x28, 0x51, 0xD6, 0xE1, 0xDA, 0x2D, 0x21, 0x13,
-    0xF4, 0xEC, 0xA6, 0x94, 0x9F, 0x31, 0xAB, 0xAB, 0xF0, 0x07, 0xDE, 0xFF, 0xAB, 0xA6, 0xAE, 0x26,
+static const uint8_t PUBKEY_test_pubkey_confirm_001_EXPORT_PUBKEY_BYRONPATH_2_EXPECTED_RESPONSE[] =
+    {
+        0x83, 0x22, 0x08, 0x49, 0xA3, 0xAD, 0xA3, 0xE9, 0x54, 0x95, 0xE2, 0x2B, 0x24,
+        0xAE, 0xE9, 0x5C, 0x31, 0x20, 0xD4, 0xC8, 0xA9, 0xFA, 0xAF, 0xED, 0x31, 0x29,
+        0x14, 0x76, 0x9E, 0x65, 0xB7, 0x0D, 0x69, 0xD1, 0xB1, 0xD5, 0xA9, 0x5B, 0xA8,
+        0x8B, 0x28, 0x51, 0xD6, 0xE1, 0xDA, 0x2D, 0x21, 0x13, 0xF4, 0xEC, 0xA6, 0x94,
+        0x9F, 0x31, 0xAB, 0xAB, 0xF0, 0x07, 0xDE, 0xFF, 0xAB, 0xA6, 0xAE, 0x26,
 };
 
 // ----------------------------------------------------------------------
@@ -73,17 +89,19 @@ static const uint8_t PUBKEY_test_pubkey_confirm_001_EXPORT_PUBKEY_BYRONPATH_2_EX
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_byronpath_3
 static const uint8_t PUBKEY_test_pubkey_confirm_002_EXPORT_PUBKEY_BYRONPATH_3_APDU[] = {
-    0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-    0x00, 0x80, 0x00, 0x00, 0x0C,
+    0x05, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x0C,
 };
 
 // Public key (hex): 40711c6ebf9c0a4c73987687a09255d9cfa8591c9915162ba11054ec4ee77e09
 // Chain code (hex): b4fbd48d01d09c7cbcaed7a48ffac9d53ddf5564ad468bfef18fe7d9bc535a16
-static const uint8_t PUBKEY_test_pubkey_confirm_002_EXPORT_PUBKEY_BYRONPATH_3_EXPECTED_RESPONSE[] = {
-    0x40, 0x71, 0x1C, 0x6E, 0xBF, 0x9C, 0x0A, 0x4C, 0x73, 0x98, 0x76, 0x87, 0xA0, 0x92, 0x55, 0xD9,
-    0xCF, 0xA8, 0x59, 0x1C, 0x99, 0x15, 0x16, 0x2B, 0xA1, 0x10, 0x54, 0xEC, 0x4E, 0xE7, 0x7E, 0x09,
-    0xB4, 0xFB, 0xD4, 0x8D, 0x01, 0xD0, 0x9C, 0x7C, 0xBC, 0xAE, 0xD7, 0xA4, 0x8F, 0xFA, 0xC9, 0xD5,
-    0x3D, 0xDF, 0x55, 0x64, 0xAD, 0x46, 0x8B, 0xFE, 0xF1, 0x8F, 0xE7, 0xD9, 0xBC, 0x53, 0x5A, 0x16,
+static const uint8_t PUBKEY_test_pubkey_confirm_002_EXPORT_PUBKEY_BYRONPATH_3_EXPECTED_RESPONSE[] =
+    {
+        0x40, 0x71, 0x1C, 0x6E, 0xBF, 0x9C, 0x0A, 0x4C, 0x73, 0x98, 0x76, 0x87, 0xA0,
+        0x92, 0x55, 0xD9, 0xCF, 0xA8, 0x59, 0x1C, 0x99, 0x15, 0x16, 0x2B, 0xA1, 0x10,
+        0x54, 0xEC, 0x4E, 0xE7, 0x7E, 0x09, 0xB4, 0xFB, 0xD4, 0x8D, 0x01, 0xD0, 0x9C,
+        0x7C, 0xBC, 0xAE, 0xD7, 0xA4, 0x8F, 0xFA, 0xC9, 0xD5, 0x3D, 0xDF, 0x55, 0x64,
+        0xAD, 0x46, 0x8B, 0xFE, 0xF1, 0x8F, 0xE7, 0xD9, 0xBC, 0x53, 0x5A, 0x16,
 };
 
 // ----------------------------------------------------------------------
@@ -94,16 +112,30 @@ static const uint8_t PUBKEY_test_pubkey_confirm_002_EXPORT_PUBKEY_BYRONPATH_3_EX
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_shelley_usual_path_0
 static const uint8_t PUBKEY_test_pubkey_confirm_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_APDU[] = {
-    0x03, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x04,
+    0x03,
+    0x80,
+    0x00,
+    0x07,
+    0x3C,
+    0x80,
+    0x00,
+    0x07,
+    0x17,
+    0x80,
+    0x00,
+    0x00,
+    0x04,
 };
 
 // Public key (hex): 4e4353d7cc6f49e8e7a281e08a7672d000d4abfdf07be299cbff95d6a05df224
 // Chain code (hex): cbc28c222a6c15c0cfe98434f97b3aef860b5ce6902e177820adbd70ed7dc2ec
-static const uint8_t PUBKEY_test_pubkey_confirm_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_EXPECTED_RESPONSE[] = {
-    0x4E, 0x43, 0x53, 0xD7, 0xCC, 0x6F, 0x49, 0xE8, 0xE7, 0xA2, 0x81, 0xE0, 0x8A, 0x76, 0x72, 0xD0,
-    0x00, 0xD4, 0xAB, 0xFD, 0xF0, 0x7B, 0xE2, 0x99, 0xCB, 0xFF, 0x95, 0xD6, 0xA0, 0x5D, 0xF2, 0x24,
-    0xCB, 0xC2, 0x8C, 0x22, 0x2A, 0x6C, 0x15, 0xC0, 0xCF, 0xE9, 0x84, 0x34, 0xF9, 0x7B, 0x3A, 0xEF,
-    0x86, 0x0B, 0x5C, 0xE6, 0x90, 0x2E, 0x17, 0x78, 0x20, 0xAD, 0xBD, 0x70, 0xED, 0x7D, 0xC2, 0xEC,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_EXPECTED_RESPONSE[] = {
+        0x4E, 0x43, 0x53, 0xD7, 0xCC, 0x6F, 0x49, 0xE8, 0xE7, 0xA2, 0x81, 0xE0, 0x8A,
+        0x76, 0x72, 0xD0, 0x00, 0xD4, 0xAB, 0xFD, 0xF0, 0x7B, 0xE2, 0x99, 0xCB, 0xFF,
+        0x95, 0xD6, 0xA0, 0x5D, 0xF2, 0x24, 0xCB, 0xC2, 0x8C, 0x22, 0x2A, 0x6C, 0x15,
+        0xC0, 0xCF, 0xE9, 0x84, 0x34, 0xF9, 0x7B, 0x3A, 0xEF, 0x86, 0x0B, 0x5C, 0xE6,
+        0x90, 0x2E, 0x17, 0x78, 0x20, 0xAD, 0xBD, 0x70, 0xED, 0x7D, 0xC2, 0xEC,
 };
 
 // ----------------------------------------------------------------------
@@ -114,17 +146,19 @@ static const uint8_t PUBKEY_test_pubkey_confirm_003_EXPORT_PUBKEY_SHELLEY_USUAL_
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_shelley_usual_path_1
 static const uint8_t PUBKEY_test_pubkey_confirm_004_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x01,
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
 };
 
 // Public key (hex): b3d5f4158f0c391ee2a28a2e285f218f3e895ff6ff59cb9369c64b03b5bab5eb
 // Chain code (hex): 27e1d1f3a3d0fafc0884e02a2d972e7e5b1be8a385ecc1bc75a977b4073dbd08
-static const uint8_t PUBKEY_test_pubkey_confirm_004_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_EXPECTED_RESPONSE[] = {
-    0xB3, 0xD5, 0xF4, 0x15, 0x8F, 0x0C, 0x39, 0x1E, 0xE2, 0xA2, 0x8A, 0x2E, 0x28, 0x5F, 0x21, 0x8F,
-    0x3E, 0x89, 0x5F, 0xF6, 0xFF, 0x59, 0xCB, 0x93, 0x69, 0xC6, 0x4B, 0x03, 0xB5, 0xBA, 0xB5, 0xEB,
-    0x27, 0xE1, 0xD1, 0xF3, 0xA3, 0xD0, 0xFA, 0xFC, 0x08, 0x84, 0xE0, 0x2A, 0x2D, 0x97, 0x2E, 0x7E,
-    0x5B, 0x1B, 0xE8, 0xA3, 0x85, 0xEC, 0xC1, 0xBC, 0x75, 0xA9, 0x77, 0xB4, 0x07, 0x3D, 0xBD, 0x08,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_004_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_EXPECTED_RESPONSE[] = {
+        0xB3, 0xD5, 0xF4, 0x15, 0x8F, 0x0C, 0x39, 0x1E, 0xE2, 0xA2, 0x8A, 0x2E, 0x28,
+        0x5F, 0x21, 0x8F, 0x3E, 0x89, 0x5F, 0xF6, 0xFF, 0x59, 0xCB, 0x93, 0x69, 0xC6,
+        0x4B, 0x03, 0xB5, 0xBA, 0xB5, 0xEB, 0x27, 0xE1, 0xD1, 0xF3, 0xA3, 0xD0, 0xFA,
+        0xFC, 0x08, 0x84, 0xE0, 0x2A, 0x2D, 0x97, 0x2E, 0x7E, 0x5B, 0x1B, 0xE8, 0xA3,
+        0x85, 0xEC, 0xC1, 0xBC, 0x75, 0xA9, 0x77, 0xB4, 0x07, 0x3D, 0xBD, 0x08,
 };
 
 // ----------------------------------------------------------------------
@@ -135,17 +169,19 @@ static const uint8_t PUBKEY_test_pubkey_confirm_004_EXPORT_PUBKEY_SHELLEY_USUAL_
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_shelley_usual_path_2
 static const uint8_t PUBKEY_test_pubkey_confirm_005_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x02, 0x00, 0x00, 0x00, 0x00,
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,
 };
 
 // Public key (hex): 66610efd336e1137c525937b76511fbcf2a0e6bcf0d340a67bcb39bc870d85e8
 // Chain code (hex): e977e956d29810dbfbda9c8ea667585982454e401c68578623d4b86bc7eb7b58
-static const uint8_t PUBKEY_test_pubkey_confirm_005_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_EXPECTED_RESPONSE[] = {
-    0x66, 0x61, 0x0E, 0xFD, 0x33, 0x6E, 0x11, 0x37, 0xC5, 0x25, 0x93, 0x7B, 0x76, 0x51, 0x1F, 0xBC,
-    0xF2, 0xA0, 0xE6, 0xBC, 0xF0, 0xD3, 0x40, 0xA6, 0x7B, 0xCB, 0x39, 0xBC, 0x87, 0x0D, 0x85, 0xE8,
-    0xE9, 0x77, 0xE9, 0x56, 0xD2, 0x98, 0x10, 0xDB, 0xFB, 0xDA, 0x9C, 0x8E, 0xA6, 0x67, 0x58, 0x59,
-    0x82, 0x45, 0x4E, 0x40, 0x1C, 0x68, 0x57, 0x86, 0x23, 0xD4, 0xB8, 0x6B, 0xC7, 0xEB, 0x7B, 0x58,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_005_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_EXPECTED_RESPONSE[] = {
+        0x66, 0x61, 0x0E, 0xFD, 0x33, 0x6E, 0x11, 0x37, 0xC5, 0x25, 0x93, 0x7B, 0x76,
+        0x51, 0x1F, 0xBC, 0xF2, 0xA0, 0xE6, 0xBC, 0xF0, 0xD3, 0x40, 0xA6, 0x7B, 0xCB,
+        0x39, 0xBC, 0x87, 0x0D, 0x85, 0xE8, 0xE9, 0x77, 0xE9, 0x56, 0xD2, 0x98, 0x10,
+        0xDB, 0xFB, 0xDA, 0x9C, 0x8E, 0xA6, 0x67, 0x58, 0x59, 0x82, 0x45, 0x4E, 0x40,
+        0x1C, 0x68, 0x57, 0x86, 0x23, 0xD4, 0xB8, 0x6B, 0xC7, 0xEB, 0x7B, 0x58,
 };
 
 // ----------------------------------------------------------------------
@@ -156,17 +192,19 @@ static const uint8_t PUBKEY_test_pubkey_confirm_005_EXPORT_PUBKEY_SHELLEY_USUAL_
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_shelley_usual_path_3
 static const uint8_t PUBKEY_test_pubkey_confirm_006_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x02, 0x00, 0x00, 0x03, 0xE9,
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x03, 0xE9,
 };
 
 // Public key (hex): dbc5fbbe47eabc036c6834ea62c011b15272ec85a17facd3670cd9304486ffe8
 // Chain code (hex): fb037474fc75e64745f7fd9f44b4bcbc58d81cae2209f2f5c1f77501e9bb43df
-static const uint8_t PUBKEY_test_pubkey_confirm_006_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_EXPECTED_RESPONSE[] = {
-    0xDB, 0xC5, 0xFB, 0xBE, 0x47, 0xEA, 0xBC, 0x03, 0x6C, 0x68, 0x34, 0xEA, 0x62, 0xC0, 0x11, 0xB1,
-    0x52, 0x72, 0xEC, 0x85, 0xA1, 0x7F, 0xAC, 0xD3, 0x67, 0x0C, 0xD9, 0x30, 0x44, 0x86, 0xFF, 0xE8,
-    0xFB, 0x03, 0x74, 0x74, 0xFC, 0x75, 0xE6, 0x47, 0x45, 0xF7, 0xFD, 0x9F, 0x44, 0xB4, 0xBC, 0xBC,
-    0x58, 0xD8, 0x1C, 0xAE, 0x22, 0x09, 0xF2, 0xF5, 0xC1, 0xF7, 0x75, 0x01, 0xE9, 0xBB, 0x43, 0xDF,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_006_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_EXPECTED_RESPONSE[] = {
+        0xDB, 0xC5, 0xFB, 0xBE, 0x47, 0xEA, 0xBC, 0x03, 0x6C, 0x68, 0x34, 0xEA, 0x62,
+        0xC0, 0x11, 0xB1, 0x52, 0x72, 0xEC, 0x85, 0xA1, 0x7F, 0xAC, 0xD3, 0x67, 0x0C,
+        0xD9, 0x30, 0x44, 0x86, 0xFF, 0xE8, 0xFB, 0x03, 0x74, 0x74, 0xFC, 0x75, 0xE6,
+        0x47, 0x45, 0xF7, 0xFD, 0x9F, 0x44, 0xB4, 0xBC, 0xBC, 0x58, 0xD8, 0x1C, 0xAE,
+        0x22, 0x09, 0xF2, 0xF5, 0xC1, 0xF7, 0x75, 0x01, 0xE9, 0xBB, 0x43, 0xDF,
 };
 
 // ----------------------------------------------------------------------
@@ -177,17 +215,19 @@ static const uint8_t PUBKEY_test_pubkey_confirm_006_EXPORT_PUBKEY_SHELLEY_USUAL_
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_shelley_usual_path_4
 static const uint8_t PUBKEY_test_pubkey_confirm_007_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_4_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x03, 0x00, 0x00, 0x00, 0x00,
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00,
 };
 
 // Public key (hex): 7cc18df2fbd3ee1b16b76843b18446679ab95dbcd07b7833b66a9407c0709e37
 // Chain code (hex): 01d881e1c04fed8defa9a3e8bd3cf85bd975f813ff8eb622d20a4375a07d6bc9
-static const uint8_t PUBKEY_test_pubkey_confirm_007_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_4_EXPECTED_RESPONSE[] = {
-    0x7C, 0xC1, 0x8D, 0xF2, 0xFB, 0xD3, 0xEE, 0x1B, 0x16, 0xB7, 0x68, 0x43, 0xB1, 0x84, 0x46, 0x67,
-    0x9A, 0xB9, 0x5D, 0xBC, 0xD0, 0x7B, 0x78, 0x33, 0xB6, 0x6A, 0x94, 0x07, 0xC0, 0x70, 0x9E, 0x37,
-    0x01, 0xD8, 0x81, 0xE1, 0xC0, 0x4F, 0xED, 0x8D, 0xEF, 0xA9, 0xA3, 0xE8, 0xBD, 0x3C, 0xF8, 0x5B,
-    0xD9, 0x75, 0xF8, 0x13, 0xFF, 0x8E, 0xB6, 0x22, 0xD2, 0x0A, 0x43, 0x75, 0xA0, 0x7D, 0x6B, 0xC9,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_007_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_4_EXPECTED_RESPONSE[] = {
+        0x7C, 0xC1, 0x8D, 0xF2, 0xFB, 0xD3, 0xEE, 0x1B, 0x16, 0xB7, 0x68, 0x43, 0xB1,
+        0x84, 0x46, 0x67, 0x9A, 0xB9, 0x5D, 0xBC, 0xD0, 0x7B, 0x78, 0x33, 0xB6, 0x6A,
+        0x94, 0x07, 0xC0, 0x70, 0x9E, 0x37, 0x01, 0xD8, 0x81, 0xE1, 0xC0, 0x4F, 0xED,
+        0x8D, 0xEF, 0xA9, 0xA3, 0xE8, 0xBD, 0x3C, 0xF8, 0x5B, 0xD9, 0x75, 0xF8, 0x13,
+        0xFF, 0x8E, 0xB6, 0x22, 0xD2, 0x0A, 0x43, 0x75, 0xA0, 0x7D, 0x6B, 0xC9,
 };
 
 // ----------------------------------------------------------------------
@@ -198,17 +238,19 @@ static const uint8_t PUBKEY_test_pubkey_confirm_007_EXPORT_PUBKEY_SHELLEY_USUAL_
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_shelley_usual_path_5
 static const uint8_t PUBKEY_test_pubkey_confirm_008_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_5_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x04, 0x00, 0x00, 0x00, 0x00,
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00,
 };
 
 // Public key (hex): bc8c8a37d6ab41339bb073e72ce2e776cefed98d1a6d070ea5fada80dc7d6737
 // Chain code (hex): 6f58406a51d33bb35e98884cbadced9bc94f65a752001ad5f4788af07b2ec0fe
-static const uint8_t PUBKEY_test_pubkey_confirm_008_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_5_EXPECTED_RESPONSE[] = {
-    0xBC, 0x8C, 0x8A, 0x37, 0xD6, 0xAB, 0x41, 0x33, 0x9B, 0xB0, 0x73, 0xE7, 0x2C, 0xE2, 0xE7, 0x76,
-    0xCE, 0xFE, 0xD9, 0x8D, 0x1A, 0x6D, 0x07, 0x0E, 0xA5, 0xFA, 0xDA, 0x80, 0xDC, 0x7D, 0x67, 0x37,
-    0x6F, 0x58, 0x40, 0x6A, 0x51, 0xD3, 0x3B, 0xB3, 0x5E, 0x98, 0x88, 0x4C, 0xBA, 0xDC, 0xED, 0x9B,
-    0xC9, 0x4F, 0x65, 0xA7, 0x52, 0x00, 0x1A, 0xD5, 0xF4, 0x78, 0x8A, 0xF0, 0x7B, 0x2E, 0xC0, 0xFE,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_008_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_5_EXPECTED_RESPONSE[] = {
+        0xBC, 0x8C, 0x8A, 0x37, 0xD6, 0xAB, 0x41, 0x33, 0x9B, 0xB0, 0x73, 0xE7, 0x2C,
+        0xE2, 0xE7, 0x76, 0xCE, 0xFE, 0xD9, 0x8D, 0x1A, 0x6D, 0x07, 0x0E, 0xA5, 0xFA,
+        0xDA, 0x80, 0xDC, 0x7D, 0x67, 0x37, 0x6F, 0x58, 0x40, 0x6A, 0x51, 0xD3, 0x3B,
+        0xB3, 0x5E, 0x98, 0x88, 0x4C, 0xBA, 0xDC, 0xED, 0x9B, 0xC9, 0x4F, 0x65, 0xA7,
+        0x52, 0x00, 0x1A, 0xD5, 0xF4, 0x78, 0x8A, 0xF0, 0x7B, 0x2E, 0xC0, 0xFE,
 };
 
 // ----------------------------------------------------------------------
@@ -219,17 +261,19 @@ static const uint8_t PUBKEY_test_pubkey_confirm_008_EXPORT_PUBKEY_SHELLEY_USUAL_
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_shelley_usual_path_6
 static const uint8_t PUBKEY_test_pubkey_confirm_009_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_6_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
-    0x05, 0x00, 0x00, 0x00, 0x00,
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x01, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00,
 };
 
 // Public key (hex): 624142a80217b95ca2fc5b0c1f8d74e26e5683621c430c7bc7eebca6ee541a58
 // Chain code (hex): 92a8c64cfdf1af08e78c2ba59bef496eb34ddf24bdf0f91404a962415a7a0810
-static const uint8_t PUBKEY_test_pubkey_confirm_009_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_6_EXPECTED_RESPONSE[] = {
-    0x62, 0x41, 0x42, 0xA8, 0x02, 0x17, 0xB9, 0x5C, 0xA2, 0xFC, 0x5B, 0x0C, 0x1F, 0x8D, 0x74, 0xE2,
-    0x6E, 0x56, 0x83, 0x62, 0x1C, 0x43, 0x0C, 0x7B, 0xC7, 0xEE, 0xBC, 0xA6, 0xEE, 0x54, 0x1A, 0x58,
-    0x92, 0xA8, 0xC6, 0x4C, 0xFD, 0xF1, 0xAF, 0x08, 0xE7, 0x8C, 0x2B, 0xA5, 0x9B, 0xEF, 0x49, 0x6E,
-    0xB3, 0x4D, 0xDF, 0x24, 0xBD, 0xF0, 0xF9, 0x14, 0x04, 0xA9, 0x62, 0x41, 0x5A, 0x7A, 0x08, 0x10,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_009_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_6_EXPECTED_RESPONSE[] = {
+        0x62, 0x41, 0x42, 0xA8, 0x02, 0x17, 0xB9, 0x5C, 0xA2, 0xFC, 0x5B, 0x0C, 0x1F,
+        0x8D, 0x74, 0xE2, 0x6E, 0x56, 0x83, 0x62, 0x1C, 0x43, 0x0C, 0x7B, 0xC7, 0xEE,
+        0xBC, 0xA6, 0xEE, 0x54, 0x1A, 0x58, 0x92, 0xA8, 0xC6, 0x4C, 0xFD, 0xF1, 0xAF,
+        0x08, 0xE7, 0x8C, 0x2B, 0xA5, 0x9B, 0xEF, 0x49, 0x6E, 0xB3, 0x4D, 0xDF, 0x24,
+        0xBD, 0xF0, 0xF9, 0x14, 0x04, 0xA9, 0x62, 0x41, 0x5A, 0x7A, 0x08, 0x10,
 };
 
 // ----------------------------------------------------------------------
@@ -240,16 +284,30 @@ static const uint8_t PUBKEY_test_pubkey_confirm_009_EXPORT_PUBKEY_SHELLEY_USUAL_
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_shelley_unusual_path_1
 static const uint8_t PUBKEY_test_pubkey_confirm_010_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_1_APDU[] = {
-    0x03, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x65,
+    0x03,
+    0x80,
+    0x00,
+    0x07,
+    0x3C,
+    0x80,
+    0x00,
+    0x07,
+    0x17,
+    0x80,
+    0x00,
+    0x00,
+    0x65,
 };
 
 // Public key (hex): 674af1cfe5919576714bb31f065ac93788a6a2fb5168362c0aa9509ac513bbbc
 // Chain code (hex): 5d403248edff92b87433ae97942326cd1656a57301a03988fb36b9ae728d4d2c
-static const uint8_t PUBKEY_test_pubkey_confirm_010_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_1_EXPECTED_RESPONSE[] = {
-    0x67, 0x4A, 0xF1, 0xCF, 0xE5, 0x91, 0x95, 0x76, 0x71, 0x4B, 0xB3, 0x1F, 0x06, 0x5A, 0xC9, 0x37,
-    0x88, 0xA6, 0xA2, 0xFB, 0x51, 0x68, 0x36, 0x2C, 0x0A, 0xA9, 0x50, 0x9A, 0xC5, 0x13, 0xBB, 0xBC,
-    0x5D, 0x40, 0x32, 0x48, 0xED, 0xFF, 0x92, 0xB8, 0x74, 0x33, 0xAE, 0x97, 0x94, 0x23, 0x26, 0xCD,
-    0x16, 0x56, 0xA5, 0x73, 0x01, 0xA0, 0x39, 0x88, 0xFB, 0x36, 0xB9, 0xAE, 0x72, 0x8D, 0x4D, 0x2C,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_010_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_1_EXPECTED_RESPONSE[] = {
+        0x67, 0x4A, 0xF1, 0xCF, 0xE5, 0x91, 0x95, 0x76, 0x71, 0x4B, 0xB3, 0x1F, 0x06,
+        0x5A, 0xC9, 0x37, 0x88, 0xA6, 0xA2, 0xFB, 0x51, 0x68, 0x36, 0x2C, 0x0A, 0xA9,
+        0x50, 0x9A, 0xC5, 0x13, 0xBB, 0xBC, 0x5D, 0x40, 0x32, 0x48, 0xED, 0xFF, 0x92,
+        0xB8, 0x74, 0x33, 0xAE, 0x97, 0x94, 0x23, 0x26, 0xCD, 0x16, 0x56, 0xA5, 0x73,
+        0x01, 0xA0, 0x39, 0x88, 0xFB, 0x36, 0xB9, 0xAE, 0x72, 0x8D, 0x4D, 0x2C,
 };
 
 // ----------------------------------------------------------------------
@@ -260,17 +318,19 @@ static const uint8_t PUBKEY_test_pubkey_confirm_010_EXPORT_PUBKEY_SHELLEY_UNUSUA
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_shelley_unusual_path_2
 static const uint8_t PUBKEY_test_pubkey_confirm_011_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_2_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x64, 0x00, 0x00, 0x00,
-    0x00, 0x80, 0x0F, 0x42, 0x41,
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x64, 0x00, 0x00, 0x00, 0x00, 0x80, 0x0F, 0x42, 0x41,
 };
 
 // Public key (hex): d06a7a9d87e95f475811e31b03564d272f1c2614e8b2cf0f37d6e973fd2aba9c
 // Chain code (hex): 8aca949d791e4a4f26e05e55d39d17f565884b56882283cf7d97e338fa7ab9ee
-static const uint8_t PUBKEY_test_pubkey_confirm_011_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_2_EXPECTED_RESPONSE[] = {
-    0xD0, 0x6A, 0x7A, 0x9D, 0x87, 0xE9, 0x5F, 0x47, 0x58, 0x11, 0xE3, 0x1B, 0x03, 0x56, 0x4D, 0x27,
-    0x2F, 0x1C, 0x26, 0x14, 0xE8, 0xB2, 0xCF, 0x0F, 0x37, 0xD6, 0xE9, 0x73, 0xFD, 0x2A, 0xBA, 0x9C,
-    0x8A, 0xCA, 0x94, 0x9D, 0x79, 0x1E, 0x4A, 0x4F, 0x26, 0xE0, 0x5E, 0x55, 0xD3, 0x9D, 0x17, 0xF5,
-    0x65, 0x88, 0x4B, 0x56, 0x88, 0x22, 0x83, 0xCF, 0x7D, 0x97, 0xE3, 0x38, 0xFA, 0x7A, 0xB9, 0xEE,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_011_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_2_EXPECTED_RESPONSE[] = {
+        0xD0, 0x6A, 0x7A, 0x9D, 0x87, 0xE9, 0x5F, 0x47, 0x58, 0x11, 0xE3, 0x1B, 0x03,
+        0x56, 0x4D, 0x27, 0x2F, 0x1C, 0x26, 0x14, 0xE8, 0xB2, 0xCF, 0x0F, 0x37, 0xD6,
+        0xE9, 0x73, 0xFD, 0x2A, 0xBA, 0x9C, 0x8A, 0xCA, 0x94, 0x9D, 0x79, 0x1E, 0x4A,
+        0x4F, 0x26, 0xE0, 0x5E, 0x55, 0xD3, 0x9D, 0x17, 0xF5, 0x65, 0x88, 0x4B, 0x56,
+        0x88, 0x22, 0x83, 0xCF, 0x7D, 0x97, 0xE3, 0x38, 0xFA, 0x7A, 0xB9, 0xEE,
 };
 
 // ----------------------------------------------------------------------
@@ -281,17 +341,19 @@ static const uint8_t PUBKEY_test_pubkey_confirm_011_EXPORT_PUBKEY_SHELLEY_UNUSUA
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_shelley_unusual_path_3
 static const uint8_t PUBKEY_test_pubkey_confirm_012_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_3_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x02, 0x00, 0x0F, 0x42, 0x41,
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x0F, 0x42, 0x41,
 };
 
 // Public key (hex): 1763dfbba10629d5e9ed8f8714889f82f0bdb4b62af22b19b607713919f93e4d
 // Chain code (hex): b46ecc1459e0ad4ae7fa1b9a7440584b6177472db300304a3191a91b7fb0e1e8
-static const uint8_t PUBKEY_test_pubkey_confirm_012_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_3_EXPECTED_RESPONSE[] = {
-    0x17, 0x63, 0xDF, 0xBB, 0xA1, 0x06, 0x29, 0xD5, 0xE9, 0xED, 0x8F, 0x87, 0x14, 0x88, 0x9F, 0x82,
-    0xF0, 0xBD, 0xB4, 0xB6, 0x2A, 0xF2, 0x2B, 0x19, 0xB6, 0x07, 0x71, 0x39, 0x19, 0xF9, 0x3E, 0x4D,
-    0xB4, 0x6E, 0xCC, 0x14, 0x59, 0xE0, 0xAD, 0x4A, 0xE7, 0xFA, 0x1B, 0x9A, 0x74, 0x40, 0x58, 0x4B,
-    0x61, 0x77, 0x47, 0x2D, 0xB3, 0x00, 0x30, 0x4A, 0x31, 0x91, 0xA9, 0x1B, 0x7F, 0xB0, 0xE1, 0xE8,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_012_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_3_EXPECTED_RESPONSE[] = {
+        0x17, 0x63, 0xDF, 0xBB, 0xA1, 0x06, 0x29, 0xD5, 0xE9, 0xED, 0x8F, 0x87, 0x14,
+        0x88, 0x9F, 0x82, 0xF0, 0xBD, 0xB4, 0xB6, 0x2A, 0xF2, 0x2B, 0x19, 0xB6, 0x07,
+        0x71, 0x39, 0x19, 0xF9, 0x3E, 0x4D, 0xB4, 0x6E, 0xCC, 0x14, 0x59, 0xE0, 0xAD,
+        0x4A, 0xE7, 0xFA, 0x1B, 0x9A, 0x74, 0x40, 0x58, 0x4B, 0x61, 0x77, 0x47, 0x2D,
+        0xB3, 0x00, 0x30, 0x4A, 0x31, 0x91, 0xA9, 0x1B, 0x7F, 0xB0, 0xE1, 0xE8,
 };
 
 // ----------------------------------------------------------------------
@@ -302,17 +364,19 @@ static const uint8_t PUBKEY_test_pubkey_confirm_012_EXPORT_PUBKEY_SHELLEY_UNUSUA
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_shelley_unusual_path_4
 static const uint8_t PUBKEY_test_pubkey_confirm_013_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_4_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x65, 0x00, 0x00, 0x00,
-    0x03, 0x00, 0x00, 0x00, 0x00,
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x65, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00,
 };
 
 // Public key (hex): a4fecb8d8febd80d1f7eefe3d1705b03405e219df1f6aa4c2e227b5909df873e
 // Chain code (hex): a0aac4f3cfe62e20ad66c5f737979eecc4472c61c41d8d5f4e06cf13a2386648
-static const uint8_t PUBKEY_test_pubkey_confirm_013_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_4_EXPECTED_RESPONSE[] = {
-    0xA4, 0xFE, 0xCB, 0x8D, 0x8F, 0xEB, 0xD8, 0x0D, 0x1F, 0x7E, 0xEF, 0xE3, 0xD1, 0x70, 0x5B, 0x03,
-    0x40, 0x5E, 0x21, 0x9D, 0xF1, 0xF6, 0xAA, 0x4C, 0x2E, 0x22, 0x7B, 0x59, 0x09, 0xDF, 0x87, 0x3E,
-    0xA0, 0xAA, 0xC4, 0xF3, 0xCF, 0xE6, 0x2E, 0x20, 0xAD, 0x66, 0xC5, 0xF7, 0x37, 0x97, 0x9E, 0xEC,
-    0xC4, 0x47, 0x2C, 0x61, 0xC4, 0x1D, 0x8D, 0x5F, 0x4E, 0x06, 0xCF, 0x13, 0xA2, 0x38, 0x66, 0x48,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_013_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_4_EXPECTED_RESPONSE[] = {
+        0xA4, 0xFE, 0xCB, 0x8D, 0x8F, 0xEB, 0xD8, 0x0D, 0x1F, 0x7E, 0xEF, 0xE3, 0xD1,
+        0x70, 0x5B, 0x03, 0x40, 0x5E, 0x21, 0x9D, 0xF1, 0xF6, 0xAA, 0x4C, 0x2E, 0x22,
+        0x7B, 0x59, 0x09, 0xDF, 0x87, 0x3E, 0xA0, 0xAA, 0xC4, 0xF3, 0xCF, 0xE6, 0x2E,
+        0x20, 0xAD, 0x66, 0xC5, 0xF7, 0x37, 0x97, 0x9E, 0xEC, 0xC4, 0x47, 0x2C, 0x61,
+        0xC4, 0x1D, 0x8D, 0x5F, 0x4E, 0x06, 0xCF, 0x13, 0xA2, 0x38, 0x66, 0x48,
 };
 
 // ----------------------------------------------------------------------
@@ -323,17 +387,19 @@ static const uint8_t PUBKEY_test_pubkey_confirm_013_EXPORT_PUBKEY_SHELLEY_UNUSUA
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_shelley_unusual_path_5
 static const uint8_t PUBKEY_test_pubkey_confirm_014_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_5_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x65, 0x00, 0x00, 0x00,
-    0x04, 0x00, 0x00, 0x00, 0x00,
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x65, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00,
 };
 
 // Public key (hex): 6967cc28a4665b319405b5ce8dae9ae6c89967fb3068f7f84c66bf6abbab94f2
 // Chain code (hex): 66381ec0b35d2805256f5d57ec47abf948a3206902868ed80b04a5b0e81cf1de
-static const uint8_t PUBKEY_test_pubkey_confirm_014_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_5_EXPECTED_RESPONSE[] = {
-    0x69, 0x67, 0xCC, 0x28, 0xA4, 0x66, 0x5B, 0x31, 0x94, 0x05, 0xB5, 0xCE, 0x8D, 0xAE, 0x9A, 0xE6,
-    0xC8, 0x99, 0x67, 0xFB, 0x30, 0x68, 0xF7, 0xF8, 0x4C, 0x66, 0xBF, 0x6A, 0xBB, 0xAB, 0x94, 0xF2,
-    0x66, 0x38, 0x1E, 0xC0, 0xB3, 0x5D, 0x28, 0x05, 0x25, 0x6F, 0x5D, 0x57, 0xEC, 0x47, 0xAB, 0xF9,
-    0x48, 0xA3, 0x20, 0x69, 0x02, 0x86, 0x8E, 0xD8, 0x0B, 0x04, 0xA5, 0xB0, 0xE8, 0x1C, 0xF1, 0xDE,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_014_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_5_EXPECTED_RESPONSE[] = {
+        0x69, 0x67, 0xCC, 0x28, 0xA4, 0x66, 0x5B, 0x31, 0x94, 0x05, 0xB5, 0xCE, 0x8D,
+        0xAE, 0x9A, 0xE6, 0xC8, 0x99, 0x67, 0xFB, 0x30, 0x68, 0xF7, 0xF8, 0x4C, 0x66,
+        0xBF, 0x6A, 0xBB, 0xAB, 0x94, 0xF2, 0x66, 0x38, 0x1E, 0xC0, 0xB3, 0x5D, 0x28,
+        0x05, 0x25, 0x6F, 0x5D, 0x57, 0xEC, 0x47, 0xAB, 0xF9, 0x48, 0xA3, 0x20, 0x69,
+        0x02, 0x86, 0x8E, 0xD8, 0x0B, 0x04, 0xA5, 0xB0, 0xE8, 0x1C, 0xF1, 0xDE,
 };
 
 // ----------------------------------------------------------------------
@@ -344,17 +410,19 @@ static const uint8_t PUBKEY_test_pubkey_confirm_014_EXPORT_PUBKEY_SHELLEY_UNUSUA
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_shelley_unusual_path_6
 static const uint8_t PUBKEY_test_pubkey_confirm_015_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_6_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x65, 0x00, 0x00, 0x00,
-    0x05, 0x00, 0x00, 0x00, 0x00,
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x65, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00,
 };
 
 // Public key (hex): 1b520336538452b69d5562e5d714bfe7aeeb7cf9afd1d8574af1823c5636f9eb
 // Chain code (hex): 5e21bf9678c54b880d2f594f3b0cd1c000f8516f809fc0f6aaaa35e2d2030e40
-static const uint8_t PUBKEY_test_pubkey_confirm_015_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_6_EXPECTED_RESPONSE[] = {
-    0x1B, 0x52, 0x03, 0x36, 0x53, 0x84, 0x52, 0xB6, 0x9D, 0x55, 0x62, 0xE5, 0xD7, 0x14, 0xBF, 0xE7,
-    0xAE, 0xEB, 0x7C, 0xF9, 0xAF, 0xD1, 0xD8, 0x57, 0x4A, 0xF1, 0x82, 0x3C, 0x56, 0x36, 0xF9, 0xEB,
-    0x5E, 0x21, 0xBF, 0x96, 0x78, 0xC5, 0x4B, 0x88, 0x0D, 0x2F, 0x59, 0x4F, 0x3B, 0x0C, 0xD1, 0xC0,
-    0x00, 0xF8, 0x51, 0x6F, 0x80, 0x9F, 0xC0, 0xF6, 0xAA, 0xAA, 0x35, 0xE2, 0xD2, 0x03, 0x0E, 0x40,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_015_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_6_EXPECTED_RESPONSE[] = {
+        0x1B, 0x52, 0x03, 0x36, 0x53, 0x84, 0x52, 0xB6, 0x9D, 0x55, 0x62, 0xE5, 0xD7,
+        0x14, 0xBF, 0xE7, 0xAE, 0xEB, 0x7C, 0xF9, 0xAF, 0xD1, 0xD8, 0x57, 0x4A, 0xF1,
+        0x82, 0x3C, 0x56, 0x36, 0xF9, 0xEB, 0x5E, 0x21, 0xBF, 0x96, 0x78, 0xC5, 0x4B,
+        0x88, 0x0D, 0x2F, 0x59, 0x4F, 0x3B, 0x0C, 0xD1, 0xC0, 0x00, 0xF8, 0x51, 0x6F,
+        0x80, 0x9F, 0xC0, 0xF6, 0xAA, 0xAA, 0x35, 0xE2, 0xD2, 0x03, 0x0E, 0x40,
 };
 
 // ----------------------------------------------------------------------
@@ -365,16 +433,30 @@ static const uint8_t PUBKEY_test_pubkey_confirm_015_EXPORT_PUBKEY_SHELLEY_UNUSUA
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_multisig_account_path_0
 static const uint8_t PUBKEY_test_pubkey_confirm_016_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_APDU[] = {
-    0x03, 0x80, 0x00, 0x07, 0x3E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00,
+    0x03,
+    0x80,
+    0x00,
+    0x07,
+    0x3E,
+    0x80,
+    0x00,
+    0x07,
+    0x17,
+    0x80,
+    0x00,
+    0x00,
+    0x00,
 };
 
 // Public key (hex): 5602a5c773ca2c3fe374fde1afd395547f792e300ffb95bc387e4f1e9226019f
 // Chain code (hex): 95ed49685b2a43e435c303d65ea316f86ea1086a5c2addcf41ac867f6e763498
-static const uint8_t PUBKEY_test_pubkey_confirm_016_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_EXPECTED_RESPONSE[] = {
-    0x56, 0x02, 0xA5, 0xC7, 0x73, 0xCA, 0x2C, 0x3F, 0xE3, 0x74, 0xFD, 0xE1, 0xAF, 0xD3, 0x95, 0x54,
-    0x7F, 0x79, 0x2E, 0x30, 0x0F, 0xFB, 0x95, 0xBC, 0x38, 0x7E, 0x4F, 0x1E, 0x92, 0x26, 0x01, 0x9F,
-    0x95, 0xED, 0x49, 0x68, 0x5B, 0x2A, 0x43, 0xE4, 0x35, 0xC3, 0x03, 0xD6, 0x5E, 0xA3, 0x16, 0xF8,
-    0x6E, 0xA1, 0x08, 0x6A, 0x5C, 0x2A, 0xDD, 0xCF, 0x41, 0xAC, 0x86, 0x7F, 0x6E, 0x76, 0x34, 0x98,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_016_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_EXPECTED_RESPONSE[] = {
+        0x56, 0x02, 0xA5, 0xC7, 0x73, 0xCA, 0x2C, 0x3F, 0xE3, 0x74, 0xFD, 0xE1, 0xAF,
+        0xD3, 0x95, 0x54, 0x7F, 0x79, 0x2E, 0x30, 0x0F, 0xFB, 0x95, 0xBC, 0x38, 0x7E,
+        0x4F, 0x1E, 0x92, 0x26, 0x01, 0x9F, 0x95, 0xED, 0x49, 0x68, 0x5B, 0x2A, 0x43,
+        0xE4, 0x35, 0xC3, 0x03, 0xD6, 0x5E, 0xA3, 0x16, 0xF8, 0x6E, 0xA1, 0x08, 0x6A,
+        0x5C, 0x2A, 0xDD, 0xCF, 0x41, 0xAC, 0x86, 0x7F, 0x6E, 0x76, 0x34, 0x98,
 };
 
 // ----------------------------------------------------------------------
@@ -385,17 +467,19 @@ static const uint8_t PUBKEY_test_pubkey_confirm_016_EXPORT_PUBKEY_MULTISIG_ACCOU
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_multisig_payment_path_0
 static const uint8_t PUBKEY_test_pubkey_confirm_017_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
+    0x05, 0x80, 0x00, 0x07, 0x3E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
 // Public key (hex): 0fa60d5831ee0be1f221ff93ba0a4fdeca5a5866e47569607b04e287fc9b5ec0
 // Chain code (hex): 57fccd2e6071fbcab281598c6e2e53515d2e3ca762566237583d76915a401d09
-static const uint8_t PUBKEY_test_pubkey_confirm_017_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_EXPECTED_RESPONSE[] = {
-    0x0F, 0xA6, 0x0D, 0x58, 0x31, 0xEE, 0x0B, 0xE1, 0xF2, 0x21, 0xFF, 0x93, 0xBA, 0x0A, 0x4F, 0xDE,
-    0xCA, 0x5A, 0x58, 0x66, 0xE4, 0x75, 0x69, 0x60, 0x7B, 0x04, 0xE2, 0x87, 0xFC, 0x9B, 0x5E, 0xC0,
-    0x57, 0xFC, 0xCD, 0x2E, 0x60, 0x71, 0xFB, 0xCA, 0xB2, 0x81, 0x59, 0x8C, 0x6E, 0x2E, 0x53, 0x51,
-    0x5D, 0x2E, 0x3C, 0xA7, 0x62, 0x56, 0x62, 0x37, 0x58, 0x3D, 0x76, 0x91, 0x5A, 0x40, 0x1D, 0x09,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_017_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_EXPECTED_RESPONSE[] = {
+        0x0F, 0xA6, 0x0D, 0x58, 0x31, 0xEE, 0x0B, 0xE1, 0xF2, 0x21, 0xFF, 0x93, 0xBA,
+        0x0A, 0x4F, 0xDE, 0xCA, 0x5A, 0x58, 0x66, 0xE4, 0x75, 0x69, 0x60, 0x7B, 0x04,
+        0xE2, 0x87, 0xFC, 0x9B, 0x5E, 0xC0, 0x57, 0xFC, 0xCD, 0x2E, 0x60, 0x71, 0xFB,
+        0xCA, 0xB2, 0x81, 0x59, 0x8C, 0x6E, 0x2E, 0x53, 0x51, 0x5D, 0x2E, 0x3C, 0xA7,
+        0x62, 0x56, 0x62, 0x37, 0x58, 0x3D, 0x76, 0x91, 0x5A, 0x40, 0x1D, 0x09,
 };
 
 // ----------------------------------------------------------------------
@@ -406,17 +490,19 @@ static const uint8_t PUBKEY_test_pubkey_confirm_017_EXPORT_PUBKEY_MULTISIG_PAYME
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_multisig_staking_path_0
 static const uint8_t PUBKEY_test_pubkey_confirm_018_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x02, 0x00, 0x00, 0x00, 0x00,
+    0x05, 0x80, 0x00, 0x07, 0x3E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,
 };
 
 // Public key (hex): 91e2647a4db84e47c895160b1f534d72c24c5eaf0aefb5f72dbfdea9913d96c6
 // Chain code (hex): 95709e03201f165004c65f95b52cdfa026c9c884e8d9241d0d73090ac73cf705
-static const uint8_t PUBKEY_test_pubkey_confirm_018_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_EXPECTED_RESPONSE[] = {
-    0x91, 0xE2, 0x64, 0x7A, 0x4D, 0xB8, 0x4E, 0x47, 0xC8, 0x95, 0x16, 0x0B, 0x1F, 0x53, 0x4D, 0x72,
-    0xC2, 0x4C, 0x5E, 0xAF, 0x0A, 0xEF, 0xB5, 0xF7, 0x2D, 0xBF, 0xDE, 0xA9, 0x91, 0x3D, 0x96, 0xC6,
-    0x95, 0x70, 0x9E, 0x03, 0x20, 0x1F, 0x16, 0x50, 0x04, 0xC6, 0x5F, 0x95, 0xB5, 0x2C, 0xDF, 0xA0,
-    0x26, 0xC9, 0xC8, 0x84, 0xE8, 0xD9, 0x24, 0x1D, 0x0D, 0x73, 0x09, 0x0A, 0xC7, 0x3C, 0xF7, 0x05,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_018_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_EXPECTED_RESPONSE[] = {
+        0x91, 0xE2, 0x64, 0x7A, 0x4D, 0xB8, 0x4E, 0x47, 0xC8, 0x95, 0x16, 0x0B, 0x1F,
+        0x53, 0x4D, 0x72, 0xC2, 0x4C, 0x5E, 0xAF, 0x0A, 0xEF, 0xB5, 0xF7, 0x2D, 0xBF,
+        0xDE, 0xA9, 0x91, 0x3D, 0x96, 0xC6, 0x95, 0x70, 0x9E, 0x03, 0x20, 0x1F, 0x16,
+        0x50, 0x04, 0xC6, 0x5F, 0x95, 0xB5, 0x2C, 0xDF, 0xA0, 0x26, 0xC9, 0xC8, 0x84,
+        0xE8, 0xD9, 0x24, 0x1D, 0x0D, 0x73, 0x09, 0x0A, 0xC7, 0x3C, 0xF7, 0x05,
 };
 
 // ----------------------------------------------------------------------
@@ -427,7 +513,22 @@ static const uint8_t PUBKEY_test_pubkey_confirm_018_EXPORT_PUBKEY_MULTISIG_STAKI
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_cold_case
 static const uint8_t PUBKEY_test_pubkey_confirm_019_EXPORT_PUBKEY_COLD_CASE_APDU[] = {
-    0x04, 0x80, 0x00, 0x07, 0x3D, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00,
+    0x04,
+    0x80,
+    0x00,
+    0x07,
+    0x3D,
+    0x80,
+    0x00,
+    0x07,
+    0x17,
+    0x80,
+    0x00,
+    0x00,
+    0x00,
+    0x80,
+    0x00,
+    0x00,
     0x00,
 };
 
@@ -448,17 +549,34 @@ static const uint8_t PUBKEY_test_pubkey_confirm_019_EXPORT_PUBKEY_COLD_CASE_EXPE
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_cold_unusual_case
 static const uint8_t PUBKEY_test_pubkey_confirm_020_EXPORT_PUBKEY_COLD_UNUSUAL_CASE_APDU[] = {
-    0x04, 0x80, 0x00, 0x07, 0x3D, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00,
+    0x04,
+    0x80,
+    0x00,
+    0x07,
+    0x3D,
+    0x80,
+    0x00,
+    0x07,
+    0x17,
+    0x80,
+    0x00,
+    0x00,
+    0x00,
+    0x80,
+    0x00,
+    0x00,
     0x65,
 };
 
 // Public key (hex): f3872b05f2b3de86be4f1255be784cb69e7d19e256df9d10b54e4b0c12cc87ef
 // Chain code (hex): 4f5d86a20d58bcad1160f84bd27c657fb444f42cb7377e737111f9aeeb301355
-static const uint8_t PUBKEY_test_pubkey_confirm_020_EXPORT_PUBKEY_COLD_UNUSUAL_CASE_EXPECTED_RESPONSE[] = {
-    0xF3, 0x87, 0x2B, 0x05, 0xF2, 0xB3, 0xDE, 0x86, 0xBE, 0x4F, 0x12, 0x55, 0xBE, 0x78, 0x4C, 0xB6,
-    0x9E, 0x7D, 0x19, 0xE2, 0x56, 0xDF, 0x9D, 0x10, 0xB5, 0x4E, 0x4B, 0x0C, 0x12, 0xCC, 0x87, 0xEF,
-    0x4F, 0x5D, 0x86, 0xA2, 0x0D, 0x58, 0xBC, 0xAD, 0x11, 0x60, 0xF8, 0x4B, 0xD2, 0x7C, 0x65, 0x7F,
-    0xB4, 0x44, 0xF4, 0x2C, 0xB7, 0x37, 0x7E, 0x73, 0x71, 0x11, 0xF9, 0xAE, 0xEB, 0x30, 0x13, 0x55,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_020_EXPORT_PUBKEY_COLD_UNUSUAL_CASE_EXPECTED_RESPONSE[] = {
+        0xF3, 0x87, 0x2B, 0x05, 0xF2, 0xB3, 0xDE, 0x86, 0xBE, 0x4F, 0x12, 0x55, 0xBE,
+        0x78, 0x4C, 0xB6, 0x9E, 0x7D, 0x19, 0xE2, 0x56, 0xDF, 0x9D, 0x10, 0xB5, 0x4E,
+        0x4B, 0x0C, 0x12, 0xCC, 0x87, 0xEF, 0x4F, 0x5D, 0x86, 0xA2, 0x0D, 0x58, 0xBC,
+        0xAD, 0x11, 0x60, 0xF8, 0x4B, 0xD2, 0x7C, 0x65, 0x7F, 0xB4, 0x44, 0xF4, 0x2C,
+        0xB7, 0x37, 0x7E, 0x73, 0x71, 0x11, 0xF9, 0xAE, 0xEB, 0x30, 0x13, 0x55,
 };
 
 // ----------------------------------------------------------------------
@@ -469,16 +587,30 @@ static const uint8_t PUBKEY_test_pubkey_confirm_020_EXPORT_PUBKEY_COLD_UNUSUAL_C
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_CVote_keys_path_2
 static const uint8_t PUBKEY_test_pubkey_confirm_021_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_APDU[] = {
-    0x03, 0x80, 0x00, 0x06, 0x9E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x64,
+    0x03,
+    0x80,
+    0x00,
+    0x06,
+    0x9E,
+    0x80,
+    0x00,
+    0x07,
+    0x17,
+    0x80,
+    0x00,
+    0x00,
+    0x64,
 };
 
 // Public key (hex): ff451db773898b80488d892b248acdc634f6ec79d923f12aae9feb2563513b63
 // Chain code (hex): 47478097ef56dcef686f8dcbd7d0c1d073740cde65a48e5615799096f67a144f
-static const uint8_t PUBKEY_test_pubkey_confirm_021_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_EXPECTED_RESPONSE[] = {
-    0xFF, 0x45, 0x1D, 0xB7, 0x73, 0x89, 0x8B, 0x80, 0x48, 0x8D, 0x89, 0x2B, 0x24, 0x8A, 0xCD, 0xC6,
-    0x34, 0xF6, 0xEC, 0x79, 0xD9, 0x23, 0xF1, 0x2A, 0xAE, 0x9F, 0xEB, 0x25, 0x63, 0x51, 0x3B, 0x63,
-    0x47, 0x47, 0x80, 0x97, 0xEF, 0x56, 0xDC, 0xEF, 0x68, 0x6F, 0x8D, 0xCB, 0xD7, 0xD0, 0xC1, 0xD0,
-    0x73, 0x74, 0x0C, 0xDE, 0x65, 0xA4, 0x8E, 0x56, 0x15, 0x79, 0x90, 0x96, 0xF6, 0x7A, 0x14, 0x4F,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_021_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_EXPECTED_RESPONSE[] = {
+        0xFF, 0x45, 0x1D, 0xB7, 0x73, 0x89, 0x8B, 0x80, 0x48, 0x8D, 0x89, 0x2B, 0x24,
+        0x8A, 0xCD, 0xC6, 0x34, 0xF6, 0xEC, 0x79, 0xD9, 0x23, 0xF1, 0x2A, 0xAE, 0x9F,
+        0xEB, 0x25, 0x63, 0x51, 0x3B, 0x63, 0x47, 0x47, 0x80, 0x97, 0xEF, 0x56, 0xDC,
+        0xEF, 0x68, 0x6F, 0x8D, 0xCB, 0xD7, 0xD0, 0xC1, 0xD0, 0x73, 0x74, 0x0C, 0xDE,
+        0x65, 0xA4, 0x8E, 0x56, 0x15, 0x79, 0x90, 0x96, 0xF6, 0x7A, 0x14, 0x4F,
 };
 
 // ----------------------------------------------------------------------
@@ -489,17 +621,19 @@ static const uint8_t PUBKEY_test_pubkey_confirm_021_EXPORT_PUBKEY_CVOTE_KEYS_PAT
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_CVote_keys_path_1
 static const uint8_t PUBKEY_test_pubkey_confirm_022_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_APDU[] = {
-    0x05, 0x80, 0x00, 0x06, 0x9E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x01,
+    0x05, 0x80, 0x00, 0x06, 0x9E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
 };
 
 // Public key (hex): aac861247bd24cae705bca1d1c9763f19c19188fb0faf257c50ed69b8157bced
 // Chain code (hex): f23595dd3207b7dde477347fa25d3fd6291c3363df43b54a9cf523d2c7683c10
-static const uint8_t PUBKEY_test_pubkey_confirm_022_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_EXPECTED_RESPONSE[] = {
-    0xAA, 0xC8, 0x61, 0x24, 0x7B, 0xD2, 0x4C, 0xAE, 0x70, 0x5B, 0xCA, 0x1D, 0x1C, 0x97, 0x63, 0xF1,
-    0x9C, 0x19, 0x18, 0x8F, 0xB0, 0xFA, 0xF2, 0x57, 0xC5, 0x0E, 0xD6, 0x9B, 0x81, 0x57, 0xBC, 0xED,
-    0xF2, 0x35, 0x95, 0xDD, 0x32, 0x07, 0xB7, 0xDD, 0xE4, 0x77, 0x34, 0x7F, 0xA2, 0x5D, 0x3F, 0xD6,
-    0x29, 0x1C, 0x33, 0x63, 0xDF, 0x43, 0xB5, 0x4A, 0x9C, 0xF5, 0x23, 0xD2, 0xC7, 0x68, 0x3C, 0x10,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_022_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_EXPECTED_RESPONSE[] = {
+        0xAA, 0xC8, 0x61, 0x24, 0x7B, 0xD2, 0x4C, 0xAE, 0x70, 0x5B, 0xCA, 0x1D, 0x1C,
+        0x97, 0x63, 0xF1, 0x9C, 0x19, 0x18, 0x8F, 0xB0, 0xFA, 0xF2, 0x57, 0xC5, 0x0E,
+        0xD6, 0x9B, 0x81, 0x57, 0xBC, 0xED, 0xF2, 0x35, 0x95, 0xDD, 0x32, 0x07, 0xB7,
+        0xDD, 0xE4, 0x77, 0x34, 0x7F, 0xA2, 0x5D, 0x3F, 0xD6, 0x29, 0x1C, 0x33, 0x63,
+        0xDF, 0x43, 0xB5, 0x4A, 0x9C, 0xF5, 0x23, 0xD2, 0xC7, 0x68, 0x3C, 0x10,
 };
 
 // ----------------------------------------------------------------------
@@ -510,16 +644,30 @@ static const uint8_t PUBKEY_test_pubkey_confirm_022_EXPORT_PUBKEY_CVOTE_KEYS_PAT
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_CVote_keys_path_3
 static const uint8_t PUBKEY_test_pubkey_confirm_023_EXPORT_PUBKEY_CVOTE_KEYS_PATH_3_APDU[] = {
-    0x03, 0x80, 0x00, 0x06, 0x9E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x65,
+    0x03,
+    0x80,
+    0x00,
+    0x06,
+    0x9E,
+    0x80,
+    0x00,
+    0x07,
+    0x17,
+    0x80,
+    0x00,
+    0x00,
+    0x65,
 };
 
 // Public key (hex): c7adc69b6dd29c48d29edb089c1aecbe218fdb9cfa59c325afcd2c5fa3844be1
 // Chain code (hex): ffa9953f6c77fccc15c000db494177d84e218f2740ddd44cfcbea0455cc6a6be
-static const uint8_t PUBKEY_test_pubkey_confirm_023_EXPORT_PUBKEY_CVOTE_KEYS_PATH_3_EXPECTED_RESPONSE[] = {
-    0xC7, 0xAD, 0xC6, 0x9B, 0x6D, 0xD2, 0x9C, 0x48, 0xD2, 0x9E, 0xDB, 0x08, 0x9C, 0x1A, 0xEC, 0xBE,
-    0x21, 0x8F, 0xDB, 0x9C, 0xFA, 0x59, 0xC3, 0x25, 0xAF, 0xCD, 0x2C, 0x5F, 0xA3, 0x84, 0x4B, 0xE1,
-    0xFF, 0xA9, 0x95, 0x3F, 0x6C, 0x77, 0xFC, 0xCC, 0x15, 0xC0, 0x00, 0xDB, 0x49, 0x41, 0x77, 0xD8,
-    0x4E, 0x21, 0x8F, 0x27, 0x40, 0xDD, 0xD4, 0x4C, 0xFC, 0xBE, 0xA0, 0x45, 0x5C, 0xC6, 0xA6, 0xBE,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_023_EXPORT_PUBKEY_CVOTE_KEYS_PATH_3_EXPECTED_RESPONSE[] = {
+        0xC7, 0xAD, 0xC6, 0x9B, 0x6D, 0xD2, 0x9C, 0x48, 0xD2, 0x9E, 0xDB, 0x08, 0x9C,
+        0x1A, 0xEC, 0xBE, 0x21, 0x8F, 0xDB, 0x9C, 0xFA, 0x59, 0xC3, 0x25, 0xAF, 0xCD,
+        0x2C, 0x5F, 0xA3, 0x84, 0x4B, 0xE1, 0xFF, 0xA9, 0x95, 0x3F, 0x6C, 0x77, 0xFC,
+        0xCC, 0x15, 0xC0, 0x00, 0xDB, 0x49, 0x41, 0x77, 0xD8, 0x4E, 0x21, 0x8F, 0x27,
+        0x40, 0xDD, 0xD4, 0x4C, 0xFC, 0xBE, 0xA0, 0x45, 0x5C, 0xC6, 0xA6, 0xBE,
 };
 
 // ----------------------------------------------------------------------
@@ -530,79 +678,125 @@ static const uint8_t PUBKEY_test_pubkey_confirm_023_EXPORT_PUBKEY_CVOTE_KEYS_PAT
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_drep_key_path_0
 static const uint8_t PUBKEY_test_pubkey_confirm_024_EXPORT_PUBKEY_DREP_KEY_PATH_0_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x03, 0x00, 0x00, 0x00, 0x00,
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00,
 };
 
 // Public key (hex): 7cc18df2fbd3ee1b16b76843b18446679ab95dbcd07b7833b66a9407c0709e37
 // Chain code (hex): 01d881e1c04fed8defa9a3e8bd3cf85bd975f813ff8eb622d20a4375a07d6bc9
-static const uint8_t PUBKEY_test_pubkey_confirm_024_EXPORT_PUBKEY_DREP_KEY_PATH_0_EXPECTED_RESPONSE[] = {
-    0x7C, 0xC1, 0x8D, 0xF2, 0xFB, 0xD3, 0xEE, 0x1B, 0x16, 0xB7, 0x68, 0x43, 0xB1, 0x84, 0x46, 0x67,
-    0x9A, 0xB9, 0x5D, 0xBC, 0xD0, 0x7B, 0x78, 0x33, 0xB6, 0x6A, 0x94, 0x07, 0xC0, 0x70, 0x9E, 0x37,
-    0x01, 0xD8, 0x81, 0xE1, 0xC0, 0x4F, 0xED, 0x8D, 0xEF, 0xA9, 0xA3, 0xE8, 0xBD, 0x3C, 0xF8, 0x5B,
-    0xD9, 0x75, 0xF8, 0x13, 0xFF, 0x8E, 0xB6, 0x22, 0xD2, 0x0A, 0x43, 0x75, 0xA0, 0x7D, 0x6B, 0xC9,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_024_EXPORT_PUBKEY_DREP_KEY_PATH_0_EXPECTED_RESPONSE[] = {
+        0x7C, 0xC1, 0x8D, 0xF2, 0xFB, 0xD3, 0xEE, 0x1B, 0x16, 0xB7, 0x68, 0x43, 0xB1,
+        0x84, 0x46, 0x67, 0x9A, 0xB9, 0x5D, 0xBC, 0xD0, 0x7B, 0x78, 0x33, 0xB6, 0x6A,
+        0x94, 0x07, 0xC0, 0x70, 0x9E, 0x37, 0x01, 0xD8, 0x81, 0xE1, 0xC0, 0x4F, 0xED,
+        0x8D, 0xEF, 0xA9, 0xA3, 0xE8, 0xBD, 0x3C, 0xF8, 0x5B, 0xD9, 0x75, 0xF8, 0x13,
+        0xFF, 0x8E, 0xB6, 0x22, 0xD2, 0x0A, 0x43, 0x75, 0xA0, 0x7D, 0x6B, 0xC9,
 };
 
 // ----------------------------------------------------------------------
 // Test group: test_pubkey_confirm
-// Test 25: Export_pubkey_committee_cold_key_path_0
+// Test 25: Export_pubkey_multisig_drep_key_path_0
+// Path: m/1854'/1815'/0'/3/0
+// ----------------------------------------------------------------------
+
+// Source: tests/standalone/input_files/pubkey.py > Export_pubkey_multisig_drep_key_path_0
+static const uint8_t PUBKEY_test_pubkey_confirm_025_EXPORT_PUBKEY_MULTISIG_DREP_KEY_PATH_0_APDU[] =
+    {
+        0x05, 0x80, 0x00, 0x07, 0x3E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00,
+};
+
+// Public key (hex): 2ead271505af50a1302dadc18d69452f2d7f1edf691265c3c9b004f1872068a6
+// Chain code (hex): cdf8c089856cc489cedfcf744b94361ad5f1e8ea1546eb9cbfa8511ec0bf1380
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_025_EXPORT_PUBKEY_MULTISIG_DREP_KEY_PATH_0_EXPECTED_RESPONSE[] = {
+        0x2E, 0xAD, 0x27, 0x15, 0x05, 0xAF, 0x50, 0xA1, 0x30, 0x2D, 0xAD, 0xC1, 0x8D,
+        0x69, 0x45, 0x2F, 0x2D, 0x7F, 0x1E, 0xDF, 0x69, 0x12, 0x65, 0xC3, 0xC9, 0xB0,
+        0x04, 0xF1, 0x87, 0x20, 0x68, 0xA6, 0xCD, 0xF8, 0xC0, 0x89, 0x85, 0x6C, 0xC4,
+        0x89, 0xCE, 0xDF, 0xCF, 0x74, 0x4B, 0x94, 0x36, 0x1A, 0xD5, 0xF1, 0xE8, 0xEA,
+        0x15, 0x46, 0xEB, 0x9C, 0xBF, 0xA8, 0x51, 0x1E, 0xC0, 0xBF, 0x13, 0x80,
+};
+
+// ----------------------------------------------------------------------
+// Test group: test_pubkey_confirm
+// Test 26: Export_pubkey_committee_cold_key_path_0
 // Path: m/1852'/1815'/0'/4/0
 // ----------------------------------------------------------------------
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_committee_cold_key_path_0
-static const uint8_t PUBKEY_test_pubkey_confirm_025_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x04, 0x00, 0x00, 0x00, 0x00,
+static const uint8_t PUBKEY_test_pubkey_confirm_026_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_APDU[] =
+    {
+        0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00,
 };
 
 // Public key (hex): bc8c8a37d6ab41339bb073e72ce2e776cefed98d1a6d070ea5fada80dc7d6737
 // Chain code (hex): 6f58406a51d33bb35e98884cbadced9bc94f65a752001ad5f4788af07b2ec0fe
-static const uint8_t PUBKEY_test_pubkey_confirm_025_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_EXPECTED_RESPONSE[] = {
-    0xBC, 0x8C, 0x8A, 0x37, 0xD6, 0xAB, 0x41, 0x33, 0x9B, 0xB0, 0x73, 0xE7, 0x2C, 0xE2, 0xE7, 0x76,
-    0xCE, 0xFE, 0xD9, 0x8D, 0x1A, 0x6D, 0x07, 0x0E, 0xA5, 0xFA, 0xDA, 0x80, 0xDC, 0x7D, 0x67, 0x37,
-    0x6F, 0x58, 0x40, 0x6A, 0x51, 0xD3, 0x3B, 0xB3, 0x5E, 0x98, 0x88, 0x4C, 0xBA, 0xDC, 0xED, 0x9B,
-    0xC9, 0x4F, 0x65, 0xA7, 0x52, 0x00, 0x1A, 0xD5, 0xF4, 0x78, 0x8A, 0xF0, 0x7B, 0x2E, 0xC0, 0xFE,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_026_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_EXPECTED_RESPONSE[] = {
+        0xBC, 0x8C, 0x8A, 0x37, 0xD6, 0xAB, 0x41, 0x33, 0x9B, 0xB0, 0x73, 0xE7, 0x2C,
+        0xE2, 0xE7, 0x76, 0xCE, 0xFE, 0xD9, 0x8D, 0x1A, 0x6D, 0x07, 0x0E, 0xA5, 0xFA,
+        0xDA, 0x80, 0xDC, 0x7D, 0x67, 0x37, 0x6F, 0x58, 0x40, 0x6A, 0x51, 0xD3, 0x3B,
+        0xB3, 0x5E, 0x98, 0x88, 0x4C, 0xBA, 0xDC, 0xED, 0x9B, 0xC9, 0x4F, 0x65, 0xA7,
+        0x52, 0x00, 0x1A, 0xD5, 0xF4, 0x78, 0x8A, 0xF0, 0x7B, 0x2E, 0xC0, 0xFE,
 };
 
 // ----------------------------------------------------------------------
 // Test group: test_pubkey_confirm
-// Test 26: Export_pubkey_committee_hot_key_path_0
+// Test 27: Export_pubkey_committee_hot_key_path_0
 // Path: m/1852'/1815'/0'/5/0
 // ----------------------------------------------------------------------
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_committee_hot_key_path_0
-static const uint8_t PUBKEY_test_pubkey_confirm_026_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x05, 0x00, 0x00, 0x00, 0x00,
+static const uint8_t PUBKEY_test_pubkey_confirm_027_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_APDU[] =
+    {
+        0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00,
 };
 
 // Public key (hex): 650eb87ddfffe7babd505f2d66c2db28b1c05ac54f9121589107acd6eb20cc2c
 // Chain code (hex): 27d79714a89eb58aa7433d7579fb23b54ada4aa29023820fb8b58ff378e12fb4
-static const uint8_t PUBKEY_test_pubkey_confirm_026_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_EXPECTED_RESPONSE[] = {
-    0x65, 0x0E, 0xB8, 0x7D, 0xDF, 0xFF, 0xE7, 0xBA, 0xBD, 0x50, 0x5F, 0x2D, 0x66, 0xC2, 0xDB, 0x28,
-    0xB1, 0xC0, 0x5A, 0xC5, 0x4F, 0x91, 0x21, 0x58, 0x91, 0x07, 0xAC, 0xD6, 0xEB, 0x20, 0xCC, 0x2C,
-    0x27, 0xD7, 0x97, 0x14, 0xA8, 0x9E, 0xB5, 0x8A, 0xA7, 0x43, 0x3D, 0x75, 0x79, 0xFB, 0x23, 0xB5,
-    0x4A, 0xDA, 0x4A, 0xA2, 0x90, 0x23, 0x82, 0x0F, 0xB8, 0xB5, 0x8F, 0xF3, 0x78, 0xE1, 0x2F, 0xB4,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_027_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_EXPECTED_RESPONSE[] = {
+        0x65, 0x0E, 0xB8, 0x7D, 0xDF, 0xFF, 0xE7, 0xBA, 0xBD, 0x50, 0x5F, 0x2D, 0x66,
+        0xC2, 0xDB, 0x28, 0xB1, 0xC0, 0x5A, 0xC5, 0x4F, 0x91, 0x21, 0x58, 0x91, 0x07,
+        0xAC, 0xD6, 0xEB, 0x20, 0xCC, 0x2C, 0x27, 0xD7, 0x97, 0x14, 0xA8, 0x9E, 0xB5,
+        0x8A, 0xA7, 0x43, 0x3D, 0x75, 0x79, 0xFB, 0x23, 0xB5, 0x4A, 0xDA, 0x4A, 0xA2,
+        0x90, 0x23, 0x82, 0x0F, 0xB8, 0xB5, 0x8F, 0xF3, 0x78, 0xE1, 0x2F, 0xB4,
 };
 
 // ----------------------------------------------------------------------
 // Test group: test_pubkey_confirm
-// Test 27: Export_pubkey_mint_key_path_0
+// Test 28: Export_pubkey_mint_key_path_0
 // Path: m/1855'/1815'/0'
 // ----------------------------------------------------------------------
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_mint_key_path_0
-static const uint8_t PUBKEY_test_pubkey_confirm_027_EXPORT_PUBKEY_MINT_KEY_PATH_0_APDU[] = {
-    0x03, 0x80, 0x00, 0x07, 0x3F, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00,
+static const uint8_t PUBKEY_test_pubkey_confirm_028_EXPORT_PUBKEY_MINT_KEY_PATH_0_APDU[] = {
+    0x03,
+    0x80,
+    0x00,
+    0x07,
+    0x3F,
+    0x80,
+    0x00,
+    0x07,
+    0x17,
+    0x80,
+    0x00,
+    0x00,
+    0x00,
 };
 
 // Public key (hex): b9de636bf236e5543377e4b4d6b63613f188fb65b83b8a61c4b68be0c196c3d8
 // Chain code (hex): 3545aee9b82476574ff115aa1c7ab688c24b4bca687af4bb79129e4fcea066da
-static const uint8_t PUBKEY_test_pubkey_confirm_027_EXPORT_PUBKEY_MINT_KEY_PATH_0_EXPECTED_RESPONSE[] = {
-    0xB9, 0xDE, 0x63, 0x6B, 0xF2, 0x36, 0xE5, 0x54, 0x33, 0x77, 0xE4, 0xB4, 0xD6, 0xB6, 0x36, 0x13,
-    0xF1, 0x88, 0xFB, 0x65, 0xB8, 0x3B, 0x8A, 0x61, 0xC4, 0xB6, 0x8B, 0xE0, 0xC1, 0x96, 0xC3, 0xD8,
-    0x35, 0x45, 0xAE, 0xE9, 0xB8, 0x24, 0x76, 0x57, 0x4F, 0xF1, 0x15, 0xAA, 0x1C, 0x7A, 0xB6, 0x88,
-    0xC2, 0x4B, 0x4B, 0xCA, 0x68, 0x7A, 0xF4, 0xBB, 0x79, 0x12, 0x9E, 0x4F, 0xCE, 0xA0, 0x66, 0xDA,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_028_EXPORT_PUBKEY_MINT_KEY_PATH_0_EXPECTED_RESPONSE[] = {
+        0xB9, 0xDE, 0x63, 0x6B, 0xF2, 0x36, 0xE5, 0x54, 0x33, 0x77, 0xE4, 0xB4, 0xD6,
+        0xB6, 0x36, 0x13, 0xF1, 0x88, 0xFB, 0x65, 0xB8, 0x3B, 0x8A, 0x61, 0xC4, 0xB6,
+        0x8B, 0xE0, 0xC1, 0x96, 0xC3, 0xD8, 0x35, 0x45, 0xAE, 0xE9, 0xB8, 0x24, 0x76,
+        0x57, 0x4F, 0xF1, 0x15, 0xAA, 0x1C, 0x7A, 0xB6, 0x88, 0xC2, 0x4B, 0x4B, 0xCA,
+        0x68, 0x7A, 0xF4, 0xBB, 0x79, 0x12, 0x9E, 0x4F, 0xCE, 0xA0, 0x66, 0xDA,
 };
 
 // ----------------------------------------------------------------------
@@ -612,17 +806,33 @@ static const uint8_t PUBKEY_test_pubkey_confirm_027_EXPORT_PUBKEY_MINT_KEY_PATH_
 // ----------------------------------------------------------------------
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_shelley_usual_path_0
-static const uint8_t PUBKEY_test_pubkey_without_confirmation_000_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_APDU[] = {
-    0x03, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x04,
+static const uint8_t
+    PUBKEY_test_pubkey_without_confirmation_000_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_APDU[] = {
+        0x03,
+        0x80,
+        0x00,
+        0x07,
+        0x3C,
+        0x80,
+        0x00,
+        0x07,
+        0x17,
+        0x80,
+        0x00,
+        0x00,
+        0x04,
 };
 
 // Public key (hex): 4e4353d7cc6f49e8e7a281e08a7672d000d4abfdf07be299cbff95d6a05df224
 // Chain code (hex): cbc28c222a6c15c0cfe98434f97b3aef860b5ce6902e177820adbd70ed7dc2ec
-static const uint8_t PUBKEY_test_pubkey_without_confirmation_000_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_EXPECTED_RESPONSE[] = {
-    0x4E, 0x43, 0x53, 0xD7, 0xCC, 0x6F, 0x49, 0xE8, 0xE7, 0xA2, 0x81, 0xE0, 0x8A, 0x76, 0x72, 0xD0,
-    0x00, 0xD4, 0xAB, 0xFD, 0xF0, 0x7B, 0xE2, 0x99, 0xCB, 0xFF, 0x95, 0xD6, 0xA0, 0x5D, 0xF2, 0x24,
-    0xCB, 0xC2, 0x8C, 0x22, 0x2A, 0x6C, 0x15, 0xC0, 0xCF, 0xE9, 0x84, 0x34, 0xF9, 0x7B, 0x3A, 0xEF,
-    0x86, 0x0B, 0x5C, 0xE6, 0x90, 0x2E, 0x17, 0x78, 0x20, 0xAD, 0xBD, 0x70, 0xED, 0x7D, 0xC2, 0xEC,
+static const uint8_t
+    PUBKEY_test_pubkey_without_confirmation_000_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_EXPECTED_RESPONSE
+        [] = {
+            0x4E, 0x43, 0x53, 0xD7, 0xCC, 0x6F, 0x49, 0xE8, 0xE7, 0xA2, 0x81, 0xE0, 0x8A,
+            0x76, 0x72, 0xD0, 0x00, 0xD4, 0xAB, 0xFD, 0xF0, 0x7B, 0xE2, 0x99, 0xCB, 0xFF,
+            0x95, 0xD6, 0xA0, 0x5D, 0xF2, 0x24, 0xCB, 0xC2, 0x8C, 0x22, 0x2A, 0x6C, 0x15,
+            0xC0, 0xCF, 0xE9, 0x84, 0x34, 0xF9, 0x7B, 0x3A, 0xEF, 0x86, 0x0B, 0x5C, 0xE6,
+            0x90, 0x2E, 0x17, 0x78, 0x20, 0xAD, 0xBD, 0x70, 0xED, 0x7D, 0xC2, 0xEC,
 };
 
 // ----------------------------------------------------------------------
@@ -632,18 +842,22 @@ static const uint8_t PUBKEY_test_pubkey_without_confirmation_000_EXPORT_PUBKEY_S
 // ----------------------------------------------------------------------
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_shelley_usual_path_1
-static const uint8_t PUBKEY_test_pubkey_without_confirmation_001_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x01,
+static const uint8_t
+    PUBKEY_test_pubkey_without_confirmation_001_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_APDU[] = {
+        0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
 };
 
 // Public key (hex): b3d5f4158f0c391ee2a28a2e285f218f3e895ff6ff59cb9369c64b03b5bab5eb
 // Chain code (hex): 27e1d1f3a3d0fafc0884e02a2d972e7e5b1be8a385ecc1bc75a977b4073dbd08
-static const uint8_t PUBKEY_test_pubkey_without_confirmation_001_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_EXPECTED_RESPONSE[] = {
-    0xB3, 0xD5, 0xF4, 0x15, 0x8F, 0x0C, 0x39, 0x1E, 0xE2, 0xA2, 0x8A, 0x2E, 0x28, 0x5F, 0x21, 0x8F,
-    0x3E, 0x89, 0x5F, 0xF6, 0xFF, 0x59, 0xCB, 0x93, 0x69, 0xC6, 0x4B, 0x03, 0xB5, 0xBA, 0xB5, 0xEB,
-    0x27, 0xE1, 0xD1, 0xF3, 0xA3, 0xD0, 0xFA, 0xFC, 0x08, 0x84, 0xE0, 0x2A, 0x2D, 0x97, 0x2E, 0x7E,
-    0x5B, 0x1B, 0xE8, 0xA3, 0x85, 0xEC, 0xC1, 0xBC, 0x75, 0xA9, 0x77, 0xB4, 0x07, 0x3D, 0xBD, 0x08,
+static const uint8_t
+    PUBKEY_test_pubkey_without_confirmation_001_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_EXPECTED_RESPONSE
+        [] = {
+            0xB3, 0xD5, 0xF4, 0x15, 0x8F, 0x0C, 0x39, 0x1E, 0xE2, 0xA2, 0x8A, 0x2E, 0x28,
+            0x5F, 0x21, 0x8F, 0x3E, 0x89, 0x5F, 0xF6, 0xFF, 0x59, 0xCB, 0x93, 0x69, 0xC6,
+            0x4B, 0x03, 0xB5, 0xBA, 0xB5, 0xEB, 0x27, 0xE1, 0xD1, 0xF3, 0xA3, 0xD0, 0xFA,
+            0xFC, 0x08, 0x84, 0xE0, 0x2A, 0x2D, 0x97, 0x2E, 0x7E, 0x5B, 0x1B, 0xE8, 0xA3,
+            0x85, 0xEC, 0xC1, 0xBC, 0x75, 0xA9, 0x77, 0xB4, 0x07, 0x3D, 0xBD, 0x08,
 };
 
 // ----------------------------------------------------------------------
@@ -653,18 +867,22 @@ static const uint8_t PUBKEY_test_pubkey_without_confirmation_001_EXPORT_PUBKEY_S
 // ----------------------------------------------------------------------
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_shelley_usual_path_2
-static const uint8_t PUBKEY_test_pubkey_without_confirmation_002_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x02, 0x00, 0x00, 0x00, 0x00,
+static const uint8_t
+    PUBKEY_test_pubkey_without_confirmation_002_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_APDU[] = {
+        0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,
 };
 
 // Public key (hex): 66610efd336e1137c525937b76511fbcf2a0e6bcf0d340a67bcb39bc870d85e8
 // Chain code (hex): e977e956d29810dbfbda9c8ea667585982454e401c68578623d4b86bc7eb7b58
-static const uint8_t PUBKEY_test_pubkey_without_confirmation_002_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_EXPECTED_RESPONSE[] = {
-    0x66, 0x61, 0x0E, 0xFD, 0x33, 0x6E, 0x11, 0x37, 0xC5, 0x25, 0x93, 0x7B, 0x76, 0x51, 0x1F, 0xBC,
-    0xF2, 0xA0, 0xE6, 0xBC, 0xF0, 0xD3, 0x40, 0xA6, 0x7B, 0xCB, 0x39, 0xBC, 0x87, 0x0D, 0x85, 0xE8,
-    0xE9, 0x77, 0xE9, 0x56, 0xD2, 0x98, 0x10, 0xDB, 0xFB, 0xDA, 0x9C, 0x8E, 0xA6, 0x67, 0x58, 0x59,
-    0x82, 0x45, 0x4E, 0x40, 0x1C, 0x68, 0x57, 0x86, 0x23, 0xD4, 0xB8, 0x6B, 0xC7, 0xEB, 0x7B, 0x58,
+static const uint8_t
+    PUBKEY_test_pubkey_without_confirmation_002_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_EXPECTED_RESPONSE
+        [] = {
+            0x66, 0x61, 0x0E, 0xFD, 0x33, 0x6E, 0x11, 0x37, 0xC5, 0x25, 0x93, 0x7B, 0x76,
+            0x51, 0x1F, 0xBC, 0xF2, 0xA0, 0xE6, 0xBC, 0xF0, 0xD3, 0x40, 0xA6, 0x7B, 0xCB,
+            0x39, 0xBC, 0x87, 0x0D, 0x85, 0xE8, 0xE9, 0x77, 0xE9, 0x56, 0xD2, 0x98, 0x10,
+            0xDB, 0xFB, 0xDA, 0x9C, 0x8E, 0xA6, 0x67, 0x58, 0x59, 0x82, 0x45, 0x4E, 0x40,
+            0x1C, 0x68, 0x57, 0x86, 0x23, 0xD4, 0xB8, 0x6B, 0xC7, 0xEB, 0x7B, 0x58,
 };
 
 // ----------------------------------------------------------------------
@@ -674,18 +892,22 @@ static const uint8_t PUBKEY_test_pubkey_without_confirmation_002_EXPORT_PUBKEY_S
 // ----------------------------------------------------------------------
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_shelley_usual_path_3
-static const uint8_t PUBKEY_test_pubkey_without_confirmation_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x02, 0x00, 0x00, 0x03, 0xE9,
+static const uint8_t
+    PUBKEY_test_pubkey_without_confirmation_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_APDU[] = {
+        0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x03, 0xE9,
 };
 
 // Public key (hex): dbc5fbbe47eabc036c6834ea62c011b15272ec85a17facd3670cd9304486ffe8
 // Chain code (hex): fb037474fc75e64745f7fd9f44b4bcbc58d81cae2209f2f5c1f77501e9bb43df
-static const uint8_t PUBKEY_test_pubkey_without_confirmation_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_EXPECTED_RESPONSE[] = {
-    0xDB, 0xC5, 0xFB, 0xBE, 0x47, 0xEA, 0xBC, 0x03, 0x6C, 0x68, 0x34, 0xEA, 0x62, 0xC0, 0x11, 0xB1,
-    0x52, 0x72, 0xEC, 0x85, 0xA1, 0x7F, 0xAC, 0xD3, 0x67, 0x0C, 0xD9, 0x30, 0x44, 0x86, 0xFF, 0xE8,
-    0xFB, 0x03, 0x74, 0x74, 0xFC, 0x75, 0xE6, 0x47, 0x45, 0xF7, 0xFD, 0x9F, 0x44, 0xB4, 0xBC, 0xBC,
-    0x58, 0xD8, 0x1C, 0xAE, 0x22, 0x09, 0xF2, 0xF5, 0xC1, 0xF7, 0x75, 0x01, 0xE9, 0xBB, 0x43, 0xDF,
+static const uint8_t
+    PUBKEY_test_pubkey_without_confirmation_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_EXPECTED_RESPONSE
+        [] = {
+            0xDB, 0xC5, 0xFB, 0xBE, 0x47, 0xEA, 0xBC, 0x03, 0x6C, 0x68, 0x34, 0xEA, 0x62,
+            0xC0, 0x11, 0xB1, 0x52, 0x72, 0xEC, 0x85, 0xA1, 0x7F, 0xAC, 0xD3, 0x67, 0x0C,
+            0xD9, 0x30, 0x44, 0x86, 0xFF, 0xE8, 0xFB, 0x03, 0x74, 0x74, 0xFC, 0x75, 0xE6,
+            0x47, 0x45, 0xF7, 0xFD, 0x9F, 0x44, 0xB4, 0xBC, 0xBC, 0x58, 0xD8, 0x1C, 0xAE,
+            0x22, 0x09, 0xF2, 0xF5, 0xC1, 0xF7, 0x75, 0x01, 0xE9, 0xBB, 0x43, 0xDF,
 };
 
 // ----------------------------------------------------------------------
@@ -695,17 +917,33 @@ static const uint8_t PUBKEY_test_pubkey_without_confirmation_003_EXPORT_PUBKEY_S
 // ----------------------------------------------------------------------
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_multisig_account_path_0
-static const uint8_t PUBKEY_test_pubkey_without_confirmation_004_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_APDU[] = {
-    0x03, 0x80, 0x00, 0x07, 0x3E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00,
+static const uint8_t
+    PUBKEY_test_pubkey_without_confirmation_004_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_APDU[] = {
+        0x03,
+        0x80,
+        0x00,
+        0x07,
+        0x3E,
+        0x80,
+        0x00,
+        0x07,
+        0x17,
+        0x80,
+        0x00,
+        0x00,
+        0x00,
 };
 
 // Public key (hex): 5602a5c773ca2c3fe374fde1afd395547f792e300ffb95bc387e4f1e9226019f
 // Chain code (hex): 95ed49685b2a43e435c303d65ea316f86ea1086a5c2addcf41ac867f6e763498
-static const uint8_t PUBKEY_test_pubkey_without_confirmation_004_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_EXPECTED_RESPONSE[] = {
-    0x56, 0x02, 0xA5, 0xC7, 0x73, 0xCA, 0x2C, 0x3F, 0xE3, 0x74, 0xFD, 0xE1, 0xAF, 0xD3, 0x95, 0x54,
-    0x7F, 0x79, 0x2E, 0x30, 0x0F, 0xFB, 0x95, 0xBC, 0x38, 0x7E, 0x4F, 0x1E, 0x92, 0x26, 0x01, 0x9F,
-    0x95, 0xED, 0x49, 0x68, 0x5B, 0x2A, 0x43, 0xE4, 0x35, 0xC3, 0x03, 0xD6, 0x5E, 0xA3, 0x16, 0xF8,
-    0x6E, 0xA1, 0x08, 0x6A, 0x5C, 0x2A, 0xDD, 0xCF, 0x41, 0xAC, 0x86, 0x7F, 0x6E, 0x76, 0x34, 0x98,
+static const uint8_t
+    PUBKEY_test_pubkey_without_confirmation_004_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_EXPECTED_RESPONSE
+        [] = {
+            0x56, 0x02, 0xA5, 0xC7, 0x73, 0xCA, 0x2C, 0x3F, 0xE3, 0x74, 0xFD, 0xE1, 0xAF,
+            0xD3, 0x95, 0x54, 0x7F, 0x79, 0x2E, 0x30, 0x0F, 0xFB, 0x95, 0xBC, 0x38, 0x7E,
+            0x4F, 0x1E, 0x92, 0x26, 0x01, 0x9F, 0x95, 0xED, 0x49, 0x68, 0x5B, 0x2A, 0x43,
+            0xE4, 0x35, 0xC3, 0x03, 0xD6, 0x5E, 0xA3, 0x16, 0xF8, 0x6E, 0xA1, 0x08, 0x6A,
+            0x5C, 0x2A, 0xDD, 0xCF, 0x41, 0xAC, 0x86, 0x7F, 0x6E, 0x76, 0x34, 0x98,
 };
 
 // ----------------------------------------------------------------------
@@ -715,18 +953,22 @@ static const uint8_t PUBKEY_test_pubkey_without_confirmation_004_EXPORT_PUBKEY_M
 // ----------------------------------------------------------------------
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_multisig_payment_path_0
-static const uint8_t PUBKEY_test_pubkey_without_confirmation_005_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
+static const uint8_t
+    PUBKEY_test_pubkey_without_confirmation_005_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_APDU[] = {
+        0x05, 0x80, 0x00, 0x07, 0x3E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
 // Public key (hex): 0fa60d5831ee0be1f221ff93ba0a4fdeca5a5866e47569607b04e287fc9b5ec0
 // Chain code (hex): 57fccd2e6071fbcab281598c6e2e53515d2e3ca762566237583d76915a401d09
-static const uint8_t PUBKEY_test_pubkey_without_confirmation_005_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_EXPECTED_RESPONSE[] = {
-    0x0F, 0xA6, 0x0D, 0x58, 0x31, 0xEE, 0x0B, 0xE1, 0xF2, 0x21, 0xFF, 0x93, 0xBA, 0x0A, 0x4F, 0xDE,
-    0xCA, 0x5A, 0x58, 0x66, 0xE4, 0x75, 0x69, 0x60, 0x7B, 0x04, 0xE2, 0x87, 0xFC, 0x9B, 0x5E, 0xC0,
-    0x57, 0xFC, 0xCD, 0x2E, 0x60, 0x71, 0xFB, 0xCA, 0xB2, 0x81, 0x59, 0x8C, 0x6E, 0x2E, 0x53, 0x51,
-    0x5D, 0x2E, 0x3C, 0xA7, 0x62, 0x56, 0x62, 0x37, 0x58, 0x3D, 0x76, 0x91, 0x5A, 0x40, 0x1D, 0x09,
+static const uint8_t
+    PUBKEY_test_pubkey_without_confirmation_005_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_EXPECTED_RESPONSE
+        [] = {
+            0x0F, 0xA6, 0x0D, 0x58, 0x31, 0xEE, 0x0B, 0xE1, 0xF2, 0x21, 0xFF, 0x93, 0xBA,
+            0x0A, 0x4F, 0xDE, 0xCA, 0x5A, 0x58, 0x66, 0xE4, 0x75, 0x69, 0x60, 0x7B, 0x04,
+            0xE2, 0x87, 0xFC, 0x9B, 0x5E, 0xC0, 0x57, 0xFC, 0xCD, 0x2E, 0x60, 0x71, 0xFB,
+            0xCA, 0xB2, 0x81, 0x59, 0x8C, 0x6E, 0x2E, 0x53, 0x51, 0x5D, 0x2E, 0x3C, 0xA7,
+            0x62, 0x56, 0x62, 0x37, 0x58, 0x3D, 0x76, 0x91, 0x5A, 0x40, 0x1D, 0x09,
 };
 
 // ----------------------------------------------------------------------
@@ -736,18 +978,22 @@ static const uint8_t PUBKEY_test_pubkey_without_confirmation_005_EXPORT_PUBKEY_M
 // ----------------------------------------------------------------------
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_multisig_staking_path_0
-static const uint8_t PUBKEY_test_pubkey_without_confirmation_006_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x02, 0x00, 0x00, 0x00, 0x00,
+static const uint8_t
+    PUBKEY_test_pubkey_without_confirmation_006_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_APDU[] = {
+        0x05, 0x80, 0x00, 0x07, 0x3E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,
 };
 
 // Public key (hex): 91e2647a4db84e47c895160b1f534d72c24c5eaf0aefb5f72dbfdea9913d96c6
 // Chain code (hex): 95709e03201f165004c65f95b52cdfa026c9c884e8d9241d0d73090ac73cf705
-static const uint8_t PUBKEY_test_pubkey_without_confirmation_006_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_EXPECTED_RESPONSE[] = {
-    0x91, 0xE2, 0x64, 0x7A, 0x4D, 0xB8, 0x4E, 0x47, 0xC8, 0x95, 0x16, 0x0B, 0x1F, 0x53, 0x4D, 0x72,
-    0xC2, 0x4C, 0x5E, 0xAF, 0x0A, 0xEF, 0xB5, 0xF7, 0x2D, 0xBF, 0xDE, 0xA9, 0x91, 0x3D, 0x96, 0xC6,
-    0x95, 0x70, 0x9E, 0x03, 0x20, 0x1F, 0x16, 0x50, 0x04, 0xC6, 0x5F, 0x95, 0xB5, 0x2C, 0xDF, 0xA0,
-    0x26, 0xC9, 0xC8, 0x84, 0xE8, 0xD9, 0x24, 0x1D, 0x0D, 0x73, 0x09, 0x0A, 0xC7, 0x3C, 0xF7, 0x05,
+static const uint8_t
+    PUBKEY_test_pubkey_without_confirmation_006_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_EXPECTED_RESPONSE
+        [] = {
+            0x91, 0xE2, 0x64, 0x7A, 0x4D, 0xB8, 0x4E, 0x47, 0xC8, 0x95, 0x16, 0x0B, 0x1F,
+            0x53, 0x4D, 0x72, 0xC2, 0x4C, 0x5E, 0xAF, 0x0A, 0xEF, 0xB5, 0xF7, 0x2D, 0xBF,
+            0xDE, 0xA9, 0x91, 0x3D, 0x96, 0xC6, 0x95, 0x70, 0x9E, 0x03, 0x20, 0x1F, 0x16,
+            0x50, 0x04, 0xC6, 0x5F, 0x95, 0xB5, 0x2C, 0xDF, 0xA0, 0x26, 0xC9, 0xC8, 0x84,
+            0xE8, 0xD9, 0x24, 0x1D, 0x0D, 0x73, 0x09, 0x0A, 0xC7, 0x3C, 0xF7, 0x05,
 };
 
 // ----------------------------------------------------------------------
@@ -757,17 +1003,33 @@ static const uint8_t PUBKEY_test_pubkey_without_confirmation_006_EXPORT_PUBKEY_M
 // ----------------------------------------------------------------------
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_CVote_keys_path_2
-static const uint8_t PUBKEY_test_pubkey_without_confirmation_007_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_APDU[] = {
-    0x03, 0x80, 0x00, 0x06, 0x9E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x64,
+static const uint8_t
+    PUBKEY_test_pubkey_without_confirmation_007_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_APDU[] = {
+        0x03,
+        0x80,
+        0x00,
+        0x06,
+        0x9E,
+        0x80,
+        0x00,
+        0x07,
+        0x17,
+        0x80,
+        0x00,
+        0x00,
+        0x64,
 };
 
 // Public key (hex): ff451db773898b80488d892b248acdc634f6ec79d923f12aae9feb2563513b63
 // Chain code (hex): 47478097ef56dcef686f8dcbd7d0c1d073740cde65a48e5615799096f67a144f
-static const uint8_t PUBKEY_test_pubkey_without_confirmation_007_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_EXPECTED_RESPONSE[] = {
-    0xFF, 0x45, 0x1D, 0xB7, 0x73, 0x89, 0x8B, 0x80, 0x48, 0x8D, 0x89, 0x2B, 0x24, 0x8A, 0xCD, 0xC6,
-    0x34, 0xF6, 0xEC, 0x79, 0xD9, 0x23, 0xF1, 0x2A, 0xAE, 0x9F, 0xEB, 0x25, 0x63, 0x51, 0x3B, 0x63,
-    0x47, 0x47, 0x80, 0x97, 0xEF, 0x56, 0xDC, 0xEF, 0x68, 0x6F, 0x8D, 0xCB, 0xD7, 0xD0, 0xC1, 0xD0,
-    0x73, 0x74, 0x0C, 0xDE, 0x65, 0xA4, 0x8E, 0x56, 0x15, 0x79, 0x90, 0x96, 0xF6, 0x7A, 0x14, 0x4F,
+static const uint8_t
+    PUBKEY_test_pubkey_without_confirmation_007_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_EXPECTED_RESPONSE
+        [] = {
+            0xFF, 0x45, 0x1D, 0xB7, 0x73, 0x89, 0x8B, 0x80, 0x48, 0x8D, 0x89, 0x2B, 0x24,
+            0x8A, 0xCD, 0xC6, 0x34, 0xF6, 0xEC, 0x79, 0xD9, 0x23, 0xF1, 0x2A, 0xAE, 0x9F,
+            0xEB, 0x25, 0x63, 0x51, 0x3B, 0x63, 0x47, 0x47, 0x80, 0x97, 0xEF, 0x56, 0xDC,
+            0xEF, 0x68, 0x6F, 0x8D, 0xCB, 0xD7, 0xD0, 0xC1, 0xD0, 0x73, 0x74, 0x0C, 0xDE,
+            0x65, 0xA4, 0x8E, 0x56, 0x15, 0x79, 0x90, 0x96, 0xF6, 0x7A, 0x14, 0x4F,
 };
 
 // ----------------------------------------------------------------------
@@ -777,18 +1039,22 @@ static const uint8_t PUBKEY_test_pubkey_without_confirmation_007_EXPORT_PUBKEY_C
 // ----------------------------------------------------------------------
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_CVote_keys_path_1
-static const uint8_t PUBKEY_test_pubkey_without_confirmation_008_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_APDU[] = {
-    0x05, 0x80, 0x00, 0x06, 0x9E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x01,
+static const uint8_t
+    PUBKEY_test_pubkey_without_confirmation_008_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_APDU[] = {
+        0x05, 0x80, 0x00, 0x06, 0x9E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
 };
 
 // Public key (hex): aac861247bd24cae705bca1d1c9763f19c19188fb0faf257c50ed69b8157bced
 // Chain code (hex): f23595dd3207b7dde477347fa25d3fd6291c3363df43b54a9cf523d2c7683c10
-static const uint8_t PUBKEY_test_pubkey_without_confirmation_008_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_EXPECTED_RESPONSE[] = {
-    0xAA, 0xC8, 0x61, 0x24, 0x7B, 0xD2, 0x4C, 0xAE, 0x70, 0x5B, 0xCA, 0x1D, 0x1C, 0x97, 0x63, 0xF1,
-    0x9C, 0x19, 0x18, 0x8F, 0xB0, 0xFA, 0xF2, 0x57, 0xC5, 0x0E, 0xD6, 0x9B, 0x81, 0x57, 0xBC, 0xED,
-    0xF2, 0x35, 0x95, 0xDD, 0x32, 0x07, 0xB7, 0xDD, 0xE4, 0x77, 0x34, 0x7F, 0xA2, 0x5D, 0x3F, 0xD6,
-    0x29, 0x1C, 0x33, 0x63, 0xDF, 0x43, 0xB5, 0x4A, 0x9C, 0xF5, 0x23, 0xD2, 0xC7, 0x68, 0x3C, 0x10,
+static const uint8_t
+    PUBKEY_test_pubkey_without_confirmation_008_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_EXPECTED_RESPONSE
+        [] = {
+            0xAA, 0xC8, 0x61, 0x24, 0x7B, 0xD2, 0x4C, 0xAE, 0x70, 0x5B, 0xCA, 0x1D, 0x1C,
+            0x97, 0x63, 0xF1, 0x9C, 0x19, 0x18, 0x8F, 0xB0, 0xFA, 0xF2, 0x57, 0xC5, 0x0E,
+            0xD6, 0x9B, 0x81, 0x57, 0xBC, 0xED, 0xF2, 0x35, 0x95, 0xDD, 0x32, 0x07, 0xB7,
+            0xDD, 0xE4, 0x77, 0x34, 0x7F, 0xA2, 0x5D, 0x3F, 0xD6, 0x29, 0x1C, 0x33, 0x63,
+            0xDF, 0x43, 0xB5, 0x4A, 0x9C, 0xF5, 0x23, 0xD2, 0xC7, 0x68, 0x3C, 0x10,
 };
 
 // ----------------------------------------------------------------------
@@ -798,18 +1064,23 @@ static const uint8_t PUBKEY_test_pubkey_without_confirmation_008_EXPORT_PUBKEY_C
 // ----------------------------------------------------------------------
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_drep_key_path_0_silent
-static const uint8_t PUBKEY_test_pubkey_confirm_even_with_silent_export_000_EXPORT_PUBKEY_DREP_KEY_PATH_0_SILENT_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x03, 0x00, 0x00, 0x00, 0x00,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_even_with_silent_export_000_EXPORT_PUBKEY_DREP_KEY_PATH_0_SILENT_APDU
+        [] = {
+            0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00,
 };
 
 // Public key (hex): 7cc18df2fbd3ee1b16b76843b18446679ab95dbcd07b7833b66a9407c0709e37
 // Chain code (hex): 01d881e1c04fed8defa9a3e8bd3cf85bd975f813ff8eb622d20a4375a07d6bc9
-static const uint8_t PUBKEY_test_pubkey_confirm_even_with_silent_export_000_EXPORT_PUBKEY_DREP_KEY_PATH_0_SILENT_EXPECTED_RESPONSE[] = {
-    0x7C, 0xC1, 0x8D, 0xF2, 0xFB, 0xD3, 0xEE, 0x1B, 0x16, 0xB7, 0x68, 0x43, 0xB1, 0x84, 0x46, 0x67,
-    0x9A, 0xB9, 0x5D, 0xBC, 0xD0, 0x7B, 0x78, 0x33, 0xB6, 0x6A, 0x94, 0x07, 0xC0, 0x70, 0x9E, 0x37,
-    0x01, 0xD8, 0x81, 0xE1, 0xC0, 0x4F, 0xED, 0x8D, 0xEF, 0xA9, 0xA3, 0xE8, 0xBD, 0x3C, 0xF8, 0x5B,
-    0xD9, 0x75, 0xF8, 0x13, 0xFF, 0x8E, 0xB6, 0x22, 0xD2, 0x0A, 0x43, 0x75, 0xA0, 0x7D, 0x6B, 0xC9,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_even_with_silent_export_000_EXPORT_PUBKEY_DREP_KEY_PATH_0_SILENT_EXPECTED_RESPONSE
+        [] = {
+            0x7C, 0xC1, 0x8D, 0xF2, 0xFB, 0xD3, 0xEE, 0x1B, 0x16, 0xB7, 0x68, 0x43, 0xB1,
+            0x84, 0x46, 0x67, 0x9A, 0xB9, 0x5D, 0xBC, 0xD0, 0x7B, 0x78, 0x33, 0xB6, 0x6A,
+            0x94, 0x07, 0xC0, 0x70, 0x9E, 0x37, 0x01, 0xD8, 0x81, 0xE1, 0xC0, 0x4F, 0xED,
+            0x8D, 0xEF, 0xA9, 0xA3, 0xE8, 0xBD, 0x3C, 0xF8, 0x5B, 0xD9, 0x75, 0xF8, 0x13,
+            0xFF, 0x8E, 0xB6, 0x22, 0xD2, 0x0A, 0x43, 0x75, 0xA0, 0x7D, 0x6B, 0xC9,
 };
 
 // ----------------------------------------------------------------------
@@ -819,18 +1090,23 @@ static const uint8_t PUBKEY_test_pubkey_confirm_even_with_silent_export_000_EXPO
 // ----------------------------------------------------------------------
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_committee_cold_key_path_0_silent
-static const uint8_t PUBKEY_test_pubkey_confirm_even_with_silent_export_001_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_SILENT_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x04, 0x00, 0x00, 0x00, 0x00,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_even_with_silent_export_001_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_SILENT_APDU
+        [] = {
+            0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00,
 };
 
 // Public key (hex): bc8c8a37d6ab41339bb073e72ce2e776cefed98d1a6d070ea5fada80dc7d6737
 // Chain code (hex): 6f58406a51d33bb35e98884cbadced9bc94f65a752001ad5f4788af07b2ec0fe
-static const uint8_t PUBKEY_test_pubkey_confirm_even_with_silent_export_001_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_SILENT_EXPECTED_RESPONSE[] = {
-    0xBC, 0x8C, 0x8A, 0x37, 0xD6, 0xAB, 0x41, 0x33, 0x9B, 0xB0, 0x73, 0xE7, 0x2C, 0xE2, 0xE7, 0x76,
-    0xCE, 0xFE, 0xD9, 0x8D, 0x1A, 0x6D, 0x07, 0x0E, 0xA5, 0xFA, 0xDA, 0x80, 0xDC, 0x7D, 0x67, 0x37,
-    0x6F, 0x58, 0x40, 0x6A, 0x51, 0xD3, 0x3B, 0xB3, 0x5E, 0x98, 0x88, 0x4C, 0xBA, 0xDC, 0xED, 0x9B,
-    0xC9, 0x4F, 0x65, 0xA7, 0x52, 0x00, 0x1A, 0xD5, 0xF4, 0x78, 0x8A, 0xF0, 0x7B, 0x2E, 0xC0, 0xFE,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_even_with_silent_export_001_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_SILENT_EXPECTED_RESPONSE
+        [] = {
+            0xBC, 0x8C, 0x8A, 0x37, 0xD6, 0xAB, 0x41, 0x33, 0x9B, 0xB0, 0x73, 0xE7, 0x2C,
+            0xE2, 0xE7, 0x76, 0xCE, 0xFE, 0xD9, 0x8D, 0x1A, 0x6D, 0x07, 0x0E, 0xA5, 0xFA,
+            0xDA, 0x80, 0xDC, 0x7D, 0x67, 0x37, 0x6F, 0x58, 0x40, 0x6A, 0x51, 0xD3, 0x3B,
+            0xB3, 0x5E, 0x98, 0x88, 0x4C, 0xBA, 0xDC, 0xED, 0x9B, 0xC9, 0x4F, 0x65, 0xA7,
+            0x52, 0x00, 0x1A, 0xD5, 0xF4, 0x78, 0x8A, 0xF0, 0x7B, 0x2E, 0xC0, 0xFE,
 };
 
 // ----------------------------------------------------------------------
@@ -840,18 +1116,23 @@ static const uint8_t PUBKEY_test_pubkey_confirm_even_with_silent_export_001_EXPO
 // ----------------------------------------------------------------------
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_committee_hot_key_path_0_silent
-static const uint8_t PUBKEY_test_pubkey_confirm_even_with_silent_export_002_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_SILENT_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x05, 0x00, 0x00, 0x00, 0x00,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_even_with_silent_export_002_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_SILENT_APDU
+        [] = {
+            0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00,
 };
 
 // Public key (hex): 650eb87ddfffe7babd505f2d66c2db28b1c05ac54f9121589107acd6eb20cc2c
 // Chain code (hex): 27d79714a89eb58aa7433d7579fb23b54ada4aa29023820fb8b58ff378e12fb4
-static const uint8_t PUBKEY_test_pubkey_confirm_even_with_silent_export_002_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_SILENT_EXPECTED_RESPONSE[] = {
-    0x65, 0x0E, 0xB8, 0x7D, 0xDF, 0xFF, 0xE7, 0xBA, 0xBD, 0x50, 0x5F, 0x2D, 0x66, 0xC2, 0xDB, 0x28,
-    0xB1, 0xC0, 0x5A, 0xC5, 0x4F, 0x91, 0x21, 0x58, 0x91, 0x07, 0xAC, 0xD6, 0xEB, 0x20, 0xCC, 0x2C,
-    0x27, 0xD7, 0x97, 0x14, 0xA8, 0x9E, 0xB5, 0x8A, 0xA7, 0x43, 0x3D, 0x75, 0x79, 0xFB, 0x23, 0xB5,
-    0x4A, 0xDA, 0x4A, 0xA2, 0x90, 0x23, 0x82, 0x0F, 0xB8, 0xB5, 0x8F, 0xF3, 0x78, 0xE1, 0x2F, 0xB4,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_even_with_silent_export_002_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_SILENT_EXPECTED_RESPONSE
+        [] = {
+            0x65, 0x0E, 0xB8, 0x7D, 0xDF, 0xFF, 0xE7, 0xBA, 0xBD, 0x50, 0x5F, 0x2D, 0x66,
+            0xC2, 0xDB, 0x28, 0xB1, 0xC0, 0x5A, 0xC5, 0x4F, 0x91, 0x21, 0x58, 0x91, 0x07,
+            0xAC, 0xD6, 0xEB, 0x20, 0xCC, 0x2C, 0x27, 0xD7, 0x97, 0x14, 0xA8, 0x9E, 0xB5,
+            0x8A, 0xA7, 0x43, 0x3D, 0x75, 0x79, 0xFB, 0x23, 0xB5, 0x4A, 0xDA, 0x4A, 0xA2,
+            0x90, 0x23, 0x82, 0x0F, 0xB8, 0xB5, 0x8F, 0xF3, 0x78, 0xE1, 0x2F, 0xB4,
 };
 
 // ----------------------------------------------------------------------
@@ -861,17 +1142,34 @@ static const uint8_t PUBKEY_test_pubkey_confirm_even_with_silent_export_002_EXPO
 // ----------------------------------------------------------------------
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_mint_key_path_0_silent
-static const uint8_t PUBKEY_test_pubkey_confirm_even_with_silent_export_003_EXPORT_PUBKEY_MINT_KEY_PATH_0_SILENT_APDU[] = {
-    0x03, 0x80, 0x00, 0x07, 0x3F, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_even_with_silent_export_003_EXPORT_PUBKEY_MINT_KEY_PATH_0_SILENT_APDU
+        [] = {
+            0x03,
+            0x80,
+            0x00,
+            0x07,
+            0x3F,
+            0x80,
+            0x00,
+            0x07,
+            0x17,
+            0x80,
+            0x00,
+            0x00,
+            0x00,
 };
 
 // Public key (hex): b9de636bf236e5543377e4b4d6b63613f188fb65b83b8a61c4b68be0c196c3d8
 // Chain code (hex): 3545aee9b82476574ff115aa1c7ab688c24b4bca687af4bb79129e4fcea066da
-static const uint8_t PUBKEY_test_pubkey_confirm_even_with_silent_export_003_EXPORT_PUBKEY_MINT_KEY_PATH_0_SILENT_EXPECTED_RESPONSE[] = {
-    0xB9, 0xDE, 0x63, 0x6B, 0xF2, 0x36, 0xE5, 0x54, 0x33, 0x77, 0xE4, 0xB4, 0xD6, 0xB6, 0x36, 0x13,
-    0xF1, 0x88, 0xFB, 0x65, 0xB8, 0x3B, 0x8A, 0x61, 0xC4, 0xB6, 0x8B, 0xE0, 0xC1, 0x96, 0xC3, 0xD8,
-    0x35, 0x45, 0xAE, 0xE9, 0xB8, 0x24, 0x76, 0x57, 0x4F, 0xF1, 0x15, 0xAA, 0x1C, 0x7A, 0xB6, 0x88,
-    0xC2, 0x4B, 0x4B, 0xCA, 0x68, 0x7A, 0xF4, 0xBB, 0x79, 0x12, 0x9E, 0x4F, 0xCE, 0xA0, 0x66, 0xDA,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_even_with_silent_export_003_EXPORT_PUBKEY_MINT_KEY_PATH_0_SILENT_EXPECTED_RESPONSE
+        [] = {
+            0xB9, 0xDE, 0x63, 0x6B, 0xF2, 0x36, 0xE5, 0x54, 0x33, 0x77, 0xE4, 0xB4, 0xD6,
+            0xB6, 0x36, 0x13, 0xF1, 0x88, 0xFB, 0x65, 0xB8, 0x3B, 0x8A, 0x61, 0xC4, 0xB6,
+            0x8B, 0xE0, 0xC1, 0x96, 0xC3, 0xD8, 0x35, 0x45, 0xAE, 0xE9, 0xB8, 0x24, 0x76,
+            0x57, 0x4F, 0xF1, 0x15, 0xAA, 0x1C, 0x7A, 0xB6, 0x88, 0xC2, 0x4B, 0x4B, 0xCA,
+            0x68, 0x7A, 0xF4, 0xBB, 0x79, 0x12, 0x9E, 0x4F, 0xCE, 0xA0, 0x66, 0xDA,
 };
 
 // ----------------------------------------------------------------------
@@ -881,488 +1179,680 @@ static const uint8_t PUBKEY_test_pubkey_confirm_even_with_silent_export_003_EXPO
 // ----------------------------------------------------------------------
 
 // Source: tests/standalone/input_files/pubkey.py > Export_pubkey_cold_case_silent
-static const uint8_t PUBKEY_test_pubkey_confirm_even_with_silent_export_004_EXPORT_PUBKEY_COLD_CASE_SILENT_APDU[] = {
-    0x04, 0x80, 0x00, 0x07, 0x3D, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00,
-    0x00,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_even_with_silent_export_004_EXPORT_PUBKEY_COLD_CASE_SILENT_APDU[] = {
+        0x04,
+        0x80,
+        0x00,
+        0x07,
+        0x3D,
+        0x80,
+        0x00,
+        0x07,
+        0x17,
+        0x80,
+        0x00,
+        0x00,
+        0x00,
+        0x80,
+        0x00,
+        0x00,
+        0x00,
 };
 
 // Public key (hex): 3d7e84dca8b4bc322401a2cc814af7c84d2992a22f99554fe340d7df7910768d
 // Chain code (hex): 1e2a47754207da3069f90241fbf3b8742c367e9028e5f3f85ae3660330b4f5b7
-static const uint8_t PUBKEY_test_pubkey_confirm_even_with_silent_export_004_EXPORT_PUBKEY_COLD_CASE_SILENT_EXPECTED_RESPONSE[] = {
-    0x3D, 0x7E, 0x84, 0xDC, 0xA8, 0xB4, 0xBC, 0x32, 0x24, 0x01, 0xA2, 0xCC, 0x81, 0x4A, 0xF7, 0xC8,
-    0x4D, 0x29, 0x92, 0xA2, 0x2F, 0x99, 0x55, 0x4F, 0xE3, 0x40, 0xD7, 0xDF, 0x79, 0x10, 0x76, 0x8D,
-    0x1E, 0x2A, 0x47, 0x75, 0x42, 0x07, 0xDA, 0x30, 0x69, 0xF9, 0x02, 0x41, 0xFB, 0xF3, 0xB8, 0x74,
-    0x2C, 0x36, 0x7E, 0x90, 0x28, 0xE5, 0xF3, 0xF8, 0x5A, 0xE3, 0x66, 0x03, 0x30, 0xB4, 0xF5, 0xB7,
+static const uint8_t
+    PUBKEY_test_pubkey_confirm_even_with_silent_export_004_EXPORT_PUBKEY_COLD_CASE_SILENT_EXPECTED_RESPONSE
+        [] = {
+            0x3D, 0x7E, 0x84, 0xDC, 0xA8, 0xB4, 0xBC, 0x32, 0x24, 0x01, 0xA2, 0xCC, 0x81,
+            0x4A, 0xF7, 0xC8, 0x4D, 0x29, 0x92, 0xA2, 0x2F, 0x99, 0x55, 0x4F, 0xE3, 0x40,
+            0xD7, 0xDF, 0x79, 0x10, 0x76, 0x8D, 0x1E, 0x2A, 0x47, 0x75, 0x42, 0x07, 0xDA,
+            0x30, 0x69, 0xF9, 0x02, 0x41, 0xFB, 0xF3, 0xB8, 0x74, 0x2C, 0x36, 0x7E, 0x90,
+            0x28, 0xE5, 0xF3, 0xF8, 0x5A, 0xE3, 0x66, 0x03, 0x30, 0xB4, 0xF5, 0xB7,
 };
 
 static const pubkey_fixture_t PUBKEY_FIXTURES_TEST_PUBKEY_CONFIRM[] = {
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_byronpath_1
-{
-    .name = "Export_pubkey_byronpath_1",
-    .data = PUBKEY_test_pubkey_confirm_000_EXPORT_PUBKEY_BYRONPATH_1_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_000_EXPORT_PUBKEY_BYRONPATH_1_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_000_EXPORT_PUBKEY_BYRONPATH_1_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_000_EXPORT_PUBKEY_BYRONPATH_1_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_byronpath_2
-{
-    .name = "Export_pubkey_byronpath_2",
-    .data = PUBKEY_test_pubkey_confirm_001_EXPORT_PUBKEY_BYRONPATH_2_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_001_EXPORT_PUBKEY_BYRONPATH_2_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_001_EXPORT_PUBKEY_BYRONPATH_2_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_001_EXPORT_PUBKEY_BYRONPATH_2_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_byronpath_3
-{
-    .name = "Export_pubkey_byronpath_3",
-    .data = PUBKEY_test_pubkey_confirm_002_EXPORT_PUBKEY_BYRONPATH_3_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_002_EXPORT_PUBKEY_BYRONPATH_3_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_002_EXPORT_PUBKEY_BYRONPATH_3_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_002_EXPORT_PUBKEY_BYRONPATH_3_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_shelley_usual_path_0
-{
-    .name = "Export_pubkey_shelley_usual_path_0",
-    .data = PUBKEY_test_pubkey_confirm_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_shelley_usual_path_1
-{
-    .name = "Export_pubkey_shelley_usual_path_1",
-    .data = PUBKEY_test_pubkey_confirm_004_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_004_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_004_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_004_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_shelley_usual_path_2
-{
-    .name = "Export_pubkey_shelley_usual_path_2",
-    .data = PUBKEY_test_pubkey_confirm_005_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_005_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_005_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_005_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_shelley_usual_path_3
-{
-    .name = "Export_pubkey_shelley_usual_path_3",
-    .data = PUBKEY_test_pubkey_confirm_006_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_006_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_006_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_006_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_shelley_usual_path_4
-{
-    .name = "Export_pubkey_shelley_usual_path_4",
-    .data = PUBKEY_test_pubkey_confirm_007_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_4_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_007_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_4_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_007_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_4_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_007_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_4_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_shelley_usual_path_5
-{
-    .name = "Export_pubkey_shelley_usual_path_5",
-    .data = PUBKEY_test_pubkey_confirm_008_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_5_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_008_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_5_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_008_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_5_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_008_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_5_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_shelley_usual_path_6
-{
-    .name = "Export_pubkey_shelley_usual_path_6",
-    .data = PUBKEY_test_pubkey_confirm_009_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_6_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_009_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_6_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_009_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_6_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_009_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_6_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_shelley_unusual_path_1
-{
-    .name = "Export_pubkey_shelley_unusual_path_1",
-    .data = PUBKEY_test_pubkey_confirm_010_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_1_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_010_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_1_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_010_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_1_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_010_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_1_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_shelley_unusual_path_2
-{
-    .name = "Export_pubkey_shelley_unusual_path_2",
-    .data = PUBKEY_test_pubkey_confirm_011_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_2_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_011_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_2_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_011_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_2_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_011_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_2_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_shelley_unusual_path_3
-{
-    .name = "Export_pubkey_shelley_unusual_path_3",
-    .data = PUBKEY_test_pubkey_confirm_012_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_3_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_012_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_3_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_012_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_3_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_012_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_3_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_shelley_unusual_path_4
-{
-    .name = "Export_pubkey_shelley_unusual_path_4",
-    .data = PUBKEY_test_pubkey_confirm_013_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_4_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_013_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_4_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_013_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_4_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_013_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_4_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_shelley_unusual_path_5
-{
-    .name = "Export_pubkey_shelley_unusual_path_5",
-    .data = PUBKEY_test_pubkey_confirm_014_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_5_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_014_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_5_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_014_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_5_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_014_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_5_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_shelley_unusual_path_6
-{
-    .name = "Export_pubkey_shelley_unusual_path_6",
-    .data = PUBKEY_test_pubkey_confirm_015_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_6_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_015_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_6_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_015_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_6_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_015_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_6_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_multisig_account_path_0
-{
-    .name = "Export_pubkey_multisig_account_path_0",
-    .data = PUBKEY_test_pubkey_confirm_016_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_016_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_016_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_016_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_multisig_payment_path_0
-{
-    .name = "Export_pubkey_multisig_payment_path_0",
-    .data = PUBKEY_test_pubkey_confirm_017_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_017_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_017_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_017_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_multisig_staking_path_0
-{
-    .name = "Export_pubkey_multisig_staking_path_0",
-    .data = PUBKEY_test_pubkey_confirm_018_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_018_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_018_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_018_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_cold_case
-{
-    .name = "Export_pubkey_cold_case",
-    .data = PUBKEY_test_pubkey_confirm_019_EXPORT_PUBKEY_COLD_CASE_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_019_EXPORT_PUBKEY_COLD_CASE_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_019_EXPORT_PUBKEY_COLD_CASE_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_019_EXPORT_PUBKEY_COLD_CASE_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_cold_unusual_case
-{
-    .name = "Export_pubkey_cold_unusual_case",
-    .data = PUBKEY_test_pubkey_confirm_020_EXPORT_PUBKEY_COLD_UNUSUAL_CASE_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_020_EXPORT_PUBKEY_COLD_UNUSUAL_CASE_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_020_EXPORT_PUBKEY_COLD_UNUSUAL_CASE_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_020_EXPORT_PUBKEY_COLD_UNUSUAL_CASE_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_CVote_keys_path_2
-{
-    .name = "Export_pubkey_CVote_keys_path_2",
-    .data = PUBKEY_test_pubkey_confirm_021_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_021_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_021_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_021_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_CVote_keys_path_1
-{
-    .name = "Export_pubkey_CVote_keys_path_1",
-    .data = PUBKEY_test_pubkey_confirm_022_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_022_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_022_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_022_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_CVote_keys_path_3
-{
-    .name = "Export_pubkey_CVote_keys_path_3",
-    .data = PUBKEY_test_pubkey_confirm_023_EXPORT_PUBKEY_CVOTE_KEYS_PATH_3_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_023_EXPORT_PUBKEY_CVOTE_KEYS_PATH_3_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_023_EXPORT_PUBKEY_CVOTE_KEYS_PATH_3_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_023_EXPORT_PUBKEY_CVOTE_KEYS_PATH_3_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_drep_key_path_0
-{
-    .name = "Export_pubkey_drep_key_path_0",
-    .data = PUBKEY_test_pubkey_confirm_024_EXPORT_PUBKEY_DREP_KEY_PATH_0_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_024_EXPORT_PUBKEY_DREP_KEY_PATH_0_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_024_EXPORT_PUBKEY_DREP_KEY_PATH_0_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_024_EXPORT_PUBKEY_DREP_KEY_PATH_0_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_committee_cold_key_path_0
-{
-    .name = "Export_pubkey_committee_cold_key_path_0",
-    .data = PUBKEY_test_pubkey_confirm_025_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_025_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_025_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_025_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_committee_hot_key_path_0
-{
-    .name = "Export_pubkey_committee_hot_key_path_0",
-    .data = PUBKEY_test_pubkey_confirm_026_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_026_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_026_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_026_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm > Export_pubkey_mint_key_path_0
-{
-    .name = "Export_pubkey_mint_key_path_0",
-    .data = PUBKEY_test_pubkey_confirm_027_EXPORT_PUBKEY_MINT_KEY_PATH_0_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_027_EXPORT_PUBKEY_MINT_KEY_PATH_0_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_027_EXPORT_PUBKEY_MINT_KEY_PATH_0_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_027_EXPORT_PUBKEY_MINT_KEY_PATH_0_EXPECTED_RESPONSE),
-    .silent_export_enabled = false,
-    .expected_policy = POLICY_SHOW,
-},
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_byronpath_1
+    {
+        .name = "Export_pubkey_byronpath_1",
+        .data = PUBKEY_test_pubkey_confirm_000_EXPORT_PUBKEY_BYRONPATH_1_APDU,
+        .data_len = sizeof(PUBKEY_test_pubkey_confirm_000_EXPORT_PUBKEY_BYRONPATH_1_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_000_EXPORT_PUBKEY_BYRONPATH_1_EXPECTED_RESPONSE,
+        .expected_response_len =
+            sizeof(PUBKEY_test_pubkey_confirm_000_EXPORT_PUBKEY_BYRONPATH_1_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_byronpath_2
+    {
+        .name = "Export_pubkey_byronpath_2",
+        .data = PUBKEY_test_pubkey_confirm_001_EXPORT_PUBKEY_BYRONPATH_2_APDU,
+        .data_len = sizeof(PUBKEY_test_pubkey_confirm_001_EXPORT_PUBKEY_BYRONPATH_2_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_001_EXPORT_PUBKEY_BYRONPATH_2_EXPECTED_RESPONSE,
+        .expected_response_len =
+            sizeof(PUBKEY_test_pubkey_confirm_001_EXPORT_PUBKEY_BYRONPATH_2_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_byronpath_3
+    {
+        .name = "Export_pubkey_byronpath_3",
+        .data = PUBKEY_test_pubkey_confirm_002_EXPORT_PUBKEY_BYRONPATH_3_APDU,
+        .data_len = sizeof(PUBKEY_test_pubkey_confirm_002_EXPORT_PUBKEY_BYRONPATH_3_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_002_EXPORT_PUBKEY_BYRONPATH_3_EXPECTED_RESPONSE,
+        .expected_response_len =
+            sizeof(PUBKEY_test_pubkey_confirm_002_EXPORT_PUBKEY_BYRONPATH_3_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_shelley_usual_path_0
+    {
+        .name = "Export_pubkey_shelley_usual_path_0",
+        .data = PUBKEY_test_pubkey_confirm_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_APDU,
+        .data_len = sizeof(PUBKEY_test_pubkey_confirm_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_shelley_usual_path_1
+    {
+        .name = "Export_pubkey_shelley_usual_path_1",
+        .data = PUBKEY_test_pubkey_confirm_004_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_APDU,
+        .data_len = sizeof(PUBKEY_test_pubkey_confirm_004_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_004_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_004_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_shelley_usual_path_2
+    {
+        .name = "Export_pubkey_shelley_usual_path_2",
+        .data = PUBKEY_test_pubkey_confirm_005_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_APDU,
+        .data_len = sizeof(PUBKEY_test_pubkey_confirm_005_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_005_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_005_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_shelley_usual_path_3
+    {
+        .name = "Export_pubkey_shelley_usual_path_3",
+        .data = PUBKEY_test_pubkey_confirm_006_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_APDU,
+        .data_len = sizeof(PUBKEY_test_pubkey_confirm_006_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_006_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_006_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_shelley_usual_path_4
+    {
+        .name = "Export_pubkey_shelley_usual_path_4",
+        .data = PUBKEY_test_pubkey_confirm_007_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_4_APDU,
+        .data_len = sizeof(PUBKEY_test_pubkey_confirm_007_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_4_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_007_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_4_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_007_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_4_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_shelley_usual_path_5
+    {
+        .name = "Export_pubkey_shelley_usual_path_5",
+        .data = PUBKEY_test_pubkey_confirm_008_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_5_APDU,
+        .data_len = sizeof(PUBKEY_test_pubkey_confirm_008_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_5_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_008_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_5_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_008_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_5_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_shelley_usual_path_6
+    {
+        .name = "Export_pubkey_shelley_usual_path_6",
+        .data = PUBKEY_test_pubkey_confirm_009_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_6_APDU,
+        .data_len = sizeof(PUBKEY_test_pubkey_confirm_009_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_6_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_009_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_6_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_009_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_6_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_shelley_unusual_path_1
+    {
+        .name = "Export_pubkey_shelley_unusual_path_1",
+        .data = PUBKEY_test_pubkey_confirm_010_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_1_APDU,
+        .data_len =
+            sizeof(PUBKEY_test_pubkey_confirm_010_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_1_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_010_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_1_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_010_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_1_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_shelley_unusual_path_2
+    {
+        .name = "Export_pubkey_shelley_unusual_path_2",
+        .data = PUBKEY_test_pubkey_confirm_011_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_2_APDU,
+        .data_len =
+            sizeof(PUBKEY_test_pubkey_confirm_011_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_2_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_011_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_2_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_011_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_2_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_shelley_unusual_path_3
+    {
+        .name = "Export_pubkey_shelley_unusual_path_3",
+        .data = PUBKEY_test_pubkey_confirm_012_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_3_APDU,
+        .data_len =
+            sizeof(PUBKEY_test_pubkey_confirm_012_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_3_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_012_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_3_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_012_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_3_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_shelley_unusual_path_4
+    {
+        .name = "Export_pubkey_shelley_unusual_path_4",
+        .data = PUBKEY_test_pubkey_confirm_013_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_4_APDU,
+        .data_len =
+            sizeof(PUBKEY_test_pubkey_confirm_013_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_4_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_013_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_4_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_013_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_4_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_shelley_unusual_path_5
+    {
+        .name = "Export_pubkey_shelley_unusual_path_5",
+        .data = PUBKEY_test_pubkey_confirm_014_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_5_APDU,
+        .data_len =
+            sizeof(PUBKEY_test_pubkey_confirm_014_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_5_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_014_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_5_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_014_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_5_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_shelley_unusual_path_6
+    {
+        .name = "Export_pubkey_shelley_unusual_path_6",
+        .data = PUBKEY_test_pubkey_confirm_015_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_6_APDU,
+        .data_len =
+            sizeof(PUBKEY_test_pubkey_confirm_015_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_6_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_015_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_6_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_015_EXPORT_PUBKEY_SHELLEY_UNUSUAL_PATH_6_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_multisig_account_path_0
+    {
+        .name = "Export_pubkey_multisig_account_path_0",
+        .data = PUBKEY_test_pubkey_confirm_016_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_APDU,
+        .data_len =
+            sizeof(PUBKEY_test_pubkey_confirm_016_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_016_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_016_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_multisig_payment_path_0
+    {
+        .name = "Export_pubkey_multisig_payment_path_0",
+        .data = PUBKEY_test_pubkey_confirm_017_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_APDU,
+        .data_len =
+            sizeof(PUBKEY_test_pubkey_confirm_017_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_017_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_017_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_multisig_staking_path_0
+    {
+        .name = "Export_pubkey_multisig_staking_path_0",
+        .data = PUBKEY_test_pubkey_confirm_018_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_APDU,
+        .data_len =
+            sizeof(PUBKEY_test_pubkey_confirm_018_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_018_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_018_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_cold_case
+    {
+        .name = "Export_pubkey_cold_case",
+        .data = PUBKEY_test_pubkey_confirm_019_EXPORT_PUBKEY_COLD_CASE_APDU,
+        .data_len = sizeof(PUBKEY_test_pubkey_confirm_019_EXPORT_PUBKEY_COLD_CASE_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_019_EXPORT_PUBKEY_COLD_CASE_EXPECTED_RESPONSE,
+        .expected_response_len =
+            sizeof(PUBKEY_test_pubkey_confirm_019_EXPORT_PUBKEY_COLD_CASE_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_cold_unusual_case
+    {
+        .name = "Export_pubkey_cold_unusual_case",
+        .data = PUBKEY_test_pubkey_confirm_020_EXPORT_PUBKEY_COLD_UNUSUAL_CASE_APDU,
+        .data_len = sizeof(PUBKEY_test_pubkey_confirm_020_EXPORT_PUBKEY_COLD_UNUSUAL_CASE_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_020_EXPORT_PUBKEY_COLD_UNUSUAL_CASE_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_020_EXPORT_PUBKEY_COLD_UNUSUAL_CASE_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_CVote_keys_path_2
+    {
+        .name = "Export_pubkey_CVote_keys_path_2",
+        .data = PUBKEY_test_pubkey_confirm_021_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_APDU,
+        .data_len = sizeof(PUBKEY_test_pubkey_confirm_021_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_021_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_021_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_CVote_keys_path_1
+    {
+        .name = "Export_pubkey_CVote_keys_path_1",
+        .data = PUBKEY_test_pubkey_confirm_022_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_APDU,
+        .data_len = sizeof(PUBKEY_test_pubkey_confirm_022_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_022_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_022_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_CVote_keys_path_3
+    {
+        .name = "Export_pubkey_CVote_keys_path_3",
+        .data = PUBKEY_test_pubkey_confirm_023_EXPORT_PUBKEY_CVOTE_KEYS_PATH_3_APDU,
+        .data_len = sizeof(PUBKEY_test_pubkey_confirm_023_EXPORT_PUBKEY_CVOTE_KEYS_PATH_3_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_023_EXPORT_PUBKEY_CVOTE_KEYS_PATH_3_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_023_EXPORT_PUBKEY_CVOTE_KEYS_PATH_3_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_drep_key_path_0
+    {
+        .name = "Export_pubkey_drep_key_path_0",
+        .data = PUBKEY_test_pubkey_confirm_024_EXPORT_PUBKEY_DREP_KEY_PATH_0_APDU,
+        .data_len = sizeof(PUBKEY_test_pubkey_confirm_024_EXPORT_PUBKEY_DREP_KEY_PATH_0_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_024_EXPORT_PUBKEY_DREP_KEY_PATH_0_EXPECTED_RESPONSE,
+        .expected_response_len =
+            sizeof(PUBKEY_test_pubkey_confirm_024_EXPORT_PUBKEY_DREP_KEY_PATH_0_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_multisig_drep_key_path_0
+    {
+        .name = "Export_pubkey_multisig_drep_key_path_0",
+        .data = PUBKEY_test_pubkey_confirm_025_EXPORT_PUBKEY_MULTISIG_DREP_KEY_PATH_0_APDU,
+        .data_len =
+            sizeof(PUBKEY_test_pubkey_confirm_025_EXPORT_PUBKEY_MULTISIG_DREP_KEY_PATH_0_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_025_EXPORT_PUBKEY_MULTISIG_DREP_KEY_PATH_0_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_025_EXPORT_PUBKEY_MULTISIG_DREP_KEY_PATH_0_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_committee_cold_key_path_0
+    {
+        .name = "Export_pubkey_committee_cold_key_path_0",
+        .data = PUBKEY_test_pubkey_confirm_026_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_APDU,
+        .data_len =
+            sizeof(PUBKEY_test_pubkey_confirm_026_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_026_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_026_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_committee_hot_key_path_0
+    {
+        .name = "Export_pubkey_committee_hot_key_path_0",
+        .data = PUBKEY_test_pubkey_confirm_027_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_APDU,
+        .data_len =
+            sizeof(PUBKEY_test_pubkey_confirm_027_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_027_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_027_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm >
+    // Export_pubkey_mint_key_path_0
+    {
+        .name = "Export_pubkey_mint_key_path_0",
+        .data = PUBKEY_test_pubkey_confirm_028_EXPORT_PUBKEY_MINT_KEY_PATH_0_APDU,
+        .data_len = sizeof(PUBKEY_test_pubkey_confirm_028_EXPORT_PUBKEY_MINT_KEY_PATH_0_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_028_EXPORT_PUBKEY_MINT_KEY_PATH_0_EXPECTED_RESPONSE,
+        .expected_response_len =
+            sizeof(PUBKEY_test_pubkey_confirm_028_EXPORT_PUBKEY_MINT_KEY_PATH_0_EXPECTED_RESPONSE),
+        .silent_export_enabled = false,
+        .expected_policy = POLICY_SHOW,
+    },
 };
 
 static const pubkey_fixture_t PUBKEY_FIXTURES_TEST_PUBKEY_WITHOUT_CONFIRMATION[] = {
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_without_confirmation > Export_pubkey_shelley_usual_path_0
-{
-    .name = "Export_pubkey_shelley_usual_path_0",
-    .data = PUBKEY_test_pubkey_without_confirmation_000_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_without_confirmation_000_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_without_confirmation_000_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_without_confirmation_000_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_EXPECTED_RESPONSE),
-    .silent_export_enabled = true,
-    .expected_policy = POLICY_HIDE,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_without_confirmation > Export_pubkey_shelley_usual_path_1
-{
-    .name = "Export_pubkey_shelley_usual_path_1",
-    .data = PUBKEY_test_pubkey_without_confirmation_001_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_without_confirmation_001_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_without_confirmation_001_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_without_confirmation_001_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_EXPECTED_RESPONSE),
-    .silent_export_enabled = true,
-    .expected_policy = POLICY_HIDE,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_without_confirmation > Export_pubkey_shelley_usual_path_2
-{
-    .name = "Export_pubkey_shelley_usual_path_2",
-    .data = PUBKEY_test_pubkey_without_confirmation_002_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_without_confirmation_002_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_without_confirmation_002_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_without_confirmation_002_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_EXPECTED_RESPONSE),
-    .silent_export_enabled = true,
-    .expected_policy = POLICY_HIDE,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_without_confirmation > Export_pubkey_shelley_usual_path_3
-{
-    .name = "Export_pubkey_shelley_usual_path_3",
-    .data = PUBKEY_test_pubkey_without_confirmation_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_without_confirmation_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_without_confirmation_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_without_confirmation_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_EXPECTED_RESPONSE),
-    .silent_export_enabled = true,
-    .expected_policy = POLICY_HIDE,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_without_confirmation > Export_pubkey_multisig_account_path_0
-{
-    .name = "Export_pubkey_multisig_account_path_0",
-    .data = PUBKEY_test_pubkey_without_confirmation_004_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_without_confirmation_004_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_without_confirmation_004_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_without_confirmation_004_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_EXPECTED_RESPONSE),
-    .silent_export_enabled = true,
-    .expected_policy = POLICY_HIDE,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_without_confirmation > Export_pubkey_multisig_payment_path_0
-{
-    .name = "Export_pubkey_multisig_payment_path_0",
-    .data = PUBKEY_test_pubkey_without_confirmation_005_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_without_confirmation_005_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_without_confirmation_005_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_without_confirmation_005_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_EXPECTED_RESPONSE),
-    .silent_export_enabled = true,
-    .expected_policy = POLICY_HIDE,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_without_confirmation > Export_pubkey_multisig_staking_path_0
-{
-    .name = "Export_pubkey_multisig_staking_path_0",
-    .data = PUBKEY_test_pubkey_without_confirmation_006_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_without_confirmation_006_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_without_confirmation_006_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_without_confirmation_006_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_EXPECTED_RESPONSE),
-    .silent_export_enabled = true,
-    .expected_policy = POLICY_HIDE,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_without_confirmation > Export_pubkey_CVote_keys_path_2
-{
-    .name = "Export_pubkey_CVote_keys_path_2",
-    .data = PUBKEY_test_pubkey_without_confirmation_007_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_without_confirmation_007_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_without_confirmation_007_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_without_confirmation_007_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_EXPECTED_RESPONSE),
-    .silent_export_enabled = true,
-    .expected_policy = POLICY_HIDE,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_without_confirmation > Export_pubkey_CVote_keys_path_1
-{
-    .name = "Export_pubkey_CVote_keys_path_1",
-    .data = PUBKEY_test_pubkey_without_confirmation_008_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_without_confirmation_008_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_without_confirmation_008_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_without_confirmation_008_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_EXPECTED_RESPONSE),
-    .silent_export_enabled = true,
-    .expected_policy = POLICY_HIDE,
-},
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_without_confirmation >
+    // Export_pubkey_shelley_usual_path_0
+    {
+        .name = "Export_pubkey_shelley_usual_path_0",
+        .data = PUBKEY_test_pubkey_without_confirmation_000_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_APDU,
+        .data_len = sizeof(
+            PUBKEY_test_pubkey_without_confirmation_000_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_without_confirmation_000_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_without_confirmation_000_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_0_EXPECTED_RESPONSE),
+        .silent_export_enabled = true,
+        .expected_policy = POLICY_HIDE,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_without_confirmation >
+    // Export_pubkey_shelley_usual_path_1
+    {
+        .name = "Export_pubkey_shelley_usual_path_1",
+        .data = PUBKEY_test_pubkey_without_confirmation_001_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_APDU,
+        .data_len = sizeof(
+            PUBKEY_test_pubkey_without_confirmation_001_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_without_confirmation_001_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_without_confirmation_001_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_1_EXPECTED_RESPONSE),
+        .silent_export_enabled = true,
+        .expected_policy = POLICY_HIDE,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_without_confirmation >
+    // Export_pubkey_shelley_usual_path_2
+    {
+        .name = "Export_pubkey_shelley_usual_path_2",
+        .data = PUBKEY_test_pubkey_without_confirmation_002_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_APDU,
+        .data_len = sizeof(
+            PUBKEY_test_pubkey_without_confirmation_002_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_without_confirmation_002_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_without_confirmation_002_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_2_EXPECTED_RESPONSE),
+        .silent_export_enabled = true,
+        .expected_policy = POLICY_HIDE,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_without_confirmation >
+    // Export_pubkey_shelley_usual_path_3
+    {
+        .name = "Export_pubkey_shelley_usual_path_3",
+        .data = PUBKEY_test_pubkey_without_confirmation_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_APDU,
+        .data_len = sizeof(
+            PUBKEY_test_pubkey_without_confirmation_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_without_confirmation_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_without_confirmation_003_EXPORT_PUBKEY_SHELLEY_USUAL_PATH_3_EXPECTED_RESPONSE),
+        .silent_export_enabled = true,
+        .expected_policy = POLICY_HIDE,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_without_confirmation >
+    // Export_pubkey_multisig_account_path_0
+    {
+        .name = "Export_pubkey_multisig_account_path_0",
+        .data =
+            PUBKEY_test_pubkey_without_confirmation_004_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_APDU,
+        .data_len = sizeof(
+            PUBKEY_test_pubkey_without_confirmation_004_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_without_confirmation_004_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_without_confirmation_004_EXPORT_PUBKEY_MULTISIG_ACCOUNT_PATH_0_EXPECTED_RESPONSE),
+        .silent_export_enabled = true,
+        .expected_policy = POLICY_HIDE,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_without_confirmation >
+    // Export_pubkey_multisig_payment_path_0
+    {
+        .name = "Export_pubkey_multisig_payment_path_0",
+        .data =
+            PUBKEY_test_pubkey_without_confirmation_005_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_APDU,
+        .data_len = sizeof(
+            PUBKEY_test_pubkey_without_confirmation_005_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_without_confirmation_005_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_without_confirmation_005_EXPORT_PUBKEY_MULTISIG_PAYMENT_PATH_0_EXPECTED_RESPONSE),
+        .silent_export_enabled = true,
+        .expected_policy = POLICY_HIDE,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_without_confirmation >
+    // Export_pubkey_multisig_staking_path_0
+    {
+        .name = "Export_pubkey_multisig_staking_path_0",
+        .data =
+            PUBKEY_test_pubkey_without_confirmation_006_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_APDU,
+        .data_len = sizeof(
+            PUBKEY_test_pubkey_without_confirmation_006_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_without_confirmation_006_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_without_confirmation_006_EXPORT_PUBKEY_MULTISIG_STAKING_PATH_0_EXPECTED_RESPONSE),
+        .silent_export_enabled = true,
+        .expected_policy = POLICY_HIDE,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_without_confirmation >
+    // Export_pubkey_CVote_keys_path_2
+    {
+        .name = "Export_pubkey_CVote_keys_path_2",
+        .data = PUBKEY_test_pubkey_without_confirmation_007_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_APDU,
+        .data_len = sizeof(
+            PUBKEY_test_pubkey_without_confirmation_007_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_without_confirmation_007_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_without_confirmation_007_EXPORT_PUBKEY_CVOTE_KEYS_PATH_2_EXPECTED_RESPONSE),
+        .silent_export_enabled = true,
+        .expected_policy = POLICY_HIDE,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_without_confirmation >
+    // Export_pubkey_CVote_keys_path_1
+    {
+        .name = "Export_pubkey_CVote_keys_path_1",
+        .data = PUBKEY_test_pubkey_without_confirmation_008_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_APDU,
+        .data_len = sizeof(
+            PUBKEY_test_pubkey_without_confirmation_008_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_without_confirmation_008_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_without_confirmation_008_EXPORT_PUBKEY_CVOTE_KEYS_PATH_1_EXPECTED_RESPONSE),
+        .silent_export_enabled = true,
+        .expected_policy = POLICY_HIDE,
+    },
 };
 
 static const pubkey_fixture_t PUBKEY_FIXTURES_TEST_PUBKEY_CONFIRM_EVEN_WITH_SILENT_EXPORT[] = {
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm_even_with_silent_export > Export_pubkey_drep_key_path_0_silent
-{
-    .name = "Export_pubkey_drep_key_path_0_silent",
-    .data = PUBKEY_test_pubkey_confirm_even_with_silent_export_000_EXPORT_PUBKEY_DREP_KEY_PATH_0_SILENT_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_even_with_silent_export_000_EXPORT_PUBKEY_DREP_KEY_PATH_0_SILENT_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_even_with_silent_export_000_EXPORT_PUBKEY_DREP_KEY_PATH_0_SILENT_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_even_with_silent_export_000_EXPORT_PUBKEY_DREP_KEY_PATH_0_SILENT_EXPECTED_RESPONSE),
-    .silent_export_enabled = true,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm_even_with_silent_export > Export_pubkey_committee_cold_key_path_0_silent
-{
-    .name = "Export_pubkey_committee_cold_key_path_0_silent",
-    .data = PUBKEY_test_pubkey_confirm_even_with_silent_export_001_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_SILENT_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_even_with_silent_export_001_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_SILENT_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_even_with_silent_export_001_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_SILENT_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_even_with_silent_export_001_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_SILENT_EXPECTED_RESPONSE),
-    .silent_export_enabled = true,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm_even_with_silent_export > Export_pubkey_committee_hot_key_path_0_silent
-{
-    .name = "Export_pubkey_committee_hot_key_path_0_silent",
-    .data = PUBKEY_test_pubkey_confirm_even_with_silent_export_002_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_SILENT_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_even_with_silent_export_002_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_SILENT_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_even_with_silent_export_002_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_SILENT_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_even_with_silent_export_002_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_SILENT_EXPECTED_RESPONSE),
-    .silent_export_enabled = true,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm_even_with_silent_export > Export_pubkey_mint_key_path_0_silent
-{
-    .name = "Export_pubkey_mint_key_path_0_silent",
-    .data = PUBKEY_test_pubkey_confirm_even_with_silent_export_003_EXPORT_PUBKEY_MINT_KEY_PATH_0_SILENT_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_even_with_silent_export_003_EXPORT_PUBKEY_MINT_KEY_PATH_0_SILENT_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_even_with_silent_export_003_EXPORT_PUBKEY_MINT_KEY_PATH_0_SILENT_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_even_with_silent_export_003_EXPORT_PUBKEY_MINT_KEY_PATH_0_SILENT_EXPECTED_RESPONSE),
-    .silent_export_enabled = true,
-    .expected_policy = POLICY_SHOW,
-},
-// Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm_even_with_silent_export > Export_pubkey_cold_case_silent
-{
-    .name = "Export_pubkey_cold_case_silent",
-    .data = PUBKEY_test_pubkey_confirm_even_with_silent_export_004_EXPORT_PUBKEY_COLD_CASE_SILENT_APDU,
-    .data_len = sizeof(PUBKEY_test_pubkey_confirm_even_with_silent_export_004_EXPORT_PUBKEY_COLD_CASE_SILENT_APDU),
-    .check_expected = SWO_SUCCESS,
-    .expected_response = PUBKEY_test_pubkey_confirm_even_with_silent_export_004_EXPORT_PUBKEY_COLD_CASE_SILENT_EXPECTED_RESPONSE,
-    .expected_response_len = sizeof(PUBKEY_test_pubkey_confirm_even_with_silent_export_004_EXPORT_PUBKEY_COLD_CASE_SILENT_EXPECTED_RESPONSE),
-    .silent_export_enabled = true,
-    .expected_policy = POLICY_SHOW,
-},
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm_even_with_silent_export
+    // > Export_pubkey_drep_key_path_0_silent
+    {
+        .name = "Export_pubkey_drep_key_path_0_silent",
+        .data =
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_000_EXPORT_PUBKEY_DREP_KEY_PATH_0_SILENT_APDU,
+        .data_len = sizeof(
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_000_EXPORT_PUBKEY_DREP_KEY_PATH_0_SILENT_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_000_EXPORT_PUBKEY_DREP_KEY_PATH_0_SILENT_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_000_EXPORT_PUBKEY_DREP_KEY_PATH_0_SILENT_EXPECTED_RESPONSE),
+        .silent_export_enabled = true,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm_even_with_silent_export
+    // > Export_pubkey_committee_cold_key_path_0_silent
+    {
+        .name = "Export_pubkey_committee_cold_key_path_0_silent",
+        .data =
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_001_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_SILENT_APDU,
+        .data_len = sizeof(
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_001_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_SILENT_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_001_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_SILENT_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_001_EXPORT_PUBKEY_COMMITTEE_COLD_KEY_PATH_0_SILENT_EXPECTED_RESPONSE),
+        .silent_export_enabled = true,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm_even_with_silent_export
+    // > Export_pubkey_committee_hot_key_path_0_silent
+    {
+        .name = "Export_pubkey_committee_hot_key_path_0_silent",
+        .data =
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_002_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_SILENT_APDU,
+        .data_len = sizeof(
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_002_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_SILENT_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_002_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_SILENT_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_002_EXPORT_PUBKEY_COMMITTEE_HOT_KEY_PATH_0_SILENT_EXPECTED_RESPONSE),
+        .silent_export_enabled = true,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm_even_with_silent_export
+    // > Export_pubkey_mint_key_path_0_silent
+    {
+        .name = "Export_pubkey_mint_key_path_0_silent",
+        .data =
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_003_EXPORT_PUBKEY_MINT_KEY_PATH_0_SILENT_APDU,
+        .data_len = sizeof(
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_003_EXPORT_PUBKEY_MINT_KEY_PATH_0_SILENT_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_003_EXPORT_PUBKEY_MINT_KEY_PATH_0_SILENT_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_003_EXPORT_PUBKEY_MINT_KEY_PATH_0_SILENT_EXPECTED_RESPONSE),
+        .silent_export_enabled = true,
+        .expected_policy = POLICY_SHOW,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > test_pubkey_confirm_even_with_silent_export
+    // > Export_pubkey_cold_case_silent
+    {
+        .name = "Export_pubkey_cold_case_silent",
+        .data =
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_004_EXPORT_PUBKEY_COLD_CASE_SILENT_APDU,
+        .data_len = sizeof(
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_004_EXPORT_PUBKEY_COLD_CASE_SILENT_APDU),
+        .check_expected = SWO_SUCCESS,
+        .expected_response =
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_004_EXPORT_PUBKEY_COLD_CASE_SILENT_EXPECTED_RESPONSE,
+        .expected_response_len = sizeof(
+            PUBKEY_test_pubkey_confirm_even_with_silent_export_004_EXPORT_PUBKEY_COLD_CASE_SILENT_EXPECTED_RESPONSE),
+        .silent_export_enabled = true,
+        .expected_policy = POLICY_SHOW,
+    },
 };
-

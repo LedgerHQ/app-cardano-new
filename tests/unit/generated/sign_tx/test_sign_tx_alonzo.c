@@ -49,6 +49,36 @@
 // ALONZO Era Tests
 // ======================================================================
 
+static void test_sign_tx_auto_mode_resolves_to_plutus_via_collateral_expert_off(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_AUTO_MODE_RESOLVES_TO_PLUTUS_VIA_COLLATERAL,
+        false);
+}
+
+static void test_sign_tx_auto_mode_resolves_to_plutus_via_collateral_reject_tx_expert_off(
+    void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_AUTO_MODE_RESOLVES_TO_PLUTUS_VIA_COLLATERAL,
+        false);
+}
+
+static void test_sign_tx_auto_mode_resolves_to_plutus_via_collateral_expert_on(void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_AUTO_MODE_RESOLVES_TO_PLUTUS_VIA_COLLATERAL,
+        true);
+}
+
+static void test_sign_tx_auto_mode_resolves_to_plutus_via_collateral_reject_tx_expert_on(
+    void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_AUTO_MODE_RESOLVES_TO_PLUTUS_VIA_COLLATERAL,
+        true);
+}
+
 static void test_sign_tx_with_script_data_hash_expert_off(void **state) {
     (void) state;
     run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_SCRIPT_DATA_HASH, false);
@@ -76,7 +106,8 @@ static void test_sign_tx_with_change_output_as_array_expert_off(void **state) {
 
 static void test_sign_tx_with_change_output_as_array_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_CHANGE_OUTPUT_AS_ARRAY, false);
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_CHANGE_OUTPUT_AS_ARRAY,
+                                           false);
 }
 
 static void test_sign_tx_with_change_output_as_array_expert_on(void **state) {
@@ -86,7 +117,8 @@ static void test_sign_tx_with_change_output_as_array_expert_on(void **state) {
 
 static void test_sign_tx_with_change_output_as_array_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_CHANGE_OUTPUT_AS_ARRAY, true);
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_CHANGE_OUTPUT_AS_ARRAY,
+                                           true);
 }
 
 static void test_sign_tx_with_maximum_warning_count_expert_off(void **state) {
@@ -96,7 +128,8 @@ static void test_sign_tx_with_maximum_warning_count_expert_off(void **state) {
 
 static void test_sign_tx_with_maximum_warning_count_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT, false);
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT,
+                                           false);
 }
 
 static void test_sign_tx_with_maximum_warning_count_expert_on(void **state) {
@@ -106,7 +139,8 @@ static void test_sign_tx_with_maximum_warning_count_expert_on(void **state) {
 
 static void test_sign_tx_with_maximum_warning_count_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT, true);
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MAXIMUM_WARNING_COUNT,
+                                           true);
 }
 
 static void test_sign_tx_with_datum_hash_in_output_as_array_expert_off(void **state) {
@@ -116,7 +150,9 @@ static void test_sign_tx_with_datum_hash_in_output_as_array_expert_off(void **st
 
 static void test_sign_tx_with_datum_hash_in_output_as_array_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY,
+        false);
 }
 
 static void test_sign_tx_with_datum_hash_in_output_as_array_expert_on(void **state) {
@@ -126,127 +162,205 @@ static void test_sign_tx_with_datum_hash_in_output_as_array_expert_on(void **sta
 
 static void test_sign_tx_with_datum_hash_in_output_as_array_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY,
+        true);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_expert_off(void **state) {
+static void test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_FAKENET_BIG_TTL, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_FAKENET_BIG_TTL,
+        false);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_FAKENET_BIG_TTL, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_FAKENET_BIG_TTL,
+        false);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_expert_on(void **state) {
+static void test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_FAKENET_BIG_TTL, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_FAKENET_BIG_TTL,
+        true);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_FAKENET_BIG_TTL, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_FAKENET_BIG_TTL,
+        true);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_base_keyhash_scripthash_fakenet_expert_off(void **state) {
+static void test_sign_tx_with_datum_hash_in_output_base_keyhash_scripthash_fakenet_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_BASE_KEYHASH_SCRIPTHASH_FAKENET, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_BASE_KEYHASH_SCRIPTHASH_FAKENET,
+        false);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_base_keyhash_scripthash_fakenet_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_datum_hash_in_output_base_keyhash_scripthash_fakenet_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_BASE_KEYHASH_SCRIPTHASH_FAKENET, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_BASE_KEYHASH_SCRIPTHASH_FAKENET,
+        false);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_base_keyhash_scripthash_fakenet_expert_on(void **state) {
+static void test_sign_tx_with_datum_hash_in_output_base_keyhash_scripthash_fakenet_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_BASE_KEYHASH_SCRIPTHASH_FAKENET, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_BASE_KEYHASH_SCRIPTHASH_FAKENET,
+        true);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_base_keyhash_scripthash_fakenet_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_datum_hash_in_output_base_keyhash_scripthash_fakenet_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_BASE_KEYHASH_SCRIPTHASH_FAKENET, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_BASE_KEYHASH_SCRIPTHASH_FAKENET,
+        true);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_base_scripthash_scripthash_fakenet_expert_off(void **state) {
+static void test_sign_tx_with_datum_hash_in_output_base_scripthash_scripthash_fakenet_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_BASE_SCRIPTHASH_SCRIPTHASH_FAKENET, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_BASE_SCRIPTHASH_SCRIPTHASH_FAKENET,
+        false);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_base_scripthash_scripthash_fakenet_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_datum_hash_in_output_base_scripthash_scripthash_fakenet_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_BASE_SCRIPTHASH_SCRIPTHASH_FAKENET, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_BASE_SCRIPTHASH_SCRIPTHASH_FAKENET,
+        false);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_base_scripthash_scripthash_fakenet_expert_on(void **state) {
+static void test_sign_tx_with_datum_hash_in_output_base_scripthash_scripthash_fakenet_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_BASE_SCRIPTHASH_SCRIPTHASH_FAKENET, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_BASE_SCRIPTHASH_SCRIPTHASH_FAKENET,
+        true);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_base_scripthash_scripthash_fakenet_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_datum_hash_in_output_base_scripthash_scripthash_fakenet_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_BASE_SCRIPTHASH_SCRIPTHASH_FAKENET, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_BASE_SCRIPTHASH_SCRIPTHASH_FAKENET,
+        true);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_expert_off(void **state) {
+static void
+test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_MAINNET_BIG_TTL_EPOCH_OVER_1000000, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_MAINNET_BIG_TTL_EPOCH_OVER_1000000,
+        false);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_MAINNET_BIG_TTL_EPOCH_OVER_1000000, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_MAINNET_BIG_TTL_EPOCH_OVER_1000000,
+        false);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_expert_on(void **state) {
+static void
+test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_MAINNET_BIG_TTL_EPOCH_OVER_1000000, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_MAINNET_BIG_TTL_EPOCH_OVER_1000000,
+        true);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_MAINNET_BIG_TTL_EPOCH_OVER_1000000, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_MAINNET_BIG_TTL_EPOCH_OVER_1000000,
+        true);
 }
 
 static void test_sign_tx_with_datum_hash_in_output_as_array_with_tokens_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_WITH_TOKENS, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_WITH_TOKENS,
+        false);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_as_array_with_tokens_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_datum_hash_in_output_as_array_with_tokens_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_WITH_TOKENS, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_WITH_TOKENS,
+        false);
 }
 
 static void test_sign_tx_with_datum_hash_in_output_as_array_with_tokens_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_WITH_TOKENS, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_WITH_TOKENS,
+        true);
 }
 
-static void test_sign_tx_with_datum_hash_in_output_as_array_with_tokens_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_datum_hash_in_output_as_array_with_tokens_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_WITH_TOKENS, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_DATUM_HASH_IN_OUTPUT_AS_ARRAY_WITH_TOKENS,
+        true);
 }
 
 static void test_sign_tx_with_missing_datum_hash_in_output_with_tokens_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MISSING_DATUM_HASH_IN_OUTPUT_WITH_TOKENS, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_MISSING_DATUM_HASH_IN_OUTPUT_WITH_TOKENS,
+        false);
 }
 
-static void test_sign_tx_with_missing_datum_hash_in_output_with_tokens_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_missing_datum_hash_in_output_with_tokens_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MISSING_DATUM_HASH_IN_OUTPUT_WITH_TOKENS, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_MISSING_DATUM_HASH_IN_OUTPUT_WITH_TOKENS,
+        false);
 }
 
 static void test_sign_tx_with_missing_datum_hash_in_output_with_tokens_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MISSING_DATUM_HASH_IN_OUTPUT_WITH_TOKENS, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_MISSING_DATUM_HASH_IN_OUTPUT_WITH_TOKENS,
+        true);
 }
 
-static void test_sign_tx_with_missing_datum_hash_in_output_with_tokens_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_missing_datum_hash_in_output_with_tokens_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MISSING_DATUM_HASH_IN_OUTPUT_WITH_TOKENS, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_MISSING_DATUM_HASH_IN_OUTPUT_WITH_TOKENS,
+        true);
 }
 
 static void test_sign_tx_with_collateral_inputs_expert_off(void **state) {
@@ -276,7 +390,8 @@ static void test_sign_tx_with_collateral_inputs_shelley_expert_off(void **state)
 
 static void test_sign_tx_with_collateral_inputs_shelley_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_COLLATERAL_INPUTS_SHELLEY, false);
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_COLLATERAL_INPUTS_SHELLEY,
+                                           false);
 }
 
 static void test_sign_tx_with_collateral_inputs_shelley_expert_on(void **state) {
@@ -286,7 +401,8 @@ static void test_sign_tx_with_collateral_inputs_shelley_expert_on(void **state) 
 
 static void test_sign_tx_with_collateral_inputs_shelley_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_COLLATERAL_INPUTS_SHELLEY, true);
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_COLLATERAL_INPUTS_SHELLEY,
+                                           true);
 }
 
 static void test_sign_tx_with_required_signers_mixed_expert_off(void **state) {
@@ -296,7 +412,8 @@ static void test_sign_tx_with_required_signers_mixed_expert_off(void **state) {
 
 static void test_sign_tx_with_required_signers_mixed_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_REQUIRED_SIGNERS_MIXED, false);
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_REQUIRED_SIGNERS_MIXED,
+                                           false);
 }
 
 static void test_sign_tx_with_required_signers_mixed_expert_on(void **state) {
@@ -306,17 +423,21 @@ static void test_sign_tx_with_required_signers_mixed_expert_on(void **state) {
 
 static void test_sign_tx_with_required_signers_mixed_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_REQUIRED_SIGNERS_MIXED, true);
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_REQUIRED_SIGNERS_MIXED,
+                                           true);
 }
 
 static void test_sign_tx_with_mint_path_in_a_required_signer_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MINT_PATH_IN_A_REQUIRED_SIGNER, false);
+    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MINT_PATH_IN_A_REQUIRED_SIGNER,
+                                 false);
 }
 
 static void test_sign_tx_with_mint_path_in_a_required_signer_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MINT_PATH_IN_A_REQUIRED_SIGNER, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_MINT_PATH_IN_A_REQUIRED_SIGNER,
+        false);
 }
 
 static void test_sign_tx_with_mint_path_in_a_required_signer_expert_on(void **state) {
@@ -326,7 +447,9 @@ static void test_sign_tx_with_mint_path_in_a_required_signer_expert_on(void **st
 
 static void test_sign_tx_with_mint_path_in_a_required_signer_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MINT_PATH_IN_A_REQUIRED_SIGNER, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_MINT_PATH_IN_A_REQUIRED_SIGNER,
+        true);
 }
 
 static void test_sign_tx_with_key_hash_in_stake_credential_expert_off(void **state) {
@@ -336,7 +459,9 @@ static void test_sign_tx_with_key_hash_in_stake_credential_expert_off(void **sta
 
 static void test_sign_tx_with_key_hash_in_stake_credential_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_KEY_HASH_IN_STAKE_CREDENTIAL, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_KEY_HASH_IN_STAKE_CREDENTIAL,
+        false);
 }
 
 static void test_sign_tx_with_key_hash_in_stake_credential_expert_on(void **state) {
@@ -346,17 +471,22 @@ static void test_sign_tx_with_key_hash_in_stake_credential_expert_on(void **stat
 
 static void test_sign_tx_with_key_hash_in_stake_credential_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_KEY_HASH_IN_STAKE_CREDENTIAL, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_KEY_HASH_IN_STAKE_CREDENTIAL,
+        true);
 }
 
 static void test_sign_tx_full_test_for_trezor_feature_parity_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY, false);
+    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY,
+                                 false);
 }
 
 static void test_sign_tx_full_test_for_trezor_feature_parity_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY,
+        false);
 }
 
 static void test_sign_tx_full_test_for_trezor_feature_parity_expert_on(void **state) {
@@ -366,47 +496,65 @@ static void test_sign_tx_full_test_for_trezor_feature_parity_expert_on(void **st
 
 static void test_sign_tx_full_test_for_trezor_feature_parity_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_FULL_TEST_FOR_TREZOR_FEATURE_PARITY,
+        true);
 }
 
 static void test_sign_tx_blind_signing_enabled_without_prompt_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_BLIND_SIGNING_ENABLED_WITHOUT_PROMPT, false);
+    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_BLIND_SIGNING_ENABLED_WITHOUT_PROMPT,
+                                 false);
 }
 
 static void test_sign_tx_blind_signing_enabled_without_prompt_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_BLIND_SIGNING_ENABLED_WITHOUT_PROMPT, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_BLIND_SIGNING_ENABLED_WITHOUT_PROMPT,
+        false);
 }
 
 static void test_sign_tx_blind_signing_enabled_without_prompt_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_BLIND_SIGNING_ENABLED_WITHOUT_PROMPT, true);
+    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_BLIND_SIGNING_ENABLED_WITHOUT_PROMPT,
+                                 true);
 }
 
 static void test_sign_tx_blind_signing_enabled_without_prompt_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_BLIND_SIGNING_ENABLED_WITHOUT_PROMPT, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_BLIND_SIGNING_ENABLED_WITHOUT_PROMPT,
+        true);
 }
 
 static void test_sign_tx_with_multidelegation_keys_in_all_tx_elements_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MULTIDELEGATION_KEYS_IN_ALL_TX_ELEMENTS, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_MULTIDELEGATION_KEYS_IN_ALL_TX_ELEMENTS,
+        false);
 }
 
-static void test_sign_tx_with_multidelegation_keys_in_all_tx_elements_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_multidelegation_keys_in_all_tx_elements_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MULTIDELEGATION_KEYS_IN_ALL_TX_ELEMENTS, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_MULTIDELEGATION_KEYS_IN_ALL_TX_ELEMENTS,
+        false);
 }
 
 static void test_sign_tx_with_multidelegation_keys_in_all_tx_elements_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MULTIDELEGATION_KEYS_IN_ALL_TX_ELEMENTS, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_MULTIDELEGATION_KEYS_IN_ALL_TX_ELEMENTS,
+        true);
 }
 
-static void test_sign_tx_with_multidelegation_keys_in_all_tx_elements_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_multidelegation_keys_in_all_tx_elements_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_ALONZO_SIGN_TX_WITH_MULTIDELEGATION_KEYS_IN_ALL_TX_ELEMENTS, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_ALONZO_SIGN_TX_WITH_MULTIDELEGATION_KEYS_IN_ALL_TX_ELEMENTS,
+        true);
 }
 
 // ======================================================================
@@ -415,6 +563,12 @@ static void test_sign_tx_with_multidelegation_keys_in_all_tx_elements_reject_tx_
 
 int main(void) {
     const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_sign_tx_auto_mode_resolves_to_plutus_via_collateral_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_auto_mode_resolves_to_plutus_via_collateral_reject_tx_expert_off),
+        cmocka_unit_test(test_sign_tx_auto_mode_resolves_to_plutus_via_collateral_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_auto_mode_resolves_to_plutus_via_collateral_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_script_data_hash_expert_off),
         cmocka_unit_test(test_sign_tx_with_script_data_hash_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_script_data_hash_expert_on),
@@ -431,30 +585,49 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_expert_on),
         cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_expert_off),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_expert_on),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_base_keyhash_scripthash_fakenet_expert_off),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_base_keyhash_scripthash_fakenet_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_base_keyhash_scripthash_fakenet_expert_on),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_base_keyhash_scripthash_fakenet_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_base_scripthash_scripthash_fakenet_expert_off),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_base_scripthash_scripthash_fakenet_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_base_scripthash_scripthash_fakenet_expert_on),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_base_scripthash_scripthash_fakenet_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_expert_off),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_expert_on),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_as_array_fakenet_big_ttl_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_base_keyhash_scripthash_fakenet_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_base_keyhash_scripthash_fakenet_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_base_keyhash_scripthash_fakenet_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_base_keyhash_scripthash_fakenet_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_base_scripthash_scripthash_fakenet_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_base_scripthash_scripthash_fakenet_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_base_scripthash_scripthash_fakenet_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_base_scripthash_scripthash_fakenet_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_as_array_mainnet_big_ttl_epoch_over_1000000_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_with_tokens_expert_off),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_with_tokens_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_as_array_with_tokens_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_with_tokens_expert_on),
-        cmocka_unit_test(test_sign_tx_with_datum_hash_in_output_as_array_with_tokens_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_datum_hash_in_output_as_array_with_tokens_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_missing_datum_hash_in_output_with_tokens_expert_off),
-        cmocka_unit_test(test_sign_tx_with_missing_datum_hash_in_output_with_tokens_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_missing_datum_hash_in_output_with_tokens_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_missing_datum_hash_in_output_with_tokens_expert_on),
-        cmocka_unit_test(test_sign_tx_with_missing_datum_hash_in_output_with_tokens_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_missing_datum_hash_in_output_with_tokens_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_collateral_inputs_expert_off),
         cmocka_unit_test(test_sign_tx_with_collateral_inputs_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_collateral_inputs_expert_on),
@@ -484,9 +657,15 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_blind_signing_enabled_without_prompt_expert_on),
         cmocka_unit_test(test_sign_tx_blind_signing_enabled_without_prompt_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_multidelegation_keys_in_all_tx_elements_expert_off),
-        cmocka_unit_test(test_sign_tx_with_multidelegation_keys_in_all_tx_elements_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_multidelegation_keys_in_all_tx_elements_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_multidelegation_keys_in_all_tx_elements_expert_on),
-        cmocka_unit_test(test_sign_tx_with_multidelegation_keys_in_all_tx_elements_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_multidelegation_keys_in_all_tx_elements_reject_tx_expert_on),
     };
-    return _cmocka_run_group_tests("test_sign_tx_alonzo", tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);
+    return _cmocka_run_group_tests("test_sign_tx_alonzo",
+                                   tests,
+                                   ARRAY_LEN(tests),
+                                   NULL,
+                                   assert_no_pending_apdu_response);
 }

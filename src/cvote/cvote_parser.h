@@ -25,7 +25,7 @@ typedef struct {
     uint16_t remaining_delegations;
     cvote_credential_t staking_credential;  // CVote-specific credential (KEY_HASH = 32-byte pubkey)
     cvote_credential_t vote_credential;     // CVote-specific credential (KEY_HASH = 32-byte pubkey)
-    tx_output_destination_t destination;     // Address params (by value) or raw buffer pointer
+    tx_output_destination_t destination;    // Address params (by value) or raw buffer pointer
     uint64_t nonce;
     uint64_t voting_purpose;
 
@@ -45,8 +45,8 @@ typedef struct {
     } ui_show;
 
     // UI delegation tracking (all modes)
-    uint16_t ui_delegations_total;           // Total delegation count
-    uint16_t ui_delegations_shown;           // Delegations displayed so far
+    uint16_t ui_delegations_total;  // Total delegation count
+    uint16_t ui_delegations_shown;  // Delegations displayed so far
 
     // UI streaming state - only populated when ui_streaming.on == true
     // Streaming is forced when there are too many UI pairs for a single review
@@ -54,8 +54,8 @@ typedef struct {
     // - ui_streaming.on == true IFF (too many UI pairs)
     // - NBGL streaming started IFF review_started == true
     struct {
-        bool on;                             // Streaming mode forced (too many pairs)
-        bool review_started;                 // NBGL streaming review session started
+        bool on;              // Streaming mode forced (too many pairs)
+        bool review_started;  // NBGL streaming review session started
     } ui_streaming;
 
     // State machine for CVote aux data processing
@@ -70,8 +70,7 @@ bool buffer_read_cvote_credential(buffer_t *buf, cvote_credential_t *credential)
 // For DESTINATION_DEVICE_OWNED, params are parsed in place from APDU-owned buffer
 // and must be copied by the caller before reset if longer lifetime is needed.
 // For DESTINATION_THIRD_PARTY, destination.address points to raw buffer.
-cvote_parser_status_t cvote_parse_destination(buffer_t *buf,
-                                              tx_output_destination_t *destination);
+cvote_parser_status_t cvote_parse_destination(buffer_t *buf, tx_output_destination_t *destination);
 
 // Parse CVote init from global context raw_cvote_init_data into cvote_aux_data structure
 // Credentials and addresses point into the persistent raw_cvote_init_data buffer

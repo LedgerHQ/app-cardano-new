@@ -26,28 +26,34 @@ typedef enum {
 #define MAX_MINT_ASSET_NAME_LENGTH 32
 
 typedef struct {
-    const uint8_t* txHash;
+    const uint8_t *txHash;
     uint32_t index;
 } tx_input_t;
 
 typedef struct {
-    const uint8_t* policyId;   // set by caller from outer asset group context, not parsed here
-    const uint8_t* assetName;
+    const uint8_t *policyId;  // set by caller from outer asset group context, not parsed here
+    const uint8_t *assetName;
     uint8_t assetNameLen;
     int64_t amount;
 } mint_token_t;
 
 typedef struct {
-    const uint8_t* policyId;
+    const uint8_t *policyId;
     uint16_t numTokens;
 } mint_asset_group_t;
 
 typedef enum {
-    SIGN_TX_SIGNINGMODE_ORDINARY_TX = 3,
+    SIGN_TX_SIGNINGMODE_ORDINARY = 3,
     SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER = 4,
     SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR = 5,
-    SIGN_TX_SIGNINGMODE_MULTISIG_TX = 6,
-    SIGN_TX_SIGNINGMODE_PLUTUS_TX = 7,
+    SIGN_TX_SIGNINGMODE_MULTISIG = 6,
+    SIGN_TX_SIGNINGMODE_PLUTUS = 7,
+    SIGN_TX_SIGNINGMODE_UNRESTRICTED = 9,
+    // AUTO is a client-side hint: the device infers the concrete mode from the
+    // tx body fields present in the init APDU.  It is replaced by a concrete
+    // mode before any security-policy check runs; no policy function ever sees
+    // this value.
+    SIGN_TX_SIGNINGMODE_AUTO = 8,
 } sign_tx_signingmode_t;
 
 // Transaction parameters parsed from SIGN_TX INIT APDU.
@@ -97,7 +103,7 @@ typedef struct {
     required_signer_type_t type;
     union {
         bip44_path_t keyPath;
-        const uint8_t* keyHash;
+        const uint8_t *keyHash;
     };
 } required_signer_t;
 
@@ -122,11 +128,12 @@ typedef struct {
     ext_credential_t poolCredential;
     pool_id_t poolId;
     ext_credential_t hotCredential;
-    const uint8_t* poolKeyHash;
-    const uint8_t* combinedDelegPoolKeyHash;
+    const uint8_t *poolKeyHash;
+    const uint8_t *combinedDelegPoolKeyHash;
     ext_drep_t drep;
     uint64_t deposit;
     uint64_t retirementEpoch;
     anchor_t anchor;  // For committee resign, DRep registration/update
-    pool_registration_data_t poolRegistration;  // valid only when type == CERTIFICATE_STAKE_POOL_REGISTRATION
+    pool_registration_data_t
+        poolRegistration;  // valid only when type == CERTIFICATE_STAKE_POOL_REGISTRATION
 } certificate_data_t;

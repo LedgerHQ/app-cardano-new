@@ -4,11 +4,10 @@
 import re
 from pathlib import Path
 
-
 from tests.unit.generators.common import (
     read_file_safe,
-    write_generated_c_file,
     sanitize_c_identifier,
+    write_generated_c_file,
 )
 from tests.unit.generators.paths import GENERATED_DERIVE_ADDRESS_DIR
 
@@ -84,7 +83,7 @@ static void run_deny_fixture(const derive_address_fixture_t *fixture) {
     TRACE("Running deny fixture: %s", fixture->name);
     apdu_response_begin(INS_DERIVE_ADDRESS);
     handler_derive_address(&deny_fixture_buffer.sdk_buffer, fixture->p1);
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_read_buffer_unchanged_and_cleanup(&deny_fixture_buffer, fixture->data);
     assert_int_equal(g_last_response_swo, fixture->check_expected);
 }
@@ -97,9 +96,7 @@ def _build_test_functions(fixture_names: list[str]) -> tuple[str, list[str]]:
     test_function_names: list[str] = []
 
     for idx, fixture_name in enumerate(fixture_names):
-        sanitized = sanitize_c_identifier(
-            fixture_name, uppercase=False, handle_leading_digit=True
-        )
+        sanitized = sanitize_c_identifier(fixture_name, uppercase=False, handle_leading_digit=True)
         test_function_name = f"test_derive_address_deny_{idx}_{sanitized}"
 
         test_functions.append(
@@ -114,9 +111,7 @@ def _build_test_functions(fixture_names: list[str]) -> tuple[str, list[str]]:
 
 
 def _build_main_function(test_function_names: list[str]) -> str:
-    registrations = ",\n        ".join(
-        f"cmocka_unit_test({name})" for name in test_function_names
-    )
+    registrations = ",\n        ".join(f"cmocka_unit_test({name})" for name in test_function_names)
 
     return (
         "int main(void) {\n"
@@ -130,18 +125,14 @@ def _build_main_function(test_function_names: list[str]) -> str:
 
 
 def generate_address_derivation_deny_test_runners() -> int:
-    fixture_header_path = (
-        GENERATED_DERIVE_ADDRESS_DIR / "test_derive_address_fixtures_deny.h"
-    )
+    fixture_header_path = GENERATED_DERIVE_ADDRESS_DIR / "test_derive_address_fixtures_deny.h"
     test_c_file = GENERATED_DERIVE_ADDRESS_DIR / "test_derive_address_deny_tests.c"
 
     fixture_names = _extract_deny_fixture_names(fixture_header_path)
     test_functions_section, test_function_names = _build_test_functions(fixture_names)
     main_section = _build_main_function(test_function_names)
 
-    complete_file = (
-        _build_test_file_header() + test_functions_section + "\n" + main_section
-    )
+    complete_file = _build_test_file_header() + test_functions_section + "\n" + main_section
 
     write_generated_c_file(test_c_file, complete_file)
 

@@ -48,11 +48,21 @@
 #include "swap_error_code_helpers.h"
 #endif
 
+/* Optional module-specific tracing for debugging.
+ * Enabled via -DTRACE_TX_PROCESSING to trace this module's processing details.
+ */
+#ifdef TRACE_TX_PROCESSING
+#define TRACE_MODULE(...) TRACE("[tx_process] " __VA_ARGS__)
+#else
+#define TRACE_MODULE(...) (void) 0  // Compiled out
+#endif
+
 // ---------------------------------------------------------------------------
 // Context helpers
 // ---------------------------------------------------------------------------
 
-static void tx_processing_mode_validate(const tx_processing_mode_t *mode) __attribute__((nonnull(1)));
+static void tx_processing_mode_validate(const tx_processing_mode_t *mode)
+    __attribute__((nonnull(1)));
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnonnull-compare"
@@ -124,7 +134,7 @@ credential_t credential_for_tx_hash_from_ext_credential(const ext_credential_t *
         default:
             ASSERT(false);
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     return result;
@@ -162,7 +172,7 @@ drep_t drep_for_tx_hash_from_ext_drep(const ext_drep_t *ext_drep) {
         default:
             ASSERT(false);
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     return result;
@@ -214,7 +224,7 @@ voter_t voter_for_tx_hash_from_ext_voter(const ext_voter_t *ext_voter) {
         default:
             ASSERT(false);
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     return voter;
@@ -240,12 +250,14 @@ bool tx_process_inputs(buffer_t *buf, tx_processing_state_t *state) {
         }
 
         if (mode->run_validation) {
-            security_policy_t input_policy = policyForSignTxInput(
-                tx_params->txSigningMode,
-                &parsed_input,
-                state->warning_bits);
+            security_policy_t input_policy =
+                policyForSignTxInput(tx_params->txSigningMode, &parsed_input, state->warning_bits);
 
-            APPLY_POLICY(input_policy, tx_ui_plan_or_render_input, mode, &parsed_input, input_index);
+            APPLY_POLICY(input_policy,
+                         tx_ui_plan_or_render_input,
+                         mode,
+                         &parsed_input,
+                         input_index);
         }
 
         if (mode->run_hash_builder) {
@@ -278,13 +290,17 @@ bool tx_process_collateral_inputs(buffer_t *buf, tx_processing_state_t *state) {
         }
 
         if (mode->run_validation) {
-            security_policy_t collateral_input_policy = policyForSignTxCollateralInput(
-                tx_params->txSigningMode,
-                tx_params->includeTotalCollateral,
-                &parsed_input,
-                state->warning_bits);
+            security_policy_t collateral_input_policy =
+                policyForSignTxCollateralInput(tx_params->txSigningMode,
+                                               tx_params->includeTotalCollateral,
+                                               &parsed_input,
+                                               state->warning_bits);
 
-            APPLY_POLICY(collateral_input_policy, tx_ui_plan_or_render_collateral_input, mode, &parsed_input, input_index);
+            APPLY_POLICY(collateral_input_policy,
+                         tx_ui_plan_or_render_collateral_input,
+                         mode,
+                         &parsed_input,
+                         input_index);
         }
 
         if (mode->run_hash_builder) {
@@ -317,12 +333,16 @@ bool tx_process_reference_inputs(buffer_t *buf, tx_processing_state_t *state) {
         }
 
         if (mode->run_validation) {
-            security_policy_t reference_input_policy = policyForSignTxReferenceInput(
-                tx_params->txSigningMode,
-                &parsed_input,
-                state->warning_bits);
+            security_policy_t reference_input_policy =
+                policyForSignTxReferenceInput(tx_params->txSigningMode,
+                                              &parsed_input,
+                                              state->warning_bits);
 
-            APPLY_POLICY(reference_input_policy, tx_ui_plan_or_render_reference_input, mode, &parsed_input, input_index);
+            APPLY_POLICY(reference_input_policy,
+                         tx_ui_plan_or_render_reference_input,
+                         mode,
+                         &parsed_input,
+                         input_index);
         }
 
         if (mode->run_hash_builder) {
@@ -349,16 +369,12 @@ static bool tx_process_fee(buffer_t *buf, tx_processing_state_t *state) {
     }
 
     if (mode->run_validation) {
-        security_policy_t fee_policy = policyForSignTxFee(
-            tx_params->txSigningMode,
-            parsed_fee,
-            state->warning_bits);
+        security_policy_t fee_policy =
+            policyForSignTxFee(tx_params->txSigningMode, parsed_fee, state->warning_bits);
         APPLY_POLICY(fee_policy, tx_ui_plan_or_render_fee, mode, parsed_fee);
     }
 #ifdef HAVE_SWAP
-    if (mode->run_validation &&
-        G_called_from_swap &&
-        !swap_check_fee_validity(parsed_fee)) {
+    if (mode->run_validation && G_called_from_swap && !swap_check_fee_validity(parsed_fee)) {
         swap_reject_and_exit(SWAP_EC_ERROR_WRONG_FEES, SWAP_APP_CODE_DEFAULT);
     }
 #endif
@@ -405,6 +421,9 @@ static bool tx_process_withdrawals(buffer_t *buf, tx_processing_state_t *state) 
         return true;
     }
 
+    TRACE_MODULE("tx_process_withdrawals: num_withdrawals=%u",
+                 (unsigned) tx_params->num_withdrawals);
+
     if (mode->run_hash_builder) {
         txHashBuilder_enterWithdrawals(&state->hash_builder);
     }
@@ -414,17 +433,32 @@ static bool tx_process_withdrawals(buffer_t *buf, tx_processing_state_t *state) 
     for (uint16_t withdrawal_index = 0; withdrawal_index < tx_params->num_withdrawals;
          withdrawal_index++) {
         withdrawal_t parsed_withdrawal = {0};
+        TRACE_MODULE("withdrawal %u/%u: parsing",
+                     (unsigned) withdrawal_index + 1,
+                     (unsigned) tx_params->num_withdrawals);
         if (!parse_withdrawal(buf, &parsed_withdrawal)) {
+            TRACE_MODULE("withdrawal %u/%u: parse_withdrawal FAILED",
+                         (unsigned) withdrawal_index + 1,
+                         (unsigned) tx_params->num_withdrawals);
             tx_handle_parse_error(SWO_TX_PARSING_FAIL_WITHDRAWALS);
             return false;
         }
+        TRACE_MODULE("withdrawal %u/%u: amount=%llu cred_type=%u",
+                     (unsigned) withdrawal_index + 1,
+                     (unsigned) tx_params->num_withdrawals,
+                     (unsigned long long) parsed_withdrawal.amount,
+                     (unsigned) parsed_withdrawal.stakeCredential.type);
 
         if (mode->run_validation) {
-            security_policy_t withdrawal_policy = policyForSignTxWithdrawal(
-                tx_params->txSigningMode,
-                &parsed_withdrawal.stakeCredential,
-                state->warning_bits);
-            APPLY_POLICY(withdrawal_policy, tx_ui_plan_or_render_withdrawal, mode, &parsed_withdrawal, tx_params->networkId);
+            security_policy_t withdrawal_policy =
+                policyForSignTxWithdrawal(tx_params->txSigningMode,
+                                          &parsed_withdrawal.stakeCredential,
+                                          state->warning_bits);
+            APPLY_POLICY(withdrawal_policy,
+                         tx_ui_plan_or_render_withdrawal,
+                         mode,
+                         &parsed_withdrawal,
+                         tx_params->networkId);
         }
 
         // Optimization: calculate reward address only when needed (canonical check or hashing)
@@ -441,35 +475,36 @@ static bool tx_process_withdrawals(buffer_t *buf, tx_processing_state_t *state) 
                         REWARD_ACCOUNT_LENGTH);
                     break;
                 case EXT_CREDENTIAL_KEY_HASH:
-                    reward_address_length = constructRewardAddressFromHash(
-                        tx_params->networkId,
-                        REWARD_HASH_SOURCE_KEY,
-                        parsed_withdrawal.stakeCredential.keyHash,
-                        ADDRESS_KEY_HASH_LENGTH,
-                        reward_address,
-                        REWARD_ACCOUNT_LENGTH);
+                    reward_address_length =
+                        constructRewardAddressFromHash(tx_params->networkId,
+                                                       REWARD_HASH_SOURCE_KEY,
+                                                       parsed_withdrawal.stakeCredential.keyHash,
+                                                       ADDRESS_KEY_HASH_LENGTH,
+                                                       reward_address,
+                                                       REWARD_ACCOUNT_LENGTH);
                     break;
                 case EXT_CREDENTIAL_SCRIPT_HASH:
-                    reward_address_length = constructRewardAddressFromHash(
-                        tx_params->networkId,
-                        REWARD_HASH_SOURCE_SCRIPT,
-                        parsed_withdrawal.stakeCredential.scriptHash,
-                        SCRIPT_HASH_LENGTH,
-                        reward_address,
-                        REWARD_ACCOUNT_LENGTH);
+                    reward_address_length =
+                        constructRewardAddressFromHash(tx_params->networkId,
+                                                       REWARD_HASH_SOURCE_SCRIPT,
+                                                       parsed_withdrawal.stakeCredential.scriptHash,
+                                                       SCRIPT_HASH_LENGTH,
+                                                       reward_address,
+                                                       REWARD_ACCOUNT_LENGTH);
                     break;
                 // LCOV_EXCL_START
                 default:
                     LEDGER_ASSERT(false, "Unknown withdrawal credential type");
                     break;
-                // LCOV_EXCL_STOP
+                    // LCOV_EXCL_STOP
             }
-            LEDGER_ASSERT(reward_address_length == REWARD_ACCOUNT_LENGTH, "Invalid reward address length");
+            LEDGER_ASSERT(reward_address_length == REWARD_ACCOUNT_LENGTH,
+                          "Invalid reward address length");
 
             ENFORCE_CANONICAL_ORDERING_CHECK(withdrawal_key_tracker,
                                              reward_address,
                                              reward_address_length,
-                                             SWO_TX_PARSING_FAIL_WITHDRAWALS);
+                                             SWO_TX_PARSING_FAIL_CANONICAL_ORDER);
 
             if (mode->run_hash_builder) {
                 txHashBuilder_addWithdrawal(&state->hash_builder,
@@ -478,7 +513,7 @@ static bool tx_process_withdrawals(buffer_t *buf, tx_processing_state_t *state) 
                                             parsed_withdrawal.amount);
             }
 
-            APP_MEM_FREE_AND_NULL((void **) &reward_address);
+            tx_free_temp_buffer((void **) &reward_address);
         }
     }
 
@@ -494,9 +529,12 @@ static bool tx_process_aux_data_hash(tx_processing_state_t *state) {
     }
 
     if (mode->run_validation) {
-        security_policy_t aux_data_policy = policyForSignTxAuxData(tx_params->auxDataType,
-                                                                   state->warning_bits);
-        APPLY_POLICY(aux_data_policy, tx_ui_plan_or_render_aux_data_hash, mode, tx_params->auxDataHash);
+        security_policy_t aux_data_policy =
+            policyForSignTxAuxData(tx_params->auxDataType, state->warning_bits);
+        APPLY_POLICY(aux_data_policy,
+                     tx_ui_plan_or_render_aux_data_hash,
+                     mode,
+                     tx_params->auxDataHash);
     }
 
     if (mode->run_hash_builder) {
@@ -524,9 +562,12 @@ static bool tx_process_validity_interval_start(buffer_t *buf, tx_processing_stat
     }
 
     if (mode->run_validation) {
-        security_policy_t validity_interval_start_policy = policyForSignTxValidityIntervalStart(
-            state->warning_bits);
-        APPLY_POLICY(validity_interval_start_policy, tx_ui_plan_or_render_validity_interval_start, mode, validity_interval_start);
+        security_policy_t validity_interval_start_policy =
+            policyForSignTxValidityIntervalStart(state->warning_bits);
+        APPLY_POLICY(validity_interval_start_policy,
+                     tx_ui_plan_or_render_validity_interval_start,
+                     mode,
+                     validity_interval_start);
     }
 
     if (mode->run_hash_builder) {
@@ -537,10 +578,10 @@ static bool tx_process_validity_interval_start(buffer_t *buf, tx_processing_stat
 }
 
 static bool tx_process_mint_tokens(buffer_t *buf,
-                                    tx_processing_state_t *state,
-                                    const uint8_t *policy_id,
-                                    uint16_t number_of_tokens,
-                                    security_policy_t mint_policy) {
+                                   tx_processing_state_t *state,
+                                   const uint8_t *policy_id,
+                                   uint16_t number_of_tokens,
+                                   security_policy_t mint_policy) {
     ASSERT(buf != NULL);
     ASSERT(policy_id != NULL);
     const tx_processing_mode_t *mode = &state->mode;
@@ -584,21 +625,20 @@ static bool tx_process_mint(buffer_t *buf, tx_processing_state_t *state) {
 
     security_policy_t mint_policy = POLICY_DENY;
     if (mode->run_validation) {
-        mint_policy = policyForSignTxMintInit(
-            tx_params->txSigningMode,
-            state->warning_bits);
-        APPLY_POLICY(mint_policy, tx_ui_plan_or_render_mint_summary, mode, tx_params->num_mint_asset_groups);
+        mint_policy = policyForSignTxMintInit(tx_params->txSigningMode, state->warning_bits);
+        APPLY_POLICY(mint_policy,
+                     tx_ui_plan_or_render_mint_summary,
+                     mode,
+                     tx_params->num_mint_asset_groups);
     }
 
     if (mode->run_hash_builder) {
         txHashBuilder_enterMint(&state->hash_builder);
-        txHashBuilder_addMint_topLevelData(&state->hash_builder,
-                                           tx_params->num_mint_asset_groups);
+        txHashBuilder_addMint_topLevelData(&state->hash_builder, tx_params->num_mint_asset_groups);
     }
 
     ENFORCE_CANONICAL_ORDERING_START(policy_id_tracker);
-    for (uint16_t asset_group_index = 0;
-         asset_group_index < tx_params->num_mint_asset_groups;
+    for (uint16_t asset_group_index = 0; asset_group_index < tx_params->num_mint_asset_groups;
          asset_group_index++) {
         const uint8_t *policy_id = NULL;
         if (!buffer_read_bytes_ptr(buf, &policy_id, MINTING_POLICY_ID_LENGTH)) {
@@ -606,7 +646,8 @@ static bool tx_process_mint(buffer_t *buf, tx_processing_state_t *state) {
             return false;
         }
         ENFORCE_CANONICAL_ORDERING_CHECK(policy_id_tracker,
-                                         policy_id, MINTING_POLICY_ID_LENGTH,
+                                         policy_id,
+                                         MINTING_POLICY_ID_LENGTH,
                                          SWO_TX_PARSING_FAIL_CANONICAL_ORDER);
 
         uint16_t number_of_tokens = 0;
@@ -650,10 +691,12 @@ static bool tx_process_script_data_hash(buffer_t *buf, tx_processing_state_t *st
     }
 
     if (mode->run_validation) {
-        security_policy_t script_data_hash_policy = policyForSignTxScriptDataHash(
-            tx_params->txSigningMode,
-            state->warning_bits);
-        APPLY_POLICY(script_data_hash_policy, tx_ui_plan_or_render_script_data_hash, mode, script_data_hash);
+        security_policy_t script_data_hash_policy =
+            policyForSignTxScriptDataHash(tx_params->txSigningMode, state->warning_bits);
+        APPLY_POLICY(script_data_hash_policy,
+                     tx_ui_plan_or_render_script_data_hash,
+                     mode,
+                     script_data_hash);
     }
 
     if (mode->run_hash_builder) {
@@ -681,7 +724,8 @@ bool tx_process_required_signers(buffer_t *buf, tx_processing_state_t *state) {
         txHashBuilder_enterRequiredSigners(hash_builder);
     }
 
-    for (uint16_t signer_index = 0; signer_index < tx_params->num_required_signers; signer_index++) {
+    for (uint16_t signer_index = 0; signer_index < tx_params->num_required_signers;
+         signer_index++) {
         required_signer_t parsed_required_signer = {0};
         if (!parse_required_signer(buf, &parsed_required_signer)) {
             tx_handle_parse_error(SWO_TX_PARSING_FAIL_REQUIRED_SIGNERS);
@@ -689,12 +733,16 @@ bool tx_process_required_signers(buffer_t *buf, tx_processing_state_t *state) {
         }
 
         if (mode->run_validation) {
-            security_policy_t signer_policy = policyForSignTxRequiredSigner(
-                tx_params->txSigningMode,
-                &parsed_required_signer,
-                state->warning_bits);
+            security_policy_t signer_policy =
+                policyForSignTxRequiredSigner(tx_params->txSigningMode,
+                                              &parsed_required_signer,
+                                              state->warning_bits);
 
-            APPLY_POLICY(signer_policy, tx_ui_plan_or_render_required_signer, mode, &parsed_required_signer, signer_index);
+            APPLY_POLICY(signer_policy,
+                         tx_ui_plan_or_render_required_signer,
+                         mode,
+                         &parsed_required_signer,
+                         signer_index);
         }
 
         if (mode->run_hash_builder) {
@@ -715,11 +763,9 @@ bool tx_process_required_signers(buffer_t *buf, tx_processing_state_t *state) {
                 default:
                     LEDGER_ASSERT(false, "Unknown required_signer_type_t");
                     break;
-                // LCOV_EXCL_STOP
+                    // LCOV_EXCL_STOP
             }
-            txHashBuilder_addRequiredSigner(hash_builder,
-                                            signer_key_hash,
-                                            SIZEOF(signer_key_hash));
+            txHashBuilder_addRequiredSigner(hash_builder, signer_key_hash, SIZEOF(signer_key_hash));
         }
     }
 
@@ -761,9 +807,12 @@ static bool tx_process_total_collateral(buffer_t *buf, tx_processing_state_t *st
     }
 
     if (mode->run_validation) {
-        security_policy_t total_collateral_policy = policyForSignTxTotalCollateral(
-            state->warning_bits);
-        APPLY_POLICY(total_collateral_policy, tx_ui_plan_or_render_total_collateral, mode, total_collateral);
+        security_policy_t total_collateral_policy =
+            policyForSignTxTotalCollateral(state->warning_bits);
+        APPLY_POLICY(total_collateral_policy,
+                     tx_ui_plan_or_render_total_collateral,
+                     mode,
+                     total_collateral);
     }
 
     if (mode->run_hash_builder) {
@@ -774,8 +823,8 @@ static bool tx_process_total_collateral(buffer_t *buf, tx_processing_state_t *st
 }
 
 static bool tx_process_vote(tx_processing_state_t *state,
-                             const vote_item_t *parsed_vote,
-                             security_policy_t voter_policy) {
+                            const vote_item_t *parsed_vote,
+                            security_policy_t voter_policy) {
     const tx_processing_mode_t *mode = &state->mode;
 
     if (mode->run_validation) {
@@ -783,9 +832,8 @@ static bool tx_process_vote(tx_processing_state_t *state,
     }
 
     if (mode->run_validation && parsed_vote->anchor.isIncluded) {
-        security_policy_t anchor_policy = policyForSignTxAnchor(
-            &parsed_vote->anchor,
-            state->warning_bits);
+        security_policy_t anchor_policy =
+            policyForSignTxAnchor(&parsed_vote->anchor, state->warning_bits);
         APPLY_POLICY(anchor_policy, tx_ui_plan_or_render_vote_anchor, mode, &parsed_vote->anchor);
     }
 
@@ -802,9 +850,9 @@ static bool tx_process_vote(tx_processing_state_t *state,
 }
 
 static bool tx_process_votes(buffer_t *buf,
-                              tx_processing_state_t *state,
-                              uint16_t num_votes,
-                              security_policy_t voter_policy) {
+                             tx_processing_state_t *state,
+                             uint16_t num_votes,
+                             security_policy_t voter_policy) {
     ENFORCE_CANONICAL_ORDERING_START(vote_key_tracker);
 
     for (uint16_t vote_index = 0; vote_index < num_votes; vote_index++) {
@@ -815,18 +863,18 @@ static bool tx_process_votes(buffer_t *buf,
         }
 
         uint8_t *gov_action_key = tx_alloc_temp_buffer_or_fail(MAX_CBOR_GOV_ACTION_MAP_KEY_SIZE);
-        size_t gov_action_key_length = txHashBuilder_serializeGovActionKey(
-            &parsed_vote.govActionId,
-            gov_action_key,
-            MAX_CBOR_GOV_ACTION_MAP_KEY_SIZE);
+        size_t gov_action_key_length =
+            txHashBuilder_serializeGovActionKey(&parsed_vote.govActionId,
+                                                gov_action_key,
+                                                MAX_CBOR_GOV_ACTION_MAP_KEY_SIZE);
         ENFORCE_CANONICAL_ORDERING_CHECK(vote_key_tracker,
                                          gov_action_key,
                                          gov_action_key_length,
-                                         SWO_TX_PARSING_FAIL_VOTING_PROCEDURES);
-        APP_MEM_FREE_AND_NULL((void **) &gov_action_key);
+                                         SWO_TX_PARSING_FAIL_CANONICAL_ORDER);
+        tx_free_temp_buffer((void **) &gov_action_key);
 
         if (!tx_process_vote(state, &parsed_vote, voter_policy)) {
-            return false;
+            return false;  // LCOV_EXCL_LINE - voter policy DENY is handled before votes
         }
     }
 
@@ -842,6 +890,8 @@ static bool tx_process_voting_procedures(buffer_t *buf, tx_processing_state_t *s
         return true;
     }
 
+    TRACE_MODULE("tx_process_voting_procedures: num_voters=%u", (unsigned) tx_params->num_voters);
+
     if (mode->run_hash_builder) {
         txHashBuilder_enterVotingProcedures(&state->hash_builder);
     }
@@ -850,31 +900,44 @@ static bool tx_process_voting_procedures(buffer_t *buf, tx_processing_state_t *s
     for (uint16_t voter_index = 0; voter_index < tx_params->num_voters; voter_index++) {
         ext_voter_t parsed_voter = {0};
         uint16_t num_votes = 0;
+        TRACE_MODULE("voter %u/%u: parsing header",
+                     (unsigned) voter_index + 1,
+                     (unsigned) tx_params->num_voters);
         if (!parse_voter_votes_header(buf, &parsed_voter, &num_votes)) {
+            TRACE_MODULE("voter %u/%u: parse_voter_votes_header FAILED",
+                         (unsigned) voter_index + 1,
+                         (unsigned) tx_params->num_voters);
             tx_handle_parse_error(SWO_TX_PARSING_FAIL_VOTING_PROCEDURES);
             return false;
         }
+        TRACE_MODULE("voter %u/%u: type=%u num_votes=%u",
+                     (unsigned) voter_index + 1,
+                     (unsigned) tx_params->num_voters,
+                     (unsigned) parsed_voter.type,
+                     (unsigned) num_votes);
 
         security_policy_t voter_policy = POLICY_DENY;
         if (mode->run_validation) {
-            voter_policy = policyForSignTxVotingProcedure(
-                tx_params->txSigningMode,
-                &parsed_voter,
-                state->warning_bits);
-            APPLY_POLICY(voter_policy, tx_ui_plan_or_render_voter, mode, &parsed_voter, voter_index);
+            voter_policy = policyForSignTxVotingProcedure(tx_params->txSigningMode,
+                                                          &parsed_voter,
+                                                          state->warning_bits);
+            APPLY_POLICY(voter_policy,
+                         tx_ui_plan_or_render_voter,
+                         mode,
+                         &parsed_voter,
+                         voter_index);
         }
 
         voter_t voter_for_hashbuilder = voter_for_tx_hash_from_ext_voter(&parsed_voter);
         uint8_t *voter_key = tx_alloc_temp_buffer_or_fail(MAX_CBOR_VOTER_MAP_KEY_SIZE);
-        size_t voter_key_length = txHashBuilder_serializeVoterKey(
-            &voter_for_hashbuilder,
-            voter_key,
-            MAX_CBOR_VOTER_MAP_KEY_SIZE);
+        size_t voter_key_length = txHashBuilder_serializeVoterKey(&voter_for_hashbuilder,
+                                                                  voter_key,
+                                                                  MAX_CBOR_VOTER_MAP_KEY_SIZE);
         ENFORCE_CANONICAL_ORDERING_CHECK(voter_key_tracker,
                                          voter_key,
                                          voter_key_length,
-                                         SWO_TX_PARSING_FAIL_VOTING_PROCEDURES);
-        APP_MEM_FREE_AND_NULL((void **) &voter_key);
+                                         SWO_TX_PARSING_FAIL_CANONICAL_ORDER);
+        tx_free_temp_buffer((void **) &voter_key);
 
         if (mode->run_hash_builder) {
             txHashBuilder_addVoter(&state->hash_builder, &voter_for_hashbuilder, num_votes);
@@ -908,10 +971,8 @@ static bool tx_process_treasury(buffer_t *buf, tx_processing_state_t *state) {
     }
 
     if (mode->run_validation) {
-        security_policy_t treasury_policy = policyForSignTxTreasury(
-            tx_params->txSigningMode,
-            treasury,
-            state->warning_bits);
+        security_policy_t treasury_policy =
+            policyForSignTxTreasury(tx_params->txSigningMode, treasury, state->warning_bits);
         APPLY_POLICY(treasury_policy, tx_ui_plan_or_render_treasury, mode, treasury);
     }
 
@@ -931,6 +992,14 @@ static bool tx_process_donation(buffer_t *buf, tx_processing_state_t *state) {
         return true;
     }
 
+#ifdef HAVE_SWAP
+    if (G_called_from_swap) {  // LCOV_EXCL_LINE - swap init rejects donation before body parsing
+        // Donation is not part of the Exchange-reviewed ADA amount; reject to prevent
+        // a hidden value transfer the user never confirmed.
+        swap_reject_and_exit(SWAP_EC_ERROR_GENERIC, SWAP_APP_CODE_DEFAULT);  // LCOV_EXCL_LINE
+    }
+#endif
+
     uint64_t donation = 0;
     if (!buffer_read_u64(buf, &donation, BE)) {
         tx_handle_parse_error(SWO_TX_PARSING_FAIL_DONATION);
@@ -942,10 +1011,8 @@ static bool tx_process_donation(buffer_t *buf, tx_processing_state_t *state) {
     }
 
     if (mode->run_validation) {
-        security_policy_t donation_policy = policyForSignTxDonation(
-            tx_params->txSigningMode,
-            donation,
-            state->warning_bits);
+        security_policy_t donation_policy =
+            policyForSignTxDonation(tx_params->txSigningMode, donation, state->warning_bits);
         APPLY_POLICY(donation_policy, tx_ui_plan_or_render_donation, mode, donation);
     }
 
@@ -978,7 +1045,7 @@ static bool tx_process_all_fields(buffer_t *buf, tx_processing_state_t *state) {
         return false;
     }
     if (!tx_process_aux_data_hash(state)) {
-        return false;
+        return false;  // LCOV_EXCL_LINE - valid aux data policies never deny here
     }
     if (!tx_process_validity_interval_start(buf, state)) {
         return false;
@@ -996,7 +1063,7 @@ static bool tx_process_all_fields(buffer_t *buf, tx_processing_state_t *state) {
         return false;
     }
     if (!tx_process_network_id(state)) {
-        return false;
+        return false;  // LCOV_EXCL_LINE - network id processing has no failing path
     }
     if (!tx_process_collateral_output(buf, state)) {
         return false;
@@ -1039,9 +1106,11 @@ bool tx_validate(void) {
     // performed in the init APDU handler; here we only need the side-effect of setting
     // warning bits, so a DENY result is an assertion failure (params haven't changed).
     tx_body_ctx()->warning_bits = 0;
-    // Re-run init policy solely to set network-level warning bits (e.g. WARNING_BIT_NETWORK_UNUSUAL).
-    // The DENY check was already enforced in the init APDU handler so DENY here is a programming error.
-    LEDGER_ASSERT(policyForSignTxInit(&G_context.tx_info.tx_params, &tx_body_ctx()->warning_bits) != POLICY_DENY,
+    // Re-run init policy solely to set network-level warning bits (e.g.
+    // WARNING_BIT_NETWORK_UNUSUAL). The DENY check was already enforced in the init APDU handler so
+    // DENY here is a programming error.
+    LEDGER_ASSERT(policyForSignTxInit(&G_context.tx_info.tx_params, &tx_body_ctx()->warning_bits) !=
+                      POLICY_DENY,
                   "policyForSignTxInit unexpectedly denied in tx_validate");
 
     // Phase: Pass-1 setup
@@ -1075,14 +1144,18 @@ bool tx_validate(void) {
 
     security_policy_t tx_hash_policy =
         policyForSignTxDisplayTxHash(state->tx_params->txSigningMode, &tx_body_ctx()->warning_bits);
-    APPLY_POLICY(tx_hash_policy, tx_ui_plan_or_render_tx_hash, &state->mode, G_context.tx_info.tx_hash);
+    APPLY_POLICY(tx_hash_policy,
+                 tx_ui_plan_or_render_tx_hash,
+                 &state->mode,
+                 G_context.tx_info.tx_hash);
 
     LEDGER_ASSERT(!warning_bits_has_any_cvote_tx_forbidden(tx_body_ctx()->warning_bits),
                   "CVote warning leaked into transaction warnings");
 
     LEDGER_ASSERT(tx_body_ctx()->total_ui_pairs > 0, "Invalid UI plan");
     TRACE("tx_validate: total_ui_pairs=%u, first_chunk_capacity=%u",
-          tx_body_ctx()->total_ui_pairs, MAX_UI_PAIRS);
+          tx_body_ctx()->total_ui_pairs,
+          MAX_UI_PAIRS);
     return true;
 }
 
@@ -1136,26 +1209,28 @@ bool tx_render_ui_chunk(uint16_t from) {
         default:
             LEDGER_ASSERT(false, "Unknown policy");
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     // A single streamed chunk may visit only a subset of policy SHOW paths.
     // It must never introduce warning bits that were not discovered during validation.
-    LEDGER_ASSERT((render_run_warnings | tx_body_ctx()->warning_bits) == tx_body_ctx()->warning_bits,
-                  "Render run introduced unexpected warning bits");
+    LEDGER_ASSERT(
+        (render_run_warnings | tx_body_ctx()->warning_bits) == tx_body_ctx()->warning_bits,
+        "Render run introduced unexpected warning bits");
 
     ui_render_session_end();
     return true;
 }
 
 bool tx_render_ui(tx_ui_review_mode_e review_mode) {
-    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION, "tx_render_ui called in wrong state");
+    LEDGER_ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION,
+                  "tx_render_ui called in wrong state");
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_HASHED ||
                       G_context.state.tx_state == TX_STATE_UI_REVIEW,
                   "tx_render_ui called in wrong tx state");
-    LEDGER_ASSERT(review_mode == TX_UI_REVIEW_MODE_DETAILS ||
-                      review_mode == TX_UI_REVIEW_MODE_HASH_ONLY,
-                  "tx_render_ui called with unsupported review mode");
+    LEDGER_ASSERT(
+        review_mode == TX_UI_REVIEW_MODE_DETAILS || review_mode == TX_UI_REVIEW_MODE_HASH_ONLY,
+        "tx_render_ui called with unsupported review mode");
     const bool initial_render = (G_context.state.tx_state == TX_STATE_HASHED);
     uint16_t total_pairs = (review_mode == TX_UI_REVIEW_MODE_HASH_ONLY)
                                ? UI_PAIRS_TX_HASH
@@ -1167,8 +1242,8 @@ bool tx_render_ui(tx_ui_review_mode_e review_mode) {
 
     ui_reset_error_status();
     if (!ui_pairs_init(alloc_count)) {
-        TRACE("ui_pairs_init failed for %u pairs", alloc_count); // LCOV_EXCL_LINE
-        return false; // LCOV_EXCL_LINE
+        TRACE("ui_pairs_init failed for %u pairs", alloc_count);  // LCOV_EXCL_LINE
+        return false;                                             // LCOV_EXCL_LINE
     }
 
     if (review_mode == TX_UI_REVIEW_MODE_HASH_ONLY) {
@@ -1232,7 +1307,7 @@ bool tx_render_ui(tx_ui_review_mode_e review_mode) {
         default:
             LEDGER_ASSERT(false, "Unexpected UI status after first chunk render");
             return false;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     // Finalize the pairs count for display (may be less than allocated).
@@ -1251,7 +1326,7 @@ bool tx_render_ui(tx_ui_review_mode_e review_mode) {
         default:
             LEDGER_ASSERT(false, "Unexpected UI warning status");
             return false;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     tx_body_ctx()->review_mode = review_mode;

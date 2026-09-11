@@ -25,14 +25,14 @@
 #ifdef TRACE_HANDLERS
 #define TRACE_MODULE(...) TRACE("[sign_cvote] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 static bool ensure_sign_cvote_request_type(request_type_e required_request_type) {
     if (G_context.req_type != required_request_type) {
         TRACE_MODULE("Rejecting CVote command for req_type %d (expected %d)",
-              G_context.req_type,
-              required_request_type);
+                     G_context.req_type,
+                     required_request_type);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return false;
     }
@@ -42,8 +42,8 @@ static bool ensure_sign_cvote_request_type(request_type_e required_request_type)
 static bool ensure_sign_cvote_state(cvote_state_e required_state) {
     if (G_context.state.cvote_state != required_state) {
         TRACE_MODULE("Rejecting CVote command in state %d (expected %d)",
-              G_context.state.cvote_state,
-              required_state);
+                     G_context.state.cvote_state,
+                     required_state);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return false;
     }
@@ -78,7 +78,8 @@ static void handle_sign_cvote_init_apdu(buffer_t *cdata) {
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
-    const size_t expected_votecast_chunk_size = MIN(ctx->remaining_votecast_bytes, MAX_VOTECAST_CHUNK_SIZE);
+    const size_t expected_votecast_chunk_size =
+        MIN(ctx->remaining_votecast_bytes, MAX_VOTECAST_CHUNK_SIZE);
     if (votecast_chunk_size != expected_votecast_chunk_size) {
         TRACE("Invalid initial votecast chunk size: expected=%u got=%u",
               (unsigned) expected_votecast_chunk_size,
@@ -151,9 +152,7 @@ static void handle_sign_cvote_chunk_apdu(buffer_t *cdata) {
         return;
     }
 
-    vote_cast_hash_builder_chunk(&ctx->votecast_hash_builder,
-                                 buffer_get_cur(cdata),
-                                 chunk_size);
+    vote_cast_hash_builder_chunk(&ctx->votecast_hash_builder, buffer_get_cur(cdata), chunk_size);
 
     ctx->remaining_votecast_bytes -= chunk_size;
 
@@ -213,8 +212,8 @@ void finalize_sign_cvote(void) {
     // Finalize the hash into a local buffer
     uint8_t votecast_hash[VOTECAST_HASH_LENGTH];
     vote_cast_hash_builder_finalize(&ctx->votecast_hash_builder,
-                                 votecast_hash,
-                                 SIZEOF(votecast_hash));
+                                    votecast_hash,
+                                    SIZEOF(votecast_hash));
 
     TRACE("votecast hash:");
     TRACE_BUFFER(votecast_hash, SIZEOF(votecast_hash));
@@ -232,10 +231,9 @@ void finalize_sign_cvote(void) {
 
     LEDGER_ASSERT(buffer_write_bytes(&response, votecast_hash, SIZEOF(votecast_hash)),
                   "Write vote cast hash failed");
-    LEDGER_ASSERT(buffer_write_bytes(&response,
-                                     ctx->witness_signature,
-                                     SIZEOF(ctx->witness_signature)),
-                  "Write witness signature failed");
+    LEDGER_ASSERT(
+        buffer_write_bytes(&response, ctx->witness_signature, SIZEOF(ctx->witness_signature)),
+        "Write witness signature failed");
 
     LEDGER_ASSERT(response.offset == SIZEOF(response_buffer), "Response size mismatch");
 
@@ -256,7 +254,7 @@ void handler_sign_cvote(buffer_t *cdata, uint8_t p1) {
             G_context.req_type = REQUEST_CVOTE;
             explicit_bzero(&G_context.cvote_info, sizeof(G_context.cvote_info));
             if (!ensure_sign_cvote_state(VOTECAST_STATE_NONE)) {
-                return; // LCOV_EXCL_LINE — req_type==REQUEST_NONE implies state==NONE
+                return;  // LCOV_EXCL_LINE — req_type==REQUEST_NONE implies state==NONE
             }
             G_context.state.cvote_state = VOTECAST_STATE_INIT;
             handle_sign_cvote_init_apdu(cdata);
@@ -289,7 +287,7 @@ void handler_sign_cvote(buffer_t *cdata, uint8_t p1) {
             TRACE("Bad display type");
             ASSERT(false);
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
     return;
 }

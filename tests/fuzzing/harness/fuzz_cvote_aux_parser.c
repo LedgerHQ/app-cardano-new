@@ -31,8 +31,9 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
                                                          aux_data.format,
                                                          &warnings);
                 if (aux_data.staking_credential.type == CVOTE_CREDENTIAL_KEY_PATH) {
-                    (void) policyForCVoteRegistrationStakingKey(&aux_data.staking_credential.keyPath,
-                                                                &warnings);
+                    (void) policyForCVoteRegistrationStakingKey(
+                        &aux_data.staking_credential.keyPath,
+                        &warnings);
                 }
             }
 

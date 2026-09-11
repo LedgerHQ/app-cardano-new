@@ -20,16 +20,16 @@
 #define APPEND_BUFFER(buffer, size) \
     blake2b_224_append_buffer_data(&builder->nativeScriptHash, buffer, size)
 
-static void blake2b_224_append_buffer_data(blake2b_224_context_t* hashCtx,
-                                           const uint8_t* buffer,
+static void blake2b_224_append_buffer_data(blake2b_224_context_t *hashCtx,
+                                           const uint8_t *buffer,
                                            size_t size) {
     _TRACE_BUFFER(buffer, size);
     blake2b_224_append(hashCtx, buffer, size);
 }
 
-static void blake2b_224_append_cbor_data(blake2b_224_context_t* hashCtx,
-                                                                   uint8_t type,
-                                                                   uint64_t value) {
+static void blake2b_224_append_cbor_data(blake2b_224_context_t *hashCtx,
+                                         uint8_t type,
+                                         uint64_t value) {
     uint8_t buffer[10] = {0};
     size_t size = 0;
     LEDGER_ASSERT(cbor_writeToken(type, value, buffer, SIZEOF(buffer), &size),
@@ -38,7 +38,7 @@ static void blake2b_224_append_cbor_data(blake2b_224_context_t* hashCtx,
     blake2b_224_append(hashCtx, buffer, size);
 }
 
-static inline void advanceState(native_script_hash_builder_t* builder) {
+static inline void advanceState(native_script_hash_builder_t *builder) {
     // advance state should be only called when state is not finished
     // the advance state determines the next state from the current level
     // and number of remaining scripts for the current level
@@ -55,11 +55,11 @@ static inline void advanceState(native_script_hash_builder_t* builder) {
     }
 }
 
-static inline bool isComplexScriptFinished(native_script_hash_builder_t* builder) {
+static inline bool isComplexScriptFinished(native_script_hash_builder_t *builder) {
     return builder->level > 0 && builder->remainingScripts[builder->level] == 0;
 }
 
-static void complexScriptFinished(native_script_hash_builder_t* builder) {
+static void complexScriptFinished(native_script_hash_builder_t *builder) {
     while (isComplexScriptFinished(builder)) {
         ASSERT(builder->level > 0);
         builder->level--;
@@ -69,7 +69,7 @@ static void complexScriptFinished(native_script_hash_builder_t* builder) {
     }
 }
 
-static void simpleScriptFinished(native_script_hash_builder_t* builder) {
+static void simpleScriptFinished(native_script_hash_builder_t *builder) {
     ASSERT(builder->remainingScripts[builder->level] > 0);
     builder->remainingScripts[builder->level]--;
 
@@ -78,7 +78,7 @@ static void simpleScriptFinished(native_script_hash_builder_t* builder) {
     }
 }
 
-void nativeScriptHashBuilder_init(native_script_hash_builder_t* builder) {
+void nativeScriptHashBuilder_init(native_script_hash_builder_t *builder) {
     ASSERT(builder != NULL);
 
     // Clear the entire structure to prevent stale data
@@ -98,7 +98,7 @@ void nativeScriptHashBuilder_init(native_script_hash_builder_t* builder) {
 }
 
 #define _DEFINE_COMPLEX_SCRIPT(name, type)                                                        \
-    void nativeScriptHashBuilder_startComplexScript_##name(native_script_hash_builder_t* builder, \
+    void nativeScriptHashBuilder_startComplexScript_##name(native_script_hash_builder_t *builder, \
                                                            uint32_t remainingScripts) {           \
         _TRACE("state = %d", builder->state);                                                     \
                                                                                                   \
@@ -114,10 +114,10 @@ void nativeScriptHashBuilder_init(native_script_hash_builder_t* builder) {
         APPEND_CBOR(CBOR_TYPE_UNSIGNED, type);                                                    \
         APPEND_CBOR(CBOR_TYPE_ARRAY, remainingScripts);                                           \
                                                                                                   \
-        LEDGER_ASSERT(builder->level + 1 < MAX_SCRIPT_DEPTH, "Native script nesting too deep");  \
+        LEDGER_ASSERT(builder->level + 1 < MAX_SCRIPT_DEPTH, "Native script nesting too deep");   \
         builder->level++;                                                                         \
         builder->remainingScripts[builder->level] = remainingScripts;                             \
-        _TRACE("appended CBOR");                                                     \
+        _TRACE("appended CBOR");                                                                  \
                                                                                                   \
         if (isComplexScriptFinished(builder)) {                                                   \
             complexScriptFinished(builder);                                                       \
@@ -130,7 +130,7 @@ _DEFINE_COMPLEX_SCRIPT(any, NATIVE_SCRIPT_ANY)
 
 #undef _DEFINE_COMPLEX_SCRIPT
 
-void nativeScriptHashBuilder_startComplexScript_n_of_k(native_script_hash_builder_t* builder,
+void nativeScriptHashBuilder_startComplexScript_n_of_k(native_script_hash_builder_t *builder,
                                                        uint32_t requiredScripts,
                                                        uint32_t remainingScripts) {
     _TRACE("state = %d", builder->state);
@@ -160,8 +160,8 @@ void nativeScriptHashBuilder_startComplexScript_n_of_k(native_script_hash_builde
     advanceState(builder);
 }
 
-void nativeScriptHashBuilder_addScript_pubkey(native_script_hash_builder_t* builder,
-                                              const uint8_t* pubKeyHashBuffer,
+void nativeScriptHashBuilder_addScript_pubkey(native_script_hash_builder_t *builder,
+                                              const uint8_t *pubKeyHashBuffer,
                                               size_t pubKeyHashSize) {
     _TRACE("state = %d", builder->state);
 
@@ -182,7 +182,7 @@ void nativeScriptHashBuilder_addScript_pubkey(native_script_hash_builder_t* buil
 }
 
 #define _DEFINE_SIMPLE_TIMELOCK_SCRIPT(name, type)                                       \
-    void nativeScriptHashBuilder_addScript_##name(native_script_hash_builder_t* builder, \
+    void nativeScriptHashBuilder_addScript_##name(native_script_hash_builder_t *builder, \
                                                   uint64_t timelock) {                   \
         _TRACE("state = %d", builder->state);                                            \
                                                                                          \
@@ -205,8 +205,8 @@ _DEFINE_SIMPLE_TIMELOCK_SCRIPT(invalidHereafter, NATIVE_SCRIPT_INVALID_HEREAFTER
 
 #undef _DEFINE_SIMPLE_TIMELOCK_SCRIPT
 
-void nativeScriptHashBuilder_finalize(native_script_hash_builder_t* builder,
-                                      uint8_t* outBuffer,
+void nativeScriptHashBuilder_finalize(native_script_hash_builder_t *builder,
+                                      uint8_t *outBuffer,
                                       size_t outSize) {
     _TRACE("state = %d", builder->state);
 

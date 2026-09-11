@@ -25,12 +25,14 @@ include $(BOLOS_SDK)/Makefile.target
 #        Mandatory configuration       #
 ########################################
 # Application name
+# Note: this is the name registered with BOLOS and returned by the GET_APP_NAME
+# APDU. The home screen / UI uses the shorter "Cardano" label (see src/ui/menu.c).
 APPNAME = "Cardano ADA"
 
 # Application version
 APPVERSION_M = 8
 APPVERSION_N = 0
-APPVERSION_P = 0
+APPVERSION_P = 7
 APPVERSION = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
 
 # Application source files
@@ -76,6 +78,11 @@ VARIANT_VALUES = cardano_ada
 # When DEBUG is enabled, add DEBUG as a preprocessor define so #ifdef DEBUG works in code
 ifneq ($(DEBUG), 0)
     DEFINES += DEBUG
+    DEBUG_OS_STACK_CONSUMPTION ?= 1
+    MEMORY_PROFILING ?= 0
+    ifneq ($(MEMORY_PROFILING),0)
+        DEFINES += HAVE_MEMORY_PROFILING
+    endif
 endif
 
 ########################################
@@ -84,7 +91,7 @@ endif
 # See SDK `include/appflags.h` for the purpose of each permission
 #HAVE_APPLICATION_FLAG_DERIVE_MASTER = 1
 #HAVE_APPLICATION_FLAG_GLOBAL_PIN = 1
-HAVE_APPLICATION_FLAG_LIBRARY = 1
+#HAVE_APPLICATION_FLAG_LIBRARY = 1
 
 ########################################
 # Application communication interfaces #
@@ -123,5 +130,10 @@ ENABLE_SWAP = 1
 #       Dynamic memory allocation      #
 ########################################
 ENABLE_DYNAMIC_ALLOC = 1
+
+########################################
+#       Lists library support          #
+########################################
+ENABLE_LISTS_LIBRARY = 1
 
 include $(BOLOS_SDK)/Makefile.standard_app

@@ -36,7 +36,6 @@
  */
 void handler_sign_tx(buffer_t *cdata, uint8_t p1);
 
-
 /**
  * Handler for SIGN_TX_WITNESS command. Signs transaction hash with witness key.
  * Must be called after transaction is approved (TX_STATE_APPROVED).

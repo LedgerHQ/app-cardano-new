@@ -1,0 +1,31 @@
+name: Checks on the Python client
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint_standalone:
+    name: Call Ledger Python linters for standalone tests
+    uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_python_checks.yml@v1
+    with:
+      run_type_check: true
+      src_directory: .
+      setup_directory: tests/standalone
+      req_directory: tests
+
+  lint_swap:
+    name: Call Ledger Python linters for swap tests
+    uses: LedgerHQ/ledger-app-workflows/.github/workflows/reusable_python_checks.yml@v1
+    with:
+      run_type_check: true
+      src_directory: .
+      setup_directory: tests/swap
+      req_directory: tests

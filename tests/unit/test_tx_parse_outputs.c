@@ -50,8 +50,8 @@ static void test_parse_output_destination_address_size_too_large(void **state) {
     uint16_t bad_size = MAX_ADDRESS_LENGTH + 1;
     uint8_t buf_data[3] = {
         DESTINATION_THIRD_PARTY,
-        (uint8_t)(bad_size >> 8),
-        (uint8_t)(bad_size & 0xFF),
+        (uint8_t) (bad_size >> 8),
+        (uint8_t) (bad_size & 0xFF),
     };
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     tx_output_destination_t dest;
@@ -84,8 +84,7 @@ static void test_parse_output_format_truncated(void **state) {
     uint8_t buf_data[1] = {0};
     buffer_t buf = {.ptr = buf_data, .size = 0, .offset = 0};
     tx_output_serialization_format_t fmt;
-    assert_int_not_equal(
-        parse_output_format(&buf, &fmt, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
+    assert_int_not_equal(parse_output_format(&buf, &fmt, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
 }
 
 static void test_parse_output_format_unknown(void **state) {
@@ -93,8 +92,7 @@ static void test_parse_output_format_unknown(void **state) {
     uint8_t buf_data[1] = {0xFF};
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     tx_output_serialization_format_t fmt;
-    assert_int_not_equal(
-        parse_output_format(&buf, &fmt, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
+    assert_int_not_equal(parse_output_format(&buf, &fmt, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
 }
 
 // ---------------------------------------------------------------------------
@@ -118,8 +116,7 @@ static void test_parse_output_top_level_truncated_amount(void **state) {
     // only 4 amount bytes (need 8)
     buffer_t buf = {.ptr = buf_data, .size = off + 4, .offset = 0};
     tx_output_description_t desc;
-    assert_int_not_equal(
-        parse_output_top_level(&buf, &desc, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
+    assert_int_not_equal(parse_output_top_level(&buf, &desc, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
 }
 
 static void test_parse_output_top_level_amount_too_large(void **state) {
@@ -146,8 +143,7 @@ static void test_parse_output_top_level_amount_too_large(void **state) {
     buf_data[off++] = 0x00;
     buffer_t buf = {.ptr = buf_data, .size = off, .offset = 0};
     tx_output_description_t desc;
-    assert_int_not_equal(
-        parse_output_top_level(&buf, &desc, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
+    assert_int_not_equal(parse_output_top_level(&buf, &desc, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
 }
 
 // Build a minimal valid output header up through the format byte and return offset.
@@ -182,8 +178,7 @@ static void test_parse_output_top_level_truncated_datum_flag(void **state) {
     // No datum flag byte follows.
     buffer_t buf = {.ptr = buf_data, .size = off, .offset = 0};
     tx_output_description_t desc;
-    assert_int_not_equal(
-        parse_output_top_level(&buf, &desc, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
+    assert_int_not_equal(parse_output_top_level(&buf, &desc, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
 }
 
 static void test_parse_output_top_level_truncated_ref_script_flag(void **state) {
@@ -194,8 +189,7 @@ static void test_parse_output_top_level_truncated_ref_script_flag(void **state) 
     // No ref script flag byte follows.
     buffer_t buf = {.ptr = buf_data, .size = off, .offset = 0};
     tx_output_description_t desc;
-    assert_int_not_equal(
-        parse_output_top_level(&buf, &desc, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
+    assert_int_not_equal(parse_output_top_level(&buf, &desc, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
 }
 
 static void test_parse_output_top_level_truncated_num_asset_groups(void **state) {
@@ -207,8 +201,7 @@ static void test_parse_output_top_level_truncated_num_asset_groups(void **state)
     // No numAssetGroups u16 follows.
     buffer_t buf = {.ptr = buf_data, .size = off, .offset = 0};
     tx_output_description_t desc;
-    assert_int_not_equal(
-        parse_output_top_level(&buf, &desc, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
+    assert_int_not_equal(parse_output_top_level(&buf, &desc, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
 }
 
 static void test_parse_output_top_level_ref_script_in_array_legacy(void **state) {
@@ -216,14 +209,13 @@ static void test_parse_output_top_level_ref_script_in_array_legacy(void **state)
     // ref_script_present=true but format=ARRAY_LEGACY — must be rejected.
     uint8_t buf_data[1 + 2 + 29 + 8 + 1 + 1 + 1 + 2] = {0};
     size_t off = _write_valid_output_header_with_format(buf_data, sizeof(buf_data), ARRAY_LEGACY);
-    buf_data[off++] = 1;  // datum absent
-    buf_data[off++] = 2;  // ref script present (FLAG_INCLUDED_YES=2)
+    buf_data[off++] = 1;     // datum absent
+    buf_data[off++] = 2;     // ref script present (FLAG_INCLUDED_YES=2)
     buf_data[off++] = 0x00;  // numAssetGroups high
     buf_data[off++] = 0x00;  // numAssetGroups low
     buffer_t buf = {.ptr = buf_data, .size = off, .offset = 0};
     tx_output_description_t desc;
-    assert_int_not_equal(
-        parse_output_top_level(&buf, &desc, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
+    assert_int_not_equal(parse_output_top_level(&buf, &desc, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
 }
 
 // ---------------------------------------------------------------------------
@@ -292,8 +284,8 @@ static void test_parse_output_token_amount_truncated(void **state) {
 static void test_parse_output_token_zero_amount(void **state) {
     (void) state;
     uint8_t buf_data[1 + 1 + 8] = {0};
-    buf_data[0] = 1;    // assetNameLen
-    buf_data[1] = 0xAA; // name byte
+    buf_data[0] = 1;     // assetNameLen
+    buf_data[1] = 0xAA;  // name byte
     // amount = 0 (all zero)
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     output_token_t token;
@@ -393,8 +385,7 @@ static void test_parse_output_top_level_bad_destination(void **state) {
     uint8_t buf_data[1] = {0xFF};
     buffer_t buf = {.ptr = buf_data, .size = sizeof(buf_data), .offset = 0};
     tx_output_description_t desc;
-    assert_int_not_equal(
-        parse_output_top_level(&buf, &desc, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
+    assert_int_not_equal(parse_output_top_level(&buf, &desc, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
 }
 
 // parse_output_top_level: format parse failure propagation (line 129)
@@ -410,14 +401,18 @@ static void test_parse_output_top_level_bad_format(void **state) {
     buf_data[off] = 0x61;  // enterprise mainnet header
     off += 29;
     // amount = 1_500_000
-    buf_data[off++] = 0x00; buf_data[off++] = 0x00; buf_data[off++] = 0x00;
-    buf_data[off++] = 0x00; buf_data[off++] = 0x00; buf_data[off++] = 0x16;
-    buf_data[off++] = 0xE3; buf_data[off++] = 0x60;
+    buf_data[off++] = 0x00;
+    buf_data[off++] = 0x00;
+    buf_data[off++] = 0x00;
+    buf_data[off++] = 0x00;
+    buf_data[off++] = 0x00;
+    buf_data[off++] = 0x16;
+    buf_data[off++] = 0xE3;
+    buf_data[off++] = 0x60;
     buf_data[off++] = 0xFF;  // unknown format byte
     buffer_t buf = {.ptr = buf_data, .size = off, .offset = 0};
     tx_output_description_t desc;
-    assert_int_not_equal(
-        parse_output_top_level(&buf, &desc, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
+    assert_int_not_equal(parse_output_top_level(&buf, &desc, SWO_TX_PARSING_FAIL_OUTPUTS), SWO_OK);
 }
 
 // parse_output_destination DEVICE_OWNED: buffer_read_address_params failure (lines 62-63)

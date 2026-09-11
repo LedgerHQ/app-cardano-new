@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # SPDX-FileCopyrightText: 2024 Ledger SAS
 # SPDX-FileCopyrightText: 2025-2026 Vacuumlabs
 # SPDX-License-Identifier: Apache-2.0
@@ -12,18 +11,11 @@ import re
 
 import cbor2
 import pytest
-
+from ledgered.devices import Device
 from ragger.backend import BackendInterface
 from ragger.error import ExceptionRAPDU
-from ledgered.devices import Device
 from ragger.navigator import Navigator, NavInsID
 from ragger.navigator.navigation_scenario import NavigateWithScenario
-
-from tests.application_client.status_words import StatusWord
-from tests.application_client.command_sender import CommandSender
-from tests.application_client.response_unpacker import (
-    unpack_derive_native_script_hash_response,
-)
 
 from tests.application_client.command_builder import (
     NativeScript,
@@ -33,6 +25,11 @@ from tests.application_client.command_builder import (
     NativeScriptParamsScripts,
     NativeScriptType,
 )
+from tests.application_client.command_sender import CommandSender
+from tests.application_client.response_unpacker import (
+    unpack_derive_native_script_hash_response,
+)
+from tests.application_client.status_words import StatusWord
 from tests.standalone.input_files.native_script import (
     InvalidScriptTestCases,
     ValidNativeScriptTestCase,
@@ -40,8 +37,9 @@ from tests.standalone.input_files.native_script import (
 )
 from tests.standalone.utils import (
     NavContext,
-    idTestFunc,
+    assert_expected_deny_and_app_alive,
     get_device_pubkey,
+    idTestFunc,
     nano_navigate_without_waits,
 )
 
@@ -166,20 +164,16 @@ def test_derive_native_script_hash(
 
     _deriveNativeScriptHash_init(nav_ctx, client, testCase.name, step_counter)
     assert testCase.script is not None
-    _deriveNativeScriptHash_addScript(
-        nav_ctx, client, testCase.script, testCase.name, step_counter
-    )
+    _deriveNativeScriptHash_addScript(nav_ctx, client, testCase.script, testCase.name, step_counter)
 
-    _deriveNativeScriptHash_finishWholeNativeScript(
-        nav_ctx, client, testCase, step_counter
-    )
+    _deriveNativeScriptHash_finishWholeNativeScript(nav_ctx, client, testCase, step_counter)
 
 
-def _deriveNativeScriptHash_init(
-    nav_ctx: NavContext, client: CommandSender, test_name: str, step_counter: list[int]
-) -> None:
-    with client.derive_script_init_async():
-        if nav_ctx.is_nano:
+def _deriveNativeScriptHash_init(nav_ctx: NavContext, client: CommandSender, test_name: str, step_counter: list[int]) -> None:
+    with client.derive_script_init_async() as has_data_available:
+        if has_data_available:
+            pass
+        elif nav_ctx.is_nano:
             snap_name = f"{test_name}/step_{step_counter[0]:02d}_init"
             step_counter[0] += 1
             nav_ctx.navigator.navigate_until_text_and_compare(
@@ -192,9 +186,14 @@ def _deriveNativeScriptHash_init(
                 screen_change_after_last_instruction=False,
             )
         else:
-            nav_ctx.navigator.navigate(
+            snap_name = f"{test_name}/step_{step_counter[0]:02d}_init"
+            step_counter[0] += 1
+            nav_ctx.navigator.navigate_and_compare(
+                nav_ctx.screenshot_path,
+                snap_name,
                 [NavInsID.USE_CASE_REVIEW_TAP],
-                screen_change_before_first_instruction=False,
+                screen_change_before_first_instruction=True,
+                screen_change_after_last_instruction=False,
             )
 
     response = client.get_async_response()
@@ -223,20 +222,12 @@ def _deriveNativeScriptHash_addScript(
         NativeScriptType.ANY,
         NativeScriptType.N_OF_K,
     ]:
-        _deriveScriptHash_startComplexScript(
-            nav_ctx, client, script, test_name, step_counter
-        )
-        assert isinstance(
-            script.params, (NativeScriptParamsScripts, NativeScriptParamsNofK)
-        )
+        _deriveScriptHash_startComplexScript(nav_ctx, client, script, test_name, step_counter)
+        assert isinstance(script.params, (NativeScriptParamsScripts, NativeScriptParamsNofK))
         for subscript in script.params.scripts:
-            _deriveNativeScriptHash_addScript(
-                nav_ctx, client, subscript, test_name, step_counter
-            )
+            _deriveNativeScriptHash_addScript(nav_ctx, client, subscript, test_name, step_counter)
     else:
-        _deriveNativeScriptHash_addSimpleScript(
-            nav_ctx, client, script, test_name, step_counter
-        )
+        _deriveNativeScriptHash_addSimpleScript(nav_ctx, client, script, test_name, step_counter)
 
 
 def _deriveNativeScriptHash_addSimpleScript(
@@ -256,8 +247,10 @@ def _deriveNativeScriptHash_addSimpleScript(
         step_counter (list[int]): Mutable step counter for unique snapshot names
     """
 
-    with client.derive_script_add_simple_async(script):
-        if nav_ctx.is_nano:
+    with client.derive_script_add_simple_async(script) as has_data_available:
+        if has_data_available:
+            pass
+        elif nav_ctx.is_nano:
             snap_name = f"{test_name}/step_{step_counter[0]:02d}_simple"
             step_counter[0] += 1
             step_right_clicks = _native_script_step_right_clicks(script)
@@ -283,9 +276,14 @@ def _deriveNativeScriptHash_addSimpleScript(
                     screen_change_before_first_instruction=True,
                 )
         else:
-            nav_ctx.navigator.navigate(
+            snap_name = f"{test_name}/step_{step_counter[0]:02d}_simple"
+            step_counter[0] += 1
+            nav_ctx.navigator.navigate_and_compare(
+                nav_ctx.screenshot_path,
+                snap_name,
                 [NavInsID.USE_CASE_REVIEW_TAP],
-                screen_change_before_first_instruction=False,
+                screen_change_before_first_instruction=True,
+                screen_change_after_last_instruction=False,
             )
 
     # Check the status (Asynchronous)
@@ -310,8 +308,10 @@ def _deriveScriptHash_startComplexScript(
         step_counter (list[int]): Mutable step counter for unique snapshot names
     """
 
-    with client.derive_script_add_complex_async(script):
-        if nav_ctx.is_nano:
+    with client.derive_script_add_complex_async(script) as has_data_available:
+        if has_data_available:
+            pass
+        elif nav_ctx.is_nano:
             snap_name = f"{test_name}/step_{step_counter[0]:02d}_complex"
             step_counter[0] += 1
             nav_ctx.navigator.navigate_until_text_and_compare(
@@ -324,9 +324,14 @@ def _deriveScriptHash_startComplexScript(
                 screen_change_after_last_instruction=False,
             )
         else:
-            nav_ctx.navigator.navigate(
+            snap_name = f"{test_name}/step_{step_counter[0]:02d}_complex"
+            step_counter[0] += 1
+            nav_ctx.navigator.navigate_and_compare(
+                nav_ctx.screenshot_path,
+                snap_name,
                 [NavInsID.USE_CASE_REVIEW_TAP],
-                screen_change_before_first_instruction=False,
+                screen_change_before_first_instruction=True,
+                screen_change_after_last_instruction=False,
             )
 
     # Check the status (Asynchronous)
@@ -351,8 +356,10 @@ def _deriveNativeScriptHash_finishWholeNativeScript(
     """
 
     assert testCase.displayFormat is not None
-    with client.derive_script_finish_async(testCase.displayFormat):
-        if nav_ctx.is_nano:
+    with client.derive_script_finish_async(testCase.displayFormat) as has_data_available:
+        if has_data_available:
+            pass
+        elif nav_ctx.is_nano:
             snap_name = f"{testCase.name}/step_{step_counter[0]:02d}_finish"
             step_counter[0] += 1
             nav_ctx.navigator.navigate_until_text_and_compare(
@@ -364,9 +371,15 @@ def _deriveNativeScriptHash_finishWholeNativeScript(
                 screen_change_before_first_instruction=True,
             )
         else:
-            nav_ctx.navigator.navigate(
-                [NavInsID.USE_CASE_REVIEW_TAP, NavInsID.USE_CASE_REVIEW_CONFIRM],
-                screen_change_before_first_instruction=False,
+            snap_name = f"{testCase.name}/step_{step_counter[0]:02d}_finish"
+            step_counter[0] += 1
+            nav_ctx.navigator.navigate_until_text_and_compare(
+                navigate_instruction=NavInsID.USE_CASE_REVIEW_TAP,
+                validation_instructions=[NavInsID.USE_CASE_REVIEW_CONFIRM],
+                text=r"^Confirm hash$",
+                path=nav_ctx.screenshot_path,
+                test_case_name=snap_name,
+                screen_change_before_first_instruction=True,
             )
     # Check the status (Asynchronous)
     response = client.get_async_response()
@@ -384,17 +397,11 @@ def _deriveNativeScriptHash_finishWholeNativeScript(
     _check_ragger_expect_native_script(testCase, script_hash)
 
 
-def _check_ragger_expect_native_script(
-    testCase: ValidNativeScriptTestCase, script_hash: bytes
-) -> None:
+def _check_ragger_expect_native_script(testCase: ValidNativeScriptTestCase, script_hash: bytes) -> None:
     if testCase.ragger_expect is None:
-        pytest.fail(
-            f"Missing ragger_expect for native_script fixture {testCase.name!r}"
-        )
+        pytest.fail(f"Missing ragger_expect for native_script fixture {testCase.name!r}")
     assert testCase.ragger_expect.hash is not None
-    assert script_hash.hex() == testCase.ragger_expect.hash, (
-        f"Script hash mismatch for {testCase.name!r}"
-    )
+    assert script_hash.hex() == testCase.ragger_expect.hash, f"Script hash mismatch for {testCase.name!r}"
 
 
 @pytest.mark.parametrize("testCase", InvalidScriptTestCases, ids=idTestFunc)
@@ -414,9 +421,7 @@ def test_derive_native_script_hash_deny(
 
     assert testCase.script is not None
     with pytest.raises(ExceptionRAPDU) as err:
-        _deriveNativeScriptHash_addScript(
-            nav_ctx, client, testCase.script, testCase.name, step_counter
-        )
+        _deriveNativeScriptHash_addScript(nav_ctx, client, testCase.script, testCase.name, step_counter)
 
     assert testCase.unit_test_expect is not None
-    assert err.value.status == testCase.unit_test_expect.swo
+    assert_expected_deny_and_app_alive(backend, err.value, testCase.unit_test_expect.swo)

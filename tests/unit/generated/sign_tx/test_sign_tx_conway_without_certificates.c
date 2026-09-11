@@ -56,7 +56,9 @@ static void test_sign_tx_with_treasury_expert_off(void **state) {
 
 static void test_sign_tx_with_treasury_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_TREASURY, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_TREASURY,
+        false);
 }
 
 static void test_sign_tx_with_treasury_expert_on(void **state) {
@@ -66,7 +68,9 @@ static void test_sign_tx_with_treasury_expert_on(void **state) {
 
 static void test_sign_tx_with_treasury_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_TREASURY, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_TREASURY,
+        true);
 }
 
 static void test_sign_tx_with_donation_expert_off(void **state) {
@@ -76,7 +80,9 @@ static void test_sign_tx_with_donation_expert_off(void **state) {
 
 static void test_sign_tx_with_donation_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_DONATION, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_DONATION,
+        false);
 }
 
 static void test_sign_tx_with_donation_expert_on(void **state) {
@@ -86,27 +92,37 @@ static void test_sign_tx_with_donation_expert_on(void **state) {
 
 static void test_sign_tx_with_donation_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_DONATION, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_DONATION,
+        true);
 }
 
 static void test_sign_tx_with_treasury_and_donation_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_TREASURY_AND_DONATION, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_TREASURY_AND_DONATION,
+        false);
 }
 
 static void test_sign_tx_with_treasury_and_donation_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_TREASURY_AND_DONATION, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_TREASURY_AND_DONATION,
+        false);
 }
 
 static void test_sign_tx_with_treasury_and_donation_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_TREASURY_AND_DONATION, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_TREASURY_AND_DONATION,
+        true);
 }
 
 static void test_sign_tx_with_treasury_and_donation_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_TREASURY_AND_DONATION, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_WITHOUT_CERTIFICATES_SIGN_TX_WITH_TREASURY_AND_DONATION,
+        true);
 }
 
 // ======================================================================
@@ -128,5 +144,9 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_treasury_and_donation_expert_on),
         cmocka_unit_test(test_sign_tx_with_treasury_and_donation_reject_tx_expert_on),
     };
-    return _cmocka_run_group_tests("test_sign_tx_conway_without_certificates", tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);
+    return _cmocka_run_group_tests("test_sign_tx_conway_without_certificates",
+                                   tests,
+                                   ARRAY_LEN(tests),
+                                   NULL,
+                                   assert_no_pending_apdu_response);
 }

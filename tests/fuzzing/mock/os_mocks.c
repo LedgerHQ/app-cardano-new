@@ -31,12 +31,10 @@ global_ctx_t G_context;
 uint16_t G_apdu_error = 0;
 
 // Mock storage for fuzzing
-const internal_storage_t N_storage_real = {
-    .expert_mode_enabled = 1,
-    .silent_pubkey_export_enabled = 0,
-    .blind_signing_enabled = 0,
-    .initialized = 1
-};
+const internal_storage_t N_storage_real = {.expert_mode_enabled = 1,
+                                           .silent_pubkey_export_enabled = 0,
+                                           .blind_signing_enabled = 0,
+                                           .initialized = 1};
 
 int io_send_response_buffers(const buffer_t *buffer_list, size_t buffer_count, uint16_t swo) {
     (void) buffer_list;
@@ -81,8 +79,7 @@ void *pic(void *linked_addr) {
 }
 // void ui_idle(){};
 void halt() {
-    for (;;)
-        ;
+    for (;;);
 };
 
 void io_send_buf(unsigned short code, unsigned char *buffer, size_t tx) {
@@ -102,6 +99,19 @@ unsigned short io_seph_recv(unsigned char *buffer, unsigned short maxlength, uns
     (void) maxlength;
     (void) flags;
     return 0;
+}
+
+uint16_t cx_crc16(const void *buf, size_t len) {
+    (void) buf;
+    (void) len;
+    return 0xFFFF;
+}
+
+uint16_t cx_crc16_update(uint16_t crc, const void *buf, size_t len) {
+    (void) crc;
+    (void) buf;
+    (void) len;
+    return 0xFFFF;
 }
 
 cx_err_t cx_blake2b_init_no_throw(cx_blake2b_t *hash, size_t size) {
@@ -175,7 +185,7 @@ cx_err_t cx_eddsa_get_public_key_no_throw(const cx_ecfp_private_key_t *pv_key,
     (void) h;
     (void) h_len;
     pu_key->W_len = 65;
-    memset(pu_key, 'A', pu_key->W_len);
+    memset(pu_key->W, 'A', pu_key->W_len);
     return CX_OK;
 }
 
@@ -212,7 +222,7 @@ cx_err_t cx_ecdomain_parameters_length(cx_curve_t cv, size_t *length) {
         return CX_OK;
     }
 
-    exit(1);
+    siglongjmp(fuzz_exit_jump_ctx.jmp_buf, 1);
     return CX_INVALID_PARAMETER;
 }
 
@@ -236,7 +246,7 @@ void os_perso_derive_node_with_seed_key(unsigned int mode,
 
 void __attribute__((noreturn)) assert_exit(bool confirm) {
     (void) confirm;
-    abort();
+    siglongjmp(fuzz_exit_jump_ctx.jmp_buf, 1);
 }
 
 void __attribute__((noreturn)) app_exit(void) {

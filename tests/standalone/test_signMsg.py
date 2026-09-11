@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # SPDX-FileCopyrightText: 2024 Ledger SAS
 # SPDX-FileCopyrightText: 2025-2026 Vacuumlabs
 # SPDX-License-Identifier: Apache-2.0
@@ -8,41 +7,42 @@ This module provides Ragger tests for Sign Message check
 """
 
 from hashlib import blake2b
-import pytest
-import cbor2
 
+import cbor2
+import pytest
+from ledgered.devices import Device
 from ragger.backend import BackendInterface
 from ragger.error import ExceptionRAPDU
-from ledgered.devices import Device
 from ragger.navigator import Navigator, NavInsID
 from ragger.navigator.navigation_scenario import NavigateWithScenario
 
 from tests.application_client.command_builder import (
+    AddressParams,
     AddressType,
+    CommandBuilder,
     Mainnet,
     MessageAddressFieldType,
 )
-from tests.application_client.status_words import StatusWord
 from tests.application_client.command_sender import CommandSender
-
-from tests.standalone.input_files.signMsg import (
-    signMsgTestCases,
-    signMsgDenyTestCases,
-    SignMsgTestCase,
-    SignMsgDenyTestCase,
-    build_sign_msg_init_apdu_for_deny,
-)
-
-from tests.application_client.command_builder import AddressParams, CommandBuilder
+from tests.application_client.status_words import StatusWord
 from tests.standalone.input_files.derive_address import DeriveAddressTestCase
-
+from tests.standalone.input_files.signMsg import (
+    SignMsgDenyTestCase,
+    SignMsgTestCase,
+    build_sign_msg_chunk_apdu_for_deny,
+    build_sign_msg_confirm_apdu_for_deny,
+    build_sign_msg_init_apdu_for_deny,
+    signMsgDenyTestCases,
+    signMsgTestCases,
+)
 from tests.standalone.utils import (
-    idTestFunc,
-    get_device_pubkey,
-    verify_signature,
-    derive_address,
-    review_approve,
     NavContext,
+    assert_expected_deny_and_app_alive,
+    derive_address,
+    get_device_pubkey,
+    idTestFunc,
+    review_approve,
+    verify_signature,
 )
 
 
@@ -64,33 +64,19 @@ def test_sign_message(
         review_approve(
             nav_ctx,
             test_name=testCase.name,
-            target_text="Sign message"
-            if not testCase.expected_warnings
-            else r"^Reject operation$",
+            target_text="Sign message" if not testCase.expected_warnings else r"^Reject operation$",
             warnings=testCase.expected_warnings,
-            nano_review_instructions=(
-                [NavInsID.LEFT_CLICK, NavInsID.BOTH_CLICK]
-                if testCase.expected_warnings
-                else None
-            ),
+            nano_review_instructions=([NavInsID.LEFT_CLICK, NavInsID.BOTH_CLICK] if testCase.expected_warnings else None),
         )
 
-    signature, public_key, address_field = client.sign_msg(
-        testCase, on_review=review_msg
-    )
+    signature, public_key, address_field = client.sign_msg(testCase, on_review=review_msg)
 
     # Check the response
     _check_result(testCase, signature, public_key, address_field)
 
 
 @pytest.mark.parametrize("testCase", signMsgDenyTestCases, ids=idTestFunc)
-def test_sign_message_deny(
-    backend: BackendInterface, testCase: SignMsgDenyTestCase
-) -> None:
-    from tests.standalone.input_files.signMsg import (
-        build_sign_msg_chunk_apdu_for_deny,
-        build_sign_msg_confirm_apdu_for_deny,
-    )
+def test_sign_message_deny(backend: BackendInterface, testCase: SignMsgDenyTestCase) -> None:
 
     # Handle multi-phase deny scenarios
     if testCase.send_chunk_without_init:
@@ -98,7 +84,7 @@ def test_sign_message_deny(
         chunk_apdu = build_sign_msg_chunk_apdu_for_deny(testCase, 0)
         with pytest.raises(ExceptionRAPDU) as err:
             backend.exchange_raw(chunk_apdu)
-        assert err.value.status == testCase.expected_swo
+        assert_expected_deny_and_app_alive(backend, err.value, testCase.expected_swo)
         return
 
     # Standard flow: always send INIT first
@@ -124,8 +110,9 @@ def test_sign_message_deny(
             and (
                 msg_len > 65535  # Exceeds UINT16_MAX
                 or (
-                    not testCase.msgData.isAscii and msg_len >= 32767
-                )  # Non-ASCII hex buffer overflow
+                    testCase.msgData.isAscii and testCase.msgData.hashPayload and msg_len >= 65534
+                )  # ASCII display allocation overflows with the +2 safety bytes
+                or (not testCase.msgData.isAscii and msg_len >= 32767)  # Non-ASCII hex buffer overflow
                 or (not testCase.msgData.hashPayload and msg_len >= 65280)
             )
         )  # Non-hashed sig_structure overflow
@@ -134,7 +121,7 @@ def test_sign_message_deny(
     if expect_init_failure:
         with pytest.raises(ExceptionRAPDU) as err:
             backend.exchange_raw(init_apdu)
-        assert err.value.status == testCase.expected_swo
+        assert_expected_deny_and_app_alive(backend, err.value, testCase.expected_swo)
         return
 
     # INIT succeeded, continue to CHUNK phase
@@ -142,14 +129,13 @@ def test_sign_message_deny(
 
     # Handle CHUNK-phase deny scenarios
     if testCase.invalid_chunk_size is not None or (
-        testCase.msgData.isAscii
-        and not all(32 <= b < 127 for b in bytes.fromhex(testCase.msgData.messageHex))
+        testCase.msgData.isAscii and not all(32 <= b < 127 for b in bytes.fromhex(testCase.msgData.messageHex))
     ):
         # ASCII validation or chunk size validation happens during CHUNK
         chunk_apdu = build_sign_msg_chunk_apdu_for_deny(testCase, 0)
         with pytest.raises(ExceptionRAPDU) as err:
             backend.exchange_raw(chunk_apdu)
-        assert err.value.status == testCase.expected_swo
+        assert_expected_deny_and_app_alive(backend, err.value, testCase.expected_swo)
         return
 
     # Handle CONFIRM-phase deny scenarios
@@ -158,7 +144,7 @@ def test_sign_message_deny(
         confirm_apdu = build_sign_msg_confirm_apdu_for_deny(testCase)
         with pytest.raises(ExceptionRAPDU) as err:
             backend.exchange_raw(confirm_apdu)
-        assert err.value.status == testCase.expected_swo
+        assert_expected_deny_and_app_alive(backend, err.value, testCase.expected_swo)
         return
 
     if testCase.send_confirm_with_payload:
@@ -175,16 +161,14 @@ def test_sign_message_deny(
         confirm_apdu = build_sign_msg_confirm_apdu_for_deny(testCase)
         with pytest.raises(ExceptionRAPDU) as err:
             backend.exchange_raw(confirm_apdu)
-        assert err.value.status == testCase.expected_swo
+        assert_expected_deny_and_app_alive(backend, err.value, testCase.expected_swo)
         return
 
     # If we reach here, the test case configuration is incomplete
     raise ValueError(f"Deny test case {testCase.name} has no deny scenario configured")
 
 
-def _check_result(
-    testCase: SignMsgTestCase, signature: bytes, public_key: bytes, address_field: bytes
-) -> None:
+def _check_result(testCase: SignMsgTestCase, signature: bytes, public_key: bytes, address_field: bytes) -> None:
     """Check the unpacked response values
 
     Args:
@@ -236,15 +220,9 @@ def _check_ragger_expect_sign_msg(
 ) -> None:
     if testCase.ragger_expect is None:
         pytest.fail(f"Missing ragger_expect for signMsg fixture {testCase.name!r}")
-    assert signature.hex() == testCase.ragger_expect.signatureHex, (
-        f"Signature mismatch for {testCase.name!r}"
-    )
-    assert public_key.hex() == testCase.ragger_expect.signingPublicKeyHex, (
-        f"Signing public key mismatch for {testCase.name!r}"
-    )
-    assert address_field.hex() == testCase.ragger_expect.addressFieldHex, (
-        f"Address field mismatch for {testCase.name!r}"
-    )
+    assert signature.hex() == testCase.ragger_expect.signatureHex, f"Signature mismatch for {testCase.name!r}"
+    assert public_key.hex() == testCase.ragger_expect.signingPublicKeyHex, f"Signing public key mismatch for {testCase.name!r}"
+    assert address_field.hex() == testCase.ragger_expect.addressFieldHex, f"Address field mismatch for {testCase.name!r}"
 
 
 def _generate_payload(testCase: SignMsgTestCase, addressField: bytes) -> bytes:
@@ -266,9 +244,7 @@ def _generate_payload(testCase: SignMsgTestCase, addressField: bytes) -> bytes:
     array.append(cbor2.dumps(dico))
     array.append(b"")
     if testCase.msgData.hashPayload:
-        msgHash = blake2b(
-            bytes.fromhex(testCase.msgData.messageHex), digest_size=28
-        ).hexdigest()
+        msgHash = blake2b(bytes.fromhex(testCase.msgData.messageHex), digest_size=28).hexdigest()
         array.append(bytes.fromhex(msgHash))
     else:
         array.append(bytes.fromhex(testCase.msgData.messageHex))

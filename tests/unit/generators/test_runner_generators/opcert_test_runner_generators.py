@@ -7,8 +7,8 @@ from pathlib import Path
 
 from tests.unit.generators.common import (
     read_file_safe,
-    write_generated_c_file,
     sanitize_c_identifier,
+    write_generated_c_file,
 )
 from tests.unit.generators.paths import GENERATED_OPCERT_DIR
 
@@ -102,7 +102,7 @@ static void run_opcert_fixture(const opcert_fixture_t *fixture) {
     test_read_buffer_t opcert_buffer = make_test_read_buffer(fixture->payload, fixture->payload_len);
     apdu_response_begin(INS_SIGN_OPCERT);
     handler_sign_opcert(&opcert_buffer.sdk_buffer);
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_read_buffer_unchanged_and_cleanup(&opcert_buffer, fixture->payload);
     assert_int_equal(g_last_swo, SWO_SUCCESS);
     assert_int_equal(g_last_response_len, ED25519_SIGNATURE_LENGTH);
@@ -164,9 +164,7 @@ def _build_main(function_names: list[str]) -> str:
 
 def generate_opcert_test_runners() -> int:
     if not FIXTURE_HEADER.exists():
-        raise FileNotFoundError(
-            "Opcert fixtures missing. Run generate_unit_tests_from_ragger.py fixtures stage first."
-        )
+        raise FileNotFoundError("Opcert fixtures missing. Run generate_unit_tests_from_ragger.py fixtures stage first.")
 
     fixture_names = _extract_fixture_names(FIXTURE_HEADER)
     if not fixture_names:

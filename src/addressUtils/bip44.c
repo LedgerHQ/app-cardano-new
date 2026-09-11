@@ -25,7 +25,7 @@ static const uint32_t MAX_REASONABLE_MINT_POLICY_INDEX = 1000000;
 
 // Internal helper: validate BIP44 path format from wire data
 // Returns true if path is valid, false on any validation error
-static bool bip44_check_path(bip44_path_t* pathSpec, const uint8_t* dataBuffer, size_t dataSize) {
+static bool bip44_check_path(bip44_path_t *pathSpec, const uint8_t *dataBuffer, size_t dataSize) {
     if (dataSize < 1) {
         TRACE("ERROR: Invalid data size");
         return false;
@@ -53,7 +53,7 @@ static bool bip44_check_path(bip44_path_t* pathSpec, const uint8_t* dataBuffer, 
 // Internal helper: parse BIP44 path from wire format
 // Returns number of bytes consumed, or 0 on error
 // Use buffer_read_bip44_path (public API) for safe reading with buffer advancement
-static size_t bip44_parse_path(bip44_path_t* pathSpec, const uint8_t* dataBuffer, size_t dataSize) {
+static size_t bip44_parse_path(bip44_path_t *pathSpec, const uint8_t *dataBuffer, size_t dataSize) {
     // Check path validity - return 0 on error instead of throwing
     if (!bip44_check_path(pathSpec, dataBuffer, dataSize)) {
         return 0;
@@ -67,8 +67,7 @@ static size_t bip44_parse_path(bip44_path_t* pathSpec, const uint8_t* dataBuffer
     return offset;
 }
 
-bool buffer_read_bip44_path(buffer_t *buf, bip44_path_t* path)
-{
+bool buffer_read_bip44_path(buffer_t *buf, bip44_path_t *path) {
     ASSERT(buf != NULL);
     ASSERT(path != NULL);
 
@@ -84,7 +83,7 @@ bool buffer_read_bip44_path(buffer_t *buf, bip44_path_t* path)
     // Advance buffer by the number of bytes consumed; cannot fail since bip44_parse_path
     // already verified length <= remaining
     if (!buffer_seek_cur(buf, length)) {
-        return false; // LCOV_EXCL_LINE
+        return false;  // LCOV_EXCL_LINE
     }
 
     return true;
@@ -105,7 +104,7 @@ uint32_t bip44_unharden(uint32_t value) {
 }
 
 // Byron: /44'/1815'
-bool bip44_hasByronPrefix(const bip44_path_t* pathSpec) {
+bool bip44_hasByronPrefix(const bip44_path_t *pathSpec) {
 #define CHECK(cond) \
     if (!(cond)) return false
     CHECK(pathSpec->length > BIP44_I_COIN_TYPE);
@@ -116,7 +115,7 @@ bool bip44_hasByronPrefix(const bip44_path_t* pathSpec) {
 }
 
 // Shelley: /1852'/1815'
-bool bip44_hasShelleyPrefix(const bip44_path_t* pathSpec) {
+bool bip44_hasShelleyPrefix(const bip44_path_t *pathSpec) {
 #define CHECK(cond) \
     if (!(cond)) return false
     CHECK(pathSpec->length > BIP44_I_COIN_TYPE);
@@ -127,12 +126,12 @@ bool bip44_hasShelleyPrefix(const bip44_path_t* pathSpec) {
 }
 
 // /44'/1815' or /1852'/1815'
-bool bip44_hasOrdinaryWalletKeyPrefix(const bip44_path_t* pathSpec) {
+bool bip44_hasOrdinaryWalletKeyPrefix(const bip44_path_t *pathSpec) {
     return bip44_hasByronPrefix(pathSpec) || bip44_hasShelleyPrefix(pathSpec);
 }
 
 // /1854'/1815'
-bool bip44_hasMultisigWalletKeyPrefix(const bip44_path_t* pathSpec) {
+bool bip44_hasMultisigWalletKeyPrefix(const bip44_path_t *pathSpec) {
 #define CHECK(cond) \
     if (!(cond)) return false
     CHECK(pathSpec->length > BIP44_I_COIN_TYPE);
@@ -143,7 +142,7 @@ bool bip44_hasMultisigWalletKeyPrefix(const bip44_path_t* pathSpec) {
 }
 
 // /1855'/1815'
-bool bip44_hasMintKeyPrefix(const bip44_path_t* pathSpec) {
+bool bip44_hasMintKeyPrefix(const bip44_path_t *pathSpec) {
 #define CHECK(cond) \
     if (!(cond)) return false
     CHECK(pathSpec->length > BIP44_I_COIN_TYPE);
@@ -154,7 +153,7 @@ bool bip44_hasMintKeyPrefix(const bip44_path_t* pathSpec) {
 }
 
 // /1853'/1815'
-bool bip44_hasPoolColdKeyPrefix(const bip44_path_t* pathSpec) {
+bool bip44_hasPoolColdKeyPrefix(const bip44_path_t *pathSpec) {
 #define CHECK(cond) \
     if (!(cond)) return false
     CHECK(pathSpec->length > BIP44_I_COIN_TYPE);
@@ -165,7 +164,7 @@ bool bip44_hasPoolColdKeyPrefix(const bip44_path_t* pathSpec) {
 }
 
 // /1694'/1815'
-bool bip44_hasCVoteKeyPrefix(const bip44_path_t* pathSpec) {
+bool bip44_hasCVoteKeyPrefix(const bip44_path_t *pathSpec) {
 #define CHECK(cond) \
     if (!(cond)) return false
     CHECK(pathSpec->length > BIP44_I_COIN_TYPE);
@@ -177,33 +176,33 @@ bool bip44_hasCVoteKeyPrefix(const bip44_path_t* pathSpec) {
 
 // Account
 
-bool bip44_containsAccount(const bip44_path_t* pathSpec) {
+bool bip44_containsAccount(const bip44_path_t *pathSpec) {
     return pathSpec->length > BIP44_I_ACCOUNT;
 }
 
-uint32_t bip44_getAccount(const bip44_path_t* pathSpec) {
+uint32_t bip44_getAccount(const bip44_path_t *pathSpec) {
     ASSERT(pathSpec->length > BIP44_I_ACCOUNT);
     return pathSpec->path[BIP44_I_ACCOUNT];
 }
 
-uint32_t bip44_getMintPolicy(const bip44_path_t* pathSpec) {
+uint32_t bip44_getMintPolicy(const bip44_path_t *pathSpec) {
     ASSERT(pathSpec->length > BIP44_I_MINT_POLICY);
     return pathSpec->path[BIP44_I_MINT_POLICY];
 }
 
-uint32_t bip44_getColdKeyIndex(const bip44_path_t* pathSpec) {
+uint32_t bip44_getColdKeyIndex(const bip44_path_t *pathSpec) {
     ASSERT(pathSpec->length > BIP44_I_POOL_COLD_KEY);
     return pathSpec->path[BIP44_I_POOL_COLD_KEY];
 }
 
-static bool bip44_hasReasonableAccount(const bip44_path_t* pathSpec) {
+static bool bip44_hasReasonableAccount(const bip44_path_t *pathSpec) {
     if (!bip44_containsAccount(pathSpec)) return false;
     uint32_t account = bip44_getAccount(pathSpec);
     if (!isHardened(account)) return false;
     return bip44_unharden(account) <= MAX_REASONABLE_ACCOUNT;
 }
 
-static bool bip44_hasReasonableMintPolicy(const bip44_path_t* pathSpec) {
+static bool bip44_hasReasonableMintPolicy(const bip44_path_t *pathSpec) {
     if (!bip44_isMintKeyPath(pathSpec)) return false;
     uint32_t mintPolicyIndex = bip44_getMintPolicy(pathSpec);
 
@@ -211,7 +210,7 @@ static bool bip44_hasReasonableMintPolicy(const bip44_path_t* pathSpec) {
     return bip44_unharden(mintPolicyIndex) <= MAX_REASONABLE_MINT_POLICY_INDEX;
 }
 
-static bool bip44_hasReasonablePoolColdKeyIndex(const bip44_path_t* pathSpec) {
+static bool bip44_hasReasonablePoolColdKeyIndex(const bip44_path_t *pathSpec) {
     if (!bip44_isPoolColdKeyPath(pathSpec)) return false;
     uint32_t coldKeyIndex = bip44_getColdKeyIndex(pathSpec);
 
@@ -219,31 +218,32 @@ static bool bip44_hasReasonablePoolColdKeyIndex(const bip44_path_t* pathSpec) {
     return bip44_unharden(coldKeyIndex) <= MAX_REASONABLE_COLD_KEY_INDEX;
 }
 
-uint32_t bip44_getChainTypeValue(const bip44_path_t* pathSpec) {
+uint32_t bip44_getChainTypeValue(const bip44_path_t *pathSpec) {
     ASSERT(pathSpec->length > BIP44_I_CHAIN);
     return pathSpec->path[BIP44_I_CHAIN];
 }
 
 // Address
 
-bool bip44_containsAddress(const bip44_path_t* pathSpec) {
+bool bip44_containsAddress(const bip44_path_t *pathSpec) {
     return pathSpec->length > BIP44_I_ADDRESS;
 }
 
-uint32_t bip44_getAddressValue(const bip44_path_t* pathSpec) {
+uint32_t bip44_getAddressValue(const bip44_path_t *pathSpec) {
     ASSERT(pathSpec->length > BIP44_I_ADDRESS);
     return pathSpec->path[BIP44_I_ADDRESS];
 }
 
-static bool bip44_hasReasonableAddress(const bip44_path_t* pathSpec) {
+static bool bip44_hasReasonableAddress(const bip44_path_t *pathSpec) {
     if (!bip44_containsAddress(pathSpec)) return false;
     const uint32_t address = bip44_getAddressValue(pathSpec);
     return (address <= MAX_REASONABLE_ADDRESS);
 }
 
-static bool bip44_isConwayPathRecommended(const bip44_path_t* pathSpec) {
+static bool bip44_isConwayPathRecommended(const bip44_path_t *pathSpec) {
     switch (bip44_classifyPath(pathSpec)) {
-        case PATH_DREP_KEY:
+        case PATH_ORDINARY_DREP_KEY:
+        case PATH_MULTISIG_DREP_KEY:
         case PATH_COMMITTEE_COLD_KEY:
         case PATH_COMMITTEE_HOT_KEY:
             // strongly recommended in CIP-0105 to only use 0 as address
@@ -252,16 +252,16 @@ static bool bip44_isConwayPathRecommended(const bip44_path_t* pathSpec) {
         default:
             ASSERT(false);
             return false;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
-static bool bip44_containsMoreThanAddress(const bip44_path_t* pathSpec) {
+static bool bip44_containsMoreThanAddress(const bip44_path_t *pathSpec) {
     return (pathSpec->length > BIP44_I_ADDRESS + 1);
 }
 
 // stake keys
-bool bip44_isOrdinaryStakingKeyPath(const bip44_path_t* pathSpec) {
+bool bip44_isOrdinaryStakingKeyPath(const bip44_path_t *pathSpec) {
 #define CHECK(cond) \
     if (!(cond)) return false
     CHECK(bip44_containsAddress(pathSpec));
@@ -275,7 +275,7 @@ bool bip44_isOrdinaryStakingKeyPath(const bip44_path_t* pathSpec) {
 }
 
 // multisig stake keys
-bool bip44_isMultisigStakingKeyPath(const bip44_path_t* pathSpec) {
+bool bip44_isMultisigStakingKeyPath(const bip44_path_t *pathSpec) {
 #define CHECK(cond) \
     if (!(cond)) return false
     CHECK(bip44_containsAddress(pathSpec));
@@ -288,12 +288,12 @@ bool bip44_isMultisigStakingKeyPath(const bip44_path_t* pathSpec) {
 #undef CHECK
 }
 
-bool bip44_isMultidelegationStakingKeyPath(const bip44_path_t* pathSpec) {
+bool bip44_isMultidelegationStakingKeyPath(const bip44_path_t *pathSpec) {
     return (bip44_isOrdinaryStakingKeyPath(pathSpec) || bip44_isMultisigStakingKeyPath(pathSpec)) &&
            (bip44_getAddressValue(pathSpec) > 0);
 }
 
-bool bip44_isDRepKeyPath(const bip44_path_t* pathSpec) {
+bool bip44_isOrdinaryDRepKeyPath(const bip44_path_t *pathSpec) {
 #define CHECK(cond) \
     if (!(cond)) return false
     CHECK(bip44_containsAddress(pathSpec));
@@ -307,7 +307,21 @@ bool bip44_isDRepKeyPath(const bip44_path_t* pathSpec) {
 #undef CHECK
 }
 
-bool bip44_isCommitteeColdKeyPath(const bip44_path_t* pathSpec) {
+bool bip44_isMultisigDRepKeyPath(const bip44_path_t *pathSpec) {
+#define CHECK(cond) \
+    if (!(cond)) return false
+    CHECK(bip44_containsAddress(pathSpec));
+    CHECK(!bip44_containsMoreThanAddress(pathSpec));
+    CHECK(bip44_hasMultisigWalletKeyPrefix(pathSpec));
+    CHECK(isHardened(bip44_getAccount(pathSpec)));
+    CHECK(bip44_getChainTypeValue(pathSpec) == CARDANO_CHAIN_DREP_KEY);
+    // is it strongly recommended (but not forbidden) to only use 0 as address
+    CHECK(!isHardened(bip44_getAddressValue(pathSpec)));
+    return true;
+#undef CHECK
+}
+
+bool bip44_isCommitteeColdKeyPath(const bip44_path_t *pathSpec) {
 #define CHECK(cond) \
     if (!(cond)) return false
     CHECK(bip44_containsAddress(pathSpec));
@@ -321,7 +335,7 @@ bool bip44_isCommitteeColdKeyPath(const bip44_path_t* pathSpec) {
 #undef CHECK
 }
 
-bool bip44_isCommitteeHotKeyPath(const bip44_path_t* pathSpec) {
+bool bip44_isCommitteeHotKeyPath(const bip44_path_t *pathSpec) {
 #define CHECK(cond) \
     if (!(cond)) return false
     CHECK(bip44_containsAddress(pathSpec));
@@ -335,7 +349,7 @@ bool bip44_isCommitteeHotKeyPath(const bip44_path_t* pathSpec) {
 #undef CHECK
 }
 
-bool bip44_isMintKeyPath(const bip44_path_t* pathSpec) {
+bool bip44_isMintKeyPath(const bip44_path_t *pathSpec) {
 #define CHECK(cond) \
     if (!(cond)) return false
     CHECK(pathSpec->length == BIP44_I_MINT_POLICY + 1);
@@ -345,7 +359,7 @@ bool bip44_isMintKeyPath(const bip44_path_t* pathSpec) {
 #undef CHECK
 }
 
-bool bip44_isPoolColdKeyPath(const bip44_path_t* pathSpec) {
+bool bip44_isPoolColdKeyPath(const bip44_path_t *pathSpec) {
 #define CHECK(cond) \
     if (!(cond)) return false
     CHECK(pathSpec->length == BIP44_I_POOL_COLD_KEY + 1);
@@ -356,7 +370,7 @@ bool bip44_isPoolColdKeyPath(const bip44_path_t* pathSpec) {
 #undef CHECK
 }
 
-bool bip44_isCVoteKeyPath(const bip44_path_t* pathSpec) {
+bool bip44_isCVoteKeyPath(const bip44_path_t *pathSpec) {
 #define CHECK(cond) \
     if (!(cond)) return false
     CHECK(pathSpec->length == BIP44_I_ADDRESS + 1);
@@ -369,7 +383,7 @@ bool bip44_isCVoteKeyPath(const bip44_path_t* pathSpec) {
 }
 
 // returns success/failure (length must be obtained via strlen)
-bool format_bip44_path(const bip44_path_t* pathSpec, char* out, size_t outSize) {
+bool format_bip44_path(const bip44_path_t *pathSpec, char *out, size_t outSize) {
     ASSERT(outSize < BUFFER_SIZE_PARANOIA);
 
     explicit_bzero(out, outSize);
@@ -378,21 +392,21 @@ bool format_bip44_path(const bip44_path_t* pathSpec, char* out, size_t outSize) 
     // and one more byte to check whether
     // everything was printed
     ASSERT(outSize >= MAX_BIP44_PATH_STRING_LENGTH + 1);
-    char* ptr = out;
-    char* end = (out + outSize);
+    char *ptr = out;
+    char *end = (out + outSize);
 
-#define WRITE(fmt, ...)                                                               \
-    {                                                                                 \
-        ASSERT(ptr <= end);                                                           \
-        STATIC_ASSERT(sizeof(end - ptr) == sizeof(size_t), "bad size_t size");        \
-        size_t availableSize = (size_t)(end - ptr);                                   \
-        int written = snprintf(ptr, availableSize, fmt, ##__VA_ARGS__);               \
-        LEDGER_ASSERT(written > 0, "snprintf formatting failed");                     \
-        /* if snprintf filled all the remaining space, there is no space for '\0', */ \
-        /* or the information is not displayed in full, */                            \
-        /* and that's a serious security risk */                                      \
-        LEDGER_ASSERT((size_t)written + 1 < availableSize, "Formatted string does not fit"); \
-        ptr += written;                                                               \
+#define WRITE(fmt, ...)                                                                       \
+    {                                                                                         \
+        ASSERT(ptr <= end);                                                                   \
+        STATIC_ASSERT(sizeof(end - ptr) == sizeof(size_t), "bad size_t size");                \
+        size_t availableSize = (size_t) (end - ptr);                                          \
+        int written = snprintf(ptr, availableSize, fmt, ##__VA_ARGS__);                       \
+        LEDGER_ASSERT(written > 0, "snprintf formatting failed");                             \
+        /* if snprintf filled all the remaining space, there is no space for '\0', */         \
+        /* or the information is not displayed in full, */                                    \
+        /* and that's a serious security risk */                                              \
+        LEDGER_ASSERT((size_t) written + 1 < availableSize, "Formatted string does not fit"); \
+        ptr += written;                                                                       \
     }
 
     WRITE("m");
@@ -411,14 +425,14 @@ bool format_bip44_path(const bip44_path_t* pathSpec, char* out, size_t outSize) 
 #undef WRITE
     ASSERT(ptr >= out);
     ASSERT(ptr + 1 < end);
-    const size_t resultLen = (size_t)(ptr - out);
+    const size_t resultLen = (size_t) (ptr - out);
     ASSERT(resultLen + 1 < outSize);
     ASSERT(strlen(out) == resultLen);
 
     return true;
 }
 
-static bip44_path_type_t bip44_classifyOrdinaryWalletPath(const bip44_path_t* pathSpec) {
+static bip44_path_type_t bip44_classifyOrdinaryWalletPath(const bip44_path_t *pathSpec) {
     ASSERT(bip44_hasOrdinaryWalletKeyPrefix(pathSpec));
 
     // account must be hardened
@@ -450,7 +464,8 @@ static bip44_path_type_t bip44_classifyOrdinaryWalletPath(const bip44_path_t* pa
                                                                     : PATH_INVALID;
 
                 case CARDANO_CHAIN_DREP_KEY:
-                    return bip44_isDRepKeyPath(pathSpec) ? PATH_DREP_KEY : PATH_INVALID;
+                    return bip44_isOrdinaryDRepKeyPath(pathSpec) ? PATH_ORDINARY_DREP_KEY
+                                                                 : PATH_INVALID;
 
                 case CARDANO_CHAIN_COMMITTEE_COLD_KEY:
                     return bip44_isCommitteeColdKeyPath(pathSpec) ? PATH_COMMITTEE_COLD_KEY
@@ -469,7 +484,7 @@ static bip44_path_type_t bip44_classifyOrdinaryWalletPath(const bip44_path_t* pa
     }
 }
 
-static bip44_path_type_t bip44_classifyMultisigWalletPath(const bip44_path_t* pathSpec) {
+static bip44_path_type_t bip44_classifyMultisigWalletPath(const bip44_path_t *pathSpec) {
     ASSERT(bip44_hasMultisigWalletKeyPrefix(pathSpec));
 
     // account must be hardened
@@ -498,6 +513,10 @@ static bip44_path_type_t bip44_classifyMultisigWalletPath(const bip44_path_t* pa
                     return bip44_isMultisigStakingKeyPath(pathSpec) ? PATH_MULTISIG_STAKING_KEY
                                                                     : PATH_INVALID;
 
+                case CARDANO_CHAIN_DREP_KEY:
+                    return bip44_isMultisigDRepKeyPath(pathSpec) ? PATH_MULTISIG_DREP_KEY
+                                                                 : PATH_INVALID;
+
                 default:
                     return PATH_INVALID;
             }
@@ -507,7 +526,7 @@ static bip44_path_type_t bip44_classifyMultisigWalletPath(const bip44_path_t* pa
     }
 }
 
-static bip44_path_type_t bip44_classifyCVotePath(const bip44_path_t* pathSpec) {
+static bip44_path_type_t bip44_classifyCVotePath(const bip44_path_t *pathSpec) {
     ASSERT(bip44_hasCVoteKeyPrefix(pathSpec));
 
     // account must be hardened
@@ -530,7 +549,7 @@ static bip44_path_type_t bip44_classifyCVotePath(const bip44_path_t* pathSpec) {
     }
 }
 
-bip44_path_type_t bip44_classifyPath(const bip44_path_t* pathSpec) {
+bip44_path_type_t bip44_classifyPath(const bip44_path_t *pathSpec) {
     if (bip44_hasOrdinaryWalletKeyPrefix(pathSpec)) {
         return bip44_classifyOrdinaryWalletPath(pathSpec);
     }
@@ -562,7 +581,7 @@ bip44_path_type_t bip44_classifyPath(const bip44_path_t* pathSpec) {
     return PATH_INVALID;
 }
 
-bool bip44_isPathReasonable(const bip44_path_t* pathSpec) {
+bool bip44_isPathReasonable(const bip44_path_t *pathSpec) {
     switch (bip44_classifyPath(pathSpec)) {
         case PATH_ORDINARY_ACCOUNT:
         case PATH_MULTISIG_ACCOUNT:
@@ -576,7 +595,8 @@ bool bip44_isPathReasonable(const bip44_path_t* pathSpec) {
         case PATH_MULTISIG_STAKING_KEY:
             return bip44_hasReasonableAccount(pathSpec) && bip44_hasReasonableAddress(pathSpec);
 
-        case PATH_DREP_KEY:
+        case PATH_ORDINARY_DREP_KEY:
+        case PATH_MULTISIG_DREP_KEY:
         case PATH_COMMITTEE_COLD_KEY:
         case PATH_COMMITTEE_HOT_KEY:
             return bip44_hasReasonableAccount(pathSpec) && bip44_hasReasonableAddress(pathSpec) &&
@@ -598,13 +618,12 @@ bool bip44_isPathReasonable(const bip44_path_t* pathSpec) {
         default:
             // we are not supposed to call this for invalid paths
             ASSERT(false);
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
-    return false; // LCOV_EXCL_LINE
+    return false;  // LCOV_EXCL_LINE
 }
 
-
-bool bip44_pathsEqual(const bip44_path_t* lhs, const bip44_path_t* rhs) {
+bool bip44_pathsEqual(const bip44_path_t *lhs, const bip44_path_t *rhs) {
     if (lhs->length != rhs->length) {
         return false;
     }
@@ -617,11 +636,12 @@ bool bip44_pathsEqual(const bip44_path_t* lhs, const bip44_path_t* rhs) {
 }
 
 #ifdef HAVE_PRINTF
-void bip44_PRINTF(const bip44_path_t* pathSpec) {
+void bip44_PRINTF(const bip44_path_t *pathSpec) {
     char tmp[MAX_BIP44_PATH_STRING_LENGTH + 2] = {0};
     bool success = format_bip44_path(pathSpec, tmp, SIZEOF(tmp));
     ASSERT(success);
-    LEDGER_ASSERT(strlen(tmp) <= MAX_BIP44_PATH_STRING_LENGTH, "BIP44 path ui string buffer too short");
+    LEDGER_ASSERT(strlen(tmp) <= MAX_BIP44_PATH_STRING_LENGTH,
+                  "BIP44 path ui string buffer too short");
     TRACE("%s", tmp);
 }
 #endif  // HAVE_PRINTF

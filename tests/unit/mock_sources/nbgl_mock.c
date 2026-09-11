@@ -19,15 +19,12 @@
 #include <string.h>
 
 #define NBGL_MOCK_MAX_FINAL_DECISIONS 16
-#define NBGL_MOCK_TEXT_BUFFER_SIZE 256
+#define NBGL_MOCK_TEXT_BUFFER_SIZE    256
 
 static bool g_final_decisions_storage[NBGL_MOCK_MAX_FINAL_DECISIONS];
 static size_t g_final_decision_count = 0;
 static size_t g_final_decision_index = 0;
 static bool g_final_decisions_strict = false;
-static bool g_reject_next_final_decision_enabled = false;
-static bool g_reject_next_final_decision_consumed = false;
-static nbgl_opType_t g_reject_next_operation_type = TYPE_TRANSACTION;
 static nbgl_operationType_t g_last_streaming_operation_type = TYPE_TRANSACTION;
 static bool g_streaming_start_auto_complete = false;
 static bool g_streaming_start_confirm = true;
@@ -50,9 +47,6 @@ void nbgl_mock_reset(void) {
     g_final_decision_count = 0;
     g_final_decision_index = 0;
     g_final_decisions_strict = false;
-    g_reject_next_final_decision_enabled = false;
-    g_reject_next_final_decision_consumed = false;
-    g_reject_next_operation_type = TYPE_TRANSACTION;
     g_last_streaming_operation_type = TYPE_TRANSACTION;
     g_streaming_start_auto_complete = false;
     g_streaming_start_confirm = true;
@@ -72,8 +66,7 @@ void nbgl_mock_set_final_decisions(const bool *decisions, size_t decision_count)
         return;
     }
 
-    LEDGER_ASSERT(decision_count <= NBGL_MOCK_MAX_FINAL_DECISIONS,
-                  "Too many final decisions");
+    LEDGER_ASSERT(decision_count <= NBGL_MOCK_MAX_FINAL_DECISIONS, "Too many final decisions");
 
     for (size_t i = 0; i < decision_count; i++) {
         g_final_decisions_storage[i] = decisions[i];
@@ -94,12 +87,6 @@ void nbgl_mock_assert_all_final_decisions_consumed(void) {
     }
 }
 
-void nbgl_mock_reject_next_final_decision_for_operation(nbgl_opType_t operation_type) {
-    g_reject_next_final_decision_enabled = true;
-    g_reject_next_final_decision_consumed = false;
-    g_reject_next_operation_type = operation_type;
-}
-
 void nbgl_mock_set_streaming_start_auto_complete(bool enabled, bool confirm) {
     g_streaming_start_auto_complete = enabled;
     g_streaming_start_confirm = confirm;
@@ -109,10 +96,6 @@ void nbgl_mock_set_streaming_continue_reject_at_call(size_t call_index) {
     g_streaming_continue_reject_enabled = true;
     g_streaming_continue_reject_at_call = call_index;
     g_streaming_continue_call_count = 0;
-}
-
-static nbgl_opType_t nbgl_mock_operation_base_type(nbgl_operationType_t operation_type) {
-    return (nbgl_opType_t) (operation_type & 0x0F);
 }
 
 static bool nbgl_mock_next_final_decision(void) {
@@ -130,15 +113,7 @@ static bool nbgl_mock_next_final_decision(void) {
 }
 
 static bool nbgl_mock_final_decision_for_operation(nbgl_operationType_t operation_type) {
-    const nbgl_opType_t operation_base_type = nbgl_mock_operation_base_type(operation_type);
-
-    if (g_reject_next_final_decision_enabled &&
-        !g_reject_next_final_decision_consumed &&
-        operation_base_type == g_reject_next_operation_type) {
-        g_reject_next_final_decision_consumed = true;
-        return false;
-    }
-
+    (void) operation_type;
     return nbgl_mock_next_final_decision();
 }
 
@@ -150,14 +125,14 @@ void nbgl_useCaseSpinner(const char *text) {
     (void) text;
 }
 
-void nbgl_useCaseHomeAndSettings(const char                   *appName,
-                                 const nbgl_icon_details_t    *appIcon,
-                                 const char                   *tagline,
-                                 const uint8_t                 initSettingPage,
+void nbgl_useCaseHomeAndSettings(const char *appName,
+                                 const nbgl_icon_details_t *appIcon,
+                                 const char *tagline,
+                                 const uint8_t initSettingPage,
                                  const nbgl_genericContents_t *settingContents,
                                  const nbgl_contentInfoList_t *infosList,
-                                 const nbgl_homeAction_t      *action,
-                                 nbgl_callback_t               quitCallback) {
+                                 const nbgl_homeAction_t *action,
+                                 nbgl_callback_t quitCallback) {
     (void) appName;
     (void) appIcon;
     (void) tagline;
@@ -181,7 +156,7 @@ void nbgl_useCaseStatus(const char *message, bool isSuccess, nbgl_callback_t qui
 }
 
 void nbgl_useCaseReviewStatus(nbgl_reviewStatusType_t reviewStatusType,
-                              nbgl_callback_t         quitCallback) {
+                              nbgl_callback_t quitCallback) {
     (void) reviewStatusType;
     if (quitCallback != NULL) {
         quitCallback();
@@ -192,15 +167,15 @@ void nbgl_useCaseReviewStatus(nbgl_reviewStatusType_t reviewStatusType,
 // Review/choice functions (auto-confirm with true)
 // ======================================================================
 
-void nbgl_useCaseAdvancedReview(nbgl_operationType_t              operationType,
+void nbgl_useCaseAdvancedReview(nbgl_operationType_t operationType,
                                 const nbgl_contentTagValueList_t *tagValueList,
-                                const nbgl_icon_details_t        *icon,
-                                const char                       *reviewTitle,
-                                const char                       *reviewSubTitle,
-                                const char                       *finishTitle,
-                                const nbgl_tipBox_t              *tipBox,
-                                const nbgl_warning_t             *warning,
-                                nbgl_choiceCallback_t             choiceCallback) {
+                                const nbgl_icon_details_t *icon,
+                                const char *reviewTitle,
+                                const char *reviewSubTitle,
+                                const char *finishTitle,
+                                const nbgl_tipBox_t *tipBox,
+                                const nbgl_warning_t *warning,
+                                nbgl_choiceCallback_t choiceCallback) {
     (void) operationType;
     (void) tagValueList;
     (void) icon;
@@ -215,11 +190,11 @@ void nbgl_useCaseAdvancedReview(nbgl_operationType_t              operationType,
 }
 
 void nbgl_useCaseChoice(const nbgl_icon_details_t *icon,
-                        const char                *message,
-                        const char                *subMessage,
-                        const char                *confirmText,
-                        const char                *rejectString,
-                        nbgl_choiceCallback_t      callback) {
+                        const char *message,
+                        const char *subMessage,
+                        const char *confirmText,
+                        const char *rejectString,
+                        nbgl_choiceCallback_t callback) {
     (void) icon;
     nbgl_mock_store_text(g_last_choice_message, message);
     (void) subMessage;
@@ -230,12 +205,12 @@ void nbgl_useCaseChoice(const nbgl_icon_details_t *icon,
     }
 }
 
-void nbgl_useCaseAddressReview(const char                       *address,
+void nbgl_useCaseAddressReview(const char *address,
                                const nbgl_contentTagValueList_t *additionalTagValueList,
-                               const nbgl_icon_details_t        *icon,
-                               const char                       *reviewTitle,
-                               const char                       *reviewSubTitle,
-                               nbgl_choiceCallback_t             choiceCallback) {
+                               const nbgl_icon_details_t *icon,
+                               const char *reviewTitle,
+                               const char *reviewSubTitle,
+                               nbgl_choiceCallback_t choiceCallback) {
     (void) address;
     (void) additionalTagValueList;
     (void) icon;
@@ -250,11 +225,11 @@ void nbgl_useCaseAddressReview(const char                       *address,
 // Streaming review functions (auto-confirm with true)
 // ======================================================================
 
-void nbgl_useCaseReviewStreamingStart(nbgl_operationType_t       operationType,
+void nbgl_useCaseReviewStreamingStart(nbgl_operationType_t operationType,
                                       const nbgl_icon_details_t *icon,
-                                      const char                *reviewTitle,
-                                      const char                *reviewSubTitle,
-                                      nbgl_choiceCallback_t      choiceCallback) {
+                                      const char *reviewTitle,
+                                      const char *reviewSubTitle,
+                                      nbgl_choiceCallback_t choiceCallback) {
     g_last_streaming_operation_type = operationType;
     (void) operationType;
     (void) icon;
@@ -265,12 +240,12 @@ void nbgl_useCaseReviewStreamingStart(nbgl_operationType_t       operationType,
     }
 }
 
-void nbgl_useCaseAdvancedReviewStreamingStart(nbgl_operationType_t       operationType,
+void nbgl_useCaseAdvancedReviewStreamingStart(nbgl_operationType_t operationType,
                                               const nbgl_icon_details_t *icon,
-                                              const char                *reviewTitle,
-                                              const char                *reviewSubTitle,
-                                              const nbgl_warning_t      *warning,
-                                              nbgl_choiceCallback_t      choiceCallback) {
+                                              const char *reviewTitle,
+                                              const char *reviewSubTitle,
+                                              const nbgl_warning_t *warning,
+                                              nbgl_choiceCallback_t choiceCallback) {
     g_last_streaming_operation_type = operationType;
     (void) operationType;
     (void) icon;
@@ -283,7 +258,7 @@ void nbgl_useCaseAdvancedReviewStreamingStart(nbgl_operationType_t       operati
 }
 
 void nbgl_useCaseReviewStreamingContinue(const nbgl_contentTagValueList_t *tagValueList,
-                                         nbgl_choiceCallback_t             choiceCallback) {
+                                         nbgl_choiceCallback_t choiceCallback) {
     (void) tagValueList;
     if (choiceCallback != NULL) {
         bool confirm = true;
@@ -296,7 +271,7 @@ void nbgl_useCaseReviewStreamingContinue(const nbgl_contentTagValueList_t *tagVa
     }
 }
 
-void nbgl_useCaseReviewStreamingFinish(const char           *finishTitle,
+void nbgl_useCaseReviewStreamingFinish(const char *finishTitle,
                                        nbgl_choiceCallback_t choiceCallback) {
     (void) finishTitle;
     if (choiceCallback != NULL) {

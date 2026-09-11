@@ -27,7 +27,7 @@
 #ifdef TRACE_UI_DISPLAY
 #define TRACE_MODULE(...) TRACE("[ui_display_tx] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 static const char BLIND_SIGNING_CHOICE_TITLE[] = "Blind signing";
@@ -44,10 +44,12 @@ bool tx_render_ui_or_fail(tx_ui_review_mode_e review_mode) {
         return true;
     }
 
+    // LCOV_EXCL_START
     tx_review_cleanup();
     TRACE_MODULE("TX UI render failed");
     send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);
     return false;
+    // LCOV_EXCL_STOP
 }
 
 static void tx_review_choice(bool confirm) {
@@ -82,7 +84,7 @@ static void tx_blind_signing_choice(bool confirm) {
     tx_ui_review_mode_e review_mode =
         confirm ? TX_UI_REVIEW_MODE_DETAILS : TX_UI_REVIEW_MODE_HASH_ONLY;
     if (!tx_render_ui_or_fail(review_mode)) {
-        return;
+        return;  // LCOV_EXCL_LINE
     }
     ui_display_transaction();
 }
@@ -94,7 +96,8 @@ void ui_display_blind_signing_choice(void) {
     LEDGER_ASSERT(G_context.state.tx_state == TX_STATE_UI_REVIEW,
                   "ui_display_blind_signing_choice called in wrong tx state: %d",
                   G_context.state.tx_state);
-    LEDGER_ASSERT(is_blind_signing_enabled(), "Blind-signing choice shown when blind signing is off");
+    LEDGER_ASSERT(is_blind_signing_enabled(),
+                  "Blind-signing choice shown when blind signing is off");
     LEDGER_ASSERT(tx_body_ctx()->review_mode == TX_UI_REVIEW_MODE_PENDING_BLIND_SIGNING_CHOICE,
                   "Blind-signing choice shown without pending choice");
 
@@ -116,7 +119,7 @@ static bool is_recoverable_streaming_chunk_boundary(ui_status_t render_status,
             return rendered_count > 0;
         default:
             return false;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
@@ -132,7 +135,7 @@ static void tx_streaming_continue_choice(bool confirm) {
     ui_free_pairs();
 
     uint16_t next_from = tx_body_ctx()->rendered_ui_pairs;
-    uint16_t total     = tx_body_ctx()->total_ui_pairs;
+    uint16_t total = tx_body_ctx()->total_ui_pairs;
 
     if (next_from >= total) {
         // All chunks done — finish screen.
@@ -143,9 +146,9 @@ static void tx_streaming_continue_choice(bool confirm) {
     // Render the next chunk.
     ui_reset_error_status();
     if (!ui_pairs_init(MAX_UI_PAIRS)) {
-        tx_review_cleanup(); // LCOV_EXCL_LINE
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
-        return; // LCOV_EXCL_LINE
+        tx_review_cleanup();                          // LCOV_EXCL_LINE
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);  // LCOV_EXCL_LINE
+        return;                                       // LCOV_EXCL_LINE
     }
 
     LEDGER_ASSERT(tx_render_ui_chunk(next_from),
@@ -164,25 +167,26 @@ static void tx_streaming_continue_choice(bool confirm) {
                 ui_reset_error_status();
                 break;
             }
-            tx_review_cleanup(); // LCOV_EXCL_LINE
-            send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
-            return; // LCOV_EXCL_LINE
+            tx_review_cleanup();                          // LCOV_EXCL_LINE
+            send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);  // LCOV_EXCL_LINE
+            return;                                       // LCOV_EXCL_LINE
         // LCOV_EXCL_START
         case UI_STATUS_UNINITIALIZED:
         default:
             LEDGER_ASSERT(false, "Unexpected UI status after streaming chunk render");
             return;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     // Update next_ui_pair_index for the next chunk.
     if (rendered_count == 0) {
         // If nothing rendered, the single pair exceeds memory. This should
         // never happen in practice because individual UI strings are bounded and small, but without
-        // this guard the next_ui_pair_index would not advance and the app would loop forever on this chunk.
-        tx_review_cleanup(); // LCOV_EXCL_LINE
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
-        return; // LCOV_EXCL_LINE
+        // this guard the next_ui_pair_index would not advance and the app would loop forever on
+        // this chunk.
+        tx_review_cleanup();                          // LCOV_EXCL_LINE
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);  // LCOV_EXCL_LINE
+        return;                                       // LCOV_EXCL_LINE
     }
     tx_body_ctx()->rendered_ui_pairs = next_from + rendered_count;
 
@@ -191,7 +195,10 @@ static void tx_streaming_continue_choice(bool confirm) {
     g_pairsList->nbPairs = (uint8_t) rendered_count;
 
     TRACE_MODULE("Streaming chunk: from=%u rendered=%u next_ui_pair_index=%u total=%u",
-          next_from, rendered_count, tx_body_ctx()->rendered_ui_pairs, total);
+                 next_from,
+                 rendered_count,
+                 tx_body_ctx()->rendered_ui_pairs,
+                 total);
 
     nbgl_useCaseReviewStreamingContinue(g_pairsList, tx_streaming_continue_choice);
 }
@@ -220,12 +227,16 @@ void ui_display_transaction(void) {
                   tx_body_ctx()->review_mode);
 
     const char *review_subtitle = NULL;
+    const char *review_title = "Review transaction";
     switch (G_context.tx_info.tx_params.txSigningMode) {
-        case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
+        case SIGN_TX_SIGNINGMODE_PLUTUS:
             review_subtitle = "Plutus execution";
             break;
-        case SIGN_TX_SIGNINGMODE_MULTISIG_TX:
+        case SIGN_TX_SIGNINGMODE_MULTISIG:
             review_subtitle = "Multisig transaction";
+            break;
+        case SIGN_TX_SIGNINGMODE_UNRESTRICTED:
+            review_subtitle = "Unrestricted signing";
             break;
         default:
             break;
@@ -242,7 +253,7 @@ void ui_display_transaction(void) {
         nbgl_useCaseAdvancedReview(TYPE_TRANSACTION,
                                    g_pairsList,
                                    &ICON_APP_CARDANO,
-                                   "Review transaction",
+                                   review_title,
                                    review_subtitle,
                                    "Sign transaction",
                                    NULL,
@@ -252,7 +263,7 @@ void ui_display_transaction(void) {
         // Streaming: first chunk already rendered.
         nbgl_useCaseAdvancedReviewStreamingStart(TYPE_TRANSACTION,
                                                  &ICON_APP_CARDANO,
-                                                 "Review transaction",
+                                                 review_title,
                                                  review_subtitle,
                                                  warningPtr,
                                                  tx_streaming_start_choice);

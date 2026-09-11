@@ -78,6 +78,10 @@ include_directories(generated/cvote)
 include_directories(generated/opcert)
 
 set(UNIT_TEST_MEM_UTILS_STUB mock_sources/mem_utils_stub.c)
+set(UNIT_TEST_MEM_UTILS_REAL_ALLOC
+    $ENV{BOLOS_SDK}/lib_alloc/app_mem_utils.c
+    $ENV{BOLOS_SDK}/lib_alloc/mem_alloc.c
+    mock_sources/os_longjmp_stub.c)
 
 # Helper: add a unit test executable, link it, and register it with CTest.
 # Usage: cardano_unit_test(<name> SOURCES <src>... LIBS <lib>...)
@@ -94,7 +98,7 @@ add_compile_definitions(HAVE_SNPRINTF_FORMAT_U)
 add_compile_definitions(HAVE_SNPRINTF_FORMAT_LL)
 # Prevent os.h from defining PRINTF as empty macro
 add_compile_definitions(PRINTF=mcu_usb_printf)
-add_compile_definitions(APPNAME=\"Cardano\")
+add_compile_definitions("APPNAME=\"Cardano ADA\"")
 add_compile_definitions(APPVERSION=\"8.0.0\")
 add_compile_definitions(MAJOR_VERSION=8)
 add_compile_definitions(MINOR_VERSION=0)
@@ -163,6 +167,7 @@ set(SIGN_TX_COMMON_SOURCES
     ../../src/transaction/tx_parse_certificates.c
     ../../src/transaction/tx_parse_outputs.c
     ../../src/transaction/tx_utils.c
+    ../../src/transaction/tx_signing_mode.c
     ../../src/parsers/cardano_parsers.c
     ../../src/securityPolicy/securityPolicy.c
     ../../src/securityPolicy/securityPolicy_privkey.c
@@ -220,6 +225,13 @@ set(SIGN_TX_COMMON_SOURCES_SWAP
 add_library(cardano_sign_tx_core_swap STATIC ${SIGN_TX_COMMON_SOURCES_SWAP})
 target_link_libraries(cardano_sign_tx_core_swap PUBLIC ${SIGN_TX_COMMON_LIBS})
 target_compile_definitions(cardano_sign_tx_core_swap PRIVATE TRACE_TX_HASH_BUILDER HAVE_SWAP)
+
+set(SIGN_TX_COMMON_SOURCES_REAL_ALLOC ${SIGN_TX_COMMON_SOURCES})
+list(REMOVE_ITEM SIGN_TX_COMMON_SOURCES_REAL_ALLOC ${UNIT_TEST_MEM_UTILS_STUB})
+list(APPEND SIGN_TX_COMMON_SOURCES_REAL_ALLOC ${UNIT_TEST_MEM_UTILS_REAL_ALLOC})
+add_library(cardano_sign_tx_core_real_alloc STATIC ${SIGN_TX_COMMON_SOURCES_REAL_ALLOC})
+target_link_libraries(cardano_sign_tx_core_real_alloc PUBLIC ${SIGN_TX_COMMON_LIBS})
+target_compile_definitions(cardano_sign_tx_core_real_alloc PRIVATE TRACE_TX_HASH_BUILDER)
 
 # Crypto reference implementations
 add_library(blake2b_lib SHARED libs/blake2b.c)
@@ -539,6 +551,10 @@ cardano_unit_test(test_sign_tx_deny_tests
     SOURCES generated/sign_tx/test_sign_tx_deny_tests.c
     LIBS cardano_sign_tx_core)
 
+cardano_unit_test(test_sign_tx_deny_tests_real_alloc
+    SOURCES generated/sign_tx/test_sign_tx_deny_tests.c
+    LIBS cardano_sign_tx_core_real_alloc)
+
 cardano_unit_test(test_handler_denies_tx
     SOURCES test_handler_denies_tx.c
     LIBS cardano_sign_tx_core)
@@ -557,6 +573,11 @@ cardano_unit_test(test_handler_state_machines
 cardano_unit_test(test_handler_sign_tx_swap
     SOURCES test_handler_sign_tx_swap.c
     LIBS cardano_sign_tx_core_swap)
+target_compile_definitions(test_handler_sign_tx_swap PRIVATE HAVE_SWAP)
+
+cardano_unit_test(test_handler_sign_tx_ui_render_failure
+    SOURCES test_handler_sign_tx_ui_render_failure.c
+    LIBS cardano_sign_tx_core)
 
 cardano_unit_test(test_sign_tx_witness_nbgl_reject
     SOURCES test_sign_tx_witness_nbgl_reject.c
@@ -604,6 +625,10 @@ cardano_unit_test(test_tx_parse_certificates
     SOURCES test_tx_parse_certificates.c
     LIBS cardano_sign_tx_core)
 
+cardano_unit_test(test_tx_ui_render_certificates
+    SOURCES test_tx_ui_render_certificates.c
+    LIBS cardano_sign_tx_core)
+
 # test_cvote_parser: keep manual (needs target_link_options)
 add_executable(test_cvote_parser test_cvote_parser.c)
 target_link_libraries(test_cvote_parser PUBLIC cmocka gcov cardano_sign_tx_core)
@@ -617,6 +642,10 @@ cardano_unit_test(test_cardano_parsers
 cardano_unit_test(test_tx_utils
     SOURCES test_tx_utils.c
     LIBS cardano_sign_tx_core)
+
+cardano_unit_test(test_tx_signing_mode
+    SOURCES test_tx_signing_mode.c ../../src/transaction/tx_signing_mode.c
+    LIBS mock_printf)
 
 cardano_unit_test(test_cvote_deny_tests
     SOURCES generated/cvote/test_cvote_deny_tests.c
@@ -856,7 +885,6 @@ set(DERIVE_NATIVE_SCRIPT_COMMON_SOURCES
     mock_sources/glyphs_mock.c
     mock_sources/nbgl_mock.c
     mock_sources/hex_stub.c
-    mock_sources/io_stub.c
     test_native_script_utils.c
 )
 set(DERIVE_NATIVE_SCRIPT_COMMON_LIBS
@@ -893,6 +921,26 @@ cardano_unit_test(test_native_script_deny_tests
 cardano_unit_test(test_handler_reset_semantics
     SOURCES test_handler_reset_semantics.c
     LIBS cardano_derive_native_script_core)
+
+cardano_unit_test(test_app_main_exception_handling
+    SOURCES
+        test_app_main_exception_handling.c
+        ../../src/app_main_utils.c
+        ../../src/app_context.c
+        ../../src/utils/mem.c
+        ${UNIT_TEST_MEM_UTILS_STUB}
+        mock_sources/mock_globals.c
+    LIBS mock_printf)
+
+cardano_unit_test(test_app_main_exception_handling_real_alloc
+    SOURCES
+        test_app_main_exception_handling.c
+        ../../src/app_main_utils.c
+        ../../src/app_context.c
+        ../../src/utils/mem.c
+        ${UNIT_TEST_MEM_UTILS_REAL_ALLOC}
+        mock_sources/mock_globals.c
+    LIBS mock_printf)
 
 cardano_unit_test(test_native_script_state_machine
     SOURCES test_native_script_state_machine.c

@@ -24,7 +24,7 @@ void handler_debug_set_settings(const buffer_t *buf) {
     // Expect exactly 3 bytes of data
     const size_t remaining = buffer_data_size(buf);
     if (remaining != 3) {
-        TRACE("DEBUG: Invalid data length: %d (expected 3)", (int)remaining);
+        TRACE("DEBUG: Invalid data length: %d (expected 3)", (int) remaining);
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
     }
@@ -34,10 +34,8 @@ void handler_debug_set_settings(const buffer_t *buf) {
     uint8_t silent_export = 0;
     uint8_t blind_signing = 0;
     buffer_t read_buf = *buf;
-    if (!buffer_read_u8(&read_buf, &expert_mode) ||
-        !buffer_read_u8(&read_buf, &silent_export) ||
-        !buffer_read_u8(&read_buf, &blind_signing) ||
-        read_buf.offset != read_buf.size) {
+    if (!buffer_read_u8(&read_buf, &expert_mode) || !buffer_read_u8(&read_buf, &silent_export) ||
+        !buffer_read_u8(&read_buf, &blind_signing) || read_buf.offset != read_buf.size) {
         TRACE("DEBUG: Invalid data length while reading settings");
         send_swo_and_reset(SWO_WRONG_DATA_LENGTH);
         return;
@@ -61,15 +59,15 @@ void handler_debug_set_settings(const buffer_t *buf) {
           blind_signing);
 
     // Write to NVM to mirror the UI toggles
-    nvm_write((void*)&N_storage.expert_mode_enabled, &expert_mode, sizeof(uint8_t));
-    nvm_write((void*)&N_storage.silent_pubkey_export_enabled, &silent_export, sizeof(uint8_t));
-    nvm_write((void*)&N_storage.blind_signing_enabled, &blind_signing, sizeof(uint8_t));
+    nvm_write((void *) &N_storage.expert_mode_enabled, &expert_mode, sizeof(uint8_t));
+    nvm_write((void *) &N_storage.silent_pubkey_export_enabled, &silent_export, sizeof(uint8_t));
+    nvm_write((void *) &N_storage.blind_signing_enabled, &blind_signing, sizeof(uint8_t));
 
     // Return current settings as confirmation (3 bytes)
     uint8_t response[3] = {
-        N_storage.expert_mode_enabled,
-        N_storage.silent_pubkey_export_enabled,
-        N_storage.blind_signing_enabled,
+        expert_mode_setting_value(),
+        silent_pubkey_export_setting_value(),
+        blind_signing_setting_value(),
     };
 
     apdu_response_send_data(response, sizeof(response), SWO_SUCCESS);

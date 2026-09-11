@@ -48,7 +48,7 @@ static void test_buffer_read_cvote_credential_empty(void **state) {
 
 static void test_buffer_read_cvote_credential_invalid_type(void **state) {
     (void) state;
-    uint8_t raw[] = {0x01}; // Type 1 is not allowed
+    uint8_t raw[] = {0x01};  // Type 1 is not allowed
     buffer_t buf = buffer_create(raw, sizeof(raw));
     cvote_credential_t cred = {0};
     assert_false(buffer_read_cvote_credential(&buf, &cred));
@@ -56,7 +56,7 @@ static void test_buffer_read_cvote_credential_invalid_type(void **state) {
 
 static void test_buffer_read_cvote_credential_key_path_truncated(void **state) {
     (void) state;
-    uint8_t raw[] = {CVOTE_CREDENTIAL_KEY_PATH, 0x01, 0x02}; // Truncated path
+    uint8_t raw[] = {CVOTE_CREDENTIAL_KEY_PATH, 0x01, 0x02};  // Truncated path
     buffer_t buf = buffer_create(raw, sizeof(raw));
     cvote_credential_t cred = {0};
     assert_false(buffer_read_cvote_credential(&buf, &cred));
@@ -64,7 +64,7 @@ static void test_buffer_read_cvote_credential_key_path_truncated(void **state) {
 
 static void test_buffer_read_cvote_credential_key_truncated(void **state) {
     (void) state;
-    uint8_t raw[] = {CVOTE_CREDENTIAL_KEY, 0x00, 0x01}; // Less than 32 bytes
+    uint8_t raw[] = {CVOTE_CREDENTIAL_KEY, 0x00, 0x01};  // Less than 32 bytes
     buffer_t buf = buffer_create(raw, sizeof(raw));
     cvote_credential_t cred = {0};
     assert_false(buffer_read_cvote_credential(&buf, &cred));
@@ -77,7 +77,7 @@ static void test_buffer_read_cvote_credential_key_truncated(void **state) {
 static void test_cvote_parse_destination_invalid_format(void **state) {
     (void) state;
     reset_test_context();
-    uint8_t raw[] = {0xFF}; // Invalid destination format
+    uint8_t raw[] = {0xFF};  // Invalid destination format
     buffer_t buf = buffer_create(raw, sizeof(raw));
     tx_output_destination_t dest = {0};
     will_return(__wrap_parse_output_destination, 1);
@@ -103,7 +103,7 @@ static void test_cvote_parse_destination_out_of_memory(void **state) {
 static void test_cvote_parse_init_too_short(void **state) {
     (void) state;
     reset_test_context();
-    uint8_t raw[] = {0x01, 0x00}; // Only 2 bytes, needs at least 3
+    uint8_t raw[] = {0x01, 0x00};  // Only 2 bytes, needs at least 3
     tx_aux_data_ctx()->raw_cvote_init_data = raw;
     tx_aux_data_ctx()->raw_cvote_init_data_len = sizeof(raw);
     cvote_aux_data_t out_data = {0};
@@ -114,7 +114,7 @@ static void test_cvote_parse_init_invalid_format(void **state) {
     (void) state;
     reset_test_context();
     // Format 3 (invalid), 0 delegations
-    uint8_t raw[] = {0x03, 0x00, 0x00}; 
+    uint8_t raw[] = {0x03, 0x00, 0x00};
     tx_aux_data_ctx()->raw_cvote_init_data = raw;
     tx_aux_data_ctx()->raw_cvote_init_data_len = sizeof(raw);
     cvote_aux_data_t out_data = {0};
@@ -149,9 +149,16 @@ static void test_cvote_parse_init_destination_truncated(void **state) {
     // CIP36, 0 delegations
     // Staking credential: Key path with 1 element
     uint8_t raw[] = {
-        CIP36, 0x00, 0x00, 
-        CVOTE_CREDENTIAL_KEY_PATH, 0x01, 0x80, 0x00, 0x00, 0x00, // Staking cred (valid path len=1, path=0x80000000)
-        0xFF // Invalid dest format
+        CIP36,
+        0x00,
+        0x00,
+        CVOTE_CREDENTIAL_KEY_PATH,
+        0x01,
+        0x80,
+        0x00,
+        0x00,
+        0x00,  // Staking cred (valid path len=1, path=0x80000000)
+        0xFF   // Invalid dest format
     };
     tx_aux_data_ctx()->raw_cvote_init_data = raw;
     tx_aux_data_ctx()->raw_cvote_init_data_len = sizeof(raw);
@@ -164,15 +171,23 @@ static void test_cvote_parse_init_nonce_truncated(void **state) {
     (void) state;
     reset_test_context();
     uint8_t raw[] = {
-        CIP36, 0x00, 0x00, 
-        CVOTE_CREDENTIAL_KEY_PATH, 0x01, 0x80, 0x00, 0x00, 0x00,
-        DESTINATION_THIRD_PARTY, // Dest: third party, 1 byte address
-        0x00, 0x00 // Truncated nonce
+        CIP36,
+        0x00,
+        0x00,
+        CVOTE_CREDENTIAL_KEY_PATH,
+        0x01,
+        0x80,
+        0x00,
+        0x00,
+        0x00,
+        DESTINATION_THIRD_PARTY,  // Dest: third party, 1 byte address
+        0x00,
+        0x00  // Truncated nonce
     };
     tx_aux_data_ctx()->raw_cvote_init_data = raw;
     tx_aux_data_ctx()->raw_cvote_init_data_len = sizeof(raw);
     cvote_aux_data_t out_data = {0};
-    will_return(__wrap_parse_output_destination, 0); // Success
+    will_return(__wrap_parse_output_destination, 0);  // Success
     assert_int_equal(cvote_parse_aux_data_init(&out_data), CVOTE_PARSER_INVALID_FORMAT);
 }
 
@@ -180,16 +195,30 @@ static void test_cvote_parse_init_cip36_voting_purpose_truncated(void **state) {
     (void) state;
     reset_test_context();
     uint8_t raw[] = {
-        CIP36, 0x00, 0x00, 
-        CVOTE_CREDENTIAL_KEY_PATH, 0x01, 0x80, 0x00, 0x00, 0x00,
+        CIP36,
+        0x00,
+        0x00,
+        CVOTE_CREDENTIAL_KEY_PATH,
+        0x01,
+        0x80,
+        0x00,
+        0x00,
+        0x00,
         DESTINATION_THIRD_PARTY,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, // Nonce (8 bytes)
-        0x00 // Truncated voting purpose
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x01,  // Nonce (8 bytes)
+        0x00   // Truncated voting purpose
     };
     tx_aux_data_ctx()->raw_cvote_init_data = raw;
     tx_aux_data_ctx()->raw_cvote_init_data_len = sizeof(raw);
     cvote_aux_data_t out_data = {0};
-    will_return(__wrap_parse_output_destination, 0); // Success
+    will_return(__wrap_parse_output_destination, 0);  // Success
     assert_int_equal(cvote_parse_aux_data_init(&out_data), CVOTE_PARSER_INVALID_FORMAT);
 }
 
@@ -197,17 +226,25 @@ static void test_cvote_parse_init_cip36_vote_cred_truncated(void **state) {
     (void) state;
     reset_test_context();
     uint8_t raw[] = {
-        CIP36, 0x00, 0x00, 
-        CVOTE_CREDENTIAL_KEY_PATH, 0x01, 0x80, 0x00, 0x00, 0x00,
-        DESTINATION_THIRD_PARTY,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, // Nonce (8 bytes)
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // Voting purpose (8 bytes)
-        0x01 // Invalid vote credential
+        CIP36, 0x00,
+        0x00,  CVOTE_CREDENTIAL_KEY_PATH,
+        0x01,  0x80,
+        0x00,  0x00,
+        0x00,  DESTINATION_THIRD_PARTY,
+        0x00,  0x00,
+        0x00,  0x00,
+        0x00,  0x00,
+        0x00,  0x01,  // Nonce (8 bytes)
+        0x00,  0x00,
+        0x00,  0x00,
+        0x00,  0x00,
+        0x00,  0x00,  // Voting purpose (8 bytes)
+        0x01          // Invalid vote credential
     };
     tx_aux_data_ctx()->raw_cvote_init_data = raw;
     tx_aux_data_ctx()->raw_cvote_init_data_len = sizeof(raw);
     cvote_aux_data_t out_data = {0};
-    will_return(__wrap_parse_output_destination, 0); // Success
+    will_return(__wrap_parse_output_destination, 0);  // Success
     assert_int_equal(cvote_parse_aux_data_init(&out_data), CVOTE_PARSER_INVALID_FORMAT);
 }
 
@@ -215,16 +252,30 @@ static void test_cvote_parse_init_cip15_vote_cred_truncated(void **state) {
     (void) state;
     reset_test_context();
     uint8_t raw[] = {
-        CIP15, 0x00, 0x00, 
-        CVOTE_CREDENTIAL_KEY_PATH, 0x01, 0x80, 0x00, 0x00, 0x00,
+        CIP15,
+        0x00,
+        0x00,
+        CVOTE_CREDENTIAL_KEY_PATH,
+        0x01,
+        0x80,
+        0x00,
+        0x00,
+        0x00,
         DESTINATION_THIRD_PARTY,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, // Nonce (8 bytes)
-        0x01 // Invalid vote credential
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x01,  // Nonce (8 bytes)
+        0x01   // Invalid vote credential
     };
     tx_aux_data_ctx()->raw_cvote_init_data = raw;
     tx_aux_data_ctx()->raw_cvote_init_data_len = sizeof(raw);
     cvote_aux_data_t out_data = {0};
-    will_return(__wrap_parse_output_destination, 0); // Success
+    will_return(__wrap_parse_output_destination, 0);  // Success
     assert_int_equal(cvote_parse_aux_data_init(&out_data), CVOTE_PARSER_INVALID_FORMAT);
 }
 
@@ -232,17 +283,36 @@ static void test_cvote_parse_init_not_fully_consumed(void **state) {
     (void) state;
     reset_test_context();
     uint8_t raw[] = {
-        CIP15, 0x00, 0x00, 
-        CVOTE_CREDENTIAL_KEY_PATH, 0x01, 0x80, 0x00, 0x00, 0x00, // Staking cred
-        DESTINATION_THIRD_PARTY, // Dest
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, // Nonce (8 bytes)
-        CVOTE_CREDENTIAL_KEY_PATH, 0x01, 0x80, 0x00, 0x00, 0x00, // Vote cred
-        0xEE // EXTRA BYTE
+        CIP15,
+        0x00,
+        0x00,
+        CVOTE_CREDENTIAL_KEY_PATH,
+        0x01,
+        0x80,
+        0x00,
+        0x00,
+        0x00,                     // Staking cred
+        DESTINATION_THIRD_PARTY,  // Dest
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x01,  // Nonce (8 bytes)
+        CVOTE_CREDENTIAL_KEY_PATH,
+        0x01,
+        0x80,
+        0x00,
+        0x00,
+        0x00,  // Vote cred
+        0xEE   // EXTRA BYTE
     };
     tx_aux_data_ctx()->raw_cvote_init_data = raw;
     tx_aux_data_ctx()->raw_cvote_init_data_len = sizeof(raw);
     cvote_aux_data_t out_data = {0};
-    will_return(__wrap_parse_output_destination, 0); // Success
+    will_return(__wrap_parse_output_destination, 0);  // Success
     assert_int_equal(cvote_parse_aux_data_init(&out_data), CVOTE_PARSER_INVALID_FORMAT);
 }
 

@@ -12,20 +12,70 @@
 #include "assert.h"
 #include "utils.h"
 
+/**
+ * Registry of currently-live temporary buffers allocated via tx_alloc_temp_buffer_or_fail().
+ *
+ * Transaction parsing routinely allocates a short-lived scratch buffer, then aborts deep in the
+ * call stack on a malformed input or a security-policy DENY. Those abort paths reach
+ * reset_app_context() -> mem_utils_reset_app_heap(), which reclaims the whole app heap in one shot
+ * BEFORE control unwinds back to the function that owns the scratch buffer. The owner therefore
+ * cannot free it after the fact (the heap is already gone) and the memory profiler would flag the
+ * unmatched allocation as a leak.
+ *
+ * To keep ownership simple, every temp buffer is registered here on allocation and removed on its
+ * normal free. reset_app_context() calls tx_free_all_temp_buffers() before the bulk heap reset, so
+ * any buffer still live at an abort is freed explicitly (and visible to the profiler) while the
+ * heap is still valid. The slot count only needs to cover the maximum number simultaneously live
+ * (currently 2: e.g. address_bytes + hash_description, or parsed_certificate_data + a nested
+ * scratch); 4 leaves head-room.
+ */
+#define MAX_LIVE_TEMP_BUFFERS 4
+static uint8_t *g_temp_buffers[MAX_LIVE_TEMP_BUFFERS];
+
 uint8_t *tx_alloc_temp_buffer_or_fail(size_t size) {
     uint8_t *buffer = NULL;
     bool allocated = allocate_zeroed((void **) &buffer, size);
     ASSERT(allocated && buffer != NULL);
-    return buffer;
+
+    for (size_t i = 0; i < MAX_LIVE_TEMP_BUFFERS; i++) {
+        if (g_temp_buffers[i] == NULL) {
+            g_temp_buffers[i] = buffer;
+            return buffer;
+        }
+    }
+    // Invariant: the number of simultaneously-live temp buffers never exceeds the registry size.
+    LEDGER_ASSERT(false, "temp buffer registry full");  // LCOV_EXCL_LINE
+    return buffer;                                      // LCOV_EXCL_LINE
 }
 
-bool violatesSingleAccountOrStoreIt(const bip44_path_t* path) {
+void tx_free_temp_buffer(void **buffer) {
+    if (buffer == NULL || *buffer == NULL) {
+        return;
+    }
+    for (size_t i = 0; i < MAX_LIVE_TEMP_BUFFERS; i++) {
+        if (g_temp_buffers[i] == *buffer) {
+            g_temp_buffers[i] = NULL;
+            break;
+        }
+    }
+    APP_MEM_FREE_AND_NULL(buffer);
+}
+
+void tx_free_all_temp_buffers(void) {
+    for (size_t i = 0; i < MAX_LIVE_TEMP_BUFFERS; i++) {
+        if (g_temp_buffers[i] != NULL) {
+            APP_MEM_FREE_AND_NULL((void **) &g_temp_buffers[i]);
+        }
+    }
+}
+
+bool violatesSingleAccountOrStoreIt(const bip44_path_t *path) {
     ASSERT(path != NULL);
     TRACE("Considering path");
     BIP44_PRINTF(path);
     TRACE("");
 
-    single_account_data_t* singleAccountData = &(G_context.tx_info.single_account_data);
+    single_account_data_t *singleAccountData = &(G_context.tx_info.single_account_data);
 
     ASSERT(bip44_hasOrdinaryWalletKeyPrefix(path) && bip44_containsAccount(path));
 
@@ -54,10 +104,10 @@ bool violatesSingleAccountOrStoreIt(const bip44_path_t* path) {
     return false;
 }
 
-bool tx_output_destination_to_address_bytes(const tx_output_destination_t* destination,
-                                            uint8_t* addressBuffer,
+bool tx_output_destination_to_address_bytes(const tx_output_destination_t *destination,
+                                            uint8_t *addressBuffer,
                                             size_t addressBufferSize,
-                                            size_t* outAddressLength) {
+                                            size_t *outAddressLength) {
     ASSERT(destination != NULL);
     ASSERT(addressBuffer != NULL);
     ASSERT(outAddressLength != NULL);
@@ -80,9 +130,8 @@ bool tx_output_destination_to_address_bytes(const tx_output_destination_t* desti
         case DESTINATION_DEVICE_OWNED: {
             size_t derivedAddressLength =
                 deriveAddress(&destination->params, addressBuffer, addressBufferSize);
-            LEDGER_ASSERT(derivedAddressLength > 0 &&
-                          derivedAddressLength <= MAX_ADDRESS_LENGTH &&
-                          derivedAddressLength <= addressBufferSize,
+            LEDGER_ASSERT(derivedAddressLength > 0 && derivedAddressLength <= MAX_ADDRESS_LENGTH &&
+                              derivedAddressLength <= addressBufferSize,
                           "Invalid derived destination address length: %u",
                           (unsigned) derivedAddressLength);
             *outAddressLength = derivedAddressLength;
@@ -93,25 +142,25 @@ bool tx_output_destination_to_address_bytes(const tx_output_destination_t* desti
         default:
             ASSERT(false);
             return false;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
-__noinline_due_to_stack__
-bool format_tx_output_destination_human_readable(const tx_output_destination_t* destination,
-                                                 char* out,
-                                                 size_t outSize) {
-    uint8_t *address_bytes = tx_alloc_temp_buffer_or_fail(MAX_ADDRESS_LENGTH);
+__noinline_due_to_stack__ bool format_tx_output_destination_human_readable(
+    const tx_output_destination_t *destination,
+    char *out,
+    size_t outSize) {
+    // Use a stack buffer — formatters used with UI_ADD_FORMAT* must not heap-allocate.
+    // See the contract note in ui_utils.h.
+    uint8_t address_bytes[MAX_ADDRESS_LENGTH];
+    explicit_bzero(address_bytes, sizeof(address_bytes));
 
     size_t address_size = 0;
-    bool destination_parsed = tx_output_destination_to_address_bytes(
-        destination,
-        address_bytes,
-        MAX_ADDRESS_LENGTH,
-        &address_size);
+    bool destination_parsed = tx_output_destination_to_address_bytes(destination,
+                                                                     address_bytes,
+                                                                     MAX_ADDRESS_LENGTH,
+                                                                     &address_size);
     LEDGER_ASSERT(destination_parsed, "Failed to build output address bytes for UI");
 
-    bool formatted = format_address_human_readable(address_bytes, address_size, out, outSize);
-    APP_MEM_FREE_AND_NULL((void **) &address_bytes);
-    return formatted;
+    return format_address_human_readable(address_bytes, address_size, out, outSize);
 }

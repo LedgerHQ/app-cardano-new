@@ -23,13 +23,13 @@ typedef struct {
     bool ext_pubkey_was_nonzero_before_scrub;
 } key_derivation_scrub_observation_t;
 
-static key_derivation_scrub_observation_t* g_key_derivation_scrub_observation = NULL;
+static key_derivation_scrub_observation_t *g_key_derivation_scrub_observation = NULL;
 
-void explicit_bzero(void* ptr, size_t len) {
+void explicit_bzero(void *ptr, size_t len) {
     if (g_key_derivation_scrub_observation != NULL && len == sizeof(extendedPublicKey_t)) {
         g_key_derivation_scrub_observation->saw_ext_pubkey_scrub = true;
 
-        const uint8_t* bytes = (const uint8_t*) ptr;
+        const uint8_t *bytes = (const uint8_t *) ptr;
         for (size_t i = 0; i < len; i++) {
             if (bytes[i] != 0) {
                 g_key_derivation_scrub_observation->ext_pubkey_was_nonzero_before_scrub = true;
@@ -41,16 +41,16 @@ void explicit_bzero(void* ptr, size_t len) {
     memset(ptr, 0, len);
 }
 
-static void init_path(bip44_path_t* dst, const uint32_t* elems, size_t len) {
+static void init_path(bip44_path_t *dst, const uint32_t *elems, size_t len) {
     dst->length = len;
     for (size_t i = 0; i < len; i++) {
         dst->path[i] = elems[i];
     }
 }
 
-static void expect_extended_pubkey(const uint32_t* path,
+static void expect_extended_pubkey(const uint32_t *path,
                                    size_t path_len,
-                                   const char* expected_hex) {
+                                   const char *expected_hex) {
     bip44_path_t bip = {0};
     init_path(&bip, path, path_len);
 
@@ -64,46 +64,43 @@ static void expect_extended_pubkey(const uint32_t* path,
     assert_memory_equal(ext.pubKey, expected, sizeof(expected));
 }
 
-static void test_byron_accounts(void** state) {
+static void test_byron_accounts(void **state) {
     (void) state;
 
-    expect_extended_pubkey((uint32_t[]){HD + 44, HD + 1815, HD + 1}, 3,
+    expect_extended_pubkey((uint32_t[]) {HD + 44, HD + 1815, HD + 1},
+                           3,
                            "eb6e933ce45516ac7b0e023de700efae5e212ccc6bf0fcb33ba9243b9d832827");
-
 }
 
-static void test_shelley_accounts(void** state) {
+static void test_shelley_accounts(void **state) {
     (void) state;
 
-    expect_extended_pubkey((uint32_t[]){HD + 1852, HD + 1815, HD + 1}, 3,
+    expect_extended_pubkey((uint32_t[]) {HD + 1852, HD + 1815, HD + 1},
+                           3,
                            "c9d624c493e269271980bc5e89bcd913719137f3b20c11339f28875951124c82");
 }
 
-static void test_pool_cold_key(void** state) {
+static void test_pool_cold_key(void **state) {
     (void) state;
 
-    expect_extended_pubkey((uint32_t[]){HD + 1853, HD + 1815, HD + 0, HD + 2}, 4,
+    expect_extended_pubkey((uint32_t[]) {HD + 1853, HD + 1815, HD + 0, HD + 2},
+                           4,
                            "0f38ab7679e756ca11924f12e745d154ffbac01bc0f7bf05ba7f658c3a28b0cb");
 }
 
 static void child_key_hash_invalid_size_should_abort_after_scrub(void) {
     bip44_path_t bip = {0};
-    init_path(&bip, (uint32_t[]){HD + 1852, HD + 1815, HD + 1}, 3);
+    init_path(&bip, (uint32_t[]) {HD + 1852, HD + 1815, HD + 1}, 3);
 
     uint8_t hash[27] = {0};
     keyPathToKeyHash(&bip, hash, sizeof(hash));
 }
 
-static void test_key_hash_invalid_size_scrubs_extended_pubkey_before_abort(void** state) {
+static void test_key_hash_invalid_size_scrubs_extended_pubkey_before_abort(void **state) {
     (void) state;
 
-    key_derivation_scrub_observation_t* observation =
-        mmap(NULL,
-             sizeof(*observation),
-             PROT_READ | PROT_WRITE,
-             MAP_SHARED | MAP_ANONYMOUS,
-             -1,
-             0);
+    key_derivation_scrub_observation_t *observation =
+        mmap(NULL, sizeof(*observation), PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     assert_true(observation != MAP_FAILED);
     memset(observation, 0, sizeof(*observation));
 

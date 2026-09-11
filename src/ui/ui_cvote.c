@@ -25,7 +25,7 @@
 #ifdef TRACE_UI_DISPLAY
 #define TRACE_MODULE(...) TRACE("[ui_cvote] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 // CIP-36 vote confirm UI pair counts
@@ -64,17 +64,23 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy, warning_bits_t w
     TRACE_MODULE("=== ui_display_cvote_confirm START ===");
 
     // Check state
-    LEDGER_ASSERT(G_context.req_type == REQUEST_CVOTE, "ui_display_cvote_confirm called with wrong request type: %d", G_context.req_type);
-    LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STATE_CONFIRM, "ui_display_cvote_confirm called in wrong state: %d", G_context.state.cvote_state);
+    LEDGER_ASSERT(G_context.req_type == REQUEST_CVOTE,
+                  "ui_display_cvote_confirm called with wrong request type: %d",
+                  G_context.req_type);
+    LEDGER_ASSERT(G_context.state.cvote_state == VOTECAST_STATE_CONFIRM,
+                  "ui_display_cvote_confirm called in wrong state: %d",
+                  G_context.state.cvote_state);
 
     // Check policy
     TRACE_MODULE("securityPolicy: %d", securityPolicy);
-    LEDGER_ASSERT(securityPolicy == POLICY_SHOW, "ui_display_cvote_confirm called with wrong security policy: %d", securityPolicy);
+    LEDGER_ASSERT(securityPolicy == POLICY_SHOW,
+                  "ui_display_cvote_confirm called with wrong security policy: %d",
+                  securityPolicy);
 
     ui_status_t warning_status = ui_build_warnings(warnings);
     if (warning_status != UI_STATUS_SUCCESS) {
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
-        return; // LCOV_EXCL_LINE
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);  // LCOV_EXCL_LINE
+        return;                                       // LCOV_EXCL_LINE
     }
 
     // Format all fields and check for errors
@@ -82,9 +88,9 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy, warning_bits_t w
     ui_render_scope_begin(&session);
     if (!ui_pairs_init(UI_PAIRS_CVOTE_CONFIRM)) {
         TRACE_MODULE("Failed to initialize pairs");
-        ui_render_scope_end(); // LCOV_EXCL_LINE
-        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY); // LCOV_EXCL_LINE
-        return; // LCOV_EXCL_LINE
+        ui_render_scope_end();                        // LCOV_EXCL_LINE
+        send_swo_and_reset(SWO_INSUFFICIENT_MEMORY);  // LCOV_EXCL_LINE
+        return;                                       // LCOV_EXCL_LINE
     }
 
     START_COUNT();
@@ -109,9 +115,7 @@ void ui_display_cvote_confirm(security_policy_t securityPolicy, warning_bits_t w
                    0);
     CHECK_COUNT(UI_PAIRS_CVOTE_CONFIRM);
     ui_status_t render_status = ui_render_scope_end();
-    LEDGER_ASSERT(render_status == UI_STATUS_SUCCESS,
-                  "Unexpected UI status: %d",
-                  render_status);
+    LEDGER_ASSERT(render_status == UI_STATUS_SUCCESS, "Unexpected UI status: %d", render_status);
 
     nbgl_useCaseAdvancedReview(TYPE_OPERATION,
                                g_pairsList,

@@ -16,11 +16,12 @@
 #include "transaction/tx_credential_types.h"
 #include "buffer.h"
 #include "hexUtils.h"
+#include "base58.h"
 
-#define HD HARDENED_BIP32
+#define HD                 HARDENED_BIP32
 #define MAX_ADDRESS_LENGTH 128
 
-static void init_path(bip44_path_t* path, const uint32_t* elements, size_t len) {
+static void init_path(bip44_path_t *path, const uint32_t *elements, size_t len) {
     path->length = len;
     for (size_t i = 0; i < len; i++) {
         path->path[i] = elements[i];
@@ -29,14 +30,14 @@ static void init_path(bip44_path_t* path, const uint32_t* elements, size_t len) 
 
 static void testcase_derive_address_shelley(address_type_t type,
                                             uint32_t networkIdOrProtocolMagic,
-                                            const uint32_t* paymentPath,
+                                            const uint32_t *paymentPath,
                                             size_t paymentPathLen,
                                             staking_part_type_t stakingPartType,
-                                            const uint32_t* stakingPath,
+                                            const uint32_t *stakingPath,
                                             size_t stakingPathLen,
-                                            const char* stakingKeyHashHex,
-                                            const blockchainPointer_t* pointer,
-                                            const char* expectedHex) {
+                                            const char *stakingKeyHashHex,
+                                            const blockchainPointer_t *pointer,
+                                            const char *expectedHex) {
     address_params_t params = {0};
 
     if (type == BYRON) {
@@ -63,7 +64,10 @@ static void testcase_derive_address_shelley(address_type_t type,
     if (stakingKeyHashHex != NULL) {
         size_t decodedLen = 0;
         assert_true(strlen(stakingKeyHashHex) == ADDRESS_KEY_HASH_LENGTH * 2);
-        assert_true(decode_hex(stakingKeyHashHex, stakingKeyHashBuf, sizeof(stakingKeyHashBuf), &decodedLen));
+        assert_true(decode_hex(stakingKeyHashHex,
+                               stakingKeyHashBuf,
+                               sizeof(stakingKeyHashBuf),
+                               &decodedLen));
         assert_int_equal(decodedLen, sizeof(stakingKeyHashBuf));
         params.stakingKeyHash = stakingKeyHashBuf;
     }
@@ -81,7 +85,8 @@ static void testcase_derive_address_shelley(address_type_t type,
 
     if (expectedHex != NULL &&
         strcmp(expectedHex,
-               "01f90b0dfcace47bf03e88f7469a2f4fb3a7918461aa4765bfaf55f0dae260546c20562e598fb761f419dad27edcd49f4ee4f0540b8e40d4d5") == 0) {
+               "01f90b0dfcace47bf03e88f7469a2f4fb3a7918461aa4765bfaf55f0dae260546c20562e598fb761f41"
+               "9dad27edcd49f4ee4f0540b8e40d4d5") == 0) {
         char out_hex[MAX_ADDRESS_LENGTH * 2 + 1];
         char exp_hex[MAX_ADDRESS_LENGTH * 2 + 1];
         test_bytes_to_lowercase_hex(out_hex, sizeof(out_hex), out, outSize);
@@ -100,7 +105,7 @@ static void test_address_derivation(void **state) {
     testcase_derive_address_shelley(
         BYRON,
         MAINNET_PROTOCOL_MAGIC,
-        (uint32_t[]){HD + 44, HD + 1815, HD + 0, 1, 55},
+        (uint32_t[]) {HD + 44, HD + 1815, HD + 0, 1, 55},
         5,
         STAKING_PART_NONE,
         NULL,
@@ -109,125 +114,143 @@ static void test_address_derivation(void **state) {
         NULL,
         "82d818582183581ca39fa49038d760e5ebfdafe4e6fb28bd5506af6be6687e2278e8f13ba0001a5bce789b");
 
-    testcase_derive_address_shelley(
-        BASE_PAYMENT_KEY_STAKE_KEY,
-        0x03,
-        (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1},
-        5,
-        STAKING_PART_KEY_PATH,
-        (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 2, 0},
-        5,
-        NULL,
-        NULL,
-        "035a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b31d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c");
+    testcase_derive_address_shelley(BASE_PAYMENT_KEY_STAKE_KEY,
+                                    0x03,
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1},
+                                    5,
+                                    STAKING_PART_KEY_PATH,
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 2, 0},
+                                    5,
+                                    NULL,
+                                    NULL,
+                                    "035a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b31d22"
+                                    "7aefa4b773149170885aadba30aab3127cc611ddbc4999def61c");
 
-    testcase_derive_address_shelley(
-        BASE_PAYMENT_KEY_STAKE_KEY,
-        0x00,
-        (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1},
-        5,
-        STAKING_PART_KEY_PATH,
-        (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 2, 0},
-        5,
-        NULL,
-        NULL,
-        "005a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b31d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c");
+    testcase_derive_address_shelley(BASE_PAYMENT_KEY_STAKE_KEY,
+                                    0x00,
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1},
+                                    5,
+                                    STAKING_PART_KEY_PATH,
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 2, 0},
+                                    5,
+                                    NULL,
+                                    NULL,
+                                    "005a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b31d22"
+                                    "7aefa4b773149170885aadba30aab3127cc611ddbc4999def61c");
 
-    testcase_derive_address_shelley(
-        BASE_PAYMENT_KEY_STAKE_KEY,
-        0x00,
-        (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1},
-        5,
-        STAKING_PART_KEY_HASH,
-        NULL,
-        0,
-        "1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c",
-        NULL,
-        "005a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b31d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c");
+    testcase_derive_address_shelley(BASE_PAYMENT_KEY_STAKE_KEY,
+                                    0x00,
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1},
+                                    5,
+                                    STAKING_PART_KEY_HASH,
+                                    NULL,
+                                    0,
+                                    "1d227aefa4b773149170885aadba30aab3127cc611ddbc4999def61c",
+                                    NULL,
+                                    "005a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b31d22"
+                                    "7aefa4b773149170885aadba30aab3127cc611ddbc4999def61c");
 
-    testcase_derive_address_shelley(
-        BASE_PAYMENT_KEY_STAKE_KEY,
-        0x03,
-        (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1},
-        5,
-        STAKING_PART_KEY_HASH,
-        NULL,
-        0,
-        "122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
-        NULL,
-        "035a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277");
+    testcase_derive_address_shelley(BASE_PAYMENT_KEY_STAKE_KEY,
+                                    0x03,
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1},
+                                    5,
+                                    STAKING_PART_KEY_HASH,
+                                    NULL,
+                                    0,
+                                    "122a946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277",
+                                    NULL,
+                                    "035a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3122a"
+                                    "946b9ad3d2ddf029d3a828f0468aece76895f15c9efbd69b4277");
 
-    testcase_derive_address_shelley(
-        ENTERPRISE_KEY,
-        0x00,
-        (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1},
-        5,
-        STAKING_PART_NONE,
-        NULL,
-        0,
-        NULL,
-        NULL,
-        "605a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3");
+    testcase_derive_address_shelley(ENTERPRISE_KEY,
+                                    0x00,
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1},
+                                    5,
+                                    STAKING_PART_NONE,
+                                    NULL,
+                                    0,
+                                    NULL,
+                                    NULL,
+                                    "605a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3");
 
-    testcase_derive_address_shelley(
-        ENTERPRISE_KEY,
-        0x03,
-        (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1},
-        5,
-        STAKING_PART_NONE,
-        NULL,
-        0,
-        NULL,
-        NULL,
-        "635a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3");
+    testcase_derive_address_shelley(ENTERPRISE_KEY,
+                                    0x03,
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1},
+                                    5,
+                                    STAKING_PART_NONE,
+                                    NULL,
+                                    0,
+                                    NULL,
+                                    NULL,
+                                    "635a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3");
 
     testcase_derive_address_shelley(
         POINTER_KEY,
         0x00,
-        (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1},
+        (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1},
         5,
         STAKING_PART_BLOCKCHAIN_POINTER,
         NULL,
         0,
         NULL,
-        &(blockchainPointer_t){.blockIndex = 1, .txIndex = 2, .certificateIndex = 3},
+        &(blockchainPointer_t) {.blockIndex = 1, .txIndex = 2, .certificateIndex = 3},
         "405a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3010203");
 
     testcase_derive_address_shelley(
         POINTER_KEY,
         0x03,
-        (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1},
+        (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1},
         5,
         STAKING_PART_BLOCKCHAIN_POINTER,
         NULL,
         0,
         NULL,
-        &(blockchainPointer_t){.blockIndex = 24157, .txIndex = 177, .certificateIndex = 42},
+        &(blockchainPointer_t) {.blockIndex = 24157, .txIndex = 177, .certificateIndex = 42},
         "435a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b381bc5d81312a");
 
     testcase_derive_address_shelley(
         POINTER_KEY,
         0x03,
-        (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1},
+        (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1},
         5,
         STAKING_PART_BLOCKCHAIN_POINTER,
         NULL,
         0,
         NULL,
-        &(blockchainPointer_t){.blockIndex = 0, .txIndex = 0, .certificateIndex = 0},
+        &(blockchainPointer_t) {.blockIndex = 0, .txIndex = 0, .certificateIndex = 0},
         "435a53103829a7382c2ab76111fb69f13e69d616824c62058e44f1a8b3000000");
 
-    testcase_derive_address_shelley(
-        BASE_PAYMENT_KEY_STAKE_KEY,
-        MAINNET_NETWORK_ID,
-        (uint32_t[]){HD + 1852, HD + 1815, HD + 456, 0, 5000000},
-        5,
-        STAKING_PART_KEY_PATH,
-        (uint32_t[]){HD + 1852, HD + 1815, HD + 456, 2, 0},
-        5,
-        NULL,
-        NULL,
-        "01f90b0dfcace47bf03e88f7469a2f4fb3a7918461aa4765bfaf55f0dae260546c20562e598fb761f419dad27edcd49f4ee4f0540b8e40d4d5");
+    testcase_derive_address_shelley(BASE_PAYMENT_KEY_STAKE_KEY,
+                                    MAINNET_NETWORK_ID,
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 456, 0, 5000000},
+                                    5,
+                                    STAKING_PART_KEY_PATH,
+                                    (uint32_t[]) {HD + 1852, HD + 1815, HD + 456, 2, 0},
+                                    5,
+                                    NULL,
+                                    NULL,
+                                    "01f90b0dfcace47bf03e88f7469a2f4fb3a7918461aa4765bfaf55f0dae260"
+                                    "546c20562e598fb761f419dad27edcd49f4ee4f0540b8e40d4d5");
+}
+
+static void test_format_byron_address_rejects_oversized_input(void **state) {
+    (void) state;
+
+    uint8_t address[MAX_ENC_INPUT_SIZE + 1] = {0};
+    address[0] = (uint8_t) (BYRON << 4);
+    char out[MAX_HUMAN_ADDRESS_LENGTH] = {0};
+
+    assert_false(format_address_human_readable(address, sizeof(address), out, sizeof(out)));
+}
+
+static void test_format_byron_address_rejects_tiny_output_buffer(void **state) {
+    (void) state;
+
+    uint8_t address[2] = {0};
+    address[0] = (uint8_t) (BYRON << 4);
+    char out[1] = {0};
+
+    assert_false(format_address_human_readable(address, sizeof(address), out, sizeof(out)));
 }
 
 static void test_buffer_parse_address_params_payment_script_hash(void **state) {
@@ -362,8 +385,8 @@ static void test_buffer_parse_address_params_payment_script_hash_with_stake_path
 
 // ======================== buffer_read_address_params failure tests ========================
 
-static void testcase_buffer_read_address_params_fails(const uint8_t* data, size_t dataLen) {
-    buffer_t buf = {.ptr = (uint8_t*) data, .size = dataLen, .offset = 0};
+static void testcase_buffer_read_address_params_fails(const uint8_t *data, size_t dataLen) {
+    buffer_t buf = {.ptr = (uint8_t *) data, .size = dataLen, .offset = 0};
     address_params_t params = {0};
     assert_false(buffer_read_address_params(&buf, &params));
 }
@@ -411,8 +434,8 @@ static void test_buffer_parse_address_params_invalid_staking_type(void **state) 
     // Build a valid REWARD_KEY payload up to staking part type, then put 0xFF
     uint8_t data[2 + 1] = {0};
     data[0] = REWARD_KEY;
-    data[1] = 0x01;   // network id
-    data[2] = 0xFF;   // invalid staking part type
+    data[1] = 0x01;  // network id
+    data[2] = 0xFF;  // invalid staking part type
     testcase_buffer_read_address_params_fails(data, sizeof(data));
 }
 
@@ -449,7 +472,8 @@ static void test_buffer_parse_address_params_truncated_pointer_certindex(void **
     const uint32_t payment_path[] = {HD + 1852, HD + 1815, HD + 0, 0, 1};
     enum { PAYMENT_PATH_LEN = ARRAY_LEN(payment_path) };
 
-    // type(1) + network_id(1) + path_len(1) + path(20) + staking_type(1) + blockIndex(4) + txIndex(4) = 32
+    // type(1) + network_id(1) + path_len(1) + path(20) + staking_type(1) + blockIndex(4) +
+    // txIndex(4) = 32
     uint8_t data[1 + 1 + 1 + PAYMENT_PATH_LEN * 4 + 1 + 4 + 4];
     size_t offset = 0;
     data[offset++] = POINTER_KEY;
@@ -463,14 +487,21 @@ static void test_buffer_parse_address_params_truncated_pointer_certindex(void **
     }
     data[offset++] = STAKING_PART_BLOCKCHAIN_POINTER;
     // blockIndex
-    data[offset++] = 0x00; data[offset++] = 0x00; data[offset++] = 0x00; data[offset++] = 0x01;
+    data[offset++] = 0x00;
+    data[offset++] = 0x00;
+    data[offset++] = 0x00;
+    data[offset++] = 0x01;
     // txIndex
-    data[offset++] = 0x00; data[offset++] = 0x00; data[offset++] = 0x00; data[offset++] = 0x02;
+    data[offset++] = 0x00;
+    data[offset++] = 0x00;
+    data[offset++] = 0x00;
+    data[offset++] = 0x02;
     // certIndex missing
     testcase_buffer_read_address_params_fails(data, offset);
 }
 
-// ======================== isValidAddressParams: inconsistent staking type tests ========================
+// ======================== isValidAddressParams: inconsistent staking type tests
+// ========================
 
 // Each test passes a valid address type but a staking part that doesn't belong to it,
 // exercising the break→return false path in is_staking_part_consistent_with_address_type.
@@ -482,8 +513,7 @@ static void test_invalid_params_base_key_with_blockchain_pointer(void **state) {
     params.type = BASE_PAYMENT_KEY_STAKE_KEY;
     params.networkId = MAINNET_NETWORK_ID;
     params.paymentPartType = PAYMENT_PART_KEY_PATH;
-    init_path(&params.paymentKeyPath,
-              (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 0}, 5);
+    init_path(&params.paymentKeyPath, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 0}, 5);
     params.stakingPartType = STAKING_PART_BLOCKCHAIN_POINTER;
     assert_false(isValidAddressParams(&params));
 }
@@ -495,8 +525,7 @@ static void test_invalid_params_pointer_key_with_key_hash(void **state) {
     params.type = POINTER_KEY;
     params.networkId = MAINNET_NETWORK_ID;
     params.paymentPartType = PAYMENT_PART_KEY_PATH;
-    init_path(&params.paymentKeyPath,
-              (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 0}, 5);
+    init_path(&params.paymentKeyPath, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 0}, 5);
     params.stakingPartType = STAKING_PART_KEY_HASH;
     static uint8_t dummyHash[ADDRESS_KEY_HASH_LENGTH];
     params.stakingKeyHash = dummyHash;
@@ -510,11 +539,9 @@ static void test_invalid_params_enterprise_key_with_key_path(void **state) {
     params.type = ENTERPRISE_KEY;
     params.networkId = MAINNET_NETWORK_ID;
     params.paymentPartType = PAYMENT_PART_KEY_PATH;
-    init_path(&params.paymentKeyPath,
-              (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 0}, 5);
+    init_path(&params.paymentKeyPath, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 0}, 5);
     params.stakingPartType = STAKING_PART_KEY_PATH;
-    init_path(&params.stakingKeyPath,
-              (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 2, 0}, 5);
+    init_path(&params.stakingKeyPath, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 2, 0}, 5);
     assert_false(isValidAddressParams(&params));
 }
 
@@ -526,8 +553,7 @@ static void test_invalid_params_reward_script_with_key_path(void **state) {
     params.networkId = MAINNET_NETWORK_ID;
     params.paymentPartType = PAYMENT_PART_NONE;
     params.stakingPartType = STAKING_PART_KEY_PATH;
-    init_path(&params.stakingKeyPath,
-              (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 2, 0}, 5);
+    init_path(&params.stakingKeyPath, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 2, 0}, 5);
     assert_false(isValidAddressParams(&params));
 }
 
@@ -547,7 +573,8 @@ static void test_is_shelley_address_type_invalid(void **state) {
     assert_false(isShelleyAddressType(0x09));
 }
 
-// ======================== buffer_read_address_params: Byron protocol magic truncated ========================
+// ======================== buffer_read_address_params: Byron protocol magic truncated
+// ========================
 
 static void test_buffer_parse_address_params_byron_truncated_protocol_magic(void **state) {
     (void) state;
@@ -556,13 +583,16 @@ static void test_buffer_parse_address_params_byron_truncated_protocol_magic(void
     testcase_buffer_read_address_params_fails(data, sizeof(data));
 }
 
-// ======================== buffer_read_address_params: staking part truncations ========================
+// ======================== buffer_read_address_params: staking part truncations
+// ========================
 
 // Helper: build a minimal valid ENTERPRISE_KEY payload up to (and including) the staking type byte,
 // then append any extra bytes the caller wants.
-static size_t build_enterprise_key_up_to_staking_type(uint8_t* buf, size_t bufSize,
-                                                       uint8_t stakingTypeByte,
-                                                       const uint8_t* extra, size_t extraLen) {
+static size_t build_enterprise_key_up_to_staking_type(uint8_t *buf,
+                                                      size_t bufSize,
+                                                      uint8_t stakingTypeByte,
+                                                      const uint8_t *extra,
+                                                      size_t extraLen) {
     const uint32_t payment_path[] = {HD + 1852, HD + 1815, HD + 0, 0, 1};
     const size_t PAYMENT_PATH_LEN = ARRAY_LEN(payment_path);
 
@@ -607,8 +637,8 @@ static void test_buffer_parse_address_params_truncated_staking_key_path(void **s
     // STAKING_PART_KEY_PATH byte present but no path bytes follow
     uint8_t data[64];
     // Just the staking type byte, nothing after it
-    size_t len = build_enterprise_key_up_to_staking_type(data, sizeof(data),
-                                                         STAKING_PART_KEY_PATH, NULL, 0);
+    size_t len =
+        build_enterprise_key_up_to_staking_type(data, sizeof(data), STAKING_PART_KEY_PATH, NULL, 0);
     testcase_buffer_read_address_params_fails(data, len);
 }
 
@@ -617,9 +647,11 @@ static void test_buffer_parse_address_params_truncated_staking_key_hash(void **s
     // STAKING_PART_KEY_HASH byte present but only 4 bytes of the 28-byte hash follow
     uint8_t extra[] = {0xAA, 0xBB, 0xCC, 0xDD};
     uint8_t data[64];
-    size_t len = build_enterprise_key_up_to_staking_type(data, sizeof(data),
+    size_t len = build_enterprise_key_up_to_staking_type(data,
+                                                         sizeof(data),
                                                          STAKING_PART_KEY_HASH,
-                                                         extra, sizeof(extra));
+                                                         extra,
+                                                         sizeof(extra));
     testcase_buffer_read_address_params_fails(data, len);
 }
 
@@ -628,9 +660,11 @@ static void test_buffer_parse_address_params_truncated_staking_script_hash(void 
     // STAKING_PART_SCRIPT_HASH byte present but only 4 bytes of the 28-byte hash follow
     uint8_t extra[] = {0x11, 0x22, 0x33, 0x44};
     uint8_t data[64];
-    size_t len = build_enterprise_key_up_to_staking_type(data, sizeof(data),
+    size_t len = build_enterprise_key_up_to_staking_type(data,
+                                                         sizeof(data),
                                                          STAKING_PART_SCRIPT_HASH,
-                                                         extra, sizeof(extra));
+                                                         extra,
+                                                         sizeof(extra));
     testcase_buffer_read_address_params_fails(data, len);
 }
 
@@ -644,9 +678,7 @@ static void test_derive_reward_key_address(void **state) {
     params.networkId = MAINNET_NETWORK_ID;
     params.paymentPartType = PAYMENT_PART_NONE;
     params.stakingPartType = STAKING_PART_KEY_PATH;
-    init_path(&params.stakingKeyPath,
-              (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 2, 0},
-              5);
+    init_path(&params.stakingKeyPath, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 2, 0}, 5);
 
     uint8_t out[MAX_ADDRESS_LENGTH];
     size_t outSize = deriveAddress(&params, out, sizeof(out));
@@ -654,14 +686,16 @@ static void test_derive_reward_key_address(void **state) {
     assert_int_equal(outSize, 29);
 }
 
-// ======================== format_reward_account_from_credential: invalid credential type ========================
+// ======================== format_reward_account_from_credential: invalid credential type
+// ========================
 
 static void test_format_reward_account_invalid_credential_type(void **state) {
     (void) state;
     ext_credential_t cred = {0};
     cred.type = (ext_credential_type_t) 0xFF;  // invalid type
     char out[200];
-    bool result = format_reward_account_from_credential(MAINNET_NETWORK_ID, &cred, out, sizeof(out));
+    bool result =
+        format_reward_account_from_credential(MAINNET_NETWORK_ID, &cred, out, sizeof(out));
     assert_false(result);
 }
 
@@ -671,7 +705,7 @@ static void test_format_blockchain_pointer(void **state) {
 
     struct {
         blockchainPointer_t pointer;
-        const char* expected;
+        const char *expected;
     } testVectors[] = {
         {{0, 0, 0}, "(0, 0, 0)"},
         {{1, 2, 3}, "(1, 2, 3)"},
@@ -692,6 +726,8 @@ static void test_format_blockchain_pointer(void **state) {
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_address_derivation),
+        cmocka_unit_test(test_format_byron_address_rejects_oversized_input),
+        cmocka_unit_test(test_format_byron_address_rejects_tiny_output_buffer),
         cmocka_unit_test(test_buffer_parse_address_params_payment_script_hash),
         cmocka_unit_test(test_buffer_parse_address_params_payment_script_hash_with_pointer),
         cmocka_unit_test(test_buffer_parse_address_params_payment_script_hash_with_stake_path),

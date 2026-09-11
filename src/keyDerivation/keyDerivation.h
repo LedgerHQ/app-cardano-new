@@ -5,6 +5,7 @@
 
 #include "bip44.h"
 #include "cx.h"
+#include "utils.h"
 
 #define PUBLIC_KEY_LENGTH    (32)
 #define CHAIN_CODE_LENGTH    (32)
@@ -21,6 +22,9 @@ typedef struct {
     uint8_t chainCode[CHAIN_CODE_LENGTH];
 } extendedPublicKey_t;
 
-void deriveExtendedPublicKey(const bip44_path_t* pathSpec, extendedPublicKey_t* out);
+__noinline_due_to_stack__ void deriveExtendedPublicKey(const bip44_path_t *pathSpec,
+                                                       extendedPublicKey_t *out);
 
-void keyPathToKeyHash(const bip44_path_t* pathSpec, uint8_t* hash, size_t hashSize);
+__noinline_due_to_stack__ void keyPathToKeyHash(const bip44_path_t *pathSpec,
+                                                uint8_t *hash,
+                                                size_t hashSize);

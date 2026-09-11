@@ -183,8 +183,10 @@ static void test_policy_for_derive_private_key_rejects_invalid_ordinary_paths(vo
     (void) state;
 
     const bip44_path_t paths[] = {
-        {.path = {bip44_harden(PURPOSE_SHELLEY), bip44_harden(ADA_COIN_TYPE), bip44_harden(0), 0}, .length = 4},
-        {.path = {bip44_harden(PURPOSE_SHELLEY), bip44_harden(ADA_COIN_TYPE), 0, 0, 0}, .length = 5},
+        {.path = {bip44_harden(PURPOSE_SHELLEY), bip44_harden(ADA_COIN_TYPE), bip44_harden(0), 0},
+         .length = 4},
+        {.path = {bip44_harden(PURPOSE_SHELLEY), bip44_harden(ADA_COIN_TYPE), 0, 0, 0},
+         .length = 5},
     };
 
     for (size_t i = 0; i < ARRAY_LEN(paths); i++) {
@@ -197,8 +199,10 @@ static void test_policy_for_derive_private_key_rejects_invalid_multisig_paths(vo
 
     const bip44_path_t paths[] = {
         {.path = {bip44_harden(PURPOSE_MULTISIG), bip44_harden(ADA_COIN_TYPE)}, .length = 2},
-        {.path = {bip44_harden(PURPOSE_MULTISIG), bip44_harden(ADA_COIN_TYPE), 0, 0, 0}, .length = 5},
-        {.path = {bip44_harden(PURPOSE_MULTISIG), bip44_harden(ADA_COIN_TYPE), bip44_harden(0), 0}, .length = 4},
+        {.path = {bip44_harden(PURPOSE_MULTISIG), bip44_harden(ADA_COIN_TYPE), 0, 0, 0},
+         .length = 5},
+        {.path = {bip44_harden(PURPOSE_MULTISIG), bip44_harden(ADA_COIN_TYPE), bip44_harden(0), 0},
+         .length = 4},
     };
 
     for (size_t i = 0; i < ARRAY_LEN(paths); i++) {
@@ -211,8 +215,10 @@ static void test_policy_for_derive_private_key_rejects_invalid_cvote_paths(void 
 
     const bip44_path_t paths[] = {
         {.path = {bip44_harden(PURPOSE_CVOTE_KEY), bip44_harden(ADA_COIN_TYPE)}, .length = 2},
-        {.path = {bip44_harden(PURPOSE_CVOTE_KEY), bip44_harden(ADA_COIN_TYPE), 0, 3, 0}, .length = 5},
-        {.path = {bip44_harden(PURPOSE_CVOTE_KEY), bip44_harden(ADA_COIN_TYPE), bip44_harden(0), 3}, .length = 4},
+        {.path = {bip44_harden(PURPOSE_CVOTE_KEY), bip44_harden(ADA_COIN_TYPE), 0, 3, 0},
+         .length = 5},
+        {.path = {bip44_harden(PURPOSE_CVOTE_KEY), bip44_harden(ADA_COIN_TYPE), bip44_harden(0), 3},
+         .length = 4},
     };
 
     for (size_t i = 0; i < ARRAY_LEN(paths); i++) {

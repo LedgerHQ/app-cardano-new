@@ -22,96 +22,164 @@
 // ----------------------------------------------------------------------
 // Deny Test 0: Export_pubkey_path_shorter_than_3_indexes
 // Path: m/44'/1815'
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_path_shorter_than_3_indexes
+// Source: tests/standalone/input_files/pubkey.py > deny tests >
+// Export_pubkey_path_shorter_than_3_indexes
 // ----------------------------------------------------------------------
 
 static const uint8_t PUBKEY_DENY_000_EXPORT_PUBKEY_PATH_SHORTER_THAN_3_INDEXES_APDU[] = {
-    0x02, 0x80, 0x00, 0x00, 0x2C, 0x80, 0x00, 0x07, 0x17,
+    0x02,
+    0x80,
+    0x00,
+    0x00,
+    0x2C,
+    0x80,
+    0x00,
+    0x07,
+    0x17,
 };
 
 // ----------------------------------------------------------------------
 // Deny Test 1: Export_pubkey_path_not_matching_cold_key_structure
 // Path: m/1853'/1900'/0'/0/0
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_path_not_matching_cold_key_structure
+// Source: tests/standalone/input_files/pubkey.py > deny tests >
+// Export_pubkey_path_not_matching_cold_key_structure
 // ----------------------------------------------------------------------
 
 static const uint8_t PUBKEY_DENY_001_EXPORT_PUBKEY_PATH_NOT_MATCHING_COLD_KEY_STRUCTURE_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3D, 0x80, 0x00, 0x07, 0x6C, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00,
+    0x05, 0x80, 0x00, 0x07, 0x3D, 0x80, 0x00, 0x07, 0x6C, 0x80, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
 // ----------------------------------------------------------------------
 // Deny Test 2: Export_pubkey_invalid_vote_key_path_1
 // Path: m/1694'/1815'/0'/1/0
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_vote_key_path_1
+// Source: tests/standalone/input_files/pubkey.py > deny tests >
+// Export_pubkey_invalid_vote_key_path_1
 // ----------------------------------------------------------------------
 
 static const uint8_t PUBKEY_DENY_002_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_1_APDU[] = {
-    0x05, 0x80, 0x00, 0x06, 0x9E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x01, 0x00, 0x00, 0x00, 0x00,
+    0x05, 0x80, 0x00, 0x06, 0x9E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00,
 };
 
 // ----------------------------------------------------------------------
 // Deny Test 3: Export_pubkey_invalid_vote_key_path_2
 // Path: m/1694'/1815'/17
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_vote_key_path_2
+// Source: tests/standalone/input_files/pubkey.py > deny tests >
+// Export_pubkey_invalid_vote_key_path_2
 // ----------------------------------------------------------------------
 
 static const uint8_t PUBKEY_DENY_003_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_2_APDU[] = {
-    0x03, 0x80, 0x00, 0x06, 0x9E, 0x80, 0x00, 0x07, 0x17, 0x00, 0x00, 0x00, 0x11,
+    0x03,
+    0x80,
+    0x00,
+    0x06,
+    0x9E,
+    0x80,
+    0x00,
+    0x07,
+    0x17,
+    0x00,
+    0x00,
+    0x00,
+    0x11,
 };
 
 // ----------------------------------------------------------------------
 // Deny Test 4: Export_pubkey_invalid_vote_key_path_3
 // Path: m/1694'/1815'/0'/1
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_vote_key_path_3
+// Source: tests/standalone/input_files/pubkey.py > deny tests >
+// Export_pubkey_invalid_vote_key_path_3
 // ----------------------------------------------------------------------
 
 static const uint8_t PUBKEY_DENY_004_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_3_APDU[] = {
-    0x04, 0x80, 0x00, 0x06, 0x9E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x04,
+    0x80,
+    0x00,
+    0x06,
+    0x9E,
+    0x80,
+    0x00,
+    0x07,
+    0x17,
+    0x80,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
     0x01,
 };
 
 // ----------------------------------------------------------------------
 // Deny Test 5: Export_pubkey_invalid_multisig_account_not_hardened
 // Path: m/1854'/1815'/0
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_multisig_account_not_hardened
+// Source: tests/standalone/input_files/pubkey.py > deny tests >
+// Export_pubkey_invalid_multisig_account_not_hardened
 // ----------------------------------------------------------------------
 
 static const uint8_t PUBKEY_DENY_005_EXPORT_PUBKEY_INVALID_MULTISIG_ACCOUNT_NOT_HARDENED_APDU[] = {
-    0x03, 0x80, 0x00, 0x07, 0x3E, 0x80, 0x00, 0x07, 0x17, 0x00, 0x00, 0x00, 0x00,
+    0x03,
+    0x80,
+    0x00,
+    0x07,
+    0x3E,
+    0x80,
+    0x00,
+    0x07,
+    0x17,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
 };
 
 // ----------------------------------------------------------------------
 // Deny Test 6: Export_pubkey_invalid_multisig_chain
-// Path: m/1854'/1815'/0'/3/0
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_multisig_chain
+// Path: m/1854'/1815'/0'/6/0
+// Source: tests/standalone/input_files/pubkey.py > deny tests >
+// Export_pubkey_invalid_multisig_chain
 // ----------------------------------------------------------------------
 
 static const uint8_t PUBKEY_DENY_006_EXPORT_PUBKEY_INVALID_MULTISIG_CHAIN_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x03, 0x00, 0x00, 0x00, 0x00,
+    0x05, 0x80, 0x00, 0x07, 0x3E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00,
 };
 
 // ----------------------------------------------------------------------
 // Deny Test 7: Export_pubkey_invalid_multisig_address_hardened
 // Path: m/1854'/1815'/0'/0/0'
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_multisig_address_hardened
+// Source: tests/standalone/input_files/pubkey.py > deny tests >
+// Export_pubkey_invalid_multisig_address_hardened
 // ----------------------------------------------------------------------
 
 static const uint8_t PUBKEY_DENY_007_EXPORT_PUBKEY_INVALID_MULTISIG_ADDRESS_HARDENED_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x80, 0x00, 0x00, 0x00,
+    0x05, 0x80, 0x00, 0x07, 0x3E, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00,
 };
 
 // ----------------------------------------------------------------------
 // Deny Test 8: Export_pubkey_invalid_mint_policy_not_hardened
 // Path: m/1855'/1815'/0
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_mint_policy_not_hardened
+// Source: tests/standalone/input_files/pubkey.py > deny tests >
+// Export_pubkey_invalid_mint_policy_not_hardened
 // ----------------------------------------------------------------------
 
 static const uint8_t PUBKEY_DENY_008_EXPORT_PUBKEY_INVALID_MINT_POLICY_NOT_HARDENED_APDU[] = {
-    0x03, 0x80, 0x00, 0x07, 0x3F, 0x80, 0x00, 0x07, 0x17, 0x00, 0x00, 0x00, 0x00,
+    0x03,
+    0x80,
+    0x00,
+    0x07,
+    0x3F,
+    0x80,
+    0x00,
+    0x07,
+    0x17,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
 };
 
 // ----------------------------------------------------------------------
@@ -121,185 +189,383 @@ static const uint8_t PUBKEY_DENY_008_EXPORT_PUBKEY_INVALID_MINT_POLICY_NOT_HARDE
 // ----------------------------------------------------------------------
 
 static const uint8_t PUBKEY_DENY_009_EXPORT_PUBKEY_INVALID_DREP_CHAIN_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x06, 0x00, 0x00, 0x00, 0x00,
+    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00,
 };
 
 // ----------------------------------------------------------------------
 // Deny Test 10: Export_pubkey_invalid_committee_cold_address_hardened
 // Path: m/1852'/1815'/0'/4/0'
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_committee_cold_address_hardened
+// Source: tests/standalone/input_files/pubkey.py > deny tests >
+// Export_pubkey_invalid_committee_cold_address_hardened
 // ----------------------------------------------------------------------
 
-static const uint8_t PUBKEY_DENY_010_EXPORT_PUBKEY_INVALID_COMMITTEE_COLD_ADDRESS_HARDENED_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x04, 0x80, 0x00, 0x00, 0x00,
+static const uint8_t PUBKEY_DENY_010_EXPORT_PUBKEY_INVALID_COMMITTEE_COLD_ADDRESS_HARDENED_APDU[] =
+    {
+        0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x80, 0x00, 0x00, 0x00,
 };
 
 // ----------------------------------------------------------------------
 // Deny Test 11: Export_pubkey_invalid_committee_hot_account_not_hardened
 // Path: m/1852'/1815'/0/5/0
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_committee_hot_account_not_hardened
+// Source: tests/standalone/input_files/pubkey.py > deny tests >
+// Export_pubkey_invalid_committee_hot_account_not_hardened
 // ----------------------------------------------------------------------
 
-static const uint8_t PUBKEY_DENY_011_EXPORT_PUBKEY_INVALID_COMMITTEE_HOT_ACCOUNT_NOT_HARDENED_APDU[] = {
-    0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x05, 0x00, 0x00, 0x00, 0x00,
+static const uint8_t
+    PUBKEY_DENY_011_EXPORT_PUBKEY_INVALID_COMMITTEE_HOT_ACCOUNT_NOT_HARDENED_APDU[] = {
+        0x05, 0x80, 0x00, 0x07, 0x3C, 0x80, 0x00, 0x07, 0x17, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00,
 };
 
 // ----------------------------------------------------------------------
 // Deny Test 12: Export_pubkey_invalid_pool_cold_usecase
 // Path: m/1853'/1815'/1'/0'
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_pool_cold_usecase
+// Source: tests/standalone/input_files/pubkey.py > deny tests >
+// Export_pubkey_invalid_pool_cold_usecase
 // ----------------------------------------------------------------------
 
 static const uint8_t PUBKEY_DENY_012_EXPORT_PUBKEY_INVALID_POOL_COLD_USECASE_APDU[] = {
-    0x04, 0x80, 0x00, 0x07, 0x3D, 0x80, 0x00, 0x07, 0x17, 0x80, 0x00, 0x00, 0x01, 0x80, 0x00, 0x00,
+    0x04,
+    0x80,
+    0x00,
+    0x07,
+    0x3D,
+    0x80,
+    0x00,
+    0x07,
+    0x17,
+    0x80,
+    0x00,
+    0x00,
+    0x01,
+    0x80,
+    0x00,
+    0x00,
     0x00,
 };
 
 static const pubkey_fixture_t PUBKEY_DENY_FIXTURES[] = {
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_path_shorter_than_3_indexes
-{
-    .name = "Export_pubkey_path_shorter_than_3_indexes",
-    .data = PUBKEY_DENY_000_EXPORT_PUBKEY_PATH_SHORTER_THAN_3_INDEXES_APDU,
-    .data_len = sizeof(PUBKEY_DENY_000_EXPORT_PUBKEY_PATH_SHORTER_THAN_3_INDEXES_APDU),
-    .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
-    .expected_response = NULL,
-    .expected_response_len = 0,
-    .silent_export_enabled = false,
-    .expected_policy = 0,
-},
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_path_not_matching_cold_key_structure
-{
-    .name = "Export_pubkey_path_not_matching_cold_key_structure",
-    .data = PUBKEY_DENY_001_EXPORT_PUBKEY_PATH_NOT_MATCHING_COLD_KEY_STRUCTURE_APDU,
-    .data_len = sizeof(PUBKEY_DENY_001_EXPORT_PUBKEY_PATH_NOT_MATCHING_COLD_KEY_STRUCTURE_APDU),
-    .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
-    .expected_response = NULL,
-    .expected_response_len = 0,
-    .silent_export_enabled = false,
-    .expected_policy = 0,
-},
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_vote_key_path_1
-{
-    .name = "Export_pubkey_invalid_vote_key_path_1",
-    .data = PUBKEY_DENY_002_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_1_APDU,
-    .data_len = sizeof(PUBKEY_DENY_002_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_1_APDU),
-    .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
-    .expected_response = NULL,
-    .expected_response_len = 0,
-    .silent_export_enabled = false,
-    .expected_policy = 0,
-},
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_vote_key_path_2
-{
-    .name = "Export_pubkey_invalid_vote_key_path_2",
-    .data = PUBKEY_DENY_003_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_2_APDU,
-    .data_len = sizeof(PUBKEY_DENY_003_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_2_APDU),
-    .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
-    .expected_response = NULL,
-    .expected_response_len = 0,
-    .silent_export_enabled = false,
-    .expected_policy = 0,
-},
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_vote_key_path_3
-{
-    .name = "Export_pubkey_invalid_vote_key_path_3",
-    .data = PUBKEY_DENY_004_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_3_APDU,
-    .data_len = sizeof(PUBKEY_DENY_004_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_3_APDU),
-    .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
-    .expected_response = NULL,
-    .expected_response_len = 0,
-    .silent_export_enabled = false,
-    .expected_policy = 0,
-},
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_multisig_account_not_hardened
-{
-    .name = "Export_pubkey_invalid_multisig_account_not_hardened",
-    .data = PUBKEY_DENY_005_EXPORT_PUBKEY_INVALID_MULTISIG_ACCOUNT_NOT_HARDENED_APDU,
-    .data_len = sizeof(PUBKEY_DENY_005_EXPORT_PUBKEY_INVALID_MULTISIG_ACCOUNT_NOT_HARDENED_APDU),
-    .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
-    .expected_response = NULL,
-    .expected_response_len = 0,
-    .silent_export_enabled = false,
-    .expected_policy = 0,
-},
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_multisig_chain
-{
-    .name = "Export_pubkey_invalid_multisig_chain",
-    .data = PUBKEY_DENY_006_EXPORT_PUBKEY_INVALID_MULTISIG_CHAIN_APDU,
-    .data_len = sizeof(PUBKEY_DENY_006_EXPORT_PUBKEY_INVALID_MULTISIG_CHAIN_APDU),
-    .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
-    .expected_response = NULL,
-    .expected_response_len = 0,
-    .silent_export_enabled = false,
-    .expected_policy = 0,
-},
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_multisig_address_hardened
-{
-    .name = "Export_pubkey_invalid_multisig_address_hardened",
-    .data = PUBKEY_DENY_007_EXPORT_PUBKEY_INVALID_MULTISIG_ADDRESS_HARDENED_APDU,
-    .data_len = sizeof(PUBKEY_DENY_007_EXPORT_PUBKEY_INVALID_MULTISIG_ADDRESS_HARDENED_APDU),
-    .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
-    .expected_response = NULL,
-    .expected_response_len = 0,
-    .silent_export_enabled = false,
-    .expected_policy = 0,
-},
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_mint_policy_not_hardened
-{
-    .name = "Export_pubkey_invalid_mint_policy_not_hardened",
-    .data = PUBKEY_DENY_008_EXPORT_PUBKEY_INVALID_MINT_POLICY_NOT_HARDENED_APDU,
-    .data_len = sizeof(PUBKEY_DENY_008_EXPORT_PUBKEY_INVALID_MINT_POLICY_NOT_HARDENED_APDU),
-    .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
-    .expected_response = NULL,
-    .expected_response_len = 0,
-    .silent_export_enabled = false,
-    .expected_policy = 0,
-},
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_drep_chain
-{
-    .name = "Export_pubkey_invalid_drep_chain",
-    .data = PUBKEY_DENY_009_EXPORT_PUBKEY_INVALID_DREP_CHAIN_APDU,
-    .data_len = sizeof(PUBKEY_DENY_009_EXPORT_PUBKEY_INVALID_DREP_CHAIN_APDU),
-    .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
-    .expected_response = NULL,
-    .expected_response_len = 0,
-    .silent_export_enabled = false,
-    .expected_policy = 0,
-},
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_committee_cold_address_hardened
-{
-    .name = "Export_pubkey_invalid_committee_cold_address_hardened",
-    .data = PUBKEY_DENY_010_EXPORT_PUBKEY_INVALID_COMMITTEE_COLD_ADDRESS_HARDENED_APDU,
-    .data_len = sizeof(PUBKEY_DENY_010_EXPORT_PUBKEY_INVALID_COMMITTEE_COLD_ADDRESS_HARDENED_APDU),
-    .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
-    .expected_response = NULL,
-    .expected_response_len = 0,
-    .silent_export_enabled = false,
-    .expected_policy = 0,
-},
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_committee_hot_account_not_hardened
-{
-    .name = "Export_pubkey_invalid_committee_hot_account_not_hardened",
-    .data = PUBKEY_DENY_011_EXPORT_PUBKEY_INVALID_COMMITTEE_HOT_ACCOUNT_NOT_HARDENED_APDU,
-    .data_len = sizeof(PUBKEY_DENY_011_EXPORT_PUBKEY_INVALID_COMMITTEE_HOT_ACCOUNT_NOT_HARDENED_APDU),
-    .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
-    .expected_response = NULL,
-    .expected_response_len = 0,
-    .silent_export_enabled = false,
-    .expected_policy = 0,
-},
-// Source: tests/standalone/input_files/pubkey.py > deny tests > Export_pubkey_invalid_pool_cold_usecase
-{
-    .name = "Export_pubkey_invalid_pool_cold_usecase",
-    .data = PUBKEY_DENY_012_EXPORT_PUBKEY_INVALID_POOL_COLD_USECASE_APDU,
-    .data_len = sizeof(PUBKEY_DENY_012_EXPORT_PUBKEY_INVALID_POOL_COLD_USECASE_APDU),
-    .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
-    .expected_response = NULL,
-    .expected_response_len = 0,
-    .silent_export_enabled = false,
-    .expected_policy = 0,
-},
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_path_shorter_than_3_indexes
+    {
+        .name = "Export_pubkey_path_shorter_than_3_indexes",
+        .data = PUBKEY_DENY_000_EXPORT_PUBKEY_PATH_SHORTER_THAN_3_INDEXES_APDU,
+        .data_len = sizeof(PUBKEY_DENY_000_EXPORT_PUBKEY_PATH_SHORTER_THAN_3_INDEXES_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = false,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_path_not_matching_cold_key_structure
+    {
+        .name = "Export_pubkey_path_not_matching_cold_key_structure",
+        .data = PUBKEY_DENY_001_EXPORT_PUBKEY_PATH_NOT_MATCHING_COLD_KEY_STRUCTURE_APDU,
+        .data_len = sizeof(PUBKEY_DENY_001_EXPORT_PUBKEY_PATH_NOT_MATCHING_COLD_KEY_STRUCTURE_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = false,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_vote_key_path_1
+    {
+        .name = "Export_pubkey_invalid_vote_key_path_1",
+        .data = PUBKEY_DENY_002_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_1_APDU,
+        .data_len = sizeof(PUBKEY_DENY_002_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_1_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = false,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_vote_key_path_2
+    {
+        .name = "Export_pubkey_invalid_vote_key_path_2",
+        .data = PUBKEY_DENY_003_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_2_APDU,
+        .data_len = sizeof(PUBKEY_DENY_003_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_2_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = false,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_vote_key_path_3
+    {
+        .name = "Export_pubkey_invalid_vote_key_path_3",
+        .data = PUBKEY_DENY_004_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_3_APDU,
+        .data_len = sizeof(PUBKEY_DENY_004_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_3_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = false,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_multisig_account_not_hardened
+    {
+        .name = "Export_pubkey_invalid_multisig_account_not_hardened",
+        .data = PUBKEY_DENY_005_EXPORT_PUBKEY_INVALID_MULTISIG_ACCOUNT_NOT_HARDENED_APDU,
+        .data_len =
+            sizeof(PUBKEY_DENY_005_EXPORT_PUBKEY_INVALID_MULTISIG_ACCOUNT_NOT_HARDENED_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = false,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_multisig_chain
+    {
+        .name = "Export_pubkey_invalid_multisig_chain",
+        .data = PUBKEY_DENY_006_EXPORT_PUBKEY_INVALID_MULTISIG_CHAIN_APDU,
+        .data_len = sizeof(PUBKEY_DENY_006_EXPORT_PUBKEY_INVALID_MULTISIG_CHAIN_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = false,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_multisig_address_hardened
+    {
+        .name = "Export_pubkey_invalid_multisig_address_hardened",
+        .data = PUBKEY_DENY_007_EXPORT_PUBKEY_INVALID_MULTISIG_ADDRESS_HARDENED_APDU,
+        .data_len = sizeof(PUBKEY_DENY_007_EXPORT_PUBKEY_INVALID_MULTISIG_ADDRESS_HARDENED_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = false,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_mint_policy_not_hardened
+    {
+        .name = "Export_pubkey_invalid_mint_policy_not_hardened",
+        .data = PUBKEY_DENY_008_EXPORT_PUBKEY_INVALID_MINT_POLICY_NOT_HARDENED_APDU,
+        .data_len = sizeof(PUBKEY_DENY_008_EXPORT_PUBKEY_INVALID_MINT_POLICY_NOT_HARDENED_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = false,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_drep_chain
+    {
+        .name = "Export_pubkey_invalid_drep_chain",
+        .data = PUBKEY_DENY_009_EXPORT_PUBKEY_INVALID_DREP_CHAIN_APDU,
+        .data_len = sizeof(PUBKEY_DENY_009_EXPORT_PUBKEY_INVALID_DREP_CHAIN_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = false,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_committee_cold_address_hardened
+    {
+        .name = "Export_pubkey_invalid_committee_cold_address_hardened",
+        .data = PUBKEY_DENY_010_EXPORT_PUBKEY_INVALID_COMMITTEE_COLD_ADDRESS_HARDENED_APDU,
+        .data_len =
+            sizeof(PUBKEY_DENY_010_EXPORT_PUBKEY_INVALID_COMMITTEE_COLD_ADDRESS_HARDENED_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = false,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_committee_hot_account_not_hardened
+    {
+        .name = "Export_pubkey_invalid_committee_hot_account_not_hardened",
+        .data = PUBKEY_DENY_011_EXPORT_PUBKEY_INVALID_COMMITTEE_HOT_ACCOUNT_NOT_HARDENED_APDU,
+        .data_len =
+            sizeof(PUBKEY_DENY_011_EXPORT_PUBKEY_INVALID_COMMITTEE_HOT_ACCOUNT_NOT_HARDENED_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = false,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_pool_cold_usecase
+    {
+        .name = "Export_pubkey_invalid_pool_cold_usecase",
+        .data = PUBKEY_DENY_012_EXPORT_PUBKEY_INVALID_POOL_COLD_USECASE_APDU,
+        .data_len = sizeof(PUBKEY_DENY_012_EXPORT_PUBKEY_INVALID_POOL_COLD_USECASE_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = false,
+        .expected_policy = 0,
+    },
+};
+
+static const pubkey_fixture_t PUBKEY_DENY_SILENT_FIXTURES[] = {
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_path_shorter_than_3_indexes
+    {
+        .name = "Export_pubkey_path_shorter_than_3_indexes",
+        .data = PUBKEY_DENY_000_EXPORT_PUBKEY_PATH_SHORTER_THAN_3_INDEXES_APDU,
+        .data_len = sizeof(PUBKEY_DENY_000_EXPORT_PUBKEY_PATH_SHORTER_THAN_3_INDEXES_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = true,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_path_not_matching_cold_key_structure
+    {
+        .name = "Export_pubkey_path_not_matching_cold_key_structure",
+        .data = PUBKEY_DENY_001_EXPORT_PUBKEY_PATH_NOT_MATCHING_COLD_KEY_STRUCTURE_APDU,
+        .data_len = sizeof(PUBKEY_DENY_001_EXPORT_PUBKEY_PATH_NOT_MATCHING_COLD_KEY_STRUCTURE_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = true,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_vote_key_path_1
+    {
+        .name = "Export_pubkey_invalid_vote_key_path_1",
+        .data = PUBKEY_DENY_002_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_1_APDU,
+        .data_len = sizeof(PUBKEY_DENY_002_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_1_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = true,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_vote_key_path_2
+    {
+        .name = "Export_pubkey_invalid_vote_key_path_2",
+        .data = PUBKEY_DENY_003_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_2_APDU,
+        .data_len = sizeof(PUBKEY_DENY_003_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_2_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = true,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_vote_key_path_3
+    {
+        .name = "Export_pubkey_invalid_vote_key_path_3",
+        .data = PUBKEY_DENY_004_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_3_APDU,
+        .data_len = sizeof(PUBKEY_DENY_004_EXPORT_PUBKEY_INVALID_VOTE_KEY_PATH_3_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = true,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_multisig_account_not_hardened
+    {
+        .name = "Export_pubkey_invalid_multisig_account_not_hardened",
+        .data = PUBKEY_DENY_005_EXPORT_PUBKEY_INVALID_MULTISIG_ACCOUNT_NOT_HARDENED_APDU,
+        .data_len =
+            sizeof(PUBKEY_DENY_005_EXPORT_PUBKEY_INVALID_MULTISIG_ACCOUNT_NOT_HARDENED_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = true,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_multisig_chain
+    {
+        .name = "Export_pubkey_invalid_multisig_chain",
+        .data = PUBKEY_DENY_006_EXPORT_PUBKEY_INVALID_MULTISIG_CHAIN_APDU,
+        .data_len = sizeof(PUBKEY_DENY_006_EXPORT_PUBKEY_INVALID_MULTISIG_CHAIN_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = true,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_multisig_address_hardened
+    {
+        .name = "Export_pubkey_invalid_multisig_address_hardened",
+        .data = PUBKEY_DENY_007_EXPORT_PUBKEY_INVALID_MULTISIG_ADDRESS_HARDENED_APDU,
+        .data_len = sizeof(PUBKEY_DENY_007_EXPORT_PUBKEY_INVALID_MULTISIG_ADDRESS_HARDENED_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = true,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_mint_policy_not_hardened
+    {
+        .name = "Export_pubkey_invalid_mint_policy_not_hardened",
+        .data = PUBKEY_DENY_008_EXPORT_PUBKEY_INVALID_MINT_POLICY_NOT_HARDENED_APDU,
+        .data_len = sizeof(PUBKEY_DENY_008_EXPORT_PUBKEY_INVALID_MINT_POLICY_NOT_HARDENED_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = true,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_drep_chain
+    {
+        .name = "Export_pubkey_invalid_drep_chain",
+        .data = PUBKEY_DENY_009_EXPORT_PUBKEY_INVALID_DREP_CHAIN_APDU,
+        .data_len = sizeof(PUBKEY_DENY_009_EXPORT_PUBKEY_INVALID_DREP_CHAIN_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = true,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_committee_cold_address_hardened
+    {
+        .name = "Export_pubkey_invalid_committee_cold_address_hardened",
+        .data = PUBKEY_DENY_010_EXPORT_PUBKEY_INVALID_COMMITTEE_COLD_ADDRESS_HARDENED_APDU,
+        .data_len =
+            sizeof(PUBKEY_DENY_010_EXPORT_PUBKEY_INVALID_COMMITTEE_COLD_ADDRESS_HARDENED_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = true,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_committee_hot_account_not_hardened
+    {
+        .name = "Export_pubkey_invalid_committee_hot_account_not_hardened",
+        .data = PUBKEY_DENY_011_EXPORT_PUBKEY_INVALID_COMMITTEE_HOT_ACCOUNT_NOT_HARDENED_APDU,
+        .data_len =
+            sizeof(PUBKEY_DENY_011_EXPORT_PUBKEY_INVALID_COMMITTEE_HOT_ACCOUNT_NOT_HARDENED_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = true,
+        .expected_policy = 0,
+    },
+    // Source: tests/standalone/input_files/pubkey.py > deny tests >
+    // Export_pubkey_invalid_pool_cold_usecase
+    {
+        .name = "Export_pubkey_invalid_pool_cold_usecase",
+        .data = PUBKEY_DENY_012_EXPORT_PUBKEY_INVALID_POOL_COLD_USECASE_APDU,
+        .data_len = sizeof(PUBKEY_DENY_012_EXPORT_PUBKEY_INVALID_POOL_COLD_USECASE_APDU),
+        .check_expected = SWO_SECURITY_CONDITION_NOT_SATISFIED,
+        .expected_response = NULL,
+        .expected_response_len = 0,
+        .silent_export_enabled = true,
+        .expected_policy = 0,
+    },
 };

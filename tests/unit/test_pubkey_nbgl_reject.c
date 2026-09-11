@@ -73,7 +73,7 @@ static void test_get_public_key_when_request_already_active(void **state) {
     test_read_buffer_t pubkey_buffer = make_test_read_buffer(path_raw, path_len);
     apdu_response_begin(INS_GET_PUBLIC_KEY);
     handler_get_public_key(&pubkey_buffer.sdk_buffer);
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_int_equal(g_last_response_swo, SWO_COMMAND_NOT_ALLOWED);
 }
 
@@ -86,7 +86,7 @@ static void test_get_public_key_truncated_path(void **state) {
     test_read_buffer_t pubkey_buffer = make_test_read_buffer(path_raw, sizeof(path_raw));
     apdu_response_begin(INS_GET_PUBLIC_KEY);
     handler_get_public_key(&pubkey_buffer.sdk_buffer);
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_int_equal(g_last_response_swo, SWO_BIP44_PATH_PARSING_FAIL);
 }
 
@@ -101,7 +101,7 @@ static void test_get_public_key_trailing_bytes(void **state) {
     test_read_buffer_t pubkey_buffer = make_test_read_buffer(path_raw, path_len + 1);
     apdu_response_begin(INS_GET_PUBLIC_KEY);
     handler_get_public_key(&pubkey_buffer.sdk_buffer);
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_int_equal(g_last_response_swo, SWO_WRONG_DATA_LENGTH);
 }
 
@@ -117,7 +117,7 @@ static void test_nbgl_reject_on_pubkey_export_resets_context(void **state) {
 
     apdu_response_begin(INS_GET_PUBLIC_KEY);
     handler_get_public_key(&pubkey_buffer.sdk_buffer);
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_read_buffer_unchanged_and_cleanup(&pubkey_buffer, fixture->data);
     nbgl_mock_assert_all_final_decisions_consumed();
 
@@ -137,55 +137,63 @@ static void test_pubkey_review_title_matrix(void **state) {
     } test_cases[] = {
         {
             .name = "usual public key",
-            .path = {
-                .length = 3,
-                .path = {
-                    1852 + HARDENED_BIP32,
-                    ADA_COIN_TYPE + HARDENED_BIP32,
-                    0 + HARDENED_BIP32,
+            .path =
+                {
+                    .length = 3,
+                    .path =
+                        {
+                            1852 + HARDENED_BIP32,
+                            ADA_COIN_TYPE + HARDENED_BIP32,
+                            0 + HARDENED_BIP32,
+                        },
                 },
-            },
             .warnings = 0,
             .expected_title = "Export Public key",
         },
         {
             .name = "unusual public key",
-            .path = {
-                .length = 3,
-                .path = {
-                    1852 + HARDENED_BIP32,
-                    ADA_COIN_TYPE + HARDENED_BIP32,
-                    101 + HARDENED_BIP32,
+            .path =
+                {
+                    .length = 3,
+                    .path =
+                        {
+                            1852 + HARDENED_BIP32,
+                            ADA_COIN_TYPE + HARDENED_BIP32,
+                            101 + HARDENED_BIP32,
+                        },
                 },
-            },
             .warnings = ((warning_bits_t) 1 << WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH),
             .expected_title = "Export UNUSUAL Public key",
         },
         {
             .name = "usual cold public key",
-            .path = {
-                .length = 4,
-                .path = {
-                    1853 + HARDENED_BIP32,
-                    ADA_COIN_TYPE + HARDENED_BIP32,
-                    0 + HARDENED_BIP32,
-                    0 + HARDENED_BIP32,
+            .path =
+                {
+                    .length = 4,
+                    .path =
+                        {
+                            1853 + HARDENED_BIP32,
+                            ADA_COIN_TYPE + HARDENED_BIP32,
+                            0 + HARDENED_BIP32,
+                            0 + HARDENED_BIP32,
+                        },
                 },
-            },
             .warnings = 0,
             .expected_title = "Export Cold public key",
         },
         {
             .name = "unusual cold public key",
-            .path = {
-                .length = 4,
-                .path = {
-                    1853 + HARDENED_BIP32,
-                    ADA_COIN_TYPE + HARDENED_BIP32,
-                    0 + HARDENED_BIP32,
-                    101 + HARDENED_BIP32,
+            .path =
+                {
+                    .length = 4,
+                    .path =
+                        {
+                            1853 + HARDENED_BIP32,
+                            ADA_COIN_TYPE + HARDENED_BIP32,
+                            0 + HARDENED_BIP32,
+                            101 + HARDENED_BIP32,
+                        },
                 },
-            },
             .warnings = ((warning_bits_t) 1 << WARNING_BIT_UNUSUAL_KEY_DERIVATION_PATH),
             .expected_title = "Export UNUSUAL Cold public key",
         },
@@ -201,7 +209,7 @@ static void test_pubkey_review_title_matrix(void **state) {
 
         apdu_response_begin(INS_GET_PUBLIC_KEY);
         ui_display_pubkey(POLICY_SHOW, test_cases[i].warnings);
-        apdu_response_assert_sent_or_deferred();
+        apdu_response_finalize_after_handler();
         nbgl_mock_assert_all_final_decisions_consumed();
 
         assert_string_equal(nbgl_mock_last_choice_message(), test_cases[i].expected_title);

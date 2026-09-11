@@ -8,7 +8,7 @@
 
 // A single vote: gov_action_id + voting_procedure
 typedef struct {
-    gov_action_id_t govActionId;      // Tx hash (pointer) + index
-    vote_t voteOption;                 // NO=0, YES=1, ABSTAIN=2
-    anchor_t anchor;                   // Optional anchor (URL + hash)
+    gov_action_id_t govActionId;  // Tx hash (pointer) + index
+    vote_t voteOption;            // NO=0, YES=1, ABSTAIN=2
+    anchor_t anchor;              // Optional anchor (URL + hash)
 } vote_item_t;

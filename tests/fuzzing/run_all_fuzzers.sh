@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+umask 077
+
 if [[ $# -lt 1 || $# -gt 2 ]]; then
   echo "Usage: $0 <timeout_seconds> [output_dir]"
   echo "Example: $0 600 out-local"
@@ -43,7 +45,7 @@ fi
 
 # Try requested output location first, then fallback to /tmp if not writable.
 if ! mkdir -p "$output_root/logs" "$output_root/artifacts" "$output_root/corpus" 2>/dev/null; then
-  fallback_root="/tmp/cardano-fuzz-out-$(id -u)"
+  fallback_root="$(mktemp -d "${TMPDIR:-/tmp}/cardano-fuzz-out.XXXXXX")"
   echo "Warning: cannot write to '$output_root', falling back to '$fallback_root'"
   output_root="$fallback_root"
   mkdir -p "$output_root/logs" "$output_root/artifacts" "$output_root/corpus"
@@ -62,6 +64,8 @@ elif [[ "$asan_options" != *detect_leaks=* ]]; then
   asan_options="detect_leaks=0:$asan_options"
 fi
 
+failure_count=0
+
 for fuzzer in "${fuzzers[@]}"; do
   name="$(basename "$fuzzer")"
   corpus_dir="$output_root/corpus/$name"
@@ -70,7 +74,7 @@ for fuzzer in "${fuzzers[@]}"; do
 
   mkdir -p "$corpus_dir" "$artifact_dir"
 
-  echo "== $name =="
+  printf "[%s] Running ... " "$name"
   set +e
   ASAN_OPTIONS="$asan_options" timeout "${timeout_seconds}s" "$fuzzer" \
     -artifact_prefix="${artifact_dir}/" \
@@ -81,12 +85,18 @@ for fuzzer in "${fuzzers[@]}"; do
   set -e
 
   if [[ $rc -eq 124 ]]; then
-    echo "[$name] timed out as expected"
+    echo "OK."
   elif [[ $rc -eq 0 ]]; then
-    echo "[$name] finished cleanly"
+    echo "OK."
   else
-    echo "[$name] exited with code $rc (check $log_file)"
+    echo "FAILED (exit code $rc, log: $log_file)"
+    failure_count=$((failure_count + 1))
   fi
 done
 
-echo "Done."
+if [[ $failure_count -eq 0 ]]; then
+  echo "All fuzzers completed successfully."
+else
+  echo "FAILURES: $failure_count harness(es) failed."
+  exit 1
+fi

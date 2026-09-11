@@ -49,44 +49,67 @@
 // CONWAY Era Tests
 // ======================================================================
 
-static void test_sign_tx_with_a_stake_registration_path_certificate_conway_expert_off(void **state) {
+static void test_sign_tx_with_a_stake_registration_path_certificate_conway_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_A_STAKE_REGISTRATION_PATH_CERTIFICATE_CONWAY, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_A_STAKE_REGISTRATION_PATH_CERTIFICATE_CONWAY,
+        false);
 }
 
-static void test_sign_tx_with_a_stake_registration_path_certificate_conway_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_a_stake_registration_path_certificate_conway_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_A_STAKE_REGISTRATION_PATH_CERTIFICATE_CONWAY, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_A_STAKE_REGISTRATION_PATH_CERTIFICATE_CONWAY,
+        false);
 }
 
 static void test_sign_tx_with_a_stake_registration_path_certificate_conway_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_A_STAKE_REGISTRATION_PATH_CERTIFICATE_CONWAY, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_A_STAKE_REGISTRATION_PATH_CERTIFICATE_CONWAY,
+        true);
 }
 
-static void test_sign_tx_with_a_stake_registration_path_certificate_conway_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_a_stake_registration_path_certificate_conway_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_A_STAKE_REGISTRATION_PATH_CERTIFICATE_CONWAY, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_A_STAKE_REGISTRATION_PATH_CERTIFICATE_CONWAY,
+        true);
 }
 
-static void test_sign_tx_with_a_stake_deregistration_path_certificate_conway_expert_off(void **state) {
+static void test_sign_tx_with_a_stake_deregistration_path_certificate_conway_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_PATH_CERTIFICATE_CONWAY, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_PATH_CERTIFICATE_CONWAY,
+        false);
 }
 
-static void test_sign_tx_with_a_stake_deregistration_path_certificate_conway_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_a_stake_deregistration_path_certificate_conway_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_PATH_CERTIFICATE_CONWAY, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_PATH_CERTIFICATE_CONWAY,
+        false);
 }
 
-static void test_sign_tx_with_a_stake_deregistration_path_certificate_conway_expert_on(void **state) {
+static void test_sign_tx_with_a_stake_deregistration_path_certificate_conway_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_PATH_CERTIFICATE_CONWAY, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_PATH_CERTIFICATE_CONWAY,
+        true);
 }
 
-static void test_sign_tx_with_a_stake_deregistration_path_certificate_conway_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_a_stake_deregistration_path_certificate_conway_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_PATH_CERTIFICATE_CONWAY, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_A_STAKE_DEREGISTRATION_PATH_CERTIFICATE_CONWAY,
+        true);
 }
 
 static void test_sign_tx_with_vote_delegation_certificates_expert_off(void **state) {
@@ -96,7 +119,9 @@ static void test_sign_tx_with_vote_delegation_certificates_expert_off(void **sta
 
 static void test_sign_tx_with_vote_delegation_certificates_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_VOTE_DELEGATION_CERTIFICATES, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_VOTE_DELEGATION_CERTIFICATES,
+        false);
 }
 
 static void test_sign_tx_with_vote_delegation_certificates_expert_on(void **state) {
@@ -106,177 +131,296 @@ static void test_sign_tx_with_vote_delegation_certificates_expert_on(void **stat
 
 static void test_sign_tx_with_vote_delegation_certificates_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_VOTE_DELEGATION_CERTIFICATES, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_VOTE_DELEGATION_CERTIFICATES,
+        true);
 }
 
 static void test_sign_tx_with_stake_pool_and_drep_delegation_certificates_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_STAKE_POOL_AND_DREP_DELEGATION_CERTIFICATES, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_STAKE_POOL_AND_DREP_DELEGATION_CERTIFICATES,
+        false);
 }
 
-static void test_sign_tx_with_stake_pool_and_drep_delegation_certificates_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_stake_pool_and_drep_delegation_certificates_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_STAKE_POOL_AND_DREP_DELEGATION_CERTIFICATES, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_STAKE_POOL_AND_DREP_DELEGATION_CERTIFICATES,
+        false);
 }
 
 static void test_sign_tx_with_stake_pool_and_drep_delegation_certificates_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_STAKE_POOL_AND_DREP_DELEGATION_CERTIFICATES, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_STAKE_POOL_AND_DREP_DELEGATION_CERTIFICATES,
+        true);
 }
 
-static void test_sign_tx_with_stake_pool_and_drep_delegation_certificates_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_stake_pool_and_drep_delegation_certificates_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_STAKE_POOL_AND_DREP_DELEGATION_CERTIFICATES, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_STAKE_POOL_AND_DREP_DELEGATION_CERTIFICATES,
+        true);
 }
 
-static void test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_expert_off(void **state) {
+static void test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_CERTIFICATE, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_CERTIFICATE,
+        false);
 }
 
-static void test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_CERTIFICATE, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_CERTIFICATE,
+        false);
 }
 
-static void test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_expert_on(void **state) {
+static void test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_CERTIFICATE, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_CERTIFICATE,
+        true);
 }
 
-static void test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_CERTIFICATE, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_CERTIFICATE,
+        true);
 }
 
-static void test_sign_tx_with_account_registration_delegation_to_drep_certificate_expert_off(void **state) {
+static void test_sign_tx_with_account_registration_delegation_to_drep_certificate_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP_CERTIFICATE, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP_CERTIFICATE,
+        false);
 }
 
-static void test_sign_tx_with_account_registration_delegation_to_drep_certificate_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_account_registration_delegation_to_drep_certificate_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP_CERTIFICATE, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP_CERTIFICATE,
+        false);
 }
 
-static void test_sign_tx_with_account_registration_delegation_to_drep_certificate_expert_on(void **state) {
+static void test_sign_tx_with_account_registration_delegation_to_drep_certificate_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP_CERTIFICATE, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP_CERTIFICATE,
+        true);
 }
 
-static void test_sign_tx_with_account_registration_delegation_to_drep_certificate_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_account_registration_delegation_to_drep_certificate_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP_CERTIFICATE, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_DREP_CERTIFICATE,
+        true);
 }
 
-static void test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_expert_off(void **state) {
+static void
+test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP_CERTIFICATE, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP_CERTIFICATE,
+        false);
 }
 
-static void test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP_CERTIFICATE, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP_CERTIFICATE,
+        false);
 }
 
-static void test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_expert_on(void **state) {
+static void
+test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP_CERTIFICATE, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP_CERTIFICATE,
+        true);
 }
 
-static void test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP_CERTIFICATE, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_ACCOUNT_REGISTRATION_DELEGATION_TO_STAKE_POOL_AND_DREP_CERTIFICATE,
+        true);
 }
 
 static void test_sign_tx_with_all_certificates_except_pool_registration_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ALL_CERTIFICATES_EXCEPT_POOL_REGISTRATION, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_ALL_CERTIFICATES_EXCEPT_POOL_REGISTRATION,
+        false);
 }
 
-static void test_sign_tx_with_all_certificates_except_pool_registration_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_all_certificates_except_pool_registration_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ALL_CERTIFICATES_EXCEPT_POOL_REGISTRATION, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_ALL_CERTIFICATES_EXCEPT_POOL_REGISTRATION,
+        false);
 }
 
 static void test_sign_tx_with_all_certificates_except_pool_registration_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ALL_CERTIFICATES_EXCEPT_POOL_REGISTRATION, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_ALL_CERTIFICATES_EXCEPT_POOL_REGISTRATION,
+        true);
 }
 
-static void test_sign_tx_with_all_certificates_except_pool_registration_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_all_certificates_except_pool_registration_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_ALL_CERTIFICATES_EXCEPT_POOL_REGISTRATION, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_ALL_CERTIFICATES_EXCEPT_POOL_REGISTRATION,
+        true);
+}
+
+static void test_unrestricted_tx_with_cross_account_governance_certificates_deny_init_expert_off(
+    void **state) {
+    (void) state;
+    run_fixture_init_deny_with_expert_mode(
+        &FIXTURE_CONWAY_UNRESTRICTED_TX_WITH_CROSS_ACCOUNT_GOVERNANCE_CERTIFICATES,
+        false,
+        SWO_SECURITY_CONDITION_NOT_SATISFIED);
+}
+
+static void test_unrestricted_tx_with_cross_account_governance_certificates_expert_on(
+    void **state) {
+    (void) state;
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_UNRESTRICTED_TX_WITH_CROSS_ACCOUNT_GOVERNANCE_CERTIFICATES,
+        true);
+}
+
+static void test_unrestricted_tx_with_cross_account_governance_certificates_reject_tx_expert_on(
+    void **state) {
+    (void) state;
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_UNRESTRICTED_TX_WITH_CROSS_ACCOUNT_GOVERNANCE_CERTIFICATES,
+        true);
 }
 
 static void test_sign_tx_with_authorize_committee_hot_certificates_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_AUTHORIZE_COMMITTEE_HOT_CERTIFICATES, false);
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_AUTHORIZE_COMMITTEE_HOT_CERTIFICATES,
+                                 false);
 }
 
-static void test_sign_tx_with_authorize_committee_hot_certificates_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_authorize_committee_hot_certificates_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_AUTHORIZE_COMMITTEE_HOT_CERTIFICATES, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_AUTHORIZE_COMMITTEE_HOT_CERTIFICATES,
+        false);
 }
 
 static void test_sign_tx_with_authorize_committee_hot_certificates_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_AUTHORIZE_COMMITTEE_HOT_CERTIFICATES, true);
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_AUTHORIZE_COMMITTEE_HOT_CERTIFICATES,
+                                 true);
 }
 
-static void test_sign_tx_with_authorize_committee_hot_certificates_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_authorize_committee_hot_certificates_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_AUTHORIZE_COMMITTEE_HOT_CERTIFICATES, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_AUTHORIZE_COMMITTEE_HOT_CERTIFICATES,
+        true);
 }
 
 static void test_sign_tx_with_resign_committee_cold_certificates_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_CERTIFICATES, false);
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_CERTIFICATES,
+                                 false);
 }
 
-static void test_sign_tx_with_resign_committee_cold_certificates_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_resign_committee_cold_certificates_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_CERTIFICATES, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_CERTIFICATES,
+        false);
 }
 
 static void test_sign_tx_with_resign_committee_cold_certificates_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_CERTIFICATES, true);
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_CERTIFICATES,
+                                 true);
 }
 
 static void test_sign_tx_with_resign_committee_cold_certificates_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_CERTIFICATES, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_CERTIFICATES,
+        true);
 }
 
 static void test_sign_tx_with_resign_committee_cold_hash_certificates_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES,
+        false);
 }
 
-static void test_sign_tx_with_resign_committee_cold_hash_certificates_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_resign_committee_cold_hash_certificates_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES,
+        false);
 }
 
 static void test_sign_tx_with_resign_committee_cold_hash_certificates_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES,
+        true);
 }
 
-static void test_sign_tx_with_resign_committee_cold_hash_certificates_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_resign_committee_cold_hash_certificates_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_RESIGN_COMMITTEE_COLD_HASH_CERTIFICATES,
+        true);
 }
 
 static void test_sign_tx_with_drep_registration_certificates_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_DREP_REGISTRATION_CERTIFICATES, false);
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_DREP_REGISTRATION_CERTIFICATES,
+                                 false);
 }
 
 static void test_sign_tx_with_drep_registration_certificates_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_DREP_REGISTRATION_CERTIFICATES, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_DREP_REGISTRATION_CERTIFICATES,
+        false);
 }
 
 static void test_sign_tx_with_drep_registration_certificates_expert_on(void **state) {
@@ -286,27 +430,35 @@ static void test_sign_tx_with_drep_registration_certificates_expert_on(void **st
 
 static void test_sign_tx_with_drep_registration_certificates_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_DREP_REGISTRATION_CERTIFICATES, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_DREP_REGISTRATION_CERTIFICATES,
+        true);
 }
 
 static void test_sign_tx_with_drep_deregistration_certificate_expert_off(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_DREP_DEREGISTRATION_CERTIFICATE, false);
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_DREP_DEREGISTRATION_CERTIFICATE,
+                                 false);
 }
 
 static void test_sign_tx_with_drep_deregistration_certificate_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_DREP_DEREGISTRATION_CERTIFICATE, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_DREP_DEREGISTRATION_CERTIFICATE,
+        false);
 }
 
 static void test_sign_tx_with_drep_deregistration_certificate_expert_on(void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_DREP_DEREGISTRATION_CERTIFICATE, true);
+    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_DREP_DEREGISTRATION_CERTIFICATE,
+                                 true);
 }
 
 static void test_sign_tx_with_drep_deregistration_certificate_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_DREP_DEREGISTRATION_CERTIFICATE, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_DREP_DEREGISTRATION_CERTIFICATE,
+        true);
 }
 
 static void test_sign_tx_with_drep_update_certificates_expert_off(void **state) {
@@ -316,7 +468,8 @@ static void test_sign_tx_with_drep_update_certificates_expert_off(void **state) 
 
 static void test_sign_tx_with_drep_update_certificates_reject_tx_expert_off(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_DREP_UPDATE_CERTIFICATES, false);
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_DREP_UPDATE_CERTIFICATES,
+                                           false);
 }
 
 static void test_sign_tx_with_drep_update_certificates_expert_on(void **state) {
@@ -326,47 +479,74 @@ static void test_sign_tx_with_drep_update_certificates_expert_on(void **state) {
 
 static void test_sign_tx_with_drep_update_certificates_reject_tx_expert_on(void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_DREP_UPDATE_CERTIFICATES, true);
+    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_DREP_UPDATE_CERTIFICATES,
+                                           true);
 }
 
-static void test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_expert_off(void **state) {
+static void test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_MIXED_SCRIPT_HASH_CERTIFICATES_IN_PLUTUS_MODE, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_MIXED_SCRIPT_HASH_CERTIFICATES_IN_PLUTUS_MODE,
+        false);
 }
 
-static void test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_reject_tx_expert_off(void **state) {
+static void test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_MIXED_SCRIPT_HASH_CERTIFICATES_IN_PLUTUS_MODE, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_MIXED_SCRIPT_HASH_CERTIFICATES_IN_PLUTUS_MODE,
+        false);
 }
 
-static void test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_expert_on(void **state) {
+static void test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_MIXED_SCRIPT_HASH_CERTIFICATES_IN_PLUTUS_MODE, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_MIXED_SCRIPT_HASH_CERTIFICATES_IN_PLUTUS_MODE,
+        true);
 }
 
-static void test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_reject_tx_expert_on(void **state) {
+static void test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_MIXED_SCRIPT_HASH_CERTIFICATES_IN_PLUTUS_MODE, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_MIXED_SCRIPT_HASH_CERTIFICATES_IN_PLUTUS_MODE,
+        true);
 }
 
-static void test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_expert_off(void **state) {
+static void test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_MISSING_SCRIPT_HASH_CONWAY_CERTIFICATES_IN_PLUTUS_MODE, false);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_MISSING_SCRIPT_HASH_CONWAY_CERTIFICATES_IN_PLUTUS_MODE,
+        false);
 }
 
-static void test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_reject_tx_expert_off(void **state) {
+static void
+test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_reject_tx_expert_off(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_MISSING_SCRIPT_HASH_CONWAY_CERTIFICATES_IN_PLUTUS_MODE, false);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_MISSING_SCRIPT_HASH_CONWAY_CERTIFICATES_IN_PLUTUS_MODE,
+        false);
 }
 
-static void test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_expert_on(void **state) {
+static void test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_MISSING_SCRIPT_HASH_CONWAY_CERTIFICATES_IN_PLUTUS_MODE, true);
+    run_fixture_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_MISSING_SCRIPT_HASH_CONWAY_CERTIFICATES_IN_PLUTUS_MODE,
+        true);
 }
 
-static void test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_reject_tx_expert_on(void **state) {
+static void
+test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_reject_tx_expert_on(
+    void **state) {
     (void) state;
-    run_fixture_reject_tx_with_expert_mode(&FIXTURE_CONWAY_SIGN_TX_WITH_MISSING_SCRIPT_HASH_CONWAY_CERTIFICATES_IN_PLUTUS_MODE, true);
+    run_fixture_reject_tx_with_expert_mode(
+        &FIXTURE_CONWAY_SIGN_TX_WITH_MISSING_SCRIPT_HASH_CONWAY_CERTIFICATES_IN_PLUTUS_MODE,
+        true);
 }
 
 // ======================================================================
@@ -376,49 +556,80 @@ static void test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_sign_tx_with_a_stake_registration_path_certificate_conway_expert_off),
-        cmocka_unit_test(test_sign_tx_with_a_stake_registration_path_certificate_conway_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_a_stake_registration_path_certificate_conway_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_a_stake_registration_path_certificate_conway_expert_on),
-        cmocka_unit_test(test_sign_tx_with_a_stake_registration_path_certificate_conway_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_a_stake_deregistration_path_certificate_conway_expert_off),
-        cmocka_unit_test(test_sign_tx_with_a_stake_deregistration_path_certificate_conway_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_a_stake_deregistration_path_certificate_conway_expert_on),
-        cmocka_unit_test(test_sign_tx_with_a_stake_deregistration_path_certificate_conway_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_a_stake_registration_path_certificate_conway_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_a_stake_deregistration_path_certificate_conway_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_a_stake_deregistration_path_certificate_conway_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_a_stake_deregistration_path_certificate_conway_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_a_stake_deregistration_path_certificate_conway_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_vote_delegation_certificates_expert_off),
         cmocka_unit_test(test_sign_tx_with_vote_delegation_certificates_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_vote_delegation_certificates_expert_on),
         cmocka_unit_test(test_sign_tx_with_vote_delegation_certificates_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_stake_pool_and_drep_delegation_certificates_expert_off),
-        cmocka_unit_test(test_sign_tx_with_stake_pool_and_drep_delegation_certificates_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_stake_pool_and_drep_delegation_certificates_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_stake_pool_and_drep_delegation_certificates_expert_on),
-        cmocka_unit_test(test_sign_tx_with_stake_pool_and_drep_delegation_certificates_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_expert_off),
-        cmocka_unit_test(test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_expert_on),
-        cmocka_unit_test(test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_account_registration_delegation_to_drep_certificate_expert_off),
-        cmocka_unit_test(test_sign_tx_with_account_registration_delegation_to_drep_certificate_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_account_registration_delegation_to_drep_certificate_expert_on),
-        cmocka_unit_test(test_sign_tx_with_account_registration_delegation_to_drep_certificate_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_expert_off),
-        cmocka_unit_test(test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_expert_on),
-        cmocka_unit_test(test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_stake_pool_and_drep_delegation_certificates_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_account_registration_delegation_to_stake_pool_certificate_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_account_registration_delegation_to_drep_certificate_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_account_registration_delegation_to_drep_certificate_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_account_registration_delegation_to_drep_certificate_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_account_registration_delegation_to_drep_certificate_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_account_registration_delegation_to_stake_pool_and_drep_certificate_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_all_certificates_except_pool_registration_expert_off),
-        cmocka_unit_test(test_sign_tx_with_all_certificates_except_pool_registration_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_all_certificates_except_pool_registration_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_all_certificates_except_pool_registration_expert_on),
-        cmocka_unit_test(test_sign_tx_with_all_certificates_except_pool_registration_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_all_certificates_except_pool_registration_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_unrestricted_tx_with_cross_account_governance_certificates_deny_init_expert_off),
+        cmocka_unit_test(test_unrestricted_tx_with_cross_account_governance_certificates_expert_on),
+        cmocka_unit_test(
+            test_unrestricted_tx_with_cross_account_governance_certificates_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_authorize_committee_hot_certificates_expert_off),
-        cmocka_unit_test(test_sign_tx_with_authorize_committee_hot_certificates_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_authorize_committee_hot_certificates_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_authorize_committee_hot_certificates_expert_on),
-        cmocka_unit_test(test_sign_tx_with_authorize_committee_hot_certificates_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_authorize_committee_hot_certificates_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_resign_committee_cold_certificates_expert_off),
         cmocka_unit_test(test_sign_tx_with_resign_committee_cold_certificates_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_resign_committee_cold_certificates_expert_on),
         cmocka_unit_test(test_sign_tx_with_resign_committee_cold_certificates_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_resign_committee_cold_hash_certificates_expert_off),
-        cmocka_unit_test(test_sign_tx_with_resign_committee_cold_hash_certificates_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_resign_committee_cold_hash_certificates_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_resign_committee_cold_hash_certificates_expert_on),
-        cmocka_unit_test(test_sign_tx_with_resign_committee_cold_hash_certificates_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_resign_committee_cold_hash_certificates_reject_tx_expert_on),
         cmocka_unit_test(test_sign_tx_with_drep_registration_certificates_expert_off),
         cmocka_unit_test(test_sign_tx_with_drep_registration_certificates_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_drep_registration_certificates_expert_on),
@@ -431,14 +642,25 @@ int main(void) {
         cmocka_unit_test(test_sign_tx_with_drep_update_certificates_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_drep_update_certificates_expert_on),
         cmocka_unit_test(test_sign_tx_with_drep_update_certificates_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_expert_off),
-        cmocka_unit_test(test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_reject_tx_expert_off),
         cmocka_unit_test(test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_expert_on),
-        cmocka_unit_test(test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_reject_tx_expert_on),
-        cmocka_unit_test(test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_expert_off),
-        cmocka_unit_test(test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_reject_tx_expert_off),
-        cmocka_unit_test(test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_expert_on),
-        cmocka_unit_test(test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_mixed_script_hash_certificates_in_plutus_mode_reject_tx_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_reject_tx_expert_off),
+        cmocka_unit_test(
+            test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_expert_on),
+        cmocka_unit_test(
+            test_sign_tx_with_missing_script_hash_conway_certificates_in_plutus_mode_reject_tx_expert_on),
     };
-    return _cmocka_run_group_tests("test_sign_tx_conway", tests, ARRAY_LEN(tests), NULL, assert_no_pending_apdu_response);
+    return _cmocka_run_group_tests("test_sign_tx_conway",
+                                   tests,
+                                   ARRAY_LEN(tests),
+                                   NULL,
+                                   assert_no_pending_apdu_response);
 }

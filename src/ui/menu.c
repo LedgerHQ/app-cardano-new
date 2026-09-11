@@ -16,12 +16,19 @@
 //  ----------------------- HOME PAGE -------------------------
 //  -----------------------------------------------------------
 
+// Name displayed on the home screen / UI. Intentionally shorter than the
+// BOLOS application name (APPNAME = "Cardano ADA", see Makefile), which is
+// kept for the dashboard and the GET_APP_NAME APDU response.
+#define UI_APP_NAME "Cardano"
+
 //  -----------------------------------------------------------
 //  --------------------- SETTINGS MENU -----------------------
 //  -----------------------------------------------------------
-#define SETTING_INFO_NB 2
-static const char* const INFO_TYPES[SETTING_INFO_NB] = {"Version", "Developer"};
-static const char* const INFO_CONTENTS[SETTING_INFO_NB] = {APPVERSION, "Vacuumlabs"};
+#define SETTING_INFO_NB 3
+static const char *const INFO_TYPES[SETTING_INFO_NB] = {"Version", "Developer", "Copyright"};
+static const char *const INFO_CONTENTS[SETTING_INFO_NB] = {APPVERSION,
+                                                           "Vacuumlabs",
+                                                           "(c) 2026 Ledger"};
 
 // settings switches definitions
 enum { SILENT_PUBKEY_EXPORT_TOKEN = FIRST_USER_TOKEN, EXPERT_MODE_TOKEN, BLIND_SIGNING_TOKEN };
@@ -63,7 +70,7 @@ static void controls_callback(int token, uint8_t index, int page) {
             switch_value = flip_bool_setting(N_storage.silent_pubkey_export_enabled);
             switches[SILENT_PUBKEY_EXPORT_ID].initState = (nbgl_state_t) switch_value;
             // store the new setting value in NVM
-            nvm_write((void*) &N_storage.silent_pubkey_export_enabled, &switch_value, 1);
+            nvm_write((void *) &N_storage.silent_pubkey_export_enabled, &switch_value, 1);
             break;
 
         case EXPERT_MODE_TOKEN:
@@ -71,7 +78,7 @@ static void controls_callback(int token, uint8_t index, int page) {
             switch_value = flip_bool_setting(N_storage.expert_mode_enabled);
             switches[EXPERT_MODE_ID].initState = (nbgl_state_t) switch_value;
             // store the new setting value in NVM
-            nvm_write((void*) &N_storage.expert_mode_enabled, &switch_value, 1);
+            nvm_write((void *) &N_storage.expert_mode_enabled, &switch_value, 1);
             break;
 
         case BLIND_SIGNING_TOKEN:
@@ -79,21 +86,22 @@ static void controls_callback(int token, uint8_t index, int page) {
             switch_value = flip_bool_setting(N_storage.blind_signing_enabled);
             switches[BLIND_SIGNING_ID].initState = (nbgl_state_t) switch_value;
             // store the new setting value in NVM
-            nvm_write((void*) &N_storage.blind_signing_enabled, &switch_value, 1);
+            nvm_write((void *) &N_storage.blind_signing_enabled, &switch_value, 1);
             break;
 
         // LCOV_EXCL_START
         default:
             LEDGER_ASSERT(false, "Unknown menu token");
             break;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }
 
 // home page definition
 void ui_menu_main(void) {
     // Initialize switches data
-    switches[SILENT_PUBKEY_EXPORT_ID].initState = (nbgl_state_t) N_storage.silent_pubkey_export_enabled;
+    switches[SILENT_PUBKEY_EXPORT_ID].initState =
+        (nbgl_state_t) silent_pubkey_export_setting_value();
 #ifdef SCREEN_SIZE_WALLET
     switches[SILENT_PUBKEY_EXPORT_ID].text = "Silent public key export";
     switches[SILENT_PUBKEY_EXPORT_ID].subText = "Allow usual public keys to be exported silently";
@@ -106,7 +114,7 @@ void ui_menu_main(void) {
     switches[SILENT_PUBKEY_EXPORT_ID].tuneId = TUNE_TAP_CASUAL;
 #endif
 
-    switches[EXPERT_MODE_ID].initState = (nbgl_state_t) N_storage.expert_mode_enabled;
+    switches[EXPERT_MODE_ID].initState = (nbgl_state_t) expert_mode_setting_value();
     switches[EXPERT_MODE_ID].text = "Expert mode";
 #ifdef SCREEN_SIZE_WALLET
     switches[EXPERT_MODE_ID].subText = "Show technical details in transactions";
@@ -118,7 +126,7 @@ void ui_menu_main(void) {
     switches[EXPERT_MODE_ID].tuneId = TUNE_TAP_CASUAL;
 #endif
 
-    switches[BLIND_SIGNING_ID].initState = (nbgl_state_t) N_storage.blind_signing_enabled;
+    switches[BLIND_SIGNING_ID].initState = (nbgl_state_t) blind_signing_setting_value();
     switches[BLIND_SIGNING_ID].text = "Blind signing";
     switches[BLIND_SIGNING_ID].subText = "Enable blind signing for long transactions";
     switches[BLIND_SIGNING_ID].token = BLIND_SIGNING_TOKEN;
@@ -126,11 +134,13 @@ void ui_menu_main(void) {
     switches[BLIND_SIGNING_ID].tuneId = TUNE_TAP_CASUAL;
 #endif
 
-    TRACE("Calling nbgl_useCaseHomeAndSettings(APPNAME), expert=%d, silentPubkey=%d, blindSigning=%d",
-          N_storage.expert_mode_enabled,
-          N_storage.silent_pubkey_export_enabled,
-          N_storage.blind_signing_enabled);
-    nbgl_useCaseHomeAndSettings(APPNAME,
+    TRACE(
+        "Calling nbgl_useCaseHomeAndSettings(UI_APP_NAME), expert=%d, silentPubkey=%d, "
+        "blindSigning=%d",
+        expert_mode_setting_value(),
+        silent_pubkey_export_setting_value(),
+        blind_signing_setting_value());
+    nbgl_useCaseHomeAndSettings(UI_APP_NAME,
                                 &ICON_APP_HOME,
                                 NULL,
                                 INIT_HOME_PAGE,

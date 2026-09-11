@@ -67,12 +67,12 @@ void swap_handle_check_address(check_address_parameters_t *params) {
             // except for the chain and address index elements
             addressParams.stakingKeyPath.path[BIP44_I_CHAIN] = 2;
             addressParams.stakingKeyPath.path[BIP44_I_ADDRESS] = 0;
-            LEDGER_ASSERT(bip44_classifyPath(&addressParams.stakingKeyPath) == PATH_ORDINARY_STAKING_KEY,
-                          "Invalid staking key path in swap check");
+            LEDGER_ASSERT(
+                bip44_classifyPath(&addressParams.stakingKeyPath) == PATH_ORDINARY_STAKING_KEY,
+                "Invalid staking key path in swap check");
 
-            derivedAddressLength = deriveAddress(&addressParams,
-                                                 rawAddressBuffer,
-                                                 sizeof(rawAddressBuffer));
+            derivedAddressLength =
+                deriveAddress(&addressParams, rawAddressBuffer, sizeof(rawAddressBuffer));
             if (!format_address_human_readable(rawAddressBuffer,
                                                derivedAddressLength,
                                                derivedAddressHumanReadable,

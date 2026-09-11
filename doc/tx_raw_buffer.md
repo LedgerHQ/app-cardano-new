@@ -8,6 +8,7 @@ This document covers the raw transaction buffer format, size calculations, and t
 2. [Format Differences: CBOR vs Raw](#format-differences-cbor-vs-raw)
 3. [Buffer Size Calculation](#buffer-size-calculation)
 4. [Dynamic Allocation Optimization](#dynamic-allocation-optimization)
+5. [Nano X Stack/BSS Interaction in Swap Library Mode](#nano-x-stackbss-interaction-in-swap-library-mode)
 
 ---
 
@@ -278,7 +279,7 @@ def analyze_outputs():
     print()
 
     # Also check what actually fits in remaining memory
-    size_mem_buffer = 23 * 1024  # worst case (Nano X, the tightest device)
+    size_mem_buffer = 22 * 1024  # worst case (Nano X, the tightest device)
     heap_overhead = 200  # approximate overhead for heap structures
     available = size_mem_buffer - heap_overhead
 
@@ -336,11 +337,11 @@ Margin above required:  +2,048 bytes
   ✓ Current setting is SAFE
 
 Memory constraints (Nano X, worst case):
-  SIZE_MEM_BUFFER:     23,552 bytes
+  SIZE_MEM_BUFFER:     22,528 bytes
   Heap overhead:       ~200 bytes
-  Available for TX:    23,352 bytes
+  Available for TX:    22,328 bytes
   Recommended TX size: 19,456 bytes
-  Remaining margin:    3,896 bytes
+  Remaining margin:    2,872 bytes
 ```
 
 ---
@@ -461,7 +462,7 @@ Verification against device memory limits (Nano X is the tightest):
 
 | Device | Total RAM | Heap Overhead | Available | MAX (21 KB) | Typical TX | UI Space |
 |--------|-----------|---------------|-----------|-------------|------------|----------|
-| Nano X | 23 KB | ~200 B | 22.8 KB | 21 KB | 2-3 KB | ~19-20 KB |
+| Nano X | 22 KB | ~200 B | 21.8 KB | 21 KB | 2-3 KB | ~18-19 KB |
 | Nano S+, Stax, Flex | 25 KB+ | ~200 B | 24.8 KB+ | 21 KB | 2-3 KB | ~21-22 KB |
 
 The 21 KB maximum fits comfortably with room for UI structures.
@@ -474,6 +475,147 @@ The Python test harness automatically calculates the correct size, verifying:
 - Allocation uses advertised size
 - Length validation works correctly
 - Transactions parse successfully with exact-sized buffers
+
+---
+
+## Nano X Stack/BSS Interaction in Swap Library Mode
+
+### Summary
+
+Nano X swap/library-mode tests can fail even when the raw transaction itself is
+small. The failure is caused by the static app heap reserving too much BSS space,
+leaving too little room for stack while `tx_validate()` runs through transaction
+parsing, hashing, address derivation, and swap-specific validation.
+
+The raw transaction buffer is dynamically allocated from `mem_buffer`, but
+`mem_buffer` itself is a static BSS object. Its configured size therefore changes
+the linker layout and the distance between `_stack`, SDK swap globals, and the
+rest of BSS before any transaction is allocated.
+
+### Failure Signature
+
+The confirmed bad Nano X layout had only about 0x990 bytes between `_stack` and
+`_estack`, with SDK swap globals such as `G_called_from_swap` and
+`G_swap_response_ready` immediately below `_stack`. During `tx_validate()`, stack
+growth corrupted data below `_stack`. Once control returned, the current stack
+pointer looked normal again, but the SDK swap state was already damaged.
+
+Typical symptoms:
+
+- Valid Nano X swap tests fail with `ExceptionRAPDU: Error [0x6e00] b''`.
+- Speculos logs show Cardano returning control to Exchange immediately after the
+  transaction hash response, before the witness APDU is processed.
+- The next Cardano witness APDU starts with `D721...`, but Exchange receives it
+  as a top-level APDU and reports `invalid CLA 215`.
+- In another variant, corrupted `G_called_from_swap` makes Cardano leave swap
+  mode and enter normal transaction review UI.
+- Screenshot assertions may report only a post-sign image mismatch such as
+  "Transaction signed" vs "Incorrect transaction rejected by the Cardano app",
+  even though the primary bug is an APDU/control-flow failure.
+
+### How To Detect It
+
+Start with the Speculos APDU log around the Cardano `SIGN_TRANSACTION` library
+call.
+
+Good flow:
+
+1. Exchange calls Cardano as a library for `SIGN_TRANSACTION`.
+2. Cardano receives `P1_TX_INIT` and transaction chunks.
+3. Cardano returns the transaction hash with `SW=9000`.
+4. The test sends one or more `sign_tx_witness` APDUs to Cardano.
+5. Only the final witness response sets `G_swap_response_ready = true`, causing
+   `os_lib_end()` and returning a successful swap answer to Exchange.
+
+Bad flow:
+
+1. Cardano returns the transaction hash with `SW=9000`.
+2. The SDK immediately logs `Swap answer is processed. Send it` and
+   `Returning to Exchange with status 1`.
+3. The next witness APDU is interpreted by Exchange and fails with `0x6e00`.
+
+Inspect the Nano X linker map, typically `build/nanox/dbg/app.map`, for these
+symbols:
+
+```text
+mem_buffer
+G_called_from_swap
+G_swap_response_ready
+_stack
+_estack
+```
+
+In the bad layout, `mem_buffer` was 23 KiB and the stack boundary was too close
+to SDK swap globals. Reducing the Nano X static heap to 22 KiB moved `_stack`
+down by 0x400 bytes, increasing the usable stack room and moving the globals
+away from the overflow area.
+
+When a direct probe is needed, add temporary `TRACE` instrumentation around:
+
+- before `tx_validate()`
+- after `tx_validate()`
+- before the transaction hash response
+- before witness signing
+- before the final witness response
+
+The useful values are current `sp`, `_stack`, `_estack`, a canary just below
+`_stack`, `G_called_from_swap`, and `G_swap_response_ready`. If the values change
+after `tx_validate()` without an explicit write, this is stack/BSS corruption.
+Remove this instrumentation before merging; it is diagnostic-only and changes
+the memory layout being measured.
+
+`--get-stack-consumption` is useful, but it is not sufficient by itself for this
+failure mode. A transient overwrite below `_stack` can corrupt BSS while the
+reported stack pointer later recovers.
+
+### How To Fix It
+
+Keep all three parts of the fix together:
+
+1. Reduce the Nano X static app heap in `src/utils/mem.c`.
+   `SIZE_MEM_BUFFER` is 22 KiB on Nano X and 25 KiB on larger targets. This
+   directly improves the static BSS/stack layout.
+2. Reduce transaction validation stack pressure where practical:
+   - parse device-owned output address params directly into embedded storage
+     instead of copying a stack-local `address_params_t`,
+   - move transient hash-output descriptions to tightly scoped app-heap buffers,
+   - mark stack-heavy key-derivation helpers with `__noinline_due_to_stack__`.
+3. Preserve swap control-flow invariants:
+   - clear `G_swap_response_ready` when a new swap transaction starts, after
+     the double-sign guard has checked for stale `true`,
+   - set `G_swap_response_ready` only before the final witness response,
+   - do not reset `G_called_from_swap`; the SDK sets it when entering the app in
+     library mode.
+
+Do not reduce `MAX_TX_BUFFER_SIZE` as the first response. The failing swap raw
+transactions are small; the crash comes from static memory layout and validation
+stack depth, not from allocating a near-maximum transaction buffer. If a future
+change makes the 22 KiB heap unable to hold the 21 KiB maximum raw transaction,
+then adjust the target-specific maximum deliberately and update this document and
+tests together.
+
+### Test Reporting
+
+Valid swap tests should assert direct Cardano APDU success in addition to
+checking post-sign screenshots. For the final witness response, assert:
+
+- status word is `SWO_SUCCESS`
+- response data length is `ED25519_SIGNATURE_LENGTH`
+
+This prevents a valid signing failure from being reported only as a snapshot
+change. Post-sign screenshots are still useful for Exchange UI behavior, but
+they should not mask the primary APDU exception from the Cardano library call.
+
+### Verification Checklist
+
+- Nano X map shows `SIZE_MEM_BUFFER` as 22 KiB and `_stack` moved away from SDK
+  swap globals compared with the bad layout.
+- Nano X swap valid cases complete without `0x6e00`, `invalid CLA 215`, or a
+  normal Cardano transaction-review UI.
+- Logs show `G_swap_response_ready` is reset at swap transaction init and set to
+  true only for the final witness response.
+- Any temporary stack probes, canaries, map parsers, or scratch notes are removed
+  from the tracked diff before merging.
 
 ---
 

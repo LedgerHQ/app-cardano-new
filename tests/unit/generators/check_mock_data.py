@@ -13,24 +13,19 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
+from tests.unit.generators.common import (
+    extract_brace_delimited_entries,
+    extract_static_uint8_array_bodies,
+)
 from tests.unit.generators.mock_data_utils import (
+    _ENTRY_START_PATTERN,
     _GENERATED_SIGN_TX_MESSAGE_NAME_PATTERN,
+    _MOCK_SIGNATURES_PATTERN,
     collect_required_sign_tx_signature_keys,
 )
 from tests.unit.generators.paths import UNIT_TESTS_DIR
 
-
-DEFAULT_RUNTIME_USAGE_CTEST_REGEX = (
-    r"test_(message_signing|sign_msg|sign_tx|opcert|cvote)"
-)
-
-SIGNATURE_ENTRY_PATTERN = re.compile(
-    r'/\*\s*Path\s*"(?P<path>[^"]+)"\s+message\s+'
-    r"(?P<message_name>[A-Z0-9_]+)\s+"
-    r'\(hex\s+"(?P<hash_hex>[a-f0-9]+)"\)\s*\*/'
-    r".*?\.path\s*=\s*\{\s*(?P<path_words>[^}]+)\}",
-    flags=re.DOTALL,
-)
+DEFAULT_RUNTIME_USAGE_CTEST_REGEX = r"test_(message_signing|sign_msg|sign_tx|opcert|cvote)"
 
 
 @dataclass(frozen=True)
@@ -42,9 +37,7 @@ class SignatureEntry:
 
     @property
     def is_generated_sign_tx(self) -> bool:
-        return bool(
-            _GENERATED_SIGN_TX_MESSAGE_NAME_PATTERN.fullmatch(self.message_name)
-        )
+        return bool(_GENERATED_SIGN_TX_MESSAGE_NAME_PATTERN.fullmatch(self.message_name))
 
 
 def _parse_path_words(path_words_str: str) -> tuple[int, ...]:
@@ -54,26 +47,38 @@ def _parse_path_words(path_words_str: str) -> tuple[int, ...]:
 def _load_signature_entries() -> list[SignatureEntry]:
     mock_data_header = UNIT_TESTS_DIR / "mock_crypto" / "crypto_mock_data.h"
     content = mock_data_header.read_text(encoding="utf-8")
+    message_bodies = extract_static_uint8_array_bodies(content)
+    mock_signatures_match = _MOCK_SIGNATURES_PATTERN.search(content)
+    if mock_signatures_match is None:
+        raise ValueError("MOCK_SIGNATURES array not found in mock crypto data header")
+
+    signature_entries_body = mock_signatures_match.group(2)
+    entry_texts = extract_brace_delimited_entries(signature_entries_body, _ENTRY_START_PATTERN)
 
     entries: list[SignatureEntry] = []
-    for entry_index, match in enumerate(SIGNATURE_ENTRY_PATTERN.finditer(content)):
+    for entry_index, entry_text in enumerate(entry_texts):
+        path_words_match = re.search(r"\.path\s*=\s*\{\s*(?P<path_words>[^}]+)\}", entry_text)
+        message_name_match = re.search(r"\.message\s*=\s*(?P<message_name>[A-Z0-9_]+)", entry_text)
+        if path_words_match is None or message_name_match is None:
+            raise ValueError(f"Failed to parse MOCK_SIGNATURES entry at index {entry_index}")
+        message_name = message_name_match.group("message_name")
+        message_body = message_bodies.get(message_name)
+        if message_body is None:
+            raise ValueError(f"Failed to resolve message buffer {message_name} for MOCK_SIGNATURES entry at index {entry_index}")
+        hash_bytes = bytes.fromhex("".join(re.findall(r"0x([0-9a-fA-F]{2})", message_body)))
         entries.append(
             SignatureEntry(
                 index=entry_index,
-                message_name=match.group("message_name"),
-                path_words=_parse_path_words(match.group("path_words")),
-                hash_bytes=bytes.fromhex(match.group("hash_hex")),
+                message_name=message_name,
+                path_words=_parse_path_words(path_words_match.group("path_words")),
+                hash_bytes=hash_bytes,
             )
         )
     return entries
 
 
 def _report_generated_sign_tx_usage(entries: list[SignatureEntry]) -> int:
-    available_keys = {
-        (entry.path_words, entry.hash_bytes)
-        for entry in entries
-        if entry.is_generated_sign_tx
-    }
+    available_keys = {(entry.path_words, entry.hash_bytes) for entry in entries if entry.is_generated_sign_tx}
     required_keys = set(collect_required_sign_tx_signature_keys())
     missing_keys = sorted(required_keys - available_keys)
     unused_keys = sorted(available_keys - required_keys)
@@ -95,8 +100,7 @@ def _collect_runtime_used_signature_indices(ctest_regex: str) -> set[int]:
     build_dir = UNIT_TESTS_DIR / "build"
     if not build_dir.exists():
         raise FileNotFoundError(
-            f"Unit-test build directory not found: {build_dir}. "
-            "Build tests first with cmake -Bbuild -H. && cmake --build build."
+            f"Unit-test build directory not found: {build_dir}. Build tests first with cmake -Bbuild -H. && cmake --build build."
         )
 
     with tempfile.NamedTemporaryFile(
@@ -122,15 +126,14 @@ def _collect_runtime_used_signature_indices(ctest_regex: str) -> set[int]:
             text=True,
             capture_output=True,
             timeout=1800,
+            check=False,
         )
         if result.returncode != 0:
             if result.stdout:
                 print(result.stdout, end="")
             if result.stderr:
                 print(result.stderr, end="", file=sys.stderr)
-            raise RuntimeError(
-                f"ctest failed with return code {result.returncode} for regex {ctest_regex!r}"
-            )
+            raise RuntimeError(f"ctest failed with return code {result.returncode} for regex {ctest_regex!r}")
 
         used_indices: set[int] = set()
         if log_path.exists():
@@ -145,9 +148,7 @@ def _collect_runtime_used_signature_indices(ctest_regex: str) -> set[int]:
             log_path.unlink()
 
 
-def _report_runtime_static_usage(
-    entries: list[SignatureEntry], ctest_regex: str
-) -> int:
+def _report_runtime_static_usage(entries: list[SignatureEntry], ctest_regex: str) -> int:
     used_indices = _collect_runtime_used_signature_indices(ctest_regex)
 
     static_entries = [entry for entry in entries if not entry.is_generated_sign_tx]
@@ -159,21 +160,15 @@ def _report_runtime_static_usage(
 
     print(f"Static mock signatures available: {len(static_entries)}")
     print(f"Static mock signatures used in runtime sample: {len(used_static_indices)}")
-    print(
-        f"Static mock signatures unused in runtime sample: {len(unused_static_indices)}"
-    )
+    print(f"Static mock signatures unused in runtime sample: {len(unused_static_indices)}")
     print(f"Runtime sample: ctest -R {ctest_regex!r}")
-    print(
-        f"Generated sign-tx mock signatures touched in runtime sample: {len(used_generated_indices)}"
-    )
+    print(f"Generated sign-tx mock signatures touched in runtime sample: {len(used_generated_indices)}")
 
     return 0
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Check mock-crypto data consistency and optional runtime usage."
-    )
+    parser = argparse.ArgumentParser(description="Check mock-crypto data consistency and optional runtime usage.")
     parser.add_argument(
         "--runtime-static-usage",
         action="store_true",
@@ -185,10 +180,7 @@ def main() -> int:
     parser.add_argument(
         "--ctest-regex",
         default=DEFAULT_RUNTIME_USAGE_CTEST_REGEX,
-        help=(
-            "CTest regex used with --runtime-static-usage. "
-            f"Default: {DEFAULT_RUNTIME_USAGE_CTEST_REGEX!r}"
-        ),
+        help=(f"CTest regex used with --runtime-static-usage. Default: {DEFAULT_RUNTIME_USAGE_CTEST_REGEX!r}"),
     )
     args = parser.parse_args()
 

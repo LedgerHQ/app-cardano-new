@@ -114,5 +114,5 @@
  */
 int cx_selftest(void);
 
-#endif // CX_H
+#endif  // CX_H
 // #include "cx_compliance_141.h"

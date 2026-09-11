@@ -16,7 +16,7 @@
 #define HD HARDENED_BIP32  // 0x80000000
 
 // Helper to initialize BIP44 path
-static void pathSpec_init(bip44_path_t* pathSpec, const uint32_t* pathArray, uint32_t pathLength) {
+static void pathSpec_init(bip44_path_t *pathSpec, const uint32_t *pathArray, uint32_t pathLength) {
     pathSpec->length = pathLength;
     if (pathLength > 0) {
         memmove(pathSpec->path, pathArray, pathLength * 4);
@@ -28,15 +28,15 @@ static void test_bip44_simple_paths(void **state) {
     (void) state;
 
     struct {
-        const uint32_t* path;
+        const uint32_t *path;
         size_t path_len;
-        const char* expected;
+        const char *expected;
     } testVectors[] = {
         // Simple paths without hardening
-        {(uint32_t[]){1, 2, 3, 4, 5}, 5, "m/1/2/3/4/5"},
-        {(uint32_t[]){0}, 1, "m/0"},
-        {(uint32_t[]){1}, 1, "m/1"},
-        {(uint32_t[]){44, 1815, 0}, 3, "m/44/1815/0"},
+        {(uint32_t[]) {1, 2, 3, 4, 5}, 5, "m/1/2/3/4/5"},
+        {(uint32_t[]) {0}, 1, "m/0"},
+        {(uint32_t[]) {1}, 1, "m/1"},
+        {(uint32_t[]) {44, 1815, 0}, 3, "m/44/1815/0"},
     };
 
     for (size_t i = 0; i < sizeof(testVectors) / sizeof(testVectors[0]); i++) {
@@ -59,16 +59,16 @@ static void test_bip44_hardened_paths(void **state) {
     (void) state;
 
     struct {
-        const uint32_t* path;
+        const uint32_t *path;
         size_t path_len;
-        const char* expected;
+        const char *expected;
     } testVectors[] = {
         // Hardened paths (with ')
-        {(uint32_t[]){HD + 44, HD + 1815, HD + 0, 1, 55}, 5, "m/44'/1815'/0'/1/55"},
-        {(uint32_t[]){HD + 44, HD + 1815}, 2, "m/44'/1815'"},
-        {(uint32_t[]){HD + 0}, 1, "m/0'"},
+        {(uint32_t[]) {HD + 44, HD + 1815, HD + 0, 1, 55}, 5, "m/44'/1815'/0'/1/55"},
+        {(uint32_t[]) {HD + 44, HD + 1815}, 2, "m/44'/1815'"},
+        {(uint32_t[]) {HD + 0}, 1, "m/0'"},
         // Mixed paths
-        {(uint32_t[]){HD + 44, HD + 1815, HD + 0, 0, 0}, 5, "m/44'/1815'/0'/0/0"},
+        {(uint32_t[]) {HD + 44, HD + 1815, HD + 0, 0, 0}, 5, "m/44'/1815'/0'/0/0"},
     };
 
     for (size_t i = 0; i < sizeof(testVectors) / sizeof(testVectors[0]); i++) {
@@ -106,27 +106,28 @@ static void test_bip44_cardano_paths(void **state) {
     (void) state;
 
     struct {
-        const uint32_t* path;
+        const uint32_t *path;
         size_t path_len;
-        const char* expected;
-        const char* description;
+        const char *expected;
+        const char *description;
     } testVectors[] = {
         // Cardano standard paths (CIP-3)
-        {(uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 0}, 5,
+        {(uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 0},
+         5,
          "m/1852'/1815'/0'/0/0",
          "Shelley payment address path"},
 
-        {(uint32_t[]){HD + 1852, HD + 1815, HD + 0, 2, 0}, 5,
+        {(uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 2, 0},
+         5,
          "m/1852'/1815'/0'/2/0",
          "Shelley stake key path"},
 
-        {(uint32_t[]){HD + 1852, HD + 1815, HD + 0}, 3,
+        {(uint32_t[]) {HD + 1852, HD + 1815, HD + 0},
+         3,
          "m/1852'/1815'/0'",
          "Shelley account path"},
 
-        {(uint32_t[]){HD + 1852, HD + 1815}, 2,
-         "m/1852'/1815'",
-         "Shelley coin path"},
+        {(uint32_t[]) {HD + 1852, HD + 1815}, 2, "m/1852'/1815'", "Shelley coin path"},
     };
 
     for (size_t i = 0; i < sizeof(testVectors) / sizeof(testVectors[0]); i++) {
@@ -154,7 +155,7 @@ static void test_bip44_buffer_size(void **state) {
 
     // Test with proper minimum buffer size (MAX_BIP44_PATH_STRING_LENGTH + 1)
     // The function requires at least this much space
-    const char* expected = "m/44'/1815'/0'/0/0";
+    const char *expected = "m/44'/1815'/0'/0/0";
     bool success = format_bip44_path(&pathSpec, result, 256);
     assert_true(success);
     size_t resultLen = strlen(result);
@@ -192,7 +193,7 @@ static void test_bip44_parser_rejects_empty_wire_path(void **state) {
 
     const uint8_t wire_data[] = {0};
     buffer_t path_buffer = {
-        .ptr = (uint8_t*) wire_data,
+        .ptr = (uint8_t *) wire_data,
         .size = sizeof(wire_data),
         .offset = 0,
     };
@@ -208,14 +209,14 @@ static void test_paths_equal_different_lengths(void **state) {
     (void) state;
 
     bip44_path_t lhs, rhs;
-    pathSpec_init(&lhs, (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0, 1}, 5);
-    pathSpec_init(&rhs, (uint32_t[]){HD + 1852, HD + 1815, HD + 0}, 3);
+    pathSpec_init(&lhs, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0, 1}, 5);
+    pathSpec_init(&rhs, (uint32_t[]) {HD + 1852, HD + 1815, HD + 0}, 3);
     assert_false(bip44_pathsEqual(&lhs, &rhs));
 }
 
 // ======================== bip44_classifyPath invalid/PATH_INVALID tests ========================
 
-static void testcase_classify_path_invalid(const uint32_t* pathArray, uint32_t pathLength) {
+static void testcase_classify_path_invalid(const uint32_t *pathArray, uint32_t pathLength) {
     bip44_path_t pathSpec;
     pathSpec_init(&pathSpec, pathArray, pathLength);
     assert_int_equal(bip44_classifyPath(&pathSpec), PATH_INVALID);
@@ -224,65 +225,49 @@ static void testcase_classify_path_invalid(const uint32_t* pathArray, uint32_t p
 static void test_classify_ordinary_path_length_4(void **state) {
     (void) state;
     // Ordinary wallet prefix (1852'/1815') but length 4 — neither account (3) nor full key (5)
-    testcase_classify_path_invalid(
-        (uint32_t[]){HD + 1852, HD + 1815, HD + 0, 0},
-        4);
+    testcase_classify_path_invalid((uint32_t[]) {HD + 1852, HD + 1815, HD + 0, 0}, 4);
 }
 
 static void test_classify_ordinary_path_non_hardened_account(void **state) {
     (void) state;
     // Ordinary wallet prefix but account is not hardened
-    testcase_classify_path_invalid(
-        (uint32_t[]){HD + 1852, HD + 1815, 0, 0, 0},
-        5);
+    testcase_classify_path_invalid((uint32_t[]) {HD + 1852, HD + 1815, 0, 0, 0}, 5);
 }
 
 static void test_classify_multisig_path_no_account(void **state) {
     (void) state;
     // Multisig prefix (1854'/1815') but path ends at coin type — no account component
-    testcase_classify_path_invalid(
-        (uint32_t[]){HD + 1854, HD + 1815},
-        2);
+    testcase_classify_path_invalid((uint32_t[]) {HD + 1854, HD + 1815}, 2);
 }
 
 static void test_classify_multisig_path_non_hardened_account(void **state) {
     (void) state;
     // Multisig prefix (1854'/1815') but account is not hardened
-    testcase_classify_path_invalid(
-        (uint32_t[]){HD + 1854, HD + 1815, 0, 0, 0},
-        5);
+    testcase_classify_path_invalid((uint32_t[]) {HD + 1854, HD + 1815, 0, 0, 0}, 5);
 }
 
 static void test_classify_multisig_path_length_4(void **state) {
     (void) state;
     // Multisig prefix but length 4 — neither account (3) nor full key (5)
-    testcase_classify_path_invalid(
-        (uint32_t[]){HD + 1854, HD + 1815, HD + 0, 0},
-        4);
+    testcase_classify_path_invalid((uint32_t[]) {HD + 1854, HD + 1815, HD + 0, 0}, 4);
 }
 
 static void test_classify_cvote_path_no_account(void **state) {
     (void) state;
     // CVote prefix (1694'/1815') but path ends at coin type — no account component
-    testcase_classify_path_invalid(
-        (uint32_t[]){HD + 1694, HD + 1815},
-        2);
+    testcase_classify_path_invalid((uint32_t[]) {HD + 1694, HD + 1815}, 2);
 }
 
 static void test_classify_cvote_path_non_hardened_account(void **state) {
     (void) state;
     // CVote prefix (1694'/1815') but account is not hardened
-    testcase_classify_path_invalid(
-        (uint32_t[]){HD + 1694, HD + 1815, 0, 3, 0},
-        5);
+    testcase_classify_path_invalid((uint32_t[]) {HD + 1694, HD + 1815, 0, 3, 0}, 5);
 }
 
 static void test_classify_cvote_path_length_4(void **state) {
     (void) state;
     // CVote prefix but length 4 — neither account (3) nor full key (5)
-    testcase_classify_path_invalid(
-        (uint32_t[]){HD + 1694, HD + 1815, HD + 0, 3},
-        4);
+    testcase_classify_path_invalid((uint32_t[]) {HD + 1694, HD + 1815, HD + 0, 3}, 4);
 }
 
 int main(void) {

@@ -40,15 +40,18 @@ cx_err_t cx_blake2b_init_no_throw(cx_blake2b_t *ctx, uint8_t output_len) {
  * Add more data to hash or finalize
  * Mode: 0 = update, CX_LAST (0x80000000) = finalize
  */
-cx_err_t cx_hash_no_throw(cx_hash_t *hash, int mode,
-                          const uint8_t *in, size_t in_len,
-                          uint8_t *out, size_t out_len) {
+cx_err_t cx_hash_no_throw(cx_hash_t *hash,
+                          int mode,
+                          const uint8_t *in,
+                          size_t in_len,
+                          uint8_t *out,
+                          size_t out_len) {
     if (hash == NULL) {
         return -1;
     }
 
     // Cast to Blake2b context
-    cx_blake2b_t *ctx = (cx_blake2b_t *)hash;
+    cx_blake2b_t *ctx = (cx_blake2b_t *) hash;
     blake2b_t *blake2b_state = &ctx->state;
 
     // Check if state needs initialization

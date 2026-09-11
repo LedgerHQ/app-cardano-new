@@ -7,7 +7,7 @@ We are converting an old version of the Ledger Cardano app into a new modernized
 - **New app:** `../ledger-app-cardano`. The modernized Ledger Cardano app in this repository.
 - **Local reference repos:** Use the checked-out local copies first, not web search:
   - `../../ledger/app-ethereum`
-  - `../../ledger/app-bitcoin-new`
+  - `../../ledger/app-bitcoin`
   - `../../ledger/app-boilerplate`
   - `../../ledger/ledger-app-workflows`
 - **Device Support:** Supporting Stax, Flex, Nano X, and Nano S+. *Nano S is no longer supported.*
@@ -31,10 +31,22 @@ For detailed analysis, see:
 - **Static-analysis-friendly null checks:** Prefer combined guards like `x != NULL && x->field ...` in conditions/assertions (including `LEDGER_ASSERT`) when dereferencing pointers, to keep `scan-build`/clang analyzer free of false-positive null-dereference warnings. Use function contracts like `__attribute__((nonnull(...)))` where appropriate (already used in this repo), and note the SDK `__clang_analyzer__` trick with `__attribute__((analyzer_noreturn))` (see `exceptions.h`) for analyzer-specific control-flow hints.
 - **Debugging:** Use `TRACE` (avoid `PRINTF`) and `TRACE_MODULE()` for verbose or repetitive output. See `doc/testing.md` for the guard list and usage pattern.
 - **Memory Management:** Be extremely mindful of scarce memory. Global context data should be strictly necessary.
-- **Stack Discipline:** Ledger targets, especially Nano X, are sensitive to stack pressure. Use `__noinline_due_to_stack__` from `src/utils/utils.h` for helpers with large local buffers or helpers that commonly compose into stack-heavy call chains, particularly in address derivation / formatting and transaction parsing / formatting paths. Put the attribute on its own line immediately above the function declaration / definition. Prefer this over adding temporary global scratch buffers unless there is a stronger architectural reason.
+- **Stack Discipline:** Ledger targets, especially Nano X, are sensitive to stack pressure. Use `__noinline_due_to_stack__` from `src/utils/utils.h` for helpers with large local buffers or helpers that commonly compose into stack-heavy call chains, particularly in address derivation / formatting and transaction parsing / formatting paths. Put the attribute on its own line immediately above the function declaration / definition. Prefer this over adding temporary global scratch buffers unless there is a stronger architectural reason. For Nano X swap/library-mode stack and raw-buffer layout diagnostics, see [doc/tx_raw_buffer.md](doc/tx_raw_buffer.md#nano-x-stackbss-interaction-in-swap-library-mode).
 - **Temporary Buffers:** For short-lived byte buffers in tx/UI code, a tiny local helper such as `alloc_temp_buffer_or_fail()` using `APP_MEM_CALLOC`/`APP_MEM_FREE_AND_NULL` is acceptable when the allocation/free stay tightly scoped and improve stack usage.
 - **Imports:** Organize imports logically and avoid forward declarations.
-- **Use cheap fast model to gather context if possible (e.g. Haiku)**.
+- **Use cheap fast model for subagents:** When spawning agents for simple tasks (searching codebases, gathering context, reading files, repetitive straightforward small-scope changes), prefer cheaper/faster models (e.g. Haiku, Gemini Flash, DeepSeek Flash, GPT-5.4-mini) to save context and cost on the main model thread. Reserve the main model for reasoning-heavy tasks.
+
+### When the Model Makes a Mistake
+
+If you make a wrong decision, take a wrong approach, or the user has to stop and redirect you, append a 1–2 sentence note to a `## Lessons Learned` section at the bottom of this file summarizing: (1) what the mistake was, and (2) the correct behavior going forward. Keep entries terse and actionable — the goal is to prevent repeating the same error.
+
+### When to Ask Questions
+
+When a requirement, design intent, or correctness of a behavior cannot be definitively answered from the code itself (e.g., whether a path rejection is intentional or an oversight, whether dead code should be removed vs. excluded vs. tested), do not guess. Prepare a concise numbered list of specific questions and ask the human user.
+
+The one exception is straightforward mechanical tasks (e.g., declaring an existing function in a header, regenerating fixtures) where the only risk is trivial — those can be done directly.
+
+This also applies when the user gives a direction that has multiple plausible interpretations: lay out the interpretations in a short list and ask which they meant.
 
 ### What NOT to DO
 - **Do NOT modify `src/transaction/tx_hash_builder.c` or `src/addressUtils/bip44.c`** without explicit confirmation. They are trusted components.
@@ -84,7 +96,7 @@ For detailed analysis, see:
 
 ## Additional Resources
 - **BOLOS SDK:** `/opt/ledger-secure-sdk` (underlying library).
-- **Reference Apps:** `../../ledger/app-ethereum` (eth app) and `../../ledger/app-bitcoin-new` (btc app) for modern coding patterns.
+- **Reference Apps:** `../../ledger/app-ethereum` (eth app) and `../../ledger/app-bitcoin` (btc app) for modern coding patterns.
 - **Client Libraries:** `../ledgerjs-cardano-shelley` and `../cardano-hw-interop-lib`.
 - **Testing:**
     - [doc/testing.md](doc/testing.md): Testing entry point and workflow.
@@ -109,3 +121,11 @@ Brief summary:
   expected results, treat it as an error. Do not omit the fixture, do not leave
   generated success fixtures with null expected outputs unnoticed, and do not skip
   assertions at runtime for that reason.
+
+## Lessons Learned
+
+- 2026-05-08: When a body-processing failure shows a `tx_handle_parse_error` with an exact SWO, cross-reference `cardano_swo.h` first to identify the error category before searching code paths.
+- 2026-05-08: Never use `unsuitable_in_ragger_reason` as a skip mechanism for incomplete/stub tests. Tests added to input files must be run and allowed to fail legitimately — if a test isn't ready, don't add it to the input file. `unsuitable_in_ragger_reason` is only for genuine ragger-specific blockers (e.g. "Seed-dependent"). Also, new test case lists must be imported in the generator's `_load_sign_tx_tests()`. Generator-side logic that mirrors app policy (such as `_is_reasonable_witness_path`) must be kept in sync with the C code when new path types are added.
+- 2026-06-09: For memory-profiler leak fixes, do NOT add a local `APP_MEM_FREE` on an error/deny path that runs *after* `send_swo_and_reset()`/`tx_handle_parse_error()` — those reset the heap (`mem_utils_reset_app_heap`) and zero `G_context` deep in the call stack, so a later free is a use-after-reset (`corrupted prev_chunk`) and the free event lands after the profiler `init`. Free request-scoped buffers centrally in `reset_app_context()` *before* the bulk heap reset (context buffers via `free_request_context_buffers`; transaction parsing temp buffers via the `tx_alloc_temp_buffer_or_fail`/`tx_free_temp_buffer`/`tx_free_all_temp_buffers` registry in `tx_utils.c`).
+
+<!-- Append 1–2 sentence notes here when the model makes a mistake that should be avoided in the future. Format: date, brief description of mistake, and the correct behavior. -->

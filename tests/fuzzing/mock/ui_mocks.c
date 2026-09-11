@@ -148,12 +148,12 @@ void nbgl_useCaseAdvancedReview(nbgl_operationType_t operationType,
 }
 
 void nbgl_useCaseReview(nbgl_operationType_t operationType,
-                       const nbgl_contentTagValueList_t *tagValueList,
-                       const nbgl_icon_details_t *icon,
-                       const char *reviewTitle,
-                       const char *reviewSubTitle,
-                       const char *finishTitle,
-                       nbgl_choiceCallback_t choiceCallback) {
+                        const nbgl_contentTagValueList_t *tagValueList,
+                        const nbgl_icon_details_t *icon,
+                        const char *reviewTitle,
+                        const char *reviewSubTitle,
+                        const char *finishTitle,
+                        nbgl_choiceCallback_t choiceCallback) {
     UNUSED(operationType);
     UNUSED(tagValueList);
     UNUSED(icon);

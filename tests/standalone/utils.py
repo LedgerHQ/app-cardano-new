@@ -1,42 +1,41 @@
 # SPDX-FileCopyrightText: 2025-2026 Vacuumlabs
 # SPDX-License-Identifier: Apache-2.0
 
-from pathlib import Path
-from typing import List, Sequence, Tuple, Union, cast
-import re
 import hashlib
+import re
+from collections.abc import Sequence
+from pathlib import Path
 from time import time
+from typing import cast
 
 import base58
+from bip_utils import Bip39SeedGenerator, Bip44, Bip44Changes, Bip44Coins
+from bip_utils.bip.bip32.bip32_path import Bip32Path, Bip32PathParser
 from ecdsa.curves import Ed25519
 from ecdsa.keys import VerifyingKey
-
-from bip_utils import Bip44, Bip44Coins, Bip44Changes, Bip39SeedGenerator
-from bip_utils.bip.bip32.bip32_path import Bip32Path, Bip32PathParser
-
-from ragger.bip import calculate_public_key_and_chaincode, CurveChoice
-from ragger.navigator import Navigator, NavInsID, NavIns, BaseNavInsID
+from ledgered.devices import Device
+from ragger.backend import BackendInterface
+from ragger.bip import CurveChoice, calculate_public_key_and_chaincode
+from ragger.bip.seed import SPECULOS_MNEMONIC
+from ragger.error import ExceptionRAPDU
+from ragger.navigator import BaseNavInsID, Navigator, NavIns, NavInsID
 from ragger.navigator.navigation_scenario import (
     NavigateWithScenario,
     NavigationScenarioData,
     UseCase,
 )
-from ledgered.devices import Device
-
-from ragger.bip.seed import SPECULOS_MNEMONIC
-from ragger.backend import BackendInterface
 
 from tests.application_client.command_builder import AddressType
-
+from tests.application_client.command_sender import CommandSender
+from tests.application_client.status_words import StatusWord
+from tests.standalone.input_files.cvote import CVoteTestCase
 from tests.standalone.input_files.derive_address import DeriveAddressTestCase
 from tests.standalone.input_files.pubkey import (
     PubKeyTestCase,
     convert_ragger_bip_pubkey_to_app_pubkey,
 )
-from tests.standalone.input_files.cvote import CVoteTestCase
-from tests.standalone.input_files.signOpCert import OpCertTestCase
 from tests.standalone.input_files.signMsg import SignMsgTestCase
-
+from tests.standalone.input_files.signOpCert import OpCertTestCase
 
 ROOT_SCREENSHOT_PATH = Path(__file__).parent.resolve()
 NANO_CHOICE_CONFIRM_INSTRUCTIONS = [NavInsID.BOTH_CLICK]
@@ -44,7 +43,6 @@ NANO_REVIEW_CONFIRM_INSTRUCTIONS = [NavInsID.LEFT_CLICK, NavInsID.BOTH_CLICK]
 
 _REJECT_TEXT = r"^Reject operation$"
 _WARNING_PATH = "warning"
-_WARNING_CLICKS = 3
 
 
 class NavContext:
@@ -67,6 +65,31 @@ class NavContext:
     @property
     def screenshot_path(self) -> Path:
         return self.scenario_navigator.screenshot_path
+
+
+def assert_expected_deny_and_app_alive(backend: BackendInterface, err: ExceptionRAPDU, expected_swo: int | None) -> None:
+    assert expected_swo is not None
+    assert err.status == expected_swo
+
+    try:
+        response = CommandSender(backend).get_version_raw()
+    except ExceptionRAPDU as liveness_err:
+        raise AssertionError(
+            "App correctly denied the invalid input, but is not alive afterwards.\n"
+            f"Expected deny SW: {hex(expected_swo)}\n"
+            f"Observed deny SW: {hex(err.status)}\n"
+            f"Follow-up GET_VERSION SW: {hex(liveness_err.status)}\n"
+            "This usually means the app sent the correct deny response and then "
+            "crashed or corrupted its APDU/session state before the next command."
+        ) from liveness_err
+
+    assert response.status == StatusWord.SWO_SUCCESS, (
+        "App correctly denied the invalid input, but is not healthy afterwards.\n"
+        f"Expected deny SW: {hex(expected_swo)}\n"
+        f"Observed deny SW: {hex(err.status)}\n"
+        f"Follow-up GET_VERSION SW: {hex(response.status)}\n"
+        f"Expected GET_VERSION SW: {hex(StatusWord.SWO_SUCCESS)}"
+    )
 
 
 def _nano_instructions(
@@ -251,24 +274,18 @@ def verify_version(version: str) -> None:
     assert version == vers_str
 
 
-def _read_makefile() -> List[str]:
+def _read_makefile() -> list[str]:
     """Read lines from the parent Makefile"""
 
     parent = Path(__file__).parent.parent.parent.resolve()
     makefile = f"{parent}/Makefile"
-    with open(makefile, "r", encoding="utf-8") as f_p:
+    with open(makefile, encoding="utf-8") as f_p:
         lines = f_p.readlines()
     return lines
 
 
 def idTestFunc(
-    testCase: Union[
-        DeriveAddressTestCase,
-        PubKeyTestCase,
-        CVoteTestCase,
-        OpCertTestCase,
-        SignMsgTestCase,
-    ],
+    testCase: DeriveAddressTestCase | PubKeyTestCase | CVoteTestCase | OpCertTestCase | SignMsgTestCase,
 ) -> str:
     """Retrieve the test case name for friendly display
 
@@ -291,6 +308,11 @@ def _review_approve_with_warning(
 ) -> None:
     if not ctx.is_nano:
         detail_navigation: list[NavIns | BaseNavInsID] = [NavInsID.RIGHT_HEADER_TAP]
+        for warning_index in range(min(len(warnings), 3)):
+            detail_navigation += [
+                NavIns(NavInsID.CHOICE_CHOOSE, (warning_index + 1,)),
+                NavInsID.LEFT_HEADER_TAP,
+            ]
         if len(warnings) > 3:
             detail_navigation += [
                 NavIns(NavInsID.CHOICE_CHOOSE, (4,)),
@@ -326,21 +348,35 @@ def _review_approve_with_warning(
         )
         return
 
-    nano_review_instructions = _nano_instructions(
-        nano_review_instructions, [NavInsID.BOTH_CLICK]
-    )
+    nano_review_instructions = _nano_instructions(nano_review_instructions, [NavInsID.BOTH_CLICK])
 
-    # Nano NBGL warning/review flows are fragile under screenshot comparison and
-    # can time out while waiting for intermediate screen changes. Drive them
-    # without golden comparisons regardless of do_comparison.
-    ctx.navigator.navigate(
-        [NavInsID.RIGHT_CLICK] * _WARNING_CLICKS,
+    # Nano warning flow: move from the intro warning page to each warning title,
+    # open its details with both buttons, return with left, then continue.
+    warning_navigation: list[NavIns | BaseNavInsID] = []
+    for _warning in warnings:
+        warning_navigation += [
+            NavInsID.RIGHT_CLICK,
+            NavInsID.BOTH_CLICK,
+            NavInsID.LEFT_CLICK,
+        ]
+    # Exit the warning flow and enter the actual review.
+    warning_navigation.append(NavInsID.RIGHT_CLICK)
+    _navigate_maybe_compare(
+        ctx,
+        f"{test_name}/{_WARNING_PATH}",
+        warning_navigation,
+        do_comparison,
         screen_change_after_last_instruction=False,
     )
-    ctx.navigator.navigate_until_text(
+
+    # Navigate and snapshot the transaction review screens.
+    _navigate_until_text_optional_compare(
+        ctx,
+        test_name=test_name,
         navigate_instruction=NavInsID.RIGHT_CLICK,
         validation_instructions=nano_review_instructions,
         text=target_text,
+        do_comparison=do_comparison,
         screen_change_before_first_instruction=False,
     )
 
@@ -375,15 +411,11 @@ def review_approve(
             )
         else:
             navigator_backend = ctx.navigator._backend  # pylint: disable=protected-access
-            scenario = NavigationScenarioData(
-                ctx.device, navigator_backend, UseCase.TX_REVIEW, True
-            )
+            scenario = NavigationScenarioData(ctx.device, navigator_backend, UseCase.TX_REVIEW, True)
             if target_text is not None:
                 scenario.pattern = target_text
 
-            screen_change_after_last_instruction = (
-                scenario.post_validation_spinner is None
-            )
+            screen_change_after_last_instruction = scenario.post_validation_spinner is None
             _navigate_until_text_optional_compare(
                 ctx,
                 test_name=test_name,
@@ -396,23 +428,7 @@ def review_approve(
             )
 
             if scenario.post_validation_spinner is not None:
-                navigator_backend.wait_for_text_on_screen(
-                    scenario.post_validation_spinner
-                )
-        return
-
-    if target_text is not None:
-        _navigate_until_text_optional_compare(
-            ctx,
-            test_name=test_name,
-            navigate_instruction=NavInsID.RIGHT_CLICK,
-            validation_instructions=_nano_instructions(
-                nano_review_instructions, NANO_CHOICE_CONFIRM_INSTRUCTIONS
-            ),
-            text=target_text,
-            do_comparison=do_comparison,
-            screen_change_before_first_instruction=screen_change_before_first_instruction,
-        )
+                navigator_backend.wait_for_text_on_screen(scenario.post_validation_spinner)
         return
 
     _navigate_until_text_optional_compare(
@@ -420,9 +436,10 @@ def review_approve(
         test_name=test_name,
         navigate_instruction=NavInsID.RIGHT_CLICK,
         validation_instructions=_nano_instructions(
-            nano_review_instructions, NANO_REVIEW_CONFIRM_INSTRUCTIONS
+            nano_review_instructions,
+            NANO_CHOICE_CONFIRM_INSTRUCTIONS if target_text is not None else NANO_REVIEW_CONFIRM_INSTRUCTIONS,
         ),
-        text=_REJECT_TEXT,
+        text=target_text if target_text is not None else _REJECT_TEXT,
         do_comparison=do_comparison,
         screen_change_before_first_instruction=screen_change_before_first_instruction,
     )
@@ -513,9 +530,7 @@ def _deriveAddressByron(testCase: DeriveAddressTestCase) -> bytes:
     # Derive the key for the specified path
     bip32Path: Bip32Path = Bip32PathParser.Parse(testCase.params.spendingValue).ToList()
     bip44_acc = bip44_mst_ctx.Purpose().Coin().Account(bip32Path[2])
-    bip44_chg = bip44_acc.Change(
-        Bip44Changes.CHAIN_EXT if bip32Path[3] == 0 else Bip44Changes.CHAIN_INT
-    )
+    bip44_chg = bip44_acc.Change(Bip44Changes.CHAIN_EXT if bip32Path[3] == 0 else Bip44Changes.CHAIN_INT)
     bip44_addr = bip44_chg.AddressIndex(bip32Path[4])
 
     # Convert the human-readable Byron address back to the raw APDU payload.
@@ -561,7 +576,7 @@ def _appenduint32(value: int) -> str:
     return result
 
 
-def get_device_pubkey(path: str) -> Tuple[bytes, str]:
+def get_device_pubkey(path: str) -> tuple[bytes, str]:
     """Retrieve the Public Key
 
     Args:
@@ -570,9 +585,7 @@ def get_device_pubkey(path: str) -> Tuple[bytes, str]:
     Returns:
         The Reference PK and the byte Chain Code
     """
-    ref_pk, ref_chain_code = calculate_public_key_and_chaincode(
-        CurveChoice.Ed25519Kholaw, path
-    )
+    ref_pk, ref_chain_code = calculate_public_key_and_chaincode(CurveChoice.Ed25519Kholaw, path)
     return (
         bytes.fromhex(convert_ragger_bip_pubkey_to_app_pubkey(ref_pk)),
         ref_chain_code,

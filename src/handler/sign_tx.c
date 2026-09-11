@@ -27,17 +27,18 @@
 #include "tx_credential_types.h"
 #include "tx_output_types.h"
 #include "tx_processing.h"
+#include "tx_signing_mode.h"
 #include "tx_utils.h"
 #include "utils.h"
 #include "cardano_buffer.h"
 
-/* Optional module-specific tracing for debugging.
- * Enabled via -DTRACE_HANDLERS to trace handler-level flow.
+/* Optional verbose flow tracing, compiled out unless -DTRACE_HANDLERS.
+ * Error paths use plain TRACE() so they are always visible for third-party debug.
  */
 #ifdef TRACE_HANDLERS
 #define TRACE_MODULE(...) TRACE("[sign_tx] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 #ifdef HAVE_SWAP
@@ -46,22 +47,9 @@
 #include "swap_lib.h"
 #endif
 
-static bool is_valid_tx_signing_mode(uint8_t tx_signing_mode) {
-    switch (tx_signing_mode) {
-        case SIGN_TX_SIGNINGMODE_ORDINARY_TX:
-        case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
-        case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
-        case SIGN_TX_SIGNINGMODE_MULTISIG_TX:
-        case SIGN_TX_SIGNINGMODE_PLUTUS_TX:
-            return true;
-        default:
-            return false;
-    }
-}
-
 static bool ensure_sign_tx_state(tx_state_e required_state) {
     if (G_context.state.tx_state != required_state) {
-        TRACE_MODULE("Rejecting sign_tx command in state %d (expected %d)",
+        TRACE("Rejecting sign_tx command in state %d (expected %d)",
               G_context.state.tx_state,
               required_state);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
@@ -72,7 +60,7 @@ static bool ensure_sign_tx_state(tx_state_e required_state) {
 
 static bool ensure_sign_tx_request_type(request_type_e required_request_type) {
     if (G_context.req_type != required_request_type) {
-        TRACE_MODULE("Rejecting sign_tx command for req_type %d (expected %d)",
+        TRACE("Rejecting sign_tx command for req_type %d (expected %d)",
               G_context.req_type,
               required_request_type);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
@@ -107,8 +95,7 @@ static bool read_tx_options(buffer_t *cdata, tx_params_t *tx_params) {
  * Returns false and sends SW on failure.
  */
 static bool read_tx_network_params(buffer_t *cdata, tx_params_t *tx_params) {
-    if (!buffer_read_u8(cdata, &tx_params->networkId) ||
-        !isValidNetworkId(tx_params->networkId)) {
+    if (!buffer_read_u8(cdata, &tx_params->networkId) || !isValidNetworkId(tx_params->networkId)) {
         TRACE("TX init: invalid network id %u", tx_params->networkId);
         send_swo_and_reset(SWO_INVALID_NETWORK_ID);
         return false;
@@ -316,6 +303,20 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         return;
     }
 
+#ifdef HAVE_SWAP
+    if (G_called_from_swap) {
+        // At least one witness is required to authorize spending.
+        if (G_context.tx_info.num_witnesses == 0) {
+            swap_reject_and_exit(SWAP_EC_ERROR_GENERIC, SWAP_APP_CODE_DEFAULT);
+        }
+        // In swap mode only payment-key witnesses are allowed (one per input at most),
+        // so the witness count cannot exceed the input count.
+        if (G_context.tx_info.num_witnesses > tx_params->num_inputs) {
+            swap_reject_and_exit(SWAP_EC_ERROR_GENERIC, SWAP_APP_CODE_DEFAULT);
+        }
+    }
+#endif
+
     // Read raw transaction buffer size (advertised by client).
     // Direct stage access: tx_state is still TX_STATE_NONE at this point.
     if (!buffer_read_u16(cdata, &G_context.tx_info.raw_tx_total_length, BE)) {
@@ -343,7 +344,9 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         return;
     }
 
-    TRACE("TX Mode=%d, Network: ID=%d, Magic=%u, Inputs=%u, Outputs=%u, Certificates=%u, Withdrawals=%u, Mint=%u, includeTTL=%d, includeVIS=%d, Witnesses=%u, RawTotalLength=%u",
+    TRACE_MODULE(
+        "TX Mode=%d, Network: ID=%d, Magic=%u, Inputs=%u, Outputs=%u, Certificates=%u, "
+        "Withdrawals=%u, Mint=%u, includeTTL=%d, includeVIS=%d, Witnesses=%u, RawTotalLength=%u",
         tx_params->txSigningMode,
         tx_params->networkId,
         tx_params->protocolMagic,
@@ -355,16 +358,34 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         tx_params->includeTtl,
         tx_params->includeValidityIntervalStart,
         G_context.tx_info.num_witnesses,
-        G_context.tx_info.raw_tx_total_length
-    );
+        G_context.tx_info.raw_tx_total_length);
+
+    // Resolve AUTO signing mode from init-APDU fields before any policy check.
+    if (!resolve_auto_tx_signing_mode(tx_params)) {
+        TRACE("TX init: AUTO mode cannot be resolved from init APDU fields alone");
+        send_swo_and_reset(SWO_AMBIGUOUS_TX_SIGNING_MODE);
+        return;
+    }
+    TRACE_MODULE("TX mode after AUTO resolution: %d", tx_params->txSigningMode);
 
     // Check security policy for DENY at init time (before buffering the tx body).
     // Warning bits are intentionally discarded here; they will be re-set in tx_validate
     // so they are available for UI display.
     {
         warning_bits_t dummy_warnings = 0;
-        security_policy_t init_policy = policyForSignTxInit(tx_params, &dummy_warnings);
-        TRACE("Transaction init security policy: %d", (int) init_policy);
+        security_policy_t init_policy = POLICY_DENY;
+#ifdef HAVE_SWAP
+        if (G_called_from_swap) {
+            init_policy = policyForSignTxSwapInit(tx_params, &dummy_warnings);
+            if (init_policy == POLICY_DENY) {
+                swap_reject_and_exit(SWAP_EC_ERROR_GENERIC, SWAP_APP_CODE_DEFAULT);
+            }
+        } else
+#endif
+        {
+            init_policy = policyForSignTxInit(tx_params, &dummy_warnings);
+        }
+        TRACE_MODULE("Transaction init security policy: %d", (int) init_policy);
         if (init_policy == POLICY_DENY) {
             TRACE("Security policy DENY - rejecting transaction init");
             send_swo_and_reset(SWO_SECURITY_CONDITION_NOT_SATISFIED);
@@ -381,7 +402,7 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
     if (!G_called_from_swap)
 #endif
     {
-        TRACE("Calling nbgl_useCaseSpinner(\"Processing\")");
+        TRACE_MODULE("Calling nbgl_useCaseSpinner(\"Processing\")");
         nbgl_useCaseSpinner("Processing");
     }
 
@@ -389,11 +410,11 @@ static void handle_tx_init_apdu(buffer_t *cdata) {
         // Transition to AUX_DATA state; set initial aux_data sub-state before accessor is valid.
         G_context.state.tx_state = TX_STATE_AUX_DATA;
         tx_aux_data_ctx()->cvote_aux_data.state = CVOTE_AUX_DATA_STATE_EXPECTING_INIT;
-        TRACE("Transaction initialized, waiting for CVote AUX_DATA");
+        TRACE_MODULE("Transaction initialized, waiting for CVote AUX_DATA");
     } else {
         // Transition directly to CHUNKS state - no aux data expected.
         G_context.state.tx_state = TX_STATE_CHUNKS;
-        TRACE("Transaction initialized, waiting for data chunks");
+        TRACE_MODULE("Transaction initialized, waiting for data chunks");
     }
 
     apdu_response_send_sw(SWO_SUCCESS);
@@ -428,7 +449,7 @@ static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
     // Allocate buffer on first data chunk (using advertised size from client)
     if (tx_body_ctx()->raw_tx == NULL) {
         uint16_t alloc_size = G_context.tx_info.raw_tx_total_length;
-        TRACE("Allocating transaction buffer: %u bytes (advertised by client)", alloc_size);
+        TRACE_MODULE("Allocating transaction buffer: %u bytes (advertised by client)", alloc_size);
         if (!APP_MEM_CALLOC((void **) &tx_body_ctx()->raw_tx, alloc_size)) {
             // LCOV_EXCL_START
             // APP_MEM_CALLOC failure requires OOM condition unreachable in unit tests
@@ -437,7 +458,9 @@ static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
             return false;
             // LCOV_EXCL_STOP
         }
-        TRACE("Transaction buffer allocated: %u bytes at %p", alloc_size, tx_body_ctx()->raw_tx);
+        TRACE_MODULE("Transaction buffer allocated: %u bytes at %p",
+                     alloc_size,
+                     tx_body_ctx()->raw_tx);
     }
 
     // Check if adding this chunk would exceed advertised buffer size
@@ -452,11 +475,13 @@ static bool handle_tx_data_chunk(buffer_t *cdata, bool is_final_chunk) {
 
     // Copy chunk data
     bool chunk_copied = buffer_move(cdata,
-                     tx_body_ctx()->raw_tx + tx_body_ctx()->raw_tx_current_length,
-                     chunk_size);
+                                    tx_body_ctx()->raw_tx + tx_body_ctx()->raw_tx_current_length,
+                                    chunk_size);
     LEDGER_ASSERT(chunk_copied, "buffer_move failed unexpectedly");
     tx_body_ctx()->raw_tx_current_length += chunk_size;
-    TRACE("Copied %u bytes, total: %u", (unsigned) chunk_size, (unsigned) tx_body_ctx()->raw_tx_current_length);
+    TRACE_MODULE("Copied %u bytes, total: %u",
+                 (unsigned) chunk_size,
+                 (unsigned) tx_body_ctx()->raw_tx_current_length);
     return true;
 }
 
@@ -473,11 +498,14 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
 #ifdef HAVE_SWAP
             if (G_called_from_swap && G_swap_response_ready) {
                 // Safety against trying to make the app sign multiple TXs in swap mode
-                TRACE("Safety against double signing triggered");
+                TRACE_MODULE("Safety against double signing triggered");
                 swap_reject_and_exit(SWAP_EC_ERROR_GENERIC, SWAP_APP_CODE_MULTI_SIGN);
             }
             if (G_called_from_swap) {
-                TRACE("Swap mode transaction started");
+                TRACE_MODULE("Swap mode transaction started");
+                // The transaction hash is an intermediate response in Cardano's swap flow.
+                // Only the final witness response may return control to Exchange.
+                G_swap_response_ready = false;
             }
 #endif
             G_context.req_type = REQUEST_SIGN_TRANSACTION;
@@ -539,14 +567,14 @@ void handler_sign_tx(buffer_t *cdata, uint8_t p1) {
                 // In swap mode there is no interactive transaction review, so we intentionally
                 // skip TX_STATE_UI_REVIEW and transition directly to TX_STATE_APPROVED.
                 // Consequently, finalize_sign_tx() is not used in this flow.
+
                 // Free raw_tx while body slot is still valid, before the union is repurposed.
                 APP_MEM_FREE_AND_NULL((void **) &tx_body_ctx()->raw_tx);
                 G_context.state.tx_state = TX_STATE_APPROVED;
                 tx_witness_ctx()->current_witness = 0;
-                apdu_response_send_data(
-                    G_context.tx_info.tx_hash,
-                    sizeof(G_context.tx_info.tx_hash),
-                    SWO_SUCCESS);
+                apdu_response_send_data(G_context.tx_info.tx_hash,
+                                        sizeof(G_context.tx_info.tx_hash),
+                                        SWO_SUCCESS);
                 return;
             }
 #endif
@@ -590,14 +618,15 @@ void finalize_sign_tx(void) {
     APP_MEM_FREE_AND_NULL((void **) &tx_body_ctx()->raw_tx);
     G_context.state.tx_state = TX_STATE_APPROVED;
     tx_witness_ctx()->current_witness = 0;
-    apdu_response_send_data(G_context.tx_info.tx_hash, SIZEOF(G_context.tx_info.tx_hash), SWO_SUCCESS);
+    apdu_response_send_data(G_context.tx_info.tx_hash,
+                            SIZEOF(G_context.tx_info.tx_hash),
+                            SWO_SUCCESS);
 
     if (G_context.tx_info.num_witnesses == 0) {
         // there are no witnesses, we are done with this tx
         reset_app_context();
     }
 }
-
 
 bool is_last_witness_to_process(void) {
     ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION);
@@ -610,8 +639,7 @@ bool is_last_witness_to_process(void) {
     return (remaining_witnesses == 1);
 }
 
-void finalize_witness(void)
-{
+void finalize_witness(void) {
     ASSERT(G_context.req_type == REQUEST_SIGN_TRANSACTION);
     ASSERT(G_context.state.tx_state == TX_STATE_APPROVED);
     LEDGER_ASSERT(G_context.tx_info.num_witnesses > 0, "No witnesses expected");
@@ -631,20 +659,17 @@ void finalize_witness(void)
 
     // Witness confirmed - send signature back
 #ifdef HAVE_SWAP
-    if (G_called_from_swap &&
-        is_last_witness) {
+    if (G_called_from_swap && is_last_witness) {
         // Must be set before apdu_response_send_data(): the SDK IO send path checks
         // G_swap_response_ready while transmitting the response and calls os_lib_end()
         // immediately to return control to Exchange.
-        TRACE("Swap mode: final witness response will return to Exchange");
+        TRACE_MODULE("Swap mode: final witness response will return to Exchange");
         G_swap_response_ready = true;
     }
 #endif
-    apdu_response_send_data(
-        tx_witness_ctx()->witness_signature,
-        ED25519_SIGNATURE_LENGTH,
-        SWO_SUCCESS
-    );
+    apdu_response_send_data(tx_witness_ctx()->witness_signature,
+                            ED25519_SIGNATURE_LENGTH,
+                            SWO_SUCCESS);
 
     if (is_last_witness) {
         // All witnesses processed - reset context to prevent further APDUs for this tx
@@ -666,7 +691,8 @@ void handler_sign_tx_witness(buffer_t *cdata) {
     }
 
     if (G_context.state.tx_state != TX_STATE_APPROVED) {
-        TRACE("Bad state for witness signing: expected TX_STATE_APPROVED, got %d", G_context.state.tx_state);
+        TRACE("Bad state for witness signing: expected TX_STATE_APPROVED, got %d",
+              G_context.state.tx_state);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return;
     }
@@ -675,8 +701,7 @@ void handler_sign_tx_witness(buffer_t *cdata) {
     if (tx_witness_ctx()->current_witness >= G_context.tx_info.num_witnesses) {
         TRACE("Witness count exceeded: current=%d, expected=%d",
               tx_witness_ctx()->current_witness,
-              G_context.tx_info.num_witnesses
-        );
+              G_context.tx_info.num_witnesses);
         send_swo_and_reset(SWO_COMMAND_NOT_ALLOWED);
         return;
     }
@@ -693,20 +718,21 @@ void handler_sign_tx_witness(buffer_t *cdata) {
         return;
     }
 
-    TRACE("Witness %d: path length=%d",
-           tx_witness_ctx()->current_witness,
-           tx_witness_ctx()->witness_path.length);
+    TRACE_MODULE("Witness %d: path length=%d",
+                 tx_witness_ctx()->current_witness,
+                 tx_witness_ctx()->witness_path.length);
 
     // Check security policy for witness signing
     // Determine if mint is present in the transaction
     bool mintPresent = (G_context.tx_info.tx_params.num_mint_asset_groups > 0);
 
     // Get pool owner path if this is a pool registration
-    const bip44_path_t* poolOwnerPath = NULL;
+    const bip44_path_t *poolOwnerPath = NULL;
     switch (G_context.tx_info.tx_params.txSigningMode) {
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OWNER:
             if (G_context.tx_info.pool_owner_path_present) {
-                poolOwnerPath = &G_context.tx_info.pool_owner_path;  // cross-stage field, direct access ok
+                poolOwnerPath =
+                    &G_context.tx_info.pool_owner_path;  // cross-stage field, direct access ok
             }
             break;
         case SIGN_TX_SIGNINGMODE_POOL_REGISTRATION_OPERATOR:
@@ -721,21 +747,19 @@ void handler_sign_tx_witness(buffer_t *cdata) {
 #else
     const bool isSwap = false;
 #endif
-    security_policy_t policy = policyForSignTxWitness(
-        G_context.tx_info.tx_params.txSigningMode,
-        isSwap,
-        &tx_witness_ctx()->witness_path,
-        mintPresent,
-        poolOwnerPath,
-        &witness_warnings
-    );
+    security_policy_t policy = policyForSignTxWitness(G_context.tx_info.tx_params.txSigningMode,
+                                                      isSwap,
+                                                      &tx_witness_ctx()->witness_path,
+                                                      mintPresent,
+                                                      poolOwnerPath,
+                                                      &witness_warnings);
 
-    TRACE("Witness security policy: %d", (int) policy);
+    TRACE_MODULE("Witness security policy: %d", (int) policy);
 
 #ifdef HAVE_SWAP
     // Invariant: swap-validated params must only exist in swap invocation context.
-    if (swap_transaction_params_initialized() && !G_called_from_swap) {
-        ASSERT(false);
+    if (swap_transaction_params_initialized() && !G_called_from_swap) {  // LCOV_EXCL_LINE
+        ASSERT(false);                                                   // LCOV_EXCL_LINE
     }
 #endif
 
@@ -760,12 +784,14 @@ void handler_sign_tx_witness(buffer_t *cdata) {
 
             // Handle UI state: if this was the last witness, return to main menu.
             if (is_last_witness) {
+                // LCOV_EXCL_START
 #ifdef HAVE_SWAP
                 LEDGER_ASSERT(!G_called_from_swap,
                               "Swap flow must terminate before returning from finalize_witness");
 #endif
+                // LCOV_EXCL_STOP
                 // All witnesses processed - return to main menu
-                TRACE("All POLICY_HIDE witnesses complete, returning to main menu");
+                TRACE_MODULE("All POLICY_HIDE witnesses complete, returning to main menu");
                 ui_menu_main();
             }
             return;
@@ -780,6 +806,6 @@ void handler_sign_tx_witness(buffer_t *cdata) {
         default:
             ASSERT(false);
             return;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 }

@@ -63,10 +63,7 @@ Format: -> means explanation why not a bug.
 -> not a bug. These IDs don't exist on any real network, and `isNetworkUsual()` returns false for them, triggering an unusual-network warning to the user. Behavior matches the old app.
 
 * Tx body field 15 (`network_id`) is hashed without a dedicated per-field review screen.
--> not a bug. The app intentionally treats `includeNetworkId` itself as making network identity verifiable and only shows network details when the network parameters are unusual. This matches the local specs and the old app behavior; a separate “field 15 present” screen is not required.
-
-* `extractProtocolMagic` parses the tag-24 inner Byron payload on the outer buffer without a dedicated sub-buffer.
--> not a bug. The outer buffer bounds, whole-buffer exhaustion check, and CRC32 checksum verification together ensure correctness; a sub-buffer would add no security value.
+-> not a bug. Network details (Network ID, Protocol magic) are shown when the network is unusual OR when expert mode is enabled. For usual networks in non-expert mode, details are hidden to avoid bothering users.
 
 * `aux_data_hash_builder.c` trace buffers (`AUX_DATA_TRACE_BUFFER_SIZE` / `CVOTE_PAYLOAD_TRACE_BUFFER_SIZE`) are only 4 KiB each and will assert if a high-delegation CIP-36 registration overflows them.
 -> intentional. Buffers are debug-only (compiled in only under `-DTRACE_AUX_DATA_HASH_BUILDER`, never in production). The assert-on-overflow is deliberate: if a developer enables tracing and hits the limit, they get a loud failure rather than silent truncation of the trace, and can decide how to proceed. Production hashing is unaffected.

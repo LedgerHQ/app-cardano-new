@@ -37,6 +37,16 @@ For standalone functional tests (ragger), you also need:
 sudo apt install qemu-user-static
 ```
 
+## Ledger Docker Environment
+
+For app builds and swap dependency builds, use the active Ledger VS Code
+dev-tools container for this repository, typically `ledger-app-cardano-container`.
+It carries the current per-device SDKs used by the VS Code Ledger plugin. Avoid
+using older standalone builder images such as
+`ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest` for swap
+dependencies, because they can produce binaries with an older SDK API level than
+the local Cardano app.
+
 ### Linting and Formatting (Ruff)
 
 The project uses [Ruff](https://docs.astral.sh/ruff/) for Python linting and formatting. Ruff is included in the shared `tests/requirements.txt`.
@@ -80,6 +90,49 @@ Notes:
 - Do not rely on the system `python3` for these workflows; missing packages and
   import-path mismatches are common outside the shared venv.
 
+## Speculos Seed & Crypto Derivation
+
+Ragger tests run against Speculos with a deterministic, well-known mnemonic. The
+same mnemonic is also used by Python-side test tooling to precompute expected
+transaction hashes, reward addresses, and key hashes for fixture data.
+
+### Accessing the seed in test code
+
+```python
+from ragger.bip.seed import SPECULOS_MNEMONIC
+from ragger.bip import calculate_public_key_and_chaincode, CurveChoice
+import hashlib
+
+# Derive a Blake2b-224 key hash for a Cardano derivation path
+def derive_key_hash(path_str: str):
+    pk_hex, _chain_code = calculate_public_key_and_chaincode(
+        CurveChoice.Ed25519Kholaw, path_str, mnemonic=SPECULOS_MNEMONIC
+    )
+    pk_bytes = bytes.fromhex(pk_hex)
+    return hashlib.blake2b(pk_bytes, digest_size=28).digest()
+```
+
+This is the same derivation used by `get_device_pubkey()` in
+`tests/standalone/utils.py`, but performed offline without a running device.
+Use it to compute reward addresses, voter key hashes, and other
+seed-dependent fixture values.
+
+### Why fixture CBOR values must match the speculos seed
+
+Ragger fixtures carry a `unit_test_expect.txBodyHex` that encodes reward
+addresses, key hashes, and other cryptographic material derived from BIP32
+paths. The mock-crypto unit tests use a separate seed; the fixture's CBOR must
+be generated with speculos-derived values for Ragger to accept it, because the
+device-side `constructRewardAddressFromKeyPath` and
+`txHashBuilder_serializeVoterKey` call into real crypto that uses the speculos
+seed.
+
+When a fixture with `DUMMY_TX_HASH_HEX` and mock-crypto-derived CBOR values
+fails with `SWO_TX_PARSING_FAIL_WITHDRAWALS` (0x6B25) or
+`SWO_TX_PARSING_FAIL_VOTING_PROCEDURES` (0x6B33), the `ENFORCE_CANONICAL_ORDERING`
+checks compare device-derived addresses/keys that differ from the fixture's CBOR
+bytes. Regenerate these fixtures from a speculos run.
+
 ## Test Suites
 
 - Unit tests: `tests/unit/README.md`
@@ -94,6 +147,7 @@ Notes:
 - Regenerate unit-test fixtures when `tests/standalone/input_files/` or
   `tests/application_client/` changes via:
   `PYTHONPATH=. tests/venv/bin/python -m tests.unit.generators.generate_unit_tests_from_ragger all` from the repository root.
+- When `clang-format-14` is available, generated unit-test C/H files are normalized by the generator itself, and `make -C tests generated-fixture-drift` verifies that generated output still matches `clang-format-14`.
 - Happy-path unit fixtures must have explicit expected output values. Missing unit
   expected results are a hard error: generators must report them, and unit tests
   must not silently skip response verification for those fixtures.
@@ -101,10 +155,20 @@ Notes:
   `tests/unit/README.md` -> `Fixture Workflow`.
 - Use the shared venv above when running generator scripts or other Python-based
   test tooling.
-- Run ragger and swap tests only when explicitly requested.
+- Run ragger and swap tests only when explicitly requested. For standalone
+  ragger tests, `--get-stack-consumption` is a useful optional diagnostic flag:
+  it prints a per-test stack usage summary when the app binary is built with
+  `DEBUG_OS_STACK_CONSUMPTION=1`. This is an SDK build variable handled by
+  `$(BOLOS_SDK)/Makefile.standard_app`; this app enables it automatically for
+  `DEBUG=1` builds. For Nano X swap/library-mode stack and raw-buffer memory
+  layout diagnostics, see
+  [`doc/tx_raw_buffer.md`](tx_raw_buffer.md#nano-x-stackbss-interaction-in-swap-library-mode).
 - Convenience wrappers from the repository root:
   - `make -C tests python-checks` runs Ruff format check, pylint, and mypy.
-  - `make -C tests tests-unit` regenerates unit fixtures, checks drift, builds, and runs unit tests.
+  - `make -C tests clang-format-src-check` checks `clang-format-14` on `src/**/*.c` and `src/**/*.h`.
+  - `make -C tests clang-format-generated-check` checks `clang-format-14` on generated unit-test C/H files.
+  - `make -C tests tests-unit` regenerates unit fixtures, checks drift and generated C formatting, builds, and runs unit tests.
+  - `make -C tests unit-coverage` builds unit tests, runs them, and generates an HTML coverage report at `tests/unit/coverage/index.html`.
   - `make -C tests fuzzing` builds fuzzing harnesses and runs each for 1 second by default (override with `FUZZ_SECONDS=<n>`, requires `BOLOS_SDK`).
 
 ## Coverage Exclusion Policy
@@ -193,7 +257,7 @@ To use a guard in your module:
 | `TRACE_AUX_DATA_HASH_BUILDER` | `src/cvote/aux_data_hash_builder.c` | Voting aux data hashing |
 | `TRACE_VOTECAST_HASH_BUILDER` | `src/cvote/vote_cast_hash_builder.c` | Vote cast hashing |
 | `TRACE_NATIVE_SCRIPT_HASH_BUILDER` | `src/deriveNativeScriptHash/derive_native_script_hash_builder.c` | Native script hashing |
-| `TRACE_SWAP` | `src/swap/swap_lib.c` | Swap/library-mode validation flow |
+| `TRACE_TX_PROCESSING` | `src/transaction/tx_processing.c` | Transaction body processing, per-element iteration and canonical ordering |
 
 ### How to Build & Verify
 

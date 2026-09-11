@@ -22,10 +22,10 @@ typedef struct {
     uint64bits_t acc[25];
 } cx_sha3_t;
 
-static inline cx_err_t cx_sha3_init_no_throw(cx_sha3_t* hash, size_t size) {
-    (void)hash;
-    (void)size;
+static inline cx_err_t cx_sha3_init_no_throw(cx_sha3_t *hash, size_t size) {
+    (void) hash;
+    (void) size;
     return CX_OK;
 }
 
-#endif // LCX_SHA3_H
+#endif  // LCX_SHA3_H

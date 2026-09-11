@@ -21,7 +21,7 @@
 #ifdef TRACE_CVOTE
 #define TRACE_MODULE(...) TRACE("[cvote_parser] " __VA_ARGS__)
 #else
-#define TRACE_MODULE(...) (void)0  // Compiled out
+#define TRACE_MODULE(...) (void) 0  // Compiled out
 #endif
 
 /**
@@ -77,8 +77,7 @@ static cvote_parser_status_t _map_output_parser_status(uint16_t swo) {
     }
 }
 
-cvote_parser_status_t cvote_parse_destination(buffer_t *buf,
-                                              tx_output_destination_t *destination) {
+cvote_parser_status_t cvote_parse_destination(buffer_t *buf, tx_output_destination_t *destination) {
     ASSERT(buf != NULL);
     ASSERT(destination != NULL);
 
@@ -91,8 +90,8 @@ cvote_parser_status_t cvote_parse_destination(buffer_t *buf,
 
     if (destination->type == DESTINATION_DEVICE_OWNED) {
         TRACE_MODULE("CVote destination type 0x%x, staking %d",
-              destination->params.type,
-              addressParams_getStakingPartType(&destination->params));
+                     destination->params.type,
+                     addressParams_getStakingPartType(&destination->params));
     } else {
         TRACE_MODULE("CVote destination: third-party payload");
     }
@@ -104,11 +103,9 @@ cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
     ASSERT(out_data != NULL);
     ASSERT(tx_aux_data_ctx()->raw_cvote_init_data != NULL);
 
-    buffer_t parse_buf = {
-        .ptr = tx_aux_data_ctx()->raw_cvote_init_data,
-        .size = tx_aux_data_ctx()->raw_cvote_init_data_len,
-        .offset = 0
-    };
+    buffer_t parse_buf = {.ptr = tx_aux_data_ctx()->raw_cvote_init_data,
+                          .size = tx_aux_data_ctx()->raw_cvote_init_data_len,
+                          .offset = 0};
 
     // Zero out output structure
     explicit_bzero(out_data, sizeof(*out_data));
@@ -134,8 +131,7 @@ cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
 
     // CIP15 does not support delegations (only a single vote key in init payload)
     if (out_data->format == CIP15 && out_data->remaining_delegations != 0) {
-        TRACE("CVote init: CIP15 must have 0 delegations, got %u",
-              out_data->remaining_delegations);
+        TRACE("CVote init: CIP15 must have 0 delegations, got %u", out_data->remaining_delegations);
         return CVOTE_PARSER_INVALID_FORMAT;
     }
 
@@ -197,19 +193,22 @@ cvote_parser_status_t cvote_parse_aux_data_init(cvote_aux_data_t *out_data) {
             LEDGER_ASSERT(false, "Invalid CVote registration format: %u", out_data->format);
             dest_status = CVOTE_PARSER_INVALID_FORMAT;
             return dest_status;
-        // LCOV_EXCL_STOP
+            // LCOV_EXCL_STOP
     }
 
     // Verify buffer fully consumed
     if (parse_buf.offset != parse_buf.size) {
         TRACE("CVote init payload not fully consumed: %u/%u bytes",
-              (unsigned)parse_buf.offset, (unsigned)parse_buf.size);
+              (unsigned) parse_buf.offset,
+              (unsigned) parse_buf.size);
         dest_status = CVOTE_PARSER_INVALID_FORMAT;
         return dest_status;
     }
 
     TRACE("CVote init parsed: format=%u, delegations=%u, nonce=%llu",
-          out_data->format, out_data->remaining_delegations, out_data->nonce);
+          out_data->format,
+          out_data->remaining_delegations,
+          out_data->nonce);
 
     return CVOTE_PARSER_OK;
 }

@@ -41,11 +41,12 @@ static void test_nbgl_reject_on_sign_opcert_review_resets_context(void **state) 
     nbgl_mock_set_final_decisions(final_decisions, ARRAY_LEN(final_decisions));
 
     const opcert_fixture_t *fixture = &OPCERT_FIXTURES[0];
-    test_read_buffer_t opcert_buffer = make_test_read_buffer(fixture->payload, fixture->payload_len);
+    test_read_buffer_t opcert_buffer =
+        make_test_read_buffer(fixture->payload, fixture->payload_len);
 
     apdu_response_begin(INS_SIGN_OPCERT);
     handler_sign_opcert(&opcert_buffer.sdk_buffer);
-    apdu_response_assert_sent_or_deferred();
+    apdu_response_finalize_after_handler();
     assert_read_buffer_unchanged_and_cleanup(&opcert_buffer, fixture->payload);
     nbgl_mock_assert_all_final_decisions_consumed();
 
